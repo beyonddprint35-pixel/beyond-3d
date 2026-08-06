@@ -135,9 +135,35 @@ orderForm?.addEventListener('submit', async (event) => {
 
     await saveOrder(order);
 
-    // Continue with the normal Netlify form submission. Netlify keeps its own
-    // submission record and can send the configured owner notification.
-    orderForm.submit();
+if (submitButton) {
+  submitButton.textContent = 'Sending confirmation...';
+}
+
+const emailResponse = await fetch(
+  '/.netlify/functions/send-confirmation',
+  {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      customerName: order.customer_name,
+      customerEmail: order.email,
+      orderNumber: `B3D-${order.id.slice(0, 8).toUpperCase()}`,
+      material: order.material,
+      quantity: order.quantity
+    })
+  }
+);
+
+if (!emailResponse.ok) {
+  const emailError = await emailResponse.text();
+  console.error('Confirmation email failed:', emailError);
+}
+
+// Continue even if the email fails.
+// The order is already safely stored in Supabase.
+orderForm.submit();
   } catch (error) {
     console.error('Unable to submit order:', error);
 
