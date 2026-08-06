@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Request custom 3D printing from Beyond. Upload your model and receive a quote." />
+  <title>Beyond | Custom 3D Printing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="Beyond home">
+      <img class="brand-logo" src="assets/beyond-logo.png" alt="Beyond" />
+    </a>
+    <nav aria-label="Main navigation">
+      <a href="#how">How it works</a>
+      <a href="#materials">Materials</a>
+      <a class="nav-cta" href="#order">Get a quote</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-copy">
+        <span class="eyebrow">CUSTOM 3D PRINTING</span>
+        <h1>Turn your idea into something real.</h1>
+        <p>Upload a ready-to-print model or describe what you need. We’ll review your project and send you a clear quote before production.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#order">Start your order</a>
+          <a class="button secondary" href="#how">See how it works</a>
+        </div>
+        <div class="trust-row">
+          <span>✓ Fast response</span>
+          <span>✓ No payment before approval</span>
+          <span>✓ Local production</span>
+        </div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="printer-card">
+          <div class="printer-top"></div>
+          <div class="printer-window">
+            <div class="print-object"></div>
+            <div class="print-bed"></div>
+          </div>
+          <div class="printer-base"><span></span><span></span></div>
+        </div>
+        <div class="floating-chip chip-one">STL</div>
+        <div class="floating-chip chip-two">3MF</div>
+        <div class="floating-chip chip-three">PLA</div>
+      </div>
+    </section>
+
+    <section class="section" id="how">
+      <div class="section-heading">
+        <span class="eyebrow">SIMPLE PROCESS</span>
+        <h2>From upload to finished print</h2>
+      </div>
+      <div class="steps-grid">
+        <article class="step-card"><span>01</span><h3>Send your request</h3><p>Upload your model, image, sketch, or explain the product you want.</p></article>
+        <article class="step-card"><span>02</span><h3>Receive a quote</h3><p>We review size, material, print time, supports, quantity, and finishing.</p></article>
+        <article class="step-card"><span>03</span><h3>Approve the offer</h3><p>You confirm the price and specifications before we start production.</p></article>
+        <article class="step-card"><span>04</span><h3>We print it</h3><p>Your order enters our production queue and is prepared for delivery.</p></article>
+      </div>
+    </section>
+
+    <section class="section material-section" id="materials">
+      <div class="section-heading">
+        <span class="eyebrow">MATERIAL OPTIONS</span>
+        <h2>Choose what fits your project</h2>
+      </div>
+      <div class="material-grid">
+        <article><div class="material-icon">P</div><h3>PLA / PLA+</h3><p>Great for decorative parts, prototypes, signs, toys, and everyday products.</p></article>
+        <article><div class="material-icon">G</div><h3>PETG</h3><p>Better resistance to heat, water, impact, and outdoor conditions.</p></article>
+        <article><div class="material-icon">C</div><h3>Special finishes</h3><p>Silk, sparkle, carbon-look, multicolor, and custom finishing options.</p></article>
+      </div>
+    </section>
+
+    <section class="order-section" id="order">
+      <div class="order-intro">
+        <span class="eyebrow">REQUEST A QUOTE</span>
+        <h2>Tell us what you want to print</h2>
+        <p>You can upload a print-ready file or send an idea that still requires 3D design. We’ll contact you before any payment or printing.</p>
+        <div class="contact-card">
+          <strong>What happens after submission?</strong>
+          <p>Your request and files are saved securely. We review the project and reply with any questions and a final quotation.</p>
+        </div>
+      </div>
+
+      <form class="order-form" name="print-order" method="POST" action="success.html" data-netlify="true" netlify-honeypot="bot-field" enctype="multipart/form-data">
+        <input type="hidden" name="form-name" value="print-order" />
+        <p class="hidden"><label>Don’t fill this out: <input name="bot-field" /></label></p>
+
+        <div class="form-grid">
+          <label>Full name <span>*</span><input type="text" name="name" autocomplete="name" required /></label>
+          <label>Email <span>*</span><input type="email" name="email" autocomplete="email" required /></label>
+          <label>Phone / WhatsApp <span>*</span><input type="tel" name="phone" autocomplete="tel" required /></label>
+          <label>Project type <span>*</span>
+            <select name="project_type" required>
+              <option value="">Choose one</option>
+              <option>Print my existing model</option>
+              <option>Create a 3D model and print it</option>
+              <option>Business / bulk order</option>
+              <option>Not sure</option>
+            </select>
+          </label>
+          <label>Material
+            <select name="material">
+              <option>Recommend one for me</option>
+              <option>PLA</option><option>PLA+</option><option>PETG</option><option>Special finish</option>
+            </select>
+          </label>
+          <label>Color<input type="text" name="color" placeholder="For example: black, gold, red" /></label>
+          <label>Quantity <span>*</span><input type="number" name="quantity" min="1" value="1" required /></label>
+          <label>Needed by<input type="date" name="needed_by" /></label>
+        </div>
+
+        <label>Project description <span>*</span>
+          <textarea name="description" rows="6" required placeholder="Describe the object, approximate dimensions, purpose, strength requirements, and anything else we should know."></textarea>
+        </label>
+
+        <div class="upload-box">
+          <label for="model-file" class="upload-label">
+            <span class="upload-icon">↑</span>
+            <strong>Upload your model or reference file</strong>
+            <small>STL, 3MF, OBJ, STEP, ZIP, PDF, JPG or PNG</small>
+          </label>
+          <input id="model-file" type="file" name="model_file" accept=".stl,.3mf,.obj,.step,.stp,.zip,.pdf,.jpg,.jpeg,.png" />
+          <p id="file-name" class="file-name">No file selected</p>
+        </div>
+
+        <label class="checkbox-row"><input type="checkbox" name="confirmation" required /><span>I confirm that I own or have permission to use the uploaded design and understand that the final price is confirmed after review.</span></label>
+
+        <button class="submit-button" type="submit">Submit print request <span>→</span></button>
+        <p class="form-note">Submitting this form does not create a payment obligation.</p>
+      </form>
+    </section>
+  </main>
+
+  <footer><div class="brand"><img class="brand-logo" src="assets/beyond-logo.png" alt="Beyond" /></div><p>Custom 3D printing, made for you.</p></footer>
+  <script src="script.js"></script>
+</body>
+</html>
