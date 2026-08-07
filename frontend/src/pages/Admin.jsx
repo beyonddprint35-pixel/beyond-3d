@@ -1,5 +1,6 @@
 import {
   useEffect,
+  useMemo,
   useState,
 } from "react";
 
@@ -36,6 +37,12 @@ function Admin() {
         "beyond_admin_password"
       ) || ""
     );
+
+  const [activeFilter, setActiveFilter] =
+    useState("All");
+
+  const [search, setSearch] =
+    useState("");
 
   async function loadOrders(
     adminPassword
@@ -141,29 +148,94 @@ function Admin() {
     setOrders([]);
   }
 
-  const submitted =
-    orders.filter(
-      (order) =>
-        String(order.status)
-          .toLowerCase() ===
-        "submitted"
-    ).length;
+  const statuses = [
+    "All",
+    "Submitted",
+    "Quoted",
+    "Accepted",
+    "Printing",
+    "Completed",
+  ];
 
-  const printing =
-    orders.filter(
-      (order) =>
-        String(order.status)
-          .toLowerCase() ===
-        "printing"
-    ).length;
+  const statusCounts =
+    useMemo(() => {
+      const counts = {
+        All: orders.length,
+        Submitted: 0,
+        Quoted: 0,
+        Accepted: 0,
+        Printing: 0,
+        Completed: 0,
+      };
 
-  const completed =
-    orders.filter(
-      (order) =>
-        String(order.status)
-          .toLowerCase() ===
-        "completed"
-    ).length;
+      orders.forEach((order) => {
+        const status =
+          order.status ||
+          "Submitted";
+
+        if (
+          Object.prototype.hasOwnProperty.call(
+            counts,
+            status
+          )
+        ) {
+          counts[status] += 1;
+        }
+      });
+
+      return counts;
+    }, [orders]);
+
+  const filteredOrders =
+    useMemo(() => {
+      const normalizedSearch =
+        search
+          .trim()
+          .toLowerCase();
+
+      return orders.filter(
+        (order) => {
+          const status =
+            order.status ||
+            "Submitted";
+
+          const statusMatches =
+            activeFilter === "All" ||
+            status === activeFilter;
+
+          if (!statusMatches) {
+            return false;
+          }
+
+          if (!normalizedSearch) {
+            return true;
+          }
+
+          const searchableText = [
+            makeOrderNumber(
+              order.id
+            ),
+            order.customer_name,
+            order.email,
+            order.phone,
+            order.material,
+            order.color,
+            order.project_type,
+          ]
+            .filter(Boolean)
+            .join(" ")
+            .toLowerCase();
+
+          return searchableText.includes(
+            normalizedSearch
+          );
+        }
+      );
+    }, [
+      orders,
+      activeFilter,
+      search,
+    ]);
 
   if (!password) {
     return (
@@ -274,11 +346,11 @@ function Admin() {
 
         <article>
           <span>
-            Submitted
+            Accepted
           </span>
 
           <strong>
-            {submitted}
+            {statusCounts.Accepted}
           </strong>
         </article>
 
@@ -288,7 +360,7 @@ function Admin() {
           </span>
 
           <strong>
-            {printing}
+            {statusCounts.Printing}
           </strong>
         </article>
 
@@ -298,9 +370,82 @@ function Admin() {
           </span>
 
           <strong>
-            {completed}
+            {statusCounts.Completed}
           </strong>
         </article>
+      </section>
+
+      <section
+        style={{
+          display: "grid",
+          gap: "16px",
+          marginBottom: "24px",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            gap: "10px",
+            flexWrap: "wrap",
+          }}
+        >
+          {statuses.map(
+            (status) => (
+              <button
+                key={status}
+                type="button"
+                className={
+                  activeFilter ===
+                  status
+                    ? "primary-button"
+                    : "secondary-button"
+                }
+                onClick={() =>
+                  setActiveFilter(
+                    status
+                  )
+                }
+                style={{
+                  minHeight: "42px",
+                  padding:
+                    "0 16px",
+                }}
+              >
+                {status}
+                {" · "}
+                {
+                  statusCounts[
+                    status
+                  ]
+                }
+              </button>
+            )
+          )}
+        </div>
+
+        <input
+          type="search"
+          value={search}
+          onChange={(event) =>
+            setSearch(
+              event.target.value
+            )
+          }
+          placeholder="Search customer, email, order number, material..."
+          style={{
+            width: "100%",
+            minHeight: "52px",
+            padding:
+              "0 16px",
+            borderRadius: "14px",
+            border:
+              "1px solid rgba(255,255,255,.1)",
+            background:
+              "rgba(255,255,255,.035)",
+            color: "#ffffff",
+            outline: "none",
+          }}
+        />
       </section>
 
       {loading && (
@@ -316,9 +461,20 @@ function Admin() {
       )}
 
       {!loading &&
-        !error && (
+        !error &&
+        filteredOrders.length ===
+          0 && (
+          <div className="admin-message">
+            No matching orders.
+          </div>
+        )}
+
+      {!loading &&
+        !error &&
+        filteredOrders.length >
+          0 && (
           <section className="admin-orders">
-            {orders.map(
+            {filteredOrders.map(
               (order) => (
                 <article
                   className="admin-order-card"
@@ -375,12 +531,12 @@ function Admin() {
                     </span>
                   </div>
 
-                 <Link
-  className="admin-view-button"
-  to={`/admin/order/${order.id}`}
->
-  View →
-</Link>
+                  <Link
+                    className="admin-view-button"
+                    to={`/admin/order/${order.id}`}
+                  >
+                    View →
+                  </Link>
                 </article>
               )
             )}
