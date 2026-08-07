@@ -1,4 +1,6 @@
-const crypto = require("crypto");
+const crypto = require(
+  "crypto"
+);
 
 function createCustomerToken(
   orderId,
@@ -39,10 +41,11 @@ function safeCompare(
       return false;
     }
 
-    return crypto.timingSafeEqual(
-      a,
-      b
-    );
+    return crypto
+      .timingSafeEqual(
+        a,
+        b
+      );
   } catch {
     return false;
   }
@@ -61,7 +64,10 @@ exports.handler =
           .queryStringParameters
           ?.token;
 
-      if (!id || !token) {
+      if (
+        !id ||
+        !token
+      ) {
         return {
           statusCode: 400,
 
@@ -98,6 +104,7 @@ exports.handler =
 
         return {
           statusCode: 500,
+
           body:
             "Server configuration error.",
         };
@@ -172,18 +179,29 @@ exports.handler =
 
         return {
           statusCode: 500,
+
           body:
             "Unable to accept quotation.",
         };
       }
 
-      if (!data.length) {
+      if (
+        !data.length
+      ) {
         return {
           statusCode: 404,
+
           body:
             "Order not found.",
         };
       }
+
+      const trackUrl =
+        `https://beyond3dshop.com/track?id=${encodeURIComponent(
+          id
+        )}&token=${encodeURIComponent(
+          token
+        )}`;
 
       return {
         statusCode: 200,
@@ -265,7 +283,8 @@ exports.handler =
                 </h1>
 
                 <p style="
-                  margin:0;
+                  margin:0 auto;
+                  max-width:390px;
                   color:#9aa9bf;
                   line-height:1.7;
                 ">
@@ -275,6 +294,35 @@ exports.handler =
                   your order.
                 </p>
 
+                <a
+                  href="${trackUrl}"
+                  style="
+                    display:inline-block;
+                    margin-top:32px;
+                    padding:16px 28px;
+                    border-radius:999px;
+                    background:#176bff;
+                    color:#ffffff;
+                    text-decoration:none;
+                    font-size:14px;
+                    font-weight:700;
+                  "
+                >
+                  Track My Order
+                </a>
+
+                <p style="
+                  margin:22px 0 0;
+                  color:#677a96;
+                  font-size:12px;
+                  line-height:1.6;
+                ">
+                  Save your tracking link
+                  to check the latest
+                  production status at
+                  any time.
+                </p>
+
               </div>
 
             </body>
@@ -282,7 +330,9 @@ exports.handler =
         `,
       };
 
-    } catch (error) {
+    } catch (
+      error
+    ) {
       console.error(
         "Accept quote error:",
         error
@@ -290,6 +340,7 @@ exports.handler =
 
       return {
         statusCode: 500,
+
         body:
           "Unable to accept quotation.",
       };
