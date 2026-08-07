@@ -356,9 +356,8 @@ function OrderDetails() {
             },
 
             body: JSON.stringify({
-
-            orderId:
-    order.id,
+              orderId:
+                order.id,
 
               customerName:
                 order.customer_name,
@@ -367,7 +366,9 @@ function OrderDetails() {
                 order.email,
 
               orderNumber:
-                makeOrderNumber(order.id),
+                makeOrderNumber(
+                  order.id
+                ),
 
               material:
                 order.material,
@@ -399,15 +400,17 @@ function OrderDetails() {
         );
       }
 
-      ssetOrder((currentOrder) => ({
-  ...currentOrder,
-  status: "Quoted",
-  quote_status: "Sent",
-}));
+      setOrder(
+        (currentOrder) => ({
+          ...currentOrder,
+          status: "Quoted",
+          quote_status: "Sent",
+        })
+      );
 
-setQuoteMessage(
-  "Quote sent successfully to the customer."
-);
+      setQuoteMessage(
+        "Quote sent successfully to the customer."
+      );
     } catch (err) {
       console.error(err);
 
