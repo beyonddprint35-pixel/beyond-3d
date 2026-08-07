@@ -71,8 +71,8 @@ function OrderDetails() {
   const [sendingQuote, setSendingQuote] =
     useState(false);
 
-    const [updatingStatus, setUpdatingStatus] =
-  useState(false);
+  const [updatingStatus, setUpdatingStatus] =
+    useState(false);
 
   const [quoteMessage, setQuoteMessage] =
     useState("");
@@ -427,81 +427,85 @@ function OrderDetails() {
   }
 
   async function updateOrderStatus(
-  newStatus
-) {
-  const password =
-    sessionStorage.getItem(
-      "beyond_admin_password"
-    );
-
-  if (!password) {
-    navigate("/admin");
-    return;
-  }
-
-  try {
-    setUpdatingStatus(true);
-    setQuoteMessage("");
-
-    const response =
-      await fetch(
-        "/.netlify/functions/update-order-status",
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type":
-              "application/json",
-
-            "x-admin-password":
-              password,
-          },
-
-          body: JSON.stringify({
-            orderId:
-              order.id,
-
-            status:
-              newStatus,
-          }),
-        }
-      );
-
-    const data =
-      await response.json();
-
-    if (response.status === 401) {
-      sessionStorage.removeItem(
+    newStatus
+  ) {
+    const password =
+      sessionStorage.getItem(
         "beyond_admin_password"
       );
 
+    if (!password) {
       navigate("/admin");
       return;
     }
 
-    if (!response.ok) {
-      throw new Error(
-        data.error ||
-          "Could not update status."
-      );
+    if (!order?.id) {
+      return;
     }
 
-    setOrder(data.order);
+    try {
+      setUpdatingStatus(true);
+      setQuoteMessage("");
 
-    setQuoteMessage(
-      `Order moved to ${newStatus}.`
-    );
-  } catch (err) {
-    console.error(err);
+      const response =
+        await fetch(
+          "/.netlify/functions/update-order-status",
+          {
+            method: "POST",
 
-    setQuoteMessage(
-      err.message ||
-        "Unable to update order status."
-    );
-  } finally {
-    setUpdatingStatus(false);
+            headers: {
+              "Content-Type":
+                "application/json",
+
+              "x-admin-password":
+                password,
+            },
+
+            body: JSON.stringify({
+              orderId:
+                order.id,
+
+              status:
+                newStatus,
+            }),
+          }
+        );
+
+      const data =
+        await response.json();
+
+      if (response.status === 401) {
+        sessionStorage.removeItem(
+          "beyond_admin_password"
+        );
+
+        navigate("/admin");
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+            "Could not update status."
+        );
+      }
+
+      setOrder(data.order);
+
+      setQuoteMessage(
+        `Order moved to ${newStatus}.`
+      );
+    } catch (err) {
+      console.error(err);
+
+      setQuoteMessage(
+        err.message ||
+          "Unable to update order status."
+      );
+    } finally {
+      setUpdatingStatus(false);
+    }
   }
-}
 
   if (loading) {
     return (
@@ -563,6 +567,9 @@ function OrderDetails() {
       </section>
 
       <section className="order-details-grid">
+
+        {/* CUSTOMER */}
+
         <article className="order-detail-card">
           <h2>
             Customer
@@ -570,7 +577,9 @@ function OrderDetails() {
 
           <div className="order-info-grid">
             <div>
-              <span>Name</span>
+              <span>
+                Name
+              </span>
 
               <strong>
                 {order.customer_name ||
@@ -579,7 +588,9 @@ function OrderDetails() {
             </div>
 
             <div>
-              <span>Email</span>
+              <span>
+                Email
+              </span>
 
               <strong>
                 {order.email ||
@@ -588,7 +599,9 @@ function OrderDetails() {
             </div>
 
             <div>
-              <span>Phone</span>
+              <span>
+                Phone
+              </span>
 
               <strong>
                 {order.phone ||
@@ -597,7 +610,9 @@ function OrderDetails() {
             </div>
 
             <div>
-              <span>Needed by</span>
+              <span>
+                Needed by
+              </span>
 
               <strong>
                 {formatDate(
@@ -607,6 +622,8 @@ function OrderDetails() {
             </div>
           </div>
         </article>
+
+        {/* PROJECT */}
 
         <article className="order-detail-card">
           <h2>
@@ -659,6 +676,8 @@ function OrderDetails() {
           </div>
         </article>
 
+        {/* DESCRIPTION */}
+
         <article className="order-detail-card order-wide-card">
           <h2>
             Description
@@ -669,6 +688,8 @@ function OrderDetails() {
               "No description provided."}
           </p>
         </article>
+
+        {/* FILE */}
 
         <article className="order-detail-card order-wide-card">
           <h2>
@@ -708,85 +729,107 @@ function OrderDetails() {
           </div>
         </article>
 
-<article className="order-detail-card order-wide-card status-control-card">
-  <div className="status-control-header">
-    <div>
-      <div className="section-kicker">
-        PRODUCTION
-      </div>
+        {/* PRODUCTION STATUS */}
 
-      <h2>
-        Order status
-      </h2>
+        <article className="order-detail-card order-wide-card status-control-card">
+          <div className="status-control-header">
+            <div>
+              <div className="section-kicker">
+                PRODUCTION
+              </div>
 
-      <p>
-        Move this order through the
-        production workflow.
-      </p>
-    </div>
+              <h2>
+                Order status
+              </h2>
 
-    <span className="admin-status">
-      {order.status ||
-        "Submitted"}
-    </span>
-  </div>
+              <p>
+                Move this order through
+                the production workflow.
+              </p>
+            </div>
 
-  <div className="status-buttons">
-    <button
-      type="button"
-      className={
-        order.status === "Accepted"
-          ? "status-step active"
-          : "status-step"
-      }
-      onClick={() =>
-        updateOrderStatus(
-          "Accepted"
-        )
-      }
-      disabled={updatingStatus}
-    >
-      <span>01</span>
-      Accepted
-    </button>
+            <span className="admin-status">
+              {order.status ||
+                "Submitted"}
+            </span>
+          </div>
 
-    <button
-      type="button"
-      className={
-        order.status === "Printing"
-          ? "status-step active"
-          : "status-step"
-      }
-      onClick={() =>
-        updateOrderStatus(
-          "Printing"
-        )
-      }
-      disabled={updatingStatus}
-    >
-      <span>02</span>
-      Printing
-    </button>
+          <div className="status-buttons">
+            <button
+              type="button"
+              className={
+                order.status ===
+                "Accepted"
+                  ? "status-step active"
+                  : "status-step"
+              }
+              onClick={() =>
+                updateOrderStatus(
+                  "Accepted"
+                )
+              }
+              disabled={
+                updatingStatus
+              }
+            >
+              <span>
+                01
+              </span>
 
-    <button
-      type="button"
-      className={
-        order.status === "Completed"
-          ? "status-step active"
-          : "status-step"
-      }
-      onClick={() =>
-        updateOrderStatus(
-          "Completed"
-        )
-      }
-      disabled={updatingStatus}
-    >
-      <span>03</span>
-      Completed
-    </button>
-  </div>
-</article>
+              Accepted
+            </button>
+
+            <button
+              type="button"
+              className={
+                order.status ===
+                "Printing"
+                  ? "status-step active"
+                  : "status-step"
+              }
+              onClick={() =>
+                updateOrderStatus(
+                  "Printing"
+                )
+              }
+              disabled={
+                updatingStatus
+              }
+            >
+              <span>
+                02
+              </span>
+
+              Printing
+            </button>
+
+            <button
+              type="button"
+              className={
+                order.status ===
+                "Completed"
+                  ? "status-step active"
+                  : "status-step"
+              }
+              onClick={() =>
+                updateOrderStatus(
+                  "Completed"
+                )
+              }
+              disabled={
+                updatingStatus
+              }
+            >
+              <span>
+                03
+              </span>
+
+              Completed
+            </button>
+          </div>
+        </article>
+
+        {/* QUOTATION */}
 
         <article className="order-detail-card order-wide-card quote-card">
           <div className="quote-header">
@@ -808,6 +851,7 @@ function OrderDetails() {
 
           <div className="quote-layout">
             <div className="quote-form">
+
               <label>
                 <span>
                   Filament used
@@ -818,10 +862,15 @@ function OrderDetails() {
                     type="number"
                     min="0"
                     step="0.01"
-                    value={filamentGrams}
-                    onChange={(event) =>
+                    value={
+                      filamentGrams
+                    }
+                    onChange={(
+                      event
+                    ) =>
                       setFilamentGrams(
-                        event.target.value
+                        event.target
+                          .value
                       )
                     }
                     placeholder="120"
@@ -843,10 +892,15 @@ function OrderDetails() {
                     type="number"
                     min="0"
                     step="0.1"
-                    value={printHours}
-                    onChange={(event) =>
+                    value={
+                      printHours
+                    }
+                    onChange={(
+                      event
+                    ) =>
                       setPrintHours(
-                        event.target.value
+                        event.target
+                          .value
                       )
                     }
                     placeholder="4.5"
@@ -868,10 +922,15 @@ function OrderDetails() {
                     type="number"
                     min="0"
                     step="0.01"
-                    value={pricePerGram}
-                    onChange={(event) =>
+                    value={
+                      pricePerGram
+                    }
+                    onChange={(
+                      event
+                    ) =>
                       setPricePerGram(
-                        event.target.value
+                        event.target
+                          .value
                       )
                     }
                   />
@@ -892,10 +951,15 @@ function OrderDetails() {
                     type="number"
                     min="0"
                     step="0.01"
-                    value={extraCharge}
-                    onChange={(event) =>
+                    value={
+                      extraCharge
+                    }
+                    onChange={(
+                      event
+                    ) =>
                       setExtraCharge(
-                        event.target.value
+                        event.target
+                          .value
                       )
                     }
                   />
@@ -916,10 +980,15 @@ function OrderDetails() {
                     type="number"
                     min="0"
                     step="0.01"
-                    value={deliveryCharge}
-                    onChange={(event) =>
+                    value={
+                      deliveryCharge
+                    }
+                    onChange={(
+                      event
+                    ) =>
                       setDeliveryCharge(
-                        event.target.value
+                        event.target
+                          .value
                       )
                     }
                   />
@@ -929,16 +998,21 @@ function OrderDetails() {
                   </small>
                 </div>
               </label>
+
             </div>
 
             <div className="quote-summary">
+
               <div className="quote-summary-row">
                 <span>
                   Material
                 </span>
 
                 <strong>
-                  ₪{basePrice.toFixed(2)}
+                  ₪
+                  {basePrice.toFixed(
+                    2
+                  )}
                 </strong>
               </div>
 
@@ -948,7 +1022,8 @@ function OrderDetails() {
                 </span>
 
                 <strong>
-                  ₪{Number(
+                  ₪
+                  {Number(
                     extraCharge || 0
                   ).toFixed(2)}
                 </strong>
@@ -960,8 +1035,10 @@ function OrderDetails() {
                 </span>
 
                 <strong>
-                  ₪{Number(
-                    deliveryCharge || 0
+                  ₪
+                  {Number(
+                    deliveryCharge ||
+                      0
                   ).toFixed(2)}
                 </strong>
               </div>
@@ -974,18 +1051,25 @@ function OrderDetails() {
                 </span>
 
                 <strong>
-                  ₪{quoteTotal.toFixed(2)}
+                  ₪
+                  {quoteTotal.toFixed(
+                    2
+                  )}
                 </strong>
               </div>
 
               <div className="quote-actions">
+
                 <button
                   type="button"
                   className="primary-button quote-save-button"
-                  onClick={saveQuote}
+                  onClick={
+                    saveQuote
+                  }
                   disabled={
                     savingQuote ||
-                    sendingQuote
+                    sendingQuote ||
+                    updatingStatus
                   }
                 >
                   {savingQuote
@@ -996,16 +1080,20 @@ function OrderDetails() {
                 <button
                   type="button"
                   className="secondary-button quote-send-button"
-                  onClick={sendQuote}
+                  onClick={
+                    sendQuote
+                  }
                   disabled={
                     sendingQuote ||
-                    savingQuote
+                    savingQuote ||
+                    updatingStatus
                   }
                 >
                   {sendingQuote
                     ? "Sending..."
                     : "Send Quote to Customer"}
                 </button>
+
               </div>
 
               {quoteMessage && (
@@ -1013,9 +1101,11 @@ function OrderDetails() {
                   {quoteMessage}
                 </div>
               )}
+
             </div>
           </div>
         </article>
+
       </section>
     </main>
   );
