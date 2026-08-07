@@ -1,7 +1,23 @@
+const crypto = require("crypto");
+
+function createCustomerToken(orderId) {
+  const secret =
+    process.env.ADMIN_PASSWORD;
+
+  return crypto
+    .createHmac("sha256", secret)
+    .update(String(orderId))
+    .digest("hex");
+}
+
 exports.handler = async function (event) {
   if (event.httpMethod !== "POST") {
     return {
       statusCode: 405,
+      headers: {
+        "Content-Type":
+          "application/json",
+      },
       body: JSON.stringify({
         error: "Method not allowed",
       }),
@@ -10,7 +26,9 @@ exports.handler = async function (event) {
 
   try {
     const providedPassword =
-      event.headers["x-admin-password"];
+      event.headers[
+        "x-admin-password"
+      ];
 
     const correctPassword =
       process.env.ADMIN_PASSWORD;
@@ -18,10 +36,15 @@ exports.handler = async function (event) {
     if (
       !providedPassword ||
       !correctPassword ||
-      providedPassword !== correctPassword
+      providedPassword !==
+        correctPassword
     ) {
       return {
         statusCode: 401,
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
         body: JSON.stringify({
           error: "Unauthorized",
         }),
@@ -29,25 +52,32 @@ exports.handler = async function (event) {
     }
 
     const {
-        orderId,
+      orderId,
       customerName,
       customerEmail,
       orderNumber,
       material,
       quantity,
       quoteTotal,
-    } = JSON.parse(event.body || "{}");
+    } = JSON.parse(
+      event.body || "{}"
+    );
 
     if (
-        !orderId ||
+      !orderId ||
       !customerEmail ||
       !orderNumber ||
       quoteTotal === undefined
     ) {
       return {
         statusCode: 400,
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
         body: JSON.stringify({
-          error: "Missing quote information",
+          error:
+            "Missing quote information",
         }),
       };
     }
@@ -58,11 +88,20 @@ exports.handler = async function (event) {
     const emailFrom =
       process.env.EMAIL_FROM;
 
-    if (!resendApiKey || !emailFrom) {
+    if (
+      !resendApiKey ||
+      !emailFrom ||
+      !correctPassword
+    ) {
       return {
         statusCode: 500,
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
         body: JSON.stringify({
-          error: "Missing email configuration",
+          error:
+            "Missing server configuration",
         }),
       };
     }
@@ -71,168 +110,257 @@ exports.handler = async function (event) {
       customerName || "there";
 
     const total =
-      Number(quoteTotal).toFixed(2);
-      const token =
-  Buffer.from(
-    `${orderId}:${process.env.ADMIN_PASSWORD}`
-  ).toString("base64url");
+      Number(
+        quoteTotal
+      ).toFixed(2);
 
-const acceptUrl =
-  `https://beyond3dshop.com/.netlify/functions/accept-quote?id=${encodeURIComponent(
-    orderId
-  )}&token=${encodeURIComponent(
-    token
-  )}`;
+    const token =
+      createCustomerToken(
+        orderId
+      );
 
+    const acceptUrl =
+      `https://beyond3dshop.com/.netlify/functions/accept-quote?id=${encodeURIComponent(
+        orderId
+      )}&token=${encodeURIComponent(
+        token
+      )}`;
 
-    const response = await fetch(
-      "https://api.resend.com/emails",
-      {
-        method: "POST",
+    const response =
+      await fetch(
+        "https://api.resend.com/emails",
+        {
+          method: "POST",
 
-        headers: {
-          Authorization:
-            `Bearer ${resendApiKey}`,
+          headers: {
+            Authorization:
+              `Bearer ${resendApiKey}`,
 
-          "Content-Type":
-            "application/json",
-        },
+            "Content-Type":
+              "application/json",
+          },
 
-        body: JSON.stringify({
-          from: emailFrom,
+          body: JSON.stringify({
+            from: emailFrom,
 
-          to: [customerEmail],
+            to: [
+              customerEmail,
+            ],
 
-          subject:
-            `Your Beyond quotation – ${orderNumber}`,
+            subject:
+              `Your Beyond quotation – ${orderNumber}`,
 
-          html: `
-            <div style="
-              max-width:600px;
-              margin:0 auto;
-              font-family:Arial,sans-serif;
-              color:#111827;
-              line-height:1.6;
-            ">
+            html: `
+              <!doctype html>
 
-              <h1>
-                Your quotation is ready
-              </h1>
-
-              <p>
-                Hi ${safeName},
-              </p>
-
-              <p>
-                We've reviewed your project and
-                prepared your quotation.
-              </p>
-
-              <div style="
-                margin:28px 0;
-                padding:24px;
-                border-radius:16px;
-                background:#f4f7fb;
-              ">
-
-                <p style="
-                  margin:0 0 8px;
-                  color:#6b7280;
-                  font-size:13px;
+              <html>
+                <body style="
+                  margin:0;
+                  padding:0;
+                  background:#f3f6fb;
+                  font-family:Arial,sans-serif;
+                  color:#111827;
                 ">
-                  ORDER
-                </p>
 
-                <strong>
-                  ${orderNumber}
-                </strong>
+                  <div style="
+                    width:100%;
+                    padding:40px 16px;
+                    box-sizing:border-box;
+                  ">
 
-                <p style="
-                  margin:20px 0 8px;
-                  color:#6b7280;
-                  font-size:13px;
-                ">
-                  MATERIAL
-                </p>
+                    <div style="
+                      max-width:600px;
+                      margin:0 auto;
+                      background:#ffffff;
+                      border-radius:22px;
+                      overflow:hidden;
+                      box-shadow:0 20px 50px rgba(20,35,60,.08);
+                    ">
 
-                <strong>
-                  ${material || "Not specified"}
-                </strong>
+                      <div style="
+                        padding:34px;
+                        background:#07111f;
+                        color:#ffffff;
+                      ">
 
-                <p style="
-                  margin:20px 0 8px;
-                  color:#6b7280;
-                  font-size:13px;
-                ">
-                  QUANTITY
-                </p>
+                        <div style="
+                          font-size:15px;
+                          font-weight:700;
+                          letter-spacing:7px;
+                          margin-bottom:30px;
+                        ">
+                          BEYOND
+                        </div>
 
-                <strong>
-                  ${quantity || 1}
-                </strong>
+                        <div style="
+                          display:inline-block;
+                          padding:8px 12px;
+                          margin-bottom:16px;
+                          border-radius:999px;
+                          background:rgba(42,116,255,.18);
+                          color:#77aaff;
+                          font-size:11px;
+                          font-weight:700;
+                          letter-spacing:1.5px;
+                        ">
+                          QUOTATION
+                        </div>
 
-                <p style="
-                  margin:24px 0 8px;
-                  color:#6b7280;
-                  font-size:13px;
-                ">
-                  TOTAL
-                </p>
+                        <h1 style="
+                          margin:0;
+                          font-size:32px;
+                          line-height:1.15;
+                        ">
+                          Your quotation is ready
+                        </h1>
 
-                <div style="
-                  font-size:34px;
-                  font-weight:700;
-                ">
-                  ₪${total}
-                </div>
+                      </div>
 
-              </div>
+                      <div style="
+                        padding:34px;
+                      ">
 
-              <p>
-  If you'd like to proceed with
-  this quotation, click the button
-  below.
-</p>
+                        <p style="
+                          margin:0 0 18px;
+                          font-size:16px;
+                        ">
+                          Hi ${safeName},
+                        </p>
 
-<div style="
-  margin:32px 0;
-  text-align:center;
-">
-  <a
-    href="${acceptUrl}"
-    style="
-      display:inline-block;
-      padding:16px 28px;
-      border-radius:999px;
-      background:#176bff;
-      color:white;
-      text-decoration:none;
-      font-weight:700;
-    "
-  >
-    Accept Quote
-  </a>
-</div>
+                        <p style="
+                          margin:0 0 28px;
+                          color:#5f6b7c;
+                          font-size:15px;
+                          line-height:1.8;
+                        ">
+                          We've reviewed your project
+                          and prepared your quotation.
+                        </p>
 
-<p style="
-  color:#6b7280;
-  font-size:13px;
-">
-  If you have any questions,
-  simply reply to this email.
-</p>
+                        <div style="
+                          padding:24px;
+                          border-radius:16px;
+                          background:#f5f7fa;
+                        ">
 
-              <p style="
-                margin-top:32px;
-              ">
-                Beyond 3D
-              </p>
+                          <div style="
+                            color:#8390a3;
+                            font-size:11px;
+                            font-weight:700;
+                            letter-spacing:1.2px;
+                          ">
+                            ORDER
+                          </div>
 
-            </div>
-          `,
-        }),
-      }
-    );
+                          <div style="
+                            margin-top:6px;
+                            font-size:18px;
+                            font-weight:700;
+                          ">
+                            ${orderNumber}
+                          </div>
+
+                          <div style="
+                            margin-top:22px;
+                            color:#8390a3;
+                            font-size:11px;
+                            font-weight:700;
+                            letter-spacing:1.2px;
+                          ">
+                            MATERIAL
+                          </div>
+
+                          <div style="
+                            margin-top:6px;
+                            font-size:16px;
+                            font-weight:700;
+                          ">
+                            ${material ||
+                              "Not specified"}
+                          </div>
+
+                          <div style="
+                            margin-top:22px;
+                            color:#8390a3;
+                            font-size:11px;
+                            font-weight:700;
+                            letter-spacing:1.2px;
+                          ">
+                            QUANTITY
+                          </div>
+
+                          <div style="
+                            margin-top:6px;
+                            font-size:16px;
+                            font-weight:700;
+                          ">
+                            ${quantity || 1}
+                          </div>
+
+                          <div style="
+                            margin-top:25px;
+                            color:#8390a3;
+                            font-size:11px;
+                            font-weight:700;
+                            letter-spacing:1.2px;
+                          ">
+                            TOTAL
+                          </div>
+
+                          <div style="
+                            margin-top:5px;
+                            font-size:36px;
+                            font-weight:700;
+                          ">
+                            ₪${total}
+                          </div>
+
+                        </div>
+
+                        <div style="
+                          margin:32px 0;
+                          text-align:center;
+                        ">
+
+                          <a
+                            href="${acceptUrl}"
+                            style="
+                              display:inline-block;
+                              padding:16px 30px;
+                              border-radius:999px;
+                              background:#176bff;
+                              color:#ffffff;
+                              text-decoration:none;
+                              font-weight:700;
+                            "
+                          >
+                            Accept Quote
+                          </a>
+
+                        </div>
+
+                        <p style="
+                          margin:0;
+                          color:#7c8797;
+                          font-size:13px;
+                          line-height:1.7;
+                        ">
+                          If you have any questions,
+                          simply reply to this email.
+                        </p>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </body>
+              </html>
+            `,
+          }),
+        }
+      );
 
     const result =
       await response.json();
@@ -252,52 +380,65 @@ const acceptUrl =
         }),
       };
     }
-const supabaseUrl =
-  process.env.SUPABASE_URL;
 
-const serviceKey =
-  process.env.SUPABASE_SECRET_KEY;
+    /*
+      Update order to Quoted
+      after the email was sent.
+    */
 
-if (supabaseUrl && serviceKey) {
-  const updateResponse =
-    await fetch(
-      `${supabaseUrl}/rest/v1/orders?id=eq.${encodeURIComponent(
-        orderId
-      )}`,
-      {
-        method: "PATCH",
+    const supabaseUrl =
+      process.env.SUPABASE_URL;
 
-        headers: {
-          apikey:
-            serviceKey,
+    const serviceKey =
+      process.env
+        .SUPABASE_SECRET_KEY;
 
-          Authorization:
-            `Bearer ${serviceKey}`,
+    if (
+      supabaseUrl &&
+      serviceKey
+    ) {
+      const updateResponse =
+        await fetch(
+          `${supabaseUrl}/rest/v1/orders?id=eq.${encodeURIComponent(
+            orderId
+          )}`,
+          {
+            method: "PATCH",
 
-          "Content-Type":
-            "application/json",
+            headers: {
+              apikey:
+                serviceKey,
 
-          Prefer:
-            "return=minimal",
-        },
+              Authorization:
+                `Bearer ${serviceKey}`,
 
-        body: JSON.stringify({
-          status: "Quoted",
-          quote_status: "Sent",
-        }),
+              "Content-Type":
+                "application/json",
+
+              Prefer:
+                "return=minimal",
+            },
+
+            body:
+              JSON.stringify({
+                status: "Quoted",
+                quote_status:
+                  "Sent",
+              }),
+          }
+        );
+
+      if (!updateResponse.ok) {
+        const updateError =
+          await updateResponse.text();
+
+        console.error(
+          "Quote status update failed:",
+          updateError
+        );
       }
-    );
+    }
 
-  if (!updateResponse.ok) {
-    const updateError =
-      await updateResponse.text();
-
-    console.error(
-      "Quote status update failed:",
-      updateError
-    );
-  }
-}
     return {
       statusCode: 200,
 
@@ -308,9 +449,9 @@ if (supabaseUrl && serviceKey) {
 
       body: JSON.stringify({
         success: true,
-        email: result,
       }),
     };
+
   } catch (error) {
     console.error(
       "Send quote error:",
@@ -319,6 +460,12 @@ if (supabaseUrl && serviceKey) {
 
     return {
       statusCode: 500,
+
+      headers: {
+        "Content-Type":
+          "application/json",
+      },
+
       body: JSON.stringify({
         error:
           "Unable to send quotation",
