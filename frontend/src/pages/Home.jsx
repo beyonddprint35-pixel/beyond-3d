@@ -6,20 +6,31 @@ import {
 
 import UploadProject from "../components/UploadProject";
 
+import FilamentSpool3D from "../components/FilamentSpool3D";
+
 import "./Home.css";
 
 function Home() {
-  const [scrollProgress, setScrollProgress] =
+  const [
+    scrollProgress,
+    setScrollProgress,
+  ] =
     useState(0);
 
-  const [filamentPoint, setFilamentPoint] =
+  const [
+    filamentPoint,
+    setFilamentPoint,
+  ] =
     useState({
       x: 0,
       y: 0,
       visible: false,
     });
 
-  const [menuOpen, setMenuOpen] =
+  const [
+    menuOpen,
+    setMenuOpen,
+  ] =
     useState(false);
 
   const filamentPathRef =
@@ -40,7 +51,10 @@ function Home() {
 
       const safeProgress =
         Math.min(
-          Math.max(progress, 0),
+          Math.max(
+            progress,
+            0
+          ),
           1
         );
 
@@ -69,7 +83,9 @@ function Home() {
           });
         } catch {
           setFilamentPoint(
-            (current) => ({
+            (
+              current
+            ) => ({
               ...current,
               visible: false,
             })
@@ -106,9 +122,13 @@ function Home() {
     };
   }, []);
 
-  function scrollToSection(id) {
+  function scrollToSection(
+    id
+  ) {
     const element =
-      document.getElementById(id);
+      document.getElementById(
+        id
+      );
 
     if (!element) {
       return;
@@ -122,19 +142,10 @@ function Home() {
     });
   }
 
-  const spoolRotation =
-    scrollProgress * 1260;
-
-  const spoolTilt =
-    Math.sin(
-      scrollProgress *
-        Math.PI *
-        3
-    ) * 3;
-
   const filamentDashOffset =
     1000 -
-    scrollProgress * 1000;
+    scrollProgress *
+      1000;
 
   return (
     <main
@@ -142,18 +153,8 @@ function Home() {
       style={{
         "--scroll-progress":
           scrollProgress,
-
-        "--spool-rotation":
-          `${spoolRotation}deg`,
-
-        "--spool-tilt":
-          `${spoolTilt}deg`,
       }}
     >
-      {/* =================================
-          GLOBAL ATMOSPHERE
-      ================================= */}
-
       <div className="home-noise" />
 
       <div className="home-grid-background" />
@@ -166,9 +167,7 @@ function Home() {
 
       <div className="home-orb home-orb-three" />
 
-      {/* =================================
-          GLOBAL FILAMENT PATH
-      ================================= */}
+      {/* GLOBAL FILAMENT */}
 
       <div
         className="global-filament-system"
@@ -297,9 +296,7 @@ function Home() {
         </svg>
       </div>
 
-      {/* =================================
-          NAVIGATION
-      ================================= */}
+      {/* NAVBAR */}
 
       <header className="home-navbar">
         <button
@@ -400,9 +397,7 @@ function Home() {
         </div>
       </header>
 
-      {/* =================================
-          HERO
-      ================================= */}
+      {/* HERO */}
 
       <section
         className="home-hero"
@@ -449,7 +444,7 @@ function Home() {
             >
               Start a Project
 
-              <span className="button-arrow">
+              <span>
                 ↗
               </span>
             </button>
@@ -514,145 +509,16 @@ function Home() {
           </div>
         </div>
 
-        {/* =================================
-            REALISTIC SPOOL
-        ================================= */}
-
         <div className="hero-machine">
-          <div className="machine-crosshair crosshair-one" />
-
-          <div className="machine-crosshair crosshair-two" />
-
-          <div className="machine-data machine-data-top">
-            <span>
-              FILAMENT
-            </span>
-
-            <strong>
-              LOADED
-            </strong>
-          </div>
-
-          <div className="machine-data machine-data-right">
-            <span>
-              MATERIAL
-            </span>
-
-            <strong>
-              PLA+
-            </strong>
-
-            <i />
-          </div>
-
-          <div className="machine-data machine-data-bottom">
-            <span>
-              FEED RATE
-            </span>
-
-            <strong>
-              LIVE
-            </strong>
-          </div>
-
-          <div
-            className="spool-scene"
-            style={{
-              transform:
-                `rotateX(${4 + spoolTilt}deg) rotateY(${
-                  -5 +
-                  spoolTilt *
-                    0.7
-                }deg)`,
-            }}
-          >
-            <div className="spool-halo spool-halo-outer" />
-
-            <div className="spool-halo spool-halo-one" />
-
-            <div className="spool-halo spool-halo-two" />
-
-            <div className="spool-floor" />
-
-            <div className="spool-floor-glow" />
-
-            <div
-              className="filament-spool"
-              style={{
-                transform:
-                  `rotate(${spoolRotation}deg)`,
-              }}
-            >
-              <div className="spool-back-depth" />
-
-              <div className="spool-back-disc" />
-
-              <div className="spool-filament-body">
-                <div className="filament-rib rib-1" />
-                <div className="filament-rib rib-2" />
-                <div className="filament-rib rib-3" />
-                <div className="filament-rib rib-4" />
-                <div className="filament-rib rib-5" />
-
-                <div className="filament-specular" />
-              </div>
-
-              <div className="spool-side-depth" />
-
-              <div className="spool-front-disc">
-                <div className="spool-surface-highlight" />
-
-                <div className="spool-window window-one" />
-
-                <div className="spool-window window-two" />
-
-                <div className="spool-window window-three" />
-
-                <div className="spool-window window-four" />
-
-                <div className="spool-bolt bolt-one" />
-                <div className="spool-bolt bolt-two" />
-                <div className="spool-bolt bolt-three" />
-                <div className="spool-bolt bolt-four" />
-
-                <div className="spool-center">
-                  <div className="spool-center-ring">
-                    <div>
-                      <span>
-                        BEYOND
-                      </span>
-
-                      <small>
-                        MATERIAL
-                      </small>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="physical-filament-exit">
-              <div className="physical-filament-core" />
-
-              <div className="physical-filament-shine" />
-            </div>
-          </div>
-
-          <div className="hero-scroll-indicator">
-            <span>
-              SCROLL
-            </span>
-
-            <div className="scroll-indicator-line">
-              <i />
-            </div>
-          </div>
+          <FilamentSpool3D
+            scrollProgress={
+              scrollProgress
+            }
+          />
         </div>
       </section>
 
-      {/* =================================
-          MATERIAL TRANSFORMATION
-      ================================= */}
+      {/* MATERIAL TRANSITION */}
 
       <section className="material-transition">
         <div className="transition-top">
@@ -694,9 +560,7 @@ function Home() {
         </div>
       </section>
 
-      {/* =================================
-          HOW IT WORKS
-      ================================= */}
+      {/* HOW IT WORKS */}
 
       <section
         className="home-how"
@@ -731,116 +595,122 @@ function Home() {
         </div>
 
         <div className="process-track">
-          <article className="process-card">
-            <div className="process-card-beam" />
+          {[
+            {
+              number:
+                "01",
 
-            <div className="process-number">
-              01
-            </div>
+              icon:
+                "↑",
 
-            <div className="process-icon">
-              ↑
-            </div>
+              title:
+                "Upload",
 
-            <h3>
-              Upload
-            </h3>
+              text:
+                "Send us your STL, 3MF, OBJ, STEP or reference file.",
 
-            <p>
-              Send us your STL,
-              3MF, OBJ, STEP or
-              reference file.
-            </p>
+              meta:
+                "INPUT",
+            },
 
-            <div className="process-meta">
-              INPUT
-            </div>
-          </article>
+            {
+              number:
+                "02",
 
-          <article className="process-card">
-            <div className="process-card-beam" />
+              icon:
+                "◇",
 
-            <div className="process-number">
-              02
-            </div>
+              title:
+                "Review",
 
-            <div className="process-icon">
-              ◇
-            </div>
+              text:
+                "We inspect geometry, material, quantity and production requirements.",
 
-            <h3>
-              Review
-            </h3>
+              meta:
+                "ENGINEERING",
+            },
 
-            <p>
-              We inspect geometry,
-              material, quantity
-              and production
-              requirements.
-            </p>
+            {
+              number:
+                "03",
 
-            <div className="process-meta">
-              ENGINEERING
-            </div>
-          </article>
+              icon:
+                "₪",
 
-          <article className="process-card">
-            <div className="process-card-beam" />
+              title:
+                "Approve",
 
-            <div className="process-number">
-              03
-            </div>
+              text:
+                "Receive your quote by email and approve it securely online.",
 
-            <div className="process-icon">
-              ₪
-            </div>
+              meta:
+                "QUOTATION",
+            },
 
-            <h3>
-              Approve
-            </h3>
+            {
+              number:
+                "04",
 
-            <p>
-              Receive your quote
-              by email and approve
-              it securely online.
-            </p>
+              icon:
+                "✦",
 
-            <div className="process-meta">
-              QUOTATION
-            </div>
-          </article>
+              title:
+                "Print",
 
-          <article className="process-card">
-            <div className="process-card-beam" />
+              text:
+                "Production begins and you can track every stage online.",
 
-            <div className="process-number">
-              04
-            </div>
+              meta:
+                "OUTPUT",
+            },
+          ].map(
+            (
+              step
+            ) => (
+              <article
+                className="process-card"
+                key={
+                  step.number
+                }
+              >
+                <div className="process-card-beam" />
 
-            <div className="process-icon">
-              ✦
-            </div>
+                <div className="process-number">
+                  {
+                    step.number
+                  }
+                </div>
 
-            <h3>
-              Print
-            </h3>
+                <div className="process-icon">
+                  {
+                    step.icon
+                  }
+                </div>
 
-            <p>
-              Production begins
-              and you can track
-              every stage online.
-            </p>
+                <h3>
+                  {
+                    step.title
+                  }
+                </h3>
 
-            <div className="process-meta">
-              OUTPUT
-            </div>
-          </article>
+                <p>
+                  {
+                    step.text
+                  }
+                </p>
+
+                <div className="process-meta">
+                  {
+                    step.meta
+                  }
+                </div>
+              </article>
+            )
+          )}
         </div>
       </section>
 
-      {/* =================================
-          CAPABILITIES
-      ================================= */}
+      {/* CAPABILITIES */}
 
       <section
         className="home-capabilities"
@@ -939,8 +809,8 @@ function Home() {
               <p>
                 Personalized
                 products, gifts,
-                signage and
-                unique creations.
+                signage and unique
+                creations.
               </p>
             </div>
           </article>
@@ -1017,9 +887,7 @@ function Home() {
         </div>
       </section>
 
-      {/* =================================
-          START PROJECT / NOZZLE
-      ================================= */}
+      {/* START PROJECT */}
 
       <section
         className="home-start-project"
@@ -1096,15 +964,14 @@ function Home() {
         </div>
       </section>
 
-      {/* =================================
-          FINAL CTA
-      ================================= */}
+      {/* FINAL CTA */}
 
       <section
         className="home-final-cta"
         id="contact"
       >
         <div className="final-cta-ring ring-a" />
+
         <div className="final-cta-ring ring-b" />
 
         <div className="final-cta-glow" />
@@ -1142,10 +1009,6 @@ function Home() {
           </span>
         </button>
       </section>
-
-      {/* =================================
-          FOOTER
-      ================================= */}
 
       <footer className="home-footer">
         <div className="footer-brand">
