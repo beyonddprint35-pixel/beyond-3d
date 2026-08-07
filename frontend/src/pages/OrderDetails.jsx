@@ -28,13 +28,53 @@ function formatDate(value) {
     return "Not specified";
   }
 
-  const date = new Date(value);
+  const date =
+    new Date(value);
 
-  if (Number.isNaN(date.getTime())) {
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
     return value;
   }
 
-  return date.toLocaleDateString();
+  return date.toLocaleDateString(
+    "en-IL",
+    {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    }
+  );
+}
+
+function formatDateTime(value) {
+  if (!value) {
+    return "Not reached yet";
+  }
+
+  const date =
+    new Date(value);
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+    return "Not reached yet";
+  }
+
+  return date.toLocaleString(
+    "en-IL",
+    {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }
+  );
 }
 
 function formatFileSize(bytes) {
@@ -50,8 +90,11 @@ function formatFileSize(bytes) {
 }
 
 function OrderDetails() {
-  const { id } = useParams();
-  const navigate = useNavigate();
+  const { id } =
+    useParams();
+
+  const navigate =
+    useNavigate();
 
   const [order, setOrder] =
     useState(null);
@@ -65,31 +108,58 @@ function OrderDetails() {
   const [error, setError] =
     useState("");
 
-  const [savingQuote, setSavingQuote] =
+  const [
+    savingQuote,
+    setSavingQuote,
+  ] =
     useState(false);
 
-  const [sendingQuote, setSendingQuote] =
+  const [
+    sendingQuote,
+    setSendingQuote,
+  ] =
     useState(false);
 
-  const [updatingStatus, setUpdatingStatus] =
+  const [
+    updatingStatus,
+    setUpdatingStatus,
+  ] =
     useState(false);
 
-  const [quoteMessage, setQuoteMessage] =
+  const [
+    quoteMessage,
+    setQuoteMessage,
+  ] =
     useState("");
 
-  const [filamentGrams, setFilamentGrams] =
+  const [
+    filamentGrams,
+    setFilamentGrams,
+  ] =
     useState("");
 
-  const [printHours, setPrintHours] =
+  const [
+    printHours,
+    setPrintHours,
+  ] =
     useState("");
 
-  const [pricePerGram, setPricePerGram] =
+  const [
+    pricePerGram,
+    setPricePerGram,
+  ] =
     useState("1");
 
-  const [extraCharge, setExtraCharge] =
+  const [
+    extraCharge,
+    setExtraCharge,
+  ] =
     useState("0");
 
-  const [deliveryCharge, setDeliveryCharge] =
+  const [
+    deliveryCharge,
+    setDeliveryCharge,
+  ] =
     useState("0");
 
   useEffect(() => {
@@ -124,7 +194,10 @@ function OrderDetails() {
         const data =
           await response.json();
 
-        if (response.status === 401) {
+        if (
+          response.status ===
+          401
+        ) {
           sessionStorage.removeItem(
             "beyond_admin_password"
           );
@@ -140,56 +213,77 @@ function OrderDetails() {
           );
         }
 
-        setOrder(data.order);
+        setOrder(
+          data.order
+        );
 
         setFileUrl(
-          data.fileUrl || null
+          data.fileUrl ||
+            null
         );
 
         setFilamentGrams(
-          data.order.filament_grams ??
+          data.order
+            .filament_grams ??
             ""
         );
 
         setPrintHours(
-          data.order.print_hours ??
+          data.order
+            .print_hours ??
             ""
         );
 
         setPricePerGram(
-          data.order.price_per_gram ??
+          data.order
+            .price_per_gram ??
             "1"
         );
 
         setExtraCharge(
-          data.order.extra_charge ??
+          data.order
+            .extra_charge ??
             "0"
         );
 
         setDeliveryCharge(
-          data.order.delivery_charge ??
+          data.order
+            .delivery_charge ??
             "0"
         );
       } catch (err) {
-        console.error(err);
+        console.error(
+          err
+        );
 
         setError(
           err.message ||
             "Unable to load order."
         );
       } finally {
-        setLoading(false);
+        setLoading(
+          false
+        );
       }
     }
 
     loadOrder();
-  }, [id, navigate]);
+  }, [
+    id,
+    navigate,
+  ]);
 
   const basePrice =
     useMemo(() => {
       return (
-        Number(filamentGrams || 0) *
-        Number(pricePerGram || 0)
+        Number(
+          filamentGrams ||
+            0
+        ) *
+        Number(
+          pricePerGram ||
+            0
+        )
       );
     }, [
       filamentGrams,
@@ -199,10 +293,16 @@ function OrderDetails() {
   const quoteTotal =
     useMemo(() => {
       const extras =
-        Number(extraCharge || 0);
+        Number(
+          extraCharge ||
+            0
+        );
 
       const delivery =
-        Number(deliveryCharge || 0);
+        Number(
+          deliveryCharge ||
+            0
+        );
 
       return (
         basePrice +
@@ -214,6 +314,83 @@ function OrderDetails() {
       extraCharge,
       deliveryCharge,
     ]);
+
+  const timeline =
+    useMemo(() => {
+      if (!order) {
+        return [];
+      }
+
+      return [
+        {
+          status:
+            "Accepted",
+          number:
+            "01",
+          label:
+            "Quote accepted",
+          description:
+            "The customer approved the quotation.",
+          date:
+            order.accepted_at,
+        },
+        {
+          status:
+            "Printing",
+          number:
+            "02",
+          label:
+            "Printing started",
+          description:
+            "The project entered production.",
+          date:
+            order.printing_at,
+        },
+        {
+          status:
+            "Completed",
+          number:
+            "03",
+          label:
+            "Order completed",
+          description:
+            "Production was marked as completed.",
+          date:
+            order.completed_at,
+        },
+      ];
+    }, [
+      order,
+    ]);
+
+  function getTimelineIndex() {
+    if (!order) {
+      return -1;
+    }
+
+    if (
+      order.status ===
+      "Completed"
+    ) {
+      return 2;
+    }
+
+    if (
+      order.status ===
+      "Printing"
+    ) {
+      return 1;
+    }
+
+    if (
+      order.status ===
+      "Accepted"
+    ) {
+      return 0;
+    }
+
+    return -1;
+  }
 
   async function saveQuote() {
     const password =
@@ -227,14 +404,20 @@ function OrderDetails() {
     }
 
     try {
-      setSavingQuote(true);
-      setQuoteMessage("");
+      setSavingQuote(
+        true
+      );
+
+      setQuoteMessage(
+        ""
+      );
 
       const response =
         await fetch(
           "/.netlify/functions/save-quote",
           {
-            method: "POST",
+            method:
+              "POST",
 
             headers: {
               "Content-Type":
@@ -244,43 +427,53 @@ function OrderDetails() {
                 password,
             },
 
-            body: JSON.stringify({
-              orderId: id,
+            body:
+              JSON.stringify({
+                orderId:
+                  id,
 
-              filamentGrams:
-                Number(
-                  filamentGrams || 0
-                ),
+                filamentGrams:
+                  Number(
+                    filamentGrams ||
+                      0
+                  ),
 
-              printHours:
-                Number(
-                  printHours || 0
-                ),
+                printHours:
+                  Number(
+                    printHours ||
+                      0
+                  ),
 
-              pricePerGram:
-                Number(
-                  pricePerGram || 1
-                ),
+                pricePerGram:
+                  Number(
+                    pricePerGram ||
+                      1
+                  ),
 
-              extraCharge:
-                Number(
-                  extraCharge || 0
-                ),
+                extraCharge:
+                  Number(
+                    extraCharge ||
+                      0
+                  ),
 
-              deliveryCharge:
-                Number(
-                  deliveryCharge || 0
-                ),
+                deliveryCharge:
+                  Number(
+                    deliveryCharge ||
+                      0
+                  ),
 
-              quoteTotal,
-            }),
+                quoteTotal,
+              }),
           }
         );
 
       const data =
         await response.json();
 
-      if (response.status === 401) {
+      if (
+        response.status ===
+        401
+      ) {
         sessionStorage.removeItem(
           "beyond_admin_password"
         );
@@ -296,20 +489,26 @@ function OrderDetails() {
         );
       }
 
-      setOrder(data.order);
+      setOrder(
+        data.order
+      );
 
       setQuoteMessage(
         "Quote saved successfully."
       );
     } catch (err) {
-      console.error(err);
+      console.error(
+        err
+      );
 
       setQuoteMessage(
         err.message ||
           "Unable to save quote."
       );
     } finally {
-      setSavingQuote(false);
+      setSavingQuote(
+        false
+      );
     }
   }
 
@@ -332,7 +531,9 @@ function OrderDetails() {
       return;
     }
 
-    if (quoteTotal <= 0) {
+    if (
+      quoteTotal <= 0
+    ) {
       setQuoteMessage(
         "Please create a quotation before sending it."
       );
@@ -341,14 +542,20 @@ function OrderDetails() {
     }
 
     try {
-      setSendingQuote(true);
-      setQuoteMessage("");
+      setSendingQuote(
+        true
+      );
+
+      setQuoteMessage(
+        ""
+      );
 
       const response =
         await fetch(
           "/.netlify/functions/send-quote",
           {
-            method: "POST",
+            method:
+              "POST",
 
             headers: {
               "Content-Type":
@@ -358,36 +565,40 @@ function OrderDetails() {
                 password,
             },
 
-            body: JSON.stringify({
-              orderId:
-                order.id,
+            body:
+              JSON.stringify({
+                orderId:
+                  order.id,
 
-              customerName:
-                order.customer_name,
+                customerName:
+                  order.customer_name,
 
-              customerEmail:
-                order.email,
+                customerEmail:
+                  order.email,
 
-              orderNumber:
-                makeOrderNumber(
-                  order.id
-                ),
+                orderNumber:
+                  makeOrderNumber(
+                    order.id
+                  ),
 
-              material:
-                order.material,
+                material:
+                  order.material,
 
-              quantity:
-                order.quantity,
+                quantity:
+                  order.quantity,
 
-              quoteTotal,
-            }),
+                quoteTotal,
+              }),
           }
         );
 
       const data =
         await response.json();
 
-      if (response.status === 401) {
+      if (
+        response.status ===
+        401
+      ) {
         sessionStorage.removeItem(
           "beyond_admin_password"
         );
@@ -404,10 +615,14 @@ function OrderDetails() {
       }
 
       setOrder(
-        (currentOrder) => ({
+        (
+          currentOrder
+        ) => ({
           ...currentOrder,
-          status: "Quoted",
-          quote_status: "Sent",
+          status:
+            "Quoted",
+          quote_status:
+            "Sent",
         })
       );
 
@@ -415,14 +630,18 @@ function OrderDetails() {
         "Quote sent successfully to the customer."
       );
     } catch (err) {
-      console.error(err);
+      console.error(
+        err
+      );
 
       setQuoteMessage(
         err.message ||
           "Unable to send quote."
       );
     } finally {
-      setSendingQuote(false);
+      setSendingQuote(
+        false
+      );
     }
   }
 
@@ -444,14 +663,20 @@ function OrderDetails() {
     }
 
     try {
-      setUpdatingStatus(true);
-      setQuoteMessage("");
+      setUpdatingStatus(
+        true
+      );
+
+      setQuoteMessage(
+        ""
+      );
 
       const response =
         await fetch(
           "/.netlify/functions/update-order-status",
           {
-            method: "POST",
+            method:
+              "POST",
 
             headers: {
               "Content-Type":
@@ -461,20 +686,24 @@ function OrderDetails() {
                 password,
             },
 
-            body: JSON.stringify({
-              orderId:
-                order.id,
+            body:
+              JSON.stringify({
+                orderId:
+                  order.id,
 
-              status:
-                newStatus,
-            }),
+                status:
+                  newStatus,
+              }),
           }
         );
 
       const data =
         await response.json();
 
-      if (response.status === 401) {
+      if (
+        response.status ===
+        401
+      ) {
         sessionStorage.removeItem(
           "beyond_admin_password"
         );
@@ -490,20 +719,26 @@ function OrderDetails() {
         );
       }
 
-      setOrder(data.order);
+      setOrder(
+        data.order
+      );
 
       setQuoteMessage(
         `Order moved to ${newStatus}.`
       );
     } catch (err) {
-      console.error(err);
+      console.error(
+        err
+      );
 
       setQuoteMessage(
         err.message ||
           "Unable to update order status."
       );
     } finally {
-      setUpdatingStatus(false);
+      setUpdatingStatus(
+        false
+      );
     }
   }
 
@@ -532,10 +767,16 @@ function OrderDetails() {
   }
 
   const orderNumber =
-    makeOrderNumber(order.id);
+    makeOrderNumber(
+      order.id
+    );
+
+  const timelineIndex =
+    getTimelineIndex();
 
   return (
     <main className="order-details-page">
+
       <header className="order-details-topbar">
         <div className="logo">
           BEYOND
@@ -568,14 +809,13 @@ function OrderDetails() {
 
       <section className="order-details-grid">
 
-        {/* CUSTOMER */}
-
         <article className="order-detail-card">
           <h2>
             Customer
           </h2>
 
           <div className="order-info-grid">
+
             <div>
               <span>
                 Name
@@ -620,10 +860,9 @@ function OrderDetails() {
                 )}
               </strong>
             </div>
+
           </div>
         </article>
-
-        {/* PROJECT */}
 
         <article className="order-detail-card">
           <h2>
@@ -631,6 +870,7 @@ function OrderDetails() {
           </h2>
 
           <div className="order-info-grid">
+
             <div>
               <span>
                 Project type
@@ -670,13 +910,13 @@ function OrderDetails() {
               </span>
 
               <strong>
-                {order.quantity || 1}
+                {order.quantity ||
+                  1}
               </strong>
             </div>
+
           </div>
         </article>
-
-        {/* DESCRIPTION */}
 
         <article className="order-detail-card order-wide-card">
           <h2>
@@ -689,14 +929,13 @@ function OrderDetails() {
           </p>
         </article>
 
-        {/* FILE */}
-
         <article className="order-detail-card order-wide-card">
           <h2>
             Uploaded Model
           </h2>
 
           <div className="order-file-box">
+
             <div>
               <strong>
                 {order.file_name ||
@@ -726,12 +965,106 @@ function OrderDetails() {
                 No file
               </span>
             )}
+
           </div>
         </article>
 
-        {/* PRODUCTION STATUS */}
+        <article className="order-detail-card order-wide-card">
+
+          <div className="status-control-header">
+            <div>
+              <div className="section-kicker">
+                ORDER TIMELINE
+              </div>
+
+              <h2>
+                Production history
+              </h2>
+
+              <p>
+                Milestones are recorded
+                automatically as the order
+                progresses.
+              </p>
+            </div>
+          </div>
+
+          <div className="status-buttons">
+
+            {timeline.map(
+              (
+                step,
+                index
+              ) => {
+                const reached =
+                  Boolean(
+                    step.date
+                  );
+
+                const active =
+                  index ===
+                  timelineIndex;
+
+                return (
+                  <div
+                    key={
+                      step.status
+                    }
+                    className={
+                      active
+                        ? "status-step active"
+                        : "status-step"
+                    }
+                    style={{
+                      cursor:
+                        "default",
+                    }}
+                  >
+                    <span>
+                      {reached
+                        ? "✓"
+                        : step.number}
+                    </span>
+
+                    <div>
+                      <strong
+                        style={{
+                          display:
+                            "block",
+                          marginBottom:
+                            "5px",
+                        }}
+                      >
+                        {step.label}
+                      </strong>
+
+                      <small
+                        style={{
+                          display:
+                            "block",
+                          color:
+                            "#7487a3",
+                          fontWeight:
+                            400,
+                          lineHeight:
+                            1.5,
+                        }}
+                      >
+                        {formatDateTime(
+                          step.date
+                        )}
+                      </small>
+                    </div>
+                  </div>
+                );
+              }
+            )}
+
+          </div>
+        </article>
 
         <article className="order-detail-card order-wide-card status-control-card">
+
           <div className="status-control-header">
             <div>
               <div className="section-kicker">
@@ -755,6 +1088,7 @@ function OrderDetails() {
           </div>
 
           <div className="status-buttons">
+
             <button
               type="button"
               className={
@@ -826,12 +1160,12 @@ function OrderDetails() {
 
               Completed
             </button>
+
           </div>
         </article>
 
-        {/* QUOTATION */}
-
         <article className="order-detail-card order-wide-card quote-card">
+
           <div className="quote-header">
             <div>
               <div className="section-kicker">
@@ -850,6 +1184,7 @@ function OrderDetails() {
           </div>
 
           <div className="quote-layout">
+
             <div className="quote-form">
 
               <label>
@@ -869,8 +1204,7 @@ function OrderDetails() {
                       event
                     ) =>
                       setFilamentGrams(
-                        event.target
-                          .value
+                        event.target.value
                       )
                     }
                     placeholder="120"
@@ -899,8 +1233,7 @@ function OrderDetails() {
                       event
                     ) =>
                       setPrintHours(
-                        event.target
-                          .value
+                        event.target.value
                       )
                     }
                     placeholder="4.5"
@@ -929,8 +1262,7 @@ function OrderDetails() {
                       event
                     ) =>
                       setPricePerGram(
-                        event.target
-                          .value
+                        event.target.value
                       )
                     }
                   />
@@ -958,8 +1290,7 @@ function OrderDetails() {
                       event
                     ) =>
                       setExtraCharge(
-                        event.target
-                          .value
+                        event.target.value
                       )
                     }
                   />
@@ -987,8 +1318,7 @@ function OrderDetails() {
                       event
                     ) =>
                       setDeliveryCharge(
-                        event.target
-                          .value
+                        event.target.value
                       )
                     }
                   />
@@ -1024,8 +1354,11 @@ function OrderDetails() {
                 <strong>
                   ₪
                   {Number(
-                    extraCharge || 0
-                  ).toFixed(2)}
+                    extraCharge ||
+                      0
+                  ).toFixed(
+                    2
+                  )}
                 </strong>
               </div>
 
@@ -1039,7 +1372,9 @@ function OrderDetails() {
                   {Number(
                     deliveryCharge ||
                       0
-                  ).toFixed(2)}
+                  ).toFixed(
+                    2
+                  )}
                 </strong>
               </div>
 
@@ -1103,10 +1438,13 @@ function OrderDetails() {
               )}
 
             </div>
+
           </div>
+
         </article>
 
       </section>
+
     </main>
   );
 }
