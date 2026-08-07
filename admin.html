@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <title>Beyond Admin</title>
+
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  />
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  />
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Inter", sans-serif;
+      background:
+        radial-gradient(
+          circle at top right,
+          rgba(30, 110, 255, 0.22),
+          transparent 30%
+        ),
+        #050816;
+      color: white;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: min(1200px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 60px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 36px;
+    }
+
+    .brand {
+      font-weight: 700;
+      letter-spacing: 8px;
+      font-size: 20px;
+    }
+
+    .admin-label {
+      color: #8da0bd;
+      font-size: 14px;
+    }
+
+    .hero {
+      margin-bottom: 30px;
+    }
+
+    .hero h1 {
+      font-size: clamp(32px, 5vw, 54px);
+      margin: 0 0 10px;
+    }
+
+    .hero p {
+      margin: 0;
+      color: #8fa1bc;
+      font-size: 16px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      padding: 22px;
+      border-radius: 20px;
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255,255,255,0.06),
+          rgba(255,255,255,0.025)
+        );
+      border:
+        1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(18px);
+    }
+
+    .stat-label {
+      color: #7f92af;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .orders-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .orders-header h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .refresh-button {
+      background: #176bff;
+      color: white;
+      border: none;
+      border-radius: 14px;
+      padding: 11px 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .orders-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .order-card {
+      padding: 20px;
+      border-radius: 18px;
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255,255,255,0.055),
+          rgba(255,255,255,0.02)
+        );
+      border:
+        1px solid rgba(255,255,255,0.08);
+      display: grid;
+      grid-template-columns:
+        1.2fr 1fr 1fr auto;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .order-number {
+      color: #70a8ff;
+      font-size: 13px;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .customer-name {
+      font-size: 17px;
+      font-weight: 600;
+    }
+
+    .muted {
+      color: #8798b2;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    .status {
+      display: inline-flex;
+      width: fit-content;
+      padding: 7px 11px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      background: rgba(47,125,255,0.16);
+      color: #72aaff;
+    }
+
+    .view-button {
+      background: transparent;
+      color: white;
+      border:
+        1px solid rgba(255,255,255,0.16);
+      padding: 10px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .loading,
+    .error {
+      text-align: center;
+      padding: 30px;
+      color: #8fa1bc;
+    }
+
+    @media (max-width: 900px) {
+      .stats {
+        grid-template-columns:
+          repeat(2, minmax(0, 1fr));
+      }
+
+      .order-card {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        gap: 10px;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+
+    <header class="topbar">
+      <div class="brand">
+        BEYOND
+      </div>
+
+      <div class="admin-label">
+        Admin Dashboard
+      </div>
+    </header>
+
+    <section class="hero">
+      <h1>Orders</h1>
+
+      <p>
+        Manage incoming 3D printing requests.
+      </p>
+    </section>
+
+    <section class="stats">
+      <div class="stat-card">
+        <div class="stat-label">
+          Total Orders
+        </div>
+
+        <div
+          class="stat-value"
+          id="total-orders"
+        >
+          0
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">
+          Submitted
+        </div>
+
+        <div
+          class="stat-value"
+          id="submitted-orders"
+        >
+          0
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">
+          Printing
+        </div>
+
+        <div
+          class="stat-value"
+          id="printing-orders"
+        >
+          0
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-label">
+          Completed
+        </div>
+
+        <div
+          class="stat-value"
+          id="completed-orders"
+        >
+          0
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="orders-header">
+        <h2>Latest Orders</h2>
+
+        <button
+          class="refresh-button"
+          id="refresh-button"
+        >
+          Refresh
+        </button>
+      </div>
+
+      <div
+        id="orders-list"
+        class="orders-list"
+      >
+        <div class="loading">
+          Loading orders...
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    const ordersList =
+      document.getElementById("orders-list");
+
+    const totalOrders =
+      document.getElementById("total-orders");
+
+    const submittedOrders =
+      document.getElementById(
+        "submitted-orders"
+      );
+
+    const printingOrders =
+      document.getElementById(
+        "printing-orders"
+      );
+
+    const completedOrders =
+      document.getElementById(
+        "completed-orders"
+      );
+
+    const refreshButton =
+      document.getElementById(
+        "refresh-button"
+      );
+
+    function makeOrderNumber(id) {
+      if (!id) {
+        return "B3D-UNKNOWN";
+      }
+
+      return (
+        "B3D-" +
+        String(id)
+          .slice(0, 8)
+          .toUpperCase()
+      );
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function updateStats(orders) {
+      totalOrders.textContent =
+        orders.length;
+
+      submittedOrders.textContent =
+        orders.filter(
+          (order) =>
+            String(order.status).toLowerCase()
+              === "submitted"
+        ).length;
+
+      printingOrders.textContent =
+        orders.filter(
+          (order) =>
+            String(order.status).toLowerCase()
+              === "printing"
+        ).length;
+
+      completedOrders.textContent =
+        orders.filter(
+          (order) =>
+            String(order.status).toLowerCase()
+              === "completed"
+        ).length;
+    }
+
+    function renderOrders(orders) {
+      if (!orders.length) {
+        ordersList.innerHTML = `
+          <div class="loading">
+            No orders found.
+          </div>
+        `;
+
+        return;
+      }
+
+      ordersList.innerHTML =
+        orders.map((order) => {
+          const orderNumber =
+            makeOrderNumber(order.id);
+
+          const name =
+            escapeHtml(
+              order.customer_name ||
+              "Unknown customer"
+            );
+
+          const email =
+            escapeHtml(
+              order.email || ""
+            );
+
+          const material =
+            escapeHtml(
+              order.material ||
+              "No material"
+            );
+
+          const color =
+            escapeHtml(
+              order.color ||
+              "No color"
+            );
+
+          const quantity =
+            escapeHtml(
+              order.quantity || 1
+            );
+
+          const status =
+            escapeHtml(
+              order.status ||
+              "Submitted"
+            );
+
+          return `
+            <article class="order-card">
+
+              <div>
+                <div class="order-number">
+                  ${orderNumber}
+                </div>
+
+                <div class="customer-name">
+                  ${name}
+                </div>
+
+                <div class="muted">
+                  ${email}
+                </div>
+              </div>
+
+              <div>
+                <div>
+                  ${material}
+                </div>
+
+                <div class="muted">
+                  ${color}
+                </div>
+              </div>
+
+              <div>
+                <div>
+                  Qty ${quantity}
+                </div>
+
+                <div class="muted">
+                  <span class="status">
+                    ${status}
+                  </span>
+                </div>
+              </div>
+
+              <div>
+                <button
+                  class="view-button"
+                  data-order-id="${escapeHtml(
+                    order.id
+                  )}"
+                >
+                  View
+                </button>
+              </div>
+
+            </article>
+          `;
+        }).join("");
+
+      document
+        .querySelectorAll(".view-button")
+        .forEach((button) => {
+          button.addEventListener(
+            "click",
+            () => {
+              const id =
+                button.dataset.orderId;
+
+              alert(
+                "Order details page comes next.\\n\\nOrder ID:\\n" +
+                id
+              );
+            }
+          );
+        });
+    }
+
+    async function loadOrders() {
+      ordersList.innerHTML = `
+        <div class="loading">
+          Loading orders...
+        </div>
+      `;
+
+      try {
+        const response = await fetch(
+          "/.netlify/functions/get-orders"
+        );
+
+        const data =
+          await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data.error ||
+            "Could not load orders"
+          );
+        }
+
+        const orders =
+          data.orders || [];
+
+        updateStats(orders);
+        renderOrders(orders);
+      } catch (error) {
+        console.error(error);
+
+        ordersList.innerHTML = `
+          <div class="error">
+            Unable to load orders.
+            Check the browser console.
+          </div>
+        `;
+      }
+    }
+
+    refreshButton.addEventListener(
+      "click",
+      loadOrders
+    );
+
+    loadOrders();
+  </script>
+</body>
+</html>
