@@ -121,6 +121,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 12px;
       margin-bottom: 16px;
     }
 
@@ -129,14 +130,28 @@
       font-size: 22px;
     }
 
-    .refresh-button {
-      background: #176bff;
+    .header-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .refresh-button,
+    .logout-button {
       color: white;
-      border: none;
       border-radius: 14px;
       padding: 11px 16px;
       font-weight: 600;
       cursor: pointer;
+    }
+
+    .refresh-button {
+      background: #176bff;
+      border: none;
+    }
+
+    .logout-button {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.14);
     }
 
     .orders-list {
@@ -201,11 +216,24 @@
       cursor: pointer;
     }
 
+    .view-button:hover,
+    .logout-button:hover {
+      background: rgba(255,255,255,0.06);
+    }
+
+    .refresh-button:hover {
+      background: #0f5ce4;
+    }
+
     .loading,
     .error {
       text-align: center;
       padding: 30px;
       color: #8fa1bc;
+    }
+
+    .error {
+      color: #ff8e9b;
     }
 
     @media (max-width: 900px) {
@@ -228,6 +256,20 @@
         align-items: flex-start;
         gap: 10px;
         flex-direction: column;
+      }
+
+      .orders-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .header-actions {
+        width: 100%;
+      }
+
+      .refresh-button,
+      .logout-button {
+        flex: 1;
       }
     }
   </style>
@@ -312,12 +354,21 @@
       <div class="orders-header">
         <h2>Latest Orders</h2>
 
-        <button
-          class="refresh-button"
-          id="refresh-button"
-        >
-          Refresh
-        </button>
+        <div class="header-actions">
+          <button
+            class="refresh-button"
+            id="refresh-button"
+          >
+            Refresh
+          </button>
+
+          <button
+            class="logout-button"
+            id="logout-button"
+          >
+            Logout
+          </button>
+        </div>
       </div>
 
       <div
@@ -359,6 +410,13 @@
         "refresh-button"
       );
 
+    const logoutButton =
+      document.getElementById(
+        "logout-button"
+      );
+
+    let adminPassword = "";
+
     function makeOrderNumber(id) {
       if (!id) {
         return "B3D-UNKNOWN";
@@ -381,6 +439,35 @@
         .replaceAll("'", "&#039;");
     }
 
+    function askForAdminPassword() {
+      const savedPassword =
+        sessionStorage.getItem(
+          "beyond_admin_password"
+        );
+
+      if (savedPassword) {
+        adminPassword = savedPassword;
+        return true;
+      }
+
+      const enteredPassword = prompt(
+        "Enter Beyond admin password"
+      );
+
+      if (!enteredPassword) {
+        return false;
+      }
+
+      adminPassword = enteredPassword;
+
+      sessionStorage.setItem(
+        "beyond_admin_password",
+        enteredPassword
+      );
+
+      return true;
+    }
+
     function updateStats(orders) {
       totalOrders.textContent =
         orders.length;
@@ -388,21 +475,24 @@
       submittedOrders.textContent =
         orders.filter(
           (order) =>
-            String(order.status).toLowerCase()
+            String(order.status)
+              .toLowerCase()
               === "submitted"
         ).length;
 
       printingOrders.textContent =
         orders.filter(
           (order) =>
-            String(order.status).toLowerCase()
+            String(order.status)
+              .toLowerCase()
               === "printing"
         ).length;
 
       completedOrders.textContent =
         orders.filter(
           (order) =>
-            String(order.status).toLowerCase()
+            String(order.status)
+              .toLowerCase()
               === "completed"
         ).length;
     }
@@ -537,12 +627,45 @@
       `;
 
       try {
+        if (!askForAdminPassword()) {
+          ordersList.innerHTML = `
+            <div class="error">
+              Admin password required.
+            </div>
+          `;
+
+          return;
+        }
+
         const response = await fetch(
-          "/.netlify/functions/get-orders"
+          "/.netlify/functions/get-orders",
+          {
+            headers: {
+              "x-admin-password":
+                adminPassword
+            }
+          }
         );
 
         const data =
           await response.json();
+
+        if (response.status === 401) {
+          sessionStorage.removeItem(
+            "beyond_admin_password"
+          );
+
+          adminPassword = "";
+
+          ordersList.innerHTML = `
+            <div class="error">
+              Wrong admin password.
+              Refresh the page and try again.
+            </div>
+          `;
+
+          return;
+        }
 
         if (!response.ok) {
           throw new Error(
@@ -556,6 +679,7 @@
 
         updateStats(orders);
         renderOrders(orders);
+
       } catch (error) {
         console.error(error);
 
@@ -568,9 +692,37 @@
       }
     }
 
+    function logoutAdmin() {
+      sessionStorage.removeItem(
+        "beyond_admin_password"
+      );
+
+      adminPassword = "";
+
+      totalOrders.textContent = "0";
+      submittedOrders.textContent = "0";
+      printingOrders.textContent = "0";
+      completedOrders.textContent = "0";
+
+      ordersList.innerHTML = `
+        <div class="loading">
+          Logged out.
+        </div>
+      `;
+
+      setTimeout(() => {
+        loadOrders();
+      }, 300);
+    }
+
     refreshButton.addEventListener(
       "click",
       loadOrders
+    );
+
+    logoutButton.addEventListener(
+      "click",
+      logoutAdmin
     );
 
     loadOrders();
