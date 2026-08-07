@@ -6,6 +6,7 @@ import {
 
 import Home from "./pages/Home";
 import Admin from "./pages/Admin";
+import OrderDetails from "./pages/OrderDetails";
 
 function App() {
   return (
@@ -19,6 +20,11 @@ function App() {
         <Route
           path="/admin"
           element={<Admin />}
+        />
+
+        <Route
+          path="/admin/order/:id"
+          element={<OrderDetails />}
         />
       </Routes>
     </BrowserRouter>

@@ -1,4 +1,11 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
+
+import {
+  Link,
+} from "react-router-dom";
 
 function makeOrderNumber(id) {
   if (!id) {
@@ -368,12 +375,12 @@ function Admin() {
                     </span>
                   </div>
 
-                  <a
-                    className="admin-view-button"
-                    href={`/admin/order/${order.id}`}
-                  >
-                    View →
-                  </a>
+                 <Link
+  className="admin-view-button"
+  to={`/admin/order/${order.id}`}
+>
+  View →
+</Link>
                 </article>
               )
             )}
