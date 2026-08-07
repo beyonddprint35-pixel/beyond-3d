@@ -4,6 +4,12 @@ function createCustomerToken(orderId) {
   const secret =
     process.env.ADMIN_PASSWORD;
 
+  if (!secret) {
+    throw new Error(
+      "ADMIN_PASSWORD is missing"
+    );
+  }
+
   return crypto
     .createHmac("sha256", secret)
     .update(String(orderId))
@@ -14,17 +20,26 @@ exports.handler = async function (event) {
   if (event.httpMethod !== "POST") {
     return {
       statusCode: 405,
+
       headers: {
         "Content-Type":
           "application/json",
       },
+
       body: JSON.stringify({
-        error: "Method not allowed",
+        error:
+          "Method not allowed",
       }),
     };
   }
 
   try {
+    /*
+      =========================
+      ADMIN AUTHENTICATION
+      =========================
+    */
+
     const providedPassword =
       event.headers[
         "x-admin-password"
@@ -41,15 +56,24 @@ exports.handler = async function (event) {
     ) {
       return {
         statusCode: 401,
+
         headers: {
           "Content-Type":
             "application/json",
         },
+
         body: JSON.stringify({
-          error: "Unauthorized",
+          error:
+            "Unauthorized",
         }),
       };
     }
+
+    /*
+      =========================
+      REQUEST DATA
+      =========================
+    */
 
     const {
       orderId,
@@ -67,14 +91,17 @@ exports.handler = async function (event) {
       !orderId ||
       !customerEmail ||
       !orderNumber ||
-      quoteTotal === undefined
+      quoteTotal === undefined ||
+      quoteTotal === null
     ) {
       return {
         statusCode: 400,
+
         headers: {
           "Content-Type":
             "application/json",
         },
+
         body: JSON.stringify({
           error:
             "Missing quote information",
@@ -82,37 +109,49 @@ exports.handler = async function (event) {
       };
     }
 
+    /*
+      =========================
+      ENVIRONMENT
+      =========================
+    */
+
     const resendApiKey =
       process.env.RESEND_API_KEY;
 
     const emailFrom =
       process.env.EMAIL_FROM;
 
+    const supabaseUrl =
+      process.env.SUPABASE_URL;
+
+    const serviceKey =
+      process.env
+        .SUPABASE_SECRET_KEY;
+
     if (
       !resendApiKey ||
-      !emailFrom ||
-      !correctPassword
+      !emailFrom
     ) {
       return {
         statusCode: 500,
+
         headers: {
           "Content-Type":
             "application/json",
         },
+
         body: JSON.stringify({
           error:
-            "Missing server configuration",
+            "Missing email configuration",
         }),
       };
     }
 
-    const safeName =
-      customerName || "there";
-
-    const total =
-      Number(
-        quoteTotal
-      ).toFixed(2);
+    /*
+      =========================
+      ACCEPT QUOTE LINK
+      =========================
+    */
 
     const token =
       createCustomerToken(
@@ -126,7 +165,21 @@ exports.handler = async function (event) {
         token
       )}`;
 
-    const response =
+    const safeName =
+      customerName || "there";
+
+    const total =
+      Number(
+        quoteTotal
+      ).toFixed(2);
+
+    /*
+      =========================
+      SEND EMAIL
+      =========================
+    */
+
+    const emailResponse =
       await fetch(
         "https://api.resend.com/emails",
         {
@@ -141,7 +194,8 @@ exports.handler = async function (event) {
           },
 
           body: JSON.stringify({
-            from: emailFrom,
+            from:
+              emailFrom,
 
             to: [
               customerEmail,
@@ -154,6 +208,15 @@ exports.handler = async function (event) {
               <!doctype html>
 
               <html>
+                <head>
+                  <meta charset="utf-8" />
+
+                  <meta
+                    name="viewport"
+                    content="width=device-width, initial-scale=1"
+                  />
+                </head>
+
                 <body style="
                   margin:0;
                   padding:0;
@@ -169,16 +232,19 @@ exports.handler = async function (event) {
                   ">
 
                     <div style="
+                      width:100%;
                       max-width:600px;
                       margin:0 auto;
                       background:#ffffff;
-                      border-radius:22px;
+                      border-radius:24px;
                       overflow:hidden;
-                      box-shadow:0 20px 50px rgba(20,35,60,.08);
+                      box-shadow:0 20px 60px rgba(20,35,60,.10);
                     ">
 
+                      <!-- HEADER -->
+
                       <div style="
-                        padding:34px;
+                        padding:36px 34px 32px;
                         background:#07111f;
                         color:#ffffff;
                       ">
@@ -187,15 +253,15 @@ exports.handler = async function (event) {
                           font-size:15px;
                           font-weight:700;
                           letter-spacing:7px;
-                          margin-bottom:30px;
+                          margin-bottom:34px;
                         ">
                           BEYOND
                         </div>
 
                         <div style="
                           display:inline-block;
+                          margin-bottom:17px;
                           padding:8px 12px;
-                          margin-bottom:16px;
                           border-radius:999px;
                           background:rgba(42,116,255,.18);
                           color:#77aaff;
@@ -210,11 +276,14 @@ exports.handler = async function (event) {
                           margin:0;
                           font-size:32px;
                           line-height:1.15;
+                          letter-spacing:-1px;
                         ">
                           Your quotation is ready
                         </h1>
 
                       </div>
+
+                      <!-- CONTENT -->
 
                       <div style="
                         padding:34px;
@@ -223,6 +292,7 @@ exports.handler = async function (event) {
                         <p style="
                           margin:0 0 18px;
                           font-size:16px;
+                          line-height:1.7;
                         ">
                           Hi ${safeName},
                         </p>
@@ -233,14 +303,18 @@ exports.handler = async function (event) {
                           font-size:15px;
                           line-height:1.8;
                         ">
-                          We've reviewed your project
-                          and prepared your quotation.
+                          We've reviewed your
+                          project and prepared
+                          your quotation.
                         </p>
+
+                        <!-- QUOTE DETAILS -->
 
                         <div style="
                           padding:24px;
-                          border-radius:16px;
+                          border-radius:18px;
                           background:#f5f7fa;
+                          border:1px solid #edf0f4;
                         ">
 
                           <div style="
@@ -275,8 +349,10 @@ exports.handler = async function (event) {
                             font-size:16px;
                             font-weight:700;
                           ">
-                            ${material ||
-                              "Not specified"}
+                            ${
+                              material ||
+                              "Not specified"
+                            }
                           </div>
 
                           <div style="
@@ -294,11 +370,19 @@ exports.handler = async function (event) {
                             font-size:16px;
                             font-weight:700;
                           ">
-                            ${quantity || 1}
+                            ${
+                              quantity ||
+                              1
+                            }
                           </div>
 
                           <div style="
-                            margin-top:25px;
+                            height:1px;
+                            margin:25px 0;
+                            background:#dde3eb;
+                          "></div>
+
+                          <div style="
                             color:#8390a3;
                             font-size:11px;
                             font-weight:700;
@@ -308,30 +392,39 @@ exports.handler = async function (event) {
                           </div>
 
                           <div style="
-                            margin-top:5px;
-                            font-size:36px;
+                            margin-top:6px;
+                            font-size:38px;
                             font-weight:700;
+                            letter-spacing:-1px;
+                            color:#111827;
                           ">
                             ₪${total}
                           </div>
 
                         </div>
 
+                        <!-- ACCEPT BUTTON -->
+
                         <div style="
-                          margin:32px 0;
+                          margin:34px 0 24px;
                           text-align:center;
                         ">
 
                           <a
                             href="${acceptUrl}"
+                            target="_blank"
                             style="
                               display:inline-block;
-                              padding:16px 30px;
+                              width:auto;
+                              min-width:180px;
+                              padding:17px 30px;
                               border-radius:999px;
                               background:#176bff;
                               color:#ffffff;
                               text-decoration:none;
+                              font-size:15px;
                               font-weight:700;
+                              box-shadow:0 12px 30px rgba(23,107,255,.25);
                             "
                           >
                             Accept Quote
@@ -341,12 +434,42 @@ exports.handler = async function (event) {
 
                         <p style="
                           margin:0;
+                          text-align:center;
+                          color:#8792a2;
+                          font-size:12px;
+                          line-height:1.7;
+                        ">
+                          By clicking Accept Quote,
+                          you confirm that you would
+                          like Beyond to proceed with
+                          this order.
+                        </p>
+
+                        <div style="
+                          height:1px;
+                          margin:30px 0;
+                          background:#edf0f4;
+                        "></div>
+
+                        <p style="
+                          margin:0;
                           color:#7c8797;
                           font-size:13px;
                           line-height:1.7;
                         ">
-                          If you have any questions,
-                          simply reply to this email.
+                          Have a question or need
+                          something changed?
+                          Simply reply to this email
+                          before accepting the quote.
+                        </p>
+
+                        <p style="
+                          margin:25px 0 0;
+                          color:#111827;
+                          font-size:14px;
+                          font-weight:700;
+                        ">
+                          Beyond 3D
                         </p>
 
                       </div>
@@ -362,36 +485,43 @@ exports.handler = async function (event) {
         }
       );
 
-    const result =
-      await response.json();
+    const emailResult =
+      await emailResponse.json();
 
-    if (!response.ok) {
+    if (!emailResponse.ok) {
       console.error(
         "Resend quote error:",
-        result
+        emailResult
       );
 
       return {
         statusCode: 500,
+
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+
         body: JSON.stringify({
           error:
             "Could not send quotation",
-          details: result,
+
+          details:
+            emailResult,
         }),
       };
     }
 
     /*
-      Update order to Quoted
-      after the email was sent.
+      =========================
+      UPDATE DATABASE STATUS
+      =========================
+
+      Only update to Quoted after
+      the email was successfully sent.
     */
 
-    const supabaseUrl =
-      process.env.SUPABASE_URL;
-
-    const serviceKey =
-      process.env
-        .SUPABASE_SECRET_KEY;
+    let updatedOrder = null;
 
     if (
       supabaseUrl &&
@@ -416,28 +546,46 @@ exports.handler = async function (event) {
                 "application/json",
 
               Prefer:
-                "return=minimal",
+                "return=representation",
             },
 
             body:
               JSON.stringify({
-                status: "Quoted",
+                status:
+                  "Quoted",
+
                 quote_status:
                   "Sent",
               }),
           }
         );
 
-      if (!updateResponse.ok) {
-        const updateError =
-          await updateResponse.text();
+      const updateData =
+        await updateResponse.json();
 
+      if (!updateResponse.ok) {
         console.error(
           "Quote status update failed:",
-          updateError
+          updateData
         );
+
+        /*
+          The email already succeeded,
+          so we don't report the entire
+          operation as failed.
+        */
+      } else {
+        updatedOrder =
+          updateData?.[0] ||
+          null;
       }
     }
+
+    /*
+      =========================
+      SUCCESS
+      =========================
+    */
 
     return {
       statusCode: 200,
@@ -449,6 +597,16 @@ exports.handler = async function (event) {
 
       body: JSON.stringify({
         success: true,
+
+        message:
+          "Quote sent successfully",
+
+        emailId:
+          emailResult?.id ||
+          null,
+
+        order:
+          updatedOrder,
       }),
     };
 
