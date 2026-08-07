@@ -71,6 +71,9 @@ function OrderDetails() {
   const [sendingQuote, setSendingQuote] =
     useState(false);
 
+    const [updatingStatus, setUpdatingStatus] =
+  useState(false);
+
   const [quoteMessage, setQuoteMessage] =
     useState("");
 
@@ -423,6 +426,83 @@ function OrderDetails() {
     }
   }
 
+  async function updateOrderStatus(
+  newStatus
+) {
+  const password =
+    sessionStorage.getItem(
+      "beyond_admin_password"
+    );
+
+  if (!password) {
+    navigate("/admin");
+    return;
+  }
+
+  try {
+    setUpdatingStatus(true);
+    setQuoteMessage("");
+
+    const response =
+      await fetch(
+        "/.netlify/functions/update-order-status",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json",
+
+            "x-admin-password":
+              password,
+          },
+
+          body: JSON.stringify({
+            orderId:
+              order.id,
+
+            status:
+              newStatus,
+          }),
+        }
+      );
+
+    const data =
+      await response.json();
+
+    if (response.status === 401) {
+      sessionStorage.removeItem(
+        "beyond_admin_password"
+      );
+
+      navigate("/admin");
+      return;
+    }
+
+    if (!response.ok) {
+      throw new Error(
+        data.error ||
+          "Could not update status."
+      );
+    }
+
+    setOrder(data.order);
+
+    setQuoteMessage(
+      `Order moved to ${newStatus}.`
+    );
+  } catch (err) {
+    console.error(err);
+
+    setQuoteMessage(
+      err.message ||
+        "Unable to update order status."
+    );
+  } finally {
+    setUpdatingStatus(false);
+  }
+}
+
   if (loading) {
     return (
       <main className="order-details-page">
@@ -627,6 +707,86 @@ function OrderDetails() {
             )}
           </div>
         </article>
+
+<article className="order-detail-card order-wide-card status-control-card">
+  <div className="status-control-header">
+    <div>
+      <div className="section-kicker">
+        PRODUCTION
+      </div>
+
+      <h2>
+        Order status
+      </h2>
+
+      <p>
+        Move this order through the
+        production workflow.
+      </p>
+    </div>
+
+    <span className="admin-status">
+      {order.status ||
+        "Submitted"}
+    </span>
+  </div>
+
+  <div className="status-buttons">
+    <button
+      type="button"
+      className={
+        order.status === "Accepted"
+          ? "status-step active"
+          : "status-step"
+      }
+      onClick={() =>
+        updateOrderStatus(
+          "Accepted"
+        )
+      }
+      disabled={updatingStatus}
+    >
+      <span>01</span>
+      Accepted
+    </button>
+
+    <button
+      type="button"
+      className={
+        order.status === "Printing"
+          ? "status-step active"
+          : "status-step"
+      }
+      onClick={() =>
+        updateOrderStatus(
+          "Printing"
+        )
+      }
+      disabled={updatingStatus}
+    >
+      <span>02</span>
+      Printing
+    </button>
+
+    <button
+      type="button"
+      className={
+        order.status === "Completed"
+          ? "status-step active"
+          : "status-step"
+      }
+      onClick={() =>
+        updateOrderStatus(
+          "Completed"
+        )
+      }
+      disabled={updatingStatus}
+    >
+      <span>03</span>
+      Completed
+    </button>
+  </div>
+</article>
 
         <article className="order-detail-card order-wide-card quote-card">
           <div className="quote-header">
