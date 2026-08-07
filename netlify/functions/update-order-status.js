@@ -74,10 +74,6 @@ exports.handler = async function (event) {
     if (!orderId) {
       return {
         statusCode: 400,
-        headers: {
-          "Content-Type":
-            "application/json",
-        },
         body: JSON.stringify({
           error:
             "Order ID is required",
@@ -93,10 +89,6 @@ exports.handler = async function (event) {
     ) {
       return {
         statusCode: 400,
-        headers: {
-          "Content-Type":
-            "application/json",
-        },
         body: JSON.stringify({
           error:
             "Invalid order status",
@@ -126,10 +118,6 @@ exports.handler = async function (event) {
     ) {
       return {
         statusCode: 500,
-        headers: {
-          "Content-Type":
-            "application/json",
-        },
         body: JSON.stringify({
           error:
             "Missing Supabase configuration",
@@ -137,11 +125,36 @@ exports.handler = async function (event) {
       };
     }
 
-    /*
-      =========================
-      UPDATE ORDER
-      =========================
-    */
+    const now =
+      new Date().toISOString();
+
+    const updatePayload = {
+      status,
+    };
+
+    if (
+      status ===
+      "Accepted"
+    ) {
+      updatePayload.accepted_at =
+        now;
+    }
+
+    if (
+      status ===
+      "Printing"
+    ) {
+      updatePayload.printing_at =
+        now;
+    }
+
+    if (
+      status ===
+      "Completed"
+    ) {
+      updatePayload.completed_at =
+        now;
+    }
 
     const response =
       await fetch(
@@ -165,9 +178,10 @@ exports.handler = async function (event) {
               "return=representation",
           },
 
-          body: JSON.stringify({
-            status,
-          }),
+          body:
+            JSON.stringify(
+              updatePayload
+            ),
         }
       );
 
@@ -182,10 +196,6 @@ exports.handler = async function (event) {
 
       return {
         statusCode: 500,
-        headers: {
-          "Content-Type":
-            "application/json",
-        },
         body: JSON.stringify({
           error:
             "Could not update order status",
@@ -199,10 +209,6 @@ exports.handler = async function (event) {
     if (!data.length) {
       return {
         statusCode: 404,
-        headers: {
-          "Content-Type":
-            "application/json",
-        },
         body: JSON.stringify({
           error:
             "Order not found",
@@ -213,13 +219,8 @@ exports.handler = async function (event) {
     const order =
       data[0];
 
-    /*
-      =========================
-      TRACKING URL
-      =========================
-    */
-
-    let trackUrl = null;
+    let trackUrl =
+      null;
 
     if (
       secret &&
@@ -238,12 +239,6 @@ exports.handler = async function (event) {
           token
         )}`;
     }
-
-    /*
-      =========================
-      CUSTOMER EMAIL
-      =========================
-    */
 
     let emailSent =
       false;
@@ -272,12 +267,6 @@ exports.handler = async function (event) {
           );
         }
 
-        if (!trackUrl) {
-          throw new Error(
-            "Tracking link could not be created"
-          );
-        }
-
         const customerName =
           order.customer_name ||
           "there";
@@ -289,44 +278,20 @@ exports.handler = async function (event) {
             .slice(0, 8)
             .toUpperCase()}`;
 
-        let subject = "";
-        let title = "";
-        let message = "";
-        let badge = "";
+        const subject =
+          status === "Printing"
+            ? `Your Beyond order is now printing – ${orderNumber}`
+            : `Your Beyond order is completed – ${orderNumber}`;
 
-        if (
-          status ===
-          "Printing"
-        ) {
-          subject =
-            `Your Beyond order is now printing – ${orderNumber}`;
+        const title =
+          status === "Printing"
+            ? "Your project is now printing"
+            : "Your order is ready";
 
-          title =
-            "Your project is now printing";
-
-          message =
-            "Your project has entered production and is currently being printed. You can follow the latest status using the tracking link below.";
-
-          badge =
-            "PRINTING";
-        }
-
-        if (
-          status ===
-          "Completed"
-        ) {
-          subject =
-            `Your Beyond order is completed – ${orderNumber}`;
-
-          title =
-            "Your order is ready";
-
-          message =
-            "Great news — your 3D printing order has been completed. You can review the final status below, and we'll contact you regarding delivery or collection.";
-
-          badge =
-            "COMPLETED";
-        }
+        const message =
+          status === "Printing"
+            ? "Your project has entered production and is currently being printed."
+            : "Great news — your 3D printing order has been completed.";
 
         const emailResponse =
           await fetch(
@@ -342,272 +307,135 @@ exports.handler = async function (event) {
                   "application/json",
               },
 
-              body: JSON.stringify({
-                from:
-                  emailFrom,
+              body:
+                JSON.stringify({
+                  from:
+                    emailFrom,
 
-                to: [
-                  order.email,
-                ],
+                  to: [
+                    order.email,
+                  ],
 
-                subject,
+                  subject,
 
-                html: `
-                  <!doctype html>
+                  html: `
+                    <!doctype html>
 
-                  <html>
-                    <head>
-                      <meta charset="utf-8" />
-
-                      <meta
-                        name="viewport"
-                        content="width=device-width, initial-scale=1"
-                      />
-                    </head>
-
-                    <body style="
-                      margin:0;
-                      padding:0;
-                      background:#f3f6fb;
-                      font-family:Arial,sans-serif;
-                      color:#111827;
-                    ">
-
-                      <div style="
-                        width:100%;
-                        padding:40px 16px;
-                        box-sizing:border-box;
+                    <html>
+                      <body style="
+                        margin:0;
+                        padding:0;
+                        background:#f3f6fb;
+                        font-family:Arial,sans-serif;
+                        color:#111827;
                       ">
 
                         <div style="
-                          max-width:600px;
-                          margin:0 auto;
-                          background:#ffffff;
-                          border-radius:22px;
-                          overflow:hidden;
-                          box-shadow:0 20px 50px rgba(20,35,60,.08);
+                          width:100%;
+                          padding:40px 16px;
+                          box-sizing:border-box;
                         ">
 
                           <div style="
-                            padding:34px 34px 30px;
-                            background:#07111f;
-                            color:white;
+                            max-width:600px;
+                            margin:0 auto;
+                            background:#ffffff;
+                            border-radius:22px;
+                            overflow:hidden;
                           ">
 
                             <div style="
-                              font-size:15px;
-                              font-weight:700;
-                              letter-spacing:7px;
-                              margin-bottom:32px;
-                            ">
-                              BEYOND
-                            </div>
-
-                            <div style="
-                              display:inline-block;
-                              padding:8px 12px;
-                              margin-bottom:16px;
-                              border-radius:999px;
-                              background:rgba(42,116,255,.18);
-                              color:#77aaff;
-                              font-size:11px;
-                              font-weight:700;
-                              letter-spacing:1.5px;
-                            ">
-                              ${badge}
-                            </div>
-
-                            <h1 style="
-                              margin:0;
-                              font-size:32px;
-                              line-height:1.15;
-                              letter-spacing:-1px;
-                            ">
-                              ${title}
-                            </h1>
-
-                          </div>
-
-                          <div style="
-                            padding:34px;
-                          ">
-
-                            <p style="
-                              margin:0 0 18px;
-                              font-size:16px;
-                              line-height:1.7;
-                            ">
-                              Hi ${customerName},
-                            </p>
-
-                            <p style="
-                              margin:0 0 28px;
-                              color:#5f6b7c;
-                              font-size:15px;
-                              line-height:1.8;
-                            ">
-                              ${message}
-                            </p>
-
-                            <div style="
-                              padding:22px;
-                              border-radius:16px;
-                              background:#f5f7fa;
-                              border:1px solid #edf0f4;
+                              padding:34px;
+                              background:#07111f;
+                              color:white;
                             ">
 
                               <div style="
-                                color:#8390a3;
-                                font-size:11px;
+                                font-size:15px;
                                 font-weight:700;
-                                letter-spacing:1.2px;
+                                letter-spacing:7px;
+                                margin-bottom:30px;
                               ">
-                                ORDER
+                                BEYOND
                               </div>
 
-                              <div style="
-                                margin-top:6px;
-                                font-size:18px;
-                                font-weight:700;
+                              <h1 style="
+                                margin:0;
+                                font-size:32px;
                               ">
-                                ${orderNumber}
-                              </div>
-
-                              <div style="
-                                margin-top:22px;
-                                color:#8390a3;
-                                font-size:11px;
-                                font-weight:700;
-                                letter-spacing:1.2px;
-                              ">
-                                STATUS
-                              </div>
-
-                              <div style="
-                                margin-top:6px;
-                                font-size:18px;
-                                font-weight:700;
-                                color:#176bff;
-                              ">
-                                ${status}
-                              </div>
-
-                              ${
-                                order.material
-                                  ? `
-                                    <div style="
-                                      margin-top:22px;
-                                      color:#8390a3;
-                                      font-size:11px;
-                                      font-weight:700;
-                                      letter-spacing:1.2px;
-                                    ">
-                                      MATERIAL
-                                    </div>
-
-                                    <div style="
-                                      margin-top:6px;
-                                      font-size:16px;
-                                      font-weight:700;
-                                    ">
-                                      ${order.material}
-                                    </div>
-                                  `
-                                  : ""
-                              }
-
-                              <div style="
-                                margin-top:22px;
-                                color:#8390a3;
-                                font-size:11px;
-                                font-weight:700;
-                                letter-spacing:1.2px;
-                              ">
-                                QUANTITY
-                              </div>
-
-                              <div style="
-                                margin-top:6px;
-                                font-size:16px;
-                                font-weight:700;
-                              ">
-                                ${order.quantity || 1}
-                              </div>
+                                ${title}
+                              </h1>
 
                             </div>
 
                             <div style="
-                              margin:32px 0 24px;
-                              text-align:center;
+                              padding:34px;
                             ">
 
-                              <a
-                                href="${trackUrl}"
-                                target="_blank"
-                                style="
-                                  display:inline-block;
-                                  min-width:180px;
-                                  padding:16px 28px;
-                                  border-radius:999px;
-                                  background:#176bff;
-                                  color:#ffffff;
-                                  text-decoration:none;
-                                  font-size:14px;
+                              <p>
+                                Hi ${customerName},
+                              </p>
+
+                              <p style="
+                                color:#5f6b7c;
+                                line-height:1.8;
+                              ">
+                                ${message}
+                              </p>
+
+                              <div style="
+                                margin-top:28px;
+                                padding:22px;
+                                border-radius:16px;
+                                background:#f5f7fa;
+                              ">
+
+                                <strong>
+                                  ${orderNumber}
+                                </strong>
+
+                                <div style="
+                                  margin-top:12px;
+                                  color:#176bff;
                                   font-weight:700;
-                                  box-shadow:0 12px 30px rgba(23,107,255,.22);
-                                "
-                              >
-                                Track My Order
-                              </a>
+                                ">
+                                  ${status}
+                                </div>
+
+                              </div>
+
+                              <div style="
+                                margin:32px 0 0;
+                                text-align:center;
+                              ">
+
+                                <a
+                                  href="${trackUrl}"
+                                  style="
+                                    display:inline-block;
+                                    padding:16px 28px;
+                                    border-radius:999px;
+                                    background:#176bff;
+                                    color:#ffffff;
+                                    text-decoration:none;
+                                    font-weight:700;
+                                  "
+                                >
+                                  Track My Order
+                                </a>
+
+                              </div>
 
                             </div>
-
-                            <p style="
-                              margin:0;
-                              text-align:center;
-                              color:#8792a2;
-                              font-size:12px;
-                              line-height:1.7;
-                            ">
-                              Use your private tracking
-                              link at any time to see the
-                              latest order status.
-                            </p>
-
-                            <div style="
-                              height:1px;
-                              margin:30px 0;
-                              background:#edf0f4;
-                            "></div>
-
-                            <p style="
-                              margin:0;
-                              color:#7c8797;
-                              font-size:13px;
-                              line-height:1.7;
-                            ">
-                              Questions about your order?
-                              Simply reply to this email.
-                            </p>
-
-                            <p style="
-                              margin:24px 0 0;
-                              font-size:14px;
-                              font-weight:700;
-                            ">
-                              Beyond 3D
-                            </p>
 
                           </div>
 
                         </div>
 
-                      </div>
-
-                    </body>
-                  </html>
-                `,
-              }),
+                      </body>
+                    </html>
+                  `,
+                }),
             }
           );
 
@@ -615,13 +443,9 @@ exports.handler = async function (event) {
           await emailResponse.json();
 
         if (!emailResponse.ok) {
-          console.error(
-            "Customer status email failed:",
-            emailResult
-          );
-
           throw new Error(
-            "Customer notification could not be sent"
+            emailResult?.message ||
+              "Customer notification could not be sent"
           );
         }
 
@@ -629,12 +453,6 @@ exports.handler = async function (event) {
           true;
 
       } catch (error) {
-        /*
-          We intentionally keep the
-          database status change even
-          if Resend has a problem.
-        */
-
         console.error(
           "Status notification error:",
           error
@@ -644,12 +462,6 @@ exports.handler = async function (event) {
           error.message;
       }
     }
-
-    /*
-      =========================
-      SUCCESS
-      =========================
-    */
 
     return {
       statusCode: 200,
@@ -685,11 +497,6 @@ exports.handler = async function (event) {
 
     return {
       statusCode: 500,
-
-      headers: {
-        "Content-Type":
-          "application/json",
-      },
 
       body: JSON.stringify({
         error:

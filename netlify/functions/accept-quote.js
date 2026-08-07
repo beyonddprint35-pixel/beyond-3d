@@ -135,6 +135,9 @@ exports.handler =
         };
       }
 
+      const now =
+        new Date().toISOString();
+
       const response =
         await fetch(
           `${supabaseUrl}/rest/v1/orders?id=eq.${encodeURIComponent(
@@ -164,6 +167,9 @@ exports.handler =
 
                 quote_status:
                   "Accepted",
+
+                accepted_at:
+                  now,
               }),
           }
         );
@@ -310,18 +316,6 @@ exports.handler =
                 >
                   Track My Order
                 </a>
-
-                <p style="
-                  margin:22px 0 0;
-                  color:#677a96;
-                  font-size:12px;
-                  line-height:1.6;
-                ">
-                  Save your tracking link
-                  to check the latest
-                  production status at
-                  any time.
-                </p>
 
               </div>
 

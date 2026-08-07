@@ -50,6 +50,34 @@ function formatDate(value) {
   );
 }
 
+function formatDateTime(value) {
+  if (!value) {
+    return null;
+  }
+
+  const date =
+    new Date(value);
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+    return null;
+  }
+
+  return date.toLocaleString(
+    "en-IL",
+    {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }
+  );
+}
+
 function formatCurrency(value) {
   if (
     value === null ||
@@ -69,30 +97,6 @@ function formatCurrency(value) {
     }
   )}`;
 }
-
-const workflow = [
-  {
-    key: "Accepted",
-    number: "01",
-    title: "Accepted",
-    description:
-      "Your quotation has been approved.",
-  },
-  {
-    key: "Printing",
-    number: "02",
-    title: "Printing",
-    description:
-      "Your project is currently in production.",
-  },
-  {
-    key: "Completed",
-    number: "03",
-    title: "Completed",
-    description:
-      "Your project has been completed.",
-  },
-];
 
 function TrackOrder() {
   const [searchParams] =
@@ -137,14 +141,8 @@ function TrackOrder() {
             )}`
           );
 
-        let data = {};
-
-        try {
-          data =
-            await response.json();
-        } catch {
-          data = {};
-        }
+        const data =
+          await response.json();
 
         if (!response.ok) {
           throw new Error(
@@ -154,13 +152,10 @@ function TrackOrder() {
         }
 
         setOrder(
-          data.order || null
+          data.order
         );
       } catch (err) {
-        console.error(
-          "Tracking error:",
-          err
-        );
+        console.error(err);
 
         setError(
           err.message ||
@@ -176,6 +171,43 @@ function TrackOrder() {
     id,
     token,
   ]);
+
+  const workflow =
+    useMemo(() => {
+      if (!order) {
+        return [];
+      }
+
+      return [
+        {
+          key: "Accepted",
+          number: "01",
+          title: "Accepted",
+          description:
+            "Your quotation has been approved.",
+          date:
+            order.accepted_at,
+        },
+        {
+          key: "Printing",
+          number: "02",
+          title: "Printing",
+          description:
+            "Your project is currently in production.",
+          date:
+            order.printing_at,
+        },
+        {
+          key: "Completed",
+          number: "03",
+          title: "Completed",
+          description:
+            "Your project has been completed.",
+          date:
+            order.completed_at,
+        },
+      ];
+    }, [order]);
 
   const currentStep =
     useMemo(() => {
@@ -199,9 +231,7 @@ function TrackOrder() {
 
       if (
         order.status ===
-          "Accepted" ||
-        order.status ===
-          "Quoted"
+        "Accepted"
       ) {
         return 0;
       }
@@ -212,9 +242,6 @@ function TrackOrder() {
   if (loading) {
     return (
       <main className="tracking-page">
-        <div className="tracking-background-glow tracking-glow-one" />
-        <div className="tracking-background-glow tracking-glow-two" />
-
         <section className="tracking-state-card">
           <div className="tracking-loader" />
 
@@ -223,9 +250,8 @@ function TrackOrder() {
           </h1>
 
           <p>
-            One moment while we
-            retrieve the latest
-            production status.
+            One moment while we retrieve
+            the latest production status.
           </p>
         </section>
       </main>
@@ -238,15 +264,9 @@ function TrackOrder() {
   ) {
     return (
       <main className="tracking-page">
-        <div className="tracking-background-glow tracking-glow-one" />
-
         <section className="tracking-state-card">
           <div className="tracking-error-icon">
             !
-          </div>
-
-          <div className="tracking-kicker">
-            BEYOND
           </div>
 
           <h1>
@@ -254,8 +274,7 @@ function TrackOrder() {
           </h1>
 
           <p>
-            {error ||
-              "This tracking link is unavailable."}
+            {error}
           </p>
 
           <Link
@@ -276,9 +295,6 @@ function TrackOrder() {
 
   return (
     <main className="tracking-page">
-      <div className="tracking-background-glow tracking-glow-one" />
-      <div className="tracking-background-glow tracking-glow-two" />
-
       <header className="tracking-navbar">
         <Link
           to="/"
@@ -333,8 +349,7 @@ function TrackOrder() {
             </span>
 
             <h2>
-              {order.status ||
-                "Submitted"}
+              {order.status}
             </h2>
           </div>
 
@@ -358,10 +373,6 @@ function TrackOrder() {
                 index ===
                 currentStep;
 
-              const future =
-                index >
-                currentStep;
-
               let className =
                 "tracking-step";
 
@@ -375,7 +386,10 @@ function TrackOrder() {
                   " active";
               }
 
-              if (future) {
+              if (
+                index >
+                currentStep
+              ) {
                 className +=
                   " future";
               }
@@ -390,18 +404,14 @@ function TrackOrder() {
                   }
                 >
                   <div className="tracking-step-marker">
-                    {completed ? (
-                      "✓"
-                    ) : (
-                      step.number
-                    )}
+                    {completed
+                      ? "✓"
+                      : step.number}
                   </div>
 
                   <div className="tracking-step-content">
                     <strong>
-                      {
-                        step.title
-                      }
+                      {step.title}
                     </strong>
 
                     <span>
@@ -409,6 +419,21 @@ function TrackOrder() {
                         step.description
                       }
                     </span>
+
+                    {step.date && (
+                      <span
+                        style={{
+                          marginTop:
+                            "8px",
+                          color:
+                            "#6fa8ff",
+                        }}
+                      >
+                        {formatDateTime(
+                          step.date
+                        )}
+                      </span>
+                    )}
                   </div>
 
                   {index <
@@ -505,19 +530,6 @@ function TrackOrder() {
           </strong>
         </div>
       </section>
-
-      <footer className="tracking-footer">
-        <div className="tracking-logo">
-          BEYOND
-        </div>
-
-        <p>
-          Questions about your
-          order? Reply to any
-          Beyond email and we'll
-          help.
-        </p>
-      </footer>
     </main>
   );
 }

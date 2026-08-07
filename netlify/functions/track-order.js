@@ -39,10 +39,11 @@ function safeCompare(
       return false;
     }
 
-    return crypto.timingSafeEqual(
-      a,
-      b
-    );
+    return crypto
+      .timingSafeEqual(
+        a,
+        b
+      );
   } catch {
     return false;
   }
@@ -56,6 +57,7 @@ exports.handler =
     ) {
       return {
         statusCode: 405,
+
         body:
           JSON.stringify({
             error:
@@ -75,9 +77,13 @@ exports.handler =
           .queryStringParameters
           ?.token;
 
-      if (!id || !token) {
+      if (
+        !id ||
+        !token
+      ) {
         return {
           statusCode: 400,
+
           body:
             JSON.stringify({
               error:
@@ -105,6 +111,7 @@ exports.handler =
       ) {
         return {
           statusCode: 500,
+
           body:
             JSON.stringify({
               error:
@@ -127,6 +134,7 @@ exports.handler =
       ) {
         return {
           statusCode: 403,
+
           body:
             JSON.stringify({
               error:
@@ -139,7 +147,7 @@ exports.handler =
         await fetch(
           `${supabaseUrl}/rest/v1/orders?id=eq.${encodeURIComponent(
             id
-          )}&select=id,customer_name,project_type,material,color,quantity,status,quote_status,needed_by,quote_total`,
+          )}&select=id,customer_name,project_type,material,color,quantity,status,quote_status,needed_by,quote_total,accepted_at,printing_at,completed_at`,
           {
             headers: {
               apikey:
@@ -155,13 +163,9 @@ exports.handler =
         await response.json();
 
       if (!response.ok) {
-        console.error(
-          "Tracking query error:",
-          data
-        );
-
         return {
           statusCode: 500,
+
           body:
             JSON.stringify({
               error:
@@ -173,6 +177,7 @@ exports.handler =
       if (!data.length) {
         return {
           statusCode: 404,
+
           body:
             JSON.stringify({
               error:
