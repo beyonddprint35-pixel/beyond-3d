@@ -2,7 +2,9 @@ exports.handler = async function (event) {
   if (event.httpMethod !== "POST") {
     return {
       statusCode: 405,
-      body: JSON.stringify({ error: "Method not allowed" }),
+      body: JSON.stringify({
+        error: "Method not allowed",
+      }),
     };
   }
 
@@ -13,9 +15,9 @@ exports.handler = async function (event) {
       orderNumber,
       material,
       quantity,
-    } = JSON.parse(event.body);
+    } = JSON.parse(event.body || "{}");
 
-    if (!customerEmail || !customerName || !orderNumber) {
+    if (!customerName || !customerEmail || !orderNumber) {
       return {
         statusCode: 400,
         body: JSON.stringify({
@@ -30,7 +32,11 @@ exports.handler = async function (event) {
     const safeMaterial = escapeHtml(material || "Not selected");
     const safeQuantity = escapeHtml(String(quantity || 1));
 
-    const customerEmailRequest = await fetch(
+    // ---------------------------
+    // CUSTOMER CONFIRMATION EMAIL
+    // ---------------------------
+
+    const customerResponse = await fetch(
       "https://api.resend.com/emails",
       {
         method: "POST",
@@ -39,115 +45,262 @@ exports.handler = async function (event) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: process.env.EMAIL_FROM,
-          to: [customerEmail],
-          subject: `We received your Beyond order ${orderNumber}`,
-          html: `
-            <div style="
-              margin:0;
-              padding:40px 20px;
-              background:#f4f7fb;
-              font-family:Arial,Helvetica,sans-serif;
-              color:#0b315f;
-            ">
-              <div style="
-                max-width:620px;
-                margin:0 auto;
-                background:#ffffff;
-                border-radius:24px;
-                overflow:hidden;
-                box-shadow:0 18px 45px rgba(11,49,95,0.12);
-              ">
+          from:
+            process.env.EMAIL_FROM ||
+            "Beyond <orders@beyond3dshop.com>",
 
-                <div style="
-                  padding:34px 34px 26px;
-                  background:linear-gradient(135deg,#071a33,#0b315f,#1559a8);
-                  color:white;
-                ">
-                  <div style="
-                    font-size:13px;
-                    letter-spacing:4px;
-                    opacity:0.75;
-                    margin-bottom:10px;
-                  ">
+          to: [customerEmail],
+
+          reply_to: "beyonddprint35@gmail.com",
+
+          subject: `We received your Beyond order ${orderNumber}`,
+
+          html: `
+            <div
+              style="
+                margin:0;
+                padding:40px 20px;
+                background:#050816;
+                font-family:Arial,Helvetica,sans-serif;
+              "
+            >
+              <div
+                style="
+                  max-width:620px;
+                  margin:0 auto;
+                  background:#0d1628;
+                  border:1px solid rgba(255,255,255,0.08);
+                  border-radius:24px;
+                  overflow:hidden;
+                  box-shadow:0 20px 60px rgba(0,70,180,0.30);
+                "
+              >
+
+                <div
+                  style="
+                    padding:36px 34px 30px;
+                    background:
+                      linear-gradient(
+                        135deg,
+                        #071a33 0%,
+                        #0b315f 55%,
+                        #176bd6 100%
+                      );
+                    color:white;
+                  "
+                >
+                  <div
+                    style="
+                      font-size:13px;
+                      letter-spacing:5px;
+                      font-weight:700;
+                      opacity:0.8;
+                      margin-bottom:12px;
+                    "
+                  >
                     BEYOND
                   </div>
 
-                  <h1 style="
-                    margin:0;
-                    font-size:30px;
-                    line-height:1.2;
-                  ">
-                    Your request is in.
+                  <h1
+                    style="
+                      margin:0;
+                      font-size:30px;
+                      line-height:1.2;
+                      color:#ffffff;
+                    "
+                  >
+                    Your project is in.
                   </h1>
 
-                  <p style="
-                    margin:12px 0 0;
-                    color:rgba(255,255,255,0.8);
-                    font-size:16px;
-                  ">
-                    We’ve received your 3D printing project and will review it shortly.
+                  <p
+                    style="
+                      margin:14px 0 0;
+                      font-size:16px;
+                      line-height:1.6;
+                      color:rgba(255,255,255,0.82);
+                    "
+                  >
+                    We’ve received your 3D printing request
+                    and will review it shortly.
                   </p>
                 </div>
 
-                <div style="padding:34px;">
-                  <p style="font-size:16px; margin-top:0;">
+                <div
+                  style="
+                    padding:34px;
+                    color:#ffffff;
+                  "
+                >
+                  <p
+                    style="
+                      margin-top:0;
+                      font-size:16px;
+                      line-height:1.7;
+                      color:#ffffff;
+                    "
+                  >
                     Hi ${safeName},
                   </p>
 
-                  <p style="
-                    font-size:16px;
-                    line-height:1.7;
-                    color:#45566f;
-                  ">
+                  <p
+                    style="
+                      font-size:16px;
+                      line-height:1.7;
+                      color:#aab8cc;
+                    "
+                  >
                     Thank you for submitting your project to Beyond.
-                    We’ll review your file, material selection and quantity,
-                    then send you a quotation.
+                    We’ll review your uploaded file, material selection,
+                    quantity and project requirements, then send you
+                    a quotation.
                   </p>
 
-                  <div style="
-                    margin:28px 0;
-                    padding:22px;
-                    border-radius:18px;
-                    background:#f2f6fb;
-                    border:1px solid #e3eaf3;
-                  ">
-                    <div style="margin-bottom:14px;">
-                      <strong>Order number</strong><br>
-                      <span style="color:#4d6078;">${safeOrderNumber}</span>
+                  <div
+                    style="
+                      margin:28px 0;
+                      padding:22px;
+                      border-radius:18px;
+                      background:#111d33;
+                      border:1px solid rgba(255,255,255,0.08);
+                    "
+                  >
+                    <div style="margin-bottom:16px;">
+                      <div
+                        style="
+                          font-size:12px;
+                          color:#7890ad;
+                          text-transform:uppercase;
+                          letter-spacing:1px;
+                          margin-bottom:5px;
+                        "
+                      >
+                        Order number
+                      </div>
+
+                      <div
+                        style="
+                          color:#ffffff;
+                          font-size:17px;
+                          font-weight:700;
+                        "
+                      >
+                        ${safeOrderNumber}
+                      </div>
                     </div>
 
-                    <div style="margin-bottom:14px;">
-                      <strong>Material</strong><br>
-                      <span style="color:#4d6078;">${safeMaterial}</span>
+                    <div style="margin-bottom:16px;">
+                      <div
+                        style="
+                          font-size:12px;
+                          color:#7890ad;
+                          text-transform:uppercase;
+                          letter-spacing:1px;
+                          margin-bottom:5px;
+                        "
+                      >
+                        Material
+                      </div>
+
+                      <div
+                        style="
+                          color:#ffffff;
+                          font-size:16px;
+                        "
+                      >
+                        ${safeMaterial}
+                      </div>
                     </div>
 
-                    <div style="margin-bottom:14px;">
-                      <strong>Quantity</strong><br>
-                      <span style="color:#4d6078;">${safeQuantity}</span>
+                    <div style="margin-bottom:16px;">
+                      <div
+                        style="
+                          font-size:12px;
+                          color:#7890ad;
+                          text-transform:uppercase;
+                          letter-spacing:1px;
+                          margin-bottom:5px;
+                        "
+                      >
+                        Quantity
+                      </div>
+
+                      <div
+                        style="
+                          color:#ffffff;
+                          font-size:16px;
+                        "
+                      >
+                        ${safeQuantity}
+                      </div>
                     </div>
 
                     <div>
-                      <strong>Status</strong><br>
-                      <span style="color:#4d6078;">Submitted</span>
+                      <div
+                        style="
+                          font-size:12px;
+                          color:#7890ad;
+                          text-transform:uppercase;
+                          letter-spacing:1px;
+                          margin-bottom:5px;
+                        "
+                      >
+                        Status
+                      </div>
+
+                      <div
+                        style="
+                          display:inline-block;
+                          padding:7px 12px;
+                          border-radius:999px;
+                          background:rgba(47,125,255,0.16);
+                          color:#69a6ff;
+                          font-size:14px;
+                          font-weight:700;
+                        "
+                      >
+                        Submitted
+                      </div>
                     </div>
                   </div>
 
-                  <p style="
-                    font-size:16px;
-                    line-height:1.7;
-                    color:#45566f;
-                  ">
-                    You’ll receive another email once your quotation is ready.
+                  <p
+                    style="
+                      font-size:16px;
+                      line-height:1.7;
+                      color:#aab8cc;
+                    "
+                  >
+                    You’ll receive another email once your quotation
+                    is ready.
                   </p>
 
-                  <p style="
-                    margin-top:30px;
-                    font-size:16px;
-                  ">
+                  <p
+                    style="
+                      margin-top:32px;
+                      font-size:16px;
+                      line-height:1.6;
+                      color:#ffffff;
+                    "
+                  >
                     Thank you,<br>
                     <strong>Beyond 3D Printing</strong>
                   </p>
+
+                  <div
+                    style="
+                      margin-top:30px;
+                      padding-top:22px;
+                      border-top:1px solid rgba(255,255,255,0.08);
+                      color:#6f829d;
+                      font-size:12px;
+                      line-height:1.6;
+                    "
+                  >
+                    beyond3dshop.com
+                    <br>
+                    Replies to this email will be sent to
+                    beyonddprint35@gmail.com
+                  </div>
                 </div>
               </div>
             </div>
@@ -156,10 +309,13 @@ exports.handler = async function (event) {
       }
     );
 
-    const customerResult = await customerEmailRequest.json();
+    const customerResult = await customerResponse.json();
 
-    if (!customerEmailRequest.ok) {
-      console.error("Customer email failed:", customerResult);
+    if (!customerResponse.ok) {
+      console.error(
+        "Customer email failed:",
+        customerResult
+      );
 
       return {
         statusCode: 500,
@@ -170,7 +326,11 @@ exports.handler = async function (event) {
       };
     }
 
-    const adminEmailRequest = await fetch(
+    // ---------------------------
+    // ADMIN NOTIFICATION EMAIL
+    // ---------------------------
+
+    const adminResponse = await fetch(
       "https://api.resend.com/emails",
       {
         method: "POST",
@@ -179,60 +339,115 @@ exports.handler = async function (event) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: process.env.EMAIL_FROM,
+          from:
+            process.env.EMAIL_FROM ||
+            "Beyond <orders@beyond3dshop.com>",
+
           to: [process.env.ADMIN_EMAIL],
+
+          reply_to: customerEmail,
+
           subject: `New Beyond order: ${orderNumber}`,
+
           html: `
-            <div style="
-              margin:0;
-              padding:30px 18px;
-              background:#f4f7fb;
-              font-family:Arial,Helvetica,sans-serif;
-              color:#0b315f;
-            ">
-              <div style="
-                max-width:620px;
-                margin:0 auto;
-                background:#ffffff;
-                border-radius:20px;
-                padding:30px;
-                box-shadow:0 15px 35px rgba(11,49,95,0.1);
-              ">
-                <div style="
-                  font-size:12px;
-                  letter-spacing:3px;
-                  color:#54708f;
-                ">
+            <div
+              style="
+                margin:0;
+                padding:35px 18px;
+                background:#f3f6fa;
+                font-family:Arial,Helvetica,sans-serif;
+                color:#0b315f;
+              "
+            >
+              <div
+                style="
+                  max-width:620px;
+                  margin:0 auto;
+                  background:#ffffff;
+                  border-radius:20px;
+                  padding:30px;
+                  box-shadow:0 16px 40px rgba(11,49,95,0.12);
+                "
+              >
+
+                <div
+                  style="
+                    font-size:12px;
+                    letter-spacing:4px;
+                    color:#66809f;
+                    margin-bottom:8px;
+                  "
+                >
                   BEYOND ADMIN
                 </div>
 
-                <h2 style="
-                  margin:8px 0 24px;
-                  font-size:26px;
-                  color:#0b315f;
-                ">
+                <h2
+                  style="
+                    margin:0 0 26px;
+                    font-size:27px;
+                    color:#0b315f;
+                  "
+                >
                   New order received
                 </h2>
 
-                <div style="
-                  padding:20px;
-                  border-radius:16px;
-                  background:#f2f6fb;
-                ">
-                  <p><strong>Order:</strong> ${safeOrderNumber}</p>
-                  <p><strong>Customer:</strong> ${safeName}</p>
-                  <p><strong>Email:</strong> ${safeEmail}</p>
-                  <p><strong>Material:</strong> ${safeMaterial}</p>
-                  <p><strong>Quantity:</strong> ${safeQuantity}</p>
-                  <p><strong>Status:</strong> Submitted</p>
+                <div
+                  style="
+                    padding:22px;
+                    border-radius:16px;
+                    background:#f2f6fb;
+                    border:1px solid #e2eaf3;
+                  "
+                >
+                  <p>
+                    <strong>Order:</strong><br>
+                    ${safeOrderNumber}
+                  </p>
+
+                  <p>
+                    <strong>Customer:</strong><br>
+                    ${safeName}
+                  </p>
+
+                  <p>
+                    <strong>Email:</strong><br>
+                    ${safeEmail}
+                  </p>
+
+                  <p>
+                    <strong>Material:</strong><br>
+                    ${safeMaterial}
+                  </p>
+
+                  <p>
+                    <strong>Quantity:</strong><br>
+                    ${safeQuantity}
+                  </p>
+
+                  <p style="margin-bottom:0;">
+                    <strong>Status:</strong><br>
+                    Submitted
+                  </p>
                 </div>
 
-                <p style="
-                  margin-top:24px;
-                  color:#4d6078;
-                  line-height:1.6;
-                ">
-                  Open Supabase to review the order and uploaded file.
+                <p
+                  style="
+                    margin-top:24px;
+                    color:#4f6177;
+                    line-height:1.6;
+                  "
+                >
+                  Review the order and uploaded file in Supabase.
+                </p>
+
+                <p
+                  style="
+                    color:#4f6177;
+                    line-height:1.6;
+                  "
+                >
+                  You can reply directly to this email and
+                  the reply will go to the customer.
                 </p>
               </div>
             </div>
@@ -241,22 +456,30 @@ exports.handler = async function (event) {
       }
     );
 
-    const adminResult = await adminEmailRequest.json();
+    const adminResult = await adminResponse.json();
 
-    if (!adminEmailRequest.ok) {
-      console.error("Admin email failed:", adminResult);
+    if (!adminResponse.ok) {
+      console.error(
+        "Admin email failed:",
+        adminResult
+      );
     }
 
     return {
       statusCode: 200,
       body: JSON.stringify({
         success: true,
-        customerEmailId: customerResult.id,
-        adminEmailId: adminResult.id || null,
+        customerEmailId:
+          customerResult.id || null,
+        adminEmailId:
+          adminResult.id || null,
       }),
     };
   } catch (error) {
-    console.error("Email function error:", error);
+    console.error(
+      "Email function error:",
+      error
+    );
 
     return {
       statusCode: 500,
