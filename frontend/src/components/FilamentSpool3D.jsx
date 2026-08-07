@@ -18,14 +18,34 @@ import * as THREE from "three";
 
 import "./FilamentSpool3D.css";
 
+function clamp(
+  value,
+  min = 0,
+  max = 1
+) {
+  return Math.min(
+    Math.max(
+      value,
+      min
+    ),
+    max
+  );
+}
+
 function SpoolModel({
   scrollProgress,
 }) {
   const groupRef =
-    useRef();
+    useRef(null);
 
   const rotatingRef =
-    useRef();
+    useRef(null);
+
+  const filamentGroupRef =
+    useRef(null);
+
+  const strandRef =
+    useRef(null);
 
   const filamentMaterial =
     useMemo(
@@ -38,20 +58,20 @@ function SpoolModel({
 
           metalness: 0.08,
 
-          roughness: 0.3,
+          roughness: 0.28,
 
-          clearcoat: 0.8,
+          clearcoat: 0.95,
 
           clearcoatRoughness:
-            0.18,
+            0.13,
 
           emissive:
             new THREE.Color(
-              "#071f52"
+              "#062159"
             ),
 
           emissiveIntensity:
-            0.75,
+            0.85,
         }),
       []
     );
@@ -62,17 +82,17 @@ function SpoolModel({
         new THREE.MeshPhysicalMaterial({
           color:
             new THREE.Color(
-              "#101722"
+              "#111925"
             ),
 
-          roughness: 0.3,
+          roughness: 0.29,
 
           metalness: 0.32,
 
-          clearcoat: 0.65,
+          clearcoat: 0.7,
 
           clearcoatRoughness:
-            0.22,
+            0.2,
         }),
       []
     );
@@ -83,7 +103,7 @@ function SpoolModel({
         new THREE.MeshStandardMaterial({
           color:
             new THREE.Color(
-              "#070b11"
+              "#05090f"
             ),
 
           roughness: 0.42,
@@ -97,10 +117,17 @@ function SpoolModel({
     (state) => {
       if (
         !groupRef.current ||
-        !rotatingRef.current
+        !rotatingRef.current ||
+        !filamentGroupRef.current
       ) {
         return;
       }
+
+      /*
+        =========================
+        MOUSE PARALLAX
+        =========================
+      */
 
       const pointerX =
         state.pointer.x;
@@ -112,37 +139,131 @@ function SpoolModel({
         THREE.MathUtils.lerp(
           groupRef.current
             .rotation.y,
-          pointerX * 0.17,
-          0.035
+
+          pointerX * 0.19,
+
+          0.04
         );
 
       groupRef.current.rotation.x =
         THREE.MathUtils.lerp(
           groupRef.current
             .rotation.x,
+
           -pointerY * 0.1 +
-            0.04,
-          0.035
+            0.035,
+
+          0.04
         );
+
+      /*
+        =========================
+        SCROLL ROTATION
+        =========================
+      */
 
       const targetRotation =
         scrollProgress *
         Math.PI *
-        7;
+        10;
 
       rotatingRef.current.rotation.z =
         THREE.MathUtils.lerp(
           rotatingRef.current
             .rotation.z,
+
           targetRotation,
-          0.075
+
+          0.08
         );
+
+      /*
+        =========================
+        FILAMENT CONSUMPTION
+
+        0% scroll:
+        full spool
+
+        100% scroll:
+        visibly reduced spool
+        =========================
+      */
+
+      const consumption =
+        clamp(
+          scrollProgress *
+            1.15
+        );
+
+      const targetScale =
+        1 -
+        consumption *
+          0.24;
+
+      filamentGroupRef.current.scale.x =
+        THREE.MathUtils.lerp(
+          filamentGroupRef.current
+            .scale.x,
+
+          targetScale,
+
+          0.055
+        );
+
+      filamentGroupRef.current.scale.y =
+        THREE.MathUtils.lerp(
+          filamentGroupRef.current
+            .scale.y,
+
+          targetScale,
+
+          0.055
+        );
+
+      /*
+        Make the filament roll
+        move very slightly while
+        feeding.
+      */
 
       rotatingRef.current.position.y =
         Math.sin(
           state.clock.elapsedTime *
-            0.7
-        ) * 0.025;
+            0.8
+        ) *
+        0.018;
+
+      /*
+        =========================
+        STRAND FEED
+
+        As the user scrolls,
+        more filament visually
+        leaves the spool.
+        =========================
+      */
+
+      if (
+        strandRef.current
+      ) {
+        const strandProgress =
+          clamp(
+            scrollProgress *
+              4
+          );
+
+        strandRef.current.scale.y =
+          THREE.MathUtils.lerp(
+            strandRef.current
+              .scale.y,
+
+            0.18 +
+              strandProgress *
+                0.82,
+
+            0.06
+          );
+      }
     }
   );
 
@@ -158,7 +279,9 @@ function SpoolModel({
       <group
         ref={rotatingRef}
       >
-        {/* BACK FLANGE */}
+        {/* =====================
+            BACK FLANGE
+        ====================== */}
 
         <mesh
           position={[
@@ -187,72 +310,133 @@ function SpoolModel({
           />
         </mesh>
 
-        {/* FILAMENT CORE */}
+        {/* =====================
+            FILAMENT MATERIAL
+        ====================== */}
 
-        <mesh
-          rotation={[
-            Math.PI / 2,
-            0,
-            0,
-          ]}
-          castShadow
-          material={
-            filamentMaterial
+        <group
+          ref={
+            filamentGroupRef
           }
         >
-          <cylinderGeometry
-            args={[
-              1.68,
-              1.68,
-              0.85,
-              128,
+          <mesh
+            rotation={[
+              Math.PI / 2,
+              0,
+              0,
             ]}
-          />
-        </mesh>
-
-        {/* FILAMENT RINGS */}
-
-        {[
-          1.22,
-          1.29,
-          1.36,
-          1.43,
-          1.5,
-          1.57,
-          1.64,
-        ].map(
-          (
-            radius,
-            index
-          ) => (
-            <mesh
-              key={
-                radius
-              }
-              position={[
-                0,
-                0,
-                -0.43 +
-                  index *
-                    0.14,
+            castShadow
+            material={
+              filamentMaterial
+            }
+          >
+            <cylinderGeometry
+              args={[
+                1.68,
+                1.68,
+                0.84,
+                128,
               ]}
-              material={
-                filamentMaterial
-              }
-            >
-              <torusGeometry
-                args={[
-                  radius,
-                  0.035,
-                  10,
-                  128,
-                ]}
-              />
-            </mesh>
-          )
-        )}
+            />
+          </mesh>
 
-        {/* FRONT FLANGE */}
+          {[
+            {
+              radius: 1.18,
+              z: -0.38,
+            },
+            {
+              radius: 1.24,
+              z: -0.3,
+            },
+            {
+              radius: 1.3,
+              z: -0.22,
+            },
+            {
+              radius: 1.36,
+              z: -0.14,
+            },
+            {
+              radius: 1.42,
+              z: -0.06,
+            },
+            {
+              radius: 1.48,
+              z: 0.02,
+            },
+            {
+              radius: 1.54,
+              z: 0.1,
+            },
+            {
+              radius: 1.6,
+              z: 0.18,
+            },
+            {
+              radius: 1.65,
+              z: 0.26,
+            },
+            {
+              radius: 1.68,
+              z: 0.34,
+            },
+          ].map(
+            (
+              ring,
+              index
+            ) => (
+              <mesh
+                key={
+                  `${ring.radius}-${index}`
+                }
+                position={[
+                  0,
+                  0,
+                  ring.z,
+                ]}
+                material={
+                  filamentMaterial
+                }
+              >
+                <torusGeometry
+                  args={[
+                    ring.radius,
+                    0.028,
+                    10,
+                    128,
+                  ]}
+                />
+              </mesh>
+            )
+          )}
+
+          {/* highlight ring */}
+
+          <mesh
+            position={[
+              0,
+              0,
+              0.37,
+            ]}
+            material={
+              filamentMaterial
+            }
+          >
+            <torusGeometry
+              args={[
+                1.63,
+                0.045,
+                12,
+                128,
+              ]}
+            />
+          </mesh>
+        </group>
+
+        {/* =====================
+            FRONT FLANGE
+        ====================== */}
 
         <mesh
           position={[
@@ -281,7 +465,9 @@ function SpoolModel({
           />
         </mesh>
 
-        {/* FRONT INNER RECESS */}
+        {/* =====================
+            FRONT RECESS
+        ====================== */}
 
         <mesh
           position={[
@@ -308,7 +494,9 @@ function SpoolModel({
           />
         </mesh>
 
-        {/* CENTER HUB */}
+        {/* =====================
+            HUB
+        ====================== */}
 
         <mesh
           position={[
@@ -335,8 +523,6 @@ function SpoolModel({
             ]}
           />
         </mesh>
-
-        {/* CENTER INNER HUB */}
 
         <mesh
           position={[
@@ -366,13 +552,16 @@ function SpoolModel({
           />
         </mesh>
 
-        {/* FRONT DESIGN CUTOUTS */}
+        {/* =====================
+            FRONT CUTOUTS
+        ====================== */}
 
         {[
           0,
           Math.PI / 2,
           Math.PI,
-          Math.PI * 1.5,
+          Math.PI *
+            1.5,
         ].map(
           (
             angle,
@@ -381,24 +570,22 @@ function SpoolModel({
             const radius =
               1.48;
 
-            const x =
-              Math.cos(
-                angle
-              ) * radius;
-
-            const y =
-              Math.sin(
-                angle
-              ) * radius;
-
             return (
               <mesh
                 key={
-                  index
+                  `cutout-${index}`
                 }
                 position={[
-                  x,
-                  y,
+                  Math.cos(
+                    angle
+                  ) *
+                    radius,
+
+                  Math.sin(
+                    angle
+                  ) *
+                    radius,
+
                   0.6,
                 ]}
                 scale={[
@@ -416,9 +603,9 @@ function SpoolModel({
                 />
 
                 <meshStandardMaterial
-                  color="#03070c"
+                  color="#02060b"
                   roughness={
-                    0.6
+                    0.62
                   }
                 />
               </mesh>
@@ -426,13 +613,16 @@ function SpoolModel({
           }
         )}
 
-        {/* SMALL BOLTS */}
+        {/* =====================
+            BOLTS
+        ====================== */}
 
         {[
           0,
           Math.PI / 2,
           Math.PI,
-          Math.PI * 1.5,
+          Math.PI *
+            1.5,
         ].map(
           (
             angle,
@@ -451,10 +641,12 @@ function SpoolModel({
                     angle
                   ) *
                     radius,
+
                   Math.sin(
                     angle
                   ) *
                     radius,
+
                   0.61,
                 ]}
               >
@@ -469,10 +661,10 @@ function SpoolModel({
                 <meshStandardMaterial
                   color="#8492a5"
                   roughness={
-                    0.25
+                    0.22
                   }
                   metalness={
-                    0.8
+                    0.85
                   }
                 />
               </mesh>
@@ -481,20 +673,35 @@ function SpoolModel({
         )}
       </group>
 
-      {/* FILAMENT STRAND LEAVING SPOOL */}
+      {/* =====================
+          FILAMENT STRAND
+      ====================== */}
 
-      <FilamentStrand
-        material={
-          filamentMaterial
+      <group
+        ref={
+          strandRef
         }
-      />
+        scale={[
+          1,
+          0.2,
+          1,
+        ]}
+      >
+        <FilamentStrand
+          material={
+            filamentMaterial
+          }
+        />
+      </group>
 
-      {/* BLUE INNER LIGHT */}
+      {/* =====================
+          INNER BLUE LIGHT
+      ====================== */}
 
       <pointLight
         position={[
-          0.2,
-          0.1,
+          0.3,
+          0,
           1.5,
         ]}
         color="#397fff"
@@ -510,48 +717,56 @@ function FilamentStrand({
   material,
 }) {
   const curve =
-    useMemo(() => {
-      return new THREE.CatmullRomCurve3(
-        [
-          new THREE.Vector3(
-            1.48,
-            -0.2,
-            0.05
-          ),
+    useMemo(
+      () =>
+        new THREE.CatmullRomCurve3(
+          [
+            new THREE.Vector3(
+              1.48,
+              -0.15,
+              0.08
+            ),
 
-          new THREE.Vector3(
-            1.65,
-            -0.7,
-            0.1
-          ),
+            new THREE.Vector3(
+              1.72,
+              -0.65,
+              0.1
+            ),
 
-          new THREE.Vector3(
-            1.5,
-            -1.35,
-            0.05
-          ),
+            new THREE.Vector3(
+              1.61,
+              -1.2,
+              0.06
+            ),
 
-          new THREE.Vector3(
-            1.25,
-            -2.0,
-            0
-          ),
+            new THREE.Vector3(
+              1.42,
+              -1.85,
+              0.03
+            ),
 
-          new THREE.Vector3(
-            1.15,
-            -2.8,
-            0
-          ),
-        ]
-      );
-    }, []);
+            new THREE.Vector3(
+              1.25,
+              -2.55,
+              0
+            ),
+
+            new THREE.Vector3(
+              1.2,
+              -3.3,
+              0
+            ),
+          ]
+        ),
+      []
+    );
 
   const geometry =
     useMemo(
       () =>
         new THREE.TubeGeometry(
           curve,
-          80,
+          110,
           0.035,
           12,
           false
@@ -597,8 +812,8 @@ function SpoolScene({
       />
 
       <hemisphereLight
-        intensity={1.2}
-        color="#bcd8ff"
+        intensity={1.25}
+        color="#c4dcff"
         groundColor="#02040a"
       />
 
@@ -609,7 +824,7 @@ function SpoolScene({
           7,
         ]}
         intensity={4}
-        color="#d9e9ff"
+        color="#dcecff"
         castShadow
       />
 
@@ -649,12 +864,12 @@ function SpoolScene({
       />
 
       <Float
-        speed={1.2}
+        speed={1.1}
         rotationIntensity={
-          0.05
+          0.04
         }
         floatIntensity={
-          0.12
+          0.1
         }
       >
         <SpoolModel
@@ -670,7 +885,7 @@ function SpoolScene({
           -2.55,
           0,
         ]}
-        opacity={0.5}
+        opacity={0.52}
         scale={7}
         blur={2.5}
         far={5}
@@ -682,6 +897,23 @@ function SpoolScene({
 function FilamentSpool3D({
   scrollProgress = 0,
 }) {
+  const consumed =
+    Math.round(
+      clamp(
+        scrollProgress
+      ) *
+        100
+    );
+
+  const remaining =
+    100 -
+    Math.round(
+      clamp(
+        scrollProgress
+      ) *
+        24
+    );
+
   return (
     <div className="spool-webgl-wrapper">
       <div className="spool-webgl-glow spool-webgl-glow-one" />
@@ -713,7 +945,9 @@ function FilamentSpool3D({
         ]}
         gl={{
           antialias: true,
+
           alpha: true,
+
           powerPreference:
             "high-performance",
         }}
@@ -752,6 +986,32 @@ function FilamentSpool3D({
         </strong>
 
         <i />
+      </div>
+
+      <div className="spool-consumption-panel">
+        <div>
+          <span>
+            SPOOL
+          </span>
+
+          <strong>
+            {remaining}%
+          </strong>
+        </div>
+
+        <div className="spool-consumption-track">
+          <span
+            style={{
+              width:
+                `${remaining}%`,
+            }}
+          />
+        </div>
+
+        <small>
+          {consumed}%
+          journey complete
+        </small>
       </div>
 
       <div className="spool-webgl-bottom-label">
