@@ -1,5 +1,6 @@
 import {
   useEffect,
+  useRef,
   useState,
 } from "react";
 
@@ -11,46 +12,96 @@ function Home() {
   const [scrollProgress, setScrollProgress] =
     useState(0);
 
+  const [filamentPoint, setFilamentPoint] =
+    useState({
+      x: 0,
+      y: 0,
+      visible: false,
+    });
+
   const [menuOpen, setMenuOpen] =
     useState(false);
 
+  const filamentPathRef =
+    useRef(null);
+
   useEffect(() => {
-    function handleScroll() {
-      const documentHeight =
-        document.documentElement.scrollHeight -
+    function updateScrollEffects() {
+      const pageHeight =
+        document.documentElement
+          .scrollHeight -
         window.innerHeight;
 
-      if (documentHeight <= 0) {
-        setScrollProgress(0);
-        return;
-      }
-
       const progress =
-        window.scrollY /
-        documentHeight;
+        pageHeight > 0
+          ? window.scrollY /
+            pageHeight
+          : 0;
 
-      setScrollProgress(
+      const safeProgress =
         Math.min(
           Math.max(progress, 0),
           1
-        )
+        );
+
+      setScrollProgress(
+        safeProgress
       );
+
+      const path =
+        filamentPathRef.current;
+
+      if (path) {
+        try {
+          const totalLength =
+            path.getTotalLength();
+
+          const point =
+            path.getPointAtLength(
+              totalLength *
+                safeProgress
+            );
+
+          setFilamentPoint({
+            x: point.x,
+            y: point.y,
+            visible: true,
+          });
+        } catch {
+          setFilamentPoint(
+            (current) => ({
+              ...current,
+              visible: false,
+            })
+          );
+        }
+      }
     }
 
-    handleScroll();
+    updateScrollEffects();
 
     window.addEventListener(
       "scroll",
-      handleScroll,
+      updateScrollEffects,
       {
         passive: true,
       }
     );
 
+    window.addEventListener(
+      "resize",
+      updateScrollEffects
+    );
+
     return () => {
       window.removeEventListener(
         "scroll",
-        handleScroll
+        updateScrollEffects
+      );
+
+      window.removeEventListener(
+        "resize",
+        updateScrollEffects
       );
     };
   }, []);
@@ -72,7 +123,18 @@ function Home() {
   }
 
   const spoolRotation =
-    scrollProgress * 1100;
+    scrollProgress * 1260;
+
+  const spoolTilt =
+    Math.sin(
+      scrollProgress *
+        Math.PI *
+        3
+    ) * 3;
+
+  const filamentDashOffset =
+    1000 -
+    scrollProgress * 1000;
 
   return (
     <main
@@ -80,65 +142,164 @@ function Home() {
       style={{
         "--scroll-progress":
           scrollProgress,
+
         "--spool-rotation":
           `${spoolRotation}deg`,
+
+        "--spool-tilt":
+          `${spoolTilt}deg`,
       }}
     >
-      {/* =====================
-          BACKGROUND
-      ====================== */}
+      {/* =================================
+          GLOBAL ATMOSPHERE
+      ================================= */}
 
       <div className="home-noise" />
 
       <div className="home-grid-background" />
 
+      <div className="home-scanline" />
+
       <div className="home-orb home-orb-one" />
 
       <div className="home-orb home-orb-two" />
 
-      {/* =====================
-          FILAMENT JOURNEY
-      ====================== */}
+      <div className="home-orb home-orb-three" />
+
+      {/* =================================
+          GLOBAL FILAMENT PATH
+      ================================= */}
 
       <div
-        className="filament-journey"
+        className="global-filament-system"
         aria-hidden="true"
       >
-        <div className="filament-track">
-          <div className="filament-track-glow" />
+        <svg
+          className="global-filament-svg"
+          viewBox="0 0 1000 4000"
+          preserveAspectRatio="none"
+        >
+          <defs>
+            <linearGradient
+              id="filamentGradient"
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="1"
+            >
+              <stop
+                offset="0%"
+                stopColor="#99c7ff"
+              />
 
-          <div
-            className="filament-progress"
+              <stop
+                offset="20%"
+                stopColor="#4f95ff"
+              />
+
+              <stop
+                offset="55%"
+                stopColor="#2678ff"
+              />
+
+              <stop
+                offset="100%"
+                stopColor="#7fb2ff"
+              />
+            </linearGradient>
+
+            <filter
+              id="filamentGlow"
+              x="-100%"
+              y="-100%"
+              width="300%"
+              height="300%"
+            >
+              <feGaussianBlur
+                stdDeviation="8"
+                result="blur"
+              />
+
+              <feMerge>
+                <feMergeNode
+                  in="blur"
+                />
+
+                <feMergeNode
+                  in="SourceGraphic"
+                />
+              </feMerge>
+            </filter>
+          </defs>
+
+          <path
+            className="filament-shadow-path"
+            d="
+              M 695 150
+              C 760 380, 680 560, 565 720
+              C 390 960, 420 1210, 535 1390
+              C 690 1630, 650 1900, 485 2090
+              C 350 2240, 380 2470, 525 2660
+              C 700 2890, 645 3200, 505 3400
+              C 430 3510, 470 3710, 500 3920
+            "
+          />
+
+          <path
+            ref={
+              filamentPathRef
+            }
+            className="filament-main-path"
+            pathLength="1000"
+            d="
+              M 695 150
+              C 760 380, 680 560, 565 720
+              C 390 960, 420 1210, 535 1390
+              C 690 1630, 650 1900, 485 2090
+              C 350 2240, 380 2470, 525 2660
+              C 700 2890, 645 3200, 505 3400
+              C 430 3510, 470 3710, 500 3920
+            "
             style={{
-              height:
-                `${Math.max(
-                  scrollProgress *
-                    100,
-                  4
-                )}%`,
+              strokeDasharray:
+                1000,
+
+              strokeDashoffset:
+                filamentDashOffset,
             }}
           />
-        </div>
 
-        <div
-          className="journey-particle"
-          style={{
-            top:
-              `${Math.min(
-                94,
-                Math.max(
-                  4,
-                  scrollProgress *
-                    100
-                )
-              )}%`,
-          }}
-        />
+          {filamentPoint.visible && (
+            <>
+              <circle
+                cx={
+                  filamentPoint.x
+                }
+                cy={
+                  filamentPoint.y
+                }
+                r="17"
+                className="filament-tip-halo"
+              />
+
+              <circle
+                cx={
+                  filamentPoint.x
+                }
+                cy={
+                  filamentPoint.y
+                }
+                r="5"
+                className="filament-tip-dot"
+              />
+            </>
+          )}
+        </svg>
       </div>
 
-      {/* =====================
-          NAVBAR
-      ====================== */}
+      {/* =================================
+          NAVIGATION
+      ================================= */}
 
       <header className="home-navbar">
         <button
@@ -225,22 +386,23 @@ function Home() {
           <button
             type="button"
             className="home-mobile-menu"
+            aria-label="Toggle menu"
             onClick={() =>
               setMenuOpen(
                 !menuOpen
               )
             }
-            aria-label="Open menu"
           >
             <span />
+
             <span />
           </button>
         </div>
       </header>
 
-      {/* =====================
+      {/* =================================
           HERO
-      ====================== */}
+      ================================= */}
 
       <section
         className="home-hero"
@@ -270,9 +432,9 @@ function Home() {
             Upload your model.
             We engineer the print,
             prepare your quotation
-            and turn your digital
-            idea into something you
-            can hold.
+            and transform your
+            digital idea into a
+            physical object.
           </p>
 
           <div className="hero-buttons">
@@ -301,7 +463,7 @@ function Home() {
                 )
               }
             >
-              See how it works
+              See the process
 
               <span>
                 ↓
@@ -326,7 +488,7 @@ function Home() {
               </strong>
 
               <span>
-                Quote
+                Approve
               </span>
             </div>
 
@@ -336,43 +498,81 @@ function Home() {
               </strong>
 
               <span>
-                Print
+                Track
+              </span>
+            </div>
+
+            <div>
+              <strong>
+                04
+              </strong>
+
+              <span>
+                Receive
               </span>
             </div>
           </div>
         </div>
 
-        {/* =====================
-            HERO SPOOL
-        ====================== */}
+        {/* =================================
+            REALISTIC SPOOL
+        ================================= */}
 
         <div className="hero-machine">
+          <div className="machine-crosshair crosshair-one" />
+
+          <div className="machine-crosshair crosshair-two" />
+
           <div className="machine-data machine-data-top">
             <span>
-              MATERIAL
+              FILAMENT
             </span>
 
             <strong>
-              PLA / PETG
+              LOADED
             </strong>
           </div>
 
           <div className="machine-data machine-data-right">
             <span>
-              SYSTEM
+              MATERIAL
             </span>
 
             <strong>
-              READY
+              PLA+
             </strong>
 
             <i />
           </div>
 
-          <div className="spool-scene">
+          <div className="machine-data machine-data-bottom">
+            <span>
+              FEED RATE
+            </span>
+
+            <strong>
+              LIVE
+            </strong>
+          </div>
+
+          <div
+            className="spool-scene"
+            style={{
+              transform:
+                `rotateX(${4 + spoolTilt}deg) rotateY(${
+                  -5 +
+                  spoolTilt *
+                    0.7
+                }deg)`,
+            }}
+          >
+            <div className="spool-halo spool-halo-outer" />
+
             <div className="spool-halo spool-halo-one" />
 
             <div className="spool-halo spool-halo-two" />
+
+            <div className="spool-floor" />
 
             <div className="spool-floor-glow" />
 
@@ -383,45 +583,64 @@ function Home() {
                   `rotate(${spoolRotation}deg)`,
               }}
             >
-              <div className="spool-shadow" />
+              <div className="spool-back-depth" />
 
               <div className="spool-back-disc" />
 
               <div className="spool-filament-body">
-                <div className="filament-layer layer-one" />
-                <div className="filament-layer layer-two" />
-                <div className="filament-layer layer-three" />
-                <div className="filament-layer layer-four" />
+                <div className="filament-rib rib-1" />
+                <div className="filament-rib rib-2" />
+                <div className="filament-rib rib-3" />
+                <div className="filament-rib rib-4" />
+                <div className="filament-rib rib-5" />
+
+                <div className="filament-specular" />
               </div>
 
+              <div className="spool-side-depth" />
+
               <div className="spool-front-disc">
+                <div className="spool-surface-highlight" />
+
                 <div className="spool-window window-one" />
+
                 <div className="spool-window window-two" />
+
                 <div className="spool-window window-three" />
+
                 <div className="spool-window window-four" />
 
-                <div className="spool-center">
-                  <div>
-                    <span>
-                      BEYOND
-                    </span>
+                <div className="spool-bolt bolt-one" />
+                <div className="spool-bolt bolt-two" />
+                <div className="spool-bolt bolt-three" />
+                <div className="spool-bolt bolt-four" />
 
-                    <small>
-                      FILAMENT
-                    </small>
+                <div className="spool-center">
+                  <div className="spool-center-ring">
+                    <div>
+                      <span>
+                        BEYOND
+                      </span>
+
+                      <small>
+                        MATERIAL
+                      </small>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="filament-exit">
-              <div className="filament-exit-glow" />
+            <div className="physical-filament-exit">
+              <div className="physical-filament-core" />
+
+              <div className="physical-filament-shine" />
             </div>
           </div>
 
           <div className="hero-scroll-indicator">
             <span>
-              SCROLL TO FEED
+              SCROLL
             </span>
 
             <div className="scroll-indicator-line">
@@ -431,22 +650,42 @@ function Home() {
         </div>
       </section>
 
-      {/* =====================
-          TRANSITION
-      ====================== */}
+      {/* =================================
+          MATERIAL TRANSFORMATION
+      ================================= */}
 
       <section className="material-transition">
-        <div className="transition-label">
+        <div className="transition-top">
+          <span>
+            1.75 MM FILAMENT
+          </span>
+
+          <span className="transition-live">
+            <i />
+
+            FEED ACTIVE
+          </span>
+        </div>
+
+        <div className="transition-main">
           <span>
             RAW MATERIAL
           </span>
 
           <strong>
-            becomes
+            →
           </strong>
 
           <span>
-            YOUR OBJECT
+            DIGITAL INSTRUCTION
+          </span>
+
+          <strong>
+            →
+          </strong>
+
+          <span>
+            PHYSICAL OBJECT
           </span>
         </div>
 
@@ -455,50 +694,52 @@ function Home() {
         </div>
       </section>
 
-      {/* =====================
+      {/* =================================
           HOW IT WORKS
-      ====================== */}
+      ================================= */}
 
       <section
         className="home-how"
         id="how"
       >
+        <div className="section-side-label">
+          PROCESS
+        </div>
+
         <div className="home-section-heading">
           <div className="section-index">
-            01 / PROCESS
+            01 / HOW IT WORKS
           </div>
 
           <h2>
-            One continuous
+            The filament
             <br />
 
             <span>
-              path from file to reality.
+              keeps moving.
             </span>
           </h2>
 
           <p>
-            No confusing quoting
-            process. No endless
-            messages. Upload the
-            project and follow it
-            from submission to
-            completion.
+            Your project follows
+            one connected workflow.
+            Upload it, receive your
+            quotation, approve it
+            and track production
+            until completion.
           </p>
         </div>
 
         <div className="process-track">
-          <div className="process-filament-line" />
+          <article className="process-card">
+            <div className="process-card-beam" />
 
-          <article className="process-card process-card-one">
             <div className="process-number">
               01
             </div>
 
             <div className="process-icon">
-              <span>
-                ↑
-              </span>
+              ↑
             </div>
 
             <h3>
@@ -506,25 +747,25 @@ function Home() {
             </h3>
 
             <p>
-              Send your STL,
-              3MF, OBJ, STEP
-              or reference file.
+              Send us your STL,
+              3MF, OBJ, STEP or
+              reference file.
             </p>
 
             <div className="process-meta">
-              DIGITAL INPUT
+              INPUT
             </div>
           </article>
 
-          <article className="process-card process-card-two">
+          <article className="process-card">
+            <div className="process-card-beam" />
+
             <div className="process-number">
               02
             </div>
 
             <div className="process-icon">
-              <span>
-                ◇
-              </span>
+              ◇
             </div>
 
             <h3>
@@ -532,26 +773,26 @@ function Home() {
             </h3>
 
             <p>
-              We inspect your
-              model, material,
-              dimensions and
-              print requirements.
+              We inspect geometry,
+              material, quantity
+              and production
+              requirements.
             </p>
 
             <div className="process-meta">
-              HUMAN REVIEW
+              ENGINEERING
             </div>
           </article>
 
-          <article className="process-card process-card-three">
+          <article className="process-card">
+            <div className="process-card-beam" />
+
             <div className="process-number">
               03
             </div>
 
             <div className="process-icon">
-              <span>
-                ₪
-              </span>
+              ₪
             </div>
 
             <h3>
@@ -559,26 +800,25 @@ function Home() {
             </h3>
 
             <p>
-              Receive a clear
-              quotation and
-              approve it directly
-              online.
+              Receive your quote
+              by email and approve
+              it securely online.
             </p>
 
             <div className="process-meta">
-              SECURE QUOTE
+              QUOTATION
             </div>
           </article>
 
-          <article className="process-card process-card-four">
+          <article className="process-card">
+            <div className="process-card-beam" />
+
             <div className="process-number">
               04
             </div>
 
             <div className="process-icon">
-              <span>
-                ✦
-              </span>
+              ✦
             </div>
 
             <h3>
@@ -586,45 +826,52 @@ function Home() {
             </h3>
 
             <p>
-              Your idea becomes
-              physical while you
-              track production
-              live.
+              Production begins
+              and you can track
+              every stage online.
             </p>
 
             <div className="process-meta">
-              PHYSICAL OUTPUT
+              OUTPUT
             </div>
           </article>
         </div>
       </section>
 
-      {/* =====================
+      {/* =================================
           CAPABILITIES
-      ====================== */}
+      ================================= */}
 
       <section
         className="home-capabilities"
         id="capabilities"
       >
+        <div className="section-side-label">
+          CAPABILITIES
+        </div>
+
         <div className="capabilities-copy">
-          <div className="section-index">
-            02 / CAPABILITIES
+          <div>
+            <div className="section-index">
+              02 / WHAT WE MAKE
+            </div>
+
+            <h2>
+              Built for
+              <br />
+
+              <span>
+                ideas with purpose.
+              </span>
+            </h2>
           </div>
 
-          <h2>
-            Designed for
-            <span>
-              {" "}
-              real-world ideas.
-            </span>
-          </h2>
-
           <p>
-            From a single prototype
-            to custom branded
+            Prototypes, custom
+            products, branded
             objects and functional
-            parts.
+            components — produced
+            from your digital files.
           </p>
         </div>
 
@@ -636,11 +883,15 @@ function Home() {
               </span>
 
               <small>
-                PROTOTYPING
+                RAPID PROTOTYPING
               </small>
             </div>
 
             <div className="prototype-object">
+              <div className="prototype-laser laser-one" />
+
+              <div className="prototype-laser laser-two" />
+
               <div className="prototype-cube cube-back" />
 
               <div className="prototype-cube cube-main">
@@ -659,7 +910,7 @@ function Home() {
                 Turn concepts,
                 mechanisms and
                 product ideas into
-                testable physical
+                tangible testable
                 parts.
               </p>
             </div>
@@ -680,15 +931,18 @@ function Home() {
               ✦
             </div>
 
-            <h3>
-              Custom objects
-            </h3>
+            <div>
+              <h3>
+                Custom objects.
+              </h3>
 
-            <p>
-              Personalized products,
-              signage, gifts and
-              one-off creations.
-            </p>
+              <p>
+                Personalized
+                products, gifts,
+                signage and
+                unique creations.
+              </p>
+            </div>
           </article>
 
           <article className="capability-card">
@@ -706,16 +960,18 @@ function Home() {
               ◫
             </div>
 
-            <h3>
-              Branded production
-            </h3>
+            <div>
+              <h3>
+                Branded production.
+              </h3>
 
-            <p>
-              NFC products,
-              displays, branded
-              objects and small
-              production runs.
-            </p>
+              <p>
+                NFC products,
+                displays, branded
+                objects and small
+                production runs.
+              </p>
+            </div>
           </article>
 
           <article className="capability-card capability-wide">
@@ -726,13 +982,13 @@ function Home() {
                 </span>
 
                 <small>
-                  MATERIALS
+                  MATERIAL SYSTEM
                 </small>
               </div>
 
               <h3>
-                Material matched
-                to the project.
+                The right material
+                for every build.
               </h3>
             </div>
 
@@ -761,9 +1017,9 @@ function Home() {
         </div>
       </section>
 
-      {/* =====================
-          START PROJECT
-      ====================== */}
+      {/* =================================
+          START PROJECT / NOZZLE
+      ================================= */}
 
       <section
         className="home-start-project"
@@ -771,44 +1027,67 @@ function Home() {
       >
         <div className="start-project-light" />
 
+        <div className="section-side-label">
+          BUILD
+        </div>
+
         <div className="start-project-heading">
           <div>
             <div className="section-index">
-              03 / START
+              03 / START PROJECT
             </div>
 
             <h2>
-              Feed us
+              The filament
               <br />
 
               <span>
-                your idea.
+                reaches you.
               </span>
             </h2>
           </div>
 
           <p>
-            Upload your project
-            and tell us what you
-            need. We’ll review it
-            and prepare your
-            quotation.
+            Upload your project.
+            We’ll review the file
+            and send you a clear
+            quotation before
+            production starts.
           </p>
         </div>
 
         <div className="filament-terminal">
+          <div className="terminal-feed-light" />
+
           <div className="terminal-line" />
 
           <div className="terminal-nozzle">
-            <div className="nozzle-top" />
+            <div className="nozzle-heatsink">
+              <i />
+              <i />
+              <i />
+              <i />
+            </div>
+
+            <div className="nozzle-block" />
+
             <div className="nozzle-body" />
+
             <div className="nozzle-tip" />
           </div>
 
+          <div className="terminal-print-glow" />
+
           <div className="terminal-print">
-            <div className="print-layer print-layer-one" />
-            <div className="print-layer print-layer-two" />
-            <div className="print-layer print-layer-three" />
+            <div className="print-layer layer-a" />
+            <div className="print-layer layer-b" />
+            <div className="print-layer layer-c" />
+            <div className="print-layer layer-d" />
+            <div className="print-layer layer-e" />
+          </div>
+
+          <div className="terminal-bed">
+            <div className="terminal-bed-grid" />
           </div>
         </div>
 
@@ -817,14 +1096,17 @@ function Home() {
         </div>
       </section>
 
-      {/* =====================
+      {/* =================================
           FINAL CTA
-      ====================== */}
+      ================================= */}
 
       <section
         className="home-final-cta"
         id="contact"
       >
+        <div className="final-cta-ring ring-a" />
+        <div className="final-cta-ring ring-b" />
+
         <div className="final-cta-glow" />
 
         <div className="section-index">
@@ -832,16 +1114,16 @@ function Home() {
         </div>
 
         <h2>
-          Something in
+          Your next object
           <br />
 
           <span>
-            your head?
+            starts as an idea.
           </span>
         </h2>
 
         <p>
-          Make it physical.
+          Send it through.
         </p>
 
         <button
@@ -861,9 +1143,9 @@ function Home() {
         </button>
       </section>
 
-      {/* =====================
+      {/* =================================
           FOOTER
-      ====================== */}
+      ================================= */}
 
       <footer className="home-footer">
         <div className="footer-brand">
@@ -872,9 +1154,11 @@ function Home() {
 
         <div className="footer-center">
           DIGITAL
+
           <span>
             →
           </span>
+
           PHYSICAL
         </div>
 
