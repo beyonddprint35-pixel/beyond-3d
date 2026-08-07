@@ -1,5 +1,6 @@
 import {
   useEffect,
+  useMemo,
   useState,
 } from "react";
 
@@ -50,7 +51,6 @@ function formatFileSize(bytes) {
 
 function OrderDetails() {
   const { id } = useParams();
-
   const navigate = useNavigate();
 
   const [order, setOrder] =
@@ -64,6 +64,27 @@ function OrderDetails() {
 
   const [error, setError] =
     useState("");
+
+  const [savingQuote, setSavingQuote] =
+    useState(false);
+
+  const [quoteMessage, setQuoteMessage] =
+    useState("");
+
+  const [filamentGrams, setFilamentGrams] =
+    useState("");
+
+  const [printHours, setPrintHours] =
+    useState("");
+
+  const [pricePerGram, setPricePerGram] =
+    useState("1");
+
+  const [extraCharge, setExtraCharge] =
+    useState("0");
+
+  const [deliveryCharge, setDeliveryCharge] =
+    useState("0");
 
   useEffect(() => {
     async function loadOrder() {
@@ -119,6 +140,31 @@ function OrderDetails() {
         setFileUrl(
           data.fileUrl || null
         );
+
+        setFilamentGrams(
+          data.order.filament_grams ??
+            ""
+        );
+
+        setPrintHours(
+          data.order.print_hours ??
+            ""
+        );
+
+        setPricePerGram(
+          data.order.price_per_gram ??
+            "1"
+        );
+
+        setExtraCharge(
+          data.order.extra_charge ??
+            "0"
+        );
+
+        setDeliveryCharge(
+          data.order.delivery_charge ??
+            "0"
+        );
       } catch (err) {
         console.error(err);
 
@@ -133,6 +179,144 @@ function OrderDetails() {
 
     loadOrder();
   }, [id, navigate]);
+
+  const quoteTotal =
+    useMemo(() => {
+      const grams =
+        Number(filamentGrams || 0);
+
+      const gramPrice =
+        Number(pricePerGram || 0);
+
+      const extras =
+        Number(extraCharge || 0);
+
+      const delivery =
+        Number(deliveryCharge || 0);
+
+      return (
+        grams * gramPrice +
+        extras +
+        delivery
+      );
+    }, [
+      filamentGrams,
+      pricePerGram,
+      extraCharge,
+      deliveryCharge,
+    ]);
+
+  const basePrice =
+    useMemo(() => {
+      return (
+        Number(filamentGrams || 0) *
+        Number(pricePerGram || 0)
+      );
+    }, [
+      filamentGrams,
+      pricePerGram,
+    ]);
+
+  async function saveQuote() {
+    const password =
+      sessionStorage.getItem(
+        "beyond_admin_password"
+      );
+
+    if (!password) {
+      navigate("/admin");
+      return;
+    }
+
+    try {
+      setSavingQuote(true);
+      setQuoteMessage("");
+
+      const response =
+        await fetch(
+          "/.netlify/functions/save-quote",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+
+              "x-admin-password":
+                password,
+            },
+
+            body: JSON.stringify({
+              orderId: id,
+
+              filamentGrams:
+                Number(
+                  filamentGrams || 0
+                ),
+
+              printHours:
+                Number(
+                  printHours || 0
+                ),
+
+              pricePerGram:
+                Number(
+                  pricePerGram || 1
+                ),
+
+              extraCharge:
+                Number(
+                  extraCharge || 0
+                ),
+
+              deliveryCharge:
+                Number(
+                  deliveryCharge || 0
+                ),
+
+              quoteTotal:
+                quoteTotal,
+            }),
+          }
+        );
+
+      const data =
+        await response.json();
+
+      if (
+        response.status === 401
+      ) {
+        sessionStorage.removeItem(
+          "beyond_admin_password"
+        );
+
+        navigate("/admin");
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+            "Could not save quote."
+        );
+      }
+
+      setOrder(data.order);
+
+      setQuoteMessage(
+        "Quote saved successfully."
+      );
+    } catch (err) {
+      console.error(err);
+
+      setQuoteMessage(
+        err.message ||
+          "Unable to save quote."
+      );
+    } finally {
+      setSavingQuote(false);
+    }
+  }
 
   if (loading) {
     return (
@@ -310,7 +494,6 @@ function OrderDetails() {
         </article>
 
         <article className="order-detail-card order-wide-card">
-
           <h2>
             Uploaded Model
           </h2>
@@ -346,6 +529,213 @@ function OrderDetails() {
                 No file
               </span>
             )}
+
+          </div>
+        </article>
+
+        <article className="order-detail-card order-wide-card quote-card">
+
+          <div className="quote-header">
+            <div>
+              <div className="section-kicker">
+                QUOTATION
+              </div>
+
+              <h2>
+                Build the customer quote
+              </h2>
+            </div>
+
+            <span className="quote-status-badge">
+              {order.quote_status ||
+                "Not Created"}
+            </span>
+          </div>
+
+          <div className="quote-layout">
+
+            <div className="quote-form">
+
+              <label>
+                <span>
+                  Filament used
+                </span>
+
+                <div className="quote-input-wrap">
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={filamentGrams}
+                    onChange={(event) =>
+                      setFilamentGrams(
+                        event.target.value
+                      )
+                    }
+                    placeholder="120"
+                  />
+
+                  <small>grams</small>
+                </div>
+              </label>
+
+              <label>
+                <span>
+                  Print time
+                </span>
+
+                <div className="quote-input-wrap">
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    value={printHours}
+                    onChange={(event) =>
+                      setPrintHours(
+                        event.target.value
+                      )
+                    }
+                    placeholder="4.5"
+                  />
+
+                  <small>hours</small>
+                </div>
+              </label>
+
+              <label>
+                <span>
+                  Price per gram
+                </span>
+
+                <div className="quote-input-wrap">
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={pricePerGram}
+                    onChange={(event) =>
+                      setPricePerGram(
+                        event.target.value
+                      )
+                    }
+                  />
+
+                  <small>₪ / g</small>
+                </div>
+              </label>
+
+              <label>
+                <span>
+                  Extra charge
+                </span>
+
+                <div className="quote-input-wrap">
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={extraCharge}
+                    onChange={(event) =>
+                      setExtraCharge(
+                        event.target.value
+                      )
+                    }
+                  />
+
+                  <small>₪</small>
+                </div>
+              </label>
+
+              <label>
+                <span>
+                  Delivery
+                </span>
+
+                <div className="quote-input-wrap">
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={deliveryCharge}
+                    onChange={(event) =>
+                      setDeliveryCharge(
+                        event.target.value
+                      )
+                    }
+                  />
+
+                  <small>₪</small>
+                </div>
+              </label>
+
+            </div>
+
+            <div className="quote-summary">
+
+              <div className="quote-summary-row">
+                <span>
+                  Material
+                </span>
+
+                <strong>
+                  ₪{basePrice.toFixed(2)}
+                </strong>
+              </div>
+
+              <div className="quote-summary-row">
+                <span>
+                  Extra charge
+                </span>
+
+                <strong>
+                  ₪{Number(
+                    extraCharge || 0
+                  ).toFixed(2)}
+                </strong>
+              </div>
+
+              <div className="quote-summary-row">
+                <span>
+                  Delivery
+                </span>
+
+                <strong>
+                  ₪{Number(
+                    deliveryCharge || 0
+                  ).toFixed(2)}
+                </strong>
+              </div>
+
+              <div className="quote-divider" />
+
+              <div className="quote-total">
+                <span>
+                  TOTAL
+                </span>
+
+                <strong>
+                  ₪{quoteTotal.toFixed(2)}
+                </strong>
+              </div>
+
+              <button
+                type="button"
+                className="primary-button quote-save-button"
+                onClick={saveQuote}
+                disabled={savingQuote}
+              >
+                {savingQuote
+                  ? "Saving..."
+                  : "Save Quote"}
+              </button>
+
+              {quoteMessage && (
+                <div className="quote-message">
+                  {quoteMessage}
+                </div>
+              )}
+
+            </div>
 
           </div>
 
