@@ -1,0 +1,312 @@
+.printed-object-wrapper {
+  width: min(
+    720px,
+    100%
+  );
+
+  height: 440px;
+
+  margin:
+    0 auto 45px;
+
+  position: relative;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.07
+    );
+
+  border-radius: 28px;
+
+  background:
+    radial-gradient(
+      circle at 50% 60%,
+      rgba(
+        37,
+        111,
+        236,
+        0.12
+      ),
+      transparent 48%
+    ),
+    #02050a;
+
+  box-shadow:
+    0 40px 100px
+    rgba(
+      0,
+      0,
+      0,
+      0.25
+    );
+}
+
+.printed-object-canvas {
+  position: absolute !important;
+
+  inset: 0;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  z-index: 3;
+}
+
+/* =========================
+   HALFTONE
+========================= */
+
+.printed-halftone {
+  position: absolute;
+
+  z-index: 2;
+
+  pointer-events: none;
+
+  background-image:
+    radial-gradient(
+      circle,
+      rgba(
+        86,
+        157,
+        255,
+        0.55
+      )
+      1px,
+      transparent 1.6px
+    );
+
+  background-size:
+    9px 9px;
+}
+
+.printed-halftone-one {
+  width: 260px;
+  height: 260px;
+
+  right: -40px;
+  top: -25px;
+
+  transform:
+    rotate(11deg);
+
+  mask-image:
+    radial-gradient(
+      circle,
+      black,
+      transparent 70%
+    );
+}
+
+.printed-halftone-two {
+  width: 220px;
+  height: 220px;
+
+  left: -35px;
+  bottom: -20px;
+
+  opacity: 0.18;
+
+  background-image:
+    radial-gradient(
+      circle,
+      rgba(
+        255,
+        55,
+        124,
+        0.8
+      )
+      1px,
+      transparent 1.6px
+    );
+
+  mask-image:
+    radial-gradient(
+      circle,
+      black,
+      transparent 70%
+    );
+}
+
+/* =========================
+   COMIC WORD
+========================= */
+
+.printed-comic-word {
+  position: absolute;
+
+  right: 28px;
+  top: 27px;
+
+  z-index: 5;
+
+  transform:
+    rotate(-7deg);
+
+  color: #ffffff;
+
+  font-family:
+    "Space Grotesk",
+    sans-serif;
+
+  font-size: 27px;
+
+  font-weight: 800;
+
+  font-style: italic;
+
+  letter-spacing: -2px;
+
+  text-shadow:
+    4px 4px 0
+      rgba(
+        255,
+        54,
+        122,
+        0.38
+      ),
+    -3px -2px 0
+      rgba(
+        38,
+        111,
+        255,
+        0.35
+      );
+}
+
+/* =========================
+   PROGRESS
+========================= */
+
+.printed-progress {
+  position: absolute;
+
+  left: 25px;
+  bottom: 24px;
+
+  z-index: 6;
+
+  width: 180px;
+
+  padding: 13px;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.08
+    );
+
+  border-radius: 9px;
+
+  background:
+    rgba(
+      4,
+      10,
+      18,
+      0.72
+    );
+
+  backdrop-filter:
+    blur(15px);
+
+  box-shadow:
+    -5px 5px 0
+    rgba(
+      36,
+      102,
+      214,
+      0.1
+    );
+}
+
+.printed-progress > div:first-child {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+}
+
+.printed-progress span {
+  color: #60789a;
+
+  font-size: 7px;
+
+  letter-spacing: 1.5px;
+}
+
+.printed-progress strong {
+  color: #a7caff;
+
+  font-size: 11px;
+}
+
+.printed-progress-track {
+  height: 3px;
+
+  margin-top: 9px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.08
+    );
+
+  overflow: hidden;
+}
+
+.printed-progress-track span {
+  display: block;
+
+  height: 100%;
+
+  background:
+    linear-gradient(
+      90deg,
+      #2b76ff,
+      #8ec7ff
+    );
+
+  box-shadow:
+    0 0 10px
+      rgba(
+        50,
+        132,
+        255,
+        0.6
+      );
+}
+
+@media (
+  max-width: 700px
+) {
+  .printed-object-wrapper {
+    height: 355px;
+
+    border-radius: 20px;
+  }
+
+  .printed-comic-word {
+    font-size: 20px;
+
+    right: 18px;
+  }
+
+  .printed-progress {
+    left: 15px;
+    bottom: 15px;
+
+    width: 155px;
+  }
+}

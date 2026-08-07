@@ -8,6 +8,8 @@ import UploadProject from "../components/UploadProject";
 
 import FilamentSpool3D from "../components/FilamentSpool3D";
 
+import PrintedObject3D from "../components/PrintedObject3D";
+
 import "./Home.css";
 
 function Home() {
@@ -146,6 +148,44 @@ function Home() {
     1000 -
     scrollProgress *
       1000;
+
+  const processSteps = [
+    {
+      number: "01",
+      icon: "↑",
+      title: "Upload",
+      text:
+        "Send us your STL, 3MF, OBJ, STEP or reference file.",
+      meta: "INPUT",
+    },
+
+    {
+      number: "02",
+      icon: "◇",
+      title: "Review",
+      text:
+        "We inspect geometry, material, quantity and production requirements.",
+      meta: "ENGINEERING",
+    },
+
+    {
+      number: "03",
+      icon: "₪",
+      title: "Approve",
+      text:
+        "Receive your quote by email and approve it securely online.",
+      meta: "QUOTATION",
+    },
+
+    {
+      number: "04",
+      icon: "✦",
+      title: "Print",
+      text:
+        "Production begins and you can track every stage online.",
+      meta: "OUTPUT",
+    },
+  ];
 
   return (
     <main
@@ -296,7 +336,7 @@ function Home() {
         </svg>
       </div>
 
-      {/* NAVBAR */}
+      {/* NAV */}
 
       <header className="home-navbar">
         <button
@@ -518,7 +558,7 @@ function Home() {
         </div>
       </section>
 
-      {/* MATERIAL TRANSITION */}
+      {/* MATERIAL */}
 
       <section className="material-transition">
         <div className="transition-top">
@@ -595,78 +635,8 @@ function Home() {
         </div>
 
         <div className="process-track">
-          {[
-            {
-              number:
-                "01",
-
-              icon:
-                "↑",
-
-              title:
-                "Upload",
-
-              text:
-                "Send us your STL, 3MF, OBJ, STEP or reference file.",
-
-              meta:
-                "INPUT",
-            },
-
-            {
-              number:
-                "02",
-
-              icon:
-                "◇",
-
-              title:
-                "Review",
-
-              text:
-                "We inspect geometry, material, quantity and production requirements.",
-
-              meta:
-                "ENGINEERING",
-            },
-
-            {
-              number:
-                "03",
-
-              icon:
-                "₪",
-
-              title:
-                "Approve",
-
-              text:
-                "Receive your quote by email and approve it securely online.",
-
-              meta:
-                "QUOTATION",
-            },
-
-            {
-              number:
-                "04",
-
-              icon:
-                "✦",
-
-              title:
-                "Print",
-
-              text:
-                "Production begins and you can track every stage online.",
-
-              meta:
-                "OUTPUT",
-            },
-          ].map(
-            (
-              step
-            ) => (
+          {processSteps.map(
+            (step) => (
               <article
                 className="process-card"
                 key={
@@ -863,25 +833,11 @@ function Home() {
             </div>
 
             <div className="material-pills">
-              <span>
-                PLA
-              </span>
-
-              <span>
-                PLA+
-              </span>
-
-              <span>
-                PETG
-              </span>
-
-              <span>
-                PLA-CF
-              </span>
-
-              <span>
-                MULTICOLOR
-              </span>
+              <span>PLA</span>
+              <span>PLA+</span>
+              <span>PETG</span>
+              <span>PLA-CF</span>
+              <span>MULTICOLOR</span>
             </div>
           </article>
         </div>
@@ -906,65 +862,36 @@ function Home() {
             </div>
 
             <h2>
-              The filament
+              Watch it
               <br />
 
               <span>
-                reaches you.
+                become real.
               </span>
             </h2>
           </div>
 
           <p>
-            Upload your project.
-            We’ll review the file
-            and send you a clear
-            quotation before
-            production starts.
+            The same filament that
+            started at the top now
+            becomes the finished
+            object — one printed
+            layer at a time.
           </p>
         </div>
 
-        <div className="filament-terminal">
-          <div className="terminal-feed-light" />
-
-          <div className="terminal-line" />
-
-          <div className="terminal-nozzle">
-            <div className="nozzle-heatsink">
-              <i />
-              <i />
-              <i />
-              <i />
-            </div>
-
-            <div className="nozzle-block" />
-
-            <div className="nozzle-body" />
-
-            <div className="nozzle-tip" />
-          </div>
-
-          <div className="terminal-print-glow" />
-
-          <div className="terminal-print">
-            <div className="print-layer layer-a" />
-            <div className="print-layer layer-b" />
-            <div className="print-layer layer-c" />
-            <div className="print-layer layer-d" />
-            <div className="print-layer layer-e" />
-          </div>
-
-          <div className="terminal-bed">
-            <div className="terminal-bed-grid" />
-          </div>
-        </div>
+        <PrintedObject3D
+          scrollProgress={
+            scrollProgress
+          }
+        />
 
         <div className="home-upload-wrapper">
           <UploadProject />
         </div>
       </section>
 
-      {/* FINAL CTA */}
+      {/* FINAL */}
 
       <section
         className="home-final-cta"
