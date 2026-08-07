@@ -359,7 +359,7 @@ function OrderDetails() {
 
             orderId:
     order.id,
-    
+
               customerName:
                 order.customer_name,
 
@@ -399,9 +399,15 @@ function OrderDetails() {
         );
       }
 
-      setQuoteMessage(
-        "Quote sent successfully to the customer."
-      );
+      ssetOrder((currentOrder) => ({
+  ...currentOrder,
+  status: "Quoted",
+  quote_status: "Sent",
+}));
+
+setQuoteMessage(
+  "Quote sent successfully to the customer."
+);
     } catch (err) {
       console.error(err);
 

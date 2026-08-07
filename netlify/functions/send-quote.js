@@ -252,7 +252,52 @@ const acceptUrl =
         }),
       };
     }
+const supabaseUrl =
+  process.env.SUPABASE_URL;
 
+const serviceKey =
+  process.env.SUPABASE_SECRET_KEY;
+
+if (supabaseUrl && serviceKey) {
+  const updateResponse =
+    await fetch(
+      `${supabaseUrl}/rest/v1/orders?id=eq.${encodeURIComponent(
+        orderId
+      )}`,
+      {
+        method: "PATCH",
+
+        headers: {
+          apikey:
+            serviceKey,
+
+          Authorization:
+            `Bearer ${serviceKey}`,
+
+          "Content-Type":
+            "application/json",
+
+          Prefer:
+            "return=minimal",
+        },
+
+        body: JSON.stringify({
+          status: "Quoted",
+          quote_status: "Sent",
+        }),
+      }
+    );
+
+  if (!updateResponse.ok) {
+    const updateError =
+      await updateResponse.text();
+
+    console.error(
+      "Quote status update failed:",
+      updateError
+    );
+  }
+}
     return {
       statusCode: 200,
 
