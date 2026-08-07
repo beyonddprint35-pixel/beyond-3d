@@ -605,17 +605,14 @@
         .querySelectorAll(".view-button")
         .forEach((button) => {
           button.addEventListener(
-            "click",
-            () => {
-              const id =
-                button.dataset.orderId;
+  "click",
+  () => {
+    const id = button.dataset.orderId;
 
-              alert(
-                "Order details page comes next.\\n\\nOrder ID:\\n" +
-                id
-              );
-            }
-          );
+    window.location.href =
+      `order.html?id=${encodeURIComponent(id)}`;
+  }
+);
         });
     }
 
