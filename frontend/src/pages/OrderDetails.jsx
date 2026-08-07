@@ -68,6 +68,9 @@ function OrderDetails() {
   const [savingQuote, setSavingQuote] =
     useState(false);
 
+  const [sendingQuote, setSendingQuote] =
+    useState(false);
+
   const [quoteMessage, setQuoteMessage] =
     useState("");
 
@@ -118,9 +121,7 @@ function OrderDetails() {
         const data =
           await response.json();
 
-        if (
-          response.status === 401
-        ) {
+        if (response.status === 401) {
           sessionStorage.removeItem(
             "beyond_admin_password"
           );
@@ -137,6 +138,7 @@ function OrderDetails() {
         }
 
         setOrder(data.order);
+
         setFileUrl(
           data.fileUrl || null
         );
@@ -180,32 +182,6 @@ function OrderDetails() {
     loadOrder();
   }, [id, navigate]);
 
-  const quoteTotal =
-    useMemo(() => {
-      const grams =
-        Number(filamentGrams || 0);
-
-      const gramPrice =
-        Number(pricePerGram || 0);
-
-      const extras =
-        Number(extraCharge || 0);
-
-      const delivery =
-        Number(deliveryCharge || 0);
-
-      return (
-        grams * gramPrice +
-        extras +
-        delivery
-      );
-    }, [
-      filamentGrams,
-      pricePerGram,
-      extraCharge,
-      deliveryCharge,
-    ]);
-
   const basePrice =
     useMemo(() => {
       return (
@@ -215,6 +191,25 @@ function OrderDetails() {
     }, [
       filamentGrams,
       pricePerGram,
+    ]);
+
+  const quoteTotal =
+    useMemo(() => {
+      const extras =
+        Number(extraCharge || 0);
+
+      const delivery =
+        Number(deliveryCharge || 0);
+
+      return (
+        basePrice +
+        extras +
+        delivery
+      );
+    }, [
+      basePrice,
+      extraCharge,
+      deliveryCharge,
     ]);
 
   async function saveQuote() {
@@ -274,8 +269,7 @@ function OrderDetails() {
                   deliveryCharge || 0
                 ),
 
-              quoteTotal:
-                quoteTotal,
+              quoteTotal,
             }),
           }
         );
@@ -283,9 +277,7 @@ function OrderDetails() {
       const data =
         await response.json();
 
-      if (
-        response.status === 401
-      ) {
+      if (response.status === 401) {
         sessionStorage.removeItem(
           "beyond_admin_password"
         );
@@ -318,6 +310,106 @@ function OrderDetails() {
     }
   }
 
+  async function sendQuote() {
+    const password =
+      sessionStorage.getItem(
+        "beyond_admin_password"
+      );
+
+    if (!password) {
+      navigate("/admin");
+      return;
+    }
+
+    if (!order?.email) {
+      setQuoteMessage(
+        "Customer email is missing."
+      );
+
+      return;
+    }
+
+    if (quoteTotal <= 0) {
+      setQuoteMessage(
+        "Please create a quotation before sending it."
+      );
+
+      return;
+    }
+
+    try {
+      setSendingQuote(true);
+      setQuoteMessage("");
+
+      const response =
+        await fetch(
+          "/.netlify/functions/send-quote",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+
+              "x-admin-password":
+                password,
+            },
+
+            body: JSON.stringify({
+              customerName:
+                order.customer_name,
+
+              customerEmail:
+                order.email,
+
+              orderNumber:
+                makeOrderNumber(order.id),
+
+              material:
+                order.material,
+
+              quantity:
+                order.quantity,
+
+              quoteTotal,
+            }),
+          }
+        );
+
+      const data =
+        await response.json();
+
+      if (response.status === 401) {
+        sessionStorage.removeItem(
+          "beyond_admin_password"
+        );
+
+        navigate("/admin");
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+            "Could not send quote."
+        );
+      }
+
+      setQuoteMessage(
+        "Quote sent successfully to the customer."
+      );
+    } catch (err) {
+      console.error(err);
+
+      setQuoteMessage(
+        err.message ||
+          "Unable to send quote."
+      );
+    } finally {
+      setSendingQuote(false);
+    }
+  }
+
   if (loading) {
     return (
       <main className="order-details-page">
@@ -347,7 +439,6 @@ function OrderDetails() {
 
   return (
     <main className="order-details-page">
-
       <header className="order-details-topbar">
         <div className="logo">
           BEYOND
@@ -362,7 +453,6 @@ function OrderDetails() {
       </header>
 
       <section className="order-details-heading">
-
         <div>
           <div className="section-kicker">
             ORDER
@@ -377,18 +467,15 @@ function OrderDetails() {
           {order.status ||
             "Submitted"}
         </span>
-
       </section>
 
       <section className="order-details-grid">
-
         <article className="order-detail-card">
           <h2>
             Customer
           </h2>
 
           <div className="order-info-grid">
-
             <div>
               <span>Name</span>
 
@@ -425,7 +512,6 @@ function OrderDetails() {
                 )}
               </strong>
             </div>
-
           </div>
         </article>
 
@@ -435,7 +521,6 @@ function OrderDetails() {
           </h2>
 
           <div className="order-info-grid">
-
             <div>
               <span>
                 Project type
@@ -478,7 +563,6 @@ function OrderDetails() {
                 {order.quantity || 1}
               </strong>
             </div>
-
           </div>
         </article>
 
@@ -499,7 +583,6 @@ function OrderDetails() {
           </h2>
 
           <div className="order-file-box">
-
             <div>
               <strong>
                 {order.file_name ||
@@ -529,12 +612,10 @@ function OrderDetails() {
                 No file
               </span>
             )}
-
           </div>
         </article>
 
         <article className="order-detail-card order-wide-card quote-card">
-
           <div className="quote-header">
             <div>
               <div className="section-kicker">
@@ -553,9 +634,7 @@ function OrderDetails() {
           </div>
 
           <div className="quote-layout">
-
             <div className="quote-form">
-
               <label>
                 <span>
                   Filament used
@@ -575,7 +654,9 @@ function OrderDetails() {
                     placeholder="120"
                   />
 
-                  <small>grams</small>
+                  <small>
+                    grams
+                  </small>
                 </div>
               </label>
 
@@ -598,7 +679,9 @@ function OrderDetails() {
                     placeholder="4.5"
                   />
 
-                  <small>hours</small>
+                  <small>
+                    hours
+                  </small>
                 </div>
               </label>
 
@@ -620,7 +703,9 @@ function OrderDetails() {
                     }
                   />
 
-                  <small>₪ / g</small>
+                  <small>
+                    ₪ / g
+                  </small>
                 </div>
               </label>
 
@@ -642,7 +727,9 @@ function OrderDetails() {
                     }
                   />
 
-                  <small>₪</small>
+                  <small>
+                    ₪
+                  </small>
                 </div>
               </label>
 
@@ -664,14 +751,14 @@ function OrderDetails() {
                     }
                   />
 
-                  <small>₪</small>
+                  <small>
+                    ₪
+                  </small>
                 </div>
               </label>
-
             </div>
 
             <div className="quote-summary">
-
               <div className="quote-summary-row">
                 <span>
                   Material
@@ -718,31 +805,45 @@ function OrderDetails() {
                 </strong>
               </div>
 
-              <button
-                type="button"
-                className="primary-button quote-save-button"
-                onClick={saveQuote}
-                disabled={savingQuote}
-              >
-                {savingQuote
-                  ? "Saving..."
-                  : "Save Quote"}
-              </button>
+              <div className="quote-actions">
+                <button
+                  type="button"
+                  className="primary-button quote-save-button"
+                  onClick={saveQuote}
+                  disabled={
+                    savingQuote ||
+                    sendingQuote
+                  }
+                >
+                  {savingQuote
+                    ? "Saving..."
+                    : "Save Quote"}
+                </button>
+
+                <button
+                  type="button"
+                  className="secondary-button quote-send-button"
+                  onClick={sendQuote}
+                  disabled={
+                    sendingQuote ||
+                    savingQuote
+                  }
+                >
+                  {sendingQuote
+                    ? "Sending..."
+                    : "Send Quote to Customer"}
+                </button>
+              </div>
 
               {quoteMessage && (
                 <div className="quote-message">
                   {quoteMessage}
                 </div>
               )}
-
             </div>
-
           </div>
-
         </article>
-
       </section>
-
     </main>
   );
 }

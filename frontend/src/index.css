@@ -231,6 +231,7 @@ a {
 
 .primary-button {
   border: none;
+
   color: white;
 
   background:
@@ -241,27 +242,41 @@ a {
     );
 
   box-shadow:
-    0 12px 40px rgba(23, 107, 255, 0.32);
+    0 12px 40px
+    rgba(23, 107, 255, 0.32);
 }
 
-.primary-button:hover {
+.primary-button:hover:not(:disabled) {
   transform: translateY(-2px);
 
   box-shadow:
-    0 18px 50px rgba(23, 107, 255, 0.4);
+    0 18px 50px
+    rgba(23, 107, 255, 0.4);
 }
 
 .secondary-button {
   color: #ffffff;
 
-  border: 1px solid rgba(255, 255, 255, 0.13);
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.13);
 
-  background: rgba(255, 255, 255, 0.035);
+  background:
+    rgba(255, 255, 255, 0.035);
 }
 
-.secondary-button:hover {
-  background: rgba(255, 255, 255, 0.07);
-  transform: translateY(-2px);
+.secondary-button:hover:not(:disabled) {
+  background:
+    rgba(255, 255, 255, 0.07);
+
+  transform:
+    translateY(-2px);
+}
+
+.primary-button:disabled,
+.secondary-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
 }
 
 .hero-stats {
@@ -328,7 +343,9 @@ a {
 
   border-radius: 50%;
 
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.08);
 
   background:
     radial-gradient(
@@ -338,11 +355,14 @@ a {
     ),
     rgba(255, 255, 255, 0.025);
 
-  backdrop-filter: blur(20px);
+  backdrop-filter:
+    blur(20px);
 
   box-shadow:
-    inset 0 0 70px rgba(71, 134, 255, 0.06),
-    0 40px 100px rgba(0, 0, 0, 0.35);
+    inset 0 0 70px
+      rgba(71, 134, 255, 0.06),
+    0 40px 100px
+      rgba(0, 0, 0, 0.35);
 
   animation:
     modelFloat 6s ease-in-out infinite;
@@ -357,7 +377,9 @@ a {
 
   border-radius: 45px;
 
-  font-family: "Space Grotesk", sans-serif;
+  font-family:
+    "Space Grotesk",
+    sans-serif;
 
   font-size: 92px;
   font-weight: 700;
@@ -371,12 +393,17 @@ a {
       #07101e
     );
 
-  border: 1px solid rgba(122, 178, 255, 0.2);
+  border:
+    1px solid
+    rgba(122, 178, 255, 0.2);
 
   box-shadow:
-    15px 25px 45px rgba(0, 0, 0, 0.45),
-    inset 10px 10px 30px rgba(255, 255, 255, 0.04),
-    0 0 70px rgba(34, 112, 255, 0.2);
+    15px 25px 45px
+      rgba(0, 0, 0, 0.45),
+    inset 10px 10px 30px
+      rgba(255, 255, 255, 0.04),
+    0 0 70px
+      rgba(34, 112, 255, 0.2);
 
   transform:
     perspective(900px)
@@ -389,7 +416,9 @@ a {
 
   border-radius: 50%;
 
-  border: 1px solid rgba(85, 148, 255, 0.13);
+  border:
+    1px solid
+    rgba(85, 148, 255, 0.13);
 }
 
 .ring-one {
@@ -417,7 +446,9 @@ a {
 
   border-radius: 16px;
 
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.09);
 
   background:
     rgba(8, 18, 34, 0.7);
@@ -426,7 +457,8 @@ a {
     blur(18px);
 
   box-shadow:
-    0 18px 50px rgba(0, 0, 0, 0.25);
+    0 18px 50px
+    rgba(0, 0, 0, 0.25);
 
   display: flex;
   flex-direction: column;
@@ -500,9 +532,16 @@ a {
 ========================= */
 
 .how-section {
-  width: min(1240px, calc(100% - 40px));
+  width:
+    min(
+      1240px,
+      calc(100% - 40px)
+    );
+
   margin: 0 auto;
-  padding: 110px 0 130px;
+
+  padding:
+    110px 0 130px;
 
   position: relative;
 }
@@ -526,11 +565,19 @@ a {
 .section-heading h2 {
   margin: 0;
 
-  font-family: "Space Grotesk", sans-serif;
+  font-family:
+    "Space Grotesk",
+    sans-serif;
 
-  font-size: clamp(42px, 6vw, 74px);
+  font-size:
+    clamp(
+      42px,
+      6vw,
+      74px
+    );
 
   line-height: 1;
+
   letter-spacing: -3px;
 }
 
@@ -541,11 +588,13 @@ a {
 .section-heading p {
   max-width: 620px;
 
-  margin: 24px 0 0;
+  margin:
+    24px 0 0;
 
   color: #91a1b9;
 
   font-size: 17px;
+
   line-height: 1.7;
 }
 
@@ -553,7 +602,10 @@ a {
   display: grid;
 
   grid-template-columns:
-    repeat(4, minmax(0, 1fr));
+    repeat(
+      4,
+      minmax(0, 1fr)
+    );
 
   gap: 16px;
 }
@@ -566,7 +618,8 @@ a {
   border-radius: 24px;
 
   border:
-    1px solid rgba(255, 255, 255, 0.08);
+    1px solid
+    rgba(255, 255, 255, 0.08);
 
   background:
     linear-gradient(
@@ -575,7 +628,8 @@ a {
       rgba(255, 255, 255, 0.02)
     );
 
-  backdrop-filter: blur(18px);
+  backdrop-filter:
+    blur(18px);
 
   position: relative;
 
@@ -609,13 +663,15 @@ a {
 }
 
 .step-card:hover {
-  transform: translateY(-8px);
+  transform:
+    translateY(-8px);
 
   border-color:
     rgba(89, 153, 255, 0.25);
 
   box-shadow:
-    0 30px 70px rgba(0, 0, 0, 0.2);
+    0 30px 70px
+    rgba(0, 0, 0, 0.2);
 }
 
 .step-number {
@@ -631,7 +687,8 @@ a {
   width: 42px;
   height: 1px;
 
-  margin: 22px 0 55px;
+  margin:
+    22px 0 55px;
 
   background:
     linear-gradient(
@@ -642,7 +699,8 @@ a {
 }
 
 .step-card h3 {
-  margin: 0 0 14px;
+  margin:
+    0 0 14px;
 
   font-family:
     "Space Grotesk",
@@ -657,6 +715,7 @@ a {
   color: #899ab3;
 
   font-size: 14px;
+
   line-height: 1.7;
 }
 
@@ -665,9 +724,16 @@ a {
 ========================= */
 
 .upload-section {
-  width: min(1240px, calc(100% - 40px));
+  width:
+    min(
+      1240px,
+      calc(100% - 40px)
+    );
+
   margin: 0 auto;
-  padding: 100px 0 140px;
+
+  padding:
+    100px 0 140px;
 }
 
 .upload-heading {
@@ -683,7 +749,11 @@ a {
     sans-serif;
 
   font-size:
-    clamp(42px, 6vw, 74px);
+    clamp(
+      42px,
+      6vw,
+      74px
+    );
 
   line-height: 1;
 
@@ -766,7 +836,8 @@ a {
   background:
     rgba(36, 111, 255, 0.18);
 
-  filter: blur(80px);
+  filter:
+    blur(80px);
 }
 
 .upload-icon {
@@ -852,7 +923,10 @@ a {
   display: grid;
 
   grid-template-columns:
-    repeat(2, minmax(0, 1fr));
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
 
   gap: 18px;
 }
@@ -891,7 +965,8 @@ a {
 
   color: #ffffff;
 
-  padding: 14px 15px;
+  padding:
+    14px 15px;
 
   transition:
     border-color 0.2s ease,
@@ -1077,10 +1152,11 @@ a {
 ========================= */
 
 .contact-section {
-  width: min(
-    1240px,
-    calc(100% - 40px)
-  );
+  width:
+    min(
+      1240px,
+      calc(100% - 40px)
+    );
 
   margin: 0 auto;
 
@@ -1093,8 +1169,7 @@ a {
 .contact-section h2 {
   max-width: 850px;
 
-  margin:
-    0 auto;
+  margin: 0 auto;
 
   font-family:
     "Space Grotesk",
@@ -1143,14 +1218,16 @@ a {
 ========================= */
 
 .admin-page {
-  width: min(
-    1240px,
-    calc(100% - 40px)
-  );
+  width:
+    min(
+      1240px,
+      calc(100% - 40px)
+    );
 
   margin: 0 auto;
 
-  padding: 30px 0 100px;
+  padding:
+    30px 0 100px;
 }
 
 .admin-topbar {
@@ -1177,7 +1254,8 @@ a {
 }
 
 .admin-logout-button {
-  padding: 11px 17px;
+  padding:
+    11px 17px;
 
   border-radius: 999px;
 
@@ -1189,18 +1267,6 @@ a {
 
   background:
     rgba(255, 255, 255, 0.035);
-
-  transition:
-    background 0.2s ease,
-    transform 0.2s ease;
-}
-
-.admin-logout-button:hover {
-  background:
-    rgba(255, 255, 255, 0.08);
-
-  transform:
-    translateY(-1px);
 }
 
 .admin-heading {
@@ -1222,7 +1288,11 @@ a {
     sans-serif;
 
   font-size:
-    clamp(46px, 6vw, 78px);
+    clamp(
+      46px,
+      6vw,
+      78px
+    );
 
   letter-spacing: -4px;
 }
@@ -1240,7 +1310,10 @@ a {
   display: grid;
 
   grid-template-columns:
-    repeat(4, minmax(0, 1fr));
+    repeat(
+      4,
+      minmax(0, 1fr)
+    );
 
   gap: 14px;
 
@@ -1262,8 +1335,6 @@ a {
       rgba(255, 255, 255, 0.055),
       rgba(255, 255, 255, 0.02)
     );
-
-  backdrop-filter: blur(18px);
 }
 
 .admin-stats span {
@@ -1289,7 +1360,11 @@ a {
   display: grid;
 
   grid-template-columns:
-    1.6fr 1fr 0.5fr 0.8fr auto;
+    1.6fr
+    1fr
+    0.5fr
+    0.8fr
+    auto;
 
   gap: 18px;
 
@@ -1305,22 +1380,6 @@ a {
 
   background:
     rgba(255, 255, 255, 0.025);
-
-  transition:
-    border-color 0.2s ease,
-    transform 0.2s ease,
-    background 0.2s ease;
-}
-
-.admin-order-card:hover {
-  transform:
-    translateY(-2px);
-
-  border-color:
-    rgba(85, 149, 255, 0.26);
-
-  background:
-    rgba(255, 255, 255, 0.035);
 }
 
 .admin-order-number {
@@ -1337,12 +1396,12 @@ a {
 
 .admin-order-card h3 {
   margin: 0;
-
   font-size: 16px;
 }
 
 .admin-order-card p {
-  margin: 5px 0 0;
+  margin:
+    5px 0 0;
 
   color: #7f91aa;
 
@@ -1364,7 +1423,8 @@ a {
 .admin-status {
   display: inline-flex;
 
-  padding: 7px 11px;
+  padding:
+    7px 11px;
 
   border-radius: 999px;
 
@@ -1379,7 +1439,8 @@ a {
 }
 
 .admin-view-button {
-  padding: 10px 14px;
+  padding:
+    10px 14px;
 
   border-radius: 12px;
 
@@ -1390,18 +1451,6 @@ a {
   font-size: 13px;
 
   white-space: nowrap;
-
-  transition:
-    background 0.2s ease,
-    transform 0.2s ease;
-}
-
-.admin-view-button:hover {
-  background:
-    rgba(255, 255, 255, 0.06);
-
-  transform:
-    translateY(-1px);
 }
 
 .admin-message,
@@ -1443,23 +1492,26 @@ a {
   top: 10%;
   left: 50%;
 
-  transform: translateX(-50%);
+  transform:
+    translateX(-50%);
 
   border-radius: 50%;
 
   background:
     rgba(40, 112, 255, 0.14);
 
-  filter: blur(120px);
+  filter:
+    blur(120px);
 
   pointer-events: none;
 }
 
 .admin-login-card {
-  width: min(
-    440px,
-    100%
-  );
+  width:
+    min(
+      440px,
+      100%
+    );
 
   padding: 38px;
 
@@ -1479,11 +1531,6 @@ a {
   box-shadow:
     0 40px 100px
     rgba(0, 0, 0, 0.3);
-
-  backdrop-filter: blur(22px);
-
-  position: relative;
-  z-index: 2;
 }
 
 .admin-login-card h1 {
@@ -1518,7 +1565,8 @@ a {
 
   min-height: 52px;
 
-  padding: 0 15px;
+  padding:
+    0 15px;
 
   border-radius: 14px;
 
@@ -1532,23 +1580,6 @@ a {
   color: white;
 
   outline: none;
-
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    background 0.2s ease;
-}
-
-.admin-login-card input:focus {
-  border-color:
-    rgba(81, 148, 255, 0.55);
-
-  background:
-    rgba(255, 255, 255, 0.05);
-
-  box-shadow:
-    0 0 0 4px
-    rgba(36, 105, 255, 0.08);
 }
 
 /* =========================
@@ -1556,10 +1587,11 @@ a {
 ========================= */
 
 .order-details-page {
-  width: min(
-    1180px,
-    calc(100% - 40px)
-  );
+  width:
+    min(
+      1180px,
+      calc(100% - 40px)
+    );
 
   margin: 0 auto;
 
@@ -1580,7 +1612,8 @@ a {
 }
 
 .order-back-button {
-  padding: 11px 16px;
+  padding:
+    11px 16px;
 
   border-radius: 999px;
 
@@ -1592,18 +1625,6 @@ a {
     rgba(255, 255, 255, 0.035);
 
   font-size: 13px;
-
-  transition:
-    background 0.2s ease,
-    transform 0.2s ease;
-}
-
-.order-back-button:hover {
-  background:
-    rgba(255, 255, 255, 0.08);
-
-  transform:
-    translateY(-1px);
 }
 
 .order-details-heading {
@@ -1625,7 +1646,11 @@ a {
     sans-serif;
 
   font-size:
-    clamp(42px, 6vw, 70px);
+    clamp(
+      42px,
+      6vw,
+      70px
+    );
 
   letter-spacing: -4px;
 }
@@ -1634,7 +1659,10 @@ a {
   display: grid;
 
   grid-template-columns:
-    repeat(2, minmax(0, 1fr));
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
 
   gap: 16px;
 }
@@ -1654,9 +1682,6 @@ a {
       rgba(255, 255, 255, 0.055),
       rgba(255, 255, 255, 0.02)
     );
-
-  backdrop-filter:
-    blur(18px);
 }
 
 .order-detail-card h2 {
@@ -1674,13 +1699,12 @@ a {
   display: grid;
 
   grid-template-columns:
-    repeat(2, minmax(0, 1fr));
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
 
   gap: 20px;
-}
-
-.order-info-grid div {
-  min-width: 0;
 }
 
 .order-info-grid span {
@@ -1711,7 +1735,8 @@ a {
 }
 
 .order-wide-card {
-  grid-column: 1 / -1;
+  grid-column:
+    1 / -1;
 }
 
 .order-description {
@@ -1721,7 +1746,8 @@ a {
 
   line-height: 1.8;
 
-  white-space: pre-wrap;
+  white-space:
+    pre-wrap;
 }
 
 .order-file-box {
@@ -1742,10 +1768,6 @@ a {
   border:
     1px solid
     rgba(255, 255, 255, 0.07);
-}
-
-.order-file-box > div {
-  min-width: 0;
 }
 
 .order-file-box strong {
@@ -1779,10 +1801,6 @@ a {
   white-space: nowrap;
 }
 
-.order-file-unavailable {
-  color: #7586a0;
-}
-
 /* =========================
    QUOTATION
 ========================= */
@@ -1793,6 +1811,7 @@ a {
 
 .quote-header {
   display: flex;
+
   align-items: flex-start;
   justify-content: space-between;
 
@@ -1808,7 +1827,8 @@ a {
 .quote-status-badge {
   display: inline-flex;
 
-  padding: 8px 12px;
+  padding:
+    8px 12px;
 
   border-radius: 999px;
 
@@ -1829,7 +1849,8 @@ a {
   display: grid;
 
   grid-template-columns:
-    1.25fr 0.75fr;
+    1.25fr
+    0.75fr;
 
   gap: 20px;
 }
@@ -1838,7 +1859,10 @@ a {
   display: grid;
 
   grid-template-columns:
-    repeat(2, minmax(0, 1fr));
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
 
   gap: 16px;
 }
@@ -1846,6 +1870,7 @@ a {
 .quote-form label {
   display: flex;
   flex-direction: column;
+
   gap: 8px;
 }
 
@@ -1854,7 +1879,8 @@ a {
 
   font-size: 11px;
 
-  text-transform: uppercase;
+  text-transform:
+    uppercase;
 
   letter-spacing: 1px;
 }
@@ -1883,19 +1909,11 @@ a {
 
   background:
     rgba(255, 255, 255, 0.035);
-
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
-    background 0.2s ease;
 }
 
 .quote-input-wrap input:focus {
   border-color:
     rgba(81, 148, 255, 0.55);
-
-  background:
-    rgba(255, 255, 255, 0.05);
 
   box-shadow:
     0 0 0 4px
@@ -1953,7 +1971,8 @@ a {
 .quote-divider {
   height: 1px;
 
-  margin: 12px 0 18px;
+  margin:
+    12px 0 18px;
 
   background:
     rgba(255, 255, 255, 0.08);
@@ -1988,13 +2007,22 @@ a {
   letter-spacing: -1px;
 }
 
-.quote-save-button {
+.quote-actions {
+  display: grid;
+
+  grid-template-columns:
+    1fr;
+
+  gap: 10px;
+}
+
+.quote-save-button,
+.quote-send-button {
   width: 100%;
 }
 
-.quote-save-button:disabled {
-  opacity: 0.6;
-  cursor: wait;
+.quote-send-button {
+  min-height: 52px;
 }
 
 .quote-message {
@@ -2021,32 +2049,38 @@ a {
 @keyframes modelFloat {
   0%,
   100% {
-    transform: translateY(0);
+    transform:
+      translateY(0);
   }
 
   50% {
-    transform: translateY(-15px);
+    transform:
+      translateY(-15px);
   }
 }
 
 @keyframes floatingCard {
   0%,
   100% {
-    transform: translateY(0);
+    transform:
+      translateY(0);
   }
 
   50% {
-    transform: translateY(-12px);
+    transform:
+      translateY(-12px);
   }
 }
 
 @keyframes rotateRing {
   from {
-    transform: rotate(0deg);
+    transform:
+      rotate(0deg);
   }
 
   to {
-    transform: rotate(360deg);
+    transform:
+      rotate(360deg);
   }
 }
 
@@ -2054,17 +2088,22 @@ a {
    RESPONSIVE
 ========================= */
 
-@media (max-width: 900px) {
+@media (
+  max-width: 900px
+) {
   .nav-links {
     display: none;
   }
 
   .navbar {
-    grid-template-columns: 1fr auto;
+    grid-template-columns:
+      1fr auto;
   }
 
   .hero {
-    grid-template-columns: 1fr;
+    grid-template-columns:
+      1fr;
+
     padding-top: 80px;
   }
 
@@ -2091,20 +2130,23 @@ a {
 
   .steps-grid {
     grid-template-columns:
-      repeat(2, minmax(0, 1fr));
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
   }
 
   .upload-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .upload-visual {
-    min-height: 430px;
+    grid-template-columns:
+      1fr;
   }
 
   .admin-stats {
     grid-template-columns:
-      repeat(2, minmax(0, 1fr));
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
   }
 
   .admin-order-card {
@@ -2113,15 +2155,21 @@ a {
   }
 }
 
-@media (max-width: 820px) {
+@media (
+  max-width: 820px
+) {
   .quote-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns:
+      1fr;
   }
 }
 
-@media (max-width: 760px) {
+@media (
+  max-width: 760px
+) {
   .order-details-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns:
+      1fr;
   }
 
   .order-wide-card {
@@ -2129,44 +2177,53 @@ a {
   }
 
   .order-info-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns:
+      1fr;
   }
 
   .order-details-heading {
-    align-items: flex-start;
     flex-direction: column;
+    align-items: flex-start;
   }
 }
 
-@media (max-width: 560px) {
+@media (
+  max-width: 560px
+) {
   .navbar {
-    width: min(
-      100% - 24px,
-      1240px
-    );
+    width:
+      min(
+        100% - 24px,
+        1240px
+      );
   }
 
   .logo {
     font-size: 15px;
+
     letter-spacing: 6px;
   }
 
   .login-button {
-    padding: 9px 13px;
+    padding:
+      9px 13px;
+
     font-size: 13px;
   }
 
   .hero {
-    width: min(
-      100% - 24px,
-      1240px
-    );
+    width:
+      min(
+        100% - 24px,
+        1240px
+      );
 
     padding-top: 55px;
   }
 
   .hero h1 {
     font-size: 57px;
+
     letter-spacing: -3px;
   }
 
@@ -2185,6 +2242,7 @@ a {
 
   .hero-stats {
     flex-direction: column;
+
     gap: 18px;
   }
 
@@ -2207,161 +2265,46 @@ a {
     border-radius: 32px;
   }
 
-  .floating-card {
-    min-width: 125px;
-  }
-
-  .floating-card-one {
-    top: 30px;
-  }
-
-  .floating-card-two {
-    left: 0;
-    bottom: 30px;
-  }
-
-  .how-section {
-    width: min(
-      100% - 24px,
-      1240px
-    );
-
-    padding:
-      70px 0 90px;
-  }
-
-  .steps-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .section-heading h2 {
-    letter-spacing: -2px;
-  }
-
-  .step-card {
-    min-height: 240px;
-  }
-
-  .step-line {
-    margin-bottom: 35px;
-  }
-
-  .upload-section {
+  .how-section,
+  .upload-section,
+  .contact-section,
+  .admin-page,
+  .order-details-page {
     width:
       min(
         100% - 24px,
         1240px
       );
-
-    padding:
-      70px 0 100px;
   }
 
-  .upload-heading h2 {
-    letter-spacing: -2px;
-  }
-
-  .upload-visual {
-    min-height: 380px;
-    padding: 27px;
+  .steps-grid,
+  .form-grid,
+  .admin-stats,
+  .admin-order-card,
+  .quote-form {
+    grid-template-columns:
+      1fr;
   }
 
   .project-form {
     padding: 20px;
   }
 
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .contact-section {
-    width: min(
-      100% - 24px,
-      1240px
-    );
-
-    padding:
-      80px 0 100px;
-  }
-
-  .contact-section h2 {
-    letter-spacing: -2px;
-  }
-
-  .admin-page {
-    width: min(
-      100% - 24px,
-      1240px
-    );
-  }
-
-  .admin-topbar {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .admin-heading {
+  .admin-topbar,
+  .admin-heading,
+  .order-details-topbar,
+  .quote-header {
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .admin-heading .primary-button {
-    width: 100%;
-  }
-
-  .admin-stats {
-    grid-template-columns: 1fr;
-  }
-
-  .admin-order-card {
-    grid-template-columns: 1fr;
-  }
-
-  .admin-view-button {
-    text-align: center;
-  }
-
-  .admin-login-card {
-    padding: 28px 22px;
-  }
-
-  .admin-login-card h1 {
-    font-size: 36px;
-  }
-
-  .order-details-page {
-    width: min(
-      100% - 24px,
-      1180px
-    );
-  }
-
-  .order-details-topbar {
-    align-items:
-      flex-start;
-
-    flex-direction:
-      column;
   }
 
   .order-file-box {
-    align-items:
-      stretch;
-
-    flex-direction:
-      column;
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .order-download-button {
     width: 100%;
-  }
-
-  .quote-header {
-    flex-direction: column;
-  }
-
-  .quote-form {
-    grid-template-columns: 1fr;
   }
 
   .quote-total strong {
