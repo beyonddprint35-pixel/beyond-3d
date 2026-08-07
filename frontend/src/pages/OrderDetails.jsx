@@ -356,6 +356,10 @@ function OrderDetails() {
             },
 
             body: JSON.stringify({
+
+            orderId:
+    order.id,
+    
               customerName:
                 order.customer_name,
 

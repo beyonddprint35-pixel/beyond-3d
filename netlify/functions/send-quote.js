@@ -29,6 +29,7 @@ exports.handler = async function (event) {
     }
 
     const {
+        orderId,
       customerName,
       customerEmail,
       orderNumber,
@@ -38,6 +39,7 @@ exports.handler = async function (event) {
     } = JSON.parse(event.body || "{}");
 
     if (
+        !orderId ||
       !customerEmail ||
       !orderNumber ||
       quoteTotal === undefined
@@ -70,6 +72,24 @@ exports.handler = async function (event) {
 
     const total =
       Number(quoteTotal).toFixed(2);
+      const token =
+  Buffer.from(
+    `${orderId}:${process.env.ADMIN_PASSWORD}`
+  ).toString("base64url");
+
+const acceptUrl =
+  `https://beyond3dshop.com/.netlify/functions/accept-quote?id=${encodeURIComponent(
+    orderId
+  )}&token=${encodeURIComponent(
+    token
+  )}`;
+const token =
+  Buffer.from(
+    `${orderNumber.replace(
+      "B3D-",
+      ""
+    )}:${process.env.ADMIN_PASSWORD}`
+  ).toString("base64url");
 
     const response = await fetch(
       "https://api.resend.com/emails",
@@ -175,10 +195,38 @@ exports.handler = async function (event) {
               </div>
 
               <p>
-                If you'd like to proceed,
-                simply reply to this email and
-                we'll continue with production.
-              </p>
+  If you'd like to proceed with
+  this quotation, click the button
+  below.
+</p>
+
+<div style="
+  margin:32px 0;
+  text-align:center;
+">
+  <a
+    href="${acceptUrl}"
+    style="
+      display:inline-block;
+      padding:16px 28px;
+      border-radius:999px;
+      background:#176bff;
+      color:white;
+      text-decoration:none;
+      font-weight:700;
+    "
+  >
+    Accept Quote
+  </a>
+</div>
+
+<p style="
+  color:#6b7280;
+  font-size:13px;
+">
+  If you have any questions,
+  simply reply to this email.
+</p>
 
               <p style="
                 margin-top:32px;
