@@ -21,6 +21,15 @@ function makeOrderNumber(id) {
   );
 }
 
+function formatCurrency(value) {
+  return `₪${Number(
+    value || 0
+  ).toLocaleString("en-IL", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  })}`;
+}
+
 function Admin() {
   const [orders, setOrders] =
     useState([]);
@@ -51,15 +60,16 @@ function Admin() {
     setError("");
 
     try {
-      const response = await fetch(
-        "/.netlify/functions/get-orders",
-        {
-          headers: {
-            "x-admin-password":
-              adminPassword,
-          },
-        }
-      );
+      const response =
+        await fetch(
+          "/.netlify/functions/get-orders",
+          {
+            headers: {
+              "x-admin-password":
+                adminPassword,
+            },
+          }
+        );
 
       const data =
         await response.json();
@@ -186,6 +196,81 @@ function Admin() {
       return counts;
     }, [orders]);
 
+  const financialStats =
+    useMemo(() => {
+      const quotedOrders =
+        orders.filter(
+          (order) =>
+            Number(
+              order.quote_total ||
+                0
+            ) > 0
+        );
+
+      const totalQuoted =
+        quotedOrders.reduce(
+          (sum, order) =>
+            sum +
+            Number(
+              order.quote_total ||
+                0
+            ),
+          0
+        );
+
+      const acceptedRevenue =
+        orders
+          .filter(
+            (order) =>
+              [
+                "Accepted",
+                "Printing",
+                "Completed",
+              ].includes(
+                order.status
+              )
+          )
+          .reduce(
+            (sum, order) =>
+              sum +
+              Number(
+                order.quote_total ||
+                  0
+              ),
+            0
+          );
+
+      const completedRevenue =
+        orders
+          .filter(
+            (order) =>
+              order.status ===
+              "Completed"
+          )
+          .reduce(
+            (sum, order) =>
+              sum +
+              Number(
+                order.quote_total ||
+                  0
+              ),
+            0
+          );
+
+      const averageOrderValue =
+        quotedOrders.length
+          ? totalQuoted /
+            quotedOrders.length
+          : 0;
+
+      return {
+        totalQuoted,
+        acceptedRevenue,
+        completedRevenue,
+        averageOrderValue,
+      };
+    }, [orders]);
+
   const filteredOrders =
     useMemo(() => {
       const normalizedSearch =
@@ -200,8 +285,10 @@ function Admin() {
             "Submitted";
 
           const statusMatches =
-            activeFilter === "All" ||
-            status === activeFilter;
+            activeFilter ===
+              "All" ||
+            status ===
+              activeFilter;
 
           if (!statusMatches) {
             return false;
@@ -378,6 +465,80 @@ function Admin() {
       <section
         style={{
           display: "grid",
+          gridTemplateColumns:
+            "repeat(4, minmax(0, 1fr))",
+          gap: "14px",
+          marginBottom: "28px",
+        }}
+      >
+        <article className="order-detail-card">
+          <span className="admin-label">
+            TOTAL QUOTED
+          </span>
+
+          <strong
+            style={{
+              fontSize: "27px",
+            }}
+          >
+            {formatCurrency(
+              financialStats.totalQuoted
+            )}
+          </strong>
+        </article>
+
+        <article className="order-detail-card">
+          <span className="admin-label">
+            ACCEPTED VALUE
+          </span>
+
+          <strong
+            style={{
+              fontSize: "27px",
+            }}
+          >
+            {formatCurrency(
+              financialStats.acceptedRevenue
+            )}
+          </strong>
+        </article>
+
+        <article className="order-detail-card">
+          <span className="admin-label">
+            COMPLETED REVENUE
+          </span>
+
+          <strong
+            style={{
+              fontSize: "27px",
+            }}
+          >
+            {formatCurrency(
+              financialStats.completedRevenue
+            )}
+          </strong>
+        </article>
+
+        <article className="order-detail-card">
+          <span className="admin-label">
+            AVG. QUOTE VALUE
+          </span>
+
+          <strong
+            style={{
+              fontSize: "27px",
+            }}
+          >
+            {formatCurrency(
+              financialStats.averageOrderValue
+            )}
+          </strong>
+        </article>
+      </section>
+
+      <section
+        style={{
+          display: "grid",
           gap: "16px",
           marginBottom: "24px",
         }}
@@ -515,12 +676,15 @@ function Admin() {
 
                   <div>
                     <span className="admin-label">
-                      QUANTITY
+                      VALUE
                     </span>
 
                     <strong>
-                      {order.quantity ||
-                        1}
+                      {order.quote_total
+                        ? formatCurrency(
+                            order.quote_total
+                          )
+                        : "—"}
                     </strong>
                   </div>
 
