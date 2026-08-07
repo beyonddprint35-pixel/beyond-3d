@@ -83,13 +83,7 @@ const acceptUrl =
   )}&token=${encodeURIComponent(
     token
   )}`;
-const token =
-  Buffer.from(
-    `${orderNumber.replace(
-      "B3D-",
-      ""
-    )}:${process.env.ADMIN_PASSWORD}`
-  ).toString("base64url");
+
 
     const response = await fetch(
       "https://api.resend.com/emails",
