@@ -9,6 +9,25 @@ exports.handler = async function (event) {
   }
 
   try {
+    const providedPassword =
+      event.headers["x-admin-password"];
+
+    const correctPassword =
+      process.env.ADMIN_PASSWORD;
+
+    if (
+      !providedPassword ||
+      !correctPassword ||
+      providedPassword !== correctPassword
+    ) {
+      return {
+        statusCode: 401,
+        body: JSON.stringify({
+          error: "Unauthorized",
+        }),
+      };
+    }
+
     const supabaseUrl =
       process.env.NEXT_PUBLIC_SUPABASE_URL ||
       "https://bxxrgijespvwjarkdtwp.supabase.co";
