@@ -1,9 +1,27 @@
+const crypto = require("crypto");
+
+function createCustomerToken(
+  orderId,
+  secret
+) {
+  return crypto
+    .createHmac(
+      "sha256",
+      secret
+    )
+    .update(
+      String(orderId)
+    )
+    .digest("hex");
+}
+
 exports.handler = async function (event) {
   if (event.httpMethod !== "POST") {
     return {
       statusCode: 405,
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type":
+          "application/json",
       },
       body: JSON.stringify({
         error: "Method not allowed",
@@ -13,7 +31,9 @@ exports.handler = async function (event) {
 
   try {
     const providedPassword =
-      event.headers["x-admin-password"];
+      event.headers[
+        "x-admin-password"
+      ];
 
     const correctPassword =
       process.env.ADMIN_PASSWORD;
@@ -21,12 +41,14 @@ exports.handler = async function (event) {
     if (
       !providedPassword ||
       !correctPassword ||
-      providedPassword !== correctPassword
+      providedPassword !==
+        correctPassword
     ) {
       return {
         statusCode: 401,
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type":
+            "application/json",
         },
         body: JSON.stringify({
           error: "Unauthorized",
@@ -53,25 +75,31 @@ exports.handler = async function (event) {
       return {
         statusCode: 400,
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type":
+            "application/json",
         },
         body: JSON.stringify({
-          error: "Order ID is required",
+          error:
+            "Order ID is required",
         }),
       };
     }
 
     if (
       !status ||
-      !allowedStatuses.includes(status)
+      !allowedStatuses.includes(
+        status
+      )
     ) {
       return {
         statusCode: 400,
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type":
+            "application/json",
         },
         body: JSON.stringify({
-          error: "Invalid order status",
+          error:
+            "Invalid order status",
         }),
       };
     }
@@ -80,7 +108,17 @@ exports.handler = async function (event) {
       process.env.SUPABASE_URL;
 
     const serviceKey =
-      process.env.SUPABASE_SECRET_KEY;
+      process.env
+        .SUPABASE_SECRET_KEY;
+
+    const resendApiKey =
+      process.env.RESEND_API_KEY;
+
+    const emailFrom =
+      process.env.EMAIL_FROM;
+
+    const secret =
+      process.env.ADMIN_PASSWORD;
 
     if (
       !supabaseUrl ||
@@ -89,7 +127,8 @@ exports.handler = async function (event) {
       return {
         statusCode: 500,
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type":
+            "application/json",
         },
         body: JSON.stringify({
           error:
@@ -99,10 +138,9 @@ exports.handler = async function (event) {
     }
 
     /*
-      Update the order in Supabase.
-      We request the updated row back
-      because we need the customer's
-      email address for notifications.
+      =========================
+      UPDATE ORDER
+      =========================
     */
 
     const response =
@@ -145,7 +183,8 @@ exports.handler = async function (event) {
       return {
         statusCode: 500,
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type":
+            "application/json",
         },
         body: JSON.stringify({
           error:
@@ -161,7 +200,8 @@ exports.handler = async function (event) {
       return {
         statusCode: 404,
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type":
+            "application/json",
         },
         body: JSON.stringify({
           error:
@@ -174,27 +214,49 @@ exports.handler = async function (event) {
       data[0];
 
     /*
-      Send customer notifications only
-      for production statuses.
-
-      We do NOT send emails when changing
-      back to Submitted / Quoted / Accepted.
+      =========================
+      TRACKING URL
+      =========================
     */
 
-    let emailSent = false;
-    let emailError = null;
+    let trackUrl = null;
 
     if (
-      status === "Printing" ||
-      status === "Completed"
+      secret &&
+      order.id
     ) {
+      const token =
+        createCustomerToken(
+          order.id,
+          secret
+        );
+
+      trackUrl =
+        `https://beyond3dshop.com/track?id=${encodeURIComponent(
+          order.id
+        )}&token=${encodeURIComponent(
+          token
+        )}`;
+    }
+
+    /*
+      =========================
+      CUSTOMER EMAIL
+      =========================
+    */
+
+    let emailSent =
+      false;
+
+    let emailError =
+      null;
+
+    const shouldNotify =
+      status === "Printing" ||
+      status === "Completed";
+
+    if (shouldNotify) {
       try {
-        const resendApiKey =
-          process.env.RESEND_API_KEY;
-
-        const emailFrom =
-          process.env.EMAIL_FROM;
-
         if (
           !resendApiKey ||
           !emailFrom
@@ -207,6 +269,12 @@ exports.handler = async function (event) {
         if (!order.email) {
           throw new Error(
             "Customer email is missing"
+          );
+        }
+
+        if (!trackUrl) {
+          throw new Error(
+            "Tracking link could not be created"
           );
         }
 
@@ -227,7 +295,8 @@ exports.handler = async function (event) {
         let badge = "";
 
         if (
-          status === "Printing"
+          status ===
+          "Printing"
         ) {
           subject =
             `Your Beyond order is now printing – ${orderNumber}`;
@@ -236,14 +305,15 @@ exports.handler = async function (event) {
             "Your project is now printing";
 
           message =
-            "Your quotation was approved and your project has now entered production. We'll let you know as soon as your order is completed.";
+            "Your project has entered production and is currently being printed. You can follow the latest status using the tracking link below.";
 
           badge =
             "PRINTING";
         }
 
         if (
-          status === "Completed"
+          status ===
+          "Completed"
         ) {
           subject =
             `Your Beyond order is completed – ${orderNumber}`;
@@ -252,7 +322,7 @@ exports.handler = async function (event) {
             "Your order is ready";
 
           message =
-            "Great news — your 3D printing order has been completed. We'll contact you regarding delivery or collection.";
+            "Great news — your 3D printing order has been completed. You can review the final status below, and we'll contact you regarding delivery or collection.";
 
           badge =
             "COMPLETED";
@@ -286,6 +356,15 @@ exports.handler = async function (event) {
                   <!doctype html>
 
                   <html>
+                    <head>
+                      <meta charset="utf-8" />
+
+                      <meta
+                        name="viewport"
+                        content="width=device-width, initial-scale=1"
+                      />
+                    </head>
+
                     <body style="
                       margin:0;
                       padding:0;
@@ -310,7 +389,7 @@ exports.handler = async function (event) {
                         ">
 
                           <div style="
-                            padding:34px 34px 26px;
+                            padding:34px 34px 30px;
                             background:#07111f;
                             color:white;
                           ">
@@ -342,6 +421,7 @@ exports.handler = async function (event) {
                               margin:0;
                               font-size:32px;
                               line-height:1.15;
+                              letter-spacing:-1px;
                             ">
                               ${title}
                             </h1>
@@ -373,10 +453,10 @@ exports.handler = async function (event) {
                               padding:22px;
                               border-radius:16px;
                               background:#f5f7fa;
+                              border:1px solid #edf0f4;
                             ">
 
                               <div style="
-                                margin-bottom:6px;
                                 color:#8390a3;
                                 font-size:11px;
                                 font-weight:700;
@@ -386,6 +466,7 @@ exports.handler = async function (event) {
                               </div>
 
                               <div style="
+                                margin-top:6px;
                                 font-size:18px;
                                 font-weight:700;
                               ">
@@ -393,8 +474,7 @@ exports.handler = async function (event) {
                               </div>
 
                               <div style="
-                                margin-top:20px;
-                                margin-bottom:6px;
+                                margin-top:22px;
                                 color:#8390a3;
                                 font-size:11px;
                                 font-weight:700;
@@ -404,6 +484,7 @@ exports.handler = async function (event) {
                               </div>
 
                               <div style="
+                                margin-top:6px;
                                 font-size:18px;
                                 font-weight:700;
                                 color:#176bff;
@@ -411,16 +492,110 @@ exports.handler = async function (event) {
                                 ${status}
                               </div>
 
+                              ${
+                                order.material
+                                  ? `
+                                    <div style="
+                                      margin-top:22px;
+                                      color:#8390a3;
+                                      font-size:11px;
+                                      font-weight:700;
+                                      letter-spacing:1.2px;
+                                    ">
+                                      MATERIAL
+                                    </div>
+
+                                    <div style="
+                                      margin-top:6px;
+                                      font-size:16px;
+                                      font-weight:700;
+                                    ">
+                                      ${order.material}
+                                    </div>
+                                  `
+                                  : ""
+                              }
+
+                              <div style="
+                                margin-top:22px;
+                                color:#8390a3;
+                                font-size:11px;
+                                font-weight:700;
+                                letter-spacing:1.2px;
+                              ">
+                                QUANTITY
+                              </div>
+
+                              <div style="
+                                margin-top:6px;
+                                font-size:16px;
+                                font-weight:700;
+                              ">
+                                ${order.quantity || 1}
+                              </div>
+
+                            </div>
+
+                            <div style="
+                              margin:32px 0 24px;
+                              text-align:center;
+                            ">
+
+                              <a
+                                href="${trackUrl}"
+                                target="_blank"
+                                style="
+                                  display:inline-block;
+                                  min-width:180px;
+                                  padding:16px 28px;
+                                  border-radius:999px;
+                                  background:#176bff;
+                                  color:#ffffff;
+                                  text-decoration:none;
+                                  font-size:14px;
+                                  font-weight:700;
+                                  box-shadow:0 12px 30px rgba(23,107,255,.22);
+                                "
+                              >
+                                Track My Order
+                              </a>
+
                             </div>
 
                             <p style="
-                              margin:30px 0 0;
+                              margin:0;
+                              text-align:center;
+                              color:#8792a2;
+                              font-size:12px;
+                              line-height:1.7;
+                            ">
+                              Use your private tracking
+                              link at any time to see the
+                              latest order status.
+                            </p>
+
+                            <div style="
+                              height:1px;
+                              margin:30px 0;
+                              background:#edf0f4;
+                            "></div>
+
+                            <p style="
+                              margin:0;
                               color:#7c8797;
                               font-size:13px;
                               line-height:1.7;
                             ">
                               Questions about your order?
                               Simply reply to this email.
+                            </p>
+
+                            <p style="
+                              margin:24px 0 0;
+                              font-size:14px;
+                              font-weight:700;
+                            ">
+                              Beyond 3D
                             </p>
 
                           </div>
@@ -450,16 +625,14 @@ exports.handler = async function (event) {
           );
         }
 
-        emailSent = true;
+        emailSent =
+          true;
 
       } catch (error) {
         /*
-          Important:
-          We do NOT undo the status update
-          if the email fails.
-
-          The production status is more
-          important than the notification.
+          We intentionally keep the
+          database status change even
+          if Resend has a problem.
         */
 
         console.error(
@@ -471,6 +644,12 @@ exports.handler = async function (event) {
           error.message;
       }
     }
+
+    /*
+      =========================
+      SUCCESS
+      =========================
+    */
 
     return {
       statusCode: 200,
@@ -487,10 +666,7 @@ exports.handler = async function (event) {
 
         notification: {
           attempted:
-            status ===
-              "Printing" ||
-            status ===
-              "Completed",
+            shouldNotify,
 
           sent:
             emailSent,
