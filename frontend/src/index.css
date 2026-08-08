@@ -2641,4 +2641,617 @@ a {
   .admin-login-card h1 {
     font-size: 36px;
   }
+}/* =========================================================
+   ADMIN ORDER DETAILS — QUOTATION WIDTH FIX
+========================================================= */
+
+.order-quotation-section,
+.quotation-section,
+.quote-section {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
 }
+
+.quote-builder,
+.order-quote-builder,
+.quotation-builder {
+  width: 100% !important;
+  max-width: none !important;
+
+  display: grid !important;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(360px, 430px) !important;
+
+  gap: 28px !important;
+
+  align-items: start !important;
+}
+
+/* =========================================================
+   QUOTE FORM
+========================================================= */
+
+.quote-fields,
+.quote-form,
+.quote-inputs {
+  width: 100% !important;
+
+  display: grid !important;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    ) !important;
+
+  gap:
+    22px 18px !important;
+}
+
+/* Make every input readable */
+
+.quote-fields input,
+.quote-form input,
+.quote-inputs input {
+  width: 100% !important;
+
+  min-width: 0 !important;
+
+  box-sizing: border-box !important;
+}
+
+/* =========================================================
+   QUOTE TOTAL CARD
+========================================================= */
+
+.quote-summary,
+.quote-total-card,
+.quote-price-summary {
+  width: 100% !important;
+
+  min-width: 0 !important;
+
+  max-width: none !important;
+
+  box-sizing: border-box !important;
+}
+
+/* =========================================================
+   QUOTATION CARD ITSELF
+========================================================= */
+
+.order-card.quotation-card,
+.order-quotation-card,
+.quotation-card {
+  width: 100% !important;
+
+  max-width: none !important;
+
+  box-sizing: border-box !important;
+
+  padding: 28px !important;
+}
+
+/* =========================================================
+   ORDER DETAILS MAIN WIDTH
+========================================================= */
+
+.order-details-page,
+.order-details-container,
+.admin-order-details {
+  width: min(
+    1260px,
+    calc(100% - 48px)
+  ) !important;
+
+  max-width: 1260px !important;
+
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* =========================================================
+   DESKTOP
+========================================================= */
+
+@media (min-width: 1000px) {
+  .order-quotation-section,
+  .quotation-section,
+  .quote-section {
+    grid-column:
+      1 / -1 !important;
+  }
+
+  .order-card.quotation-card,
+  .order-quotation-card,
+  .quotation-card {
+    min-height: auto !important;
+  }
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 999px) {
+  .quote-builder,
+  .order-quote-builder,
+  .quotation-builder {
+    grid-template-columns:
+      1fr !important;
+  }
+
+  .quote-summary,
+  .quote-total-card,
+  .quote-price-summary {
+    max-width: none !important;
+  }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 650px) {
+  .order-details-page,
+  .order-details-container,
+  .admin-order-details {
+    width:
+      calc(
+        100% - 24px
+      ) !important;
+  }
+
+  .order-card.quotation-card,
+  .order-quotation-card,
+  .quotation-card {
+    padding: 18px !important;
+  }
+
+  .quote-fields,
+  .quote-form,
+  .quote-inputs {
+    grid-template-columns:
+      1fr !important;
+  }
+/* =========================================================
+   ORDER DETAILS
+   QUOTATION LAYOUT FIX
+
+   Prevent homepage ProcessStory quote styles
+   from shrinking the admin quotation.
+========================================================= */
+
+.order-details-page .order-details-grid {
+  width: 100%;
+}
+
+/* =========================================================
+   MAIN QUOTATION CARD
+========================================================= */
+
+.order-details-page .order-wide-card.quote-card {
+  width: 100% !important;
+  max-width: none !important;
+
+  min-height: auto !important;
+
+  padding: 28px !important;
+
+  display: block !important;
+
+  grid-column: 1 / -1 !important;
+
+  box-sizing: border-box !important;
+
+  border-radius: 22px !important;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(20, 31, 46, 0.95),
+      rgba(7, 14, 23, 0.98)
+    ) !important;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.order-details-page .quote-header {
+  width: 100%;
+
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: 24px;
+
+  margin-bottom: 28px;
+}
+
+.order-details-page .quote-header h2 {
+  margin-top: 8px;
+}
+
+/* =========================================================
+   MAIN QUOTE LAYOUT
+
+   LEFT = INPUTS
+   RIGHT = PRICE SUMMARY
+========================================================= */
+
+.order-details-page .quote-layout {
+  width: 100% !important;
+
+  display: grid !important;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(330px, 400px) !important;
+
+  gap: 28px !important;
+
+  align-items: start !important;
+}
+
+/* =========================================================
+   INPUT SIDE
+========================================================= */
+
+.order-details-page .quote-form {
+  width: 100% !important;
+
+  display: grid !important;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    ) !important;
+
+  gap: 22px 18px !important;
+}
+
+.order-details-page .quote-form label {
+  width: 100% !important;
+
+  min-width: 0 !important;
+
+  display: block !important;
+}
+
+.order-details-page .quote-form label > span {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #8295b0;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  letter-spacing: 1px;
+
+  text-transform: uppercase;
+}
+
+/* =========================================================
+   INPUT WRAPPER
+========================================================= */
+
+.order-details-page .quote-input-wrap {
+  width: 100% !important;
+
+  min-height: 56px;
+
+  position: relative;
+
+  display: flex !important;
+
+  align-items: center !important;
+
+  box-sizing: border-box;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.1);
+
+  border-radius: 14px;
+
+  background:
+    rgba(255, 255, 255, 0.035);
+
+  overflow: hidden;
+}
+
+.order-details-page .quote-input-wrap input {
+  width: 100% !important;
+
+  min-width: 0 !important;
+
+  height: 56px !important;
+
+  padding:
+    0 70px 0 16px !important;
+
+  border: 0 !important;
+
+  outline: 0 !important;
+
+  box-sizing: border-box !important;
+
+  color: #f2f6fb !important;
+
+  background:
+    transparent !important;
+
+  font: inherit;
+
+  font-size: 16px;
+}
+
+.order-details-page .quote-input-wrap small {
+  position: absolute;
+
+  right: 15px;
+
+  color: #7286a1;
+
+  font-size: 11px;
+
+  pointer-events: none;
+}
+
+/* =========================================================
+   PRICE SUMMARY
+========================================================= */
+
+.order-details-page .quote-summary {
+  width: 100% !important;
+
+  max-width: none !important;
+
+  min-width: 0 !important;
+
+  padding: 24px !important;
+
+  box-sizing: border-box !important;
+
+  border:
+    1px solid
+    rgba(90, 135, 198, 0.2) !important;
+
+  border-radius: 18px !important;
+
+  background:
+    rgba(8, 20, 34, 0.8) !important;
+}
+
+/* =========================================================
+   SUMMARY ROWS
+========================================================= */
+
+.order-details-page .quote-summary-row {
+  width: 100%;
+
+  margin: 0 !important;
+
+  padding: 13px 0;
+
+  display: flex !important;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 20px;
+
+  color: #91a4bd;
+
+  font-size: 14px;
+}
+
+.order-details-page .quote-summary-row strong {
+  color: #f4f7fb;
+
+  font-size: 14px;
+
+  font-weight: 700;
+}
+
+/* =========================================================
+   DIVIDER
+========================================================= */
+
+.order-details-page .quote-divider {
+  width: 100%;
+
+  height: 1px;
+
+  margin: 12px 0 20px;
+
+  background:
+    rgba(255, 255, 255, 0.09);
+}
+
+/* =========================================================
+   TOTAL
+
+   Important:
+   Overrides ProcessStory's .quote-total
+========================================================= */
+
+.order-details-page .quote-summary .quote-total {
+  width: 100% !important;
+
+  margin: 0 !important;
+
+  padding: 0 !important;
+
+  display: flex !important;
+
+  align-items: flex-end !important;
+
+  justify-content: space-between !important;
+
+  gap: 20px;
+
+  border: 0 !important;
+
+  background: transparent !important;
+}
+
+.order-details-page .quote-summary .quote-total span {
+  color: #8094ae;
+
+  font-size: 11px;
+
+  font-weight: 600;
+
+  letter-spacing: 1.5px;
+}
+
+.order-details-page .quote-summary .quote-total strong {
+  color: #ffffff !important;
+
+  font-size: 36px !important;
+
+  font-weight: 700 !important;
+
+  line-height: 1 !important;
+}
+
+/* =========================================================
+   ACTION BUTTONS
+========================================================= */
+
+.order-details-page .quote-actions {
+  width: 100%;
+
+  margin-top: 24px;
+
+  display: grid;
+
+  grid-template-columns: 1fr;
+
+  gap: 10px;
+}
+
+.order-details-page .quote-save-button,
+.order-details-page .quote-send-button {
+  width: 100% !important;
+
+  min-height: 52px !important;
+
+  margin: 0 !important;
+
+  border-radius: 999px !important;
+
+  box-sizing: border-box !important;
+
+  font-size: 14px !important;
+
+  font-weight: 700 !important;
+}
+
+.order-details-page .quote-save-button {
+  border: 0 !important;
+
+  color: white !important;
+
+  background:
+    linear-gradient(
+      90deg,
+      #1670ff,
+      #448cff
+    ) !important;
+}
+
+.order-details-page .quote-send-button {
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.16) !important;
+
+  color: #f1f5fa !important;
+
+  background:
+    rgba(255, 255, 255, 0.025) !important;
+}
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+.order-details-page .quote-message {
+  width: 100%;
+
+  margin-top: 14px;
+
+  padding: 12px 14px;
+
+  box-sizing: border-box;
+
+  border-radius: 10px;
+
+  color: #91bfff;
+
+  background:
+    rgba(18, 72, 148, 0.16);
+
+  text-align: center;
+
+  font-size: 12px;
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 950px) {
+  .order-details-page .quote-layout {
+    grid-template-columns:
+      1fr !important;
+  }
+
+  .order-details-page .quote-summary {
+    width: 100% !important;
+  }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 620px) {
+  .order-details-page .order-wide-card.quote-card {
+    padding: 18px !important;
+  }
+
+  .order-details-page .quote-header {
+    flex-direction: column;
+
+    gap: 12px;
+  }
+
+  .order-details-page .quote-form {
+    grid-template-columns:
+      1fr !important;
+
+    gap: 16px !important;
+  }
+
+  .order-details-page .quote-summary {
+    padding: 18px !important;
+  }
+
+  .order-details-page .quote-summary .quote-total strong {
+    font-size: 30px !important;
+  }
+}]
