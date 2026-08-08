@@ -10,8 +10,6 @@ import {
   useParams,
 } from "react-router-dom";
 
-import Brand from "../components/Brand";
-
 function makeOrderNumber(id) {
   if (!id) {
     return "B3D-UNKNOWN";
@@ -778,13 +776,149 @@ function OrderDetails() {
 
   return (
     <main className="order-details-page">
+      <style>{`
+        .admin-model-heading {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 20px;
+          margin-bottom: 20px;
+        }
+
+        .admin-model-heading h2 {
+          margin-top: 7px;
+        }
+
+        .admin-model-source-badge {
+          min-height: 30px;
+          padding: 0 11px;
+          display: inline-flex;
+          align-items: center;
+          border: 1px solid rgba(255,255,255,.08);
+          border-radius: 999px;
+          color: #7c8da1;
+          background: rgba(255,255,255,.025);
+          font-size: 7px;
+          font-weight: 700;
+          letter-spacing: 1.2px;
+          white-space: nowrap;
+        }
+
+        .admin-model-source-badge.ai {
+          color: #8bb2d5;
+          border-color: rgba(82,143,198,.24);
+          background: rgba(58,111,160,.08);
+        }
+
+        .admin-ai-model-card {
+          display: grid;
+          grid-template-columns: minmax(240px, .72fr) minmax(0, 1.28fr);
+          gap: 22px;
+        }
+
+        .admin-ai-model-preview {
+          min-height: 250px;
+          overflow: hidden;
+          display: grid;
+          place-items: center;
+          border: 1px solid rgba(255,255,255,.06);
+          border-radius: 18px;
+          background:
+            radial-gradient(circle at center, rgba(49,99,145,.14), transparent 48%),
+            #050b12;
+        }
+
+        .admin-ai-model-preview img {
+          width: 100%;
+          height: 100%;
+          min-height: 250px;
+          object-fit: cover;
+          display: block;
+        }
+
+        .admin-ai-model-placeholder {
+          display: grid;
+          place-items: center;
+          gap: 9px;
+          color: #5e7990;
+        }
+
+        .admin-ai-model-placeholder span {
+          font-size: 48px;
+          font-weight: 300;
+        }
+
+        .admin-ai-model-placeholder strong {
+          font-size: 7px;
+          letter-spacing: 1.5px;
+        }
+
+        .admin-ai-model-info {
+          min-width: 0;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          gap: 22px;
+        }
+
+        .admin-ai-model-grid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 10px;
+        }
+
+        .admin-ai-model-grid > div {
+          min-width: 0;
+          padding: 14px;
+          border: 1px solid rgba(255,255,255,.055);
+          border-radius: 13px;
+          background: rgba(255,255,255,.012);
+        }
+
+        .admin-ai-model-grid span {
+          display: block;
+          margin-bottom: 6px;
+          color: #526a80;
+          font-size: 6px;
+          font-weight: 700;
+          letter-spacing: 1.2px;
+        }
+
+        .admin-ai-model-grid strong {
+          display: block;
+          overflow: hidden;
+          color: #a9bac9;
+          font-size: 9px;
+          font-weight: 500;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .admin-ai-model-actions {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        @media (max-width: 760px) {
+          .admin-ai-model-card {
+            grid-template-columns: 1fr;
+          }
+
+          .admin-ai-model-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .admin-model-heading {
+            flex-direction: column;
+          }
+        }
+      `}</style>
 
       <header className="order-details-topbar">
-        <Brand
-          size={40}
-          textSize={16}
-          gap={10}
-        />
+        <div className="logo">
+          BEYOND
+        </div>
 
         <Link
           to="/admin"
@@ -934,43 +1068,160 @@ function OrderDetails() {
         </article>
 
         <article className="order-detail-card order-wide-card">
-          <h2>
-            Uploaded Model
-          </h2>
-
-          <div className="order-file-box">
-
+          <div className="admin-model-heading">
             <div>
-              <strong>
-                {order.file_name ||
-                  "No file uploaded"}
-              </strong>
+              <div className="section-kicker">
+                MODEL SOURCE
+              </div>
 
-              {order.file_size && (
-                <span>
-                  {formatFileSize(
-                    order.file_size
-                  )}
-                </span>
-              )}
+              <h2>
+                {order.source_type ===
+                "AI_MODEL"
+                  ? "AI Generated Model"
+                  : "Uploaded Model"}
+              </h2>
             </div>
 
-            {fileUrl ? (
-              <a
-                href={fileUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="primary-button order-download-button"
-              >
-                Download File
-              </a>
-            ) : (
-              <span className="order-file-unavailable">
-                No file
-              </span>
-            )}
-
+            <span
+              className={
+                order.source_type ===
+                "AI_MODEL"
+                  ? "admin-model-source-badge ai"
+                  : "admin-model-source-badge"
+              }
+            >
+              {order.source_type ===
+              "AI_MODEL"
+                ? "AI MODEL"
+                : "CUSTOMER FILE"}
+            </span>
           </div>
+
+          {order.source_type ===
+          "AI_MODEL" ? (
+            <div className="admin-ai-model-card">
+              <div className="admin-ai-model-preview">
+                {order.ai_model_thumbnail_url ? (
+                  <img
+                    src={
+                      order.ai_model_thumbnail_url
+                    }
+                    alt="AI generated model preview"
+                  />
+                ) : (
+                  <div className="admin-ai-model-placeholder">
+                    <span>
+                      ◇
+                    </span>
+
+                    <strong>
+                      AI MODEL
+                    </strong>
+                  </div>
+                )}
+              </div>
+
+              <div className="admin-ai-model-info">
+                <div className="admin-ai-model-grid">
+                  <div>
+                    <span>
+                      SOURCE
+                    </span>
+
+                    <strong>
+                      BEYOND AI Studio
+                    </strong>
+                  </div>
+
+                  <div>
+                    <span>
+                      GENERATION ID
+                    </span>
+
+                    <strong>
+                      {order.ai_generation_id ||
+                        "Not available"}
+                    </strong>
+                  </div>
+
+                  <div>
+                    <span>
+                      MESHY TASK
+                    </span>
+
+                    <strong>
+                      {order.ai_meshy_task_id ||
+                        "Not available"}
+                    </strong>
+                  </div>
+
+                  <div>
+                    <span>
+                      CUSTOMER USER ID
+                    </span>
+
+                    <strong>
+                      {order.user_id ||
+                        "Not linked"}
+                    </strong>
+                  </div>
+                </div>
+
+                <div className="admin-ai-model-actions">
+                  {order.ai_model_3mf_url ? (
+                    <a
+                      href={
+                        order.ai_model_3mf_url
+                      }
+                      target="_blank"
+                      rel="noreferrer"
+                      className="primary-button order-download-button"
+                    >
+                      Download 3MF
+                    </a>
+                  ) : (
+                    <span className="order-file-unavailable">
+                      3MF unavailable
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="order-file-box">
+
+              <div>
+                <strong>
+                  {order.file_name ||
+                    "No file uploaded"}
+                </strong>
+
+                {order.file_size && (
+                  <span>
+                    {formatFileSize(
+                      order.file_size
+                    )}
+                  </span>
+                )}
+              </div>
+
+              {fileUrl ? (
+                <a
+                  href={fileUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="primary-button order-download-button"
+                >
+                  Download File
+                </a>
+              ) : (
+                <span className="order-file-unavailable">
+                  No file
+                </span>
+              )}
+
+            </div>
+          )}
         </article>
 
         <article className="order-detail-card order-wide-card">

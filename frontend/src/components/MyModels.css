@@ -1,0 +1,929 @@
+.my-models-section {
+  position: relative;
+  z-index: 4;
+
+  padding:
+    120px 0 135px;
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at 15% 20%,
+      rgba(
+        28,
+        82,
+        139,
+        0.075
+      ),
+      transparent 28%
+    ),
+    #02050a;
+}
+
+.my-models-shell {
+  width:
+    min(
+      1240px,
+      calc(
+        100% - 64px
+      )
+    );
+
+  margin: 0 auto;
+}
+
+.my-models-heading {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.15fr)
+    minmax(
+      320px,
+      0.85fr
+    );
+
+  align-items: end;
+
+  gap: 60px;
+
+  margin-bottom: 48px;
+}
+
+.my-models-kicker {
+  margin-bottom: 18px;
+
+  color: #527ba2;
+
+  font-size: 8px;
+
+  font-weight: 700;
+
+  letter-spacing:
+    2.2px;
+}
+
+.my-models-heading h2 {
+  margin: 0;
+
+  color: #f3f7fb;
+
+  font-family:
+    "Space Grotesk",
+    sans-serif;
+
+  font-size:
+    clamp(
+      54px,
+      5.8vw,
+      84px
+    );
+
+  font-weight: 500;
+
+  line-height: 0.96;
+
+  letter-spacing:
+    -0.055em;
+}
+
+.my-models-heading h2 span {
+  color: #718397;
+}
+
+.my-models-heading-right {
+  display: grid;
+
+  gap: 22px;
+}
+
+.my-models-heading-right >
+p {
+  max-width: 400px;
+
+  justify-self: end;
+
+  margin: 0;
+
+  color: #6c8094;
+
+  font-size: 13px;
+
+  line-height: 1.75;
+}
+
+.my-models-summary {
+  display: flex;
+
+  align-items: center;
+
+  justify-content:
+    flex-end;
+
+  gap: 10px;
+}
+
+.my-models-summary >
+div {
+  min-width: 84px;
+
+  padding:
+    12px 14px;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.055
+    );
+
+  border-radius: 13px;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.012
+    );
+}
+
+.my-models-summary span {
+  display: block;
+
+  color: #415a70;
+
+  font-size: 5px;
+
+  font-weight: 700;
+
+  letter-spacing:
+    1.3px;
+}
+
+.my-models-summary strong {
+  display: block;
+
+  margin-top: 5px;
+
+  color: #a5b8c8;
+
+  font-family:
+    "Space Grotesk",
+    sans-serif;
+
+  font-size: 17px;
+
+  font-weight: 500;
+}
+
+.my-models-refresh {
+  width: 42px;
+  height: 42px;
+
+  display: grid;
+
+  place-items: center;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.07
+    );
+
+  border-radius: 50%;
+
+  color: #637e95;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.015
+    );
+
+  cursor: pointer;
+}
+
+.my-models-refresh:disabled {
+  opacity: 0.4;
+}
+
+.my-models-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      3,
+      minmax(
+        0,
+        1fr
+      )
+    );
+
+  gap: 14px;
+}
+
+.my-model-card {
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.06
+    );
+
+  border-radius: 20px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(
+        255,
+        255,
+        255,
+        0.022
+      ),
+      rgba(
+        255,
+        255,
+        255,
+        0.008
+      )
+    );
+
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.my-model-card:hover {
+  transform:
+    translateY(-4px);
+
+  border-color:
+    rgba(
+      95,
+      145,
+      190,
+      0.16
+    );
+
+  box-shadow:
+    0 24px 60px
+    rgba(
+      0,
+      0,
+      0,
+      0.22
+    );
+}
+
+.my-model-card.selected {
+  border-color:
+    rgba(
+      82,
+      142,
+      202,
+      0.32
+    );
+
+  box-shadow:
+    0 0 0 1px
+    rgba(
+      82,
+      142,
+      202,
+      0.08
+    );
+}
+
+.my-model-card-preview {
+  min-height: 215px;
+
+  position: relative;
+
+  overflow: hidden;
+
+  display: grid;
+
+  place-items: center;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(
+        35,
+        83,
+        130,
+        0.11
+      ),
+      transparent 48%
+    ),
+    #050b12;
+}
+
+.my-model-card-preview
+img {
+  width: 100%;
+  height: 100%;
+
+  position: absolute;
+
+  inset: 0;
+
+  object-fit: cover;
+}
+
+.my-model-placeholder {
+  color: #506c84;
+}
+
+.my-model-number {
+  position: absolute;
+
+  left: 15px;
+  top: 14px;
+
+  z-index: 2;
+
+  color: #526b81;
+
+  font-size: 7px;
+
+  font-weight: 700;
+
+  letter-spacing:
+    1.4px;
+}
+
+.my-model-status {
+  position: absolute;
+
+  right: 12px;
+  top: 12px;
+
+  z-index: 2;
+
+  min-height: 25px;
+
+  padding:
+    0 9px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.075
+    );
+
+  border-radius: 999px;
+
+  color: #657c90;
+
+  background:
+    rgba(
+      2,
+      7,
+      12,
+      0.72
+    );
+
+  backdrop-filter:
+    blur(10px);
+
+  font-size: 5px;
+
+  font-weight: 700;
+
+  letter-spacing:
+    1px;
+}
+
+.my-model-status i {
+  width: 5px;
+  height: 5px;
+
+  border-radius: 50%;
+
+  background: #667485;
+}
+
+.my-model-status.succeeded {
+  color: #82a98b;
+}
+
+.my-model-status.succeeded i {
+  background: #72a27d;
+}
+
+.my-model-status.failed {
+  color: #a77e7e;
+}
+
+.my-model-status.failed i {
+  background: #a26464;
+}
+
+.my-model-card-body {
+  padding: 20px;
+}
+
+.my-model-type {
+  display: flex;
+
+  align-items: center;
+
+  justify-content:
+    space-between;
+
+  gap: 10px;
+
+  color: #49637b;
+
+  font-size: 6px;
+
+  font-weight: 700;
+
+  letter-spacing:
+    1.3px;
+}
+
+.my-model-date {
+  display: flex;
+
+  align-items: center;
+
+  gap: 5px;
+
+  color: #4d6275;
+}
+
+.my-model-card h3 {
+  min-height: 52px;
+
+  margin:
+    15px 0 22px;
+
+  color: #c9d5df;
+
+  font-family:
+    "Space Grotesk",
+    sans-serif;
+
+  font-size: 17px;
+
+  font-weight: 500;
+
+  line-height: 1.35;
+}
+
+.my-model-meta {
+  display: grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap: 8px;
+
+  margin-bottom: 18px;
+}
+
+.my-model-meta div {
+  padding-left: 9px;
+
+  border-left:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.06
+    );
+}
+
+.my-model-meta span {
+  display: block;
+
+  color: #3d556b;
+
+  font-size: 5px;
+
+  letter-spacing:
+    1.2px;
+}
+
+.my-model-meta strong {
+  display: block;
+
+  margin-top: 5px;
+
+  overflow: hidden;
+
+  color: #758a9d;
+
+  font-size: 7px;
+
+  font-weight: 500;
+
+  text-overflow:
+    ellipsis;
+
+  white-space: nowrap;
+}
+
+.my-model-use-button {
+  width: 100%;
+  min-height: 42px;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.075
+    );
+
+  border-radius: 999px;
+
+  color: #aec0cf;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.022
+    );
+
+  font-size: 8px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.my-model-use-button:hover:not(
+  :disabled
+) {
+  border-color:
+    rgba(
+      87,
+      146,
+      199,
+      0.25
+    );
+
+  color: white;
+
+  background:
+    rgba(
+      58,
+      111,
+      160,
+      0.08
+    );
+}
+
+.my-model-use-button:disabled {
+  opacity: 0.36;
+
+  cursor:
+    not-allowed;
+}
+
+.my-models-state,
+.my-models-empty {
+  min-height: 260px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  flex-direction: column;
+
+  gap: 10px;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.055
+    );
+
+  border-radius: 20px;
+
+  color: #667e93;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.01
+    );
+
+  text-align: center;
+}
+
+.my-models-state strong,
+.my-models-empty strong {
+  color: #a8bac9;
+
+  font-family:
+    "Space Grotesk",
+    sans-serif;
+
+  font-size: 18px;
+
+  font-weight: 500;
+}
+
+.my-models-state >
+span {
+  color: #60768a;
+
+  font-size: 9px;
+}
+
+.my-models-state >
+button {
+  margin-top: 8px;
+
+  padding:
+    10px 16px;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.07
+    );
+
+  border-radius: 999px;
+
+  color: #91a6b9;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.02
+    );
+
+  cursor: pointer;
+}
+
+.my-models-state-icon {
+  width: 48px;
+  height: 48px;
+
+  display: grid;
+
+  place-items: center;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.06
+    );
+
+  border-radius: 50%;
+}
+
+.my-models-state-icon.loading
+svg {
+  animation:
+    myModelsSpin
+    1.2s linear
+    infinite;
+}
+
+.my-models-empty {
+  min-height: 285px;
+
+  flex-direction: row;
+
+  gap: 24px;
+
+  text-align: left;
+}
+
+.my-models-empty-visual {
+  width: 110px;
+  height: 110px;
+
+  position: relative;
+
+  display: grid;
+
+  place-items: center;
+
+  border:
+    1px solid
+    rgba(
+      92,
+      143,
+      190,
+      0.12
+    );
+
+  border-radius: 24px;
+
+  color: #607f99;
+
+  background:
+    rgba(
+      37,
+      82,
+      121,
+      0.055
+    );
+}
+
+.my-models-empty-spark {
+  position: absolute;
+
+  right: 15px;
+  top: 15px;
+
+  color: #6d9bc3;
+}
+
+.my-models-empty p {
+  max-width: 350px;
+
+  margin:
+    8px 0 0;
+
+  color: #657b8f;
+
+  font-size: 10px;
+
+  line-height: 1.65;
+}
+
+.my-models-footnote {
+  min-height: 55px;
+
+  margin-top: 18px;
+
+  padding:
+    0 16px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content:
+    space-between;
+
+  gap: 25px;
+
+  border-top:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.045
+    );
+
+  color: #415970;
+}
+
+.my-models-footnote
+span {
+  font-size: 5px;
+
+  font-weight: 700;
+
+  letter-spacing:
+    1.4px;
+}
+
+.my-models-footnote p {
+  margin: 0;
+
+  font-size: 7px;
+}
+
+@keyframes myModelsSpin {
+  to {
+    transform:
+      rotate(360deg);
+  }
+}
+
+@media (
+  max-width: 1000px
+) {
+  .my-models-heading {
+    grid-template-columns:
+      1fr;
+
+    gap: 25px;
+  }
+
+  .my-models-heading-right >
+  p {
+    justify-self: start;
+  }
+
+  .my-models-summary {
+    justify-content:
+      flex-start;
+  }
+
+  .my-models-grid {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(
+          0,
+          1fr
+        )
+      );
+  }
+}
+
+@media (
+  max-width: 700px
+) {
+  .my-models-section {
+    padding:
+      85px 0 95px;
+  }
+
+  .my-models-shell {
+    width:
+      calc(
+        100% - 28px
+      );
+  }
+
+  .my-models-heading h2 {
+    font-size: 46px;
+  }
+
+  .my-models-grid {
+    grid-template-columns:
+      1fr;
+  }
+
+  .my-model-card-preview {
+    min-height: 230px;
+  }
+
+  .my-models-empty {
+    padding:
+      32px 20px;
+
+    flex-direction:
+      column;
+
+    text-align: center;
+  }
+
+  .my-models-footnote {
+    padding:
+      14px 5px;
+
+    align-items:
+      flex-start;
+
+    flex-direction:
+      column;
+
+    gap: 7px;
+  }
+}

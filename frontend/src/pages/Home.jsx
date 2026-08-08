@@ -7,12 +7,11 @@ import UploadProject from "../components/UploadProject";
 import HeroObject3D from "../components/HeroObject3D";
 import ProcessStory from "../components/ProcessStory";
 import AIModelStudio from "../components/AIModelStudio";
+import MyModels from "../components/MyModels";
 import ReviewsSection from "../components/ReviewsSection";
 import AuthModal from "../components/AuthModal";
 
-import {
-  supabase,
-} from "../lib/supabaseClient";
+import { supabase } from "../lib/supabaseClient";
 
 import beyondLogo from "../assets/beyond-logo-transparent.png";
 
@@ -46,14 +45,16 @@ function Home() {
   ] = useState(null);
 
   const [
+    authReady,
+    setAuthReady,
+  ] = useState(false);
+
+  const [
     profile,
     setProfile,
   ] = useState(null);
 
-  const [
-    authReady,
-    setAuthReady,
-  ] = useState(false);
+
 
   const [
     scrollProgress,
@@ -63,30 +64,19 @@ function Home() {
   useEffect(() => {
     let mounted = true;
 
-    async function loadSession() {
-      const {
-        data,
-      } =
-        await supabase.auth
-          .getSession();
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        if (!mounted) {
+          return;
+        }
 
-      if (!mounted) {
-        return;
-      }
+        setSession(
+          data.session || null
+        );
 
-      const nextSession =
-        data.session || null;
-
-      setSession(
-        nextSession
-      );
-
-      setAuthReady(
-        true
-      );
-    }
-
-    loadSession();
+        setAuthReady(true);
+      });
 
     const {
       data: {
@@ -116,10 +106,17 @@ function Home() {
     return () => {
       mounted = false;
 
-      subscription
-        .unsubscribe();
+      subscription.unsubscribe();
     };
   }, []);
+
+  async function handleSignOut() {
+    await supabase.auth
+      .signOut();
+
+    setProfile(null);
+    setMenuOpen(false);
+  }
 
   useEffect(() => {
     let mounted = true;
@@ -141,7 +138,7 @@ function Home() {
             "profiles"
           )
           .select(
-            "id, email, full_name, created_at"
+            "id, email, full_name, phone, created_at, updated_at"
           )
           .eq(
             "id",
@@ -164,9 +161,7 @@ function Home() {
         return;
       }
 
-      setProfile(
-        data
-      );
+      setProfile(data);
     }
 
     loadProfile();
@@ -240,14 +235,6 @@ function Home() {
     };
   }, []);
 
-  async function handleSignOut() {
-    await supabase.auth
-      .signOut();
-
-    setProfile(null);
-    setMenuOpen(false);
-  }
-
   function scrollToSection(id) {
     const element =
       document.getElementById(id);
@@ -306,27 +293,20 @@ function Home() {
             scrollToSection("home")
           }
           style={{
-            display:
-              "inline-flex",
-            alignItems:
-              "center",
-            justifyContent:
-              "flex-start",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "flex-start",
             gap: "12px",
           }}
         >
           <img
-            src={
-              beyondLogo
-            }
+            src={beyondLogo}
             alt="Beyond logo"
             style={{
               width: "42px",
               height: "42px",
-              objectFit:
-                "contain",
-              display:
-                "block",
+              objectFit: "contain",
+              display: "block",
               flexShrink: 0,
             }}
           />
@@ -346,9 +326,7 @@ function Home() {
           <button
             type="button"
             onClick={() =>
-              scrollToSection(
-                "how"
-              )
+              scrollToSection("how")
             }
           >
             How it works
@@ -364,6 +342,19 @@ function Home() {
           >
             Reviews
           </button>
+
+          {session && (
+            <button
+              type="button"
+              onClick={() =>
+                scrollToSection(
+                  "my-models"
+                )
+              }
+            >
+              My Models
+            </button>
+          )}
 
           <button
             type="button"
@@ -398,9 +389,7 @@ function Home() {
                 </span>
 
                 <strong>
-                  {
-                    accountName
-                  }
+                  {accountName}
                 </strong>
               </div>
 
@@ -627,6 +616,16 @@ function Home() {
       <AIModelStudio />
 
       {/* =========================================
+          MY MODELS
+      ========================================= */}
+
+      <MyModels
+        session={
+          session
+        }
+      />
+
+      {/* =========================================
           REVIEWS
       ========================================= */}
 
@@ -685,7 +684,9 @@ function Home() {
         id="contact"
       >
         <div className="final-cta-ring ring-a" />
+
         <div className="final-cta-ring ring-b" />
+
         <div className="final-cta-glow" />
 
         <div className="section-index">

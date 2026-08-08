@@ -1,11 +1,159 @@
-import { useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
+
+import {
+  supabase,
+} from "../lib/supabaseClient";
 
 const MAX_FILE_SIZE = 50 * 1024 * 1024;
 
 function UploadProject() {
   const [file, setFile] = useState(null);
+
+  const [
+    selectedAiModel,
+    setSelectedAiModel,
+  ] = useState(null);
+
+  const [
+    session,
+    setSession,
+  ] = useState(null);
+
   const [status, setStatus] = useState("");
+
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        if (!mounted) {
+          return;
+        }
+
+        setSession(
+          data.session || null
+        );
+      });
+
+    const {
+      data: {
+        subscription,
+      },
+    } =
+      supabase.auth
+        .onAuthStateChange(
+          (
+            _event,
+            nextSession
+          ) => {
+            if (!mounted) {
+              return;
+            }
+
+            setSession(
+              nextSession
+            );
+          }
+        );
+
+    return () => {
+      mounted = false;
+
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    function loadSelectedAiModel() {
+      const saved =
+        sessionStorage.getItem(
+          "beyondSelectedAiModel"
+        );
+
+      if (!saved) {
+        setSelectedAiModel(
+          null
+        );
+
+        return;
+      }
+
+      try {
+        const parsed =
+          JSON.parse(
+            saved
+          );
+
+        setSelectedAiModel(
+          parsed
+        );
+      } catch {
+        sessionStorage.removeItem(
+          "beyondSelectedAiModel"
+        );
+
+        setSelectedAiModel(
+          null
+        );
+      }
+    }
+
+    function handleAiModelSelected(
+      event
+    ) {
+      if (
+        event.detail
+      ) {
+        setSelectedAiModel(
+          event.detail
+        );
+
+        setFile(null);
+
+        return;
+      }
+
+      loadSelectedAiModel();
+    }
+
+    loadSelectedAiModel();
+
+    window.addEventListener(
+      "focus",
+      loadSelectedAiModel
+    );
+
+    window.addEventListener(
+      "beyond-ai-model-selected",
+      handleAiModelSelected
+    );
+
+    return () => {
+      window.removeEventListener(
+        "focus",
+        loadSelectedAiModel
+      );
+
+      window.removeEventListener(
+        "beyond-ai-model-selected",
+        handleAiModelSelected
+      );
+    };
+  }, []);
+
+  function removeSelectedAiModel() {
+    sessionStorage.removeItem(
+      "beyondSelectedAiModel"
+    );
+
+    setSelectedAiModel(null);
+  }
 
   function handleFileChange(event) {
     const selectedFile = event.target.files?.[0];
@@ -25,6 +173,10 @@ function UploadProject() {
     }
 
     setFile(selectedFile);
+
+    if (selectedAiModel) {
+      removeSelectedAiModel();
+    }
   }
 
   function handleDrop(event) {
@@ -42,6 +194,10 @@ function UploadProject() {
     }
 
     setFile(droppedFile);
+
+    if (selectedAiModel) {
+      removeSelectedAiModel();
+    }
   }
 
   async function handleSubmit(event) {
@@ -58,6 +214,7 @@ function UploadProject() {
       import.meta.env.VITE_SUPABASE_URL;
 
     const publishableKey =
+      import.meta.env.VITE_SUPABASE_ANON_KEY ||
       import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
     if (!supabaseUrl || !publishableKey) {
@@ -67,6 +224,10 @@ function UploadProject() {
     }
 
     const orderId = crypto.randomUUID();
+
+    const accessToken =
+      session?.access_token ||
+      null;
 
     let storagePath = null;
 
@@ -96,7 +257,10 @@ function UploadProject() {
               apikey: publishableKey,
 
               Authorization:
-                `Bearer ${publishableKey}`,
+                `Bearer ${
+                  accessToken ||
+                  publishableKey
+                }`,
 
               "Content-Type":
                 file.type ||
@@ -166,6 +330,37 @@ function UploadProject() {
         storage_path: storagePath,
 
         file_size: file?.size || null,
+
+        user_id:
+          session?.user?.id ||
+          null,
+
+        ai_generation_id:
+          selectedAiModel
+            ?.generationId ||
+          null,
+
+        ai_meshy_task_id:
+          selectedAiModel
+            ?.meshyTaskId ||
+          null,
+
+        ai_model_3mf_url:
+          selectedAiModel
+            ?.model3mfUrl ||
+          null,
+
+        ai_model_thumbnail_url:
+          selectedAiModel
+            ?.thumbnailUrl ||
+          null,
+
+        source_type:
+          selectedAiModel
+            ? "AI_MODEL"
+            : file
+              ? "UPLOADED_FILE"
+              : "NO_FILE",
       };
 
       // 3. Save order in Supabase database
@@ -271,6 +466,99 @@ setFile(null);
   }
 
   return (
+    <>
+
+      <style>{`
+        .selected-ai-model-card {
+          margin-bottom: 18px;
+          padding: 16px;
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) auto auto;
+          align-items: center;
+          gap: 14px;
+          border: 1px solid rgba(86, 146, 200, 0.2);
+          border-radius: 16px;
+          background: rgba(47, 92, 132, 0.07);
+        }
+
+        .selected-ai-model-main {
+          min-width: 0;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .selected-ai-model-badge {
+          flex-shrink: 0;
+          padding: 7px 9px;
+          border-radius: 999px;
+          color: #8fb8d9;
+          background: rgba(68, 123, 169, 0.14);
+          font-size: 7px;
+          font-weight: 700;
+          letter-spacing: 1.2px;
+        }
+
+        .selected-ai-model-copy {
+          min-width: 0;
+          display: grid;
+          gap: 5px;
+        }
+
+        .selected-ai-model-copy strong {
+          overflow: hidden;
+          color: #c6d5e2;
+          font-size: 11px;
+          font-weight: 600;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .selected-ai-model-copy span {
+          color: #667c90;
+          font-size: 8px;
+        }
+
+        .selected-ai-model-thumbnail {
+          width: 54px;
+          height: 54px;
+          object-fit: cover;
+          border-radius: 12px;
+          border: 1px solid rgba(255,255,255,0.07);
+        }
+
+        .selected-ai-model-remove {
+          min-height: 34px;
+          padding: 0 12px;
+          border: 1px solid rgba(255,255,255,0.07);
+          border-radius: 999px;
+          color: #8094a7;
+          background: rgba(255,255,255,0.02);
+          font-size: 8px;
+          cursor: pointer;
+        }
+
+        .drop-zone.has-ai-model {
+          border-color: rgba(92, 150, 201, 0.16);
+          background: rgba(45, 89, 128, 0.035);
+        }
+
+        @media (max-width: 700px) {
+          .selected-ai-model-card {
+            grid-template-columns: 1fr;
+          }
+
+          .selected-ai-model-thumbnail {
+            width: 100%;
+            height: 120px;
+          }
+
+          .selected-ai-model-remove {
+            width: 100%;
+          }
+        }
+      `}</style>
+
     <section
       className="upload-section"
       id="upload"
@@ -452,9 +740,60 @@ setFile(null);
             />
           </label>
 
+          {selectedAiModel && (
+            <div className="selected-ai-model-card">
+              <div className="selected-ai-model-main">
+                <div className="selected-ai-model-badge">
+                  AI MODEL
+                </div>
+
+                <div className="selected-ai-model-copy">
+                  <strong>
+                    {selectedAiModel.prompt ||
+                      "AI-generated 3D model"}
+                  </strong>
+
+                  <span>
+                    Meshy task{" "}
+                    {selectedAiModel.meshyTaskId
+                      ? selectedAiModel.meshyTaskId.slice(
+                          0,
+                          8
+                        )
+                      : "—"}
+                  </span>
+                </div>
+              </div>
+
+              {selectedAiModel.thumbnailUrl && (
+                <img
+                  src={
+                    selectedAiModel.thumbnailUrl
+                  }
+                  alt=""
+                  className="selected-ai-model-thumbnail"
+                />
+              )}
+
+              <button
+                type="button"
+                className="selected-ai-model-remove"
+                onClick={
+                  removeSelectedAiModel
+                }
+              >
+                Remove
+              </button>
+            </div>
+          )}
+
           <div
             className={`drop-zone ${
               file ? "has-file" : ""
+            } ${
+              selectedAiModel
+                ? "has-ai-model"
+                : ""
             }`}
             onDragOver={(event) =>
               event.preventDefault()
@@ -476,7 +815,21 @@ setFile(null);
                 +
               </div>
 
-              {file ? (
+              {selectedAiModel ? (
+                <>
+                  <strong>
+                    AI model attached
+                  </strong>
+
+                  <span>
+                    Uploading a file here will replace it
+                  </span>
+
+                  <small>
+                    You can still choose your own model instead
+                  </small>
+                </>
+              ) : file ? (
                 <>
                   <strong>
                     {file.name}
@@ -527,6 +880,7 @@ setFile(null);
         </form>
       </div>
     </section>
+    </>
   );
 }
 
