@@ -349,19 +349,6 @@ function Home() {
             Reviews
           </button>
 
-          {session && (
-            <button
-              type="button"
-              onClick={() =>
-                scrollToSection(
-                  "my-models"
-                )
-              }
-            >
-              My Models
-            </button>
-          )}
-
           <button
             type="button"
             onClick={() =>
@@ -624,16 +611,6 @@ function Home() {
       ========================================= */}
 
       <AIModelStudio />
-
-      {/* =========================================
-          MY MODELS
-      ========================================= */}
-
-      <MyModels
-        session={
-          session
-        }
-      />
 
       {/* =========================================
           REVIEWS
