@@ -45,6 +45,10 @@ function clamp(
   );
 }
 
+/* =========================================================
+   TECHNICAL WIREFRAME CUBE
+========================================================= */
+
 function ProductModel({
   progressRef,
 }) {
@@ -57,29 +61,49 @@ function ProductModel({
   const solidRef =
     useRef(null);
 
+  const edgesRef =
+    useRef(null);
+
+  const cubeSize = 2.72;
+
   const solidMaterial =
     useMemo(
       () =>
-        new THREE.MeshPhysicalMaterial(
-          {
-            color:
-              new THREE.Color(
-                "#356fa8"
-              ),
+        new THREE.MeshPhysicalMaterial({
+          color:
+            new THREE.Color(
+              "#12365d"
+            ),
 
-            roughness: 0.5,
+          roughness: 0.78,
 
-            metalness: 0,
+          metalness: 0,
 
-            clearcoat:
-              0.18,
+          clearcoat: 0.04,
 
-            clearcoatRoughness:
-              0.5,
-          }
-        ),
+          clearcoatRoughness:
+            0.9,
+
+          transparent: true,
+
+          opacity: 0,
+        }),
       []
     );
+
+  const edgeGeometry =
+    useMemo(() => {
+      const geometry =
+        new THREE.BoxGeometry(
+          cubeSize,
+          cubeSize,
+          cubeSize
+        );
+
+      return new THREE.EdgesGeometry(
+        geometry
+      );
+    }, []);
 
   useFrame(
     (
@@ -89,7 +113,8 @@ function ProductModel({
       if (
         !rootRef.current ||
         !wireRef.current ||
-        !solidRef.current
+        !solidRef.current ||
+        !edgesRef.current
       ) {
         return;
       }
@@ -103,21 +128,25 @@ function ProductModel({
         state.size.width <
         700;
 
+      /* =========================================
+         SCROLL + POINTER ROTATION
+      ========================================= */
+
       rootRef.current.rotation.x =
         THREE.MathUtils.damp(
           rootRef.current
             .rotation.x,
 
           THREE.MathUtils.lerp(
-            0.18,
+            0.24,
             -0.02,
             p
           ) -
             state.pointer.y *
               (
                 mobile
-                  ? 0.01
-                  : 0.02
+                  ? 0.012
+                  : 0.028
               ),
 
           4,
@@ -130,15 +159,15 @@ function ProductModel({
             .rotation.y,
 
           THREE.MathUtils.lerp(
-            -0.55,
-            0.2,
+            -0.62,
+            0.18,
             p
           ) +
             state.pointer.x *
               (
                 mobile
-                  ? 0.015
-                  : 0.035
+                  ? 0.018
+                  : 0.045
               ),
 
           4,
@@ -151,7 +180,7 @@ function ProductModel({
             .rotation.z,
 
           THREE.MathUtils.lerp(
-            -0.08,
+            -0.035,
             0.02,
             p
           ),
@@ -160,13 +189,55 @@ function ProductModel({
           delta
         );
 
+      /* =========================================
+         SMALL PREMIUM "BREATHING" MOTION
+      ========================================= */
+
+      const idlePulse =
+        Math.sin(
+          state.clock.elapsedTime *
+            0.75
+        ) *
+        (
+          mobile
+            ? 0.008
+            : 0.012
+        );
+
+      const targetScale =
+        THREE.MathUtils.lerp(
+          1,
+          1.055,
+          p
+        ) +
+        idlePulse;
+
+      const dampedScale =
+        THREE.MathUtils.damp(
+          rootRef.current
+            .scale.x,
+
+          targetScale,
+
+          4,
+          delta
+        );
+
+      rootRef.current.scale.setScalar(
+        dampedScale
+      );
+
+      /* =========================================
+         WIREFRAME → SUBTLE SOLID TRANSITION
+      ========================================= */
+
       const solidProgress =
         clamp(
           (
             p -
-            0.18
+            0.26
           ) /
-            0.55
+            0.62
         );
 
       solidRef.current.traverse(
@@ -186,7 +257,8 @@ function ProductModel({
                 child.material
                   .opacity,
 
-                solidProgress,
+                solidProgress *
+                  0.18,
 
                 5,
                 delta
@@ -212,9 +284,38 @@ function ProductModel({
                 child.material
                   .opacity,
 
-                1 -
-                  solidProgress *
-                    0.85,
+                THREE.MathUtils.lerp(
+                  0.84,
+                  0.56,
+                  solidProgress
+                ),
+
+                5,
+                delta
+              );
+          }
+        }
+      );
+
+      edgesRef.current.traverse(
+        (
+          child
+        ) => {
+          if (
+            child.material &&
+            "opacity" in
+              child.material
+          ) {
+            child.material.opacity =
+              THREE.MathUtils.damp(
+                child.material
+                  .opacity,
+
+                THREE.MathUtils.lerp(
+                  0.92,
+                  0.72,
+                  solidProgress
+                ),
 
                 5,
                 delta
@@ -226,56 +327,15 @@ function ProductModel({
   );
 
   return (
-    <group ref={rootRef}>
-      {/* WIREFRAME */}
-
-      <group ref={wireRef}>
-        <mesh>
-          <boxGeometry
-            args={[
-              2.5,
-              2.5,
-              2.5,
-              8,
-              8,
-              8,
-            ]}
-          />
-
-          <meshBasicMaterial
-            color="#7aa2c5"
-            wireframe
-            transparent
-            opacity={0.8}
-          />
-        </mesh>
-
-        <mesh
-          position={[
-            0,
-            0,
-            1.28,
-          ]}
-        >
-          <torusGeometry
-            args={[
-              0.62,
-              0.12,
-              10,
-              48,
-            ]}
-          />
-
-          <meshBasicMaterial
-            color="#7aa2c5"
-            wireframe
-            transparent
-            opacity={0.8}
-          />
-        </mesh>
-      </group>
-
-      {/* SOLID */}
+    <group
+      ref={rootRef}
+      position={[
+        0.18,
+        0.05,
+        0,
+      ]}
+    >
+      {/* SUBTLE SOLID CORE */}
 
       <group ref={solidRef}>
         <mesh
@@ -283,167 +343,145 @@ function ProductModel({
             solidMaterial
           }
           castShadow
+          receiveShadow
         >
           <boxGeometry
             args={[
-              2.5,
-              2.5,
-              2.5,
-              12,
-              12,
-              12,
+              cubeSize,
+              cubeSize,
+              cubeSize,
+              1,
+              1,
+              1,
             ]}
           />
         </mesh>
+      </group>
+
+      {/* DENSE TECHNICAL WIREFRAME */}
+
+      <group ref={wireRef}>
+        <mesh>
+          <boxGeometry
+            args={[
+              cubeSize,
+              cubeSize,
+              cubeSize,
+              8,
+              8,
+              8,
+            ]}
+          />
+
+          <meshBasicMaterial
+            color="#83acd0"
+            wireframe
+            transparent
+            opacity={0.84}
+            depthWrite={false}
+          />
+        </mesh>
+
+        {/* SECONDARY FINER GRID */}
 
         <mesh
-          position={[
-            0,
-            0,
-            1.27,
+          scale={[
+            1.002,
+            1.002,
+            1.002,
           ]}
         >
-          <torusGeometry
+          <boxGeometry
             args={[
-              0.62,
-              0.12,
-              18,
-              72,
+              cubeSize,
+              cubeSize,
+              cubeSize,
+              4,
+              4,
+              4,
             ]}
           />
 
-          <meshPhysicalMaterial
-            color="#142538"
-            roughness={0.58}
+          <meshBasicMaterial
+            color="#496f94"
+            wireframe
             transparent
-            opacity={1}
+            opacity={0.22}
+            depthWrite={false}
+          />
+        </mesh>
+      </group>
+
+      {/* CLEAN OUTER CUBE EDGES */}
+
+      <group ref={edgesRef}>
+        <lineSegments
+          geometry={
+            edgeGeometry
+          }
+        >
+          <lineBasicMaterial
+            color="#a9c9e5"
+            transparent
+            opacity={0.92}
+          />
+        </lineSegments>
+      </group>
+
+      {/* SUBTLE FLOOR REFLECTION */}
+
+      <group
+        position={[
+          0,
+          -3.18,
+          0,
+        ]}
+        scale={[
+          1,
+          -0.34,
+          1,
+        ]}
+      >
+        <mesh>
+          <boxGeometry
+            args={[
+              cubeSize,
+              cubeSize,
+              cubeSize,
+              8,
+              8,
+              8,
+            ]}
+          />
+
+          <meshBasicMaterial
+            color="#4d83b1"
+            wireframe
+            transparent
+            opacity={0.055}
+            depthWrite={false}
           />
         </mesh>
 
-        {Array.from({
-          length: 18,
-        }).map(
-          (
-            _,
-            index
-          ) => (
-            <mesh
-              key={
-                index
-              }
-              position={[
-                0,
-
-                -1.18 +
-                  index *
-                    0.138,
-
-                1.265,
-              ]}
-            >
-              <planeGeometry
-                args={[
-                  2.3,
-                  0.01,
-                ]}
-              />
-
-              <meshBasicMaterial
-                color="#8aa7bd"
-                transparent
-                opacity={0.08}
-              />
-            </mesh>
-          )
-        )}
+        <lineSegments
+          geometry={
+            edgeGeometry
+          }
+        >
+          <lineBasicMaterial
+            color="#78a8d0"
+            transparent
+            opacity={0.09}
+          />
+        </lineSegments>
       </group>
     </group>
   );
 }
 
-function ScanPlane({
-  progressRef,
-}) {
-  const ref =
-    useRef(null);
-
-  useFrame(
-    (
-      _state,
-      delta
-    ) => {
-      if (
-        !ref.current
-      ) {
-        return;
-      }
-
-      const p =
-        clamp(
-          progressRef.current
-        );
-
-      ref.current.position.y =
-        THREE.MathUtils.damp(
-          ref.current
-            .position.y,
-
-          THREE.MathUtils.lerp(
-            2,
-            -2,
-            clamp(
-              p /
-                0.62
-            )
-          ),
-
-          6,
-          delta
-        );
-
-      ref.current.visible =
-        p < 0.72;
-    }
-  );
-
-  return (
-    <group ref={ref}>
-      <mesh>
-        <planeGeometry
-          args={[
-            4.5,
-            0.16,
-          ]}
-        />
-
-        <meshBasicMaterial
-          color="#6f9ec5"
-          transparent
-          opacity={0.08}
-          blending={
-            THREE.AdditiveBlending
-          }
-          depthWrite={false}
-        />
-      </mesh>
-
-      <mesh>
-        <planeGeometry
-          args={[
-            4.5,
-            0.015,
-          ]}
-        />
-
-        <meshBasicMaterial
-          color="#9ebbd2"
-          transparent
-          opacity={0.38}
-        />
-      </mesh>
-    </group>
-  );
-}
+/* =========================================================
+   CAMERA
+========================================================= */
 
 function CameraRig({
   progressRef,
@@ -464,32 +502,33 @@ function CameraRig({
         );
 
       const mobile =
-        size.width < 700;
+        size.width <
+        700;
 
       const start =
         mobile
           ? {
-              x: 0,
-              y: 0.18,
-              z: 7.4,
+              x: 0.05,
+              y: 0.24,
+              z: 7.75,
             }
           : {
-              x: 0.4,
-              y: 0.3,
-              z: 6.9,
+              x: 0.42,
+              y: 0.34,
+              z: 7.05,
             };
 
       const end =
         mobile
           ? {
-              x: 0,
-              y: 0.05,
-              z: 6.8,
+              x: -0.02,
+              y: 0.08,
+              z: 7.05,
             }
           : {
-              x: -0.28,
-              y: 0.06,
-              z: 6.15,
+              x: -0.22,
+              y: 0.08,
+              z: 6.35,
             };
 
       camera.position.x =
@@ -535,7 +574,7 @@ function CameraRig({
         );
 
       camera.lookAt(
-        0,
+        0.15,
         0,
         0
       );
@@ -547,17 +586,21 @@ function CameraRig({
   return null;
 }
 
+/* =========================================================
+   LIGHTING
+========================================================= */
+
 function Lighting() {
   return (
     <>
       <ambientLight
-        intensity={0.3}
+        intensity={0.24}
       />
 
       <hemisphereLight
-        color="#d8e4ee"
+        color="#d9e8f5"
         groundColor="#020407"
-        intensity={0.5}
+        intensity={0.46}
       />
 
       <directionalLight
@@ -566,8 +609,8 @@ function Lighting() {
           7,
           6,
         ]}
-        intensity={2.4}
-        color="#dde6ee"
+        intensity={1.85}
+        color="#dceaf6"
         castShadow
       />
 
@@ -577,14 +620,28 @@ function Lighting() {
           2,
           4,
         ]}
-        intensity={1.5}
-        color="#355f88"
-        angle={0.7}
+        intensity={1.15}
+        color="#35658e"
+        angle={0.72}
         penumbra={1}
+      />
+
+      <pointLight
+        position={[
+          2.4,
+          -1.5,
+          3.4,
+        ]}
+        intensity={0.55}
+        color="#3b79ad"
       />
     </>
   );
 }
+
+/* =========================================================
+   SCENE
+========================================================= */
 
 function Scene({
   progressRef,
@@ -605,33 +662,31 @@ function Scene({
         }
       />
 
-      <ScanPlane
-        progressRef={
-          progressRef
-        }
-      />
-
       <ContactShadows
         position={[
-          0,
-          -1.75,
+          0.15,
+          -1.78,
           0,
         ]}
-        opacity={0.22}
-        scale={6}
-        blur={3}
+        opacity={0.20}
+        scale={6.4}
+        blur={4.2}
         far={5}
       />
 
       <Environment
         preset="city"
         environmentIntensity={
-          0.1
+          0.08
         }
       />
     </>
   );
 }
+
+/* =========================================================
+   HERO OBJECT
+========================================================= */
 
 function HeroObject3D() {
   const wrapperRef =
@@ -758,9 +813,9 @@ function HeroObject3D() {
         className="hero-object-canvas"
         camera={{
           position: [
-            0.4,
-            0.3,
-            6.9,
+            0.42,
+            0.34,
+            7.05,
           ],
 
           fov: 43,

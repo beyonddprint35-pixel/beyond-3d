@@ -270,12 +270,6 @@ function Home() {
         id="home"
       >
         <div className="hero-copy">
-          <div className="hero-eyebrow">
-            <span className="eyebrow-dot" />
-
-            DIGITAL → PHYSICAL
-          </div>
-
           <h1>
             FROM
             <br />
@@ -310,10 +304,6 @@ function Home() {
               }
             >
               Start a Project
-
-              <span>
-                ↗
-              </span>
             </button>
 
             <button
