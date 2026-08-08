@@ -6,6 +6,7 @@ import {
 import UploadProject from "../components/UploadProject";
 import HeroObject3D from "../components/HeroObject3D";
 import ProcessStory from "../components/ProcessStory";
+import ReviewsSection from "../components/ReviewsSection";
 
 import "./Home.css";
 
@@ -121,7 +122,9 @@ function Home() {
           scrollProgress,
       }}
     >
-      {/* BACKGROUND */}
+      {/* =====================================================
+          BACKGROUND
+      ===================================================== */}
 
       <div className="home-noise" />
 
@@ -135,7 +138,9 @@ function Home() {
 
       <div className="home-orb home-orb-three" />
 
-      {/* NAV */}
+      {/* =====================================================
+          NAV
+      ===================================================== */}
 
       <header className="home-navbar">
         <button
@@ -171,6 +176,15 @@ function Home() {
             }
           >
             Capabilities
+          </button>
+
+          <button
+            type="button"
+            onClick={() =>
+              scrollToSection("reviews")
+            }
+          >
+            Reviews
           </button>
 
           <button
@@ -223,7 +237,9 @@ function Home() {
         </div>
       </header>
 
-      {/* HERO */}
+      {/* =====================================================
+          HERO
+      ===================================================== */}
 
       <section
         className="home-hero"
@@ -337,7 +353,9 @@ function Home() {
         </div>
       </section>
 
-      {/* TRANSFORMATION BAR */}
+      {/* =====================================================
+          TRANSFORMATION BAR
+      ===================================================== */}
 
       <section className="material-transition">
         <div className="transition-top">
@@ -379,11 +397,15 @@ function Home() {
         </div>
       </section>
 
-      {/* HOW IT WORKS */}
+      {/* =====================================================
+          HOW IT WORKS
+      ===================================================== */}
 
       <ProcessStory />
 
-      {/* CAPABILITIES */}
+      {/* =====================================================
+          CAPABILITIES
+      ===================================================== */}
 
       <section
         className="home-capabilities"
@@ -560,7 +582,15 @@ function Home() {
         </div>
       </section>
 
-      {/* START PROJECT — PRINTER ANIMATION REMOVED */}
+      {/* =====================================================
+          REVIEWS
+      ===================================================== */}
+
+      <ReviewsSection />
+
+      {/* =====================================================
+          START PROJECT
+      ===================================================== */}
 
       <section
         className="home-start-project"
@@ -575,7 +605,7 @@ function Home() {
         <div className="start-project-heading">
           <div>
             <div className="section-index">
-              03 / START PROJECT
+              04 / START PROJECT
             </div>
 
             <h2>
@@ -602,7 +632,9 @@ function Home() {
         </div>
       </section>
 
-      {/* FINAL CTA */}
+      {/* =====================================================
+          FINAL CTA
+      ===================================================== */}
 
       <section
         className="home-final-cta"
@@ -615,7 +647,7 @@ function Home() {
         <div className="final-cta-glow" />
 
         <div className="section-index">
-          04 / BEYOND
+          05 / BEYOND
         </div>
 
         <h2>
@@ -645,6 +677,10 @@ function Home() {
           </span>
         </button>
       </section>
+
+      {/* =====================================================
+          FOOTER
+      ===================================================== */}
 
       <footer className="home-footer">
         <div className="footer-brand">
