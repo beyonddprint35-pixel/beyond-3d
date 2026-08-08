@@ -1,24 +1,7 @@
-const crypto = require("crypto");
+import crypto from "node:crypto";
 
 const MESHY_BASE_URL =
   "https://api.meshy.ai";
-
-function jsonResponse(
-  statusCode,
-  body
-) {
-  return {
-    statusCode,
-    headers: {
-      "Content-Type":
-        "application/json",
-      "Cache-Control":
-        "no-store",
-    },
-    body:
-      JSON.stringify(body),
-  };
-}
 
 function createFileToken(
   taskId,
@@ -33,9 +16,7 @@ function createFileToken(
     .update(
       `${taskType}:${taskId}`
     )
-    .digest(
-      "hex"
-    );
+    .digest("hex");
 }
 
 function safeCompare(
@@ -45,17 +26,13 @@ function safeCompare(
   try {
     const a =
       Buffer.from(
-        String(
-          received
-        ),
+        String(received),
         "utf8"
       );
 
     const b =
       Buffer.from(
-        String(
-          expected
-        ),
+        String(expected),
         "utf8"
       );
 
@@ -66,32 +43,12 @@ function safeCompare(
       return false;
     }
 
-    return crypto
-      .timingSafeEqual(
-        a,
-        b
-      );
-  } catch {
-    return false;
-  }
-}
-
-async function readJson(
-  response
-) {
-  const text =
-    await response.text();
-
-  try {
-    return JSON.parse(
-      text
+    return crypto.timingSafeEqual(
+      a,
+      b
     );
   } catch {
-    return {
-      message:
-        text ||
-        "Unknown Meshy response",
-    };
+    return false;
   }
 }
 
@@ -100,8 +57,7 @@ function getStatusEndpoint(
   taskType
 ) {
   if (
-    taskType ===
-    "text"
+    taskType === "text"
   ) {
     return `/openapi/v2/text-to-3d/${encodeURIComponent(
       taskId
@@ -109,8 +65,7 @@ function getStatusEndpoint(
   }
 
   if (
-    taskType ===
-    "photos"
+    taskType === "photos"
   ) {
     return `/openapi/v1/multi-image-to-3d/${encodeURIComponent(
       taskId
@@ -120,18 +75,38 @@ function getStatusEndpoint(
   return null;
 }
 
-exports.handler =
-async function (event) {
+function jsonResponse(
+  body,
+  status = 200
+) {
+  return new Response(
+    JSON.stringify(body),
+    {
+      status,
+
+      headers: {
+        "Content-Type":
+          "application/json",
+
+        "Cache-Control":
+          "no-store",
+      },
+    }
+  );
+}
+
+export default async (
+  request
+) => {
   if (
-    event.httpMethod !==
-    "GET"
+    request.method !== "GET"
   ) {
     return jsonResponse(
-      405,
       {
         error:
           "Method not allowed",
-      }
+      },
+      405
     );
   }
 
@@ -148,28 +123,33 @@ async function (event) {
     !tokenSecret
   ) {
     return jsonResponse(
-      500,
       {
         error:
           "AI Studio server configuration is incomplete.",
-      }
+      },
+      500
     );
   }
 
+  const url =
+    new URL(
+      request.url
+    );
+
   const taskId =
-    event
-      .queryStringParameters
-      ?.id;
+    url.searchParams.get(
+      "id"
+    );
 
   const taskType =
-    event
-      .queryStringParameters
-      ?.type;
+    url.searchParams.get(
+      "type"
+    );
 
   const token =
-    event
-      .queryStringParameters
-      ?.token;
+    url.searchParams.get(
+      "token"
+    );
 
   if (
     !taskId ||
@@ -177,11 +157,11 @@ async function (event) {
     !token
   ) {
     return jsonResponse(
-      400,
       {
         error:
           "Missing task id, type or token.",
-      }
+      },
+      400
     );
   }
 
@@ -199,11 +179,11 @@ async function (event) {
     )
   ) {
     return jsonResponse(
-      403,
       {
         error:
           "Invalid model file token.",
-      }
+      },
+      403
     );
   }
 
@@ -215,15 +195,19 @@ async function (event) {
 
   if (!endpoint) {
     return jsonResponse(
-      400,
       {
         error:
           "Invalid task type.",
-      }
+      },
+      400
     );
   }
 
   try {
+    /* =========================================
+       GET TASK FROM MESHY
+    ========================================= */
+
     const taskResponse =
       await fetch(
         `${MESHY_BASE_URL}${endpoint}`,
@@ -235,41 +219,40 @@ async function (event) {
         }
       );
 
-    const taskData =
-      await readJson(
-        taskResponse
-      );
-
     if (
       !taskResponse.ok
     ) {
+      const errorText =
+        await taskResponse.text();
+
       console.error(
         "Meshy task lookup failed:",
         taskResponse.status,
-        taskData
+        errorText
       );
 
       return jsonResponse(
-        taskResponse.status,
         {
           error:
-            taskData?.message ||
-            taskData?.error ||
             "Unable to retrieve generated model.",
-        }
+        },
+        taskResponse.status
       );
     }
+
+    const taskData =
+      await taskResponse.json();
 
     if (
       taskData.status !==
       "SUCCEEDED"
     ) {
       return jsonResponse(
-        409,
         {
           error:
             "Generated model is not ready yet.",
-        }
+        },
+        409
       );
     }
 
@@ -280,13 +263,18 @@ async function (event) {
 
     if (!modelUrl) {
       return jsonResponse(
-        404,
         {
           error:
             "Meshy did not return a GLB model.",
-        }
+        },
+        404
       );
     }
+
+    /* =========================================
+       STREAM GLB FROM MESHY
+       DO NOT CONVERT TO BASE64
+    ========================================= */
 
     const modelResponse =
       await fetch(
@@ -294,7 +282,8 @@ async function (event) {
       );
 
     if (
-      !modelResponse.ok
+      !modelResponse.ok ||
+      !modelResponse.body
     ) {
       console.error(
         "Meshy GLB download failed:",
@@ -302,58 +291,54 @@ async function (event) {
       );
 
       return jsonResponse(
-        502,
         {
           error:
-            "Unable to download the generated GLB from Meshy.",
-        }
+            "Unable to retrieve the generated GLB.",
+        },
+        502
       );
     }
 
-    const arrayBuffer =
-      await modelResponse.arrayBuffer();
+    /*
+      Important:
+      modelResponse.body is streamed
+      directly back to the browser.
+    */
 
-    const buffer =
-      Buffer.from(
-        arrayBuffer
-      );
+    return new Response(
+      modelResponse.body,
+      {
+        status: 200,
 
-    return {
-      statusCode: 200,
+        headers: {
+          "Content-Type":
+            "model/gltf-binary",
 
-      isBase64Encoded:
-        true,
+          "Content-Disposition":
+            `inline; filename="beyond-ai-${taskId}.glb"`,
 
-      headers: {
-        "Content-Type":
-          "model/gltf-binary",
+          "Cache-Control":
+            "private, max-age=3600",
 
-        "Content-Disposition":
-          `inline; filename="beyond-ai-${taskId}.glb"`,
-
-        "Cache-Control":
-          "private, max-age=3600",
-      },
-
-      body:
-        buffer.toString(
-          "base64"
-        ),
-    };
+          "X-Content-Type-Options":
+            "nosniff",
+        },
+      }
+    );
   } catch (
     error
   ) {
     console.error(
-      "AI model file proxy error:",
+      "AI model streaming error:",
       error
     );
 
     return jsonResponse(
-      500,
       {
         error:
-          "Unable to load generated model file.",
-      }
+          "Unable to stream generated model.",
+      },
+      500
     );
   }
 };
