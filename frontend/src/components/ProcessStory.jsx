@@ -5,17 +5,24 @@ import {
 } from "react";
 
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import {
+  ScrollTrigger,
+} from "gsap/ScrollTrigger";
 
 import "./ProcessStory.css";
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(
+  ScrollTrigger
+);
 
 const stages = [
   {
     number: "01",
     eyebrow: "UPLOAD",
-    title: "Send your model.",
+
+    title:
+      "Send your model.",
+
     text:
       "Upload your STL, 3MF, OBJ, STEP or reference file and start your project.",
   },
@@ -23,7 +30,10 @@ const stages = [
   {
     number: "02",
     eyebrow: "ANALYZE",
-    title: "We inspect it.",
+
+    title:
+      "We inspect it.",
+
     text:
       "We review geometry, size, material and production requirements.",
   },
@@ -31,7 +41,10 @@ const stages = [
   {
     number: "03",
     eyebrow: "APPROVE",
-    title: "You approve the quote.",
+
+    title:
+      "You approve the quote.",
+
     text:
       "Receive a clear digital quotation and approve production online.",
   },
@@ -39,7 +52,10 @@ const stages = [
   {
     number: "04",
     eyebrow: "OBJECT",
-    title: "Your idea becomes real.",
+
+    title:
+      "Your idea becomes real.",
+
     text:
       "Once approved, your digital design becomes a real physical object ready for production.",
   },
@@ -306,7 +322,10 @@ function ApproveVisual({
               0,
               Math.min(
                 1,
-                (progress - 0.55) *
+                (
+                  progress -
+                  0.55
+                ) *
                   2.5
               )
             ),
@@ -324,9 +343,7 @@ function ApproveVisual({
 }
 
 /* =========================================================
-   FINISHED OBJECT
-
-   This replaces the old printer animation.
+   FINAL OBJECT
 ========================================================= */
 
 function FinishedVisual({
@@ -388,7 +405,10 @@ function FinishedVisual({
         </strong>
 
         <p>
-          Your approved design is transformed into a real manufactured object.
+          Your approved design
+          is transformed into
+          a real manufactured
+          object.
         </p>
 
         <div className="finished-specs">
@@ -426,24 +446,24 @@ function FinishedVisual({
 
       <div className="finished-output-label">
         DIGITAL
+
         <span>
           →
         </span>
+
         PHYSICAL
       </div>
     </div>
   );
 }
 
-/* =========================================================
-   STAGE SWITCHER
-========================================================= */
-
 function StageVisual({
   stageIndex,
   localProgress,
 }) {
-  if (stageIndex === 0) {
+  if (
+    stageIndex === 0
+  ) {
     return (
       <UploadVisual
         progress={
@@ -453,7 +473,9 @@ function StageVisual({
     );
   }
 
-  if (stageIndex === 1) {
+  if (
+    stageIndex === 1
+  ) {
     return (
       <AnalyzeVisual
         progress={
@@ -463,7 +485,9 @@ function StageVisual({
     );
   }
 
-  if (stageIndex === 2) {
+  if (
+    stageIndex === 2
+  ) {
     return (
       <ApproveVisual
         progress={
@@ -518,68 +542,59 @@ function ProcessStory() {
 
     const context =
       gsap.context(() => {
-        const trigger =
-          ScrollTrigger.create({
-            trigger:
-              sectionRef.current,
+        ScrollTrigger.create({
+          trigger:
+            sectionRef.current,
 
-            start:
-              "top top",
+          start:
+            "top top",
 
-            end:
-              "+=2800",
+          end:
+            "+=2800",
 
-            pin:
-              stickyRef.current,
+          pin:
+            stickyRef.current,
 
-            scrub:
-              0.8,
+          scrub:
+            0.8,
 
-            anticipatePin:
-              1,
+          anticipatePin:
+            1,
 
-            invalidateOnRefresh:
-              true,
+          invalidateOnRefresh:
+            true,
 
-            onUpdate:
-              (self) => {
-                const p =
-                  self.progress;
+          onUpdate:
+            (self) => {
+              const p =
+                self.progress;
 
-                setProgress(p);
+              setProgress(p);
 
-                /*
-                  4 equally sized stages
-                */
-
-                const exactStage =
-                  Math.min(
-                    3.9999,
-                    p * 4
-                  );
-
-                const nextStage =
-                  Math.floor(
-                    exactStage
-                  );
-
-                const nextLocal =
-                  exactStage -
-                  nextStage;
-
-                setStageIndex(
-                  nextStage
+              const exactStage =
+                Math.min(
+                  3.9999,
+                  p * 4
                 );
 
-                setLocalProgress(
-                  nextLocal
+              const nextStage =
+                Math.floor(
+                  exactStage
                 );
-              },
-          });
 
-        return () => {
-          trigger.kill();
-        };
+              const nextLocal =
+                exactStage -
+                nextStage;
+
+              setStageIndex(
+                nextStage
+              );
+
+              setLocalProgress(
+                nextLocal
+              );
+            },
+        });
       }, sectionRef);
 
     const timer =
@@ -621,10 +636,6 @@ function ProcessStory() {
         <div className="process-story-orb process-story-orb-two" />
 
         <div className="process-story-shell">
-          {/* ===============================
-              TOP
-          =============================== */}
-
           <div className="process-story-topbar">
             <span>
               01 / HOW IT WORKS
@@ -668,10 +679,6 @@ function ProcessStory() {
               )}
             </div>
           </div>
-
-          {/* ===============================
-              CONTENT
-          =============================== */}
 
           <div className="process-story-content">
             <div className="process-story-copy">
@@ -730,8 +737,7 @@ function ProcessStory() {
                 </div>
 
                 <span>
-                  BEYOND /
-                  {" "}
+                  BEYOND /{" "}
                   {
                     stage.eyebrow
                   }
@@ -769,10 +775,6 @@ function ProcessStory() {
               </div>
             </div>
           </div>
-
-          {/* ===============================
-              FOOTER
-          =============================== */}
 
           <div className="process-story-footer">
             <div className="process-footer-stage">

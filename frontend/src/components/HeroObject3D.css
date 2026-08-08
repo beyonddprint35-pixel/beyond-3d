@@ -7,41 +7,30 @@
   position: relative;
 
   display: grid;
+
   place-items: center;
 
   isolation: isolate;
 
   overflow: visible;
-
-  background: transparent;
 }
-
-/* =========================================================
-   WEBGL
-========================================================= */
 
 .hero-object-canvas {
   position: absolute !important;
 
   inset: -6%;
 
-  width: 112% !important;
-  height: 112% !important;
+  width:
+    112% !important;
+
+  height:
+    112% !important;
 
   z-index: 4;
 
-  background: transparent !important;
-
-  filter:
-    drop-shadow(
-      0 45px 55px
-      rgba(0, 0, 0, 0.28)
-    );
+  background:
+    transparent !important;
 }
-
-/* =========================================================
-   DEPTH
-========================================================= */
 
 .hero-object-aura {
   position: absolute;
@@ -53,9 +42,10 @@
   top: 50%;
 
   transform:
-    translate(-50%, -50%);
-
-  z-index: 1;
+    translate(
+      -50%,
+      -50%
+    );
 
   border-radius: 50%;
 
@@ -64,12 +54,24 @@
   background:
     radial-gradient(
       circle,
-      rgba(42, 92, 148, 0.12),
-      rgba(16, 40, 71, 0.045) 40%,
+      rgba(
+        42,
+        92,
+        148,
+        0.12
+      ),
+      rgba(
+        16,
+        40,
+        71,
+        0.045
+      )
+      40%,
       transparent 70%
     );
 
-  filter: blur(25px);
+  filter:
+    blur(25px);
 }
 
 .hero-object-grid {
@@ -86,84 +88,34 @@
     perspective(700px)
     rotateX(68deg);
 
-  z-index: 1;
-
   opacity: 0.27;
-
-  pointer-events: none;
 
   background-image:
     linear-gradient(
-      rgba(80, 126, 172, 0.14)
+      rgba(
+        80,
+        126,
+        172,
+        0.14
+      )
       1px,
       transparent 1px
     ),
     linear-gradient(
       90deg,
-      rgba(80, 126, 172, 0.14)
+      rgba(
+        80,
+        126,
+        172,
+        0.14
+      )
       1px,
       transparent 1px
     );
 
   background-size:
     30px 30px;
-
-  mask-image:
-    radial-gradient(
-      ellipse,
-      black 10%,
-      transparent 72%
-    );
 }
-
-/* =========================================================
-   ORBITS
-========================================================= */
-
-.hero-object-orbit {
-  position: absolute;
-
-  left: 50%;
-  top: 50%;
-
-  z-index: 2;
-
-  pointer-events: none;
-
-  border-radius: 50%;
-}
-
-.hero-object-orbit-a {
-  width: 480px;
-  height: 480px;
-
-  transform:
-    translate(-50%, -50%)
-    rotateX(68deg)
-    rotateZ(-15deg);
-
-  border:
-    1px solid
-    rgba(105, 151, 197, 0.08);
-}
-
-.hero-object-orbit-b {
-  width: 580px;
-  height: 580px;
-
-  transform:
-    translate(-50%, -50%)
-    rotateX(66deg)
-    rotateZ(18deg);
-
-  border:
-    1px dashed
-    rgba(105, 151, 197, 0.05);
-}
-
-/* =========================================================
-   DATA PANELS
-========================================================= */
 
 .hero-data-panel,
 .hero-analysis-panel {
@@ -171,14 +123,22 @@
 
   z-index: 8;
 
-  pointer-events: none;
-
   border:
     1px solid
-    rgba(141, 172, 203, 0.08);
+    rgba(
+      141,
+      172,
+      203,
+      0.08
+    );
 
   background:
-    rgba(5, 11, 19, 0.58);
+    rgba(
+      5,
+      11,
+      19,
+      0.58
+    );
 
   backdrop-filter:
     blur(15px);
@@ -220,71 +180,7 @@
   font-size: 8px;
 
   font-weight: 500;
-
-  letter-spacing: 0.8px;
 }
-
-/* =========================================================
-   MEASUREMENT
-========================================================= */
-
-.hero-measurement {
-  position: absolute;
-
-  left: 6%;
-  top: 34%;
-
-  z-index: 8;
-
-  width: 100px;
-
-  pointer-events: none;
-}
-
-.hero-measurement span {
-  display: block;
-
-  margin-bottom: 6px;
-
-  color: #596d83;
-
-  font-size: 6px;
-
-  letter-spacing: 1.6px;
-}
-
-.hero-measurement div {
-  height: 1px;
-
-  position: relative;
-
-  background:
-    linear-gradient(
-      90deg,
-      #526d88,
-      transparent
-    );
-}
-
-.hero-measurement div::before {
-  content: "";
-
-  position: absolute;
-
-  width: 4px;
-  height: 4px;
-
-  left: -2px;
-  top: -2px;
-
-  border-radius: 50%;
-
-  background: #758da5;
-}
-
-/* =========================================================
-   ANALYSIS PANEL
-========================================================= */
 
 .hero-analysis-panel {
   right: 4%;
@@ -300,9 +196,8 @@
 .hero-analysis-head {
   display: flex;
 
-  align-items: center;
-
-  justify-content: space-between;
+  justify-content:
+    space-between;
 }
 
 .hero-analysis-head i {
@@ -312,9 +207,6 @@
   border-radius: 50%;
 
   background: #64788c;
-
-  transition:
-    background 0.3s ease;
 }
 
 .hero-analysis-head i.ready {
@@ -328,15 +220,7 @@
 
   color: #cad6e1;
 
-  font-family:
-    "Space Grotesk",
-    sans-serif;
-
   font-size: 12px;
-
-  font-weight: 500;
-
-  letter-spacing: 0.6px;
 }
 
 .hero-analysis-progress {
@@ -349,7 +233,12 @@
   overflow: hidden;
 
   background:
-    rgba(255, 255, 255, 0.05);
+    rgba(
+      255,
+      255,
+      255,
+      0.05
+    );
 }
 
 .hero-analysis-progress span {
@@ -363,22 +252,13 @@
       #315e87,
       #6d99bf
     );
-
-  transition:
-    width 0.08s linear;
 }
 
 .hero-analysis-panel small {
   color: #52677d;
 
   font-size: 6px;
-
-  letter-spacing: 1px;
 }
-
-/* =========================================================
-   SPECS
-========================================================= */
 
 .hero-specs {
   position: absolute;
@@ -391,8 +271,6 @@
   display: flex;
 
   gap: 24px;
-
-  pointer-events: none;
 }
 
 .hero-specs div {
@@ -400,7 +278,12 @@
 
   border-left:
     1px solid
-    rgba(255, 255, 255, 0.07);
+    rgba(
+      255,
+      255,
+      255,
+      0.07
+    );
 }
 
 .hero-specs strong {
@@ -415,70 +298,11 @@
   font-weight: 500;
 }
 
-/* =========================================================
-   CAPTION
-========================================================= */
-
-.hero-object-caption {
-  position: absolute;
-
-  left: 50%;
-  bottom: 7%;
-
-  transform:
-    translateX(-50%);
-
-  z-index: 8;
-
-  display: flex;
-
-  align-items: center;
-
-  gap: 10px;
-
-  color: #475b70;
-
-  font-size: 6px;
-
-  font-weight: 700;
-
-  letter-spacing: 2px;
-
-  pointer-events: none;
-}
-
-.hero-object-caption span {
-  color: #738aa2;
-}
-
-/* =========================================================
-   TABLET
-========================================================= */
-
-@media (
-  max-width: 1100px
-) {
-  .hero-object-wrapper {
-    min-height: 610px;
-  }
-
-  .hero-object-aura {
-    width: 500px;
-    height: 500px;
-  }
-}
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
 @media (
   max-width: 700px
 ) {
   .hero-object-wrapper {
     min-height: 470px;
-
-    width: 100%;
   }
 
   .hero-object-canvas {
@@ -502,41 +326,11 @@
     height: 160px;
   }
 
-  .hero-object-orbit-a {
-    width: 290px;
-    height: 290px;
-  }
-
-  .hero-object-orbit-b {
-    width: 345px;
-    height: 345px;
-  }
-
   .hero-data-top {
     right: 1%;
     top: 13%;
 
     min-width: 105px;
-
-    padding:
-      8px 9px;
-  }
-
-  .hero-data-panel span,
-  .hero-analysis-panel span,
-  .hero-specs span {
-    font-size: 5px;
-  }
-
-  .hero-data-panel strong {
-    font-size: 6px;
-  }
-
-  .hero-measurement {
-    left: 1%;
-    top: 31%;
-
-    width: 55px;
   }
 
   .hero-analysis-panel {
@@ -544,12 +338,6 @@
     bottom: 13%;
 
     width: 110px;
-
-    padding: 9px;
-  }
-
-  .hero-analysis-panel strong {
-    font-size: 9px;
   }
 
   .hero-specs {
@@ -557,39 +345,5 @@
     bottom: 12%;
 
     gap: 10px;
-  }
-
-  .hero-specs div {
-    padding-left: 6px;
-  }
-
-  .hero-specs strong {
-    font-size: 6px;
-  }
-
-  .hero-object-caption {
-    bottom: 3%;
-
-    font-size: 5px;
-  }
-}
-
-@media (
-  max-width: 430px
-) {
-  .hero-object-wrapper {
-    min-height: 420px;
-  }
-
-  .hero-object-canvas {
-    inset:
-      -2% -22%;
-
-    width:
-      144% !important;
-  }
-
-  .hero-measurement {
-    display: none;
   }
 }
