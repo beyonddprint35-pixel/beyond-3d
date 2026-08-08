@@ -353,6 +353,17 @@ function Home() {
             type="button"
             onClick={() =>
               scrollToSection(
+                "ai-studio"
+              )
+            }
+          >
+            BEYOND AI Studio
+          </button>
+
+          <button
+            type="button"
+            onClick={() =>
+              scrollToSection(
                 "start"
               )
             }
@@ -610,7 +621,12 @@ function Home() {
           AI MODEL STUDIO
       ========================================= */}
 
-      <AIModelStudio />
+      <div
+        id="ai-studio"
+        className="home-ai-studio-anchor"
+      >
+        <AIModelStudio />
+      </div>
 
       {/* =========================================
           REVIEWS

@@ -3315,3 +3315,22 @@ span {
 
   font-size: 12px;
 }
+
+
+/* =========================================================
+   AI STUDIO NAV ANCHOR
+========================================================= */
+
+.home-ai-studio-anchor {
+  position: relative;
+
+  scroll-margin-top: 90px;
+}
+
+@media (
+  max-width: 700px
+) {
+  .home-ai-studio-anchor {
+    scroll-margin-top: 72px;
+  }
+}
