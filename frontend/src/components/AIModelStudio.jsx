@@ -1,4 +1,5 @@
 import {
+  Component,
   Suspense,
   useMemo,
   useRef,
@@ -77,6 +78,65 @@ function GeneratedModel({
       />
     </Bounds>
   );
+}
+
+class ModelViewerErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      hasError: false,
+    };
+  }
+
+  static getDerivedStateFromError() {
+    return {
+      hasError: true,
+    };
+  }
+
+  componentDidCatch(
+    error
+  ) {
+    console.error(
+      "3D viewer error:",
+      error
+    );
+  }
+
+  componentDidUpdate(
+    previousProps
+  ) {
+    if (
+      previousProps.resetKey !==
+        this.props.resetKey &&
+      this.state.hasError
+    ) {
+      this.setState({
+        hasError: false,
+      });
+    }
+  }
+
+  render() {
+    if (
+      this.state.hasError
+    ) {
+      return (
+        <div className="ai-viewer-error">
+          <strong>
+            The 3D preview could not be displayed.
+          </strong>
+
+          <span>
+            The generated model is safe, but the browser viewer failed to load it.
+          </span>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
 }
 
 function RealModelViewer({
@@ -307,8 +367,8 @@ function AIModelStudio() {
   ] = useState(0);
 
   const [
-    modelUrl,
-    setModelUrl,
+    viewerUrl,
+    setViewerUrl,
   ] = useState(null);
 
   const [
@@ -364,7 +424,7 @@ function AIModelStudio() {
     );
 
     setProgress(0);
-    setModelUrl(null);
+    setViewerUrl(null);
     setModel3mfUrl(
       null
     );
@@ -575,15 +635,15 @@ function AIModelStudio() {
         "SUCCEEDED"
       ) {
         if (
-          !data.modelUrl
+          !data.viewerUrl
         ) {
           throw new Error(
-            "Meshy finished but no GLB model was returned."
+            "Meshy finished but no viewer URL was returned."
           );
         }
 
-        setModelUrl(
-          data.modelUrl
+        setViewerUrl(
+          data.viewerUrl
         );
 
         setModel3mfUrl(
@@ -647,7 +707,7 @@ function AIModelStudio() {
     clearPolling();
 
     setError("");
-    setModelUrl(null);
+    setViewerUrl(null);
     setModel3mfUrl(
       null
     );
@@ -1224,13 +1284,19 @@ function AIModelStudio() {
                 <div className="ai-preview-grid" />
                 <div className="ai-preview-glow" />
 
-                {modelUrl ? (
+                {viewerUrl ? (
                   <div className="ai-real-model-viewer">
-                    <RealModelViewer
-                      modelUrl={
-                        modelUrl
+                    <ModelViewerErrorBoundary
+                      resetKey={
+                        viewerUrl
                       }
-                    />
+                    >
+                      <RealModelViewer
+                        modelUrl={
+                          viewerUrl
+                        }
+                      />
+                    </ModelViewerErrorBoundary>
                   </div>
                 ) : (
                   <>
@@ -1259,7 +1325,7 @@ function AIModelStudio() {
                   </>
                 )}
 
-                {!modelUrl && (
+                {!viewerUrl && (
                   <div className="ai-preview-empty-copy">
                     {generationState ===
                     "idle" ? (

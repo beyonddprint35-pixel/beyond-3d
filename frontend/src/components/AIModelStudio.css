@@ -1028,3 +1028,41 @@ canvas {
     width: 100%;
   }
 }
+
+
+/* =========================================================
+   3D VIEWER ERROR BOUNDARY
+========================================================= */
+
+.ai-viewer-error {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+  padding: 28px;
+  box-sizing: border-box;
+
+  text-align: center;
+
+  background:
+    rgba(2, 8, 14, 0.86);
+}
+
+.ai-viewer-error strong {
+  color: #c7d5e1;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.ai-viewer-error span {
+  max-width: 320px;
+  color: #60788d;
+  font-size: 8px;
+  line-height: 1.6;
+}

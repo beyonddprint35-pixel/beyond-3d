@@ -1,3 +1,5 @@
+const crypto = require("crypto");
+
 const MESHY_BASE_URL =
   "https://api.meshy.ai";
 
@@ -49,6 +51,24 @@ function checkAccess(
   }
 
   return true;
+}
+
+function createFileToken(
+  taskId,
+  taskType,
+  secret
+) {
+  return crypto
+    .createHmac(
+      "sha256",
+      secret
+    )
+    .update(
+      `${taskType}:${taskId}`
+    )
+    .digest(
+      "hex"
+    );
 }
 
 async function readJson(
@@ -103,12 +123,19 @@ async function (event) {
     process.env
       .MESHY_API_KEY;
 
-  if (!apiKey) {
+  const tokenSecret =
+    process.env
+      .AI_STUDIO_ACCESS_CODE;
+
+  if (
+    !apiKey ||
+    !tokenSecret
+  ) {
     return jsonResponse(
       500,
       {
         error:
-          "Missing MESHY_API_KEY.",
+          "AI Studio server configuration is incomplete.",
       }
     );
   }
@@ -221,6 +248,27 @@ async function (event) {
         ?.message ||
       "";
 
+    const fileToken =
+      status ===
+      "SUCCEEDED"
+        ? createFileToken(
+            taskId,
+            taskType,
+            tokenSecret
+          )
+        : null;
+
+    const viewerUrl =
+      fileToken
+        ? `/.netlify/functions/get-ai-model-file?id=${encodeURIComponent(
+            taskId
+          )}&type=${encodeURIComponent(
+            taskType
+          )}&token=${encodeURIComponent(
+            fileToken
+          )}`
+        : null;
+
     return jsonResponse(
       200,
       {
@@ -233,10 +281,7 @@ async function (event) {
         error:
           taskError ||
           null,
-        modelUrl:
-          data?.model_urls
-            ?.glb ||
-          null,
+        viewerUrl,
         model3mfUrl:
           data?.model_urls
             ?.[

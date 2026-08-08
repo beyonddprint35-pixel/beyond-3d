@@ -1,0 +1,359 @@
+const crypto = require("crypto");
+
+const MESHY_BASE_URL =
+  "https://api.meshy.ai";
+
+function jsonResponse(
+  statusCode,
+  body
+) {
+  return {
+    statusCode,
+    headers: {
+      "Content-Type":
+        "application/json",
+      "Cache-Control":
+        "no-store",
+    },
+    body:
+      JSON.stringify(body),
+  };
+}
+
+function createFileToken(
+  taskId,
+  taskType,
+  secret
+) {
+  return crypto
+    .createHmac(
+      "sha256",
+      secret
+    )
+    .update(
+      `${taskType}:${taskId}`
+    )
+    .digest(
+      "hex"
+    );
+}
+
+function safeCompare(
+  received,
+  expected
+) {
+  try {
+    const a =
+      Buffer.from(
+        String(
+          received
+        ),
+        "utf8"
+      );
+
+    const b =
+      Buffer.from(
+        String(
+          expected
+        ),
+        "utf8"
+      );
+
+    if (
+      a.length !==
+      b.length
+    ) {
+      return false;
+    }
+
+    return crypto
+      .timingSafeEqual(
+        a,
+        b
+      );
+  } catch {
+    return false;
+  }
+}
+
+async function readJson(
+  response
+) {
+  const text =
+    await response.text();
+
+  try {
+    return JSON.parse(
+      text
+    );
+  } catch {
+    return {
+      message:
+        text ||
+        "Unknown Meshy response",
+    };
+  }
+}
+
+function getStatusEndpoint(
+  taskId,
+  taskType
+) {
+  if (
+    taskType ===
+    "text"
+  ) {
+    return `/openapi/v2/text-to-3d/${encodeURIComponent(
+      taskId
+    )}`;
+  }
+
+  if (
+    taskType ===
+    "photos"
+  ) {
+    return `/openapi/v1/multi-image-to-3d/${encodeURIComponent(
+      taskId
+    )}`;
+  }
+
+  return null;
+}
+
+exports.handler =
+async function (event) {
+  if (
+    event.httpMethod !==
+    "GET"
+  ) {
+    return jsonResponse(
+      405,
+      {
+        error:
+          "Method not allowed",
+      }
+    );
+  }
+
+  const apiKey =
+    process.env
+      .MESHY_API_KEY;
+
+  const tokenSecret =
+    process.env
+      .AI_STUDIO_ACCESS_CODE;
+
+  if (
+    !apiKey ||
+    !tokenSecret
+  ) {
+    return jsonResponse(
+      500,
+      {
+        error:
+          "AI Studio server configuration is incomplete.",
+      }
+    );
+  }
+
+  const taskId =
+    event
+      .queryStringParameters
+      ?.id;
+
+  const taskType =
+    event
+      .queryStringParameters
+      ?.type;
+
+  const token =
+    event
+      .queryStringParameters
+      ?.token;
+
+  if (
+    !taskId ||
+    !taskType ||
+    !token
+  ) {
+    return jsonResponse(
+      400,
+      {
+        error:
+          "Missing task id, type or token.",
+      }
+    );
+  }
+
+  const expectedToken =
+    createFileToken(
+      taskId,
+      taskType,
+      tokenSecret
+    );
+
+  if (
+    !safeCompare(
+      token,
+      expectedToken
+    )
+  ) {
+    return jsonResponse(
+      403,
+      {
+        error:
+          "Invalid model file token.",
+      }
+    );
+  }
+
+  const endpoint =
+    getStatusEndpoint(
+      taskId,
+      taskType
+    );
+
+  if (!endpoint) {
+    return jsonResponse(
+      400,
+      {
+        error:
+          "Invalid task type.",
+      }
+    );
+  }
+
+  try {
+    const taskResponse =
+      await fetch(
+        `${MESHY_BASE_URL}${endpoint}`,
+        {
+          headers: {
+            Authorization:
+              `Bearer ${apiKey}`,
+          },
+        }
+      );
+
+    const taskData =
+      await readJson(
+        taskResponse
+      );
+
+    if (
+      !taskResponse.ok
+    ) {
+      console.error(
+        "Meshy task lookup failed:",
+        taskResponse.status,
+        taskData
+      );
+
+      return jsonResponse(
+        taskResponse.status,
+        {
+          error:
+            taskData?.message ||
+            taskData?.error ||
+            "Unable to retrieve generated model.",
+        }
+      );
+    }
+
+    if (
+      taskData.status !==
+      "SUCCEEDED"
+    ) {
+      return jsonResponse(
+        409,
+        {
+          error:
+            "Generated model is not ready yet.",
+        }
+      );
+    }
+
+    const modelUrl =
+      taskData
+        ?.model_urls
+        ?.glb;
+
+    if (!modelUrl) {
+      return jsonResponse(
+        404,
+        {
+          error:
+            "Meshy did not return a GLB model.",
+        }
+      );
+    }
+
+    const modelResponse =
+      await fetch(
+        modelUrl
+      );
+
+    if (
+      !modelResponse.ok
+    ) {
+      console.error(
+        "Meshy GLB download failed:",
+        modelResponse.status
+      );
+
+      return jsonResponse(
+        502,
+        {
+          error:
+            "Unable to download the generated GLB from Meshy.",
+        }
+      );
+    }
+
+    const arrayBuffer =
+      await modelResponse.arrayBuffer();
+
+    const buffer =
+      Buffer.from(
+        arrayBuffer
+      );
+
+    return {
+      statusCode: 200,
+
+      isBase64Encoded:
+        true,
+
+      headers: {
+        "Content-Type":
+          "model/gltf-binary",
+
+        "Content-Disposition":
+          `inline; filename="beyond-ai-${taskId}.glb"`,
+
+        "Cache-Control":
+          "private, max-age=3600",
+      },
+
+      body:
+        buffer.toString(
+          "base64"
+        ),
+    };
+  } catch (
+    error
+  ) {
+    console.error(
+      "AI model file proxy error:",
+      error
+    );
+
+    return jsonResponse(
+      500,
+      {
+        error:
+          "Unable to load generated model file.",
+      }
+    );
+  }
+};
