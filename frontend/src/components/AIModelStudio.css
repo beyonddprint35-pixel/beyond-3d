@@ -607,7 +607,11 @@
 
 .ai-preview-actions {
   display: grid;
-  grid-template-columns: 0.75fr 1.25fr;
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(130px, 1fr)
+    );
   gap: 9px;
   margin-top: 18px;
 }
@@ -800,5 +804,227 @@
 
   .ai-studio-demo-note p {
     text-align: left;
+  }
+}
+
+
+/* =========================================================
+   PRIVATE BETA ACCESS
+========================================================= */
+
+.ai-studio-access {
+  min-height: 70px;
+
+  padding:
+    14px 28px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content:
+    space-between;
+
+  gap: 24px;
+
+  border-bottom:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.055
+    );
+
+  background:
+    rgba(
+      38,
+      82,
+      121,
+      0.025
+    );
+}
+
+.ai-studio-access span {
+  color: #557d9f;
+
+  font-size: 6px;
+
+  font-weight: 700;
+
+  letter-spacing:
+    1.6px;
+}
+
+.ai-studio-access p {
+  margin:
+    5px 0 0;
+
+  color: #455d72;
+
+  font-size: 7px;
+
+  line-height: 1.5;
+}
+
+.ai-studio-access input {
+  width:
+    min(
+      270px,
+      42%
+    );
+
+  min-height: 40px;
+
+  box-sizing:
+    border-box;
+
+  padding:
+    0 14px;
+
+  border:
+    1px solid
+    rgba(
+      113,
+      153,
+      188,
+      0.12
+    );
+
+  border-radius:
+    999px;
+
+  outline: none;
+
+  color: #c7d5e1;
+
+  background:
+    rgba(
+      2,
+      8,
+      14,
+      0.8
+    );
+
+  font-size: 9px;
+}
+
+.ai-studio-access
+input:focus {
+  border-color:
+    rgba(
+      112,
+      164,
+      207,
+      0.3
+    );
+}
+
+/* =========================================================
+   REAL MODEL VIEWER
+========================================================= */
+
+.ai-real-model-viewer {
+  position: absolute;
+
+  inset: 0;
+
+  z-index: 4;
+}
+
+.ai-real-model-viewer
+canvas {
+  width:
+    100% !important;
+
+  height:
+    100% !important;
+
+  display: block;
+}
+
+/* =========================================================
+   LIVE ERRORS / DOWNLOAD
+========================================================= */
+
+.ai-studio-error {
+  margin-top: 14px;
+
+  padding:
+    11px 13px;
+
+  border:
+    1px solid
+    rgba(
+      197,
+      87,
+      87,
+      0.16
+    );
+
+  border-radius: 12px;
+
+  color: #c78f8f;
+
+  background:
+    rgba(
+      114,
+      38,
+      38,
+      0.08
+    );
+
+  font-size: 8px;
+
+  line-height: 1.55;
+}
+
+.ai-download-action {
+  min-height: 45px;
+
+  display: grid;
+
+  place-items: center;
+
+  box-sizing:
+    border-box;
+
+  text-decoration: none;
+}
+
+.ai-credit-readout {
+  margin-top: 10px;
+
+  color: #3f596f;
+
+  font-size: 5px;
+
+  font-weight: 700;
+
+  letter-spacing:
+    1.3px;
+
+  text-align: right;
+}
+
+@media (
+  max-width: 700px
+) {
+  .ai-studio-access {
+    align-items:
+      flex-start;
+
+    flex-direction:
+      column;
+
+    gap: 10px;
+
+    padding:
+      14px 20px;
+  }
+
+  .ai-studio-access
+  input {
+    width: 100%;
   }
 }

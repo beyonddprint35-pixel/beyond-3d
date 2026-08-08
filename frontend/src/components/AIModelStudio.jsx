@@ -1,8 +1,20 @@
 import {
+  Suspense,
   useMemo,
   useRef,
   useState,
 } from "react";
+
+import {
+  Canvas,
+} from "@react-three/fiber";
+
+import {
+  Bounds,
+  Environment,
+  OrbitControls,
+  useGLTF,
+} from "@react-three/drei";
 
 import {
   Box,
@@ -16,149 +28,792 @@ import {
 import "./AIModelStudio.css";
 
 const photoSlots = [
-  { key: "front", label: "FRONT", hint: "Straight-on view" },
-  { key: "left", label: "LEFT", hint: "Left side view" },
-  { key: "right", label: "RIGHT", hint: "Right side view" },
-  { key: "back", label: "BACK", hint: "Rear view" },
+  {
+    key: "front",
+    label: "FRONT",
+    hint: "Straight-on view",
+  },
+  {
+    key: "left",
+    label: "LEFT",
+    hint: "Left side view",
+  },
+  {
+    key: "right",
+    label: "RIGHT",
+    hint: "Right side view",
+  },
+  {
+    key: "back",
+    label: "BACK",
+    hint: "Rear view",
+  },
 ];
 
-function AIModelStudio() {
-  const [mode, setMode] = useState("text");
-  const [prompt, setPrompt] = useState("");
-  const [photos, setPhotos] = useState({
-    front: null,
-    left: null,
-    right: null,
-    back: null,
-  });
-  const [generationState, setGenerationState] = useState("idle");
-  const [statusText, setStatusText] = useState("Waiting for input");
-  const [progress, setProgress] = useState(0);
-  const timersRef = useRef([]);
+function GeneratedModel({
+  url,
+}) {
+  const { scene } =
+    useGLTF(url);
 
-  const uploadedCount = useMemo(
-    () => Object.values(photos).filter(Boolean).length,
-    [photos]
+  const clonedScene =
+    useMemo(
+      () =>
+        scene.clone(true),
+      [scene]
+    );
+
+  return (
+    <Bounds
+      fit
+      clip
+      observe
+      margin={1.35}
+    >
+      <primitive
+        object={
+          clonedScene
+        }
+      />
+    </Bounds>
+  );
+}
+
+function RealModelViewer({
+  modelUrl,
+}) {
+  return (
+    <Canvas
+      camera={{
+        position: [
+          3.4,
+          2.6,
+          4.2,
+        ],
+        fov: 42,
+      }}
+      dpr={[
+        1,
+        1.6,
+      ]}
+      gl={{
+        antialias:
+          true,
+        alpha:
+          true,
+      }}
+    >
+      <ambientLight
+        intensity={1.1}
+      />
+
+      <directionalLight
+        position={[
+          4,
+          6,
+          5,
+        ]}
+        intensity={2}
+      />
+
+      <Suspense
+        fallback={
+          null
+        }
+      >
+        <GeneratedModel
+          url={
+            modelUrl
+          }
+        />
+
+        <Environment
+          preset="city"
+          environmentIntensity={
+            0.45
+          }
+        />
+      </Suspense>
+
+      <OrbitControls
+        makeDefault
+        enablePan={false}
+        minDistance={1.5}
+        maxDistance={8}
+      />
+    </Canvas>
+  );
+}
+
+function fileToDataUrl(
+  file
+) {
+  return new Promise(
+    (
+      resolve,
+      reject
+    ) => {
+      const reader =
+        new FileReader();
+
+      reader.onload = () =>
+        resolve(
+          reader.result
+        );
+
+      reader.onerror =
+        reject;
+
+      reader.readAsDataURL(
+        file
+      );
+    }
+  );
+}
+
+async function compressImage(
+  file
+) {
+  const originalDataUrl =
+    await fileToDataUrl(
+      file
+    );
+
+  const image =
+    new Image();
+
+  await new Promise(
+    (
+      resolve,
+      reject
+    ) => {
+      image.onload =
+        resolve;
+
+      image.onerror =
+        reject;
+
+      image.src =
+        originalDataUrl;
+    }
   );
 
-  function clearTimers() {
-    timersRef.current.forEach((timer) => window.clearTimeout(timer));
-    timersRef.current = [];
+  const maxDimension =
+    1400;
+
+  const scale =
+    Math.min(
+      1,
+      maxDimension /
+        Math.max(
+          image.width,
+          image.height
+        )
+    );
+
+  const width =
+    Math.max(
+      1,
+      Math.round(
+        image.width *
+          scale
+      )
+    );
+
+  const height =
+    Math.max(
+      1,
+      Math.round(
+        image.height *
+          scale
+      )
+    );
+
+  const canvas =
+    document.createElement(
+      "canvas"
+    );
+
+  canvas.width =
+    width;
+
+  canvas.height =
+    height;
+
+  const context =
+    canvas.getContext(
+      "2d"
+    );
+
+  context.fillStyle =
+    "#ffffff";
+
+  context.fillRect(
+    0,
+    0,
+    width,
+    height
+  );
+
+  context.drawImage(
+    image,
+    0,
+    0,
+    width,
+    height
+  );
+
+  return canvas.toDataURL(
+    "image/jpeg",
+    0.8
+  );
+}
+
+function AIModelStudio() {
+  const [mode, setMode] =
+    useState("text");
+
+  const [prompt, setPrompt] =
+    useState("");
+
+  const [photos, setPhotos] =
+    useState({
+      front: null,
+      left: null,
+      right: null,
+      back: null,
+    });
+
+  const [
+    accessCode,
+    setAccessCode,
+  ] = useState("");
+
+  const [
+    generationState,
+    setGenerationState,
+  ] = useState("idle");
+
+  const [
+    statusText,
+    setStatusText,
+  ] = useState(
+    "Waiting for input"
+  );
+
+  const [
+    progress,
+    setProgress,
+  ] = useState(0);
+
+  const [
+    modelUrl,
+    setModelUrl,
+  ] = useState(null);
+
+  const [
+    model3mfUrl,
+    setModel3mfUrl,
+  ] = useState(null);
+
+  const [
+    error,
+    setError,
+  ] = useState("");
+
+  const [
+    taskInfo,
+    setTaskInfo,
+  ] = useState(null);
+
+  const pollTimerRef =
+    useRef(null);
+
+  const uploadedCount =
+    useMemo(
+      () =>
+        Object.values(
+          photos
+        ).filter(Boolean)
+          .length,
+      [photos]
+    );
+
+  function clearPolling() {
+    if (
+      pollTimerRef.current
+    ) {
+      window.clearTimeout(
+        pollTimerRef.current
+      );
+
+      pollTimerRef.current =
+        null;
+    }
   }
 
   function resetGeneration() {
-    clearTimers();
-    setGenerationState("idle");
-    setStatusText("Waiting for input");
+    clearPolling();
+
+    setGenerationState(
+      "idle"
+    );
+
+    setStatusText(
+      "Waiting for input"
+    );
+
     setProgress(0);
+    setModelUrl(null);
+    setModel3mfUrl(
+      null
+    );
+    setError("");
+    setTaskInfo(null);
   }
 
-  function switchMode(nextMode) {
+  function switchMode(
+    nextMode
+  ) {
     setMode(nextMode);
     resetGeneration();
   }
 
-  function handlePhoto(key, file) {
-    if (!file) return;
+  function handlePhoto(
+    key,
+    file
+  ) {
+    if (!file) {
+      return;
+    }
 
-    const previewUrl = URL.createObjectURL(file);
+    const previewUrl =
+      URL.createObjectURL(
+        file
+      );
 
-    setPhotos((current) => {
-      const previous = current[key];
+    setPhotos(
+      (current) => {
+        const previous =
+          current[key];
 
-      if (previous?.previewUrl) {
-        URL.revokeObjectURL(previous.previewUrl);
+        if (
+          previous?.previewUrl
+        ) {
+          URL.revokeObjectURL(
+            previous.previewUrl
+          );
+        }
+
+        return {
+          ...current,
+          [key]: {
+            file,
+            previewUrl,
+          },
+        };
       }
-
-      return {
-        ...current,
-        [key]: {
-          file,
-          previewUrl,
-        },
-      };
-    });
+    );
 
     resetGeneration();
   }
 
-  function removePhoto(key) {
-    setPhotos((current) => {
-      const item = current[key];
+  function removePhoto(
+    key
+  ) {
+    setPhotos(
+      (current) => {
+        const item =
+          current[key];
 
-      if (item?.previewUrl) {
-        URL.revokeObjectURL(item.previewUrl);
+        if (
+          item?.previewUrl
+        ) {
+          URL.revokeObjectURL(
+            item.previewUrl
+          );
+        }
+
+        return {
+          ...current,
+          [key]: null,
+        };
       }
-
-      return {
-        ...current,
-        [key]: null,
-      };
-    });
+    );
 
     resetGeneration();
   }
 
   function canGenerate() {
-    if (generationState === "generating") {
+    if (
+      generationState ===
+      "generating"
+    ) {
       return false;
     }
 
-    if (mode === "text") {
-      return prompt.trim().length >= 10;
+    if (
+      !accessCode.trim()
+    ) {
+      return false;
     }
 
-    return uploadedCount >= 2;
+    if (
+      mode === "text"
+    ) {
+      return (
+        prompt.trim()
+          .length >= 10
+      );
+    }
+
+    return (
+      uploadedCount >= 2
+    );
   }
 
-  function simulateGeneration() {
-    if (!canGenerate()) return;
+  function statusLabel(
+    status,
+    apiProgress
+  ) {
+    if (
+      status ===
+      "SUCCEEDED"
+    ) {
+      return "Model ready";
+    }
 
-    clearTimers();
-    setGenerationState("generating");
-    setProgress(8);
-    setStatusText(
-      mode === "text"
-        ? "Understanding your idea"
-        : "Reading photo angles"
+    if (
+      status ===
+      "FAILED"
+    ) {
+      return "Generation failed";
+    }
+
+    if (
+      apiProgress >= 80
+    ) {
+      return "Preparing 3D files";
+    }
+
+    if (
+      apiProgress >= 50
+    ) {
+      return "Refining geometry";
+    }
+
+    if (
+      apiProgress >= 20
+    ) {
+      return "Building geometry";
+    }
+
+    return "Starting generation";
+  }
+
+  async function pollTask(
+    taskId,
+    taskType
+  ) {
+    try {
+      const response =
+        await fetch(
+          `/.netlify/functions/get-ai-model-status?id=${encodeURIComponent(
+            taskId
+          )}&type=${encodeURIComponent(
+            taskType
+          )}`,
+          {
+            headers: {
+              "x-ai-access-code":
+                accessCode.trim(),
+            },
+          }
+        );
+
+      const data =
+        await response.json();
+
+      if (
+        !response.ok
+      ) {
+        throw new Error(
+          data.error ||
+            "Unable to check generation status."
+        );
+      }
+
+      const nextProgress =
+        Math.max(
+          1,
+          Math.min(
+            100,
+            Number(
+              data.progress ||
+                0
+            )
+          )
+        );
+
+      setProgress(
+        nextProgress
+      );
+
+      setStatusText(
+        statusLabel(
+          data.status,
+          nextProgress
+        )
+      );
+
+      setTaskInfo(
+        data
+      );
+
+      if (
+        data.status ===
+        "SUCCEEDED"
+      ) {
+        if (
+          !data.modelUrl
+        ) {
+          throw new Error(
+            "Meshy finished but no GLB model was returned."
+          );
+        }
+
+        setModelUrl(
+          data.modelUrl
+        );
+
+        setModel3mfUrl(
+          data.model3mfUrl ||
+            null
+        );
+
+        setGenerationState(
+          "ready"
+        );
+
+        setProgress(100);
+
+        return;
+      }
+
+      if (
+        data.status ===
+        "FAILED"
+      ) {
+        throw new Error(
+          data.error ||
+            "Meshy could not generate this model."
+        );
+      }
+
+      pollTimerRef.current =
+        window.setTimeout(
+          () =>
+            pollTask(
+              taskId,
+              taskType
+            ),
+          5000
+        );
+    } catch (
+      err
+    ) {
+      setGenerationState(
+        "error"
+      );
+
+      setError(
+        err.message ||
+          "Generation failed."
+      );
+
+      setStatusText(
+        "Generation error"
+      );
+    }
+  }
+
+  async function generateModel() {
+    if (
+      !canGenerate()
+    ) {
+      return;
+    }
+
+    clearPolling();
+
+    setError("");
+    setModelUrl(null);
+    setModel3mfUrl(
+      null
+    );
+    setTaskInfo(null);
+
+    setGenerationState(
+      "generating"
     );
 
-    const stages = [
-      { delay: 700, progress: 28, text: "Preparing input" },
-      { delay: 1500, progress: 52, text: "Building geometry" },
-      { delay: 2400, progress: 76, text: "Refining the model" },
-      { delay: 3300, progress: 94, text: "Preparing 3D preview" },
-      {
-        delay: 4100,
-        progress: 100,
-        text: "Model ready",
-        complete: true,
-      },
-    ];
+    setStatusText(
+      mode === "text"
+        ? "Sending prompt to Meshy"
+        : "Preparing your photos"
+    );
 
-    stages.forEach((stage) => {
-      const timer = window.setTimeout(() => {
-        setProgress(stage.progress);
-        setStatusText(stage.text);
+    setProgress(2);
 
-        if (stage.complete) {
-          setGenerationState("ready");
+    try {
+      let requestBody;
+
+      if (
+        mode === "text"
+      ) {
+        requestBody = {
+          mode:
+            "text",
+          prompt:
+            prompt.trim(),
+        };
+      } else {
+        const selected =
+          Object.values(
+            photos
+          )
+            .filter(Boolean)
+            .map(
+              (item) =>
+                item.file
+            );
+
+        const images =
+          [];
+
+        for (
+          const file of
+          selected
+        ) {
+          setStatusText(
+            `Preparing photo ${
+              images.length +
+              1
+            } of ${
+              selected.length
+            }`
+          );
+
+          const dataUrl =
+            await compressImage(
+              file
+            );
+
+          images.push(
+            dataUrl
+          );
         }
-      }, stage.delay);
 
-      timersRef.current.push(timer);
-    });
+        requestBody = {
+          mode:
+            "photos",
+          images,
+        };
+      }
+
+      setStatusText(
+        "Starting AI generation"
+      );
+
+      setProgress(5);
+
+      const response =
+        await fetch(
+          "/.netlify/functions/generate-ai-model",
+          {
+            method:
+              "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+
+              "x-ai-access-code":
+                accessCode.trim(),
+            },
+
+            body:
+              JSON.stringify(
+                requestBody
+              ),
+          }
+        );
+
+      const data =
+        await response.json();
+
+      if (
+        !response.ok
+      ) {
+        throw new Error(
+          data.error ||
+            "Unable to start generation."
+        );
+      }
+
+      setTaskInfo({
+        taskId:
+          data.taskId,
+        taskType:
+          data.taskType,
+      });
+
+      setStatusText(
+        "Generation started"
+      );
+
+      setProgress(8);
+
+      await pollTask(
+        data.taskId,
+        data.taskType
+      );
+    } catch (
+      err
+    ) {
+      setGenerationState(
+        "error"
+      );
+
+      setError(
+        err.message ||
+          "Unable to generate model."
+      );
+
+      setStatusText(
+        "Generation error"
+      );
+    }
   }
 
   function handleUseModel() {
-    document.getElementById("start")?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
+    document
+      .getElementById(
+        "start"
+      )
+      ?.scrollIntoView({
+        behavior:
+          "smooth",
+        block:
+          "start",
+      });
   }
 
   return (
-    <section className="ai-studio-section" id="ai-studio">
+    <section
+      className="ai-studio-section"
+      id="ai-studio"
+    >
       <div className="ai-studio-shell">
         <div className="ai-studio-heading">
           <div>
@@ -169,14 +824,21 @@ function AIModelStudio() {
             <h2>
               Turn an idea
               <br />
-              <span>into a 3D model.</span>
+
+              <span>
+                into a 3D model.
+              </span>
             </h2>
           </div>
 
           <p>
-            Describe what you want or upload several photos of the same
-            object. BEYOND AI Studio will prepare a 3D concept you can review
-            before starting a project.
+            Describe what you want
+            or upload several photos
+            of the same object.
+            BEYOND AI Studio creates
+            a real AI-generated 3D
+            model you can rotate and
+            inspect.
           </p>
         </div>
 
@@ -184,51 +846,150 @@ function AIModelStudio() {
           <div className="ai-studio-mode-switch">
             <button
               type="button"
-              className={mode === "text" ? "active" : ""}
-              onClick={() => switchMode("text")}
+              className={
+                mode === "text"
+                  ? "active"
+                  : ""
+              }
+              onClick={() =>
+                switchMode(
+                  "text"
+                )
+              }
             >
-              <WandSparkles size={18} strokeWidth={1.7} />
-              <span>Text to 3D</span>
-              <small>Describe your idea</small>
+              <WandSparkles
+                size={18}
+                strokeWidth={
+                  1.7
+                }
+              />
+
+              <span>
+                Text to 3D
+              </span>
+
+              <small>
+                Describe your idea
+              </small>
             </button>
 
             <button
               type="button"
-              className={mode === "photos" ? "active" : ""}
-              onClick={() => switchMode("photos")}
+              className={
+                mode === "photos"
+                  ? "active"
+                  : ""
+              }
+              onClick={() =>
+                switchMode(
+                  "photos"
+                )
+              }
             >
-              <ImagePlus size={18} strokeWidth={1.7} />
-              <span>Photos to 3D</span>
-              <small>Recommended</small>
+              <ImagePlus
+                size={18}
+                strokeWidth={
+                  1.7
+                }
+              />
+
+              <span>
+                Photos to 3D
+              </span>
+
+              <small>
+                Recommended
+              </small>
             </button>
+          </div>
+
+          <div className="ai-studio-access">
+            <div>
+              <span>
+                PRIVATE BETA
+              </span>
+
+              <p>
+                AI generation is
+                protected while we
+                test the service.
+              </p>
+            </div>
+
+            <input
+              type="password"
+              value={
+                accessCode
+              }
+              onChange={(
+                event
+              ) =>
+                setAccessCode(
+                  event.target
+                    .value
+                )
+              }
+              placeholder="AI Studio access code"
+              autoComplete="off"
+            />
           </div>
 
           <div className="ai-studio-workspace">
             <div className="ai-studio-input">
-              {mode === "text" ? (
+              {mode ===
+              "text" ? (
                 <div className="ai-text-mode">
                   <div className="ai-input-label">
-                    <span>DESCRIBE YOUR OBJECT</span>
-                    <strong>TEXT INPUT</strong>
+                    <span>
+                      DESCRIBE YOUR
+                      OBJECT
+                    </span>
+
+                    <strong>
+                      TEXT INPUT
+                    </strong>
                   </div>
 
                   <textarea
-                    value={prompt}
-                    onChange={(event) => {
-                      setPrompt(event.target.value);
+                    value={
+                      prompt
+                    }
+                    onChange={(
+                      event
+                    ) => {
+                      setPrompt(
+                        event
+                          .target
+                          .value
+                      );
+
                       resetGeneration();
                     }}
                     placeholder="Example: A minimalist wall-mounted headphone holder with rounded corners, a hidden cable hook and a clean modern shape."
-                    maxLength={600}
+                    maxLength={
+                      600
+                    }
                   />
 
                   <div className="ai-text-meta">
-                    <span>Be specific about shape, size and purpose.</span>
-                    <strong>{prompt.length}/600</strong>
+                    <span>
+                      Be specific about
+                      shape, size and
+                      purpose.
+                    </span>
+
+                    <strong>
+                      {
+                        prompt.length
+                      }
+                      /600
+                    </strong>
                   </div>
 
                   <div className="ai-prompt-ideas">
-                    <span>TRY AN IDEA</span>
+                    <span>
+                      TRY AN IDEA
+                    </span>
 
                     <button
                       type="button"
@@ -236,6 +997,7 @@ function AIModelStudio() {
                         setPrompt(
                           "A compact desktop stand for a smartphone with a 20 degree viewing angle, rounded corners and a cable opening at the bottom."
                         );
+
                         resetGeneration();
                       }}
                     >
@@ -248,6 +1010,7 @@ function AIModelStudio() {
                         setPrompt(
                           "A modern wall-mounted key holder with four hooks, soft rounded edges and a minimalist geometric design."
                         );
+
                         resetGeneration();
                       }}
                     >
@@ -259,77 +1022,137 @@ function AIModelStudio() {
                 <div className="ai-photo-mode">
                   <div className="ai-photo-intro">
                     <div>
-                      <span>MULTI-ANGLE INPUT</span>
+                      <span>
+                        MULTI-ANGLE
+                        INPUT
+                      </span>
+
                       <strong>
-                        Upload the same object from different angles.
+                        Upload the same
+                        object from
+                        different angles.
                       </strong>
                     </div>
 
-                    <small>2 photos minimum · 4 recommended</small>
+                    <small>
+                      2 photos minimum ·
+                      4 recommended
+                    </small>
                   </div>
 
                   <div className="ai-photo-grid">
-                    {photoSlots.map((slot) => {
-                      const item = photos[slot.key];
+                    {photoSlots.map(
+                      (
+                        slot
+                      ) => {
+                        const item =
+                          photos[
+                            slot
+                              .key
+                          ];
 
-                      return (
-                        <label
-                          className={
-                            item
-                              ? "ai-photo-slot filled"
-                              : "ai-photo-slot"
-                          }
-                          key={slot.key}
-                        >
-                          {item ? (
-                            <>
-                              <img
-                                src={item.previewUrl}
-                                alt={`${slot.label} preview`}
-                              />
-
-                              <div className="ai-photo-overlay">
-                                <span>{slot.label}</span>
-
-                                <button
-                                  type="button"
-                                  onClick={(event) => {
-                                    event.preventDefault();
-                                    removePhoto(slot.key);
-                                  }}
-                                >
-                                  Remove
-                                </button>
-                              </div>
-                            </>
-                          ) : (
-                            <>
-                              <Upload size={22} strokeWidth={1.5} />
-                              <strong>{slot.label}</strong>
-                              <small>{slot.hint}</small>
-                            </>
-                          )}
-
-                          <input
-                            type="file"
-                            accept="image/png,image/jpeg,image/webp"
-                            onChange={(event) =>
-                              handlePhoto(
-                                slot.key,
-                                event.target.files?.[0]
-                              )
+                        return (
+                          <label
+                            className={
+                              item
+                                ? "ai-photo-slot filled"
+                                : "ai-photo-slot"
                             }
-                          />
-                        </label>
-                      );
-                    })}
+                            key={
+                              slot.key
+                            }
+                          >
+                            {item ? (
+                              <>
+                                <img
+                                  src={
+                                    item.previewUrl
+                                  }
+                                  alt={`${slot.label} preview`}
+                                />
+
+                                <div className="ai-photo-overlay">
+                                  <span>
+                                    {
+                                      slot.label
+                                    }
+                                  </span>
+
+                                  <button
+                                    type="button"
+                                    onClick={(
+                                      event
+                                    ) => {
+                                      event.preventDefault();
+
+                                      removePhoto(
+                                        slot.key
+                                      );
+                                    }}
+                                  >
+                                    Remove
+                                  </button>
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <Upload
+                                  size={
+                                    22
+                                  }
+                                  strokeWidth={
+                                    1.5
+                                  }
+                                />
+
+                                <strong>
+                                  {
+                                    slot.label
+                                  }
+                                </strong>
+
+                                <small>
+                                  {
+                                    slot.hint
+                                  }
+                                </small>
+                              </>
+                            )}
+
+                            <input
+                              type="file"
+                              accept="image/png,image/jpeg"
+                              onChange={(
+                                event
+                              ) =>
+                                handlePhoto(
+                                  slot.key,
+                                  event
+                                    .target
+                                    .files?.[
+                                    0
+                                  ]
+                                )
+                              }
+                            />
+                          </label>
+                        );
+                      }
+                    )}
                   </div>
 
                   <div className="ai-photo-tips">
-                    <span>BEST RESULTS</span>
+                    <span>
+                      BEST RESULTS
+                    </span>
+
                     <p>
-                      Use clear lighting, keep the entire object visible and
-                      photograph the same object from different sides.
+                      Use clear lighting,
+                      keep the entire
+                      object visible and
+                      photograph the same
+                      object from
+                      different sides.
                     </p>
                   </div>
                 </div>
@@ -338,34 +1161,62 @@ function AIModelStudio() {
               <button
                 type="button"
                 className="ai-generate-button"
-                disabled={!canGenerate()}
-                onClick={simulateGeneration}
+                disabled={
+                  !canGenerate()
+                }
+                onClick={
+                  generateModel
+                }
               >
-                <Sparkles size={18} strokeWidth={1.7} />
+                <Sparkles
+                  size={18}
+                  strokeWidth={
+                    1.7
+                  }
+                />
 
-                {generationState === "generating"
+                {generationState ===
+                "generating"
                   ? "Generating..."
-                  : generationState === "ready"
+                  : generationState ===
+                      "ready"
                     ? "Generate Again"
                     : "Generate 3D Model"}
               </button>
 
+              {error && (
+                <div className="ai-studio-error">
+                  {error}
+                </div>
+              )}
+
               <div className="ai-studio-disclaimer">
-                AI-generated models may require technical adjustments before
-                3D printing. BEYOND reviews the model before production.
+                AI-generated models
+                may require technical
+                adjustments before 3D
+                printing. BEYOND reviews
+                the model before
+                production.
               </div>
             </div>
 
             <div className="ai-studio-preview">
               <div className="ai-preview-top">
-                <span>3D PREVIEW</span>
+                <span>
+                  3D PREVIEW
+                </span>
 
                 <strong>
-                  {generationState === "ready"
+                  {generationState ===
+                  "ready"
                     ? "READY"
-                    : generationState === "generating"
+                    : generationState ===
+                        "generating"
                       ? "GENERATING"
-                      : "WAITING"}
+                      : generationState ===
+                          "error"
+                        ? "ERROR"
+                        : "WAITING"}
                 </strong>
               </div>
 
@@ -373,96 +1224,201 @@ function AIModelStudio() {
                 <div className="ai-preview-grid" />
                 <div className="ai-preview-glow" />
 
-                <div
-                  className={
-                    generationState === "ready"
-                      ? "ai-preview-object ready"
-                      : generationState === "generating"
-                        ? "ai-preview-object generating"
-                        : "ai-preview-object"
-                  }
-                >
-                  <div className="ai-preview-cube-face front">
-                    <Box size={58} strokeWidth={1.1} />
+                {modelUrl ? (
+                  <div className="ai-real-model-viewer">
+                    <RealModelViewer
+                      modelUrl={
+                        modelUrl
+                      }
+                    />
                   </div>
+                ) : (
+                  <>
+                    <div
+                      className={
+                        generationState ===
+                        "generating"
+                          ? "ai-preview-object generating"
+                          : "ai-preview-object"
+                      }
+                    >
+                      <div className="ai-preview-cube-face front">
+                        <Box
+                          size={58}
+                          strokeWidth={
+                            1.1
+                          }
+                        />
+                      </div>
 
-                  <div className="ai-preview-cube-face side" />
-                  <div className="ai-preview-cube-face top" />
-                </div>
+                      <div className="ai-preview-cube-face side" />
+                      <div className="ai-preview-cube-face top" />
+                    </div>
 
-                <div className="ai-preview-shadow" />
+                    <div className="ai-preview-shadow" />
+                  </>
+                )}
 
-                <div className="ai-preview-empty-copy">
-                  {generationState === "idle" ? (
-                    <>
-                      <Rotate3D size={24} strokeWidth={1.4} />
-                      <strong>
-                        Your generated model will appear here.
-                      </strong>
-                      <span>Rotate · Zoom · Inspect</span>
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles size={24} strokeWidth={1.4} />
-                      <strong>{statusText}</strong>
-                      <span>{progress}%</span>
-                    </>
-                  )}
-                </div>
+                {!modelUrl && (
+                  <div className="ai-preview-empty-copy">
+                    {generationState ===
+                    "idle" ? (
+                      <>
+                        <Rotate3D
+                          size={
+                            24
+                          }
+                          strokeWidth={
+                            1.4
+                          }
+                        />
+
+                        <strong>
+                          Your generated
+                          model will appear
+                          here.
+                        </strong>
+
+                        <span>
+                          Rotate · Zoom ·
+                          Inspect
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles
+                          size={
+                            24
+                          }
+                          strokeWidth={
+                            1.4
+                          }
+                        />
+
+                        <strong>
+                          {
+                            statusText
+                          }
+                        </strong>
+
+                        <span>
+                          {progress}%
+                        </span>
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="ai-preview-progress">
-                <span style={{ width: `${progress}%` }} />
+                <span
+                  style={{
+                    width:
+                      `${progress}%`,
+                  }}
+                />
               </div>
 
               <div className="ai-preview-footer">
                 <div>
-                  <span>SOURCE</span>
+                  <span>
+                    SOURCE
+                  </span>
+
                   <strong>
-                    {mode === "text"
+                    {mode ===
+                    "text"
                       ? "TEXT PROMPT"
                       : `${uploadedCount} PHOTOS`}
                   </strong>
                 </div>
 
                 <div>
-                  <span>OUTPUT</span>
-                  <strong>3D CONCEPT</strong>
+                  <span>
+                    OUTPUT
+                  </span>
+
+                  <strong>
+                    GLB + 3MF
+                  </strong>
                 </div>
 
                 <div>
-                  <span>STATUS</span>
-                  <strong>{statusText}</strong>
+                  <span>
+                    STATUS
+                  </span>
+
+                  <strong>
+                    {
+                      statusText
+                    }
+                  </strong>
                 </div>
               </div>
 
-              {generationState === "ready" && (
+              {generationState ===
+                "ready" && (
                 <div className="ai-preview-actions">
                   <button
                     type="button"
                     className="ai-secondary-action"
-                    onClick={simulateGeneration}
+                    onClick={
+                      generateModel
+                    }
                   >
                     Regenerate
                   </button>
 
+                  {model3mfUrl && (
+                    <a
+                      className="ai-secondary-action ai-download-action"
+                      href={
+                        model3mfUrl
+                      }
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Download 3MF
+                    </a>
+                  )}
+
                   <button
                     type="button"
                     className="ai-primary-action"
-                    onClick={handleUseModel}
+                    onClick={
+                      handleUseModel
+                    }
                   >
                     Use This Model
                   </button>
                 </div>
               )}
+
+              {taskInfo?.consumedCredits !==
+                null &&
+                taskInfo?.consumedCredits !==
+                  undefined && (
+                  <div className="ai-credit-readout">
+                    MESHY CREDITS USED:{" "}
+                    {
+                      taskInfo.consumedCredits
+                    }
+                  </div>
+                )}
             </div>
           </div>
 
           <div className="ai-studio-demo-note">
-            <span>DEMO MODE</span>
+            <span>
+              PRIVATE BETA
+            </span>
+
             <p>
-              The AI interface is active for design testing. No paid AI
-              generation is connected yet.
+              Real Meshy generation
+              is connected. Keep the
+              access code private while
+              you decide on the final
+              customer usage model.
             </p>
           </div>
         </div>
