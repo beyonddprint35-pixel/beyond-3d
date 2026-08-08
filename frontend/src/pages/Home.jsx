@@ -6,6 +6,7 @@ import {
 import UploadProject from "../components/UploadProject";
 import HeroObject3D from "../components/HeroObject3D";
 import ProcessStory from "../components/ProcessStory";
+import AIModelStudio from "../components/AIModelStudio";
 import ReviewsSection from "../components/ReviewsSection";
 
 import beyondLogo from "../assets/beyond-logo-transparent.png";
@@ -409,6 +410,12 @@ function Home() {
       ========================================= */}
 
       <ProcessStory />
+
+      {/* =========================================
+          AI MODEL STUDIO
+      ========================================= */}
+
+      <AIModelStudio />
 
       {/* =========================================
           REVIEWS
