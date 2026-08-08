@@ -34,6 +34,29 @@ function getAccessCode(
   );
 }
 
+function getBearerToken(
+  event
+) {
+  const header =
+    event.headers
+      .authorization ||
+    event.headers
+      .Authorization ||
+    "";
+
+  if (
+    !header.startsWith(
+      "Bearer "
+    )
+  ) {
+    return null;
+  }
+
+  return header
+    .slice(7)
+    .trim();
+}
+
 function checkAccess(
   event
 ) {
@@ -51,6 +74,155 @@ function checkAccess(
   }
 
   return true;
+}
+
+function getSupabaseConfig() {
+  const url =
+    process.env
+      .SUPABASE_URL ||
+    process.env
+      .NEXT_PUBLIC_SUPABASE_URL;
+
+  const serviceKey =
+    process.env
+      .SUPABASE_SECRET_KEY;
+
+  return {
+    url,
+    serviceKey,
+  };
+}
+
+async function verifyUser(
+  event,
+  supabaseUrl,
+  serviceKey
+) {
+  const token =
+    getBearerToken(
+      event
+    );
+
+  if (!token) {
+    return null;
+  }
+
+  const response =
+    await fetch(
+      `${supabaseUrl}/auth/v1/user`,
+      {
+        headers: {
+          apikey:
+            serviceKey,
+
+          Authorization:
+            `Bearer ${token}`,
+        },
+      }
+    );
+
+  const data =
+    await response.json();
+
+  if (
+    !response.ok ||
+    !data?.id
+  ) {
+    return null;
+  }
+
+  return data;
+}
+
+async function getOwnedGeneration(
+  supabaseUrl,
+  serviceKey,
+  taskId,
+  userId
+) {
+  const response =
+    await fetch(
+      `${supabaseUrl}/rest/v1/ai_generations?meshy_task_id=eq.${encodeURIComponent(
+        taskId
+      )}&user_id=eq.${encodeURIComponent(
+        userId
+      )}&select=id,user_id,meshy_task_id,status&limit=1`,
+      {
+        headers: {
+          apikey:
+            serviceKey,
+
+          Authorization:
+            `Bearer ${serviceKey}`,
+        },
+      }
+    );
+
+  const data =
+    await response.json();
+
+  if (
+    !response.ok
+  ) {
+    console.error(
+      "AI generation ownership lookup failed:",
+      data
+    );
+
+    return null;
+  }
+
+  return data?.[0] ||
+    null;
+}
+
+async function updateGeneration(
+  supabaseUrl,
+  serviceKey,
+  generationId,
+  updates
+) {
+  const response =
+    await fetch(
+      `${supabaseUrl}/rest/v1/ai_generations?id=eq.${encodeURIComponent(
+        generationId
+      )}`,
+      {
+        method:
+          "PATCH",
+
+        headers: {
+          apikey:
+            serviceKey,
+
+          Authorization:
+            `Bearer ${serviceKey}`,
+
+          "Content-Type":
+            "application/json",
+        },
+
+        body:
+          JSON.stringify({
+            ...updates,
+            updated_at:
+              new Date()
+                .toISOString(),
+          }),
+      }
+    );
+
+  if (
+    !response.ok
+  ) {
+    const errorData =
+      await response.text();
+
+    console.error(
+      "Unable to update AI generation:",
+      errorData
+    );
+  }
 }
 
 function createFileToken(
@@ -127,15 +299,41 @@ async function (event) {
     process.env
       .AI_STUDIO_ACCESS_CODE;
 
+  const {
+    url:
+      supabaseUrl,
+    serviceKey,
+  } =
+    getSupabaseConfig();
+
   if (
     !apiKey ||
-    !tokenSecret
+    !tokenSecret ||
+    !supabaseUrl ||
+    !serviceKey
   ) {
     return jsonResponse(
       500,
       {
         error:
           "AI Studio server configuration is incomplete.",
+      }
+    );
+  }
+
+  const user =
+    await verifyUser(
+      event,
+      supabaseUrl,
+      serviceKey
+    );
+
+  if (!user) {
+    return jsonResponse(
+      401,
+      {
+        error:
+          "Please log in again before checking this AI model.",
       }
     );
   }
@@ -159,6 +357,24 @@ async function (event) {
       {
         error:
           "Missing task id or type.",
+      }
+    );
+  }
+
+  const generation =
+    await getOwnedGeneration(
+      supabaseUrl,
+      serviceKey,
+      taskId,
+      user.id
+    );
+
+  if (!generation) {
+    return jsonResponse(
+      404,
+      {
+        error:
+          "This AI generation does not belong to the logged-in customer.",
       }
     );
   }
@@ -248,6 +464,45 @@ async function (event) {
         ?.message ||
       "";
 
+    const glbUrl =
+      data?.model_urls
+        ?.glb ||
+      null;
+
+    const model3mfUrl =
+      data?.model_urls
+        ?.[
+          "3mf"
+        ] ||
+      null;
+
+    const thumbnailUrl =
+      data
+        ?.thumbnail_url ||
+      null;
+
+    const consumedCredits =
+      data
+        ?.consumed_credits ??
+      null;
+
+    await updateGeneration(
+      supabaseUrl,
+      serviceKey,
+      generation.id,
+      {
+        status,
+        glb_url:
+          glbUrl,
+        model_3mf_url:
+          model3mfUrl,
+        thumbnail_url:
+          thumbnailUrl,
+        credits_used:
+          consumedCredits,
+      }
+    );
+
     const fileToken =
       status ===
       "SUCCEEDED"
@@ -273,6 +528,8 @@ async function (event) {
       200,
       {
         success: true,
+        generationId:
+          generation.id,
         id:
           data.id ||
           taskId,
@@ -282,20 +539,9 @@ async function (event) {
           taskError ||
           null,
         viewerUrl,
-        model3mfUrl:
-          data?.model_urls
-            ?.[
-              "3mf"
-            ] ||
-          null,
-        thumbnailUrl:
-          data
-            ?.thumbnail_url ||
-          null,
-        consumedCredits:
-          data
-            ?.consumed_credits ??
-          null,
+        model3mfUrl,
+        thumbnailUrl,
+        consumedCredits,
       }
     );
   } catch (

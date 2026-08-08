@@ -1,6 +1,7 @@
 import {
   Component,
   Suspense,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -25,6 +26,8 @@ import {
   Upload,
   WandSparkles,
 } from "lucide-react";
+
+import { supabase } from "../lib/supabaseClient";
 
 import "./AIModelStudio.css";
 
@@ -350,6 +353,17 @@ function AIModelStudio() {
   ] = useState("");
 
   const [
+    session,
+    setSession,
+  ] = useState(null);
+
+  const [
+    authReady,
+    setAuthReady,
+  ] = useState(false);
+
+
+  const [
     generationState,
     setGenerationState,
   ] = useState("idle");
@@ -388,6 +402,84 @@ function AIModelStudio() {
 
   const pollTimerRef =
     useRef(null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    supabase.auth
+      .getSession()
+      .then(
+        ({
+          data,
+        }) => {
+          if (!mounted) {
+            return;
+          }
+
+          setSession(
+            data.session ||
+              null
+          );
+
+          setAuthReady(
+            true
+          );
+        }
+      );
+
+    const {
+      data: {
+        subscription,
+      },
+    } =
+      supabase.auth
+        .onAuthStateChange(
+          (
+            _event,
+            nextSession
+          ) => {
+            if (!mounted) {
+              return;
+            }
+
+            setSession(
+              nextSession
+            );
+
+            setAuthReady(
+              true
+            );
+          }
+        );
+
+    return () => {
+      mounted = false;
+
+      subscription
+        .unsubscribe();
+    };
+  }, []);
+
+  async function getFreshAccessToken() {
+    const {
+      data,
+      error:
+        sessionError,
+    } =
+      await supabase.auth
+        .getSession();
+
+    if (
+      sessionError ||
+      !data.session
+        ?.access_token
+    ) {
+      return null;
+    }
+
+    return data.session
+      .access_token;
+  }
 
   const uploadedCount =
     useMemo(
@@ -513,6 +605,13 @@ function AIModelStudio() {
     }
 
     if (
+      !authReady ||
+      !session
+    ) {
+      return false;
+    }
+
+    if (
       !accessCode.trim()
     ) {
       return false;
@@ -576,6 +675,15 @@ function AIModelStudio() {
     taskType
   ) {
     try {
+      const accessToken =
+        await getFreshAccessToken();
+
+      if (!accessToken) {
+        throw new Error(
+          "Your login session has expired. Please log in again."
+        );
+      }
+
       const response =
         await fetch(
           `/.netlify/functions/get-ai-model-status?id=${encodeURIComponent(
@@ -587,6 +695,9 @@ function AIModelStudio() {
             headers: {
               "x-ai-access-code":
                 accessCode.trim(),
+
+              Authorization:
+                `Bearer ${accessToken}`,
             },
           }
         );
@@ -726,6 +837,15 @@ function AIModelStudio() {
     setProgress(2);
 
     try {
+      const accessToken =
+        await getFreshAccessToken();
+
+      if (!accessToken) {
+        throw new Error(
+          "Please log in before using AI Studio."
+        );
+      }
+
       let requestBody;
 
       if (
@@ -800,6 +920,9 @@ function AIModelStudio() {
 
               "x-ai-access-code":
                 accessCode.trim(),
+
+              Authorization:
+                `Bearer ${accessToken}`,
             },
 
             body:
@@ -970,28 +1093,47 @@ function AIModelStudio() {
               </span>
 
               <p>
-                AI generation is
-                protected while we
-                test the service.
+                {authReady &&
+                session
+                  ? `Signed in as ${session.user?.email || "customer"}. Enter the private AI Studio code to generate.`
+                  : "Log in to your BEYOND account first, then enter the private AI Studio access code."}
               </p>
             </div>
 
-            <input
-              type="password"
-              value={
-                accessCode
-              }
-              onChange={(
-                event
-              ) =>
-                setAccessCode(
-                  event.target
-                    .value
-                )
-              }
-              placeholder="AI Studio access code"
-              autoComplete="off"
-            />
+            <div className="ai-studio-access-controls">
+              <div
+                className={
+                  authReady &&
+                  session
+                    ? "ai-login-status signed-in"
+                    : "ai-login-status"
+                }
+              >
+                <span />
+
+                {authReady &&
+                session
+                  ? "LOGGED IN"
+                  : "LOGIN REQUIRED"}
+              </div>
+
+              <input
+                type="password"
+                value={
+                  accessCode
+                }
+                onChange={(
+                  event
+                ) =>
+                  setAccessCode(
+                    event.target
+                      .value
+                  )
+                }
+                placeholder="AI Studio access code"
+                autoComplete="off"
+              />
+            </div>
           </div>
 
           <div className="ai-studio-workspace">
@@ -1243,6 +1385,13 @@ function AIModelStudio() {
                     ? "Generate Again"
                     : "Generate 3D Model"}
               </button>
+
+              {!session &&
+                authReady && (
+                <div className="ai-studio-login-note">
+                  Log in from the top navigation to use AI generation and save models to your account.
+                </div>
+              )}
 
               {error && (
                 <div className="ai-studio-error">

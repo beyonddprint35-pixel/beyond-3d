@@ -1066,3 +1066,152 @@ canvas {
   font-size: 8px;
   line-height: 1.6;
 }
+
+
+/* =========================================================
+   AI STUDIO CUSTOMER AUTH
+========================================================= */
+
+.ai-studio-access-controls {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: flex-end;
+
+  gap: 10px;
+
+  width:
+    min(
+      470px,
+      56%
+    );
+}
+
+.ai-studio-access-controls
+input {
+  width: 270px;
+}
+
+.ai-login-status {
+  min-height: 38px;
+
+  padding:
+    0 12px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  flex-shrink: 0;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.06
+    );
+
+  border-radius: 999px;
+
+  color: #66798a;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.015
+    );
+
+  font-size: 6px;
+
+  font-weight: 700;
+
+  letter-spacing: 1.2px;
+}
+
+.ai-login-status >
+span {
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: #6b5555;
+}
+
+.ai-login-status.signed-in {
+  color: #819e89;
+}
+
+.ai-login-status.signed-in >
+span {
+  background: #6a9a77;
+
+  box-shadow:
+    0 0 10px
+    rgba(
+      106,
+      154,
+      119,
+      0.35
+    );
+}
+
+.ai-studio-login-note {
+  margin-top: 14px;
+
+  padding:
+    11px 13px;
+
+  border:
+    1px solid
+    rgba(
+      101,
+      145,
+      184,
+      0.11
+    );
+
+  border-radius: 12px;
+
+  color: #668096;
+
+  background:
+    rgba(
+      47,
+      92,
+      132,
+      0.045
+    );
+
+  font-size: 8px;
+
+  line-height: 1.55;
+}
+
+@media (
+  max-width: 700px
+) {
+  .ai-studio-access-controls {
+    width: 100%;
+
+    align-items: stretch;
+
+    flex-direction: column;
+  }
+
+  .ai-studio-access-controls
+  input {
+    width: 100%;
+  }
+
+  .ai-login-status {
+    width: fit-content;
+  }
+}

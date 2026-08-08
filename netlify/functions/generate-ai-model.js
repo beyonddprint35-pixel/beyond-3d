@@ -32,6 +32,29 @@ function getAccessCode(
   );
 }
 
+function getBearerToken(
+  event
+) {
+  const header =
+    event.headers
+      .authorization ||
+    event.headers
+      .Authorization ||
+    "";
+
+  if (
+    !header.startsWith(
+      "Bearer "
+    )
+  ) {
+    return null;
+  }
+
+  return header
+    .slice(7)
+    .trim();
+}
+
 function checkAccess(
   event
 ) {
@@ -74,6 +97,128 @@ function checkAccess(
   return {
     ok: true,
   };
+}
+
+function getSupabaseConfig() {
+  const url =
+    process.env
+      .SUPABASE_URL ||
+    process.env
+      .NEXT_PUBLIC_SUPABASE_URL;
+
+  const serviceKey =
+    process.env
+      .SUPABASE_SECRET_KEY;
+
+  return {
+    url,
+    serviceKey,
+  };
+}
+
+async function verifyUser(
+  event,
+  supabaseUrl,
+  serviceKey
+) {
+  const token =
+    getBearerToken(
+      event
+    );
+
+  if (!token) {
+    return {
+      user: null,
+      error:
+        "Please log in before using AI Studio.",
+    };
+  }
+
+  const response =
+    await fetch(
+      `${supabaseUrl}/auth/v1/user`,
+      {
+        headers: {
+          apikey:
+            serviceKey,
+
+          Authorization:
+            `Bearer ${token}`,
+        },
+      }
+    );
+
+  const data =
+    await response.json();
+
+  if (
+    !response.ok ||
+    !data?.id
+  ) {
+    return {
+      user: null,
+      error:
+        "Your login session is invalid or has expired. Please log in again.",
+    };
+  }
+
+  return {
+    user: data,
+    error: null,
+  };
+}
+
+async function saveGeneration(
+  supabaseUrl,
+  serviceKey,
+  row
+) {
+  const response =
+    await fetch(
+      `${supabaseUrl}/rest/v1/ai_generations`,
+      {
+        method:
+          "POST",
+
+        headers: {
+          apikey:
+            serviceKey,
+
+          Authorization:
+            `Bearer ${serviceKey}`,
+
+          "Content-Type":
+            "application/json",
+
+          Prefer:
+            "return=representation",
+        },
+
+        body:
+          JSON.stringify(
+            row
+          ),
+      }
+    );
+
+  const data =
+    await response.json();
+
+  if (
+    !response.ok
+  ) {
+    console.error(
+      "Unable to save AI generation:",
+      data
+    );
+
+    throw new Error(
+      "The model started, but BEYOND could not save it to your account."
+    );
+  }
+
+  return data?.[0] ||
+    null;
 }
 
 async function readMeshyResponse(
@@ -148,12 +293,53 @@ async function (event) {
     process.env
       .MESHY_API_KEY;
 
+  const {
+    url:
+      supabaseUrl,
+    serviceKey,
+  } =
+    getSupabaseConfig();
+
   if (!apiKey) {
     return jsonResponse(
       500,
       {
         error:
           "Missing MESHY_API_KEY.",
+      }
+    );
+  }
+
+  if (
+    !supabaseUrl ||
+    !serviceKey
+  ) {
+    return jsonResponse(
+      500,
+      {
+        error:
+          "Supabase server configuration is incomplete.",
+      }
+    );
+  }
+
+  const {
+    user,
+    error:
+      authError,
+  } =
+    await verifyUser(
+      event,
+      supabaseUrl,
+      serviceKey
+    );
+
+  if (!user) {
+    return jsonResponse(
+      401,
+      {
+        error:
+          authError,
       }
     );
   }
@@ -182,6 +368,8 @@ async function (event) {
   let endpoint;
   let meshyBody;
   let taskType;
+  let savedPrompt =
+    null;
 
   if (
     mode === "text"
@@ -223,6 +411,9 @@ async function (event) {
 
     taskType =
       "text";
+
+    savedPrompt =
+      prompt;
 
     meshyBody = {
       mode:
@@ -394,6 +585,28 @@ async function (event) {
       );
     }
 
+    const generation =
+      await saveGeneration(
+        supabaseUrl,
+        serviceKey,
+        {
+          user_id:
+            user.id,
+
+          meshy_task_id:
+            data.result,
+
+          mode:
+            taskType,
+
+          prompt:
+            savedPrompt,
+
+          status:
+            "PENDING",
+        }
+      );
+
     return jsonResponse(
       200,
       {
@@ -401,6 +614,11 @@ async function (event) {
         taskId:
           data.result,
         taskType,
+        generationId:
+          generation?.id ||
+          null,
+        userId:
+          user.id,
       }
     );
   } catch (
@@ -415,6 +633,7 @@ async function (event) {
       500,
       {
         error:
+          error.message ||
           "Unable to start AI generation.",
       }
     );
