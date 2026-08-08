@@ -8,6 +8,9 @@ import HeroObject3D from "../components/HeroObject3D";
 import ProcessStory from "../components/ProcessStory";
 import AIModelStudio from "../components/AIModelStudio";
 import ReviewsSection from "../components/ReviewsSection";
+import AuthModal from "../components/AuthModal";
+
+import { supabase } from "../lib/supabaseClient";
 
 import beyondLogo from "../assets/beyond-logo-transparent.png";
 
@@ -31,9 +34,81 @@ function Home() {
   ] = useState(false);
 
   const [
+    authOpen,
+    setAuthOpen,
+  ] = useState(false);
+
+  const [
+    session,
+    setSession,
+  ] = useState(null);
+
+  const [
+    authReady,
+    setAuthReady,
+  ] = useState(false);
+
+
+  const [
     scrollProgress,
     setScrollProgress,
   ] = useState(0);
+
+  useEffect(() => {
+    let mounted = true;
+
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        if (!mounted) {
+          return;
+        }
+
+        setSession(
+          data.session || null
+        );
+
+        setAuthReady(true);
+      });
+
+    const {
+      data: {
+        subscription,
+      },
+    } =
+      supabase.auth
+        .onAuthStateChange(
+          (
+            _event,
+            nextSession
+          ) => {
+            if (!mounted) {
+              return;
+            }
+
+            setSession(
+              nextSession
+            );
+
+            setAuthReady(
+              true
+            );
+          }
+        );
+
+    return () => {
+      mounted = false;
+
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  async function handleSignOut() {
+    await supabase.auth
+      .signOut();
+
+    setMenuOpen(false);
+  }
 
   useEffect(() => {
     let ticking = false;
@@ -219,6 +294,48 @@ function Home() {
         </nav>
 
         <div className="home-nav-actions">
+          {authReady &&
+            session ? (
+            <div className="home-account-menu">
+              <div className="home-account-copy">
+                <span>
+                  ACCOUNT
+                </span>
+
+                <strong>
+                  {session.user
+                    ?.user_metadata
+                    ?.full_name ||
+                    session.user
+                      ?.email ||
+                    "Customer"}
+                </strong>
+              </div>
+
+              <button
+                type="button"
+                className="home-auth-button home-auth-logout"
+                onClick={
+                  handleSignOut
+                }
+              >
+                Log out
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              className="home-auth-button"
+              onClick={() =>
+                setAuthOpen(
+                  true
+                )
+              }
+            >
+              Log In
+            </button>
+          )}
+
           <button
             type="button"
             className="home-start-small"
@@ -538,6 +655,17 @@ function Home() {
           © 2026 BEYOND 3D
         </div>
       </footer>
+
+      <AuthModal
+        open={
+          authOpen
+        }
+        onClose={() =>
+          setAuthOpen(
+            false
+          )
+        }
+      />
     </main>
   );
 }
