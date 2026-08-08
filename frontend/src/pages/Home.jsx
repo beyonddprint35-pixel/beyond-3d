@@ -1,106 +1,75 @@
 import {
   useEffect,
-  useRef,
   useState,
 } from "react";
 
 import UploadProject from "../components/UploadProject";
-
-import FilamentSpool3D from "../components/FilamentSpool3D";
-
-import PrintedObject3D from "../components/PrintedObject3D";
+import HeroObject3D from "../components/HeroObject3D";
+import ProcessStory from "../components/ProcessStory";
 
 import "./Home.css";
 
+function clamp(
+  value,
+  min = 0,
+  max = 1
+) {
+  return Math.min(
+    Math.max(value, min),
+    max
+  );
+}
+
 function Home() {
-  const [
-    scrollProgress,
-    setScrollProgress,
-  ] =
-    useState(0);
-
-  const [
-    filamentPoint,
-    setFilamentPoint,
-  ] =
-    useState({
-      x: 0,
-      y: 0,
-      visible: false,
-    });
-
   const [
     menuOpen,
     setMenuOpen,
-  ] =
-    useState(false);
+  ] = useState(false);
 
-  const filamentPathRef =
-    useRef(null);
+  const [
+    scrollProgress,
+    setScrollProgress,
+  ] = useState(0);
 
   useEffect(() => {
-    function updateScrollEffects() {
-      const pageHeight =
+    let ticking = false;
+
+    function updateScroll() {
+      const maxScroll =
         document.documentElement
           .scrollHeight -
         window.innerHeight;
 
       const progress =
-        pageHeight > 0
+        maxScroll > 0
           ? window.scrollY /
-            pageHeight
+            maxScroll
           : 0;
 
-      const safeProgress =
-        Math.min(
-          Math.max(
-            progress,
-            0
-          ),
-          1
-        );
-
       setScrollProgress(
-        safeProgress
+        clamp(progress)
       );
 
-      const path =
-        filamentPathRef.current;
-
-      if (path) {
-        try {
-          const totalLength =
-            path.getTotalLength();
-
-          const point =
-            path.getPointAtLength(
-              totalLength *
-                safeProgress
-            );
-
-          setFilamentPoint({
-            x: point.x,
-            y: point.y,
-            visible: true,
-          });
-        } catch {
-          setFilamentPoint(
-            (
-              current
-            ) => ({
-              ...current,
-              visible: false,
-            })
-          );
-        }
-      }
+      ticking = false;
     }
 
-    updateScrollEffects();
+    function handleScroll() {
+      if (ticking) {
+        return;
+      }
+
+      ticking = true;
+
+      requestAnimationFrame(
+        updateScroll
+      );
+    }
+
+    updateScroll();
 
     window.addEventListener(
       "scroll",
-      updateScrollEffects,
+      handleScroll,
       {
         passive: true,
       }
@@ -108,18 +77,18 @@ function Home() {
 
     window.addEventListener(
       "resize",
-      updateScrollEffects
+      handleScroll
     );
 
     return () => {
       window.removeEventListener(
         "scroll",
-        updateScrollEffects
+        handleScroll
       );
 
       window.removeEventListener(
         "resize",
-        updateScrollEffects
+        handleScroll
       );
     };
   }, []);
@@ -144,49 +113,6 @@ function Home() {
     });
   }
 
-  const filamentDashOffset =
-    1000 -
-    scrollProgress *
-      1000;
-
-  const processSteps = [
-    {
-      number: "01",
-      icon: "↑",
-      title: "Upload",
-      text:
-        "Send us your STL, 3MF, OBJ, STEP or reference file.",
-      meta: "INPUT",
-    },
-
-    {
-      number: "02",
-      icon: "◇",
-      title: "Review",
-      text:
-        "We inspect geometry, material, quantity and production requirements.",
-      meta: "ENGINEERING",
-    },
-
-    {
-      number: "03",
-      icon: "₪",
-      title: "Approve",
-      text:
-        "Receive your quote by email and approve it securely online.",
-      meta: "QUOTATION",
-    },
-
-    {
-      number: "04",
-      icon: "✦",
-      title: "Print",
-      text:
-        "Production begins and you can track every stage online.",
-      meta: "OUTPUT",
-    },
-  ];
-
   return (
     <main
       className="beyond-home"
@@ -195,6 +121,8 @@ function Home() {
           scrollProgress,
       }}
     >
+      {/* BACKGROUND */}
+
       <div className="home-noise" />
 
       <div className="home-grid-background" />
@@ -207,135 +135,6 @@ function Home() {
 
       <div className="home-orb home-orb-three" />
 
-      {/* GLOBAL FILAMENT */}
-
-      <div
-        className="global-filament-system"
-        aria-hidden="true"
-      >
-        <svg
-          className="global-filament-svg"
-          viewBox="0 0 1000 4000"
-          preserveAspectRatio="none"
-        >
-          <defs>
-            <linearGradient
-              id="filamentGradient"
-              x1="0"
-              y1="0"
-              x2="0"
-              y2="1"
-            >
-              <stop
-                offset="0%"
-                stopColor="#99c7ff"
-              />
-
-              <stop
-                offset="20%"
-                stopColor="#4f95ff"
-              />
-
-              <stop
-                offset="55%"
-                stopColor="#2678ff"
-              />
-
-              <stop
-                offset="100%"
-                stopColor="#7fb2ff"
-              />
-            </linearGradient>
-
-            <filter
-              id="filamentGlow"
-              x="-100%"
-              y="-100%"
-              width="300%"
-              height="300%"
-            >
-              <feGaussianBlur
-                stdDeviation="8"
-                result="blur"
-              />
-
-              <feMerge>
-                <feMergeNode
-                  in="blur"
-                />
-
-                <feMergeNode
-                  in="SourceGraphic"
-                />
-              </feMerge>
-            </filter>
-          </defs>
-
-          <path
-            className="filament-shadow-path"
-            d="
-              M 695 150
-              C 760 380, 680 560, 565 720
-              C 390 960, 420 1210, 535 1390
-              C 690 1630, 650 1900, 485 2090
-              C 350 2240, 380 2470, 525 2660
-              C 700 2890, 645 3200, 505 3400
-              C 430 3510, 470 3710, 500 3920
-            "
-          />
-
-          <path
-            ref={
-              filamentPathRef
-            }
-            className="filament-main-path"
-            pathLength="1000"
-            d="
-              M 695 150
-              C 760 380, 680 560, 565 720
-              C 390 960, 420 1210, 535 1390
-              C 690 1630, 650 1900, 485 2090
-              C 350 2240, 380 2470, 525 2660
-              C 700 2890, 645 3200, 505 3400
-              C 430 3510, 470 3710, 500 3920
-            "
-            style={{
-              strokeDasharray:
-                1000,
-
-              strokeDashoffset:
-                filamentDashOffset,
-            }}
-          />
-
-          {filamentPoint.visible && (
-            <>
-              <circle
-                cx={
-                  filamentPoint.x
-                }
-                cy={
-                  filamentPoint.y
-                }
-                r="17"
-                className="filament-tip-halo"
-              />
-
-              <circle
-                cx={
-                  filamentPoint.x
-                }
-                cy={
-                  filamentPoint.y
-                }
-                r="5"
-                className="filament-tip-dot"
-              />
-            </>
-          )}
-        </svg>
-      </div>
-
       {/* NAV */}
 
       <header className="home-navbar">
@@ -343,9 +142,7 @@ function Home() {
           className="home-brand"
           type="button"
           onClick={() =>
-            scrollToSection(
-              "home"
-            )
+            scrollToSection("home")
           }
         >
           BEYOND
@@ -361,9 +158,7 @@ function Home() {
           <button
             type="button"
             onClick={() =>
-              scrollToSection(
-                "how"
-              )
+              scrollToSection("how")
             }
           >
             How it works
@@ -372,9 +167,7 @@ function Home() {
           <button
             type="button"
             onClick={() =>
-              scrollToSection(
-                "capabilities"
-              )
+              scrollToSection("capabilities")
             }
           >
             Capabilities
@@ -383,9 +176,7 @@ function Home() {
           <button
             type="button"
             onClick={() =>
-              scrollToSection(
-                "start"
-              )
+              scrollToSection("start")
             }
           >
             Start a project
@@ -394,9 +185,7 @@ function Home() {
           <button
             type="button"
             onClick={() =>
-              scrollToSection(
-                "contact"
-              )
+              scrollToSection("contact")
             }
           >
             Contact
@@ -408,9 +197,7 @@ function Home() {
             type="button"
             className="home-start-small"
             onClick={() =>
-              scrollToSection(
-                "start"
-              )
+              scrollToSection("start")
             }
           >
             Start a project
@@ -431,7 +218,6 @@ function Home() {
             }
           >
             <span />
-
             <span />
           </button>
         </div>
@@ -465,10 +251,11 @@ function Home() {
 
           <p>
             Upload your model.
-            We engineer the print,
-            prepare your quotation
-            and transform your
-            digital idea into a
+            We analyze it,
+            prepare it for
+            production and
+            transform your digital
+            idea into a real
             physical object.
           </p>
 
@@ -477,9 +264,7 @@ function Home() {
               type="button"
               className="home-primary-button"
               onClick={() =>
-                scrollToSection(
-                  "start"
-                )
+                scrollToSection("start")
               }
             >
               Start a Project
@@ -493,9 +278,7 @@ function Home() {
               type="button"
               className="home-ghost-button"
               onClick={() =>
-                scrollToSection(
-                  "how"
-                )
+                scrollToSection("how")
               }
             >
               See the process
@@ -523,7 +306,7 @@ function Home() {
               </strong>
 
               <span>
-                Approve
+                Analyze
               </span>
             </div>
 
@@ -533,7 +316,7 @@ function Home() {
               </strong>
 
               <span>
-                Track
+                Approve
               </span>
             </div>
 
@@ -543,39 +326,35 @@ function Home() {
               </strong>
 
               <span>
-                Receive
+                Print
               </span>
             </div>
           </div>
         </div>
 
         <div className="hero-machine">
-          <FilamentSpool3D
-            scrollProgress={
-              scrollProgress
-            }
-          />
+          <HeroObject3D />
         </div>
       </section>
 
-      {/* MATERIAL */}
+      {/* TRANSFORMATION BAR */}
 
       <section className="material-transition">
         <div className="transition-top">
           <span>
-            1.75 MM FILAMENT
+            DIGITAL MANUFACTURING
           </span>
 
           <span className="transition-live">
             <i />
 
-            FEED ACTIVE
+            SYSTEM ACTIVE
           </span>
         </div>
 
         <div className="transition-main">
           <span>
-            RAW MATERIAL
+            IDEA
           </span>
 
           <strong>
@@ -583,7 +362,7 @@ function Home() {
           </strong>
 
           <span>
-            DIGITAL INSTRUCTION
+            DIGITAL MODEL
           </span>
 
           <strong>
@@ -602,83 +381,7 @@ function Home() {
 
       {/* HOW IT WORKS */}
 
-      <section
-        className="home-how"
-        id="how"
-      >
-        <div className="section-side-label">
-          PROCESS
-        </div>
-
-        <div className="home-section-heading">
-          <div className="section-index">
-            01 / HOW IT WORKS
-          </div>
-
-          <h2>
-            The filament
-            <br />
-
-            <span>
-              keeps moving.
-            </span>
-          </h2>
-
-          <p>
-            Your project follows
-            one connected workflow.
-            Upload it, receive your
-            quotation, approve it
-            and track production
-            until completion.
-          </p>
-        </div>
-
-        <div className="process-track">
-          {processSteps.map(
-            (step) => (
-              <article
-                className="process-card"
-                key={
-                  step.number
-                }
-              >
-                <div className="process-card-beam" />
-
-                <div className="process-number">
-                  {
-                    step.number
-                  }
-                </div>
-
-                <div className="process-icon">
-                  {
-                    step.icon
-                  }
-                </div>
-
-                <h3>
-                  {
-                    step.title
-                  }
-                </h3>
-
-                <p>
-                  {
-                    step.text
-                  }
-                </p>
-
-                <div className="process-meta">
-                  {
-                    step.meta
-                  }
-                </div>
-              </article>
-            )
-          )}
-        </div>
-      </section>
+      <ProcessStory />
 
       {/* CAPABILITIES */}
 
@@ -833,17 +536,31 @@ function Home() {
             </div>
 
             <div className="material-pills">
-              <span>PLA</span>
-              <span>PLA+</span>
-              <span>PETG</span>
-              <span>PLA-CF</span>
-              <span>MULTICOLOR</span>
+              <span>
+                PLA
+              </span>
+
+              <span>
+                PLA+
+              </span>
+
+              <span>
+                PETG
+              </span>
+
+              <span>
+                PLA-CF
+              </span>
+
+              <span>
+                MULTICOLOR
+              </span>
             </div>
           </article>
         </div>
       </section>
 
-      {/* START PROJECT */}
+      {/* START PROJECT — PRINTER ANIMATION REMOVED */}
 
       <section
         className="home-start-project"
@@ -862,36 +579,30 @@ function Home() {
             </div>
 
             <h2>
-              Watch it
+              Make it
               <br />
 
               <span>
-                become real.
+                real.
               </span>
             </h2>
           </div>
 
           <p>
-            The same filament that
-            started at the top now
-            becomes the finished
-            object — one printed
-            layer at a time.
+            Upload your project.
+            We’ll review the model
+            and send you a clear
+            quotation before
+            production begins.
           </p>
         </div>
-
-        <PrintedObject3D
-          scrollProgress={
-            scrollProgress
-          }
-        />
 
         <div className="home-upload-wrapper">
           <UploadProject />
         </div>
       </section>
 
-      {/* FINAL */}
+      {/* FINAL CTA */}
 
       <section
         className="home-final-cta"
@@ -924,9 +635,7 @@ function Home() {
           type="button"
           className="home-primary-button final-cta-button"
           onClick={() =>
-            scrollToSection(
-              "start"
-            )
+            scrollToSection("start")
           }
         >
           Start Your Project

@@ -1,5 +1,6 @@
 import {
   Suspense,
+  useLayoutEffect,
   useMemo,
   useRef,
 } from "react";
@@ -7,207 +8,306 @@ import {
 import {
   Canvas,
   useFrame,
+  useThree,
 } from "@react-three/fiber";
 
 import {
   ContactShadows,
-  Float,
+  Environment,
 } from "@react-three/drei";
 
 import * as THREE from "three";
 
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
 import "./FilamentSpool3D.css";
 
-function clamp(
-  value,
-  min = 0,
-  max = 1
-) {
+gsap.registerPlugin(ScrollTrigger);
+
+function clamp(value, min = 0, max = 1) {
   return Math.min(
     Math.max(value, min),
     max
   );
 }
 
-function createToonGradient() {
-  const colors = new Uint8Array([
-    25, 25, 35, 255,
-    65, 90, 145, 255,
-    85, 150, 240, 255,
-    215, 235, 255, 255,
-  ]);
+/* =========================================================
+   MATERIALS
+========================================================= */
 
-  const texture =
-    new THREE.DataTexture(
-      colors,
-      4,
-      1,
-      THREE.RGBAFormat
-    );
+function useFilamentMaterial() {
+  return useMemo(
+    () =>
+      new THREE.MeshPhysicalMaterial({
+        color: new THREE.Color(
+          "#285f8d"
+        ),
 
-  texture.minFilter =
-    THREE.NearestFilter;
+        roughness: 0.52,
 
-  texture.magFilter =
-    THREE.NearestFilter;
+        metalness: 0,
 
-  texture.generateMipmaps =
-    false;
+        clearcoat: 0.18,
 
-  texture.needsUpdate =
-    true;
+        clearcoatRoughness: 0.5,
 
-  return texture;
+        sheen: 0.08,
+
+        sheenColor:
+          new THREE.Color(
+            "#789bb8"
+          ),
+
+        emissive:
+          new THREE.Color(
+            "#020810"
+          ),
+
+        emissiveIntensity: 0.025,
+      }),
+    []
+  );
 }
 
-function ComicCylinder({
-  args,
-  position,
-  rotation,
-  material,
-  outlineScale = 1.025,
-  castShadow = false,
+function useFlangeMaterial() {
+  return useMemo(
+    () =>
+      new THREE.MeshPhysicalMaterial({
+        color: new THREE.Color(
+          "#111820"
+        ),
+
+        roughness: 0.45,
+
+        metalness: 0.15,
+
+        clearcoat: 0.28,
+
+        clearcoatRoughness: 0.4,
+      }),
+    []
+  );
+}
+
+/* =========================================================
+   FILAMENT ROLL
+========================================================= */
+
+function FilamentRoll({
+  progressRef,
 }) {
+  const rollRef =
+    useRef(null);
+
+  const material =
+    useFilamentMaterial();
+
+  const windings =
+    useMemo(() => {
+      const result = [];
+
+      const depthLayers = 20;
+      const radialLayers = 9;
+
+      for (
+        let depthIndex = 0;
+        depthIndex < depthLayers;
+        depthIndex++
+      ) {
+        const z =
+          -0.58 +
+          depthIndex * 0.061;
+
+        const stagger =
+          depthIndex % 2 === 0
+            ? 0
+            : 0.017;
+
+        for (
+          let radialIndex = 0;
+          radialIndex < radialLayers;
+          radialIndex++
+        ) {
+          result.push({
+            key:
+              `${depthIndex}-${radialIndex}`,
+
+            radius:
+              1.02 +
+              radialIndex *
+                0.079 +
+              stagger,
+
+            z,
+          });
+        }
+      }
+
+      return result;
+    }, []);
+
+  useFrame(
+    (
+      _state,
+      delta
+    ) => {
+      if (!rollRef.current) {
+        return;
+      }
+
+      const progress =
+        clamp(
+          progressRef.current
+        );
+
+      const targetScale =
+        1 -
+        progress * 0.07;
+
+      rollRef.current.scale.x =
+        THREE.MathUtils.damp(
+          rollRef.current
+            .scale.x,
+          targetScale,
+          5,
+          delta
+        );
+
+      rollRef.current.scale.y =
+        THREE.MathUtils.damp(
+          rollRef.current
+            .scale.y,
+          targetScale,
+          5,
+          delta
+        );
+    }
+  );
+
   return (
-    <group
-      position={position}
-      rotation={rotation}
-    >
+    <group ref={rollRef}>
       <mesh
-        scale={[
-          outlineScale,
-          outlineScale,
-          outlineScale,
+        rotation={[
+          Math.PI / 2,
+          0,
+          0,
         ]}
+        material={material}
+        castShadow
       >
         <cylinderGeometry
-          args={args}
-        />
-
-        <meshBasicMaterial
-          color="#020307"
-          side={
-            THREE.BackSide
-          }
+          args={[
+            1.72,
+            1.72,
+            1.18,
+            128,
+          ]}
         />
       </mesh>
 
-      <mesh
-        castShadow={
-          castShadow
-        }
-        material={
-          material
-        }
-      >
-        <cylinderGeometry
-          args={args}
-        />
-      </mesh>
+      {windings.map(
+        (winding) => (
+          <mesh
+            key={winding.key}
+            position={[
+              0,
+              0,
+              winding.z,
+            ]}
+            material={material}
+          >
+            <torusGeometry
+              args={[
+                winding.radius,
+                0.03,
+                10,
+                128,
+              ]}
+            />
+          </mesh>
+        )
+      )}
     </group>
   );
 }
 
-function ComicTorus({
-  radius,
-  tube,
-  position,
-  material,
+/* =========================================================
+   LOOSE FILAMENT
+========================================================= */
+
+function LooseFilament({
+  progressRef,
 }) {
-  return (
-    <group
-      position={position}
-    >
-      <mesh
-        scale={[
-          1.025,
-          1.025,
-          1.025,
-        ]}
-      >
-        <torusGeometry
-          args={[
-            radius,
-            tube + 0.012,
-            10,
-            96,
-          ]}
-        />
+  const strandRef =
+    useRef(null);
 
-        <meshBasicMaterial
-          color="#030409"
-          side={
-            THREE.BackSide
-          }
-        />
-      </mesh>
+  const material =
+    useFilamentMaterial();
 
-      <mesh
-        material={
-          material
-        }
-      >
-        <torusGeometry
-          args={[
-            radius,
-            tube,
-            10,
-            96,
-          ]}
-        />
-      </mesh>
-    </group>
-  );
-}
-
-function FilamentStrand({
-  material,
-}) {
   const geometry =
     useMemo(() => {
       const curve =
         new THREE.CatmullRomCurve3(
           [
             new THREE.Vector3(
-              1.46,
-              -0.12,
+              1.52,
+              -0.5,
+              0.12
+            ),
+
+            new THREE.Vector3(
+              1.67,
+              -0.78,
+              0.11
+            ),
+
+            new THREE.Vector3(
+              1.62,
+              -1.06,
+              0.1
+            ),
+
+            new THREE.Vector3(
+              1.43,
+              -1.34,
               0.08
-            ),
-
-            new THREE.Vector3(
-              1.72,
-              -0.55,
-              0.08
-            ),
-
-            new THREE.Vector3(
-              1.66,
-              -1.05,
-              0.05
-            ),
-
-            new THREE.Vector3(
-              1.5,
-              -1.62,
-              0.03
-            ),
-
-            new THREE.Vector3(
-              1.32,
-              -2.22,
-              0
             ),
 
             new THREE.Vector3(
               1.18,
-              -2.95,
+              -1.61,
+              0.06
+            ),
+
+            new THREE.Vector3(
+              1.1,
+              -1.9,
+              0.04
+            ),
+
+            new THREE.Vector3(
+              1.22,
+              -2.18,
+              0.02
+            ),
+
+            new THREE.Vector3(
+              1.26,
+              -2.48,
               0
             ),
 
             new THREE.Vector3(
-              1.12,
-              -3.45,
-              0
+              1.16,
+              -2.83,
+              -0.02
+            ),
+
+            new THREE.Vector3(
+              1.05,
+              -3.25,
+              -0.04
             ),
           ]
         );
@@ -215,442 +315,385 @@ function FilamentStrand({
       return new THREE
         .TubeGeometry(
           curve,
-          110,
-          0.038,
-          10,
+          180,
+          0.058,
+          14,
           false
         );
     }, []);
 
+  useFrame(
+    (
+      _state,
+      delta
+    ) => {
+      if (!strandRef.current) {
+        return;
+      }
+
+      const progress =
+        clamp(
+          progressRef.current
+        );
+
+      const tension =
+        Math.sin(
+          progress *
+            Math.PI *
+            2.2
+        );
+
+      const sideways =
+        Math.sin(
+          progress *
+            Math.PI *
+            3.5
+        );
+
+      strandRef.current.rotation.z =
+        THREE.MathUtils.damp(
+          strandRef.current
+            .rotation.z,
+
+          tension * 0.03,
+
+          5,
+
+          delta
+        );
+
+      strandRef.current.position.x =
+        THREE.MathUtils.damp(
+          strandRef.current
+            .position.x,
+
+          sideways * 0.03,
+
+          5,
+
+          delta
+        );
+
+      strandRef.current.scale.y =
+        THREE.MathUtils.damp(
+          strandRef.current
+            .scale.y,
+
+          0.98 +
+            progress * 0.04,
+
+          5,
+
+          delta
+        );
+    }
+  );
+
   return (
-    <group>
+    <group ref={strandRef}>
       <mesh
-        geometry={
-          geometry
-        }
+        geometry={geometry}
         scale={[
-          1.08,
-          1.02,
-          1.08,
+          1.045,
+          1.015,
+          1.045,
         ]}
       >
         <meshBasicMaterial
-          color="#020309"
-          side={
-            THREE.BackSide
-          }
+          color="#020407"
+          side={THREE.BackSide}
         />
       </mesh>
 
       <mesh
-        geometry={
-          geometry
-        }
-        material={
-          material
-        }
+        geometry={geometry}
+        material={material}
+        castShadow
       />
     </group>
   );
 }
 
-function SpoolModel({
-  scrollProgress,
+/* =========================================================
+   SPOOL
+========================================================= */
+
+function Spool({
+  progressRef,
 }) {
-  const groupRef =
+  const rootRef =
     useRef(null);
 
-  const rotatingRef =
+  const spoolRef =
     useRef(null);
 
-  const filamentGroupRef =
-    useRef(null);
+  const flangeMaterial =
+    useFlangeMaterial();
 
-  const strandRef =
-    useRef(null);
-
-  const gradientMap =
+  const rearMaterial =
     useMemo(
       () =>
-        createToonGradient(),
+        new THREE.MeshStandardMaterial({
+          color: "#06090d",
+          roughness: 0.64,
+          metalness: 0.12,
+        }),
       []
     );
 
-  const blueToonMaterial =
+  const rimMaterial =
     useMemo(
       () =>
-        new THREE.MeshToonMaterial({
-          color:
-            new THREE.Color(
-              "#276dff"
-            ),
-
-          emissive:
-            new THREE.Color(
-              "#061b51"
-            ),
-
-          emissiveIntensity:
-            0.7,
-
-          gradientMap,
+        new THREE.MeshPhysicalMaterial({
+          color: "#28323e",
+          roughness: 0.36,
+          metalness: 0.27,
+          clearcoat: 0.18,
         }),
-      [gradientMap]
+      []
     );
 
-  const darkToonMaterial =
+  const hubMaterial =
     useMemo(
       () =>
-        new THREE.MeshToonMaterial({
-          color:
-            new THREE.Color(
-              "#151d2b"
-            ),
-
-          emissive:
-            new THREE.Color(
-              "#02040a"
-            ),
-
-          emissiveIntensity:
-            0.25,
-
-          gradientMap,
-        }),
-      [gradientMap]
-    );
-
-  const deepMaterial =
-    useMemo(
-      () =>
-        new THREE.MeshToonMaterial({
-          color:
-            new THREE.Color(
-              "#050811"
-            ),
-
-          gradientMap,
-        }),
-      [gradientMap]
-    );
-
-  const magentaMaterial =
-    useMemo(
-      () =>
-        new THREE.MeshBasicMaterial({
-          color:
-            "#ff397c",
-
-          transparent:
-            true,
-
-          opacity:
-            0.22,
+        new THREE.MeshPhysicalMaterial({
+          color: "#172a42",
+          roughness: 0.4,
+          metalness: 0.12,
+          clearcoat: 0.24,
         }),
       []
     );
 
   useFrame(
-    (state) => {
+    (
+      state,
+      delta
+    ) => {
       if (
-        !groupRef.current ||
-        !rotatingRef.current ||
-        !filamentGroupRef.current
+        !rootRef.current ||
+        !spoolRef.current
       ) {
         return;
       }
 
+      const progress =
+        clamp(
+          progressRef.current
+        );
+
+      const mobile =
+        state.size.width < 700;
+
+      const startX =
+        mobile
+          ? 0.16
+          : 0.2;
+
+      const endX =
+        mobile
+          ? 0.23
+          : 0.3;
+
+      const startY =
+        mobile
+          ? -0.32
+          : -0.48;
+
+      const endY =
+        mobile
+          ? -0.18
+          : -0.18;
+
+      const startZ =
+        mobile
+          ? -0.04
+          : -0.08;
+
+      const endZ =
+        mobile
+          ? 0.02
+          : 0.05;
+
       const pointerX =
-        state.pointer.x;
+        state.pointer.x *
+        (mobile
+          ? 0.02
+          : 0.045);
 
       const pointerY =
-        state.pointer.y;
+        state.pointer.y *
+        (mobile
+          ? 0.01
+          : 0.03);
 
-      groupRef.current.rotation.y =
-        THREE.MathUtils.lerp(
-          groupRef.current
-            .rotation.y,
-
-          pointerX * 0.22,
-
-          0.045
-        );
-
-      groupRef.current.rotation.x =
-        THREE.MathUtils.lerp(
-          groupRef.current
+      rootRef.current.rotation.x =
+        THREE.MathUtils.damp(
+          rootRef.current
             .rotation.x,
 
-          -pointerY * 0.13 +
-            0.04,
+          THREE.MathUtils.lerp(
+            startX,
+            endX,
+            progress
+          ) -
+            pointerY,
 
-          0.045
+          5,
+          delta
         );
 
-      /*
-        Slight comic-book snap
-        instead of completely
-        smooth rotation.
-      */
+      rootRef.current.rotation.y =
+        THREE.MathUtils.damp(
+          rootRef.current
+            .rotation.y,
 
-      const rawRotation =
-        scrollProgress *
-        Math.PI *
-        10;
+          THREE.MathUtils.lerp(
+            startY,
+            endY,
+            progress
+          ) +
+            pointerX,
 
-      const steppedRotation =
-        Math.round(
-          rawRotation * 10
-        ) / 10;
+          5,
+          delta
+        );
 
-      rotatingRef.current.rotation.z =
-        THREE.MathUtils.lerp(
-          rotatingRef.current
+      rootRef.current.rotation.z =
+        THREE.MathUtils.damp(
+          rootRef.current
             .rotation.z,
 
-          steppedRotation,
+          THREE.MathUtils.lerp(
+            startZ,
+            endZ,
+            progress
+          ),
 
-          0.09
+          5,
+          delta
         );
 
-      /*
-        Filament consumption
-      */
+      const turns =
+        mobile
+          ? 1.05
+          : 1.45;
 
-      const consumption =
-        clamp(
-          scrollProgress *
-            1.15
+      spoolRef.current.rotation.z =
+        THREE.MathUtils.damp(
+          spoolRef.current
+            .rotation.z,
+
+          progress *
+            Math.PI *
+            2 *
+            turns,
+
+          7,
+          delta
+        );
+
+      spoolRef.current.position.y =
+        THREE.MathUtils.damp(
+          spoolRef.current
+            .position.y,
+
+          THREE.MathUtils.lerp(
+            0.05,
+            -0.08,
+            progress
+          ),
+
+          5,
+          delta
         );
 
       const targetScale =
-        1 -
-        consumption *
-          0.27;
+        mobile
+          ? THREE.MathUtils.lerp(
+              0.76,
+              0.81,
+              progress
+            )
+          : THREE.MathUtils.lerp(
+              0.94,
+              1.02,
+              progress
+            );
 
-      filamentGroupRef.current.scale.x =
-        THREE.MathUtils.lerp(
-          filamentGroupRef.current
+      const scale =
+        THREE.MathUtils.damp(
+          rootRef.current
             .scale.x,
 
           targetScale,
 
-          0.055
+          5,
+          delta
         );
 
-      filamentGroupRef.current.scale.y =
-        THREE.MathUtils.lerp(
-          filamentGroupRef.current
-            .scale.y,
-
-          targetScale,
-
-          0.055
-        );
-
-      rotatingRef.current.position.y =
-        Math.sin(
-          state.clock.elapsedTime *
-            0.9
-        ) *
-        0.02;
-
-      /*
-        Filament feed
-      */
-
-      if (
-        strandRef.current
-      ) {
-        const strandProgress =
-          clamp(
-            scrollProgress *
-              4
-          );
-
-        strandRef.current.scale.y =
-          THREE.MathUtils.lerp(
-            strandRef.current
-              .scale.y,
-
-            0.15 +
-              strandProgress *
-                0.85,
-
-            0.065
-          );
-      }
+      rootRef.current.scale.setScalar(
+        scale
+      );
     }
   );
 
   return (
-    <group
-      ref={groupRef}
-      rotation={[
-        0.03,
-        -0.1,
-        0,
-      ]}
-    >
-      {/* COMIC SHADOW OFFSET */}
-
-      <mesh
-        position={[
-          0.17,
-          -0.08,
-          -0.7,
-        ]}
-        material={
-          magentaMaterial
-        }
-      >
-        <circleGeometry
-          args={[
-            2.08,
-            96,
-          ]}
-        />
-      </mesh>
-
-      <group
-        ref={rotatingRef}
-      >
-        {/* BACK DISC */}
-
-        <ComicCylinder
-          args={[
-            2.05,
-            2.05,
-            0.16,
-            96,
-          ]}
+    <group ref={rootRef}>
+      <group ref={spoolRef}>
+        <mesh
           position={[
             0,
             0,
-            -0.48,
+            -0.72,
           ]}
           rotation={[
             Math.PI / 2,
             0,
             0,
           ]}
-          material={
-            deepMaterial
-          }
-          outlineScale={
-            1.02
-          }
-        />
-
-        {/* FILAMENT */}
-
-        <group
-          ref={
-            filamentGroupRef
-          }
+          material={rearMaterial}
+          castShadow
         >
-          <ComicCylinder
+          <cylinderGeometry
             args={[
-              1.68,
-              1.68,
-              0.84,
-              96,
+              2.16,
+              2.16,
+              0.26,
+              128,
             ]}
-            rotation={[
-              Math.PI / 2,
-              0,
-              0,
-            ]}
-            material={
-              blueToonMaterial
-            }
-            outlineScale={
-              1.012
-            }
           />
+        </mesh>
 
-          {[
-            {
-              radius: 1.2,
-              z: -0.36,
-            },
-            {
-              radius: 1.26,
-              z: -0.28,
-            },
-            {
-              radius: 1.32,
-              z: -0.2,
-            },
-            {
-              radius: 1.38,
-              z: -0.12,
-            },
-            {
-              radius: 1.44,
-              z: -0.04,
-            },
-            {
-              radius: 1.5,
-              z: 0.04,
-            },
-            {
-              radius: 1.56,
-              z: 0.12,
-            },
-            {
-              radius: 1.61,
-              z: 0.2,
-            },
-            {
-              radius: 1.65,
-              z: 0.28,
-            },
-            {
-              radius: 1.68,
-              z: 0.35,
-            },
-          ].map(
-            (
-              ring,
-              index
-            ) => (
-              <ComicTorus
-                key={
-                  index
-                }
-                radius={
-                  ring.radius
-                }
-                tube={
-                  0.025
-                }
-                position={[
-                  0,
-                  0,
-                  ring.z,
-                ]}
-                material={
-                  blueToonMaterial
-                }
-              />
-            )
-          )}
-        </group>
-
-        {/* FRONT DISC */}
-
-        <ComicCylinder
-          args={[
-            2.08,
-            2.08,
-            0.18,
-            96,
-          ]}
+        <mesh
           position={[
             0,
             0,
-            0.49,
+            -0.55,
+          ]}
+          material={rimMaterial}
+        >
+          <torusGeometry
+            args={[
+              2.04,
+              0.12,
+              20,
+              128,
+            ]}
+          />
+        </mesh>
+
+        <FilamentRoll
+          progressRef={
+            progressRef
+          }
+        />
+
+        <mesh
+          position={[
+            0,
+            0,
+            0.72,
           ]}
           rotation={[
             Math.PI / 2,
@@ -658,182 +701,160 @@ function SpoolModel({
             0,
           ]}
           material={
-            darkToonMaterial
-          }
-          outlineScale={
-            1.025
+            flangeMaterial
           }
           castShadow
-        />
+        >
+          <cylinderGeometry
+            args={[
+              2.16,
+              2.16,
+              0.26,
+              128,
+            ]}
+          />
+        </mesh>
 
-        {/* INNER RECESS */}
-
-        <ComicCylinder
-          args={[
-            1.15,
-            1.15,
-            0.08,
-            72,
-          ]}
+        <mesh
           position={[
             0,
             0,
-            0.6,
+            0.9,
           ]}
-          rotation={[
-            Math.PI / 2,
-            0,
-            0,
-          ]}
-          material={
-            deepMaterial
-          }
-          outlineScale={
-            1.01
-          }
-        />
-
-        {/* HUB */}
-
-        <ComicCylinder
-          args={[
-            0.68,
-            0.68,
-            0.27,
-            72,
-          ]}
-          position={[
-            0,
-            0,
-            0.69,
-          ]}
-          rotation={[
-            Math.PI / 2,
-            0,
-            0,
-          ]}
-          material={
-            darkToonMaterial
-          }
-          outlineScale={
-            1.035
-          }
-        />
-
-        <ComicCylinder
-          args={[
-            0.4,
-            0.4,
-            0.05,
-            64,
-          ]}
-          position={[
-            0,
-            0,
-            0.84,
-          ]}
-          rotation={[
-            Math.PI / 2,
-            0,
-            0,
-          ]}
-          material={
-            blueToonMaterial
-          }
-          outlineScale={
-            1.04
-          }
-        />
-
-        {/* FRONT CUTOUTS */}
+          material={rimMaterial}
+        >
+          <torusGeometry
+            args={[
+              2.03,
+              0.115,
+              20,
+              128,
+            ]}
+          />
+        </mesh>
 
         {[
           0,
           Math.PI / 2,
           Math.PI,
-          Math.PI *
-            1.5,
+          Math.PI * 1.5,
         ].map(
           (
             angle,
             index
-          ) => {
-            const radius =
-              1.48;
+          ) => (
+            <group
+              key={index}
+              position={[
+                Math.cos(angle) *
+                  1.48,
 
-            return (
-              <group
-                key={
-                  index
-                }
-                position={[
-                  Math.cos(
-                    angle
-                  ) *
-                    radius,
+                Math.sin(angle) *
+                  1.48,
 
-                  Math.sin(
-                    angle
-                  ) *
-                    radius,
-
-                  0.6,
-                ]}
-                scale={[
-                  0.48,
-                  0.76,
-                  0.08,
-                ]}
-              >
-                <mesh
-                  scale={[
-                    1.07,
-                    1.07,
-                    1.07,
+                0.88,
+              ]}
+              rotation={[
+                0,
+                0,
+                angle,
+              ]}
+              scale={[
+                0.62,
+                0.94,
+                0.18,
+              ]}
+            >
+              <mesh>
+                <sphereGeometry
+                  args={[
+                    0.52,
+                    48,
+                    48,
                   ]}
-                >
-                  <sphereGeometry
-                    args={[
-                      0.55,
-                      32,
-                      32,
-                    ]}
-                  />
+                />
 
-                  <meshBasicMaterial
-                    color="#010207"
-                  />
-                </mesh>
-
-                <mesh>
-                  <sphereGeometry
-                    args={[
-                      0.55,
-                      32,
-                      32,
-                    ]}
-                  />
-
-                  <meshToonMaterial
-                    color="#060b14"
-                    gradientMap={
-                      gradientMap
-                    }
-                  />
-                </mesh>
-              </group>
-            );
-          }
+                <meshStandardMaterial
+                  color="#010204"
+                  roughness={0.9}
+                />
+              </mesh>
+            </group>
+          )
         )}
 
-        {/* BOLTS */}
+        <mesh
+          position={[
+            0,
+            0,
+            0.92,
+          ]}
+          rotation={[
+            Math.PI / 2,
+            0,
+            0,
+          ]}
+          material={
+            flangeMaterial
+          }
+        >
+          <cylinderGeometry
+            args={[
+              0.86,
+              0.86,
+              0.29,
+              96,
+            ]}
+          />
+        </mesh>
+
+        <mesh
+          position={[
+            0,
+            0,
+            1.1,
+          ]}
+          rotation={[
+            Math.PI / 2,
+            0,
+            0,
+          ]}
+          material={hubMaterial}
+        >
+          <cylinderGeometry
+            args={[
+              0.52,
+              0.52,
+              0.12,
+              96,
+            ]}
+          />
+        </mesh>
+
+        <mesh
+          position={[
+            0,
+            0,
+            1.17,
+          ]}
+        >
+          <circleGeometry
+            args={[
+              0.255,
+              64,
+            ]}
+          />
+
+          <meshStandardMaterial
+            color="#010204"
+          />
+        </mesh>
 
         {[
           0,
           Math.PI / 2,
           Math.PI,
-          Math.PI *
-            1.5,
+          Math.PI * 1.5,
         ].map(
           (
             angle,
@@ -841,148 +862,248 @@ function SpoolModel({
           ) => (
             <mesh
               key={
-                index
+                `fastener-${index}`
               }
               position={[
-                Math.cos(
-                  angle
-                ) *
-                  1.9,
+                Math.cos(angle) *
+                  1.92,
 
-                Math.sin(
-                  angle
-                ) *
-                  1.9,
+                Math.sin(angle) *
+                  1.92,
 
-                0.61,
+                0.94,
               ]}
             >
               <sphereGeometry
                 args={[
-                  0.048,
-                  16,
-                  16,
+                  0.043,
+                  20,
+                  20,
                 ]}
               />
 
-              <meshToonMaterial
-                color="#b0c4de"
-                gradientMap={
-                  gradientMap
-                }
+              <meshStandardMaterial
+                color="#8d959e"
+                metalness={0.68}
+                roughness={0.32}
               />
             </mesh>
           )
         )}
       </group>
 
-      {/* FILAMENT EXIT */}
-
-      <group
-        ref={
-          strandRef
+      <LooseFilament
+        progressRef={
+          progressRef
         }
-        scale={[
-          1,
-          0.2,
-          1,
-        ]}
-      >
-        <FilamentStrand
-          material={
-            blueToonMaterial
-          }
-        />
-      </group>
-
-      {/* COMIC LIGHTS */}
-
-      <pointLight
-        position={[
-          2.6,
-          2,
-          2,
-        ]}
-        color="#40a2ff"
-        intensity={7}
-        distance={7}
-      />
-
-      <pointLight
-        position={[
-          -3,
-          -1,
-          1,
-        ]}
-        color="#ff347c"
-        intensity={3.2}
-        distance={7}
       />
     </group>
   );
 }
 
-function SpoolScene({
-  scrollProgress,
+/* =========================================================
+   CAMERA
+========================================================= */
+
+function CameraRig({
+  progressRef,
+}) {
+  const {
+    camera,
+    size,
+  } = useThree();
+
+  useFrame(
+    (
+      _state,
+      delta
+    ) => {
+      const progress =
+        clamp(
+          progressRef.current
+        );
+
+      const mobile =
+        size.width < 700;
+
+      const start =
+        mobile
+          ? {
+              x: 0,
+              y: 0.18,
+              z: 8.5,
+            }
+          : {
+              x: 0.15,
+              y: 0.35,
+              z: 7.8,
+            };
+
+      const end =
+        mobile
+          ? {
+              x: 0.02,
+              y: 0.1,
+              z: 7.95,
+            }
+          : {
+              x: -0.16,
+              y: 0.15,
+              z: 7.08,
+            };
+
+      camera.position.x =
+        THREE.MathUtils.damp(
+          camera.position.x,
+
+          THREE.MathUtils.lerp(
+            start.x,
+            end.x,
+            progress
+          ),
+
+          4,
+          delta
+        );
+
+      camera.position.y =
+        THREE.MathUtils.damp(
+          camera.position.y,
+
+          THREE.MathUtils.lerp(
+            start.y,
+            end.y,
+            progress
+          ),
+
+          4,
+          delta
+        );
+
+      camera.position.z =
+        THREE.MathUtils.damp(
+          camera.position.z,
+
+          THREE.MathUtils.lerp(
+            start.z,
+            end.z,
+            progress
+          ),
+
+          4,
+          delta
+        );
+
+      camera.lookAt(
+        0,
+        THREE.MathUtils.lerp(
+          0,
+          -0.12,
+          progress
+        ),
+        0
+      );
+
+      camera.fov =
+        THREE.MathUtils.damp(
+          camera.fov,
+
+          mobile
+            ? 45
+            : THREE.MathUtils.lerp(
+                42,
+                39,
+                progress
+              ),
+
+          4,
+          delta
+        );
+
+      camera.updateProjectionMatrix();
+    }
+  );
+
+  return null;
+}
+
+/* =========================================================
+   LIGHTING
+========================================================= */
+
+function HeroLighting() {
+  return (
+    <>
+      <ambientLight
+        intensity={0.28}
+      />
+
+      <hemisphereLight
+        color="#d8e1ea"
+        groundColor="#020305"
+        intensity={0.5}
+      />
+
+      <directionalLight
+        position={[
+          5,
+          7,
+          6,
+        ]}
+        color="#dce5ed"
+        intensity={2.5}
+        castShadow
+      />
+
+      <spotLight
+        position={[
+          -5,
+          2.5,
+          4,
+        ]}
+        color="#376794"
+        intensity={1.7}
+        angle={0.7}
+        penumbra={0.95}
+      />
+
+      <spotLight
+        position={[
+          5,
+          -3,
+          3,
+        ]}
+        color="#73879a"
+        intensity={0.6}
+        angle={0.65}
+        penumbra={1}
+      />
+    </>
+  );
+}
+
+/* =========================================================
+   SCENE
+========================================================= */
+
+function FilamentScene({
+  progressRef,
 }) {
   return (
     <>
-      <color
-        attach="background"
-        args={[
-          "#02050a",
-        ]}
-      />
-
-      <ambientLight
-        intensity={1.2}
-      />
-
-      <directionalLight
-        position={[
-          4,
-          6,
-          6,
-        ]}
-        intensity={5}
-        color="#d8e9ff"
-      />
-
-      <directionalLight
-        position={[
-          -5,
-          2,
-          3,
-        ]}
-        intensity={2.8}
-        color="#4088ff"
-      />
-
-      <directionalLight
-        position={[
-          3,
-          -4,
-          3,
-        ]}
-        intensity={2}
-        color="#ff3a82"
-      />
-
-      <Float
-        speed={1.25}
-        rotationIntensity={
-          0.045
+      <CameraRig
+        progressRef={
+          progressRef
         }
-        floatIntensity={
-          0.11
+      />
+
+      <HeroLighting />
+
+      <Spool
+        progressRef={
+          progressRef
         }
-      >
-        <SpoolModel
-          scrollProgress={
-            scrollProgress
-          }
-        />
-      </Float>
+      />
 
       <ContactShadows
         position={[
@@ -990,62 +1111,101 @@ function SpoolScene({
           -2.55,
           0,
         ]}
-        opacity={0.65}
+        opacity={0.22}
         scale={7}
-        blur={1.5}
+        blur={3.5}
         far={5}
+      />
+
+      <Environment
+        preset="city"
+        environmentIntensity={
+          0.1
+        }
       />
     </>
   );
 }
 
-function FilamentSpool3D({
-  scrollProgress = 0,
-}) {
-  const consumed =
-    Math.round(
-      clamp(
-        scrollProgress
-      ) *
-        100
-    );
+/* =========================================================
+   MAIN
+========================================================= */
 
-  const remaining =
-    100 -
-    Math.round(
-      clamp(
-        scrollProgress
-      ) *
-        27
-    );
+function FilamentSpool3D() {
+  const wrapperRef =
+    useRef(null);
+
+  const progressRef =
+    useRef(0);
+
+  useLayoutEffect(() => {
+    if (!wrapperRef.current) {
+      return;
+    }
+
+    const hero =
+      wrapperRef.current.closest(
+        ".home-hero"
+      );
+
+    if (!hero) {
+      return;
+    }
+
+    const proxy = {
+      value: 0,
+    };
+
+    const context =
+      gsap.context(() => {
+        gsap.to(proxy, {
+          value: 1,
+
+          ease: "none",
+
+          scrollTrigger: {
+            trigger: hero,
+
+            start: "top top",
+
+            end: "+=120%",
+
+            scrub: 1.1,
+
+            invalidateOnRefresh:
+              true,
+
+            onUpdate: () => {
+              progressRef.current =
+                proxy.value;
+            },
+          },
+        });
+      }, wrapperRef);
+
+    ScrollTrigger.refresh();
+
+    return () => {
+      context.revert();
+    };
+  }, []);
 
   return (
-    <div className="spool-webgl-wrapper">
-      <div className="comic-halftone comic-halftone-one" />
+    <div
+      ref={wrapperRef}
+      className="spool-cinematic-wrapper"
+    >
+      <div className="spool-cinematic-aura" />
 
-      <div className="comic-halftone comic-halftone-two" />
-
-      <div className="comic-speed-line speed-line-one" />
-
-      <div className="comic-speed-line speed-line-two" />
-
-      <div className="comic-speed-line speed-line-three" />
-
-      <div className="spool-webgl-glow spool-webgl-glow-one" />
-
-      <div className="spool-webgl-glow spool-webgl-glow-two" />
-
-      <div className="spool-webgl-ring spool-webgl-ring-one" />
-
-      <div className="spool-webgl-ring spool-webgl-ring-two" />
+      <div className="spool-cinematic-vignette" />
 
       <Canvas
-        className="spool-webgl-canvas"
+        className="spool-cinematic-canvas"
         camera={{
           position: [
-            0,
-            0,
-            7.3,
+            0.15,
+            0.35,
+            7.8,
           ],
 
           fov: 42,
@@ -1060,96 +1220,68 @@ function FilamentSpool3D({
         ]}
         gl={{
           antialias: true,
-
           alpha: true,
 
           powerPreference:
             "high-performance",
         }}
+        shadows
+        onCreated={({
+          gl,
+        }) => {
+          gl.setClearColor(
+            0x000000,
+            0
+          );
+
+          gl.outputColorSpace =
+            THREE.SRGBColorSpace;
+
+          gl.toneMapping =
+            THREE.ACESFilmicToneMapping;
+
+          gl.toneMappingExposure =
+            0.9;
+        }}
       >
         <Suspense
-          fallback={
-            null
-          }
+          fallback={null}
         >
-          <SpoolScene
-            scrollProgress={
-              scrollProgress
+          <FilamentScene
+            progressRef={
+              progressRef
             }
           />
         </Suspense>
       </Canvas>
 
-      <div className="comic-caption">
-        <span>
-          MATERIAL FEED
-        </span>
+      {/*
+        HOME.JSX measures this
+        exact element.
 
-        <strong>
-          WHRRR—
-        </strong>
-      </div>
+        The page filament begins
+        here.
+      */}
 
-      <div className="spool-webgl-label spool-label-left">
+      <div
+        className="filament-page-anchor"
+        aria-hidden="true"
+      />
+
+      <div className="cinematic-material-tag">
         <span>
           MATERIAL
         </span>
 
         <strong>
-          PLA+
+          PLA / 1.75 MM
         </strong>
       </div>
 
-      <div className="spool-webgl-label spool-label-right">
-        <span>
-          FEED
-        </span>
+      <div className="cinematic-scroll-tag">
+        <span className="cinematic-scroll-dot" />
 
-        <strong>
-          ACTIVE
-        </strong>
-
-        <i />
-      </div>
-
-      <div className="spool-consumption-panel">
-        <div>
-          <span>
-            SPOOL
-          </span>
-
-          <strong>
-            {remaining}%
-          </strong>
-        </div>
-
-        <div className="spool-consumption-track">
-          <span
-            style={{
-              width:
-                `${remaining}%`,
-            }}
-          />
-        </div>
-
-        <small>
-          {consumed}%
-          journey complete
-        </small>
-      </div>
-
-      <div className="spool-webgl-bottom-label">
-        <span>
-          INTERACTIVE MATERIAL SYSTEM
-        </span>
-
-        <div>
-          MOVE CURSOR
-          <strong>
-            +
-          </strong>
-          SCROLL
-        </div>
+        SCROLL TO FEED
       </div>
     </div>
   );

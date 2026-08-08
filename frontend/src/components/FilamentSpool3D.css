@@ -1,234 +1,67 @@
-.spool-webgl-wrapper {
+/* =========================================================
+   BEYOND
+   CINEMATIC FILAMENT SPOOL
+========================================================= */
+
+.spool-cinematic-wrapper {
   width: 100%;
   height: 100%;
 
-  min-height: 680px;
+  min-height: 720px;
 
   position: relative;
 
   display: grid;
-
   place-items: center;
 
   isolation: isolate;
 
-  overflow: hidden;
+  overflow: visible;
+
+  background: transparent;
 }
 
-.spool-webgl-canvas {
+/* =========================================================
+   WEBGL
+========================================================= */
+
+.spool-cinematic-canvas {
   position: absolute !important;
 
-  inset: 0;
+  inset: -7% -8%;
 
-  width: 100% !important;
-  height: 100% !important;
+  width: 116% !important;
+  height: 114% !important;
 
   z-index: 4;
 
-  cursor: crosshair;
-}
-
-/* =========================
-   COMIC HALFTONE
-========================= */
-
-.comic-halftone {
-  position: absolute;
-
-  pointer-events: none;
-
-  border-radius: 50%;
-
-  z-index: 2;
-
-  opacity: 0.22;
-
-  background-image:
-    radial-gradient(
-      circle,
-      rgba(
-        111,
-        170,
-        255,
-        0.75
-      )
-      1px,
-      transparent 1.5px
-    );
-
-  background-size:
-    8px 8px;
-
-  mask-image:
-    radial-gradient(
-      circle,
-      black,
-      transparent 70%
-    );
-}
-
-.comic-halftone-one {
-  width: 340px;
-  height: 340px;
-
-  right: -40px;
-  top: 80px;
-
-  transform:
-    rotate(14deg);
-}
-
-.comic-halftone-two {
-  width: 300px;
-  height: 300px;
-
-  left: -30px;
-  bottom: 75px;
-
-  opacity: 0.12;
-
-  background-image:
-    radial-gradient(
-      circle,
-      rgba(
-        255,
-        54,
-        125,
-        0.8
-      )
-      1px,
-      transparent 1.5px
-    );
-}
-
-/* =========================
-   SPEED LINES
-========================= */
-
-.comic-speed-line {
-  position: absolute;
-
-  z-index: 3;
-
-  height: 2px;
-
-  pointer-events: none;
-
-  transform-origin: right;
-
   background:
-    linear-gradient(
-      90deg,
-      transparent,
-      rgba(
-        82,
-        151,
-        255,
-        0.65
-      )
-    );
+    transparent !important;
 
   filter:
     drop-shadow(
-      0 0 4px
+      0 38px 48px
       rgba(
-        57,
-        128,
-        255,
-        0.5
+        0,
+        0,
+        0,
+        0.24
       )
     );
 }
 
-.speed-line-one {
-  width: 140px;
+/* =========================================================
+   AURA
+========================================================= */
 
-  right: 8%;
-
-  top: 29%;
-
-  transform:
-    rotate(-17deg);
-}
-
-.speed-line-two {
-  width: 105px;
-
-  right: 4%;
-
-  top: 35%;
-
-  transform:
-    rotate(-11deg);
-}
-
-.speed-line-three {
-  width: 85px;
-
-  left: 7%;
-
-  bottom: 29%;
-
-  transform:
-    rotate(19deg);
-}
-
-/* =========================
-   LIGHT
-========================= */
-
-.spool-webgl-glow {
+.spool-cinematic-aura {
   position: absolute;
 
-  border-radius: 50%;
+  width: 650px;
+  height: 650px;
 
-  pointer-events: none;
-
-  filter: blur(80px);
-}
-
-.spool-webgl-glow-one {
-  width: 420px;
-  height: 420px;
-
-  background:
-    rgba(
-      34,
-      112,
-      255,
-      0.17
-    );
-
-  z-index: 1;
-}
-
-.spool-webgl-glow-two {
-  width: 270px;
-  height: 270px;
-
-  right: 6%;
-  top: 19%;
-
-  background:
-    rgba(
-      255,
-      45,
-      119,
-      0.075
-    );
-
-  z-index: 1;
-}
-
-/* =========================
-   GRAPHIC RINGS
-========================= */
-
-.spool-webgl-ring {
-  position: absolute;
-
-  left: 50%;
-  top: 50%;
+  left: 51%;
+  top: 49%;
 
   transform:
     translate(
@@ -236,446 +69,354 @@
       -50%
     );
 
+  z-index: 1;
+
+  pointer-events: none;
+
   border-radius: 50%;
 
-  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse at center,
+
+      rgba(
+        37,
+        79,
+        120,
+        0.1
+      )
+      0%,
+
+      rgba(
+        18,
+        43,
+        75,
+        0.065
+      )
+      28%,
+
+      transparent
+      72%
+    );
+
+  filter:
+    blur(30px);
+}
+
+.spool-cinematic-vignette {
+  position: absolute;
+
+  inset: -10%;
 
   z-index: 2;
-}
-
-.spool-webgl-ring-one {
-  width: 535px;
-  height: 535px;
-
-  border:
-    1px solid
-    rgba(
-      87,
-      147,
-      240,
-      0.13
-    );
-}
-
-.spool-webgl-ring-two {
-  width: 620px;
-  height: 620px;
-
-  border:
-    1px dashed
-    rgba(
-      87,
-      147,
-      240,
-      0.1
-    );
-
-  animation:
-    webglRingRotation
-    30s
-    steps(120)
-    infinite;
-}
-
-/* =========================
-   COMIC CAPTION
-========================= */
-
-.comic-caption {
-  position: absolute;
-
-  right: 9%;
-  bottom: 20%;
-
-  z-index: 8;
-
-  transform:
-    rotate(-6deg);
 
   pointer-events: none;
-}
 
-.comic-caption span {
-  display: block;
+  background:
+    radial-gradient(
+      ellipse at center,
 
-  margin-bottom: 2px;
+      transparent 39%,
 
-  color:
-    rgba(
-      135,
-      179,
-      246,
-      0.65
+      rgba(
+        1,
+        5,
+        11,
+        0.04
+      )
+      62%,
+
+      rgba(
+        1,
+        4,
+        8,
+        0.15
+      )
+      100%
     );
-
-  font-size: 7px;
-
-  font-weight: 800;
-
-  letter-spacing: 2px;
 }
 
-.comic-caption strong {
-  color: white;
+/* =========================================================
+   PAGE CONNECTION ANCHOR
 
-  font-family:
-    "Space Grotesk",
-    sans-serif;
+   Invisible.
 
-  font-size: 22px;
+   Home.jsx measures this point.
+========================================================= */
 
-  font-style: italic;
+.filament-page-anchor {
+  width: 4px;
+  height: 4px;
 
-  letter-spacing: -1px;
-
-  text-shadow:
-    3px 3px 0
-      rgba(
-        255,
-        51,
-        120,
-        0.35
-      ),
-    -2px -2px 0
-      rgba(
-        44,
-        117,
-        255,
-        0.28
-      );
-}
-
-/* =========================
-   INFO LABELS
-========================= */
-
-.spool-webgl-label {
   position: absolute;
 
-  min-width: 120px;
+  /*
+    Tuned to match the bottom
+    of the WebGL loose filament.
+  */
 
-  padding:
-    12px 14px;
+  left: 64%;
+  top: 83%;
 
   z-index: 7;
 
-  border:
-    1px solid
-    rgba(
-      255,
-      255,
-      255,
-      0.075
-    );
+  pointer-events: none;
 
-  border-radius: 8px;
-
-  background:
-    rgba(
-      4,
-      10,
-      18,
-      0.7
-    );
-
-  backdrop-filter:
-    blur(18px);
-
-  box-shadow:
-    5px 5px 0
-      rgba(
-        16,
-        61,
-        135,
-        0.14
-      );
+  opacity: 0;
 }
 
-.spool-webgl-label span {
+/* =========================================================
+   MATERIAL LABEL
+========================================================= */
+
+.cinematic-material-tag {
+  position: absolute;
+
+  left: 5%;
+  top: 28%;
+
+  z-index: 8;
+
+  pointer-events: none;
+}
+
+.cinematic-material-tag span {
   display: block;
 
-  margin-bottom: 5px;
+  margin-bottom: 6px;
 
-  color: #516680;
+  color:
+    rgba(
+      130,
+      151,
+      176,
+      0.45
+    );
 
   font-size: 7px;
 
   font-weight: 700;
 
-  letter-spacing: 1.5px;
+  letter-spacing: 2px;
 }
 
-.spool-webgl-label strong {
-  display: block;
-
-  color: #c8d9f0;
+.cinematic-material-tag strong {
+  color:
+    rgba(
+      211,
+      221,
+      232,
+      0.78
+    );
 
   font-size: 10px;
+
+  font-weight: 500;
 
   letter-spacing: 1px;
 }
 
-.spool-webgl-label i {
+/* =========================================================
+   SCROLL LABEL
+========================================================= */
+
+.cinematic-scroll-tag {
   position: absolute;
 
-  width: 6px;
-  height: 6px;
+  right: 5%;
+  bottom: 13%;
 
-  right: 10px;
-  top: 10px;
+  z-index: 8;
 
-  border-radius: 50%;
-
-  background: #448dff;
-
-  box-shadow:
-    0 0 12px
-    #448dff;
-}
-
-.spool-label-left {
-  left: 3%;
-  top: 20%;
-}
-
-.spool-label-right {
-  right: 2%;
-  top: 42%;
-}
-
-/* =========================
-   SPOOL HUD
-========================= */
-
-.spool-consumption-panel {
-  position: absolute;
-
-  left: 3%;
-  bottom: 18%;
-
-  width: 145px;
-
-  padding: 14px;
-
-  z-index: 7;
-
-  border:
-    1px solid
-    rgba(
-      255,
-      255,
-      255,
-      0.075
-    );
-
-  border-radius: 8px;
-
-  background:
-    rgba(
-      4,
-      10,
-      18,
-      0.7
-    );
-
-  backdrop-filter:
-    blur(18px);
-
-  box-shadow:
-    -4px 5px 0
-      rgba(
-        255,
-        50,
-        120,
-        0.08
-      );
-}
-
-.spool-consumption-panel > div:first-child {
   display: flex;
 
   align-items: center;
-
-  justify-content: space-between;
-}
-
-.spool-consumption-panel span {
-  color: #516680;
-
-  font-size: 7px;
-
-  letter-spacing: 1.5px;
-}
-
-.spool-consumption-panel strong {
-  color: #a8c9ff;
-
-  font-size: 12px;
-}
-
-.spool-consumption-track {
-  width: 100%;
-  height: 3px;
-
-  margin:
-    10px 0 8px;
-
-  overflow: hidden;
-
-  background:
-    rgba(
-      255,
-      255,
-      255,
-      0.07
-    );
-}
-
-.spool-consumption-track span {
-  display: block;
-
-  height: 100%;
-
-  background:
-    linear-gradient(
-      90deg,
-      #286fff,
-      #85baff
-    );
-
-  box-shadow:
-    0 0 10px
-      rgba(
-        54,
-        132,
-        255,
-        0.55
-      );
-
-  transition:
-    width 0.1s linear;
-}
-
-.spool-consumption-panel small {
-  display: block;
-
-  color: #4f6482;
-
-  font-size: 7px;
-
-  line-height: 1.5;
-
-  letter-spacing: 0.8px;
-}
-
-/* =========================
-   BOTTOM LABEL
-========================= */
-
-.spool-webgl-bottom-label {
-  position: absolute;
-
-  left: 50%;
-  bottom: 18px;
-
-  transform:
-    translateX(-50%);
-
-  z-index: 7;
-
-  width: 320px;
-
-  text-align: center;
-}
-
-.spool-webgl-bottom-label > span {
-  display: block;
-
-  margin-bottom: 8px;
-
-  color: #436088;
-
-  font-size: 7px;
-
-  letter-spacing: 2px;
-}
-
-.spool-webgl-bottom-label div {
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
 
   gap: 8px;
 
-  color: #657b9a;
+  color:
+    rgba(
+      113,
+      136,
+      161,
+      0.43
+    );
 
   font-size: 7px;
 
-  letter-spacing: 1.4px;
+  font-weight: 600;
+
+  letter-spacing: 1.8px;
+
+  pointer-events: none;
 }
 
-.spool-webgl-bottom-label strong {
-  color: #448dff;
+.cinematic-scroll-dot {
+  width: 5px;
+  height: 5px;
+
+  border-radius: 50%;
+
+  background:
+    rgba(
+      105,
+      145,
+      181,
+      0.72
+    );
 }
 
-@keyframes webglRingRotation {
-  from {
-    transform:
-      translate(
-        -50%,
-        -50%
-      )
-      rotate(0deg);
+/* =========================================================
+   LARGE DESKTOP
+========================================================= */
+
+@media (
+  min-width: 1450px
+) {
+  .spool-cinematic-wrapper {
+    min-height: 760px;
   }
 
-  to {
-    transform:
-      translate(
-        -50%,
-        -50%
-      )
-      rotate(360deg);
+  .spool-cinematic-canvas {
+    inset: -10%;
+
+    width:
+      120% !important;
+
+    height:
+      120% !important;
+  }
+
+  .spool-cinematic-aura {
+    width: 720px;
+    height: 720px;
   }
 }
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (
+  max-width: 1100px
+) {
+  .spool-cinematic-wrapper {
+    min-height: 620px;
+  }
+
+  .spool-cinematic-canvas {
+    inset:
+      -5% -10%;
+
+    width:
+      120% !important;
+
+    height:
+      110% !important;
+  }
+
+  .spool-cinematic-aura {
+    width: 520px;
+    height: 520px;
+  }
+
+  .filament-page-anchor {
+    left: 60%;
+    top: 82%;
+  }
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
 
 @media (
   max-width: 700px
 ) {
-  .spool-webgl-wrapper {
-    min-height: 480px;
+  .spool-cinematic-wrapper {
+    min-height: 470px;
+
+    width: 100%;
   }
 
-  .spool-webgl-ring-one {
-    width: 335px;
-    height: 335px;
+  .spool-cinematic-canvas {
+    inset:
+      -3% -18%;
+
+    width:
+      136% !important;
+
+    height:
+      108% !important;
   }
 
-  .spool-webgl-ring-two {
-    width: 390px;
-    height: 390px;
+  .spool-cinematic-aura {
+    width: 355px;
+    height: 355px;
+
+    left: 50%;
+    top: 49%;
   }
 
-  .spool-webgl-label,
-  .spool-consumption-panel,
-  .comic-caption,
-  .comic-speed-line {
-    display: none;
+  /*
+    Filament exits near center
+    on mobile.
+  */
+
+  .filament-page-anchor {
+    left: 53%;
+    top: 82%;
   }
 
-  .spool-webgl-bottom-label {
-    bottom: 8px;
+  .cinematic-material-tag {
+    left: 4%;
+    top: 20%;
+  }
 
-    width: 260px;
+  .cinematic-material-tag span {
+    font-size: 5px;
+  }
+
+  .cinematic-material-tag strong {
+    font-size: 8px;
+  }
+
+  .cinematic-scroll-tag {
+    right: 4%;
+    bottom: 8%;
+
+    font-size: 5px;
+
+    letter-spacing: 1.3px;
   }
 }
 
+/* =========================================================
+   SMALL PHONE
+========================================================= */
+
 @media (
-  prefers-reduced-motion:
-    reduce
+  max-width: 430px
 ) {
-  .spool-webgl-ring-two {
-    animation: none;
+  .spool-cinematic-wrapper {
+    min-height: 420px;
+  }
+
+  .spool-cinematic-canvas {
+    inset:
+      -1% -22%;
+
+    width:
+      144% !important;
+  }
+
+  .spool-cinematic-aura {
+    width: 310px;
+    height: 310px;
+  }
+
+  .filament-page-anchor {
+    left: 52%;
+    top: 81%;
   }
 }
