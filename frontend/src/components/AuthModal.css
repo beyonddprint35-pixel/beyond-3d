@@ -2,444 +2,328 @@
   position: fixed;
   inset: 0;
   z-index: 1000;
-
   display: grid;
   place-items: center;
-
   padding: 24px;
-
-  background:
-    rgba(0, 3, 8, 0.76);
-
-  backdrop-filter:
-    blur(18px);
-
-  -webkit-backdrop-filter:
-    blur(18px);
+  background: rgba(0, 3, 8, 0.76);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 
 .auth-modal-card {
-  width:
-    min(460px, 100%);
-
+  width: min(460px, 100%);
   position: relative;
-
-  box-sizing:
-    border-box;
-
+  box-sizing: border-box;
   padding: 38px;
-
   overflow: hidden;
-
-  border:
-    1px solid
-    rgba(
-      122,
-      160,
-      194,
-      0.13
-    );
-
+  border: 1px solid rgba(122, 160, 194, 0.13);
   border-radius: 26px;
-
   color: #f4f7fb;
-
   background:
-    radial-gradient(
-      circle at 82% 4%,
-      rgba(
-        46,
-        104,
-        170,
-        0.13
-      ),
-      transparent 30%
-    ),
-    linear-gradient(
-      145deg,
-      #0c1725,
-      #050a11
-    );
-
-  box-shadow:
-    0 36px 100px
-    rgba(
-      0,
-      0,
-      0,
-      0.48
-    );
+    radial-gradient(circle at 82% 4%, rgba(46, 104, 170, 0.13), transparent 30%),
+    linear-gradient(145deg, #0c1725, #050a11);
+  box-shadow: 0 36px 100px rgba(0, 0, 0, 0.48);
 }
 
 .auth-modal-close {
   width: 38px;
   height: 38px;
-
   position: absolute;
-
   right: 19px;
   top: 19px;
-
   display: grid;
   place-items: center;
-
-  border:
-    1px solid
-    rgba(
-      255,
-      255,
-      255,
-      0.07
-    );
-
+  border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 50%;
-
   color: #7e93a8;
-
-  background:
-    rgba(
-      255,
-      255,
-      255,
-      0.02
-    );
-
+  background: rgba(255, 255, 255, 0.02);
   cursor: pointer;
 }
 
 .auth-modal-kicker {
   margin-bottom: 17px;
-
   color: #5d86aa;
-
   font-size: 7px;
   font-weight: 700;
-
   letter-spacing: 2px;
 }
 
 .auth-modal-card h2 {
   margin: 0;
-
-  font-family:
-    "Space Grotesk",
-    sans-serif;
-
+  font-family: "Space Grotesk", sans-serif;
   font-size: 39px;
   font-weight: 500;
-
   line-height: 1;
-
-  letter-spacing:
-    -0.045em;
+  letter-spacing: -0.045em;
 }
 
 .auth-modal-intro {
   max-width: 350px;
-
-  margin:
-    15px 0 25px;
-
+  margin: 15px 0 25px;
   color: #71869a;
-
   font-size: 11px;
-
   line-height: 1.7;
 }
 
 .auth-mode-switch {
   display: grid;
-
-  grid-template-columns:
-    repeat(2, 1fr);
-
+  grid-template-columns: repeat(2, 1fr);
   margin-bottom: 24px;
-
   padding: 4px;
-
-  border:
-    1px solid
-    rgba(
-      255,
-      255,
-      255,
-      0.06
-    );
-
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 999px;
-
-  background:
-    rgba(
-      255,
-      255,
-      255,
-      0.018
-    );
+  background: rgba(255, 255, 255, 0.018);
 }
 
 .auth-mode-switch button {
   min-height: 38px;
-
   border: 0;
-
   border-radius: 999px;
-
   color: #5d7185;
-
   background: transparent;
-
   font-size: 9px;
   font-weight: 700;
-
   cursor: pointer;
 }
 
-.auth-mode-switch
-button.active {
+.auth-mode-switch button.active {
   color: #dfe8ef;
-
-  background:
-    rgba(
-      69,
-      119,
-      162,
-      0.16
-    );
+  background: rgba(69, 119, 162, 0.16);
 }
 
 .auth-form {
   display: grid;
-
   gap: 17px;
 }
 
 .auth-field {
   display: grid;
-
   gap: 8px;
 }
 
 .auth-field > span {
   color: #506a80;
-
   font-size: 6px;
   font-weight: 700;
-
   letter-spacing: 1.5px;
 }
 
 .auth-input-shell {
   min-height: 50px;
-
   display: flex;
-
   align-items: center;
-
   gap: 11px;
-
-  padding:
-    0 15px;
-
-  border:
-    1px solid
-    rgba(
-      111,
-      151,
-      187,
-      0.1
-    );
-
+  padding: 0 15px;
+  border: 1px solid rgba(111, 151, 187, 0.1);
   border-radius: 14px;
-
   color: #607c94;
-
-  background:
-    rgba(
-      2,
-      8,
-      14,
-      0.68
-    );
-
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+  background: rgba(2, 8, 14, 0.68);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .auth-input-shell:focus-within {
-  border-color:
-    rgba(
-      105,
-      159,
-      204,
-      0.3
-    );
-
-  box-shadow:
-    0 0 0 3px
-    rgba(
-      61,
-      114,
-      158,
-      0.045
-    );
+  border-color: rgba(105, 159, 204, 0.3);
+  box-shadow: 0 0 0 3px rgba(61, 114, 158, 0.045);
 }
 
 .auth-input-shell input {
   min-width: 0;
-
   flex: 1;
-
   border: 0;
   outline: 0;
-
   color: #dce5ec;
-
   background: transparent;
-
   font: inherit;
-
   font-size: 11px;
 }
 
-.auth-input-shell
-input::placeholder {
+.auth-input-shell input::placeholder {
   color: #3f5366;
 }
 
 .auth-password-toggle {
   padding: 4px;
-
   display: grid;
-
   place-items: center;
-
   border: 0;
-
   color: #597085;
-
   background: transparent;
-
   cursor: pointer;
 }
 
 .auth-submit {
   min-height: 50px;
-
   margin-top: 2px;
-
   border: 0;
-
   border-radius: 999px;
-
   color: white;
-
-  background:
-    linear-gradient(
-      135deg,
-      #1e67ee,
-      #438cf4
-    );
-
-  box-shadow:
-    0 16px 40px
-    rgba(
-      30,
-      103,
-      238,
-      0.18
-    );
-
+  background: linear-gradient(135deg, #1e67ee, #438cf4);
+  box-shadow: 0 16px 40px rgba(30, 103, 238, 0.18);
   font-size: 10px;
   font-weight: 700;
-
   cursor: pointer;
 }
 
 .auth-submit:disabled {
   opacity: 0.55;
-
   cursor: wait;
 }
 
 .auth-message {
-  padding:
-    11px 13px;
-
+  padding: 11px 13px;
   border-radius: 11px;
-
   font-size: 8px;
-
   line-height: 1.55;
 }
 
 .auth-message.error {
-  border:
-    1px solid
-    rgba(
-      203,
-      89,
-      89,
-      0.16
-    );
-
+  border: 1px solid rgba(203, 89, 89, 0.16);
   color: #c89393;
-
-  background:
-    rgba(
-      116,
-      37,
-      37,
-      0.08
-    );
+  background: rgba(116, 37, 37, 0.08);
 }
 
 .auth-message.success {
-  border:
-    1px solid
-    rgba(
-      99,
-      160,
-      112,
-      0.16
-    );
-
+  border: 1px solid rgba(99, 160, 112, 0.16);
   color: #94bd9c;
-
-  background:
-    rgba(
-      42,
-      96,
-      53,
-      0.08
-    );
+  background: rgba(42, 96, 53, 0.08);
 }
 
 .auth-security-note {
   margin-top: 19px;
-
   color: #3e5264;
-
   font-size: 6px;
-
   text-align: center;
 }
 
-@media (
-  max-width: 700px
-) {
+@media (max-width: 700px) {
   .auth-modal-backdrop {
     padding: 14px;
   }
 
   .auth-modal-card {
-    padding:
-      32px 22px 25px;
-
+    padding: 32px 22px 25px;
     border-radius: 22px;
   }
 
   .auth-modal-card h2 {
     font-size: 34px;
   }
+}
+
+
+/* =========================================================
+   BEYOND RESPONSIVE TYPOGRAPHY â€” AUTH
+========================================================= */
+
+.auth-modal-kicker,
+.auth-field > span {
+  font-size: clamp(10px, 0.66vw, 12px);
+}
+
+.auth-modal-card h2 {
+  font-size: clamp(38px, 3vw, 46px);
+}
+
+.auth-modal-intro {
+  font-size: clamp(14px, 0.92vw, 16px);
+  line-height: 1.65;
+}
+
+.auth-mode-switch button,
+.auth-submit {
+  font-size: clamp(12px, 0.8vw, 14px);
+}
+
+.auth-input-shell input {
+  font-size: clamp(14px, 0.92vw, 16px);
+}
+
+.auth-message,
+.auth-security-note {
+  font-size: clamp(10px, 0.66vw, 12px);
+}
+
+@media (max-width: 700px) {
+  .auth-modal-card h2 {
+    font-size: 36px;
+  }
+
+  .auth-modal-intro {
+    font-size: 14px;
+  }
+
+  .auth-modal-kicker,
+  .auth-field > span {
+    font-size: 10px;
+  }
+
+  .auth-mode-switch button,
+  .auth-submit {
+    font-size: 13px;
+  }
+
+  .auth-input-shell input {
+    font-size: 16px;
+  }
+
+  .auth-message,
+  .auth-security-note {
+    font-size: 11px;
+  }
+}
+
+
+/* =========================================================
+   GLOBAL TYPOGRAPHY MAPPING â€” AUTH
+   Layout is intentionally untouched.
+========================================================= */
+
+.auth-modal {
+  font-family:
+    var(--font-body-family);
+}
+
+.auth-modal-kicker,
+.auth-field > span {
+  font-size:
+    var(--type-label);
+}
+
+.auth-modal-card h2 {
+  font-family:
+    var(--font-display-family);
+
+  font-size:
+    var(--type-heading-1);
+
+  line-height:
+    var(--line-heading);
+}
+
+.auth-modal-intro {
+  font-size:
+    var(--type-body);
+
+  line-height:
+    var(--line-body);
+}
+
+.auth-mode-switch button,
+.auth-submit {
+  font-size:
+    var(--type-button);
+}
+
+.auth-input-shell input {
+  font-size:
+    var(--type-input);
+}
+
+.auth-message,
+.auth-security-note {
+  font-size:
+    var(--type-small);
+
+  line-height:
+    var(--line-small);
 }

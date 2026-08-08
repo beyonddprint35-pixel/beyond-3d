@@ -1,10 +1,3 @@
-import {
-  Upload,
-  ScanSearch,
-  FileCheck2,
-  Box,
-} from "lucide-react";
-
 import "./ProcessStory.css";
 
 const steps = [
@@ -12,33 +5,29 @@ const steps = [
     number: "01",
     label: "UPLOAD",
     title: "Send your model",
-    text:
-      "Upload your STL, 3MF, OBJ or STEP file with the project details.",
-    icon: Upload,
+    text: "Upload your STL, 3MF, OBJ or STEP file with the project details.",
+    icon: "↑",
   },
   {
     number: "02",
     label: "REVIEW",
     title: "We review it",
-    text:
-      "We check geometry, material, size and printability.",
-    icon: ScanSearch,
+    text: "We check geometry, material, size and printability.",
+    icon: "◇",
   },
   {
     number: "03",
     label: "APPROVE",
     title: "Approve the quote",
-    text:
-      "Receive a clear quotation and approve production online.",
-    icon: FileCheck2,
+    text: "Receive a clear quotation and approve production online.",
+    icon: "✓",
   },
   {
     number: "04",
     label: "PRINT",
     title: "We make it real",
-    text:
-      "Production begins and your digital idea becomes a physical object.",
-    icon: Box,
+    text: "Production begins and your digital idea becomes a physical object.",
+    icon: "▣",
   },
 ];
 
@@ -57,18 +46,12 @@ function ProcessStory() {
 
             <h2>
               Four steps.
-              <span>
-                {" "}
-                One simple process.
-              </span>
+              <span> One simple process.</span>
             </h2>
           </div>
 
           <p>
-            From your digital file
-            to a finished 3D-printed
-            object — without
-            unnecessary complexity.
+            From your digital file to a finished 3D-printed object — without unnecessary complexity.
           </p>
         </div>
 
@@ -77,71 +60,36 @@ function ProcessStory() {
             <span />
           </div>
 
-          {steps.map(
-            (
-              step,
-              index
-            ) => {
-              const Icon =
-                step.icon;
+          {steps.map((step, index) => (
+            <article
+              className="process-compact-card"
+              key={step.number}
+            >
+              <div className="process-card-top">
+                <span className="process-card-number">
+                  {step.number}
+                </span>
 
-              return (
-                <article
-                  className="process-compact-card"
-                  key={
-                    step.number
-                  }
-                >
-                  <div className="process-card-top">
-                    <span className="process-card-number">
-                      {
-                        step.number
-                      }
-                    </span>
+                <span className="process-card-label">
+                  {step.label}
+                </span>
+              </div>
 
-                    <span className="process-card-label">
-                      {
-                        step.label
-                      }
-                    </span>
-                  </div>
+              <div className="process-card-icon">
+                {step.icon}
+              </div>
 
-                  <div className="process-card-icon">
-                    <Icon
-                      size={30}
-                      strokeWidth={
-                        1.5
-                      }
-                      aria-hidden="true"
-                    />
-                  </div>
+              <h3>{step.title}</h3>
 
-                  <h3>
-                    {
-                      step.title
-                    }
-                  </h3>
+              <p>{step.text}</p>
 
-                  <p>
-                    {
-                      step.text
-                    }
-                  </p>
-
-                  {index <
-                    steps.length -
-                      1 && (
-                    <div
-                      className="process-card-arrow"
-                      aria-hidden="true"
-                    >
-                      →
-                    </div>
-                  )}
-                </article>
-              );
-            }
-          )}
+              {index < steps.length - 1 && (
+                <div className="process-card-arrow">
+                  →
+                </div>
+              )}
+            </article>
+          ))}
         </div>
       </div>
     </section>

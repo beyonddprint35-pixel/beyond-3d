@@ -506,6 +506,12 @@ async function (event) {
       should_texture:
         false,
 
+      should_remesh:
+        false,
+
+      image_enhancement:
+        true,
+
       moderation:
         true,
 

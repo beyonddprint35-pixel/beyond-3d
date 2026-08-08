@@ -1581,3 +1581,507 @@ small {
     width: fit-content;
   }
 }
+
+
+/* =========================================================
+   BEYOND RESPONSIVE TYPOGRAPHY â€” MY ACCOUNT
+========================================================= */
+
+.account-brand {
+  font-size: clamp(12px, 0.78vw, 14px);
+}
+
+.account-person strong {
+  font-size: clamp(12px, 0.78vw, 14px);
+}
+
+.account-person span {
+  font-size: clamp(10px, 0.66vw, 12px);
+}
+
+.account-nav button,
+.account-logout {
+  font-size: clamp(11px, 0.74vw, 13px);
+}
+
+.account-nav button > span {
+  font-size: clamp(9px, 0.58vw, 11px);
+}
+
+.account-content-header span,
+.account-welcome > span,
+.account-stats span,
+.account-subheading span,
+.account-order-number span,
+.account-order-details span,
+.account-model-type,
+.account-profile-intro span,
+.account-profile-form label > span {
+  font-size: clamp(10px, 0.66vw, 12px);
+}
+
+.account-content-header h2 {
+  font-size: clamp(34px, 3vw, 44px);
+}
+
+.account-welcome p,
+.account-profile-intro p {
+  font-size: clamp(13px, 0.88vw, 16px);
+  line-height: 1.65;
+}
+
+.account-stats small,
+.account-mini-row span:not(.account-status),
+.account-empty-small,
+.account-model-info,
+.account-profile-form small,
+.account-profile-message {
+  font-size: clamp(10px, 0.66vw, 12px);
+}
+
+.account-stats strong {
+  font-size: clamp(26px, 2vw, 34px);
+}
+
+.account-subheading h3 {
+  font-size: clamp(16px, 1.08vw, 19px);
+}
+
+.account-subheading button {
+  font-size: clamp(10px, 0.66vw, 12px);
+}
+
+.account-mini-row strong {
+  font-size: clamp(11px, 0.74vw, 13px);
+}
+
+.account-status {
+  font-size: clamp(9px, 0.58vw, 11px);
+}
+
+.account-order-number strong {
+  font-size: clamp(15px, 1vw, 18px);
+}
+
+.account-order-details strong {
+  font-size: clamp(11px, 0.74vw, 13px);
+}
+
+.account-model-body h3 {
+  font-size: clamp(16px, 1.05vw, 19px);
+}
+
+.account-primary-button,
+.account-secondary-button {
+  font-size: clamp(11px, 0.74vw, 13px);
+}
+
+.account-profile-intro h3 {
+  font-size: clamp(20px, 1.35vw, 24px);
+}
+
+.account-profile-form input {
+  font-size: clamp(14px, 0.92vw, 16px);
+}
+
+.account-error,
+.account-loading,
+.account-empty span {
+  font-size: clamp(12px, 0.8vw, 14px);
+}
+
+@media (max-width: 700px) {
+  .account-brand {
+    font-size: 12px;
+  }
+
+  .account-person strong {
+    font-size: 13px;
+  }
+
+  .account-person span {
+    font-size: 11px;
+  }
+
+  .account-nav button {
+    font-size: 9px;
+  }
+
+  .account-content-header h2 {
+    font-size: 34px;
+  }
+
+  .account-welcome p,
+  .account-profile-intro p {
+    font-size: 14px;
+  }
+
+  .account-content-header span,
+  .account-welcome > span,
+  .account-stats span,
+  .account-subheading span,
+  .account-order-number span,
+  .account-order-details span,
+  .account-model-type,
+  .account-profile-intro span,
+  .account-profile-form label > span {
+    font-size: 10px;
+  }
+
+  .account-stats small,
+  .account-mini-row span:not(.account-status),
+  .account-empty-small,
+  .account-model-info,
+  .account-profile-form small,
+  .account-profile-message {
+    font-size: 11px;
+  }
+
+  .account-status {
+    font-size: 9px;
+  }
+
+  .account-mini-row strong,
+  .account-order-details strong {
+    font-size: 12px;
+  }
+
+  .account-primary-button,
+  .account-secondary-button {
+    font-size: 12px;
+  }
+
+  .account-profile-form input {
+    font-size: 16px;
+  }
+}
+
+
+/* =========================================================
+   GLOBAL TYPOGRAPHY MAPPING â€” MY ACCOUNT
+   Layout is intentionally untouched.
+========================================================= */
+
+.account-panel {
+  font-family:
+    var(--font-body-family);
+}
+
+.account-brand {
+  font-size:
+    var(--type-small);
+}
+
+.account-person strong {
+  font-size:
+    var(--type-small);
+}
+
+.account-person span,
+.account-nav button > span {
+  font-size:
+    var(--type-micro);
+}
+
+.account-nav button,
+.account-logout,
+.account-primary-button,
+.account-secondary-button {
+  font-size:
+    var(--type-button);
+}
+
+.account-content-header span,
+.account-welcome > span,
+.account-stats span,
+.account-subheading span,
+.account-order-number span,
+.account-order-details span,
+.account-model-type,
+.account-profile-intro span,
+.account-profile-form label > span {
+  font-size:
+    var(--type-label);
+}
+
+.account-content-header h2 {
+  font-family:
+    var(--font-display-family);
+
+  font-size:
+    var(--type-heading-1);
+
+  line-height:
+    var(--line-heading);
+}
+
+.account-welcome h3 {
+  font-family:
+    var(--font-display-family);
+
+  font-size:
+    var(--type-section-title);
+
+  line-height:
+    var(--line-heading);
+}
+
+.account-welcome p,
+.account-profile-intro p {
+  font-size:
+    var(--type-body);
+
+  line-height:
+    var(--line-body);
+}
+
+.account-stats strong {
+  font-size:
+    var(--type-heading-2);
+}
+
+.account-stats small,
+.account-mini-row span:not(.account-status),
+.account-empty-small,
+.account-model-info,
+.account-profile-form small,
+.account-profile-message {
+  font-size:
+    var(--type-small);
+}
+
+.account-subheading h3,
+.account-profile-intro h3 {
+  font-size:
+    var(--type-heading-3);
+}
+
+.account-subheading button,
+.account-mini-row strong,
+.account-order-details strong {
+  font-size:
+    var(--type-small);
+}
+
+.account-status {
+  font-size:
+    var(--type-micro);
+}
+
+.account-order-number strong,
+.account-model-body h3 {
+  font-size:
+    var(--type-heading-3);
+}
+
+.account-profile-form input {
+  font-size:
+    var(--type-input);
+}
+
+.account-error,
+.account-loading,
+.account-empty span {
+  font-size:
+    var(--type-small);
+}
+
+
+/* =========================================================
+   MY ACCOUNT â€” COMPACT TYPOGRAPHY TUNING
+   Keeps the unified system, but uses a denser account-specific scale.
+   Layout is untouched.
+========================================================= */
+
+.account-brand {
+  font-size: 10px;
+}
+
+.account-person strong {
+  font-size: 10px;
+}
+
+.account-person span {
+  font-size: 8px;
+}
+
+.account-nav button,
+.account-logout {
+  font-size: 9px;
+}
+
+.account-nav button > span {
+  font-size: 7px;
+}
+
+.account-content-header > div > span,
+.account-welcome > span,
+.account-stats span,
+.account-subheading span,
+.account-order-number span,
+.account-order-details span,
+.account-model-type,
+.account-profile-intro span,
+.account-profile-form label > span {
+  font-size: 7px;
+}
+
+.account-content-header h2 {
+  font-size: clamp(28px, 2.1vw, 34px);
+  line-height: 1.05;
+}
+
+.account-welcome h3 {
+  font-size: clamp(28px, 2.2vw, 38px);
+  line-height: 1.05;
+}
+
+.account-welcome p,
+.account-profile-intro p {
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.account-stats strong {
+  font-size: 20px;
+}
+
+.account-stats small,
+.account-mini-row span:not(.account-status),
+.account-empty-small,
+.account-model-info,
+.account-profile-form small,
+.account-profile-message {
+  font-size: 8px;
+}
+
+.account-subheading h3,
+.account-profile-intro h3 {
+  font-size: 14px;
+}
+
+.account-subheading button {
+  font-size: 8px;
+}
+
+.account-mini-row strong {
+  font-size: 9px;
+}
+
+.account-status {
+  font-size: 7px;
+}
+
+.account-order-number strong {
+  font-size: 13px;
+}
+
+.account-order-details strong {
+  font-size: 9px;
+}
+
+.account-model-body h3 {
+  font-size: 14px;
+}
+
+.account-primary-button,
+.account-secondary-button {
+  font-size: 9px;
+}
+
+.account-profile-form input {
+  font-size: 13px;
+}
+
+.account-error,
+.account-loading,
+.account-empty span {
+  font-size: 9px;
+}
+
+@media (max-width: 700px) {
+  .account-brand {
+    font-size: 10px;
+  }
+
+  .account-person strong {
+    font-size: 11px;
+  }
+
+  .account-person span {
+    font-size: 9px;
+  }
+
+  .account-nav button {
+    font-size: 8px;
+  }
+
+  .account-content-header > div > span,
+  .account-welcome > span,
+  .account-stats span,
+  .account-subheading span,
+  .account-order-number span,
+  .account-order-details span,
+  .account-model-type,
+  .account-profile-intro span,
+  .account-profile-form label > span {
+    font-size: 8px;
+  }
+
+  .account-content-header h2 {
+    font-size: 28px;
+  }
+
+  .account-welcome h3 {
+    font-size: 30px;
+  }
+
+  .account-welcome p,
+  .account-profile-intro p {
+    font-size: 12px;
+  }
+
+  .account-stats strong {
+    font-size: 22px;
+  }
+
+  .account-stats small,
+  .account-mini-row span:not(.account-status),
+  .account-empty-small,
+  .account-model-info,
+  .account-profile-form small,
+  .account-profile-message {
+    font-size: 9px;
+  }
+
+  .account-subheading h3,
+  .account-profile-intro h3 {
+    font-size: 15px;
+  }
+
+  .account-mini-row strong,
+  .account-order-details strong {
+    font-size: 10px;
+  }
+
+  .account-status {
+    font-size: 8px;
+  }
+
+  .account-order-number strong {
+    font-size: 13px;
+  }
+
+  .account-model-body h3 {
+    font-size: 15px;
+  }
+
+  .account-primary-button,
+  .account-secondary-button {
+    font-size: 10px;
+  }
+
+  .account-profile-form input {
+    font-size: 16px;
+  }
+}

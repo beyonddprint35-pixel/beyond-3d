@@ -1215,3 +1215,359 @@ span {
     width: fit-content;
   }
 }
+
+
+/* =========================================================
+   BEYOND TYPOGRAPHY UPDATE
+   Font-size and line-height only.
+   Previous AI Studio layout/style is preserved.
+========================================================= */
+
+.ai-studio-access span,
+.ai-login-status,
+.ai-studio-mode-label,
+.ai-studio-label,
+.ai-studio-preview-label,
+.ai-studio-source-label,
+.ai-model-meta span {
+  font-size: clamp(10px, 0.66vw, 12px);
+}
+
+.ai-studio-access p,
+.ai-studio-helper,
+.ai-studio-progress-text,
+.ai-studio-login-note,
+.ai-studio-error {
+  font-size: clamp(11px, 0.74vw, 13px);
+  line-height: 1.55;
+}
+
+.ai-studio-input,
+.ai-studio-textarea,
+.ai-studio-access input {
+  font-size: clamp(14px, 0.92vw, 16px);
+}
+
+.ai-studio-mode button,
+.ai-studio-tabs button,
+.ai-studio-generate-button,
+.ai-studio-action-button,
+.ai-studio-download-button,
+.ai-studio-use-button {
+  font-size: clamp(12px, 0.8vw, 14px);
+}
+
+.ai-studio-upload strong,
+.ai-studio-preview strong,
+.ai-studio-result-title {
+  font-size: clamp(15px, 1vw, 18px);
+}
+
+.ai-studio-upload span,
+.ai-studio-upload small,
+.ai-studio-counter,
+.ai-studio-file-meta,
+.ai-studio-result-meta {
+  font-size: clamp(10px, 0.68vw, 12px);
+}
+
+@media (max-width: 700px) {
+  .ai-studio-access span,
+  .ai-login-status,
+  .ai-studio-mode-label,
+  .ai-studio-label,
+  .ai-studio-preview-label,
+  .ai-studio-source-label,
+  .ai-model-meta span {
+    font-size: 10px;
+  }
+
+  .ai-studio-access p,
+  .ai-studio-helper,
+  .ai-studio-progress-text,
+  .ai-studio-login-note,
+  .ai-studio-error {
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  .ai-studio-input,
+  .ai-studio-textarea,
+  .ai-studio-access input {
+    font-size: 16px;
+  }
+
+  .ai-studio-mode button,
+  .ai-studio-tabs button,
+  .ai-studio-generate-button,
+  .ai-studio-action-button,
+  .ai-studio-download-button,
+  .ai-studio-use-button {
+    font-size: 13px;
+  }
+
+  .ai-studio-upload strong,
+  .ai-studio-preview strong,
+  .ai-studio-result-title {
+    font-size: 16px;
+  }
+
+  .ai-studio-upload span,
+  .ai-studio-upload small,
+  .ai-studio-counter,
+  .ai-studio-file-meta,
+  .ai-studio-result-meta {
+    font-size: 11px;
+  }
+}
+
+
+/* =========================================================
+   GLOBAL TYPOGRAPHY MAPPING â€” AI STUDIO
+   Previous AI Studio visual layout is untouched.
+========================================================= */
+
+.ai-studio {
+  font-family:
+    var(--font-body-family);
+}
+
+.ai-studio-access span,
+.ai-login-status,
+.ai-studio-mode-label,
+.ai-studio-label,
+.ai-studio-preview-label,
+.ai-studio-source-label,
+.ai-model-meta span,
+.ai-studio-kicker {
+  font-size:
+    var(--type-label);
+}
+
+.ai-studio-access p,
+.ai-studio-helper,
+.ai-studio-progress-text,
+.ai-studio-login-note,
+.ai-studio-error,
+.ai-studio-upload span,
+.ai-studio-upload small,
+.ai-studio-counter,
+.ai-studio-file-meta,
+.ai-studio-result-meta {
+  font-size:
+    var(--type-small);
+
+  line-height:
+    var(--line-small);
+}
+
+.ai-studio-input,
+.ai-studio-textarea,
+.ai-studio-access input {
+  font-size:
+    var(--type-input);
+}
+
+.ai-studio-mode button,
+.ai-studio-tabs button,
+.ai-studio-generate-button,
+.ai-studio-action-button,
+.ai-studio-download-button,
+.ai-studio-use-button {
+  font-size:
+    var(--type-button);
+}
+
+.ai-studio-upload strong,
+.ai-studio-preview strong,
+.ai-studio-result-title {
+  font-size:
+    var(--type-heading-3);
+
+  line-height:
+    var(--line-card-title);
+}
+
+.ai-studio-title,
+.ai-studio-heading h2 {
+  font-family:
+    var(--font-display-family);
+
+  font-size:
+    var(--type-section-title);
+
+  line-height:
+    var(--line-heading);
+}
+
+.ai-studio-heading p,
+.ai-studio-intro {
+  font-size:
+    var(--type-body-large);
+
+  line-height:
+    var(--line-body);
+}
+
+
+/* =========================================================
+   AI STUDIO â€” READABILITY TUNING
+   Typography only. Layout and visual styling are untouched.
+========================================================= */
+
+/* Top Text-to-3D / Photos-to-3D tabs */
+.ai-studio-mode-switch span {
+  font-size: clamp(14px, 0.95vw, 16px);
+}
+
+.ai-studio-mode-switch small {
+  font-size: clamp(10px, 0.66vw, 12px);
+}
+
+/* Main field / preview labels */
+.ai-input-label span,
+.ai-input-label strong,
+.ai-preview-top,
+.ai-preview-top strong {
+  font-size: clamp(10px, 0.68vw, 12px);
+}
+
+/* Prompt input */
+.ai-text-mode textarea {
+  font-size: clamp(15px, 1vw, 17px);
+  line-height: 1.65;
+}
+
+/* Helper below textarea */
+.ai-text-mode small,
+.ai-studio-helper {
+  font-size: clamp(11px, 0.74vw, 13px);
+}
+
+/* Prompt examples */
+.ai-prompt-ideas > span {
+  font-size: clamp(10px, 0.66vw, 12px);
+}
+
+.ai-prompt-ideas button {
+  font-size: clamp(11px, 0.74vw, 13px);
+}
+
+/* Private Beta / signed-in access area */
+.ai-studio-access span {
+  font-size: clamp(10px, 0.68vw, 12px);
+}
+
+.ai-studio-access p,
+.ai-studio-login-note {
+  font-size: clamp(11px, 0.74vw, 13px);
+  line-height: 1.55;
+}
+
+.ai-login-status {
+  font-size: clamp(9px, 0.62vw, 11px);
+}
+
+.ai-studio-access input {
+  font-size: clamp(13px, 0.86vw, 15px);
+}
+
+/* Preview empty state */
+.ai-preview-empty-copy strong {
+  font-size: clamp(12px, 0.8vw, 14px);
+}
+
+.ai-preview-empty-copy span {
+  font-size: clamp(10px, 0.68vw, 12px);
+}
+
+/* Preview metadata/footer */
+.ai-preview-footer span {
+  font-size: clamp(9px, 0.6vw, 11px);
+}
+
+.ai-preview-footer strong {
+  font-size: clamp(10px, 0.68vw, 12px);
+}
+
+/* Preview/action buttons */
+.ai-preview-actions button {
+  font-size: clamp(11px, 0.74vw, 13px);
+}
+
+/* Other tiny readouts */
+.ai-studio-counter,
+.ai-studio-file-meta,
+.ai-studio-result-meta,
+.ai-model-meta span {
+  font-size: clamp(10px, 0.66vw, 12px);
+}
+
+@media (max-width: 700px) {
+  .ai-studio-mode-switch span {
+    font-size: 14px;
+  }
+
+  .ai-studio-mode-switch small {
+    font-size: 11px;
+  }
+
+  .ai-input-label span,
+  .ai-input-label strong,
+  .ai-preview-top,
+  .ai-preview-top strong {
+    font-size: 10px;
+  }
+
+  .ai-text-mode textarea {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  .ai-text-mode small,
+  .ai-studio-helper,
+  .ai-studio-access p,
+  .ai-studio-login-note {
+    font-size: 12px;
+  }
+
+  .ai-prompt-ideas > span {
+    font-size: 10px;
+  }
+
+  .ai-prompt-ideas button {
+    font-size: 12px;
+  }
+
+  .ai-studio-access span {
+    font-size: 10px;
+  }
+
+  .ai-login-status {
+    font-size: 9px;
+  }
+
+  .ai-studio-access input {
+    font-size: 16px;
+  }
+
+  .ai-preview-empty-copy strong {
+    font-size: 13px;
+  }
+
+  .ai-preview-empty-copy span {
+    font-size: 11px;
+  }
+
+  .ai-preview-footer span {
+    font-size: 9px;
+  }
+
+  .ai-preview-footer strong {
+    font-size: 10px;
+  }
+
+  .ai-preview-actions button {
+    font-size: 12px;
+  }
+}

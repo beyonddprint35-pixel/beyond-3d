@@ -262,7 +262,7 @@ async function compressImage(
   );
 
   const maxDimension =
-    1400;
+    1100;
 
   const scale =
     Math.min(
@@ -328,7 +328,7 @@ async function compressImage(
 
   return canvas.toDataURL(
     "image/jpeg",
-    0.8
+    0.74
   );
 }
 
@@ -538,6 +538,36 @@ function AIModelStudio() {
     if (!file) {
       return;
     }
+
+    const allowedTypes = [
+      "image/jpeg",
+      "image/png",
+    ];
+
+    if (
+      !allowedTypes.includes(
+        file.type
+      )
+    ) {
+      setError(
+        "Please upload JPG or PNG photos only."
+      );
+
+      return;
+    }
+
+    if (
+      file.size >
+      15 * 1024 * 1024
+    ) {
+      setError(
+        "Each photo must be 15 MB or smaller."
+      );
+
+      return;
+    }
+
+    setError("");
 
     const previewUrl =
       URL.createObjectURL(
@@ -1238,7 +1268,7 @@ function AIModelStudio() {
 
                     <small>
                       2 photos minimum ·
-                      4 recommended
+                      up to 4 angles
                     </small>
                   </div>
 
