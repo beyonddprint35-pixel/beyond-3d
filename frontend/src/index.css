@@ -2817,6 +2817,8 @@ a {
     grid-template-columns:
       1fr !important;
   }
+}
+
 /* =========================================================
    ORDER DETAILS
    QUOTATION LAYOUT FIX
@@ -3254,4 +3256,4 @@ a {
   .order-details-page .quote-summary .quote-total strong {
     font-size: 30px !important;
   }
-}]
+}
