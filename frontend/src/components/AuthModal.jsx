@@ -150,8 +150,7 @@ function AuthModal({
                 },
 
                 emailRedirectTo:
-                  window.location
-                    .origin,
+  "https://beyond3dshop.com",
               },
             });
 
