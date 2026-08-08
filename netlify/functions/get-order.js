@@ -9,7 +9,6 @@ exports.handler = async function (event) {
   }
 
   try {
-    // Check admin password
     const providedPassword =
       event.headers["x-admin-password"];
 
@@ -29,7 +28,6 @@ exports.handler = async function (event) {
       };
     }
 
-    // Get the order ID from the URL
     const orderId =
       event.queryStringParameters?.id;
 
@@ -44,6 +42,7 @@ exports.handler = async function (event) {
 
     const supabaseUrl =
       process.env.NEXT_PUBLIC_SUPABASE_URL ||
+      process.env.SUPABASE_URL ||
       "https://bxxrgijespvwjarkdtwp.supabase.co";
 
     const secretKey =
@@ -58,7 +57,6 @@ exports.handler = async function (event) {
       };
     }
 
-    // Get the order from Supabase
     const orderResponse = await fetch(
       `${supabaseUrl}/rest/v1/orders?id=eq.${encodeURIComponent(
         orderId
@@ -72,14 +70,10 @@ exports.handler = async function (event) {
       }
     );
 
-    const orders =
-      await orderResponse.json();
+    const orders = await orderResponse.json();
 
     if (!orderResponse.ok) {
-      console.error(
-        "Supabase order error:",
-        orders
-      );
+      console.error("Supabase order error:", orders);
 
       return {
         statusCode: 500,
@@ -100,52 +94,29 @@ exports.handler = async function (event) {
 
     const order = orders[0];
 
-    let fileUrl = null;
+    const fileUrl = await createSignedUrl({
+      supabaseUrl,
+      secretKey,
+      bucket: "order-files",
+      path: order.storage_path,
+      expiresIn: 3600,
+    });
 
-    // Create a temporary secure download link
-    if (order.storage_path) {
-      const signResponse = await fetch(
-        `${supabaseUrl}/storage/v1/object/sign/order-files/${encodeStoragePath(
-          order.storage_path
-        )}`,
-        {
-          method: "POST",
-          headers: {
-            apikey: secretKey,
-            Authorization: `Bearer ${secretKey}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            expiresIn: 3600,
-          }),
-        }
-      );
+    const aiModel3mfUrl = await createSignedUrl({
+      supabaseUrl,
+      secretKey,
+      bucket: "ai-models",
+      path: order.ai_model_3mf_storage_path,
+      expiresIn: 3600,
+    });
 
-      const signData =
-        await signResponse.json();
-
-      if (signResponse.ok) {
-        const signedPath =
-          signData.signedURL ||
-          signData.signedUrl;
-
-        if (signedPath) {
-          if (
-            signedPath.startsWith("http")
-          ) {
-            fileUrl = signedPath;
-          } else {
-            fileUrl =
-              `${supabaseUrl}/storage/v1${signedPath}`;
-          }
-        }
-      } else {
-        console.error(
-          "Signed URL error:",
-          signData
-        );
-      }
-    }
+    const aiModelThumbnailUrl = await createSignedUrl({
+      supabaseUrl,
+      secretKey,
+      bucket: "ai-models",
+      path: order.ai_model_thumbnail_storage_path,
+      expiresIn: 3600,
+    });
 
     return {
       statusCode: 200,
@@ -156,13 +127,18 @@ exports.handler = async function (event) {
         success: true,
         order,
         fileUrl,
+        aiModel3mfUrl:
+          aiModel3mfUrl ||
+          order.ai_model_3mf_url ||
+          null,
+        aiModelThumbnailUrl:
+          aiModelThumbnailUrl ||
+          order.ai_model_thumbnail_url ||
+          null,
       }),
     };
   } catch (error) {
-    console.error(
-      "Get order error:",
-      error
-    );
+    console.error("Get order error:", error);
 
     return {
       statusCode: 500,
@@ -172,6 +148,56 @@ exports.handler = async function (event) {
     };
   }
 };
+
+async function createSignedUrl({
+  supabaseUrl,
+  secretKey,
+  bucket,
+  path,
+  expiresIn,
+}) {
+  if (!path) {
+    return null;
+  }
+
+  const response = await fetch(
+    `${supabaseUrl}/storage/v1/object/sign/${encodeURIComponent(
+      bucket
+    )}/${encodeStoragePath(path)}`,
+    {
+      method: "POST",
+      headers: {
+        apikey: secretKey,
+        Authorization: `Bearer ${secretKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        expiresIn,
+      }),
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    console.error("Signed URL error:", data);
+    return null;
+  }
+
+  const signedPath =
+    data.signedURL ||
+    data.signedUrl;
+
+  if (!signedPath) {
+    return null;
+  }
+
+  if (signedPath.startsWith("http")) {
+    return signedPath;
+  }
+
+  return `${supabaseUrl}/storage/v1${signedPath}`;
+}
 
 function encodeStoragePath(path) {
   return String(path)

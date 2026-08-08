@@ -100,6 +100,11 @@ function MyModels({
   ] = useState("");
 
   const [
+    archivingIds,
+    setArchivingIds,
+  ] = useState([]);
+
+  const [
     selectedId,
     setSelectedId,
   ] = useState(null);
@@ -144,6 +149,10 @@ function MyModels({
                 glb_url,
                 model_3mf_url,
                 thumbnail_url,
+                glb_storage_path,
+                model_3mf_storage_path,
+                thumbnail_storage_path,
+                archived_at,
                 credits_used,
                 created_at,
                 updated_at
@@ -197,6 +206,69 @@ function MyModels({
     loadModels,
   ]);
 
+  async function archiveModel(
+    generation
+  ) {
+    if (
+      !session?.access_token ||
+      !generation?.id
+    ) {
+      return;
+    }
+
+    setArchivingIds(
+      (current) => [
+        ...current,
+        generation.id,
+      ]
+    );
+
+    try {
+      const response =
+        await fetch(
+          "/.netlify/functions/archive-ai-model",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type":
+                "application/json",
+              Authorization:
+                `Bearer ${session.access_token}`,
+            },
+            body: JSON.stringify({
+              generationId:
+                generation.id,
+            }),
+          }
+        );
+
+      const data =
+        await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+            "Unable to save this model permanently."
+        );
+      }
+
+      await loadModels();
+    } catch (archiveError) {
+      console.error(
+        "Archive model error:",
+        archiveError
+      );
+    } finally {
+      setArchivingIds(
+        (current) =>
+          current.filter(
+            (id) =>
+              id !== generation.id
+          )
+      );
+    }
+  }
+
   const completedCount =
     useMemo(
       () =>
@@ -229,6 +301,15 @@ function MyModels({
 
       model3mfUrl:
         generation.model_3mf_url,
+
+      model3mfStoragePath:
+        generation.model_3mf_storage_path,
+
+      glbStoragePath:
+        generation.glb_storage_path,
+
+      thumbnailStoragePath:
+        generation.thumbnail_storage_path,
 
       thumbnailUrl:
         generation.thumbnail_url,
@@ -554,6 +635,34 @@ function MyModels({
                           </strong>
                         </div>
                       </div>
+
+                      {ready &&
+                        !generation.model_3mf_storage_path && (
+                        <button
+                          type="button"
+                          className="my-model-use-button"
+                          disabled={
+                            archivingIds.includes(
+                              generation.id
+                            )
+                          }
+                          onClick={() =>
+                            archiveModel(
+                              generation
+                            )
+                          }
+                          style={{
+                            marginBottom:
+                              "8px",
+                          }}
+                        >
+                          {archivingIds.includes(
+                            generation.id
+                          )
+                            ? "Saving to BEYOND..."
+                            : "Save Permanently"}
+                        </button>
+                      )}
 
                       <button
                         type="button"

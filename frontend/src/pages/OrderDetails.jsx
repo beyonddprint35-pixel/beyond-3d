@@ -102,6 +102,16 @@ function OrderDetails() {
   const [fileUrl, setFileUrl] =
     useState(null);
 
+  const [
+    aiModel3mfUrl,
+    setAiModel3mfUrl,
+  ] = useState(null);
+
+  const [
+    aiModelThumbnailUrl,
+    setAiModelThumbnailUrl,
+  ] = useState(null);
+
   const [loading, setLoading] =
     useState(true);
 
@@ -219,6 +229,16 @@ function OrderDetails() {
 
         setFileUrl(
           data.fileUrl ||
+            null
+        );
+
+        setAiModel3mfUrl(
+          data.aiModel3mfUrl ||
+            null
+        );
+
+        setAiModelThumbnailUrl(
+          data.aiModelThumbnailUrl ||
             null
         );
 
@@ -1101,10 +1121,10 @@ function OrderDetails() {
           "AI_MODEL" ? (
             <div className="admin-ai-model-card">
               <div className="admin-ai-model-preview">
-                {order.ai_model_thumbnail_url ? (
+                {aiModelThumbnailUrl ? (
                   <img
                     src={
-                      order.ai_model_thumbnail_url
+                      aiModelThumbnailUrl
                     }
                     alt="AI generated model preview"
                   />
@@ -1168,10 +1188,10 @@ function OrderDetails() {
                 </div>
 
                 <div className="admin-ai-model-actions">
-                  {order.ai_model_3mf_url ? (
+                  {aiModel3mfUrl ? (
                     <a
                       href={
-                        order.ai_model_3mf_url
+                        aiModel3mfUrl
                       }
                       target="_blank"
                       rel="noreferrer"

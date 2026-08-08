@@ -146,7 +146,7 @@ async function getOwnedGeneration(
         taskId
       )}&user_id=eq.${encodeURIComponent(
         userId
-      )}&select=id,user_id,meshy_task_id,status&limit=1`,
+      )}&select=id,user_id,meshy_task_id,status,glb_storage_path,model_3mf_storage_path,thumbnail_storage_path&limit=1`,
       {
         headers: {
           apikey:
@@ -223,6 +223,77 @@ async function updateGeneration(
       errorData
     );
   }
+}
+
+function encodeStoragePath(path) {
+  return String(path)
+    .split("/")
+    .map(encodeURIComponent)
+    .join("/");
+}
+
+async function archiveRemoteAsset({
+  remoteUrl,
+  storagePath,
+  contentType,
+  supabaseUrl,
+  serviceKey,
+}) {
+  if (!remoteUrl || !storagePath) {
+    return null;
+  }
+
+  const sourceResponse =
+    await fetch(remoteUrl);
+
+  if (
+    !sourceResponse.ok ||
+    !sourceResponse.body
+  ) {
+    throw new Error(
+      `Unable to retrieve generated asset (${sourceResponse.status}).`
+    );
+  }
+
+  const uploadResponse =
+    await fetch(
+      `${supabaseUrl}/storage/v1/object/ai-models/${encodeStoragePath(
+        storagePath
+      )}`,
+      {
+        method: "POST",
+        headers: {
+          apikey: serviceKey,
+          Authorization:
+            `Bearer ${serviceKey}`,
+          "Content-Type":
+            sourceResponse.headers.get(
+              "content-type"
+            ) ||
+            contentType ||
+            "application/octet-stream",
+          "x-upsert": "true",
+        },
+        body: sourceResponse.body,
+        duplex: "half",
+      }
+    );
+
+  if (!uploadResponse.ok) {
+    const detail =
+      await uploadResponse.text();
+
+    console.error(
+      "AI archive upload failed:",
+      detail
+    );
+
+    throw new Error(
+      "Unable to save generated model to BEYOND storage."
+    );
+  }
+
+  return storagePath;
 }
 
 function createFileToken(
@@ -486,6 +557,85 @@ async function (event) {
         ?.consumed_credits ??
       null;
 
+    let glbStoragePath =
+      generation.glb_storage_path ||
+      null;
+
+    let model3mfStoragePath =
+      generation.model_3mf_storage_path ||
+      null;
+
+    let thumbnailStoragePath =
+      generation.thumbnail_storage_path ||
+      null;
+
+    let archivedAt = null;
+
+    if (status === "SUCCEEDED") {
+      const baseFolder =
+        `${user.id}/${generation.id}`;
+
+      try {
+        if (
+          !glbStoragePath &&
+          glbUrl
+        ) {
+          glbStoragePath =
+            await archiveRemoteAsset({
+              remoteUrl: glbUrl,
+              storagePath:
+                `${baseFolder}/model.glb`,
+              contentType:
+                "model/gltf-binary",
+              supabaseUrl,
+              serviceKey,
+            });
+        }
+
+        if (
+          !model3mfStoragePath &&
+          model3mfUrl
+        ) {
+          model3mfStoragePath =
+            await archiveRemoteAsset({
+              remoteUrl:
+                model3mfUrl,
+              storagePath:
+                `${baseFolder}/model.3mf`,
+              contentType:
+                "application/octet-stream",
+              supabaseUrl,
+              serviceKey,
+            });
+        }
+
+        if (
+          !thumbnailStoragePath &&
+          thumbnailUrl
+        ) {
+          thumbnailStoragePath =
+            await archiveRemoteAsset({
+              remoteUrl:
+                thumbnailUrl,
+              storagePath:
+                `${baseFolder}/thumbnail.png`,
+              contentType:
+                "image/png",
+              supabaseUrl,
+              serviceKey,
+            });
+        }
+
+        archivedAt =
+          new Date().toISOString();
+      } catch (archiveError) {
+        console.error(
+          "Automatic AI archive failed:",
+          archiveError
+        );
+      }
+    }
+
     await updateGeneration(
       supabaseUrl,
       serviceKey,
@@ -500,6 +650,18 @@ async function (event) {
           thumbnailUrl,
         credits_used:
           consumedCredits,
+        glb_storage_path:
+          glbStoragePath,
+        model_3mf_storage_path:
+          model3mfStoragePath,
+        thumbnail_storage_path:
+          thumbnailStoragePath,
+        ...(archivedAt
+          ? {
+              archived_at:
+                archivedAt,
+            }
+          : {}),
       }
     );
 
@@ -542,6 +704,9 @@ async function (event) {
         model3mfUrl,
         thumbnailUrl,
         consumedCredits,
+        glbStoragePath,
+        model3mfStoragePath,
+        thumbnailStoragePath,
       }
     );
   } catch (

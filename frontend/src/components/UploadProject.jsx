@@ -350,6 +350,21 @@ function UploadProject() {
             ?.model3mfUrl ||
           null,
 
+        ai_model_glb_storage_path:
+          selectedAiModel
+            ?.glbStoragePath ||
+          null,
+
+        ai_model_3mf_storage_path:
+          selectedAiModel
+            ?.model3mfStoragePath ||
+          null,
+
+        ai_model_thumbnail_storage_path:
+          selectedAiModel
+            ?.thumbnailStoragePath ||
+          null,
+
         ai_model_thumbnail_url:
           selectedAiModel
             ?.thumbnailUrl ||
