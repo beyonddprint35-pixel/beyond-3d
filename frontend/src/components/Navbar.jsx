@@ -1,8 +1,7 @@
+import Brand from "./Brand";
+
 function Navbar() {
-  function scrollToSection(
-    event,
-    id
-  ) {
+  function scrollToSection(event, id) {
     event.preventDefault();
 
     const section =
@@ -17,7 +16,7 @@ function Navbar() {
   }
 
   return (
-    <nav className="navbar">
+    <nav>
       <a
         className="logo"
         href="#top"
@@ -27,8 +26,15 @@ function Navbar() {
             "top"
           )
         }
+        style={{
+          textDecoration: "none",
+        }}
       >
-        BEYOND
+        <Brand
+          size={38}
+          textSize={16}
+          gap={10}
+        />
       </a>
 
       <div className="nav-links">

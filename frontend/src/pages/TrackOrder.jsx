@@ -9,6 +9,8 @@ import {
   useSearchParams,
 } from "react-router-dom";
 
+import Brand from "../components/Brand";
+
 import "./TrackOrder.css";
 
 function makeOrderNumber(id) {
@@ -242,9 +244,19 @@ function TrackOrder() {
   if (loading) {
     return (
       <main className="tracking-page">
-        <section className="tracking-state-card">
-          <div className="tracking-loader" />
+        <header className="tracking-topbar">
+          <Brand
+            size={40}
+            textSize={16}
+            gap={10}
+          />
 
+          <span>
+            Order Tracking
+          </span>
+        </header>
+
+        <section className="tracking-state-card">
           <h1>
             Loading your order
           </h1>
@@ -264,6 +276,18 @@ function TrackOrder() {
   ) {
     return (
       <main className="tracking-page">
+        <header className="tracking-topbar">
+          <Brand
+            size={40}
+            textSize={16}
+            gap={10}
+          />
+
+          <span>
+            Order Tracking
+          </span>
+        </header>
+
         <section className="tracking-state-card">
           <div className="tracking-error-icon">
             !
@@ -295,13 +319,12 @@ function TrackOrder() {
 
   return (
     <main className="tracking-page">
-      <header className="tracking-navbar">
-        <Link
-          to="/"
-          className="tracking-logo"
-        >
-          BEYOND
-        </Link>
+      <header className="tracking-topbar">
+        <Brand
+          size={40}
+          textSize={16}
+          gap={10}
+        />
 
         <span>
           Order Tracking

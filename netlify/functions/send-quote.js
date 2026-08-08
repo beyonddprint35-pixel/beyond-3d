@@ -250,12 +250,34 @@ exports.handler = async function (event) {
                       ">
 
                         <div style="
-                          font-size:15px;
-                          font-weight:700;
-                          letter-spacing:7px;
                           margin-bottom:34px;
+                          display:flex;
+                          align-items:center;
+                          gap:12px;
                         ">
-                          BEYOND
+                          <img
+                            src="https://beyond3dshop.com/beyond-logo.png"
+                            width="50"
+                            height="50"
+                            alt="Beyond"
+                            style="
+                              display:block;
+                              width:50px;
+                              height:50px;
+                              object-fit:contain;
+                              border:0;
+                            "
+                          />
+
+                          <div style="
+                            color:#ffffff;
+                            font-size:15px;
+                            font-weight:700;
+                            letter-spacing:7px;
+                            line-height:1;
+                          ">
+                            BEYOND
+                          </div>
                         </div>
 
                         <div style="
@@ -463,14 +485,36 @@ exports.handler = async function (event) {
                           before accepting the quote.
                         </p>
 
-                        <p style="
-                          margin:25px 0 0;
-                          color:#111827;
-                          font-size:14px;
-                          font-weight:700;
+                        <div style="
+                          margin-top:25px;
+                          display:flex;
+                          align-items:center;
+                          gap:9px;
                         ">
-                          Beyond 3D
-                        </p>
+                          <img
+                            src="https://beyond3dshop.com/beyond-logo.png"
+                            width="30"
+                            height="30"
+                            alt=""
+                            style="
+                              display:block;
+                              width:30px;
+                              height:30px;
+                              object-fit:contain;
+                              background:#07111f;
+                              border-radius:7px;
+                            "
+                          />
+
+                          <span style="
+                            color:#111827;
+                            font-size:14px;
+                            font-weight:700;
+                            letter-spacing:2px;
+                          ">
+                            BEYOND 3D
+                          </span>
+                        </div>
 
                       </div>
 

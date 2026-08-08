@@ -10,6 +10,8 @@ import {
   useParams,
 } from "react-router-dom";
 
+import Brand from "../components/Brand";
+
 function makeOrderNumber(id) {
   if (!id) {
     return "B3D-UNKNOWN";
@@ -778,9 +780,11 @@ function OrderDetails() {
     <main className="order-details-page">
 
       <header className="order-details-topbar">
-        <div className="logo">
-          BEYOND
-        </div>
+        <Brand
+          size={40}
+          textSize={16}
+          gap={10}
+        />
 
         <Link
           to="/admin"

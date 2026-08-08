@@ -259,12 +259,35 @@ exports.handler =
               ">
 
                 <div style="
-                  font-size:14px;
-                  font-weight:700;
-                  letter-spacing:7px;
-                  margin-bottom:40px;
+                  margin:0 auto 36px;
+                  display:flex;
+                  align-items:center;
+                  justify-content:center;
+                  gap:12px;
                 ">
-                  BEYOND
+                  <img
+                    src="https://beyond3dshop.com/beyond-logo.png"
+                    width="54"
+                    height="54"
+                    alt="Beyond"
+                    style="
+                      display:block;
+                      width:54px;
+                      height:54px;
+                      object-fit:contain;
+                      border:0;
+                    "
+                  >
+
+                  <span style="
+                    color:#ffffff;
+                    font-size:14px;
+                    font-weight:700;
+                    letter-spacing:7px;
+                    line-height:1;
+                  ">
+                    BEYOND
+                  </span>
                 </div>
 
                 <div style="

@@ -8,6 +8,8 @@ import {
   Link,
 } from "react-router-dom";
 
+import Brand from "../components/Brand";
+
 function makeOrderNumber(id) {
   if (!id) {
     return "B3D-UNKNOWN";
@@ -328,8 +330,19 @@ function Admin() {
     return (
       <main className="admin-login-page">
         <section className="admin-login-card">
-          <div className="section-kicker">
-            BEYOND ADMIN
+          <div
+            style={{
+              marginBottom: "24px",
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <Brand
+              size={52}
+              textSize={18}
+              gap={12}
+              subtitle="ADMIN"
+            />
           </div>
 
           <h1>
@@ -375,9 +388,11 @@ function Admin() {
     <main className="admin-page">
       <header className="admin-topbar">
         <div>
-          <div className="logo">
-            BEYOND
-          </div>
+          <Brand
+            size={40}
+            textSize={16}
+            gap={10}
+          />
 
           <span>
             Admin Dashboard
