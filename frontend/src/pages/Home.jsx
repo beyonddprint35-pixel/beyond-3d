@@ -8,6 +8,8 @@ import HeroObject3D from "../components/HeroObject3D";
 import ProcessStory from "../components/ProcessStory";
 import ReviewsSection from "../components/ReviewsSection";
 
+import beyondLogo from "../assets/beyond-logo-transparent.png";
+
 import "./Home.css";
 
 function clamp(
@@ -22,8 +24,10 @@ function clamp(
 }
 
 function Home() {
-  const [menuOpen, setMenuOpen] =
-    useState(false);
+  const [
+    menuOpen,
+    setMenuOpen,
+  ] = useState(false);
 
   const [
     scrollProgress,
@@ -116,7 +120,9 @@ function Home() {
           scrollProgress,
       }}
     >
-      {/* BACKGROUND */}
+      {/* =========================================
+          BACKGROUND
+      ========================================= */}
 
       <div className="home-noise" />
       <div className="home-grid-background" />
@@ -126,7 +132,9 @@ function Home() {
       <div className="home-orb home-orb-two" />
       <div className="home-orb home-orb-three" />
 
-      {/* NAVBAR */}
+      {/* =========================================
+          NAVBAR
+      ========================================= */}
 
       <header className="home-navbar">
         <button
@@ -135,8 +143,28 @@ function Home() {
           onClick={() =>
             scrollToSection("home")
           }
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "flex-start",
+            gap: "12px",
+          }}
         >
-          BEYOND
+          <img
+            src={beyondLogo}
+            alt="Beyond logo"
+            style={{
+              width: "42px",
+              height: "42px",
+              objectFit: "contain",
+              display: "block",
+              flexShrink: 0,
+            }}
+          />
+
+          <span>
+            BEYOND
+          </span>
         </button>
 
         <nav
@@ -180,7 +208,9 @@ function Home() {
           <button
             type="button"
             onClick={() =>
-              scrollToSection("start")
+              scrollToSection(
+                "start"
+              )
             }
           >
             Start a project
@@ -203,12 +233,16 @@ function Home() {
             type="button"
             className="home-start-small"
             onClick={() =>
-              scrollToSection("start")
+              scrollToSection(
+                "start"
+              )
             }
           >
             Start a project
 
-            <span>↗</span>
+            <span>
+              ↗
+            </span>
           </button>
 
           <button
@@ -227,7 +261,9 @@ function Home() {
         </div>
       </header>
 
-      {/* HERO */}
+      {/* =========================================
+          HERO
+      ========================================= */}
 
       <section
         className="home-hero"
@@ -275,7 +311,9 @@ function Home() {
             >
               Start a Project
 
-              <span>↗</span>
+              <span>
+                ↗
+              </span>
             </button>
 
             <button
@@ -289,29 +327,51 @@ function Home() {
             >
               See the process
 
-              <span>↓</span>
+              <span>
+                ↓
+              </span>
             </button>
           </div>
 
           <div className="hero-micro-stats">
             <div>
-              <strong>01</strong>
-              <span>Upload</span>
+              <strong>
+                01
+              </strong>
+
+              <span>
+                Upload
+              </span>
             </div>
 
             <div>
-              <strong>02</strong>
-              <span>Analyze</span>
+              <strong>
+                02
+              </strong>
+
+              <span>
+                Analyze
+              </span>
             </div>
 
             <div>
-              <strong>03</strong>
-              <span>Approve</span>
+              <strong>
+                03
+              </strong>
+
+              <span>
+                Approve
+              </span>
             </div>
 
             <div>
-              <strong>04</strong>
-              <span>Print</span>
+              <strong>
+                04
+              </strong>
+
+              <span>
+                Print
+              </span>
             </div>
           </div>
         </div>
@@ -321,7 +381,9 @@ function Home() {
         </div>
       </section>
 
-      {/* TRANSFORMATION */}
+      {/* =========================================
+          TRANSFORMATION BAR
+      ========================================= */}
 
       <section className="material-transition">
         <div className="transition-top">
@@ -337,15 +399,21 @@ function Home() {
         </div>
 
         <div className="transition-main">
-          <span>IDEA</span>
+          <span>
+            IDEA
+          </span>
 
-          <strong>→</strong>
+          <strong>
+            →
+          </strong>
 
           <span>
             DIGITAL MODEL
           </span>
 
-          <strong>→</strong>
+          <strong>
+            →
+          </strong>
 
           <span>
             PHYSICAL OBJECT
@@ -357,11 +425,15 @@ function Home() {
         </div>
       </section>
 
-      {/* PROCESS */}
+      {/* =========================================
+          HOW IT WORKS
+      ========================================= */}
 
       <ProcessStory />
 
-      {/* CAPABILITIES */}
+      {/* =========================================
+          CAPABILITIES
+      ========================================= */}
 
       <section
         className="home-capabilities"
@@ -399,7 +471,9 @@ function Home() {
         <div className="capability-grid">
           <article className="capability-card capability-large">
             <div className="capability-top">
-              <span>01</span>
+              <span>
+                01
+              </span>
 
               <small>
                 RAPID PROTOTYPING
@@ -408,6 +482,7 @@ function Home() {
 
             <div className="prototype-object">
               <div className="prototype-laser laser-one" />
+
               <div className="prototype-laser laser-two" />
 
               <div className="prototype-cube cube-back" />
@@ -436,7 +511,9 @@ function Home() {
 
           <article className="capability-card">
             <div className="capability-top">
-              <span>02</span>
+              <span>
+                02
+              </span>
 
               <small>
                 CUSTOM
@@ -463,7 +540,9 @@ function Home() {
 
           <article className="capability-card">
             <div className="capability-top">
-              <span>03</span>
+              <span>
+                03
+              </span>
 
               <small>
                 BUSINESS
@@ -491,7 +570,9 @@ function Home() {
           <article className="capability-card capability-wide">
             <div>
               <div className="capability-top">
-                <span>04</span>
+                <span>
+                  04
+                </span>
 
                 <small>
                   MATERIAL SYSTEM
@@ -505,10 +586,22 @@ function Home() {
             </div>
 
             <div className="material-pills">
-              <span>PLA</span>
-              <span>PLA+</span>
-              <span>PETG</span>
-              <span>PLA-CF</span>
+              <span>
+                PLA
+              </span>
+
+              <span>
+                PLA+
+              </span>
+
+              <span>
+                PETG
+              </span>
+
+              <span>
+                PLA-CF
+              </span>
+
               <span>
                 MULTICOLOR
               </span>
@@ -517,11 +610,15 @@ function Home() {
         </div>
       </section>
 
-      {/* STATIC REVIEWS */}
+      {/* =========================================
+          REVIEWS
+      ========================================= */}
 
       <ReviewsSection />
 
-      {/* START PROJECT */}
+      {/* =========================================
+          START PROJECT
+      ========================================= */}
 
       <section
         className="home-start-project"
@@ -563,14 +660,18 @@ function Home() {
         </div>
       </section>
 
-      {/* FINAL CTA */}
+      {/* =========================================
+          FINAL CTA
+      ========================================= */}
 
       <section
         className="home-final-cta"
         id="contact"
       >
         <div className="final-cta-ring ring-a" />
+
         <div className="final-cta-ring ring-b" />
+
         <div className="final-cta-glow" />
 
         <div className="section-index">
@@ -594,16 +695,22 @@ function Home() {
           type="button"
           className="home-primary-button final-cta-button"
           onClick={() =>
-            scrollToSection("start")
+            scrollToSection(
+              "start"
+            )
           }
         >
           Start Your Project
 
-          <span>↗</span>
+          <span>
+            ↗
+          </span>
         </button>
       </section>
 
-      {/* FOOTER */}
+      {/* =========================================
+          FOOTER
+      ========================================= */}
 
       <footer className="home-footer">
         <div className="footer-brand">
@@ -613,7 +720,9 @@ function Home() {
         <div className="footer-center">
           DIGITAL
 
-          <span>→</span>
+          <span>
+            →
+          </span>
 
           PHYSICAL
         </div>
