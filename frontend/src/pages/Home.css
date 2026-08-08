@@ -3253,3 +3253,65 @@ span {
     gap: 6px;
   }
 }
+
+
+/* =========================================================
+   MY ACCOUNT NAV BUTTON
+========================================================= */
+
+.home-account-button {
+  padding: 0;
+
+  border: 0;
+
+  color: inherit;
+
+  background: transparent;
+
+  font: inherit;
+
+  cursor: pointer;
+}
+
+.home-account-button:hover
+.home-account-copy strong {
+  color: #d7e2eb;
+}
+
+.home-account-avatar {
+  width: 35px;
+  height: 35px;
+
+  display: grid;
+
+  place-items: center;
+
+  flex-shrink: 0;
+
+  border:
+    1px solid
+    rgba(
+      98,
+      150,
+      195,
+      0.2
+    );
+
+  border-radius: 11px;
+
+  color: #95b4cf;
+
+  background:
+    rgba(
+      58,
+      111,
+      160,
+      0.08
+    );
+
+  font-family:
+    "Space Grotesk",
+    sans-serif;
+
+  font-size: 12px;
+}

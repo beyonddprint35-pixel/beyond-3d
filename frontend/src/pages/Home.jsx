@@ -7,7 +7,7 @@ import UploadProject from "../components/UploadProject";
 import HeroObject3D from "../components/HeroObject3D";
 import ProcessStory from "../components/ProcessStory";
 import AIModelStudio from "../components/AIModelStudio";
-import MyModels from "../components/MyModels";
+import MyAccount from "../components/MyAccount";
 import ReviewsSection from "../components/ReviewsSection";
 import AuthModal from "../components/AuthModal";
 
@@ -37,6 +37,11 @@ function Home() {
   const [
     authOpen,
     setAuthOpen,
+  ] = useState(false);
+
+  const [
+    accountOpen,
+    setAccountOpen,
   ] = useState(false);
 
   const [
@@ -116,6 +121,7 @@ function Home() {
 
     setProfile(null);
     setMenuOpen(false);
+    setAccountOpen(false);
   }
 
   useEffect(() => {
@@ -382,10 +388,18 @@ function Home() {
         <div className="home-nav-actions">
           {authReady &&
             session ? (
-            <div className="home-account-menu">
+            <button
+              type="button"
+              className="home-account-menu home-account-button"
+              onClick={() =>
+                setAccountOpen(
+                  true
+                )
+              }
+            >
               <div className="home-account-copy">
                 <span>
-                  ACCOUNT
+                  MY ACCOUNT
                 </span>
 
                 <strong>
@@ -393,16 +407,12 @@ function Home() {
                 </strong>
               </div>
 
-              <button
-                type="button"
-                className="home-auth-button home-auth-logout"
-                onClick={
-                  handleSignOut
-                }
-              >
-                Log out
-              </button>
-            </div>
+              <div className="home-account-avatar">
+                {accountName
+                  .charAt(0)
+                  .toUpperCase()}
+              </div>
+            </button>
           ) : (
             <button
               type="button"
@@ -755,6 +765,33 @@ function Home() {
           setAuthOpen(
             false
           )
+        }
+      />
+
+      <MyAccount
+        open={
+          accountOpen
+        }
+        onClose={() =>
+          setAccountOpen(
+            false
+          )
+        }
+        session={
+          session
+        }
+        profile={
+          profile
+        }
+        onProfileUpdated={(
+          nextProfile
+        ) =>
+          setProfile(
+            nextProfile
+          )
+        }
+        onSignOut={
+          handleSignOut
         }
       />
     </main>
