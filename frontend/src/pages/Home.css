@@ -1,3 +1,5 @@
+@import "../styles/typography.css";
+
 /* =========================================================
    BEYOND HOME
 ========================================================= */
@@ -3596,5 +3598,233 @@ span {
   .footer-center,
   .footer-right {
     font-size: 11px;
+  }
+}
+
+
+/* =========================================================
+   GLOBAL TYPOGRAPHY MAPPING â€” HOME
+   Layout is intentionally untouched.
+========================================================= */
+
+.beyond-home {
+  font-family:
+    var(--font-body-family);
+}
+
+.home-brand {
+  font-size:
+    var(--type-heading-3);
+}
+
+.home-nav-links button {
+  font-size:
+    var(--type-button);
+}
+
+.home-start-small,
+.home-auth-button {
+  font-size:
+    var(--type-button);
+}
+
+.home-account-copy span,
+.hero-eyebrow,
+.transition-top,
+.section-side-label,
+.section-index,
+.section-kicker,
+.upload-heading .section-kicker {
+  font-size:
+    var(--type-label);
+}
+
+.home-account-copy strong {
+  font-size:
+    var(--type-small);
+}
+
+.hero-copy h1 {
+  font-family:
+    var(--font-display-family);
+
+  font-size:
+    var(--type-display);
+
+  line-height:
+    var(--line-display);
+}
+
+.hero-copy > p {
+  font-size:
+    var(--type-body-large);
+
+  line-height:
+    var(--line-body);
+}
+
+.home-primary-button,
+.home-ghost-button,
+.submit-project-button {
+  font-size:
+    var(--type-button);
+}
+
+.hero-micro-stats strong,
+.hero-micro-stats span,
+.transition-main,
+.upload-benefits span,
+.drop-zone-content span,
+.drop-zone-content small,
+.form-status,
+.home-footer,
+.footer-brand,
+.footer-center,
+.footer-right {
+  font-size:
+    var(--type-small);
+}
+
+.home-section-heading h2,
+.start-project-heading h2,
+.home-final-cta h2,
+.upload-heading h2 {
+  font-family:
+    var(--font-display-family);
+
+  font-size:
+    var(--type-section-title);
+
+  line-height:
+    var(--line-heading);
+}
+
+.home-section-heading > p,
+.start-project-heading > p,
+.home-final-cta > p,
+.upload-heading p,
+.upload-visual > p,
+.reviews-section p,
+.review-card p {
+  font-size:
+    var(--type-body);
+
+  line-height:
+    var(--line-body);
+}
+
+.upload-visual h3,
+.review-card strong,
+.review-card h3 {
+  font-size:
+    var(--type-heading-3);
+
+  line-height:
+    var(--line-card-title);
+}
+
+.project-form label > span,
+.full-field > span {
+  font-size:
+    var(--type-label);
+}
+
+.project-form input,
+.project-form select,
+.project-form textarea {
+  font-size:
+    var(--type-input);
+}
+
+.drop-zone-content strong {
+  font-size:
+    var(--type-body);
+}
+
+@media (max-width: 700px) {
+  .home-brand {
+    font-size: 16px;
+  }
+}
+
+
+/* =========================================================
+   ORIGINAL HERO CUBE â€” RESPONSIVE PRESENTATION
+   Only the hero object positioning is changed.
+   All typography, colors, buttons, navbar and later sections
+   remain untouched.
+========================================================= */
+
+@media (max-width: 700px) {
+  .home-hero {
+    min-height:
+      calc(
+        100svh - 76px
+      );
+
+    padding:
+      70px 0 58px;
+
+    display: block;
+
+    position: relative;
+
+    overflow: hidden;
+  }
+
+  .hero-copy {
+    position: relative;
+
+    z-index: 4;
+  }
+
+  .hero-copy > p,
+  .hero-buttons,
+  .hero-micro-stats {
+    position: relative;
+
+    z-index: 4;
+  }
+
+  .hero-machine {
+    width: 390px;
+    height: 410px;
+
+    position: absolute;
+
+    top: 145px;
+    right: -165px;
+
+    margin: 0;
+
+    display: block;
+
+    opacity: 0.18;
+
+    z-index: 1;
+
+    pointer-events: none;
+
+    transform:
+      rotate(-5deg);
+  }
+
+  .hero-machine .hero-object-wrapper {
+    width: 100%;
+    height: 100%;
+
+    min-height: 0;
+  }
+}
+
+@media (max-width: 430px) {
+  .hero-machine {
+    width: 350px;
+    height: 380px;
+
+    top: 155px;
+    right: -155px;
+
+    opacity: 0.16;
   }
 }
