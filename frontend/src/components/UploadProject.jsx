@@ -18,6 +18,11 @@ function UploadProject() {
   ] = useState(null);
 
   const [
+    selectedCreatorModel,
+    setSelectedCreatorModel,
+  ] = useState(null);
+
+  const [
     session,
     setSession,
   ] = useState(null);
@@ -116,6 +121,10 @@ function UploadProject() {
 
         setFile(null);
 
+        setSelectedCreatorModel(
+          null
+        );
+
         return;
       }
 
@@ -147,6 +156,91 @@ function UploadProject() {
     };
   }, []);
 
+  useEffect(() => {
+    function handleCreatorModelSelected(
+      event
+    ) {
+      const detail =
+        event.detail;
+
+      const creatorFile =
+        detail?.file;
+
+      if (!creatorFile) {
+        return;
+      }
+
+      if (
+        creatorFile.size >
+        MAX_FILE_SIZE
+      ) {
+        alert(
+          "Creator model is larger than the 50 MB upload limit."
+        );
+
+        return;
+      }
+
+      sessionStorage.removeItem(
+        "beyondSelectedAiModel"
+      );
+
+      setSelectedAiModel(
+        null
+      );
+
+      setFile(
+        creatorFile
+      );
+
+      setSelectedCreatorModel({
+        name:
+          creatorFile.name,
+        format:
+          detail.format ||
+          "3MF",
+        objectCount:
+          detail.objectCount ||
+          1,
+        holeCount:
+          detail.holeCount ||
+          0,
+        bounds:
+          detail.bounds ||
+          null,
+        summary:
+          detail.summary ||
+          "",
+      });
+
+      setStatus(
+        "BEYOND Creator model attached. Complete the project details and submit."
+      );
+    }
+
+    window.addEventListener(
+      "beyond-creator-model-selected",
+      handleCreatorModelSelected
+    );
+
+    return () => {
+      window.removeEventListener(
+        "beyond-creator-model-selected",
+        handleCreatorModelSelected
+      );
+    };
+  }, []);
+
+  function removeSelectedCreatorModel() {
+    setSelectedCreatorModel(
+      null
+    );
+
+    setFile(null);
+
+    setStatus("");
+  }
+
   function removeSelectedAiModel() {
     sessionStorage.removeItem(
       "beyondSelectedAiModel"
@@ -174,6 +268,10 @@ function UploadProject() {
 
     setFile(selectedFile);
 
+    setSelectedCreatorModel(
+      null
+    );
+
     if (selectedAiModel) {
       removeSelectedAiModel();
     }
@@ -194,6 +292,10 @@ function UploadProject() {
     }
 
     setFile(droppedFile);
+
+    setSelectedCreatorModel(
+      null
+    );
 
     if (selectedAiModel) {
       removeSelectedAiModel();
@@ -468,7 +570,10 @@ function UploadProject() {
       );
 
       formElement.reset();
-setFile(null);
+      setFile(null);
+      setSelectedCreatorModel(
+        null
+      );
     } catch (error) {
       console.error(error);
 
@@ -556,6 +661,45 @@ setFile(null);
         .drop-zone.has-ai-model {
           border-color: rgba(92, 150, 201, 0.16);
           background: rgba(45, 89, 128, 0.035);
+        }
+
+        .selected-creator-model-card {
+          margin-bottom: 18px;
+          padding: 16px;
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) auto;
+          align-items: center;
+          gap: 14px;
+          border: 1px solid rgba(66, 151, 215, 0.22);
+          border-radius: 16px;
+          background: rgba(35, 104, 158, 0.075);
+        }
+
+        .selected-creator-model-badge {
+          flex-shrink: 0;
+          padding: 7px 9px;
+          border-radius: 999px;
+          color: #a8d4f2;
+          background: rgba(55, 133, 194, 0.15);
+          font-size: 7px;
+          font-weight: 700;
+          letter-spacing: 1.2px;
+        }
+
+        .selected-creator-model-meta {
+          color: #5f7c93;
+          font-size: 8px;
+        }
+
+        .drop-zone.has-creator-model {
+          border-color: rgba(73, 151, 210, 0.2);
+          background: rgba(35, 101, 153, 0.05);
+        }
+
+        @media (max-width: 700px) {
+          .selected-creator-model-card {
+            grid-template-columns: 1fr;
+          }
         }
 
         @media (max-width: 700px) {
@@ -802,12 +946,57 @@ setFile(null);
             </div>
           )}
 
+          {selectedCreatorModel && (
+            <div className="selected-creator-model-card">
+              <div className="selected-ai-model-main">
+                <div className="selected-creator-model-badge">
+                  CREATOR MODEL
+                </div>
+
+                <div className="selected-ai-model-copy">
+                  <strong>
+                    {
+                      selectedCreatorModel.name
+                    }
+                  </strong>
+
+                  <span className="selected-creator-model-meta">
+                    {
+                      selectedCreatorModel.format
+                    } · {
+                      selectedCreatorModel.objectCount
+                    } solid object{
+                      selectedCreatorModel.objectCount ===
+                      1
+                        ? ""
+                        : "s"
+                    }
+                  </span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                className="selected-ai-model-remove"
+                onClick={
+                  removeSelectedCreatorModel
+                }
+              >
+                Remove
+              </button>
+            </div>
+          )}
+
           <div
             className={`drop-zone ${
               file ? "has-file" : ""
             } ${
               selectedAiModel
                 ? "has-ai-model"
+                : ""
+            } ${
+              selectedCreatorModel
+                ? "has-creator-model"
                 : ""
             }`}
             onDragOver={(event) =>
@@ -830,7 +1019,23 @@ setFile(null);
                 +
               </div>
 
-              {selectedAiModel ? (
+              {selectedCreatorModel ? (
+                <>
+                  <strong>
+                    BEYOND Creator model attached
+                  </strong>
+
+                  <span>
+                    {
+                      selectedCreatorModel.name
+                    }
+                  </span>
+
+                  <small>
+                    Uploading another file here will replace it
+                  </small>
+                </>
+              ) : selectedAiModel ? (
                 <>
                   <strong>
                     AI model attached
