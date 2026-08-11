@@ -8723,3 +8723,28 @@ strong {
       repeat(3, minmax(0, 1fr));
   }
 }
+
+
+/* =========================================================
+   BEYOND CREATOR V11 â€” STUDIO Â· SKETCH Â· ARCHITECT
+========================================================= */
+
+.creator-mode-switch-v11 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.creator-mode-switch-v11 button {
+  min-width: 118px;
+}
+
+@media (max-width: 760px) {
+  .creator-mode-switch-v11 {
+    width: 100%;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .creator-mode-switch-v11 button {
+    min-width: 0;
+    font-size: 11px;
+  }
+}

@@ -1,0 +1,829 @@
+/* =========================================================
+   BEYOND CREATOR â€” SKETCH MODE
+   Pencil-first 2D CAD workspace for iPad / Apple Pencil.
+========================================================= */
+
+.sketch-workspace {
+  position: relative;
+  min-height: 720px;
+  margin-top: 14px;
+  border: 1px solid rgba(80, 151, 204, 0.18);
+  border-radius: 20px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 48% 38%, rgba(29, 99, 150, 0.10), transparent 38%),
+    #020b12;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.025),
+    0 22px 70px rgba(0, 0, 0, 0.24);
+  color: #dcecf6;
+  font-family: inherit;
+}
+
+.sketch-workspace-hidden {
+  display: none;
+}
+
+.sketch-workspace-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  min-height: 100dvh;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+.sketch-topbar {
+  min-height: 62px;
+  padding: 8px 10px 8px 14px;
+  border-bottom: 1px solid rgba(72, 138, 187, 0.14);
+  display: grid;
+  grid-template-columns: minmax(170px, 1fr) auto auto auto;
+  align-items: center;
+  gap: 10px;
+  background: rgba(4, 17, 27, 0.94);
+  backdrop-filter: blur(18px);
+}
+
+.sketch-topbar-title {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.sketch-topbar-title span,
+.sketch-plane-switch > span,
+.sketch-inspector-head > span,
+.sketch-dimension-panel > span,
+.sketch-constraint-panel > span,
+.sketch-settings-panel > span,
+.sketch-adaptive-copy > span,
+.sketch-extrude-control label > span {
+  color: #4f7791;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.09em;
+}
+
+.sketch-topbar-title strong {
+  color: #b7d5e6;
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.sketch-plane-switch {
+  min-height: 42px;
+  padding: 4px 5px 4px 8px;
+  border: 1px solid rgba(74, 140, 188, 0.13);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(8, 27, 40, 0.6);
+}
+
+.sketch-plane-switch > span {
+  margin-right: 4px;
+}
+
+.sketch-plane-switch button,
+.sketch-fullscreen-button,
+.sketch-adaptive-actions button,
+.sketch-extrude-control > button,
+.sketch-floating-done {
+  min-height: 36px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: #7799ad;
+  background: transparent;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.sketch-plane-switch button {
+  min-width: 48px;
+  padding: 0 8px;
+}
+
+.sketch-plane-switch button.active {
+  color: #cde9f7;
+  border-color: rgba(63, 163, 226, 0.34);
+  background: rgba(37, 122, 180, 0.16);
+}
+
+.sketch-status-cluster {
+  min-width: 138px;
+  display: grid;
+  gap: 2px;
+  text-align: right;
+}
+
+.sketch-status-cluster span {
+  color: #6a93ac;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+.sketch-status-cluster b {
+  color: #5e816f;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.04em;
+}
+
+.sketch-fullscreen-button {
+  min-width: 76px;
+  min-height: 42px;
+  padding: 0 10px;
+  border-color: rgba(72, 144, 196, 0.13);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: rgba(8, 28, 42, 0.54);
+}
+
+.sketch-main {
+  height: 590px;
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr) 268px;
+  min-height: 0;
+}
+
+.sketch-workspace-fullscreen .sketch-main {
+  height: calc(100dvh - 138px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+}
+
+.sketch-toolrail {
+  min-height: 0;
+  padding: 8px 7px;
+  border-right: 1px solid rgba(70, 136, 184, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: rgba(3, 14, 23, 0.84);
+  overflow-y: auto;
+}
+
+.sketch-toolrail button {
+  min-height: 52px;
+  padding: 5px 4px;
+  border: 1px solid rgba(67, 129, 173, 0.09);
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  gap: 2px;
+  color: #678aa1;
+  background: rgba(10, 31, 45, 0.22);
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.sketch-toolrail button b {
+  color: #9dbed1;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.sketch-toolrail button span {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.sketch-toolrail button.active {
+  color: #d1edfa;
+  border-color: rgba(67, 166, 229, 0.38);
+  background: linear-gradient(180deg, rgba(39, 127, 186, 0.20), rgba(27, 90, 134, 0.12));
+  box-shadow: inset 0 0 0 1px rgba(103, 194, 245, 0.04);
+}
+
+.sketch-toolrail button:disabled {
+  opacity: 0.28;
+  cursor: not-allowed;
+}
+
+.sketch-toolrail-spacer {
+  flex: 1;
+  min-height: 6px;
+}
+
+.sketch-canvas-shell {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: #020b12;
+}
+
+.sketch-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  overscroll-behavior: none;
+  cursor: crosshair;
+}
+
+.sketch-tool-select {
+  cursor: default;
+}
+
+.sketch-tool-erase {
+  cursor: not-allowed;
+}
+
+.sketch-canvas-bg {
+  fill: #020b12;
+}
+
+.sketch-grid-minor {
+  stroke: rgba(39, 82, 112, 0.24);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.sketch-grid-major {
+  stroke: rgba(44, 105, 145, 0.42);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.sketch-axis {
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.sketch-axis-x {
+  stroke: rgba(69, 152, 204, 0.72);
+}
+
+.sketch-axis-y {
+  stroke: rgba(100, 207, 158, 0.58);
+}
+
+.sketch-entity {
+  touch-action: none;
+}
+
+.sketch-line,
+.sketch-spline,
+.sketch-shape,
+.sketch-preview-line,
+.sketch-preview-shape {
+  fill: none;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.sketch-spline {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.sketch-shape {
+  fill: rgba(42, 123, 175, 0.035);
+}
+
+.sketch-hit-line {
+  fill: none;
+  stroke: rgba(0, 0, 0, 0.001);
+  stroke-width: 18;
+  vector-effect: non-scaling-stroke;
+  cursor: pointer;
+}
+
+.sketch-hit-shape {
+  fill: rgba(0, 0, 0, 0.001);
+  stroke: rgba(0, 0, 0, 0.001);
+  stroke-width: 18;
+  vector-effect: non-scaling-stroke;
+  cursor: pointer;
+}
+
+.sketch-point {
+  pointer-events: none;
+}
+
+.sketch-preview-line,
+.sketch-preview-shape {
+  stroke: #91d7ff;
+  stroke-dasharray: 5 5;
+}
+
+.sketch-snap-label,
+.sketch-dimension-text {
+  fill: #7eb4d2;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  paint-order: stroke;
+  stroke: #020b12;
+  stroke-width: 4px;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.sketch-snap-label {
+  fill: #7ad7a9;
+  font-size: 10px;
+}
+
+.sketch-canvas-readout {
+  position: absolute;
+  bottom: 12px;
+  padding: 6px 9px;
+  border: 1px solid rgba(69, 137, 185, 0.12);
+  border-radius: 8px;
+  display: grid;
+  gap: 1px;
+  background: rgba(3, 15, 24, 0.82);
+  pointer-events: none;
+  backdrop-filter: blur(10px);
+}
+
+.sketch-canvas-readout-left {
+  left: 12px;
+}
+
+.sketch-canvas-readout-right {
+  right: 12px;
+  text-align: right;
+}
+
+.sketch-canvas-readout span,
+.sketch-canvas-readout b {
+  font-size: 10px;
+  line-height: 1.2;
+  letter-spacing: 0.045em;
+}
+
+.sketch-canvas-readout span {
+  color: #63869c;
+}
+
+.sketch-canvas-readout b {
+  color: #8fb2c6;
+}
+
+.sketch-floating-done {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  min-width: 74px;
+  border-color: rgba(73, 166, 226, 0.28);
+  color: #bde5f8;
+  background: rgba(29, 102, 151, 0.32);
+}
+
+.sketch-inspector {
+  min-height: 0;
+  padding: 12px;
+  border-left: 1px solid rgba(70, 136, 184, 0.12);
+  background: rgba(3, 14, 23, 0.86);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.sketch-inspector-head {
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(74, 136, 178, 0.10);
+  display: grid;
+  gap: 3px;
+}
+
+.sketch-inspector-head strong {
+  color: #b7d5e6;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.sketch-empty-inspector {
+  margin-top: 10px;
+  padding: 11px;
+  border: 1px solid rgba(78, 144, 188, 0.10);
+  border-radius: 10px;
+  background: rgba(15, 45, 65, 0.15);
+}
+
+.sketch-empty-inspector b {
+  color: #8fb4c9;
+  font-size: 12px;
+}
+
+.sketch-empty-inspector p {
+  margin: 6px 0 0;
+  color: #5e7d90;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.sketch-selected-state {
+  margin-top: 8px;
+  min-height: 38px;
+  padding: 6px 8px;
+  border: 1px solid rgba(74, 140, 186, 0.10);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sketch-selected-state > span {
+  color: #4f7187;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+}
+
+.sketch-selected-state strong {
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.sketch-selected-state .defined {
+  color: #70d59f;
+}
+
+.sketch-selected-state .under-defined {
+  color: #6db9e9;
+}
+
+.sketch-dimension-panel,
+.sketch-constraint-panel,
+.sketch-settings-panel {
+  margin-top: 9px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(72, 136, 178, 0.10);
+  display: grid;
+  gap: 5px;
+}
+
+.sketch-dimension-panel label,
+.sketch-readonly-dimension,
+.sketch-settings-panel label {
+  min-height: 38px;
+  padding: 5px 7px;
+  border: 1px solid rgba(72, 136, 178, 0.08);
+  border-radius: 8px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 82px auto;
+  align-items: center;
+  gap: 4px;
+  background: rgba(10, 32, 47, 0.16);
+}
+
+.sketch-dimension-panel label > span,
+.sketch-readonly-dimension > span,
+.sketch-settings-panel label > span {
+  color: #5c7f94;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.sketch-dimension-panel input,
+.sketch-settings-panel select {
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  outline: 0;
+  color: #b8d6e6;
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.sketch-dimension-panel small {
+  color: #4d6b7e;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.sketch-readonly-dimension strong {
+  grid-column: 2 / -1;
+  color: #a2c5d8;
+  font-size: 12px;
+  text-align: right;
+}
+
+.sketch-constraint-panel > div {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+}
+
+.sketch-constraint-panel button,
+.sketch-secondary-action,
+.sketch-selection-actions button,
+.sketch-settings-panel button {
+  min-height: 38px;
+  padding: 0 7px;
+  border: 1px solid rgba(72, 145, 196, 0.12);
+  border-radius: 8px;
+  color: #789eb5;
+  background: rgba(29, 88, 129, 0.06);
+  font: inherit;
+  font-size: 10px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.sketch-constraint-panel button:last-child {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.sketch-constraint-panel button:disabled,
+.sketch-settings-panel button:disabled {
+  opacity: 0.28;
+  cursor: not-allowed;
+}
+
+.sketch-secondary-action {
+  width: 100%;
+  margin-top: 7px;
+}
+
+.sketch-selection-actions {
+  margin-top: 7px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+}
+
+.sketch-selection-actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.sketch-settings-panel {
+  margin-top: 12px;
+}
+
+.sketch-settings-panel label {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.sketch-settings-panel button {
+  min-width: 52px;
+  min-height: 30px;
+}
+
+.sketch-settings-panel button.active {
+  color: #b9e4f7;
+  border-color: rgba(70, 165, 225, 0.25);
+  background: rgba(37, 115, 172, 0.16);
+}
+
+.sketch-settings-panel select {
+  width: auto;
+  min-width: 76px;
+}
+
+.sketch-adaptive-bar {
+  min-height: 68px;
+  padding: 8px 10px 8px 14px;
+  border-top: 1px solid rgba(72, 138, 187, 0.14);
+  display: grid;
+  grid-template-columns: minmax(230px, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  background: rgba(4, 17, 27, 0.96);
+  backdrop-filter: blur(18px);
+}
+
+.sketch-adaptive-copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.sketch-adaptive-copy strong {
+  color: #9cbcd0;
+  font-size: 12px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sketch-extrude-control {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.sketch-extrude-control label {
+  min-height: 42px;
+  padding: 4px 7px;
+  border: 1px solid rgba(73, 145, 196, 0.14);
+  border-radius: 9px;
+  display: grid;
+  grid-template-columns: auto 70px auto;
+  align-items: center;
+  gap: 5px;
+}
+
+.sketch-extrude-control input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  color: #c5e1ee;
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 850;
+  text-align: right;
+}
+
+.sketch-extrude-control small {
+  color: #56758a;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.sketch-extrude-control > button,
+.sketch-adaptive-actions button {
+  min-height: 44px;
+  padding: 0 15px;
+  border-color: rgba(75, 173, 233, 0.32);
+  color: #c5eafb;
+  background: linear-gradient(180deg, rgba(38, 126, 186, 0.28), rgba(30, 91, 134, 0.20));
+}
+
+.sketch-extrude-control > button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.sketch-create-message {
+  position: absolute;
+  right: 12px;
+  bottom: 72px;
+  max-width: 320px;
+  padding: 6px 9px;
+  border: 1px solid rgba(72, 152, 205, 0.16);
+  border-radius: 7px;
+  color: #8eb5ca;
+  background: rgba(3, 16, 25, 0.92);
+  font-size: 10px;
+  font-weight: 750;
+}
+
+/* iPad / touch-first policy: minimum 44px interactive targets. */
+@media (pointer: coarse), (max-width: 1180px) {
+  .sketch-workspace {
+    min-height: 760px;
+  }
+
+  .sketch-topbar {
+    min-height: 66px;
+    grid-template-columns: minmax(120px, 1fr) auto auto;
+  }
+
+  .sketch-status-cluster {
+    display: none;
+  }
+
+  .sketch-main {
+    height: 620px;
+    grid-template-columns: 76px minmax(0, 1fr);
+  }
+
+  .sketch-toolrail button {
+    min-height: 54px;
+  }
+
+  .sketch-inspector {
+    position: absolute;
+    right: 10px;
+    top: 78px;
+    z-index: 12;
+    width: min(286px, 36vw);
+    max-height: calc(100% - 165px);
+    border: 1px solid rgba(72, 143, 193, 0.18);
+    border-radius: 14px;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.34);
+    backdrop-filter: blur(18px);
+  }
+
+  .sketch-workspace-fullscreen .sketch-main {
+    height: calc(100dvh - 142px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  }
+
+  .sketch-plane-switch button,
+  .sketch-fullscreen-button,
+  .sketch-extrude-control > button,
+  .sketch-adaptive-actions button,
+  .sketch-constraint-panel button,
+  .sketch-secondary-action,
+  .sketch-selection-actions button {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 760px) {
+  .sketch-workspace {
+    min-height: 830px;
+    border-radius: 14px;
+  }
+
+  .sketch-topbar {
+    grid-template-columns: 1fr auto;
+    gap: 6px;
+  }
+
+  .sketch-plane-switch {
+    grid-column: 1 / -1;
+    order: 3;
+    justify-content: stretch;
+  }
+
+  .sketch-plane-switch button {
+    flex: 1;
+  }
+
+  .sketch-main {
+    height: 650px;
+    display: block;
+  }
+
+  .sketch-toolrail {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    bottom: 78px;
+    z-index: 20;
+    height: 64px;
+    padding: 5px;
+    border: 1px solid rgba(72, 143, 193, 0.18);
+    border-radius: 14px;
+    flex-direction: row;
+    overflow-x: auto;
+    background: rgba(3, 16, 25, 0.94);
+    backdrop-filter: blur(18px);
+  }
+
+  .sketch-toolrail button {
+    min-width: 58px;
+    min-height: 52px;
+  }
+
+  .sketch-toolrail-spacer {
+    display: none;
+  }
+
+  .sketch-inspector {
+    top: 118px;
+    right: 8px;
+    width: min(280px, calc(100vw - 32px));
+    max-height: 380px;
+  }
+
+  .sketch-canvas-readout-right {
+    display: none;
+  }
+
+  .sketch-adaptive-bar {
+    min-height: 74px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+  }
+
+  .sketch-adaptive-copy strong {
+    max-width: 42vw;
+  }
+
+  .sketch-extrude-control label {
+    display: none;
+  }
+
+  .sketch-extrude-control > button,
+  .sketch-adaptive-actions button {
+    padding: 0 10px;
+    font-size: 11px;
+  }
+}

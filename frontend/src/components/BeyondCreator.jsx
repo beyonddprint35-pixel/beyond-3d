@@ -86,6 +86,7 @@ import {
 
 import SketchExtrudeModal from "./SketchExtrudeModal";
 import RevolveModal from "./RevolveModal";
+import SketchWorkspace from "./SketchWorkspace";
 import {
   cleanCreatorGeometryWithManifold,
   createExtrudedSketchGeometry,
@@ -687,7 +688,7 @@ function makeArchitectureObject(
     source:
       "architecture",
     engine:
-      "ARCHITECTURE PARAMETRIC",
+      "ARCHITECT PARAMETRIC",
   };
 }
 
@@ -1418,9 +1419,9 @@ function architectureProductionCheck(
       code:
         "NO_SOLIDS",
       title:
-        "No printable Architecture solids",
+        "No printable Architect solids",
       detail:
-        "Add at least one visible Architecture solid before export.",
+        "Add at least one visible Architect solid before export.",
       objectId:
         null,
     });
@@ -1465,7 +1466,7 @@ function architectureProductionCheck(
         title:
           `Missing level · ${item.name}`,
         detail:
-          "This Architecture object references a level that no longer exists.",
+          "This Architect object references a level that no longer exists.",
         objectId:
           item.id,
       });
@@ -1610,7 +1611,7 @@ function architectureProductionCheck(
       code:
         "HIDDEN_SOLIDS",
       title:
-        `${hiddenSolids.length} hidden Architecture solid(s)`,
+        `${hiddenSolids.length} hidden Architect solid(s)`,
       detail:
         "Hidden solids are excluded from the normal STL / 3MF export.",
       objectId:
@@ -1629,7 +1630,7 @@ function architectureProductionCheck(
       code:
         "OBJECT_LIMIT",
       title:
-        `${architectureObjects.length} / ${MAX_OBJECTS} Architecture objects`,
+        `${architectureObjects.length} / ${MAX_OBJECTS} Architect objects`,
       detail:
         "The project is close to the Creator object limit. Performance may decrease.",
       objectId:
@@ -6068,7 +6069,7 @@ function BeyondCreator() {
     creatorMode,
     setCreatorMode,
   ] = useState(
-    "simple"
+    "advanced"
   );
 
   const [
@@ -6984,13 +6985,6 @@ function BeyondCreator() {
       .length > 0;
 
   useEffect(() => {
-    if (
-      creatorMode ===
-      "simple"
-    ) {
-      return;
-    }
-
     let active = true;
 
     setManifoldStatus(
@@ -7188,7 +7182,7 @@ function BeyondCreator() {
       );
 
       setOperationMessage(
-        "Architecture drawing cancelled. Regular mouse navigation was unchanged."
+        "Architect drawing cancelled. Regular mouse navigation was unchanged."
       );
     }
 
@@ -7581,6 +7575,26 @@ function BeyondCreator() {
 
     recordHistory();
 
+    if (
+      sketch.plane ===
+      "front"
+    ) {
+      result.geometry.rotateX(
+        Math.PI / 2
+      );
+    } else if (
+      sketch.plane ===
+      "right"
+    ) {
+      result.geometry.rotateZ(
+        -Math.PI / 2
+      );
+    }
+
+    result.geometry.computeVertexNormals?.();
+    result.geometry.computeBoundingBox?.();
+    result.geometry.computeBoundingSphere?.();
+
     const tempMesh =
       new THREE.Mesh(
         result.geometry,
@@ -7631,6 +7645,9 @@ function BeyondCreator() {
         sketch.twistDegrees,
       scaleTop:
         sketch.scaleTop,
+      sketchPlane:
+        sketch.plane ||
+        "top",
     };
 
     result.geometry.dispose();
@@ -7666,6 +7683,59 @@ function BeyondCreator() {
     );
 
     return result.engine;
+  }
+
+  async function createSketchWorkspaceSolid(
+    sketch
+  ) {
+    const engine =
+      await createSketchSolid(
+        sketch
+      );
+
+    setCreatorMode(
+      "advanced"
+    );
+
+    setArchitectureDrawTool(
+      null
+    );
+
+    setArchitectureView(
+      "3d"
+    );
+
+    setCameraView(
+      "perspective"
+    );
+
+    setLibraryTab(
+      "scene"
+    );
+
+    setInspectorTab(
+      "transform"
+    );
+
+    return engine;
+  }
+
+  function switchSketchToStudio() {
+    setCreatorMode(
+      "advanced"
+    );
+
+    setArchitectureDrawTool(
+      null
+    );
+
+    setArchitectureView(
+      "3d"
+    );
+
+    setCameraView(
+      "perspective"
+    );
   }
 
   async function createRevolveSolid(
@@ -7922,7 +7992,7 @@ function BeyondCreator() {
     );
 
     setOperationMessage(
-      `Architecture model changed to 1:${safeNext}. Geometry was rescaled for print.`
+      `Architect model changed to 1:${safeNext}. Geometry was rescaled for print.`
     );
   }
 
@@ -8661,7 +8731,7 @@ function BeyondCreator() {
       !canJoinArchitectureWalls
     ) {
       setOperationMessage(
-        "Select exactly two uncut Architecture walls to join their corner."
+        "Select exactly two uncut Architect walls to join their corner."
       );
 
       return;
@@ -9152,7 +9222,7 @@ function BeyondCreator() {
       0
     ) {
       setOperationMessage(
-        "Select Architecture objects or add walls/floors on the active level before fitting a roof."
+        "Select Architect objects or add walls/floors on the active level before fitting a roof."
       );
 
       return;
@@ -9674,7 +9744,7 @@ function BeyondCreator() {
 
     if (!wall) {
       setOperationMessage(
-        "Select one Architecture WALL first, then choose DOOR or WINDOW."
+        "Select one Architect WALL first, then choose DOOR or WINDOW."
       );
 
       return;
@@ -9915,7 +9985,7 @@ function BeyondCreator() {
         null;
 
       resultObject.engine =
-        "ARCHITECTURE SMART OPENING";
+        "ARCHITECT SMART OPENING";
 
       resultObject.parameters = {
         ...(wall.parameters ||
@@ -11727,7 +11797,7 @@ function BeyondCreator() {
       "BLOCKED"
     ) {
       setOperationMessage(
-        `Production check BLOCKED · ${architectureProductionQA.blockerCount} blocker(s) · ${architectureProductionQA.warningCount} warning(s). Resolve blockers before Architecture export.`
+        `Production check BLOCKED · ${architectureProductionQA.blockerCount} blocker(s) · ${architectureProductionQA.warningCount} warning(s). Resolve blockers before Architect export.`
       );
 
       return;
@@ -11743,12 +11813,12 @@ function BeyondCreator() {
       architectureProductionQA;
 
     const lines = [
-      "BEYOND CREATOR — ARCHITECTURE PRODUCTION REPORT",
+      "BEYOND CREATOR — ARCHITECT PRODUCTION REPORT",
       `Generated: ${new Date().toISOString()}`,
       "",
       `Status: ${qa.status}`,
       `Scale: 1:${architectureScale}`,
-      `Architecture objects: ${qa.architectureObjectCount}`,
+      `Architect objects: ${qa.architectureObjectCount}`,
       `Visible printable solids: ${qa.visibleSolidCount}`,
       `Blockers: ${qa.blockerCount}`,
       `Warnings: ${qa.warningCount}`,
@@ -11812,7 +11882,7 @@ function BeyondCreator() {
     );
 
     setExportMessage(
-      "Architecture production report downloaded."
+      "Architect production report downloaded."
     );
   }
 
@@ -11836,7 +11906,7 @@ function BeyondCreator() {
     setOperationMessage(
       architectureProductionQA.status ===
         "READY"
-        ? `Architecture production check READY · ${architectureCheck.width.toFixed(
+        ? `Architect production check READY · ${architectureCheck.width.toFixed(
             1
           )} × ${architectureCheck.depth.toFixed(
             1
@@ -11845,8 +11915,8 @@ function BeyondCreator() {
           )} mm at 1:${architectureScale}.`
         : architectureProductionQA.status ===
             "BLOCKED"
-          ? `Architecture production check BLOCKED · ${architectureProductionQA.blockerCount} blocker(s) · ${architectureProductionQA.warningCount} warning(s).`
-          : `Architecture production check needs review · ${architectureProductionQA.warningCount} warning(s) · no export blockers.`
+          ? `Architect production check BLOCKED · ${architectureProductionQA.blockerCount} blocker(s) · ${architectureProductionQA.warningCount} warning(s).`
+          : `Architect production check needs review · ${architectureProductionQA.warningCount} warning(s) · no export blockers.`
     );
   }
 
@@ -12829,7 +12899,7 @@ function BeyondCreator() {
             .name;
 
         resultObject.engine =
-          "ARCHITECTURE CSG";
+          "ARCHITECT CSG";
 
         resultObject.parameters = {
           ...(selectedSolids[0]
@@ -12925,7 +12995,7 @@ function BeyondCreator() {
       );
 
       setExportMessage(
-        `Architecture export blocked: resolve ${architectureProductionQA.blockerCount} production issue(s) first.`
+        `Architect export blocked: resolve ${architectureProductionQA.blockerCount} production issue(s) first.`
       );
 
       return;
@@ -12989,7 +13059,7 @@ function BeyondCreator() {
       );
 
       setExportMessage(
-        `Architecture export blocked: resolve ${architectureProductionQA.blockerCount} production issue(s) first.`
+        `Architect export blocked: resolve ${architectureProductionQA.blockerCount} production issue(s) first.`
       );
 
       return;
@@ -13161,7 +13231,7 @@ function BeyondCreator() {
 
       zip.file(
         "README.txt",
-        `BEYOND Architecture\nScale: 1:${architectureScale}\nLevels exported: ${exportedLevels}\nEach 3MF contains one architecture level at print scale.`
+        `BEYOND Architect\nScale: 1:${architectureScale}\nLevels exported: ${exportedLevels}\nEach 3MF contains one architecture level at print scale.`
       );
 
       const zipBlob =
@@ -13210,7 +13280,7 @@ function BeyondCreator() {
       );
 
       setExportMessage(
-        `Architecture project transfer blocked: resolve ${architectureProductionQA.blockerCount} production issue(s) first.`
+        `Architect project transfer blocked: resolve ${architectureProductionQA.blockerCount} production issue(s) first.`
       );
 
       return;
@@ -16437,6 +16507,15 @@ function BeyondCreator() {
         return;
       }
 
+      // Sketch owns its Pencil/keyboard interaction layer.
+      // Avoid Studio shortcuts (Delete, Cmd+Z, etc.) firing behind it.
+      if (
+        creatorMode ===
+        "sketch"
+      ) {
+        return;
+      }
+
       const key =
         event.key
           .toLowerCase();
@@ -16773,58 +16852,16 @@ function BeyondCreator() {
         </div>
 
         <p>
-          Start simple, switch to
-          Advanced for precision mesh
-          modeling, or use Architecture
-          Mode to build printable scale
-          models from walls, levels,
-          slabs and openings.
+          Use Studio for precision solid
+          and mesh modeling, Sketch for a
+          Pencil-first CAD workflow, or
+          Architect for printable scale
+          models, plans and buildings.
         </p>
       </div>
 
       <div className="creator-mode-row">
-        <div className="creator-mode-switch">
-          <button
-            type="button"
-            className={
-              creatorMode ===
-              "simple"
-                ? "active"
-                : ""
-            }
-            onClick={() => {
-              setArchitectureDrawTool(
-                null
-              );
-
-              setArchitectureWallStart(
-                null
-              );
-
-              setArchitecturePointer(
-                null
-              );
-
-              setArchitectureView(
-                "3d"
-              );
-
-              setCameraView(
-                "perspective"
-              );
-
-              setCreatorMode(
-                "simple"
-              );
-
-              setTransformMode(
-                "select"
-              );
-            }}
-          >
-            SIMPLE
-          </button>
-
+        <div className="creator-mode-switch creator-mode-switch-v11">
           <button
             type="button"
             className={
@@ -16859,7 +16896,58 @@ function BeyondCreator() {
               );
             }}
           >
-            ADVANCED
+            STUDIO
+          </button>
+
+          <button
+            type="button"
+            className={
+              creatorMode ===
+              "sketch"
+                ? "active"
+                : ""
+            }
+            onClick={() => {
+              const onlyStarterCube =
+                objects.length ===
+                  1 &&
+                objects[0].id ===
+                  initial.id &&
+                objects[0].type ===
+                  "cube";
+
+              if (onlyStarterCube) {
+                setObjects([]);
+                setSelectedIds([]);
+                setPrimaryId(null);
+              }
+
+              setArchitectureDrawTool(
+                null
+              );
+
+              setArchitectureWallStart(
+                null
+              );
+
+              setArchitecturePointer(
+                null
+              );
+
+              setTransformMode(
+                "select"
+              );
+
+              setCreatorMode(
+                "sketch"
+              );
+
+              setOperationMessage(
+                "Sketch workspace ready. Apple Pencil draws; touch navigates."
+              );
+            }}
+          >
+            SKETCH
           </button>
 
           <button
@@ -16879,23 +16967,13 @@ function BeyondCreator() {
                 objects[0].type ===
                   "cube";
 
-              if (
-                onlyStarterCube
-              ) {
-                setObjects(
-                  []
-                );
-
-                setSelectedIds(
-                  []
-                );
-
-                setPrimaryId(
-                  null
-                );
+              if (onlyStarterCube) {
+                setObjects([]);
+                setSelectedIds([]);
+                setPrimaryId(null);
 
                 setOperationMessage(
-                  "Architecture workspace ready. Draw a wall or add an architectural object."
+                  "Architect workspace ready. Draw a wall or add an architectural object."
                 );
               }
 
@@ -16932,18 +17010,18 @@ function BeyondCreator() {
               );
             }}
           >
-            ARCHITECTURE
+            ARCHITECT
           </button>
         </div>
 
         <span>
           {creatorMode ===
           "advanced"
-            ? "SKETCH · REVOLVE · MIRROR · ARRAY · SHELL · FILLET · PRECISION MESH EDIT"
+            ? "SOLIDS · BOOLEAN · REVOLVE · MIRROR · ARRAY · SHELL · FILLET · PRECISION MESH EDIT"
             : creatorMode ===
-                "architecture"
-              ? `PLAN · 3D · ELEVATIONS · WALLS · OPENINGS · LEVELS · SCALE 1:${architectureScale}`
-              : "Simple solid modeling with precise numeric controls"}
+                "sketch"
+              ? "APPLE PENCIL · LINE · RECTANGLE · CIRCLE · ARC · SPLINE · CONSTRAINTS · DIMENSIONS · EXTRUDE"
+              : `PLAN · 3D · ELEVATIONS · WALLS · OPENINGS · LEVELS · SCALE 1:${architectureScale}`}
         </span>
       </div>
 
@@ -17248,7 +17326,38 @@ function BeyondCreator() {
         </div>
       )}
 
-      <div className="creator-shell creator-shell-v2 creator-shell-v3 creator-shell-v5">
+      <SketchWorkspace
+        active={
+          creatorMode ===
+          "sketch"
+        }
+        engineStatus={
+          manifoldStatus
+        }
+        onCreateSolid={
+          createSketchWorkspaceSolid
+        }
+        onSwitchToStudio={
+          switchSketchToStudio
+        }
+        objectCount={
+          objects.length
+        }
+        maxObjects={
+          MAX_OBJECTS
+        }
+      />
+
+      <div
+        className="creator-shell creator-shell-v2 creator-shell-v3 creator-shell-v5"
+        style={{
+          display:
+            creatorMode ===
+            "sketch"
+              ? "none"
+              : undefined,
+        }}
+      >
         <aside
           className={`creator-library creator-library-tab-${libraryTab}`}
         >
@@ -17409,7 +17518,7 @@ function BeyondCreator() {
             <div className="creator-architecture-library creator-library-create">
               <div className="creator-architecture-library-title">
                 <span>
-                  ARCHITECTURE V10
+                  ARCHITECT V11
                 </span>
 
                 <strong>
@@ -18568,7 +18677,7 @@ function BeyondCreator() {
             "advanced" && (
             <div className="creator-v6-add-tools creator-library-create">
               <div className="creator-v6-add-label">
-                ADVANCED SOLIDS
+                STUDIO SOLIDS
 
                 <span
                   className={`creator-manifold-state ${manifoldStatus}`}
@@ -18651,11 +18760,11 @@ function BeyondCreator() {
 
                 <span>
                   <strong>
-                    SKETCH → EXTRUDE
+                    QUICK EXTRUDE
                   </strong>
 
                   <small>
-                    Draw a custom 2D profile and turn it into a solid
+                    Draw a quick polygon profile and turn it into a solid
                   </small>
                 </span>
 
@@ -18677,7 +18786,7 @@ function BeyondCreator() {
 
                 <span>
                   <strong>
-                    SKETCH → REVOLVE
+                    REVOLVE PROFILE
                   </strong>
 
                   <small>
@@ -20303,7 +20412,7 @@ function BeyondCreator() {
                   "architecture" && (
                 <div className="creator-inspector-block creator-architecture-inspector creator-tab-object">
                   <div className="creator-inspector-title">
-                    ARCHITECTURE
+                    ARCHITECT
                     <span>
                       {
                         selected.parameters
@@ -22563,7 +22672,7 @@ function BeyondCreator() {
                 </div>
 
                 <small className="creator-material-global-note">
-                  Available in SIMPLE · ADVANCED · ARCHITECTURE
+                  Available in STUDIO · ARCHITECT
                 </small>
 
                 <div className="creator-appearance-picker">
@@ -23178,7 +23287,7 @@ function BeyondCreator() {
               <div className="creator-export-warning">
                 {creatorMode ===
                 "architecture"
-                  ? "Architecture export is blocked while unapplied openings remain. Use CUT OPENING first."
+                  ? "Architect export is blocked while unapplied openings remain. Use CUT OPENING first."
                   : "Unapplied HOLE objects are not exported. Use CUT / HOLE first if you want the opening in the final file."}
               </div>
             )}
