@@ -4351,3 +4351,4375 @@
     font-size: 9px;
   }
 }
+
+
+/* =========================================================
+   BEYOND CREATOR â€” ARCHITECTURE MODE V1
+========================================================= */
+
+.creator-mode-switch {
+  grid-template-columns:
+    repeat(3, 1fr);
+}
+
+.creator-mode-switch button:last-child {
+  min-width: 128px;
+}
+
+.creator-architecture-strip {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  max-width: 1400px;
+  margin:
+    -10px auto 16px;
+  padding: 8px 10px;
+  border:
+    1px solid
+    rgba(80, 151, 204, 0.14);
+  border-radius: 12px;
+  display: flex;
+  align-items: stretch;
+  gap: 7px;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(5, 17, 28, 0.9),
+      rgba(7, 22, 35, 0.72)
+    );
+  box-shadow:
+    inset 0 1px 0
+    rgba(255, 255, 255, 0.012);
+}
+
+.creator-architecture-strip-group,
+.creator-architecture-strip-field,
+.creator-architecture-scale-readout {
+  min-height: 42px;
+  padding: 5px 9px;
+  border:
+    1px solid
+    rgba(96, 151, 193, 0.09);
+  border-radius: 8px;
+  background:
+    rgba(255, 255, 255, 0.008);
+}
+
+.creator-architecture-strip-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.creator-architecture-strip-group > span,
+.creator-architecture-strip-field > span,
+.creator-architecture-scale-readout > span {
+  color: #45647b;
+  font-size: 6px;
+  font-weight: 850;
+  letter-spacing: 0.09em;
+}
+
+.creator-architecture-strip-group > span {
+  margin-right: 4px;
+}
+
+.creator-architecture-strip-group button {
+  min-width: 44px;
+  min-height: 28px;
+  border:
+    1px solid
+    rgba(91, 150, 195, 0.1);
+  border-radius: 6px;
+  color: #607f96;
+  background: transparent;
+  font: inherit;
+  font-size: 7px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.creator-architecture-strip-group button.active {
+  color: #cbe8f8;
+  border-color:
+    rgba(63, 158, 223, 0.33);
+  background:
+    rgba(39, 115, 173, 0.14);
+}
+
+.creator-architecture-strip-field {
+  min-width: 105px;
+  display: grid;
+  align-content: center;
+  gap: 3px;
+}
+
+.creator-architecture-strip-field select {
+  border: 0;
+  outline: 0;
+  color: #9ebbd0;
+  background: transparent;
+  font: inherit;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.creator-architecture-scale-readout {
+  margin-left: auto;
+  min-width: 180px;
+  display: grid;
+  align-content: center;
+  gap: 3px;
+}
+
+.creator-architecture-scale-readout strong {
+  color: #a8cce3;
+  font-size: 9px;
+}
+
+.creator-architecture-library {
+  padding: 0 1px 8px;
+}
+
+.creator-architecture-library-title {
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.creator-architecture-library-title > span {
+  color: #486a82;
+  font-size: 7px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+}
+
+.creator-architecture-library-title > strong {
+  padding: 4px 6px;
+  border:
+    1px solid
+    rgba(70, 151, 210, 0.17);
+  border-radius: 5px;
+  color: #8cb9d5;
+  background:
+    rgba(35, 105, 159, 0.08);
+  font-size: 7px;
+  letter-spacing: 0.06em;
+}
+
+.creator-architecture-wall-draw {
+  width: 100%;
+  min-height: 50px;
+  padding: 7px 9px;
+  border:
+    1px solid
+    rgba(67, 151, 213, 0.18);
+  border-radius: 9px;
+  display: grid;
+  grid-template-columns:
+    26px 1fr 25px;
+  align-items: center;
+  gap: 8px;
+  color: #8fbad6;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(38, 108, 164, 0.1),
+      rgba(22, 64, 98, 0.035)
+    );
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.creator-architecture-wall-draw.active {
+  color: #d7efff;
+  border-color:
+    rgba(72, 170, 237, 0.42);
+  background:
+    rgba(37, 118, 180, 0.17);
+  box-shadow:
+    inset 0 0 0 1px
+    rgba(112, 195, 248, 0.06);
+}
+
+.creator-architecture-wall-draw > b {
+  font-size: 22px;
+  font-weight: 400;
+  text-align: center;
+}
+
+.creator-architecture-wall-draw > span {
+  display: grid;
+  gap: 2px;
+}
+
+.creator-architecture-wall-draw strong {
+  font-size: 9px;
+  letter-spacing: 0.05em;
+}
+
+.creator-architecture-wall-draw small,
+.creator-architecture-wall-draw i {
+  color: #577a92;
+  font-size: 7px;
+  font-style: normal;
+}
+
+.creator-architecture-wall-draw i {
+  text-align: right;
+  font-weight: 850;
+}
+
+.creator-architecture-wall-settings {
+  margin-top: 6px;
+  display: grid;
+  grid-template-columns:
+    1fr 1fr;
+  gap: 6px;
+}
+
+.creator-architecture-wall-settings label {
+  min-height: 38px;
+  padding: 0 7px;
+  border:
+    1px solid
+    rgba(94, 146, 186, 0.09);
+  border-radius: 7px;
+  display: grid;
+  grid-template-columns:
+    1fr 54px 21px;
+  align-items: center;
+  gap: 4px;
+  background:
+    rgba(255, 255, 255, 0.006);
+}
+
+.creator-architecture-wall-settings span,
+.creator-architecture-wall-settings small {
+  color: #4b6b82;
+  font-size: 6px;
+  font-weight: 850;
+}
+
+.creator-architecture-wall-settings input {
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  outline: 0;
+  color: #a5c5d9;
+  background: transparent;
+  font: inherit;
+  font-size: 8px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.creator-architecture-primitive-grid {
+  margin-top: 7px;
+  display: grid;
+  grid-template-columns:
+    repeat(2, 1fr);
+  gap: 6px;
+}
+
+.creator-architecture-primitive-grid button {
+  min-height: 48px;
+  padding: 6px;
+  border:
+    1px solid
+    rgba(91, 146, 188, 0.1);
+  border-radius: 8px;
+  display: grid;
+  grid-template-columns:
+    26px 1fr;
+  align-items: center;
+  gap: 5px;
+  color: #6f91a9;
+  background:
+    rgba(255, 255, 255, 0.006);
+  font: inherit;
+  cursor: pointer;
+}
+
+.creator-architecture-primitive-grid button:hover {
+  color: #c3e0f2;
+  border-color:
+    rgba(71, 154, 214, 0.27);
+  background:
+    rgba(37, 106, 160, 0.075);
+}
+
+.creator-architecture-primitive-grid b {
+  color: #7eb4d6;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.creator-architecture-primitive-grid span {
+  font-size: 8px;
+  font-weight: 800;
+  text-align: left;
+}
+
+.creator-architecture-openings {
+  margin-top: 7px;
+  display: grid;
+  grid-template-columns:
+    1fr 1fr;
+  gap: 6px;
+}
+
+.creator-architecture-openings button {
+  min-height: 50px;
+  padding: 6px 7px;
+  border:
+    1px solid
+    rgba(176, 104, 117, 0.12);
+  border-radius: 8px;
+  display: grid;
+  grid-template-columns:
+    24px 1fr;
+  align-items: center;
+  gap: 6px;
+  color: #967b84;
+  background:
+    rgba(107, 48, 60, 0.025);
+  font: inherit;
+  cursor: pointer;
+}
+
+.creator-architecture-openings b {
+  color: #c98693;
+  font-size: 17px;
+}
+
+.creator-architecture-openings span {
+  display: grid;
+  gap: 2px;
+  text-align: left;
+}
+
+.creator-architecture-openings strong {
+  font-size: 8px;
+}
+
+.creator-architecture-openings small {
+  color: #6b5660;
+  font-size: 6px;
+}
+
+.creator-architecture-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.creator-architecture-section-head > span {
+  color: #496a81;
+  font-size: 7px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+}
+
+.creator-architecture-levels,
+.creator-architecture-print-check {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top:
+    1px solid
+    rgba(97, 147, 184, 0.08);
+}
+
+.creator-architecture-section-head button {
+  min-height: 25px;
+  padding: 0 7px;
+  border:
+    1px solid
+    rgba(64, 146, 207, 0.17);
+  border-radius: 6px;
+  color: #789db7;
+  background:
+    rgba(34, 99, 150, 0.06);
+  font: inherit;
+  font-size: 7px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.creator-architecture-level-list {
+  margin-top: 6px;
+  display: grid;
+  gap: 4px;
+}
+
+.creator-architecture-level-list > button {
+  min-height: 32px;
+  padding: 0 8px;
+  border:
+    1px solid
+    rgba(91, 144, 183, 0.08);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: #58778d;
+  background:
+    rgba(255, 255, 255, 0.004);
+  font: inherit;
+  font-size: 7px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.creator-architecture-level-list > button.active {
+  color: #b5d5e8;
+  border-color:
+    rgba(65, 148, 209, 0.23);
+  background:
+    rgba(36, 104, 157, 0.075);
+}
+
+.creator-architecture-level-list strong {
+  color: #46687f;
+  font-size: 7px;
+}
+
+.creator-architecture-print-check {
+  padding:
+    10px 8px 8px;
+  border:
+    1px solid
+    rgba(85, 145, 187, 0.1);
+  border-radius: 9px;
+  background:
+    rgba(255, 255, 255, 0.005);
+}
+
+.creator-architecture-print-check.ready {
+  border-color:
+    rgba(70, 174, 151, 0.18);
+}
+
+.creator-architecture-print-check.check {
+  border-color:
+    rgba(203, 146, 72, 0.18);
+}
+
+.creator-architecture-print-check .creator-architecture-section-head strong {
+  color: #8db5ce;
+  font-size: 7px;
+  letter-spacing: 0.08em;
+}
+
+.creator-architecture-print-check.ready .creator-architecture-section-head strong {
+  color: #78bda9;
+}
+
+.creator-architecture-print-check.check .creator-architecture-section-head strong {
+  color: #c69c67;
+}
+
+.creator-architecture-check-grid {
+  margin-top: 7px;
+  display: grid;
+  grid-template-columns:
+    1fr 1fr;
+  gap: 5px;
+}
+
+.creator-architecture-check-grid > span {
+  min-height: 32px;
+  padding: 5px 6px;
+  border:
+    1px solid
+    rgba(93, 147, 187, 0.07);
+  border-radius: 6px;
+  display: grid;
+  gap: 2px;
+  color: #436178;
+  font-size: 6px;
+  font-weight: 800;
+}
+
+.creator-architecture-check-grid strong {
+  color: #8aaabe;
+  font-size: 8px;
+}
+
+.creator-architecture-prepare {
+  width: 100%;
+  min-height: 34px;
+  margin-top: 7px;
+  border:
+    1px solid
+    rgba(61, 151, 216, 0.24);
+  border-radius: 7px;
+  color: #9bc8e3;
+  background:
+    rgba(35, 108, 164, 0.09);
+  font: inherit;
+  font-size: 8px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.creator-architecture-toolbar .creator-edit-mode-button {
+  display: none;
+}
+
+.creator-architecture-draw-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 22;
+  cursor: crosshair;
+  touch-action: none;
+  background:
+    rgba(32, 99, 151, 0.008);
+}
+
+.creator-architecture-draw-badge {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform:
+    translateX(-50%);
+  padding: 7px 10px;
+  border:
+    1px solid
+    rgba(75, 167, 231, 0.27);
+  border-radius: 7px;
+  color: #acd5ed;
+  background:
+    rgba(4, 17, 27, 0.91);
+  box-shadow:
+    0 12px 30px
+    rgba(0, 0, 0, 0.24);
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: 0.055em;
+  pointer-events: none;
+}
+
+.creator-architecture-preview-line {
+  position: absolute;
+  height: 2px;
+  transform-origin: 0 50%;
+  background:
+    linear-gradient(
+      90deg,
+      #6bc0f2,
+      rgba(107, 192, 242, 0.45)
+    );
+  box-shadow:
+    0 0 12px
+    rgba(74, 168, 230, 0.32);
+  pointer-events: none;
+}
+
+.creator-architecture-preview-line::before,
+.creator-architecture-preview-line::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  border:
+    1px solid
+    #8dd1f7;
+  border-radius: 50%;
+  background: #0a1c29;
+  transform:
+    translateY(-50%);
+}
+
+.creator-architecture-preview-line::before {
+  left: -3px;
+}
+
+.creator-architecture-preview-line::after {
+  right: -3px;
+}
+
+.creator-architecture-preview-line > span {
+  position: absolute;
+  left: 50%;
+  top: -19px;
+  transform:
+    translateX(-50%);
+  padding: 3px 5px;
+  border-radius: 4px;
+  color: #a5d3ee;
+  background:
+    rgba(4, 17, 27, 0.9);
+  font-size: 7px;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.creator-architecture-inspector {
+  border-color:
+    rgba(70, 150, 208, 0.14);
+}
+
+.creator-architecture-object-meta {
+  margin-top: 7px;
+  display: grid;
+  grid-template-columns:
+    1fr 1fr;
+  gap: 6px;
+}
+
+.creator-architecture-object-meta > span {
+  min-height: 35px;
+  padding: 6px 7px;
+  border:
+    1px solid
+    rgba(91, 145, 186, 0.08);
+  border-radius: 7px;
+  display: grid;
+  gap: 2px;
+  color: #45637a;
+  font-size: 6px;
+  font-weight: 800;
+}
+
+.creator-architecture-object-meta strong {
+  color: #95b8cf;
+  font-size: 8px;
+}
+
+.creator-architecture-real-fields {
+  margin-top: 7px;
+  display: grid;
+  gap: 5px;
+}
+
+.creator-architecture-real-fields label {
+  min-height: 36px;
+  padding: 0 7px;
+  border:
+    1px solid
+    rgba(92, 146, 185, 0.08);
+  border-radius: 7px;
+  display: grid;
+  grid-template-columns:
+    1fr 72px 30px;
+  align-items: center;
+  gap: 5px;
+}
+
+.creator-architecture-real-fields span,
+.creator-architecture-real-fields small {
+  color: #49687f;
+  font-size: 6px;
+  font-weight: 800;
+}
+
+.creator-architecture-real-fields input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  color: #b2cfdf;
+  background: transparent;
+  font: inherit;
+  font-size: 9px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.creator-architecture-print-size {
+  margin-top: 7px;
+  padding: 7px 8px;
+  border:
+    1px solid
+    rgba(68, 151, 210, 0.11);
+  border-radius: 7px;
+  display: grid;
+  gap: 3px;
+  background:
+    rgba(35, 102, 155, 0.035);
+}
+
+.creator-architecture-print-size span {
+  color: #48677d;
+  font-size: 6px;
+  font-weight: 800;
+}
+
+.creator-architecture-print-size strong {
+  color: #9dc4dc;
+  font-size: 8px;
+}
+
+.creator-architecture-output {
+  padding:
+    12px 13px 3px;
+}
+
+.creator-architecture-output-status {
+  display: grid;
+  gap: 5px;
+}
+
+.creator-architecture-output-status > div {
+  min-height: 34px;
+  padding: 6px 8px;
+  border:
+    1px solid
+    rgba(93, 145, 184, 0.08);
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.creator-architecture-output-status span {
+  color: #45647b;
+  font-size: 6px;
+  font-weight: 800;
+}
+
+.creator-architecture-output-status strong {
+  color: #93b5ca;
+  font-size: 8px;
+  text-align: right;
+}
+
+.creator-architecture-output-status.ready > div:first-child strong {
+  color: #73b99f;
+}
+
+.creator-architecture-output-status.check > div:first-child strong {
+  color: #c69a63;
+}
+
+.creator-architecture-warning-list {
+  margin-top: 7px;
+  display: grid;
+  gap: 4px;
+}
+
+.creator-architecture-warning-list span {
+  padding: 6px 7px;
+  border:
+    1px solid
+    rgba(201, 145, 73, 0.12);
+  border-radius: 6px;
+  color: #9d805e;
+  background:
+    rgba(131, 82, 30, 0.025);
+  font-size: 7px;
+  line-height: 1.45;
+}
+
+@media (max-width: 1100px) {
+  .creator-architecture-strip {
+    flex-wrap: wrap;
+  }
+
+  .creator-architecture-scale-readout {
+    margin-left: 0;
+    flex: 1 1 180px;
+  }
+}
+
+@media (max-width: 760px) {
+  .creator-mode-switch {
+    grid-template-columns:
+      repeat(3, 1fr);
+  }
+
+  .creator-mode-switch button:last-child {
+    min-width: 0;
+  }
+
+  .creator-architecture-strip {
+    margin:
+      0 0 14px;
+    display: grid;
+    grid-template-columns:
+      1fr 1fr;
+  }
+
+  .creator-architecture-strip-group,
+  .creator-architecture-scale-readout {
+    grid-column:
+      1 / -1;
+  }
+
+  .creator-architecture-scale-readout {
+    min-width: 0;
+  }
+}
+
+
+/* =========================================================
+   BEYOND CREATOR â€” ARCHITECTURE V1.1
+   READABILITY + COLOR / MATERIAL LIBRARY
+========================================================= */
+
+/* Architecture should be as readable as Advanced Mode. */
+.creator-architecture-strip-group > span,
+.creator-architecture-strip-field > span,
+.creator-architecture-scale-readout > span,
+.creator-architecture-library-title > span,
+.creator-architecture-library-title > strong,
+.creator-architecture-section-head > span,
+.creator-architecture-wall-settings span,
+.creator-architecture-wall-settings small,
+.creator-architecture-object-meta > span,
+.creator-architecture-real-fields span,
+.creator-architecture-real-fields small,
+.creator-architecture-print-size span,
+.creator-architecture-output-status span,
+.creator-architecture-check-grid > span {
+  font-size: 9px;
+  line-height: 1.25;
+}
+
+.creator-architecture-strip-group button,
+.creator-architecture-strip-field select,
+.creator-architecture-scale-readout strong,
+.creator-architecture-wall-draw strong,
+.creator-architecture-primitive-grid span,
+.creator-architecture-openings strong,
+.creator-architecture-section-head button,
+.creator-architecture-level-list > button,
+.creator-architecture-level-list strong,
+.creator-architecture-check-grid strong,
+.creator-architecture-prepare,
+.creator-architecture-object-meta strong,
+.creator-architecture-real-fields input,
+.creator-architecture-print-size strong,
+.creator-architecture-output-status strong {
+  font-size: 10px;
+  line-height: 1.3;
+}
+
+.creator-architecture-wall-draw small,
+.creator-architecture-wall-draw i,
+.creator-architecture-openings small,
+.creator-architecture-draw-badge,
+.creator-architecture-preview-line > span,
+.creator-architecture-warning-list span {
+  font-size: 9px;
+}
+
+.creator-architecture-wall-settings input {
+  font-size: 10px;
+}
+
+.creator-architecture-wall-draw {
+  min-height: 58px;
+}
+
+.creator-architecture-primitive-grid button,
+.creator-architecture-openings button {
+  min-height: 56px;
+}
+
+/* The Object tab can now scroll, so the material library is never cut off. */
+@media (min-width: 901px) {
+  .creator-inspector.creator-inspector-tab-object {
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 12px;
+  }
+
+  .creator-inspector.creator-inspector-tab-object::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .creator-inspector.creator-inspector-tab-object::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .creator-inspector.creator-inspector-tab-object::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background:
+      rgba(100, 155, 195, 0.2);
+  }
+}
+
+.creator-material-section-label {
+  margin:
+    4px 0 7px;
+  color: #587890;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+}
+
+.creator-material-section-label-materials {
+  margin-top: 14px;
+  padding-top: 11px;
+  border-top:
+    1px solid
+    rgba(103, 151, 187, 0.09);
+}
+
+.creator-materials {
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.creator-material {
+  min-height: 40px;
+  padding: 7px 8px;
+  gap: 7px;
+}
+
+.creator-material i {
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+}
+
+.creator-material span {
+  min-width: 0;
+  font-size: 10px;
+  font-weight: 760;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.creator-material-swatch.transparent {
+  background-image:
+    linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.16) 25%,
+      transparent 25%
+    ),
+    linear-gradient(
+      -45deg,
+      rgba(255, 255, 255, 0.16) 25%,
+      transparent 25%
+    ),
+    linear-gradient(
+      45deg,
+      transparent 75%,
+      rgba(255, 255, 255, 0.16) 75%
+    ),
+    linear-gradient(
+      -45deg,
+      transparent 75%,
+      rgba(255, 255, 255, 0.16) 75%
+    );
+  background-size:
+    6px 6px;
+  background-position:
+    0 0,
+    0 3px,
+    3px -3px,
+    -3px 0;
+}
+
+/* Slightly more room in Architecture inspector without changing site layout. */
+.creator-architecture-inspector {
+  padding-bottom: 12px;
+}
+
+@media (max-width: 900px) {
+  .creator-architecture-strip-group > span,
+  .creator-architecture-strip-field > span,
+  .creator-architecture-scale-readout > span,
+  .creator-architecture-library-title > span,
+  .creator-architecture-section-head > span,
+  .creator-architecture-wall-settings span,
+  .creator-architecture-wall-settings small {
+    font-size: 9px;
+  }
+
+  .creator-architecture-strip-group button,
+  .creator-architecture-strip-field select,
+  .creator-architecture-scale-readout strong,
+  .creator-architecture-wall-draw strong,
+  .creator-architecture-primitive-grid span,
+  .creator-architecture-openings strong,
+  .creator-architecture-level-list > button,
+  .creator-architecture-real-fields input,
+  .creator-material span {
+    font-size: 10px;
+  }
+}
+
+
+/* =========================================================
+   BEYOND CREATOR â€” ARCHITECTURE V1.2
+   GLOBAL MATERIALS + MOUSE NAVIGATION FIX
+========================================================= */
+
+/*
+  Exact navigation in ALL modes:
+  LEFT CLICK      = select
+  LEFT DRAG       = orbit
+  MIDDLE DRAG     = pan
+  WHEEL SCROLL    = zoom
+
+  OrbitControls stays enabled continuously.
+  Temporary tools such as Wall Draw / Box Select use a DOM overlay above the
+  canvas, so they receive pointer input without changing the normal navigation
+  state underneath.
+*/
+
+.creator-canvas-wrap canvas {
+  cursor: default;
+}
+
+.creator-material-global-note {
+  display: block;
+  margin:
+    1px 0 10px;
+  color: #496b83;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: 0.035em;
+}
+
+.creator-materials-colors,
+.creator-materials-architecture {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+/* Keep the complete palette accessible in every Creator mode. */
+.creator-inspector.creator-inspector-tab-object {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.creator-inspector.creator-inspector-tab-object .creator-material {
+  min-height: 42px;
+}
+
+.creator-inspector.creator-inspector-tab-object .creator-material span {
+  font-size: 10px;
+}
+
+/* Make the group headings readable in Simple + Advanced too. */
+.creator-material-section-label {
+  font-size: 9px;
+}
+
+@media (max-width: 900px) {
+  .creator-material-global-note,
+  .creator-material-section-label,
+  .creator-inspector.creator-inspector-tab-object .creator-material span {
+    font-size: 10px;
+  }
+}
+
+
+/* =========================================================
+   BEYOND CREATOR â€” ARCHITECTURE V1.3
+   EXACT V9.5 MOUSE + GLOBAL DROPDOWN
+========================================================= */
+
+/*
+  V9.5 controls restored literally in CreatorScene:
+  LEFT CLICK       = select
+  LEFT DRAG        = orbit
+  MIDDLE DRAG      = pan
+  WHEEL            = zoom
+  RIGHT            = disabled
+
+  Wall Draw is now one-shot. After its second click, the DOM drawing overlay
+  closes automatically so it cannot keep stealing LEFT-drag navigation.
+*/
+
+.creator-material-dropdown {
+  margin-top: 9px;
+  display: grid;
+  gap: 6px;
+}
+
+.creator-material-dropdown > span {
+  color: #587890;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 0.07em;
+}
+
+.creator-material-dropdown-control {
+  position: relative;
+  min-height: 46px;
+  padding:
+    0 36px 0 11px;
+  border:
+    1px solid
+    rgba(89, 151, 196, 0.15);
+  border-radius: 8px;
+  display: grid;
+  grid-template-columns:
+    18px minmax(0, 1fr);
+  align-items: center;
+  gap: 9px;
+  background:
+    rgba(255, 255, 255, 0.009);
+}
+
+.creator-material-dropdown-control > i {
+  width: 16px;
+  height: 16px;
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.16);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 2px
+    rgba(0, 0, 0, 0.12);
+  pointer-events: none;
+}
+
+.creator-material-dropdown-control > i.transparent {
+  opacity: 0.68;
+  background-image:
+    linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.22) 25%,
+      transparent 25%
+    ),
+    linear-gradient(
+      -45deg,
+      rgba(255, 255, 255, 0.22) 25%,
+      transparent 25%
+    );
+}
+
+.creator-material-dropdown select {
+  width: 100%;
+  min-height: 44px;
+  border: 0;
+  outline: 0;
+  color: #b7d1e1;
+  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.creator-material-dropdown select:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.creator-material-dropdown select optgroup,
+.creator-material-dropdown select option {
+  color: #0c1a24;
+  background: #eef3f6;
+}
+
+.creator-material-dropdown-arrow {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform:
+    translateY(-50%);
+  color: #6f99b4;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.creator-material-current {
+  margin-top: 7px;
+  min-height: 46px;
+  padding: 7px 9px;
+  border:
+    1px solid
+    rgba(91, 147, 188, 0.08);
+  border-radius: 7px;
+  display: grid;
+  grid-template-columns:
+    1fr auto;
+  align-items: center;
+  gap: 2px 8px;
+  background:
+    rgba(255, 255, 255, 0.005);
+}
+
+.creator-material-current > span {
+  color: #496981;
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+}
+
+.creator-material-current > strong {
+  color: #a7c7da;
+  font-size: 10px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.creator-material-current > small {
+  grid-column:
+    1 / -1;
+  color: #4d6c82;
+  font-size: 8px;
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .creator-material-dropdown > span,
+  .creator-material-current > span,
+  .creator-material-current > small {
+    font-size: 9px;
+  }
+
+  .creator-material-dropdown select,
+  .creator-material-current > strong {
+    font-size: 11px;
+  }
+}
+
+
+/* =========================================================
+   BEYOND CREATOR â€” ARCHITECTURE V1.4
+   SELECTED-OBJECT ORBIT + SWATCH DROPDOWN
+========================================================= */
+
+/*
+  Navigation remains the V9.5 mapping:
+  LEFT CLICK      = select
+  LEFT DRAG       = orbit
+  MIDDLE DRAG     = pan
+  WHEEL           = zoom
+
+  V1.4 changes only the ORBIT TARGET:
+  - selected object -> orbit around its actual world-space bounding-box center
+  - no selected object -> orbit around the visible model center
+  This prevents the camera from rotating around the build plate / scene origin.
+*/
+
+.creator-appearance-picker {
+  position: relative;
+  margin-top: 9px;
+}
+
+.creator-appearance-picker-label {
+  display: block;
+  margin-bottom: 6px;
+  color: #587890;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 0.07em;
+}
+
+.creator-appearance-details {
+  position: relative;
+}
+
+.creator-appearance-details > summary {
+  min-height: 46px;
+  padding:
+    0 11px;
+  border:
+    1px solid
+    rgba(89, 151, 196, 0.15);
+  border-radius: 8px;
+  display: grid;
+  grid-template-columns:
+    18px minmax(0, 1fr) auto 16px;
+  align-items: center;
+  gap: 9px;
+  color: #b7d1e1;
+  background:
+    rgba(255, 255, 255, 0.009);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.creator-appearance-details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.creator-appearance-details > summary > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.creator-appearance-details > summary > small {
+  color: #55778e;
+  font-size: 7px;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+}
+
+.creator-appearance-details > summary > b {
+  color: #7098b1;
+  font-size: 11px;
+  font-weight: 700;
+  transition:
+    transform 0.16s ease;
+}
+
+.creator-appearance-details[open] > summary > b {
+  transform:
+    rotate(180deg);
+}
+
+.creator-appearance-swatch {
+  width: 16px;
+  height: 16px;
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 2px
+    rgba(0, 0, 0, 0.13);
+  pointer-events: none;
+}
+
+.creator-appearance-swatch.transparent {
+  opacity: 0.78;
+  background-image:
+    linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.22) 25%,
+      transparent 25%
+    ),
+    linear-gradient(
+      -45deg,
+      rgba(255, 255, 255, 0.22) 25%,
+      transparent 25%
+    );
+}
+
+.creator-appearance-menu {
+  position: absolute;
+  z-index: 80;
+  top:
+    calc(100% + 6px);
+  left: 0;
+  right: 0;
+  max-height: 330px;
+  padding: 6px;
+  border:
+    1px solid
+    rgba(91, 159, 207, 0.2);
+  border-radius: 9px;
+  overflow-y: auto;
+  background:
+    rgba(6, 20, 31, 0.985);
+  box-shadow:
+    0 18px 45px
+    rgba(0, 0, 0, 0.42);
+  backdrop-filter:
+    blur(12px);
+}
+
+.creator-appearance-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.creator-appearance-menu::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background:
+    rgba(94, 154, 196, 0.2);
+}
+
+.creator-appearance-group-title {
+  padding:
+    6px 7px 5px;
+  color: #4f7188;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+}
+
+.creator-appearance-material-title {
+  margin-top: 5px;
+  padding-top: 10px;
+  border-top:
+    1px solid
+    rgba(96, 149, 188, 0.09);
+}
+
+.creator-appearance-menu button {
+  width: 100%;
+  min-height: 36px;
+  padding:
+    5px 7px;
+  border: 0;
+  border-radius: 6px;
+  display: grid;
+  grid-template-columns:
+    18px minmax(0, 1fr) 18px;
+  align-items: center;
+  gap: 9px;
+  color: #7898ae;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.creator-appearance-menu button:hover:not(:disabled),
+.creator-appearance-menu button.active {
+  color: #c7e3f3;
+  background:
+    rgba(43, 116, 169, 0.11);
+}
+
+.creator-appearance-menu button.active {
+  box-shadow:
+    inset 0 0 0 1px
+    rgba(75, 159, 218, 0.12);
+}
+
+.creator-appearance-menu button:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.creator-appearance-menu button > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 10px;
+  font-weight: 760;
+}
+
+.creator-appearance-menu button > small {
+  color: #76b8df;
+  font-size: 10px;
+  font-weight: 900;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .creator-appearance-picker-label {
+    font-size: 10px;
+  }
+
+  .creator-appearance-details > summary > span,
+  .creator-appearance-menu button > span {
+    font-size: 11px;
+  }
+
+  .creator-appearance-menu {
+    max-height: 280px;
+  }
+}
+
+
+/* =========================================================
+   BEYOND CREATOR â€” ARCHITECTURE V1.5
+   EMPTY ARCH START + LEFT PANEL LAYOUT FIX
+========================================================= */
+
+/*
+  The desktop compact-tab rule uses:
+  .creator-library-tab-create .creator-library-create { display:flex!important; }
+
+  Architecture's whole tool panel also carries creator-library-create.
+  That accidentally turned ARCHITECTURE V1 / GROUND / DRAW WALL / settings
+  into one horizontal row and clipped DRAW WALL against the viewport.
+
+  Keep the global compact-tab behavior untouched and override ONLY this
+  architecture panel.
+*/
+
+@media (min-width: 901px) {
+  .creator-library-tab-create
+    .creator-architecture-library.creator-library-create {
+    display: block !important;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .creator-architecture-library-title {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .creator-architecture-wall-draw {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .creator-architecture-wall-draw > span {
+    min-width: 0;
+  }
+
+  .creator-architecture-wall-draw > span > strong,
+  .creator-architecture-wall-draw > span > small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .creator-architecture-wall-settings,
+  .creator-architecture-primitive-grid,
+  .creator-architecture-openings,
+  .creator-architecture-levels,
+  .creator-architecture-print-check {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+
+/* =========================================================
+   BEYOND CREATOR â€” ARCHITECTURE V2
+========================================================= */
+
+.creator-architecture-room-draw {
+  width: 100%;
+  min-height: 54px;
+  margin-top: 6px;
+  padding: 7px 9px;
+  border: 1px solid rgba(68, 151, 213, 0.15);
+  border-radius: 9px;
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) 25px;
+  align-items: center;
+  gap: 8px;
+  color: #7fa7c1;
+  background: rgba(34, 99, 151, 0.04);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.creator-architecture-room-draw.active {
+  color: #d7efff;
+  border-color: rgba(72, 170, 237, 0.42);
+  background: rgba(37, 118, 180, 0.17);
+}
+
+.creator-architecture-room-draw > b {
+  color: #79b8dd;
+  font-size: 20px;
+  font-weight: 400;
+  text-align: center;
+}
+
+.creator-architecture-room-draw > span {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.creator-architecture-room-draw strong {
+  font-size: 10px;
+}
+
+.creator-architecture-room-draw small,
+.creator-architecture-room-draw i {
+  color: #587a91;
+  font-size: 9px;
+  font-style: normal;
+}
+
+.creator-architecture-room-draw i {
+  text-align: right;
+  font-weight: 850;
+}
+
+.creator-architecture-room-settings {
+  margin-top: 6px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.creator-architecture-room-settings label {
+  min-height: 38px;
+  padding: 0 7px;
+  border: 1px solid rgba(94, 146, 186, 0.09);
+  border-radius: 7px;
+  display: grid;
+  grid-template-columns: 1fr 54px 21px;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.006);
+}
+
+.creator-architecture-room-settings label:first-child {
+  grid-template-columns: 1fr 54px;
+}
+
+.creator-architecture-room-settings span,
+.creator-architecture-room-settings small {
+  color: #4b6b82;
+  font-size: 9px;
+  font-weight: 850;
+}
+
+.creator-architecture-room-settings input {
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  outline: 0;
+  color: #a5c5d9;
+  background: transparent;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.creator-architecture-room-settings button {
+  min-height: 26px;
+  border: 1px solid rgba(71, 148, 203, 0.12);
+  border-radius: 5px;
+  color: #607f95;
+  background: transparent;
+  font: inherit;
+  font-size: 9px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.creator-architecture-room-settings button.active {
+  color: #a8d5ee;
+  border-color: rgba(69, 157, 219, 0.25);
+  background: rgba(35, 106, 160, 0.09);
+}
+
+.creator-architecture-room-preview {
+  position: absolute;
+  border: 2px solid rgba(94, 191, 246, 0.9);
+  background: rgba(56, 145, 201, 0.08);
+  pointer-events: none;
+}
+
+.creator-architecture-room-preview > span,
+.creator-architecture-room-preview > small {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 3px 6px;
+  border-radius: 4px;
+  color: #b7ddf2;
+  background: rgba(4, 17, 27, 0.92);
+  white-space: nowrap;
+}
+
+.creator-architecture-room-preview > span {
+  top: 50%;
+  transform: translate(-50%, -110%);
+  font-size: 8px;
+  font-weight: 850;
+}
+
+.creator-architecture-room-preview > small {
+  top: calc(50% + 3px);
+  font-size: 7px;
+  font-weight: 750;
+}
+
+.creator-architecture-level-tools {
+  margin-top: 7px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+}
+
+.creator-architecture-level-tools button {
+  min-height: 28px;
+  border: 1px solid rgba(70, 146, 201, 0.12);
+  border-radius: 6px;
+  color: #6c91aa;
+  background: rgba(35, 101, 153, 0.035);
+  font: inherit;
+  font-size: 8px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.creator-architecture-level-row {
+  min-height: 36px;
+  padding: 3px 4px;
+  border: 1px solid rgba(91, 144, 183, 0.08);
+  border-radius: 7px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 70px 28px;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.004);
+}
+
+.creator-architecture-level-row + .creator-architecture-level-row {
+  margin-top: 4px;
+}
+
+.creator-architecture-level-row.active {
+  border-color: rgba(65, 148, 209, 0.23);
+  background: rgba(36, 104, 157, 0.075);
+}
+
+.creator-architecture-level-select {
+  min-width: 0;
+  min-height: 28px;
+  padding: 0 6px;
+  border: 0;
+  color: #6f91a8;
+  background: transparent;
+  font: inherit;
+  font-size: 9px;
+  font-weight: 850;
+  text-align: left;
+  cursor: pointer;
+}
+
+.creator-architecture-level-row.active .creator-architecture-level-select {
+  color: #bad8ea;
+}
+
+.creator-architecture-level-elevation {
+  width: 100%;
+  min-width: 0;
+  min-height: 27px;
+  padding: 0 5px;
+  border: 1px solid rgba(91, 145, 184, 0.08);
+  border-radius: 5px;
+  outline: 0;
+  color: #809fb3;
+  background: rgba(255, 255, 255, 0.006);
+  font: inherit;
+  font-size: 8px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.creator-architecture-level-eye {
+  min-height: 28px;
+  border: 1px solid rgba(81, 149, 198, 0.1);
+  border-radius: 5px;
+  color: #79afce;
+  background: transparent;
+  font-size: 9px;
+  cursor: pointer;
+}
+
+.creator-architecture-level-eye.hidden {
+  color: #405b6d;
+}
+
+.creator-architecture-level-name-editor {
+  margin-top: 6px;
+  padding: 6px 7px;
+  border: 1px solid rgba(91, 145, 184, 0.08);
+  border-radius: 7px;
+  display: grid;
+  gap: 4px;
+}
+
+.creator-architecture-level-name-editor span {
+  color: #486980;
+  font-size: 7px;
+  font-weight: 850;
+  letter-spacing: 0.05em;
+}
+
+.creator-architecture-level-name-editor input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  color: #9fbfd3;
+  background: transparent;
+  font: inherit;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.creator-architecture-dimension-hud {
+  position: absolute;
+  z-index: 12;
+  top: 12px;
+  right: 12px;
+  min-width: 160px;
+  padding: 7px 9px;
+  border: 1px solid rgba(73, 160, 219, 0.18);
+  border-radius: 7px;
+  display: grid;
+  gap: 2px;
+  background: rgba(4, 17, 27, 0.88);
+  pointer-events: none;
+}
+
+.creator-architecture-dimension-hud > span {
+  color: #4e7189;
+  font-size: 7px;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+}
+
+.creator-architecture-dimension-hud > strong {
+  color: #aed4e9;
+  font-size: 9px;
+  font-weight: 850;
+}
+
+.creator-architecture-dimension-hud > small {
+  color: #53758b;
+  font-size: 7px;
+  font-weight: 700;
+}
+
+.creator-architecture-split-levels {
+  width: 100%;
+  min-height: 38px;
+  margin: 9px 0 7px;
+  border: 1px solid rgba(68, 157, 218, 0.24);
+  border-radius: 7px;
+  color: #a4d0ea;
+  background: rgba(37, 108, 163, 0.085);
+  font: inherit;
+  font-size: 9px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.creator-architecture-split-levels:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   BEYOND CREATOR â€” ARCHITECTURE V2.1
+   COMPACT ONE-VIEW UI + LIVE NAVIGATION WHILE DRAWING
+========================================================= */
+
+/*
+  IMPORTANT: OrbitControls is unchanged from the locked V1.7 baseline.
+  DRAW WALL / DRAW ROOM no longer use a pointer-blocking overlay.
+*/
+.creator-architecture-draw-layer-passive {
+  pointer-events: none !important;
+}
+
+/* -------- Architecture CREATE: compact two-column dashboard -------- */
+@media (min-width: 901px) {
+  .creator-library-tab-create
+    .creator-architecture-library.creator-library-create {
+    display: grid !important;
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+    align-content: start;
+    gap: 5px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .creator-architecture-library-title,
+  .creator-architecture-wall-settings,
+  .creator-architecture-room-settings,
+  .creator-architecture-primitive-grid,
+  .creator-architecture-openings,
+  .creator-architecture-levels {
+    grid-column:
+      1 / -1;
+  }
+
+  .creator-architecture-library-title {
+    min-height: 24px;
+    margin-bottom: 0;
+  }
+
+  .creator-architecture-wall-draw,
+  .creator-architecture-room-draw {
+    min-width: 0;
+    min-height: 46px;
+    margin-top: 0;
+    padding:
+      5px 7px;
+    grid-template-columns:
+      20px minmax(0, 1fr) 18px;
+    gap: 5px;
+  }
+
+  .creator-architecture-wall-draw > b,
+  .creator-architecture-room-draw > b {
+    font-size: 17px;
+  }
+
+  .creator-architecture-wall-draw strong,
+  .creator-architecture-room-draw strong {
+    font-size: 9px;
+  }
+
+  .creator-architecture-wall-draw small,
+  .creator-architecture-wall-draw i,
+  .creator-architecture-room-draw small,
+  .creator-architecture-room-draw i {
+    font-size: 7px;
+  }
+
+  .creator-architecture-wall-settings,
+  .creator-architecture-room-settings {
+    margin-top: 0;
+    gap: 5px;
+  }
+
+  .creator-architecture-wall-settings label,
+  .creator-architecture-room-settings label {
+    min-height: 31px;
+    padding:
+      0 6px;
+  }
+
+  .creator-architecture-wall-settings span,
+  .creator-architecture-wall-settings small,
+  .creator-architecture-room-settings span,
+  .creator-architecture-room-settings small {
+    font-size: 8px;
+  }
+
+  .creator-architecture-wall-settings input,
+  .creator-architecture-room-settings input,
+  .creator-architecture-room-settings button {
+    font-size: 9px;
+  }
+
+  .creator-architecture-primitive-grid {
+    margin-top: 0;
+    grid-template-columns:
+      repeat(4, minmax(0, 1fr));
+    gap: 5px;
+  }
+
+  .creator-architecture-primitive-grid button {
+    min-height: 42px;
+    padding: 4px;
+    grid-template-columns:
+      18px minmax(0, 1fr);
+    gap: 3px;
+  }
+
+  .creator-architecture-primitive-grid b {
+    font-size: 14px;
+  }
+
+  .creator-architecture-primitive-grid span {
+    font-size: 8px;
+  }
+
+  .creator-architecture-openings {
+    margin-top: 0;
+    gap: 5px;
+  }
+
+  .creator-architecture-openings button {
+    min-height: 42px;
+    padding:
+      4px 6px;
+  }
+
+  .creator-architecture-openings b {
+    font-size: 14px;
+  }
+
+  .creator-architecture-openings strong {
+    font-size: 8px;
+  }
+
+  .creator-architecture-openings small {
+    font-size: 7px;
+  }
+
+  /* The long helper paragraph consumed nearly a full row. Buttons are now
+     self-explanatory; keep the note available on smaller layouts only. */
+  .creator-architecture-openings
+    + .creator-field-note {
+    display: none;
+  }
+
+  .creator-architecture-levels {
+    margin-top: 1px;
+    padding-top: 6px;
+  }
+
+  .creator-architecture-section-head {
+    min-height: 25px;
+  }
+
+  .creator-architecture-section-head > span,
+  .creator-architecture-section-head button {
+    font-size: 8px;
+  }
+
+  .creator-architecture-level-tools {
+    margin-top: 4px;
+    gap: 4px;
+  }
+
+  .creator-architecture-level-tools button {
+    min-height: 25px;
+    font-size: 7px;
+  }
+
+  .creator-architecture-level-list-v2 {
+    margin-top: 4px;
+  }
+
+  .creator-architecture-level-row {
+    min-height: 30px;
+    grid-template-columns:
+      minmax(0, 1fr)
+      60px
+      25px;
+    padding:
+      2px 3px;
+  }
+
+  .creator-architecture-level-select {
+    min-height: 24px;
+    font-size: 8px;
+  }
+
+  .creator-architecture-level-elevation {
+    min-height: 24px;
+    font-size: 8px;
+  }
+
+  .creator-architecture-level-eye {
+    min-height: 24px;
+  }
+
+  .creator-architecture-level-name-editor {
+    margin-top: 4px;
+    padding:
+      4px 6px;
+    grid-template-columns:
+      1fr 1.2fr;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .creator-architecture-level-name-editor span {
+    font-size: 7px;
+  }
+
+  .creator-architecture-level-name-editor input {
+    font-size: 8px;
+  }
+
+  /* Print Check is already available in OUTPUT. Do not duplicate it in CREATE. */
+  .creator-architecture-print-check {
+    display: none !important;
+  }
+
+  /* -------- Right OBJECT inspector: fit without routine scrolling -------- */
+  .creator-inspector.creator-inspector-tab-object {
+    overflow: hidden;
+  }
+
+  .creator-inspector-tab-object
+    .creator-inspector-top {
+    padding-bottom: 5px;
+  }
+
+  .creator-inspector-tab-object
+    .creator-inspector-block {
+    padding:
+      6px 0;
+  }
+
+  .creator-inspector-tab-object
+    .creator-selected-summary {
+    margin-top: 4px;
+  }
+
+  .creator-inspector-tab-object
+    .creator-compact-tabs {
+    margin:
+      4px 0;
+  }
+
+  .creator-inspector-tab-object
+    .creator-architecture-inspector {
+    padding-bottom: 6px;
+  }
+
+  .creator-inspector-tab-object
+    .creator-architecture-object-meta,
+  .creator-inspector-tab-object
+    .creator-architecture-real-fields,
+  .creator-inspector-tab-object
+    .creator-architecture-print-size {
+    margin-top: 5px;
+  }
+
+  .creator-inspector-tab-object
+    .creator-architecture-object-meta > span {
+    min-height: 30px;
+    padding:
+      4px 6px;
+  }
+
+  .creator-inspector-tab-object
+    .creator-architecture-real-fields label {
+    min-height: 30px;
+  }
+
+  .creator-inspector-tab-object
+    .creator-architecture-print-size {
+    padding:
+      5px 7px;
+  }
+
+  .creator-inspector-tab-object
+    .creator-appearance-picker {
+    margin-top: 5px;
+  }
+
+  .creator-inspector-tab-object
+    .creator-appearance-details > summary {
+    min-height: 38px;
+  }
+
+  .creator-inspector-tab-object
+    .creator-material-current {
+    min-height: 37px;
+    margin-top: 5px;
+    padding:
+      5px 7px;
+  }
+}
+
+/* Room/wall preview remains visual while Canvas receives navigation. */
+.creator-architecture-draw-badge,
+.creator-architecture-preview-line,
+.creator-architecture-room-preview {
+  pointer-events: none !important;
+}
+
+
+/* =========================================================
+   BEYOND CREATOR â€” ARCHITECTURE V2.1.2
+   SAFE COMPACT LAYOUT + REGULAR MOUSE WHILE DRAWING
+========================================================= */
+
+/*
+  LOCKED navigation remains V1.7:
+  LEFT click = select / drawing point
+  LEFT drag  = orbit
+  MIDDLE drag = pan
+  WHEEL = zoom
+
+  DRAW WALL and DRAW ROOM no longer switch camera view and their visual
+  overlay never receives pointer events.
+*/
+.creator-architecture-draw-layer-passive {
+  pointer-events: none !important;
+}
+
+@media (min-width: 901px) {
+  /* Stable single-column architecture panel container. Individual tool
+     groups manage their own 2-column layout, preventing sidebar overlap. */
+  .creator-library-tab-create
+    .creator-architecture-library.creator-library-create {
+    display: block !important;
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .creator-architecture-library-title {
+    min-height: 22px;
+    margin-bottom: 5px;
+  }
+
+  /* Main draw tools: two equal columns with no overflow. */
+  .creator-architecture-wall-draw,
+  .creator-architecture-room-draw {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    min-height: 42px;
+    box-sizing: border-box;
+    padding: 5px 6px;
+    grid-template-columns: 18px minmax(0, 1fr) 16px;
+    gap: 4px;
+  }
+
+  .creator-architecture-room-draw {
+    margin-top: 5px;
+  }
+
+  .creator-architecture-wall-draw > span,
+  .creator-architecture-room-draw > span {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .creator-architecture-wall-draw strong,
+  .creator-architecture-room-draw strong {
+    display: block;
+    font-size: 9px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .creator-architecture-wall-draw small,
+  .creator-architecture-room-draw small {
+    display: block;
+    font-size: 7px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Numeric settings stay two columns, but each field gets a flexible input. */
+  .creator-architecture-wall-settings,
+  .creator-architecture-room-settings {
+    margin-top: 5px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px;
+  }
+
+  .creator-architecture-wall-settings label,
+  .creator-architecture-room-settings label {
+    min-width: 0;
+    min-height: 30px;
+    padding: 0 5px;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 3px;
+    box-sizing: border-box;
+  }
+
+  .creator-architecture-room-settings label:first-child {
+    grid-template-columns: auto minmax(42px, 1fr);
+  }
+
+  .creator-architecture-wall-settings input,
+  .creator-architecture-room-settings input {
+    min-width: 0;
+    width: 100%;
+    font-size: 8px;
+  }
+
+  .creator-architecture-wall-settings span,
+  .creator-architecture-wall-settings small,
+  .creator-architecture-room-settings span,
+  .creator-architecture-room-settings small {
+    font-size: 7px;
+  }
+
+  /* FIX: Never use four columns inside this narrow sidebar. */
+  .creator-architecture-primitive-grid {
+    margin-top: 5px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px;
+  }
+
+  .creator-architecture-primitive-grid button {
+    width: 100%;
+    min-width: 0;
+    min-height: 34px;
+    box-sizing: border-box;
+    padding: 4px 5px;
+    grid-template-columns: 17px minmax(0, 1fr);
+    gap: 4px;
+  }
+
+  .creator-architecture-primitive-grid b {
+    font-size: 13px;
+  }
+
+  .creator-architecture-primitive-grid span {
+    min-width: 0;
+    font-size: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .creator-architecture-openings {
+    margin-top: 5px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px;
+  }
+
+  .creator-architecture-openings button {
+    width: 100%;
+    min-width: 0;
+    min-height: 36px;
+    box-sizing: border-box;
+    padding: 4px 5px;
+    grid-template-columns: 17px minmax(0, 1fr);
+    gap: 4px;
+  }
+
+  .creator-architecture-openings span {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .creator-architecture-openings strong {
+    font-size: 8px;
+  }
+
+  .creator-architecture-openings small {
+    font-size: 7px;
+    white-space: nowrap;
+  }
+
+  .creator-architecture-openings
+    + .creator-field-note {
+    display: none;
+  }
+
+  /* Levels stay compact and avoid horizontal collision. */
+  .creator-architecture-levels {
+    margin-top: 6px;
+    padding-top: 5px;
+  }
+
+  .creator-architecture-section-head {
+    min-height: 23px;
+  }
+
+  .creator-architecture-level-tools {
+    margin-top: 4px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  .creator-architecture-level-tools button {
+    min-width: 0;
+    min-height: 24px;
+    font-size: 7px;
+  }
+
+  .creator-architecture-level-list-v2 {
+    margin-top: 4px;
+  }
+
+  .creator-architecture-level-row {
+    width: 100%;
+    min-width: 0;
+    min-height: 29px;
+    box-sizing: border-box;
+    grid-template-columns: minmax(0, 1fr) 54px 24px;
+    gap: 3px;
+    padding: 2px 3px;
+  }
+
+  .creator-architecture-level-select,
+  .creator-architecture-level-elevation,
+  .creator-architecture-level-eye {
+    min-width: 0;
+    min-height: 23px;
+  }
+
+  .creator-architecture-level-select,
+  .creator-architecture-level-elevation {
+    font-size: 7px;
+  }
+
+  .creator-architecture-level-name-editor {
+    margin-top: 4px;
+    padding: 4px 5px;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+  }
+
+  /* Output belongs only to OUTPUT; no duplicate block should consume CREATE. */
+  .creator-architecture-print-check {
+    display: none !important;
+  }
+}
+
+/* Visual previews only; never block OrbitControls. */
+.creator-architecture-draw-badge,
+.creator-architecture-preview-line,
+.creator-architecture-room-preview {
+  pointer-events: none !important;
+}
+
+
+/* =========================================================
+   BEYOND CREATOR â€” ARCHITECTURE V3
+   SMART OPENINGS + ROOM SCHEDULE
+========================================================= */
+
+.creator-architecture-smart-opening {
+  margin-top: 6px;
+  padding: 7px;
+  border: 1px solid rgba(77, 157, 214, 0.15);
+  border-radius: 8px;
+  background: rgba(35, 104, 159, 0.035);
+}
+
+.creator-architecture-smart-opening-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 7px;
+  margin-bottom: 5px;
+}
+
+.creator-architecture-smart-opening-head > span {
+  color: #6e9bb8;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+.creator-architecture-smart-opening-head > strong {
+  min-width: 0;
+  color: #9ec4da;
+  font-size: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.creator-architecture-smart-opening > label {
+  min-height: 30px;
+  margin-top: 4px;
+  padding: 0 6px;
+  border: 1px solid rgba(91, 145, 184, 0.08);
+  border-radius: 6px;
+  display: grid;
+  grid-template-columns: 1fr 66px 24px;
+  align-items: center;
+  gap: 4px;
+}
+
+.creator-architecture-smart-opening > label span,
+.creator-architecture-smart-opening > label small {
+  color: #4d6d84;
+  font-size: 7px;
+  font-weight: 850;
+}
+
+.creator-architecture-smart-opening > label input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  color: #a9c9db;
+  background: transparent;
+  font: inherit;
+  font-size: 9px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.creator-architecture-smart-opening-actions {
+  margin-top: 5px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.creator-architecture-smart-opening-actions button,
+.creator-architecture-cut-opening {
+  min-height: 29px;
+  border: 1px solid rgba(70, 149, 205, 0.14);
+  border-radius: 6px;
+  color: #759bb4;
+  background: rgba(35, 101, 153, 0.04);
+  font: inherit;
+  font-size: 8px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.creator-architecture-cut-opening {
+  width: 100%;
+  min-height: 34px;
+  margin-top: 5px;
+  color: #b3daef;
+  border-color: rgba(70, 164, 226, 0.28);
+  background: rgba(39, 116, 177, 0.12);
+}
+
+.creator-architecture-room-schedule {
+  margin-top: 6px;
+  border: 1px solid rgba(91, 145, 184, 0.09);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.004);
+}
+
+.creator-architecture-room-schedule > summary {
+  min-height: 30px;
+  padding: 0 7px;
+  display: grid;
+  grid-template-columns: 1fr auto 14px;
+  align-items: center;
+  gap: 6px;
+  color: #587890;
+  cursor: pointer;
+  list-style: none;
+}
+
+.creator-architecture-room-schedule > summary::-webkit-details-marker {
+  display: none;
+}
+
+.creator-architecture-room-schedule > summary span {
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.07em;
+}
+
+.creator-architecture-room-schedule > summary strong {
+  min-width: 22px;
+  padding: 2px 5px;
+  border-radius: 5px;
+  color: #93b9d0;
+  background: rgba(40, 111, 165, 0.08);
+  font-size: 8px;
+  text-align: center;
+}
+
+.creator-architecture-room-schedule > summary b {
+  color: #63869d;
+  font-size: 9px;
+  transition: transform 0.15s ease;
+}
+
+.creator-architecture-room-schedule[open] > summary b {
+  transform: rotate(180deg);
+}
+
+.creator-architecture-room-schedule-body {
+  padding: 0 5px 5px;
+  display: grid;
+  gap: 4px;
+}
+
+.creator-architecture-room-schedule-body > small {
+  padding: 5px;
+  color: #526f83;
+  font-size: 7px;
+}
+
+.creator-architecture-room-schedule-row {
+  min-height: 30px;
+  padding: 3px 4px;
+  border: 1px solid rgba(91, 145, 184, 0.07);
+  border-radius: 6px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 48px 45px;
+  align-items: center;
+  gap: 4px;
+}
+
+.creator-architecture-room-schedule-row input {
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  outline: 0;
+  color: #94b6ca;
+  background: transparent;
+  font: inherit;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.creator-architecture-room-schedule-row span {
+  color: #7698ad;
+  font-size: 7px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.creator-architecture-room-schedule-row button {
+  min-height: 23px;
+  border: 1px solid rgba(72, 149, 204, 0.12);
+  border-radius: 5px;
+  color: #6f95ad;
+  background: transparent;
+  font: inherit;
+  font-size: 7px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .creator-architecture-smart-opening-head > span,
+  .creator-architecture-smart-opening-head > strong,
+  .creator-architecture-room-schedule > summary span,
+  .creator-architecture-room-schedule-row input {
+    font-size: 9px;
+  }
+}
+
+
+/* =========================================================
+   BEYOND CREATOR â€” ARCHITECTURE V4
+   WALL JOIN Â· STAIRS Â· ROOFS
+========================================================= */
+
+.creator-architecture-join-walls {
+  width: 100%;
+  min-height: 31px;
+  margin-top: 5px;
+  border:
+    1px solid
+    rgba(73, 155, 214, 0.16);
+  border-radius: 7px;
+  color: #7ea5bd;
+  background:
+    rgba(35, 104, 158, 0.045);
+  font: inherit;
+  font-size: 8px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.creator-architecture-join-walls:hover:not(:disabled) {
+  color: #c4e2f2;
+  border-color:
+    rgba(75, 165, 226, 0.31);
+  background:
+    rgba(37, 111, 170, 0.10);
+}
+
+.creator-architecture-join-walls:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.creator-architecture-component-settings {
+  margin-top: 5px;
+  border:
+    1px solid
+    rgba(91, 145, 184, 0.09);
+  border-radius: 7px;
+  background:
+    rgba(255, 255, 255, 0.004);
+}
+
+.creator-architecture-component-settings > summary {
+  min-height: 30px;
+  padding: 0 7px;
+  display: grid;
+  grid-template-columns:
+    1fr 14px;
+  align-items: center;
+  gap: 6px;
+  color: #587890;
+  cursor: pointer;
+  list-style: none;
+}
+
+.creator-architecture-component-settings > summary::-webkit-details-marker {
+  display: none;
+}
+
+.creator-architecture-component-settings > summary span {
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.07em;
+}
+
+.creator-architecture-component-settings > summary b {
+  color: #63869d;
+  font-size: 9px;
+  transition:
+    transform 0.15s ease;
+}
+
+.creator-architecture-component-settings[open] > summary b {
+  transform:
+    rotate(180deg);
+}
+
+.creator-architecture-component-body {
+  padding:
+    0 5px 6px;
+}
+
+.creator-architecture-component-title {
+  padding:
+    5px 2px 4px;
+  color: #587890;
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.creator-architecture-roof-title {
+  margin-top: 4px;
+  padding-top: 7px;
+  border-top:
+    1px solid
+    rgba(93, 145, 183, 0.07);
+}
+
+.creator-architecture-component-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.creator-architecture-component-grid label {
+  min-width: 0;
+  min-height: 29px;
+  padding:
+    0 5px;
+  border:
+    1px solid
+    rgba(91, 145, 184, 0.07);
+  border-radius: 6px;
+  display: grid;
+  grid-template-columns:
+    auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 3px;
+}
+
+.creator-architecture-component-grid span,
+.creator-architecture-component-grid small {
+  color: #4d6c82;
+  font-size: 7px;
+  font-weight: 850;
+}
+
+.creator-architecture-component-grid input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  color: #a4c3d5;
+  background: transparent;
+  font: inherit;
+  font-size: 8px;
+  font-weight: 800;
+  text-align: right;
+}
+
+/* V4 adds 3 more architecture components. Keep the safe 2-column grid. */
+@media (min-width: 901px) {
+  .creator-architecture-primitive-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .creator-architecture-component-settings {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .creator-architecture-join-walls {
+    font-size: 9px;
+  }
+
+  .creator-architecture-component-settings > summary span,
+  .creator-architecture-component-grid input {
+    font-size: 9px;
+  }
+}
+
+
+/* =========================================================
+   BEYOND CREATOR â€” ARCHITECTURE V5
+========================================================= */
+
+.creator-architecture-explode-control {
+  min-width: 92px;
+  min-height: 42px;
+  padding: 5px 8px;
+  border: 1px solid rgba(71, 133, 178, 0.14);
+  border-radius: 7px;
+  display: grid;
+  align-content: center;
+  gap: 3px;
+  background: rgba(255, 255, 255, 0.003);
+}
+
+.creator-architecture-explode-control > span {
+  color: #4f6f86;
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+.creator-architecture-explode-control > button {
+  min-height: 20px;
+  padding: 0;
+  border: 0;
+  color: #7d9eb3;
+  background: transparent;
+  font: inherit;
+  font-size: 8px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.creator-architecture-explode-control > button.active {
+  color: #acd8ee;
+}
+
+.creator-architecture-explode-control > button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.creator-plan-room-label {
+  min-width: 72px;
+  padding: 4px 7px;
+  border: 1px solid rgba(75, 157, 215, 0.22);
+  border-radius: 6px;
+  display: grid;
+  gap: 1px;
+  color: #a9d0e5;
+  background: rgba(4, 17, 27, 0.82);
+  text-align: center;
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.creator-plan-room-label strong {
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+.creator-plan-room-label span {
+  color: #6489a0;
+  font-size: 7px;
+  font-weight: 800;
+}
+
+.creator-architecture-component-grid select {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  color: #a4c3d5;
+  background: transparent;
+  font: inherit;
+  font-size: 8px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.creator-architecture-fit-roof {
+  width: 100%;
+  min-height: 31px;
+  margin-top: 6px;
+  border: 1px solid rgba(73, 157, 217, 0.18);
+  border-radius: 6px;
+  color: #8bb1c7;
+  background: rgba(38, 108, 163, 0.055);
+  font: inherit;
+  font-size: 8px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.creator-architecture-fit-roof:hover {
+  color: #c7e7f6;
+  border-color: rgba(75, 168, 230, 0.32);
+  background: rgba(40, 117, 177, 0.11);
+}
+
+
+/* =========================================================
+   BEYOND CREATOR â€” ARCHITECTURE V6
+   PLAN DIMENSIONS Â· OPENING LABELS Â· MEASURE TOOL
+========================================================= */
+
+.creator-architecture-annotation-control {
+  min-width: 88px;
+  min-height: 42px;
+  padding: 5px 8px;
+  border:
+    1px solid
+    rgba(71, 133, 178, 0.14);
+  border-radius: 7px;
+  display: grid;
+  align-content: center;
+  gap: 3px;
+  background:
+    rgba(255, 255, 255, 0.003);
+}
+
+.creator-architecture-annotation-control > span {
+  color: #4f6f86;
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+.creator-architecture-annotation-control > button {
+  min-height: 20px;
+  padding: 0;
+  border: 0;
+  color: #799bb1;
+  background: transparent;
+  font: inherit;
+  font-size: 8px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.creator-architecture-annotation-control > button.active {
+  color: #a9d8ef;
+}
+
+.creator-architecture-annotation-control > button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.creator-architecture-plan-tools {
+  margin-top: 5px;
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.creator-architecture-plan-tools button {
+  min-width: 0;
+  min-height: 28px;
+  border:
+    1px solid
+    rgba(73, 150, 205, 0.12);
+  border-radius: 6px;
+  color: #688ca4;
+  background:
+    rgba(36, 101, 153, 0.03);
+  font: inherit;
+  font-size: 7px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.creator-architecture-plan-tools button.active {
+  color: #b1dcef;
+  border-color:
+    rgba(73, 165, 225, 0.30);
+  background:
+    rgba(38, 116, 176, 0.10);
+}
+
+.creator-architecture-plan-tools button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.creator-plan-dimension-label,
+.creator-plan-opening-label {
+  padding:
+    2px 5px;
+  border:
+    1px solid
+    rgba(80, 159, 213, 0.18);
+  border-radius: 4px;
+  color: #89b8d2;
+  background:
+    rgba(3, 16, 26, 0.78);
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+
+.creator-plan-dimension-label {
+  transform:
+    translateY(-14px);
+}
+
+.creator-plan-opening-label.door {
+  color: #df9aa6;
+  border-color:
+    rgba(205, 102, 122, 0.22);
+}
+
+.creator-plan-opening-label.window {
+  color: #8dc7e7;
+}
+
+.creator-plan-measure-label {
+  color: #bfe5f7;
+  border-color:
+    rgba(87, 183, 238, 0.34);
+  background:
+    rgba(3, 18, 29, 0.9);
+  transform:
+    translateY(-12px);
+}
+
+.creator-architecture-measure-preview {
+  position: absolute;
+  height: 2px;
+  transform-origin:
+    0 50%;
+  background:
+    rgba(91, 190, 244, 0.95);
+  box-shadow:
+    0 0 0 1px
+    rgba(93, 183, 236, 0.10);
+  pointer-events: none;
+}
+
+.creator-architecture-measure-preview > span {
+  position: absolute;
+  left: 50%;
+  top: -20px;
+  transform:
+    translateX(-50%);
+  padding:
+    3px 6px;
+  border:
+    1px solid
+    rgba(84, 176, 231, 0.26);
+  border-radius: 4px;
+  color: #bde3f5;
+  background:
+    rgba(3, 17, 28, 0.92);
+  font-size: 8px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .creator-plan-dimension-label,
+  .creator-plan-opening-label,
+  .creator-architecture-plan-tools button,
+  .creator-architecture-annotation-control > button {
+    font-size: 9px;
+  }
+}
+
+
+/* =========================================================
+   BEYOND CREATOR â€” ARCHITECTURE V7
+   ACTIVE-LEVEL PLAN + DUPLICATE FLOOR
+========================================================= */
+
+.creator-architecture-duplicate-level {
+  width: 100%;
+  min-height: 29px;
+  margin-top: 4px;
+  border:
+    1px solid
+    rgba(73, 153, 211, 0.15);
+  border-radius: 6px;
+  color: #759bb3;
+  background:
+    rgba(36, 104, 158, 0.045);
+  font: inherit;
+  font-size: 7px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.creator-architecture-duplicate-level:hover {
+  color: #bae0f2;
+  border-color:
+    rgba(75, 167, 228, 0.30);
+  background:
+    rgba(39, 115, 174, 0.10);
+}
+
+@media (max-width: 900px) {
+  .creator-architecture-duplicate-level {
+    font-size: 9px;
+  }
+}
+
+
+/* =========================================================
+   BEYOND CREATOR â€” ARCHITECTURE V8
+   2D ELEVATIONS + ARCHITECTURAL PLAN SYMBOLS
+========================================================= */
+
+.creator-elevation-level-label {
+  min-width: 82px;
+  padding: 3px 6px;
+  border:
+    1px solid
+    rgba(67, 139, 190, 0.16);
+  border-radius: 5px;
+  display: grid;
+  gap: 1px;
+  color: #86aec5;
+  background:
+    rgba(3, 15, 25, 0.82);
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.creator-elevation-level-label strong {
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+}
+
+.creator-elevation-level-label span {
+  color: #587b91;
+  font-size: 7px;
+  font-weight: 800;
+}
+
+/* VIEW group now contains PLAN / 3D / FRONT / RIGHT. */
+.creator-architecture-strip-group {
+  min-width: 220px;
+}
+
+.creator-architecture-strip-group > button {
+  min-width: 42px;
+}
+
+@media (max-width: 1100px) {
+  .creator-architecture-strip-group {
+    min-width: 196px;
+  }
+
+  .creator-architecture-strip-group > button {
+    min-width: 38px;
+    font-size: 7px;
+  }
+}
+
+@media (max-width: 900px) {
+  .creator-elevation-level-label strong,
+  .creator-elevation-level-label span {
+    font-size: 9px;
+  }
+}
+
+
+/* =========================================================
+   BEYOND CREATOR â€” ARCHITECTURE V9
+   SMART WALL SNAP Â· CHAIN DRAW Â· ENDPOINT EDITING
+========================================================= */
+
+.creator-architecture-wall-draw-settings {
+  margin-top: 5px;
+  border:
+    1px solid
+    rgba(91, 145, 184, 0.08);
+  border-radius: 7px;
+  background:
+    rgba(255, 255, 255, 0.003);
+}
+
+.creator-architecture-wall-draw-settings > summary,
+.creator-architecture-wall-endpoints > summary {
+  min-height: 28px;
+  padding: 0 7px;
+  display: grid;
+  grid-template-columns:
+    1fr 14px;
+  align-items: center;
+  gap: 5px;
+  color: #587990;
+  cursor: pointer;
+  list-style: none;
+}
+
+.creator-architecture-wall-draw-settings > summary::-webkit-details-marker,
+.creator-architecture-wall-endpoints > summary::-webkit-details-marker {
+  display: none;
+}
+
+.creator-architecture-wall-draw-settings > summary span,
+.creator-architecture-wall-endpoints > summary span {
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+.creator-architecture-wall-draw-settings > summary b,
+.creator-architecture-wall-endpoints > summary b {
+  color: #60839a;
+  font-size: 8px;
+  transition:
+    transform 0.15s ease;
+}
+
+.creator-architecture-wall-draw-settings[open] > summary b,
+.creator-architecture-wall-endpoints[open] > summary b {
+  transform:
+    rotate(180deg);
+}
+
+.creator-architecture-wall-draw-settings-body {
+  padding:
+    0 5px 5px;
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.creator-architecture-wall-draw-settings-body label {
+  min-width: 0;
+  min-height: 29px;
+  padding:
+    0 5px;
+  border:
+    1px solid
+    rgba(91, 145, 184, 0.07);
+  border-radius: 6px;
+  display: grid;
+  grid-template-columns:
+    1fr auto;
+  align-items: center;
+  gap: 3px;
+}
+
+.creator-architecture-wall-draw-settings-body span {
+  min-width: 0;
+  color: #4e6d83;
+  font-size: 6px;
+  font-weight: 900;
+}
+
+.creator-architecture-wall-draw-settings-body button,
+.creator-architecture-wall-draw-settings-body select {
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  color: #789cb3;
+  background: transparent;
+  font: inherit;
+  font-size: 7px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.creator-architecture-wall-draw-settings-body button.active {
+  color: #a9d8ed;
+}
+
+.creator-architecture-wall-endpoints {
+  margin-top: 6px;
+  border:
+    1px solid
+    rgba(76, 151, 204, 0.11);
+  border-radius: 7px;
+  background:
+    rgba(35, 104, 159, 0.025);
+}
+
+.creator-architecture-wall-endpoints-body {
+  padding:
+    0 5px 6px;
+  display: grid;
+  gap: 4px;
+}
+
+.creator-architecture-wall-endpoint-row {
+  min-height: 31px;
+  display: grid;
+  grid-template-columns:
+    34px
+    minmax(0, 1fr)
+    minmax(0, 1fr);
+  align-items: center;
+  gap: 4px;
+}
+
+.creator-architecture-wall-endpoint-row > strong {
+  color: #54758a;
+  font-size: 7px;
+  font-weight: 900;
+}
+
+.creator-architecture-wall-endpoint-row label {
+  min-width: 0;
+  min-height: 28px;
+  padding:
+    0 5px;
+  border:
+    1px solid
+    rgba(91, 145, 184, 0.07);
+  border-radius: 5px;
+  display: grid;
+  grid-template-columns:
+    12px minmax(0, 1fr);
+  align-items: center;
+  gap: 3px;
+}
+
+.creator-architecture-wall-endpoint-row label span {
+  color: #4d6c82;
+  font-size: 7px;
+  font-weight: 900;
+}
+
+.creator-architecture-wall-endpoint-row input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  color: #a4c6d9;
+  background: transparent;
+  font: inherit;
+  font-size: 8px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.creator-architecture-wall-endpoints-body > button {
+  min-height: 29px;
+  border:
+    1px solid
+    rgba(72, 151, 207, 0.14);
+  border-radius: 6px;
+  color: #749bb4;
+  background:
+    rgba(36, 105, 159, 0.04);
+  font: inherit;
+  font-size: 7px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.creator-architecture-preview-line.smart-snap {
+  background:
+    rgba(120, 222, 179, 0.98);
+  box-shadow:
+    0 0 0 1px
+    rgba(120, 222, 179, 0.18),
+    0 0 10px
+    rgba(120, 222, 179, 0.18);
+}
+
+@media (max-width: 900px) {
+  .creator-architecture-wall-draw-settings-body {
+    grid-template-columns:
+      1fr;
+  }
+
+  .creator-architecture-wall-draw-settings-body span,
+  .creator-architecture-wall-draw-settings-body button,
+  .creator-architecture-wall-draw-settings-body select,
+  .creator-architecture-wall-endpoint-row > strong,
+  .creator-architecture-wall-endpoint-row label span,
+  .creator-architecture-wall-endpoints-body > button {
+    font-size: 9px;
+  }
+
+  .creator-architecture-wall-endpoint-row input {
+    font-size: 10px;
+  }
+}
+
+
+/* =========================================================
+   BEYOND CREATOR â€” ARCHITECTURE V10
+   PRODUCTION QA / PREFLIGHT
+========================================================= */
+
+.creator-architecture-production-status {
+  margin-top: 7px;
+  padding: 6px;
+  border:
+    1px solid
+    rgba(79, 146, 191, 0.10);
+  border-radius: 8px;
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 5px;
+  background:
+    rgba(255, 255, 255, 0.003);
+}
+
+.creator-architecture-production-status > div {
+  min-width: 0;
+  min-height: 38px;
+  padding: 5px 6px;
+  border:
+    1px solid
+    rgba(86, 143, 182, 0.07);
+  border-radius: 6px;
+  display: grid;
+  align-content: center;
+  gap: 2px;
+}
+
+.creator-architecture-production-status span {
+  color: #4c6b80;
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+}
+
+.creator-architecture-production-status strong {
+  color: #91b4c9;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.creator-architecture-production-status.ready {
+  border-color:
+    rgba(72, 181, 143, 0.20);
+}
+
+.creator-architecture-production-status.ready
+strong {
+  color: #87d7b4;
+}
+
+.creator-architecture-production-status.check {
+  border-color:
+    rgba(207, 164, 83, 0.20);
+}
+
+.creator-architecture-production-status.check
+strong {
+  color: #d5b478;
+}
+
+.creator-architecture-production-status.blocked {
+  border-color:
+    rgba(207, 91, 107, 0.25);
+  background:
+    rgba(124, 34, 49, 0.035);
+}
+
+.creator-architecture-production-status.blocked
+strong {
+  color: #e29aa5;
+}
+
+.creator-architecture-production-actions {
+  margin-top: 6px;
+  display: grid;
+  grid-template-columns:
+    1fr 82px;
+  gap: 5px;
+}
+
+.creator-architecture-production-actions button {
+  min-width: 0;
+  min-height: 31px;
+  border:
+    1px solid
+    rgba(73, 157, 214, 0.16);
+  border-radius: 6px;
+  color: #7fa8c0;
+  background:
+    rgba(37, 105, 159, 0.045);
+  font: inherit;
+  font-size: 7px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.creator-architecture-production-actions button:hover {
+  color: #c6e7f6;
+  border-color:
+    rgba(78, 173, 233, 0.31);
+  background:
+    rgba(39, 116, 175, 0.10);
+}
+
+.creator-architecture-qa-list {
+  margin-top: 6px;
+  display: grid;
+  gap: 4px;
+}
+
+.creator-architecture-qa-item {
+  min-width: 0;
+  min-height: 42px;
+  padding: 5px 6px;
+  border:
+    1px solid
+    rgba(87, 142, 180, 0.08);
+  border-radius: 6px;
+  display: grid;
+  grid-template-columns:
+    18px minmax(0, 1fr) 31px;
+  align-items: center;
+  gap: 5px;
+  color: #7192a7;
+  background:
+    rgba(255, 255, 255, 0.002);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.creator-architecture-qa-item.blocker {
+  border-color:
+    rgba(202, 83, 101, 0.20);
+  background:
+    rgba(130, 37, 52, 0.035);
+}
+
+.creator-architecture-qa-item.warning {
+  border-color:
+    rgba(202, 159, 77, 0.14);
+}
+
+.creator-architecture-qa-item > i {
+  color: #698ba0;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 900;
+  text-align: center;
+}
+
+.creator-architecture-qa-item.blocker > i {
+  color: #df8d9a;
+}
+
+.creator-architecture-qa-item.warning > i {
+  color: #d0ad6e;
+}
+
+.creator-architecture-qa-item > span {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.creator-architecture-qa-item strong {
+  color: #8fb2c7;
+  font-size: 8px;
+  font-weight: 900;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.creator-architecture-qa-item small {
+  color: #526f82;
+  font-size: 7px;
+  line-height: 1.25;
+}
+
+.creator-architecture-qa-item > b {
+  color: #5e8298;
+  font-size: 7px;
+  font-weight: 900;
+  text-align: right;
+}
+
+.creator-architecture-level-qa {
+  margin-top: 6px;
+  border:
+    1px solid
+    rgba(86, 143, 182, 0.08);
+  border-radius: 7px;
+  background:
+    rgba(255, 255, 255, 0.002);
+}
+
+.creator-architecture-level-qa > summary {
+  min-height: 29px;
+  padding: 0 7px;
+  display: grid;
+  grid-template-columns:
+    1fr auto 14px;
+  align-items: center;
+  gap: 5px;
+  color: #56768b;
+  cursor: pointer;
+  list-style: none;
+}
+
+.creator-architecture-level-qa > summary::-webkit-details-marker {
+  display: none;
+}
+
+.creator-architecture-level-qa > summary span {
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+.creator-architecture-level-qa > summary strong {
+  font-size: 8px;
+  font-weight: 900;
+}
+
+.creator-architecture-level-qa > summary b {
+  font-size: 8px;
+  transition:
+    transform 0.15s ease;
+}
+
+.creator-architecture-level-qa[open]
+> summary b {
+  transform:
+    rotate(180deg);
+}
+
+.creator-architecture-level-qa-body {
+  padding:
+    0 5px 5px;
+  display: grid;
+  gap: 4px;
+}
+
+.creator-architecture-level-qa-row {
+  min-height: 34px;
+  padding: 4px 5px;
+  border:
+    1px solid
+    rgba(86, 143, 182, 0.06);
+  border-radius: 5px;
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr) auto;
+  gap: 2px 5px;
+}
+
+.creator-architecture-level-qa-row > span {
+  color: #779caf;
+  font-size: 8px;
+  font-weight: 900;
+}
+
+.creator-architecture-level-qa-row > small {
+  color: #4f6e81;
+  font-size: 7px;
+  text-align: right;
+}
+
+.creator-architecture-level-qa-row > strong {
+  grid-column:
+    1 / -1;
+  color: #6b8ca1;
+  font-size: 7px;
+  font-weight: 800;
+}
+
+@media (max-width: 900px) {
+  .creator-architecture-production-actions button,
+  .creator-architecture-qa-item strong,
+  .creator-architecture-qa-item small,
+  .creator-architecture-level-qa-row > span {
+    font-size: 9px;
+  }
+}
+
+
+/* =========================================================
+   BEYOND CREATOR â€” ARCHITECTURE V10.1
+   COMPACT + READABLE DESKTOP UI
+
+   Typography policy:
+   - tertiary / micro UI text: 0.6875rem (~11px at a 16px root)
+   - controls / inputs: 0.75rem (~12px)
+   - selected / primary values: 0.8125rem+ (~13px+)
+
+   Vertical space is saved through layout, padding and multi-column fields,
+   NOT by shrinking text to 6â€“8px.
+
+   Sidebars may scroll only as an accessibility / short-viewport fallback.
+   At normal desktop height the Architecture OBJECT and CREATE panels are
+   designed to fit without routine scrolling.
+========================================================= */
+
+@media (min-width: 901px) {
+  /* Slightly wider side panels let us use denser horizontal layouts
+     without crushing readable text. */
+  .creator-shell.creator-shell-v5 {
+    grid-template-columns:
+      minmax(250px, 276px)
+      minmax(420px, 1fr)
+      minmax(365px, 398px);
+  }
+
+  /* Never clip controls. Normally these panels fit without scrolling,
+     but at browser zoom / very short heights they can scroll instead
+     of hiding content. */
+  .creator-library,
+  .creator-inspector {
+    min-height: 0;
+    padding: 10px 12px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+
+  .creator-library::-webkit-scrollbar,
+  .creator-inspector::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .creator-library::-webkit-scrollbar-thumb,
+  .creator-inspector::-webkit-scrollbar-thumb {
+    border-radius: 99px;
+    background: rgba(84, 135, 174, 0.22);
+  }
+
+  /* ---------------------------------------------------------
+     READABILITY FLOOR
+     --------------------------------------------------------- */
+
+  .creator-library button,
+  .creator-library input,
+  .creator-library select,
+  .creator-library summary,
+  .creator-library span,
+  .creator-library small,
+  .creator-library strong,
+  .creator-inspector button,
+  .creator-inspector input,
+  .creator-inspector select,
+  .creator-inspector summary,
+  .creator-inspector span,
+  .creator-inspector small,
+  .creator-inspector strong,
+  .creator-architecture-strip button,
+  .creator-architecture-strip select,
+  .creator-architecture-strip span,
+  .creator-architecture-strip strong {
+    font-size: 0.6875rem;
+    line-height: 1.18;
+  }
+
+  .creator-library input,
+  .creator-library select,
+  .creator-inspector input,
+  .creator-inspector select {
+    font-size: 0.75rem;
+  }
+
+  .creator-panel-heading,
+  .creator-panel-heading strong,
+  .creator-inspector-title,
+  .creator-appearance-picker-label {
+    font-size: 0.6875rem;
+  }
+
+  .creator-selected-name {
+    margin-bottom: 3px;
+    font-size: 0.9375rem !important;
+    line-height: 1.15;
+  }
+
+  .creator-selected-badges span {
+    font-size: 0.6875rem;
+  }
+
+  .creator-text-field input,
+  .creator-vector-fields input,
+  .creator-v6-single-field input,
+  .creator-v7-two-fields input,
+  .creator-v7-wide-field input,
+  .creator-architecture-real-fields input {
+    font-size: 0.8125rem;
+  }
+
+  /* ---------------------------------------------------------
+     COMMON PANEL COMPACTION
+     --------------------------------------------------------- */
+
+  .creator-panel-heading {
+    min-height: 20px;
+    margin-bottom: 5px;
+    gap: 7px;
+    letter-spacing: 0.09em;
+  }
+
+  .creator-compact-tabs {
+    gap: 4px;
+    margin-bottom: 5px;
+  }
+
+  .creator-compact-tabs button {
+    min-height: 28px;
+    padding: 0 5px;
+    font-size: 0.6875rem;
+    letter-spacing: 0.025em;
+  }
+
+  .creator-inspector-tabs {
+    margin: 3px 0 5px;
+  }
+
+  .creator-inspector-block {
+    padding: 5px 0;
+  }
+
+  .creator-inspector-title {
+    min-height: 17px;
+    margin-bottom: 4px;
+    letter-spacing: 0.07em;
+  }
+
+  .creator-inspector-title span {
+    font-size: 0.6875rem;
+  }
+
+  .creator-field-note {
+    margin-top: 3px;
+    font-size: 0.6875rem;
+    line-height: 1.25;
+  }
+
+  .creator-selected-summary {
+    margin-top: 0;
+  }
+
+  /* ---------------------------------------------------------
+     RIGHT â€” OBJECT INSPECTOR
+     Fits architecture object + mode + color/material in one view.
+     --------------------------------------------------------- */
+
+  .creator-inspector.creator-inspector-tab-object {
+    overflow-y: auto;
+  }
+
+  .creator-inspector-tab-object .creator-inspector-top {
+    padding-bottom: 2px;
+  }
+
+  .creator-inspector-tab-object
+    .creator-advanced-object-block {
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+
+  .creator-text-field {
+    gap: 3px;
+  }
+
+  .creator-text-field > span {
+    font-size: 0.6875rem;
+    letter-spacing: 0.07em;
+  }
+
+  .creator-text-field input {
+    height: 33px;
+    padding: 0 9px;
+    border-radius: 7px;
+  }
+
+  .creator-object-quick-actions {
+    margin-top: 4px;
+    gap: 4px;
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+
+  .creator-object-quick-actions button,
+  .creator-object-quick-actions button:first-child {
+    grid-column: auto;
+    min-height: 27px;
+    padding: 0 5px;
+    font-size: 0.6875rem;
+  }
+
+  .creator-inspector-tab-object
+    .creator-architecture-inspector {
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+
+  .creator-architecture-object-meta {
+    margin-top: 3px;
+    gap: 4px;
+  }
+
+  .creator-architecture-object-meta > span {
+    min-height: 30px;
+    padding: 4px 6px;
+  }
+
+  .creator-architecture-object-meta > span,
+  .creator-architecture-object-meta strong {
+    font-size: 0.6875rem;
+  }
+
+  /* Biggest space saver: dimensions are now one readable row instead
+     of three tall stacked rows. */
+  .creator-architecture-real-fields {
+    margin-top: 4px;
+    display: grid;
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  .creator-architecture-real-fields label {
+    min-width: 0;
+    min-height: 42px;
+    padding: 4px 5px;
+    display: grid;
+    grid-template-columns:
+      1fr auto;
+    grid-template-rows:
+      auto 1fr;
+    align-items: center;
+    gap: 1px 3px;
+  }
+
+  .creator-architecture-real-fields label > span,
+  .creator-architecture-real-fields label > small {
+    font-size: 0.6875rem;
+  }
+
+  .creator-architecture-real-fields label > small {
+    grid-column: 2;
+    grid-row: 1;
+    text-align: right;
+  }
+
+  .creator-architecture-real-fields input {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    min-width: 0;
+    font-size: 0.75rem;
+    text-align: left;
+  }
+
+  .creator-architecture-print-size {
+    min-height: 30px;
+    margin-top: 4px;
+    padding: 4px 6px;
+    grid-template-columns:
+      1fr auto;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .creator-architecture-print-size span,
+  .creator-architecture-print-size strong {
+    font-size: 0.6875rem;
+  }
+
+  .creator-architecture-print-size strong {
+    text-align: right;
+  }
+
+  .creator-architecture-wall-endpoints {
+    margin-top: 4px;
+  }
+
+  .creator-architecture-wall-endpoints > summary,
+  .creator-architecture-smart-opening-head {
+    min-height: 26px;
+  }
+
+  .creator-architecture-wall-endpoints > summary span,
+  .creator-architecture-wall-endpoints > summary b,
+  .creator-architecture-smart-opening-head > span,
+  .creator-architecture-smart-opening-head > strong {
+    font-size: 0.6875rem;
+  }
+
+  /* Object mode remains fully visible but much shorter. */
+  .creator-role-toggle {
+    gap: 5px;
+  }
+
+  .creator-role-toggle button {
+    min-height: 30px;
+    font-size: 0.6875rem;
+  }
+
+  .creator-inspector-tab-object
+    .creator-tab-object:has(.creator-role-toggle) {
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+
+  /* COLOR + MATERIAL should always be visible in the normal desktop view. */
+  .creator-appearance-dropdown-block {
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+
+  /* This sentence is informational, not a control; removing it creates room
+     without hiding any setting or capability. */
+  .creator-material-global-note {
+    display: none;
+  }
+
+  .creator-appearance-picker {
+    margin-top: 3px;
+  }
+
+  .creator-appearance-picker-label {
+    display: none;
+  }
+
+  .creator-appearance-details > summary {
+    min-height: 34px;
+    padding: 0 8px;
+    grid-template-columns:
+      16px minmax(0, 1fr) auto 14px;
+    gap: 6px;
+  }
+
+  .creator-appearance-details > summary > span,
+  .creator-appearance-details > summary > small,
+  .creator-appearance-details > summary > b {
+    font-size: 0.6875rem;
+  }
+
+  .creator-appearance-swatch {
+    width: 14px;
+    height: 14px;
+  }
+
+  .creator-material-current {
+    min-height: 31px;
+    margin-top: 4px;
+    padding: 4px 7px;
+    grid-template-columns:
+      1fr auto;
+  }
+
+  .creator-material-current > span,
+  .creator-material-current > strong,
+  .creator-material-current > small {
+    font-size: 0.6875rem;
+  }
+
+  .creator-material-current > small {
+    display: none;
+  }
+
+  .creator-inspector-actions {
+    padding-top: 5px;
+    gap: 5px;
+    grid-template-columns:
+      1fr 96px;
+  }
+
+  .creator-primary-action,
+  .creator-reset-action {
+    min-height: 34px;
+    font-size: 0.6875rem;
+  }
+
+  /* ---------------------------------------------------------
+     LEFT â€” ARCHITECTURE CREATE
+     Keep all major tools/level controls visible at normal laptop height.
+     --------------------------------------------------------- */
+
+  .creator-library-tab-create
+    .creator-architecture-library.creator-library-create {
+    display: block !important;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .creator-architecture-library-title {
+    min-height: 20px;
+    margin-bottom: 4px;
+  }
+
+  .creator-architecture-library-title,
+  .creator-architecture-library-title * {
+    font-size: 0.6875rem;
+  }
+
+  .creator-architecture-wall-draw,
+  .creator-architecture-room-draw {
+    min-height: 38px;
+    padding: 4px 6px;
+    gap: 4px;
+  }
+
+  .creator-architecture-room-draw {
+    margin-top: 4px;
+  }
+
+  .creator-architecture-wall-draw strong,
+  .creator-architecture-room-draw strong,
+  .creator-architecture-wall-draw small,
+  .creator-architecture-room-draw small,
+  .creator-architecture-wall-draw i,
+  .creator-architecture-room-draw i {
+    font-size: 0.6875rem;
+  }
+
+  .creator-architecture-plan-tools {
+    margin-top: 4px;
+    gap: 4px;
+  }
+
+  .creator-architecture-plan-tools button {
+    min-height: 25px;
+    font-size: 0.6875rem;
+  }
+
+  .creator-architecture-wall-settings,
+  .creator-architecture-room-settings {
+    margin-top: 4px;
+    gap: 4px;
+  }
+
+  .creator-architecture-wall-settings label,
+  .creator-architecture-room-settings label {
+    min-height: 28px;
+    padding: 0 5px;
+  }
+
+  .creator-architecture-wall-settings span,
+  .creator-architecture-wall-settings small,
+  .creator-architecture-room-settings span,
+  .creator-architecture-room-settings small,
+  .creator-architecture-wall-settings input,
+  .creator-architecture-room-settings input,
+  .creator-architecture-room-settings button {
+    font-size: 0.6875rem;
+  }
+
+  .creator-architecture-wall-draw-settings {
+    margin-top: 4px;
+  }
+
+  .creator-architecture-wall-draw-settings > summary {
+    min-height: 25px;
+    padding: 0 6px;
+  }
+
+  .creator-architecture-wall-draw-settings > summary span,
+  .creator-architecture-wall-draw-settings > summary b,
+  .creator-architecture-wall-draw-settings-body span,
+  .creator-architecture-wall-draw-settings-body button,
+  .creator-architecture-wall-draw-settings-body select {
+    font-size: 0.6875rem;
+  }
+
+  .creator-architecture-wall-draw-settings-body {
+    padding: 0 4px 4px;
+    gap: 3px;
+  }
+
+  .creator-architecture-wall-draw-settings-body label {
+    min-height: 27px;
+  }
+
+  /* Three columns are safe at the wider V10.1 sidebar and remove one full
+     row of primitive tools without returning to the old 4-column overlap. */
+  .creator-architecture-primitive-grid {
+    margin-top: 4px;
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  .creator-architecture-primitive-grid button {
+    min-width: 0;
+    min-height: 34px;
+    padding: 3px 4px;
+    grid-template-columns:
+      15px minmax(0, 1fr);
+    gap: 3px;
+  }
+
+  .creator-architecture-primitive-grid b {
+    font-size: 0.75rem;
+  }
+
+  .creator-architecture-primitive-grid span {
+    font-size: 0.6875rem;
+    white-space: normal;
+    line-height: 1.05;
+  }
+
+  .creator-architecture-openings {
+    margin-top: 4px;
+    gap: 4px;
+  }
+
+  .creator-architecture-openings button {
+    min-height: 34px;
+    padding: 3px 5px;
+  }
+
+  .creator-architecture-openings strong,
+  .creator-architecture-openings small {
+    font-size: 0.6875rem;
+  }
+
+  .creator-architecture-openings
+    + .creator-field-note {
+    display: none;
+  }
+
+  .creator-architecture-join-walls {
+    min-height: 26px;
+    margin-top: 4px;
+    font-size: 0.6875rem;
+  }
+
+  .creator-architecture-component-settings,
+  .creator-architecture-room-schedule {
+    margin-top: 4px;
+  }
+
+  .creator-architecture-component-settings > summary,
+  .creator-architecture-room-schedule > summary {
+    min-height: 26px;
+    padding: 0 6px;
+  }
+
+  .creator-architecture-component-settings > summary span,
+  .creator-architecture-component-settings > summary b,
+  .creator-architecture-room-schedule > summary span,
+  .creator-architecture-room-schedule > summary strong,
+  .creator-architecture-room-schedule > summary b {
+    font-size: 0.6875rem;
+  }
+
+  .creator-architecture-levels {
+    margin-top: 4px;
+    padding-top: 4px;
+  }
+
+  .creator-architecture-section-head {
+    min-height: 23px;
+  }
+
+  .creator-architecture-section-head > span,
+  .creator-architecture-section-head button {
+    font-size: 0.6875rem;
+  }
+
+  .creator-architecture-duplicate-level {
+    min-height: 25px;
+    margin-top: 3px;
+    font-size: 0.6875rem;
+  }
+
+  .creator-architecture-level-tools {
+    margin-top: 3px;
+    gap: 3px;
+  }
+
+  .creator-architecture-level-tools button {
+    min-height: 24px;
+    font-size: 0.6875rem;
+  }
+
+  .creator-architecture-level-list-v2 {
+    margin-top: 3px;
+  }
+
+  .creator-architecture-level-row {
+    min-height: 28px;
+    padding: 2px 3px;
+    grid-template-columns:
+      minmax(0, 1fr)
+      58px
+      24px;
+  }
+
+  .creator-architecture-level-select,
+  .creator-architecture-level-elevation,
+  .creator-architecture-level-eye {
+    min-height: 23px;
+  }
+
+  .creator-architecture-level-select,
+  .creator-architecture-level-elevation,
+  .creator-architecture-level-name-editor span,
+  .creator-architecture-level-name-editor input {
+    font-size: 0.6875rem;
+  }
+
+  .creator-architecture-level-name-editor {
+    margin-top: 3px;
+    padding: 3px 5px;
+  }
+
+  .creator-object-limit {
+    margin-top: 5px;
+    font-size: 0.6875rem;
+  }
+
+  /* ---------------------------------------------------------
+     ARCHITECTURE TOP STRIP
+     --------------------------------------------------------- */
+
+  .creator-architecture-strip {
+    gap: 6px;
+  }
+
+  .creator-architecture-strip-group button,
+  .creator-architecture-explode-control button,
+  .creator-architecture-annotation-control button,
+  .creator-architecture-strip-field select {
+    font-size: 0.6875rem;
+  }
+
+  .creator-architecture-strip-group > span,
+  .creator-architecture-explode-control > span,
+  .creator-architecture-annotation-control > span,
+  .creator-architecture-strip-field > span,
+  .creator-architecture-scale-readout > span {
+    font-size: 0.6875rem;
+  }
+
+  .creator-architecture-scale-readout strong {
+    font-size: 0.75rem;
+  }
+}
+
+/* At shorter desktop heights, preserve every control with a scrollbar
+   rather than clipping content. This is a fallback, not the normal layout. */
+@media (min-width: 901px) and (max-height: 760px) {
+  .creator-library,
+  .creator-inspector {
+    overflow-y: auto;
+  }
+
+  .creator-shell.creator-shell-v5 {
+    min-height: 620px;
+  }
+}
+
+/* At browser zoom / narrower laptop widths, switch primitives back to
+   two columns before they can overlap. */
+@media (min-width: 901px) and (max-width: 1240px) {
+  .creator-shell.creator-shell-v5 {
+    grid-template-columns:
+      minmax(235px, 255px)
+      minmax(390px, 1fr)
+      minmax(335px, 365px);
+  }
+
+  .creator-architecture-primitive-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .creator-architecture-real-fields {
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+}

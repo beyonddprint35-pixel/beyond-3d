@@ -15,6 +15,8 @@ import {
   Edges,
   Environment,
   Grid,
+  Html,
+  Line,
   OrbitControls,
   TransformControls,
 } from "@react-three/drei";
@@ -97,28 +99,211 @@ import "./SketchExtrudeModal.css";
 import "./RevolveModal.css";
 
 const SCENE_SCALE = 0.018;
-const MAX_OBJECTS = 24;
+const MAX_OBJECTS = 80;
 
 const MATERIALS = [
+  // ---------------------------------------------------------
+  // COLOR PRESETS
+  // ---------------------------------------------------------
   {
     id: "navy",
     label: "Navy",
+    group: "color",
     color: "#245b87",
+    roughness: 0.38,
+    metalness: 0.08,
   },
   {
     id: "ice",
-    label: "Ice",
+    label: "Ice Blue",
+    group: "color",
     color: "#95c9ee",
+    roughness: 0.34,
+    metalness: 0.04,
   },
   {
     id: "graphite",
     label: "Graphite",
+    group: "color",
     color: "#4d5965",
+    roughness: 0.42,
+    metalness: 0.1,
   },
   {
     id: "white",
     label: "White",
+    group: "color",
     color: "#dce7ef",
+    roughness: 0.42,
+    metalness: 0.02,
+  },
+  {
+    id: "black",
+    label: "Black",
+    group: "color",
+    color: "#161b20",
+    roughness: 0.4,
+    metalness: 0.05,
+  },
+  {
+    id: "red",
+    label: "Red",
+    group: "color",
+    color: "#b84a4f",
+    roughness: 0.4,
+    metalness: 0.03,
+  },
+  {
+    id: "orange",
+    label: "Orange",
+    group: "color",
+    color: "#d07939",
+    roughness: 0.42,
+    metalness: 0.02,
+  },
+  {
+    id: "yellow",
+    label: "Yellow",
+    group: "color",
+    color: "#d4b447",
+    roughness: 0.44,
+    metalness: 0.02,
+  },
+  {
+    id: "green",
+    label: "Sage",
+    group: "color",
+    color: "#728f76",
+    roughness: 0.46,
+    metalness: 0.02,
+  },
+  {
+    id: "blue",
+    label: "Royal Blue",
+    group: "color",
+    color: "#456fae",
+    roughness: 0.38,
+    metalness: 0.04,
+  },
+  {
+    id: "purple",
+    label: "Purple",
+    group: "color",
+    color: "#75629a",
+    roughness: 0.4,
+    metalness: 0.03,
+  },
+  {
+    id: "beige",
+    label: "Warm Beige",
+    group: "color",
+    color: "#c4b49a",
+    roughness: 0.48,
+    metalness: 0,
+  },
+
+  // ---------------------------------------------------------
+  // ARCHITECTURAL MATERIAL LOOKS
+  // ---------------------------------------------------------
+  {
+    id: "concrete",
+    label: "Concrete",
+    group: "material",
+    color: "#8f9391",
+    roughness: 0.9,
+    metalness: 0,
+  },
+  {
+    id: "plaster",
+    label: "White Plaster",
+    group: "material",
+    color: "#e4e0d8",
+    roughness: 0.82,
+    metalness: 0,
+  },
+  {
+    id: "sandstone",
+    label: "Sandstone",
+    group: "material",
+    color: "#b9a07a",
+    roughness: 0.88,
+    metalness: 0,
+  },
+  {
+    id: "terracotta",
+    label: "Terracotta",
+    group: "material",
+    color: "#a85d46",
+    roughness: 0.8,
+    metalness: 0,
+  },
+  {
+    id: "brick",
+    label: "Brick",
+    group: "material",
+    color: "#8f4c3d",
+    roughness: 0.86,
+    metalness: 0,
+  },
+  {
+    id: "oak",
+    label: "Oak Wood",
+    group: "material",
+    color: "#a97c4f",
+    roughness: 0.7,
+    metalness: 0,
+  },
+  {
+    id: "walnut",
+    label: "Walnut",
+    group: "material",
+    color: "#604330",
+    roughness: 0.68,
+    metalness: 0,
+  },
+  {
+    id: "steel",
+    label: "Steel",
+    group: "material",
+    color: "#8c969d",
+    roughness: 0.28,
+    metalness: 0.92,
+  },
+  {
+    id: "aluminum",
+    label: "Aluminum",
+    group: "material",
+    color: "#b8c0c5",
+    roughness: 0.3,
+    metalness: 0.8,
+  },
+  {
+    id: "bronze",
+    label: "Bronze",
+    group: "material",
+    color: "#9a7047",
+    roughness: 0.34,
+    metalness: 0.78,
+  },
+  {
+    id: "glass-blue",
+    label: "Blue Glass",
+    group: "material",
+    color: "#7bb5ca",
+    roughness: 0.12,
+    metalness: 0.05,
+    transparent: true,
+    opacity: 0.38,
+  },
+  {
+    id: "glass-clear",
+    label: "Clear Glass",
+    group: "material",
+    color: "#d8eef3",
+    roughness: 0.08,
+    metalness: 0,
+    transparent: true,
+    opacity: 0.24,
   },
 ];
 
@@ -188,6 +373,1342 @@ const SHAPE_DEFAULTS = {
     },
   },
 };
+
+
+const ARCH_SCALE_OPTIONS = [
+  50,
+  75,
+  100,
+  150,
+  200,
+  500,
+];
+
+const ARCH_MIN_PRINT_WALL_MM =
+  1.2;
+
+const ARCH_DEFAULTS = {
+  wall: {
+    label: "Wall",
+    width: 5200,
+    depth: 200,
+    height: 3000,
+    materialId: "white",
+    role: "solid",
+  },
+  floor: {
+    label: "Floor / Slab",
+    width: 5000,
+    depth: 4000,
+    height: 200,
+    materialId: "graphite",
+    role: "solid",
+  },
+  column: {
+    label: "Column",
+    width: 300,
+    depth: 300,
+    height: 3000,
+    materialId: "white",
+    role: "solid",
+  },
+  beam: {
+    label: "Beam",
+    width: 4000,
+    depth: 300,
+    height: 450,
+    materialId: "white",
+    role: "solid",
+  },
+  door: {
+    label: "Door Opening",
+    width: 900,
+    depth: 500,
+    height: 2100,
+    materialId: "graphite",
+    role: "hole",
+    sill: 0,
+  },
+  window: {
+    label: "Window Opening",
+    width: 1200,
+    depth: 500,
+    height: 1200,
+    materialId: "ice",
+    role: "hole",
+    sill: 900,
+  },
+  stair: {
+    label: "Stair",
+    width: 1100,
+    depth: 280,
+    height: 180,
+    materialId: "concrete",
+    role: "solid",
+  },
+  roof: {
+    label: "Roof",
+    width: 6000,
+    depth: 5000,
+    height: 180,
+    materialId: "graphite",
+    role: "solid",
+  },
+};
+
+function architectureUnitFactor(
+  unit
+) {
+  if (
+    unit === "m"
+  ) {
+    return 1000;
+  }
+
+  if (
+    unit === "cm"
+  ) {
+    return 10;
+  }
+
+  return 1;
+}
+
+function architectureFromMm(
+  valueMm,
+  unit
+) {
+  return (
+    safeNumber(
+      valueMm,
+      0
+    ) /
+    architectureUnitFactor(
+      unit
+    )
+  );
+}
+
+function architectureToMm(
+  value,
+  unit
+) {
+  return (
+    safeNumber(
+      value,
+      0
+    ) *
+    architectureUnitFactor(
+      unit
+    )
+  );
+}
+
+function architectureUnitDigits(
+  unit
+) {
+  return unit ===
+    "mm"
+    ? 0
+    : unit ===
+        "cm"
+      ? 1
+      : 3;
+}
+
+function architectureFormat(
+  valueMm,
+  unit
+) {
+  return architectureFromMm(
+    valueMm,
+    unit
+  ).toFixed(
+    architectureUnitDigits(
+      unit
+    )
+  );
+}
+
+function architectureObjectCount(
+  objects,
+  kind
+) {
+  return (
+    objects.filter(
+      (item) =>
+        item.source ===
+          "architecture" &&
+        item.parameters
+          ?.archType ===
+          kind
+    ).length +
+    1
+  );
+}
+
+function makeArchitectureObject(
+  kind,
+  index,
+  scale,
+  level,
+  overrides = {}
+) {
+  const defaults =
+    ARCH_DEFAULTS[
+      kind
+    ];
+
+  if (!defaults) {
+    throw new Error(
+      `Unknown architecture object: ${kind}`
+    );
+  }
+
+  const real = {
+    width:
+      safeNumber(
+        overrides.width,
+        defaults.width
+      ),
+    depth:
+      safeNumber(
+        overrides.depth,
+        defaults.depth
+      ),
+    height:
+      safeNumber(
+        overrides.height,
+        defaults.height
+      ),
+  };
+
+  const safeScale =
+    Math.max(
+      1,
+      safeNumber(
+        scale,
+        100
+      )
+    );
+
+  const elevation =
+    safeNumber(
+      level?.elevation,
+      0
+    );
+
+  const sill =
+    safeNumber(
+      overrides.sill,
+      defaults.sill ||
+        0
+    );
+
+  return {
+    id: makeId(),
+    type: "cube",
+    role:
+      overrides.role ||
+      defaults.role ||
+      "solid",
+    visible: true,
+    locked: false,
+    groupId: null,
+    groupName: null,
+    name:
+      `${defaults.label.toUpperCase()} ${index}`,
+    text: "",
+    dimensions: {
+      width:
+        real.width /
+        safeScale,
+      depth:
+        real.depth /
+        safeScale,
+      height:
+        real.height /
+        safeScale,
+    },
+    baseDimensions: null,
+    geometry: null,
+    position: {
+      x:
+        safeNumber(
+          overrides.x,
+          0
+        ) /
+        safeScale,
+      y:
+        (
+          elevation +
+          sill
+        ) /
+        safeScale,
+      z:
+        safeNumber(
+          overrides.z,
+          0
+        ) /
+        safeScale,
+    },
+    rotation: {
+      x: 0,
+      y:
+        safeNumber(
+          overrides.rotationY,
+          0
+        ),
+      z: 0,
+    },
+    materialId:
+      overrides.materialId ||
+      defaults.materialId ||
+      "white",
+    parameters: {
+      archType:
+        kind,
+      archLevelId:
+        level?.id ||
+        "ground",
+      archLevelName:
+        level?.name ||
+        "GROUND",
+      archLevelElevation:
+        elevation,
+      archRealDimensions: {
+        ...real,
+      },
+      archSill:
+        sill,
+      archScale:
+        safeScale,
+    },
+    source:
+      "architecture",
+    engine:
+      "ARCHITECTURE PARAMETRIC",
+  };
+}
+
+function architectureWallFrameFor(
+  wall,
+  scale
+) {
+  if (!wall) {
+    return null;
+  }
+
+  const safeScale =
+    Math.max(
+      1,
+      safeNumber(
+        scale,
+        100
+      )
+    );
+
+  const saved =
+    wall.parameters
+      ?.archWallFrame;
+
+  if (
+    wall.parameters
+      ?.architectureCut &&
+    saved
+  ) {
+    return {
+      x:
+        safeNumber(
+          saved.x,
+          0
+        ),
+      z:
+        safeNumber(
+          saved.z,
+          0
+        ),
+      rotationY:
+        safeNumber(
+          saved.rotationY,
+          0
+        ),
+      width:
+        safeNumber(
+          saved.width,
+          wall.parameters
+            ?.archRealDimensions
+            ?.width ||
+            wall.dimensions.width *
+              safeScale
+        ),
+      depth:
+        safeNumber(
+          saved.depth,
+          wall.parameters
+            ?.archRealDimensions
+            ?.depth ||
+            wall.dimensions.depth *
+              safeScale
+        ),
+      elevation:
+        safeNumber(
+          saved.elevation,
+          wall.parameters
+            ?.archLevelElevation ||
+            0
+        ),
+    };
+  }
+
+  return {
+    x:
+      wall.position.x *
+      safeScale,
+    z:
+      wall.position.z *
+      safeScale,
+    rotationY:
+      safeNumber(
+        wall.rotation.y,
+        0
+      ),
+    width:
+      safeNumber(
+        wall.parameters
+          ?.archRealDimensions
+          ?.width,
+        wall.dimensions.width *
+          safeScale
+      ),
+    depth:
+      safeNumber(
+        wall.parameters
+          ?.archRealDimensions
+          ?.depth,
+        wall.dimensions.depth *
+          safeScale
+      ),
+    elevation:
+      safeNumber(
+        wall.parameters
+          ?.archLevelElevation,
+        wall.position.y *
+          safeScale
+      ),
+  };
+}
+
+function architectureOpeningOnWall(
+  opening,
+  wall,
+  scale,
+  offsetMm,
+  sillMm
+) {
+  if (
+    !opening ||
+    !wall
+  ) {
+    return opening;
+  }
+
+  const safeScale =
+    Math.max(
+      1,
+      safeNumber(
+        scale,
+        100
+      )
+    );
+
+  const frame =
+    architectureWallFrameFor(
+      wall,
+      safeScale
+    );
+
+  const realDimensions = {
+    ...(
+      opening.parameters
+        ?.archRealDimensions ||
+      {
+        width:
+          opening.dimensions
+            .width *
+          safeScale,
+        depth:
+          opening.dimensions
+            .depth *
+          safeScale,
+        height:
+          opening.dimensions
+            .height *
+          safeScale,
+      }
+    ),
+  };
+
+  const maxOffset =
+    Math.max(
+      0,
+      (
+        frame.width -
+        realDimensions.width
+      ) /
+        2 -
+        50
+    );
+
+  const safeOffset =
+    clamp(
+      offsetMm,
+      -maxOffset,
+      maxOffset
+    );
+
+  const safeSill =
+    clamp(
+      sillMm,
+      0,
+      20000
+    );
+
+  const theta =
+    THREE.MathUtils.degToRad(
+      frame.rotationY
+    );
+
+  const xReal =
+    frame.x +
+    safeOffset *
+      Math.cos(
+        theta
+      );
+
+  const zReal =
+    frame.z -
+    safeOffset *
+      Math.sin(
+        theta
+      );
+
+  const depthReal =
+    Math.max(
+      realDimensions.depth,
+      frame.depth +
+        200
+    );
+
+  return {
+    ...opening,
+    position: {
+      ...opening.position,
+      x:
+        xReal /
+        safeScale,
+      y:
+        (
+          frame.elevation +
+          safeSill
+        ) /
+        safeScale,
+      z:
+        zReal /
+        safeScale,
+    },
+    rotation: {
+      ...opening.rotation,
+      y:
+        frame.rotationY,
+    },
+    dimensions: {
+      ...opening.dimensions,
+      depth:
+        depthReal /
+        safeScale,
+    },
+    parameters: {
+      ...(opening.parameters ||
+        {}),
+      archHostWallId:
+        wall.id,
+      archHostWallName:
+        wall.name,
+      archWallOffsetMm:
+        safeOffset,
+      archSill:
+        safeSill,
+      archScale:
+        safeScale,
+      archLevelId:
+        wall.parameters
+          ?.archLevelId ||
+        opening.parameters
+          ?.archLevelId ||
+        "ground",
+      archLevelName:
+        wall.parameters
+          ?.archLevelName ||
+        opening.parameters
+          ?.archLevelName ||
+        "GROUND",
+      archLevelElevation:
+        frame.elevation,
+      archRealDimensions: {
+        ...realDimensions,
+        depth:
+          depthReal,
+      },
+    },
+  };
+}
+
+function architectureObjectBounds(
+  item
+) {
+  const geometry =
+    localGeometryForObject(
+      item
+    );
+
+  try {
+    const box =
+      geometry.boundingBox
+        ? geometry.boundingBox.clone()
+        : new THREE.Box3()
+            .setFromBufferAttribute(
+              geometry.getAttribute(
+                "position"
+              )
+            );
+
+    box.applyMatrix4(
+      creatorObjectWorldMatrix(
+        item
+      )
+    );
+
+    return box;
+  } finally {
+    geometry.dispose?.();
+  }
+}
+
+function architecturePrintCheck(
+  objects
+) {
+  const solids =
+    objects.filter(
+      (item) =>
+        item.source ===
+          "architecture" &&
+        item.role ===
+          "solid" &&
+        item.visible !==
+          false
+    );
+
+  if (
+    solids.length ===
+    0
+  ) {
+    return {
+      objectCount: 0,
+      width: 0,
+      depth: 0,
+      height: 0,
+      thinWalls: 0,
+      thinColumns: 0,
+      outsideBed: false,
+      status: "EMPTY",
+    };
+  }
+
+  const bounds =
+    new THREE.Box3();
+
+  solids.forEach(
+    (item) => {
+      bounds.union(
+        architectureObjectBounds(
+          item
+        )
+      );
+    }
+  );
+
+  const size =
+    new THREE.Vector3();
+
+  bounds.getSize(
+    size
+  );
+
+  const width =
+    size.x /
+    SCENE_SCALE;
+
+  const height =
+    size.y /
+    SCENE_SCALE;
+
+  const depth =
+    size.z /
+    SCENE_SCALE;
+
+  const thinWalls =
+    solids.filter(
+      (item) =>
+        item.parameters
+          ?.archType ===
+          "wall" &&
+        Math.min(
+          item.dimensions
+            .width,
+          item.dimensions
+            .depth
+        ) <
+          ARCH_MIN_PRINT_WALL_MM
+    ).length;
+
+  const thinColumns =
+    solids.filter(
+      (item) =>
+        item.parameters
+          ?.archType ===
+          "column" &&
+        Math.min(
+          item.dimensions
+            .width,
+          item.dimensions
+            .depth
+        ) <
+          ARCH_MIN_PRINT_WALL_MM
+    ).length;
+
+  return {
+    objectCount:
+      solids.length,
+    width,
+    depth,
+    height,
+    thinWalls,
+    thinColumns,
+    outsideBed:
+      width >
+        256 ||
+      depth >
+        256,
+    status:
+      thinWalls >
+        0 ||
+      thinColumns >
+        0 ||
+      width >
+        256 ||
+      depth >
+        256
+        ? "CHECK"
+        : "READY",
+  };
+}
+
+function architectureProductionCheck(
+  objects,
+  levels,
+  printCheck
+) {
+  const architectureObjects =
+    objects.filter(
+      (item) =>
+        item.source ===
+        "architecture"
+    );
+
+  const architectureSolids =
+    architectureObjects.filter(
+      (item) =>
+        item.role ===
+          "solid"
+    );
+
+  const visibleSolids =
+    architectureSolids.filter(
+      (item) =>
+        item.visible !==
+          false
+    );
+
+  const levelIds =
+    new Set(
+      levels.map(
+        (level) =>
+          level.id
+      )
+    );
+
+  const objectIds =
+    new Set();
+
+  const duplicateIds =
+    [];
+
+  architectureObjects.forEach(
+    (item) => {
+      if (
+        objectIds.has(
+          item.id
+        )
+      ) {
+        duplicateIds.push(
+          item.id
+        );
+      }
+
+      objectIds.add(
+        item.id
+      );
+    }
+  );
+
+  const invalidGeometryObjects =
+    architectureObjects.filter(
+      (item) => {
+        const values = [
+          item.dimensions
+            ?.width,
+          item.dimensions
+            ?.depth,
+          item.dimensions
+            ?.height,
+          item.position
+            ?.x,
+          item.position
+            ?.y,
+          item.position
+            ?.z,
+          item.rotation
+            ?.x,
+          item.rotation
+            ?.y,
+          item.rotation
+            ?.z,
+        ];
+
+        if (
+          values.some(
+            (value) =>
+              !Number.isFinite(
+                Number(
+                  value
+                )
+              )
+          )
+        ) {
+          return true;
+        }
+
+        return (
+          safeNumber(
+            item.dimensions
+              ?.width,
+            0
+          ) <=
+            0 ||
+          safeNumber(
+            item.dimensions
+              ?.depth,
+            0
+          ) <=
+            0 ||
+          safeNumber(
+            item.dimensions
+              ?.height,
+            0
+          ) <=
+            0
+        );
+      }
+    );
+
+  const missingLevelObjects =
+    architectureObjects.filter(
+      (item) =>
+        !levelIds.has(
+          item.parameters
+            ?.archLevelId
+        )
+    );
+
+  const unappliedOpenings =
+    architectureObjects.filter(
+      (item) =>
+        item.role ===
+          "hole"
+    );
+
+  const orphanOpenings =
+    unappliedOpenings.filter(
+      (item) => {
+        const hostId =
+          item.parameters
+            ?.archHostWallId;
+
+        return (
+          hostId &&
+          !architectureObjects.some(
+            (candidate) =>
+              candidate.id ===
+              hostId
+          )
+        );
+      }
+    );
+
+  const cutWallsMissingFrame =
+    architectureObjects.filter(
+      (item) =>
+        item.role ===
+          "solid" &&
+        item.parameters
+          ?.archType ===
+          "wall" &&
+        item.parameters
+          ?.architectureCut &&
+        !item.parameters
+          ?.archWallFrame
+    );
+
+  const hiddenSolids =
+    architectureSolids.filter(
+      (item) =>
+        item.visible ===
+          false
+    );
+
+  const emptyLevels =
+    levels.filter(
+      (level) =>
+        !architectureObjects.some(
+          (item) =>
+            item.parameters
+              ?.archLevelId ===
+              level.id
+        )
+    );
+
+  const levelStats =
+    levels.map(
+      (level) => {
+        const levelObjects =
+          architectureObjects.filter(
+            (item) =>
+              item.parameters
+                ?.archLevelId ===
+                level.id
+          );
+
+        const solids =
+          levelObjects.filter(
+            (item) =>
+              item.role ===
+              "solid"
+          );
+
+        const openings =
+          levelObjects.filter(
+            (item) =>
+              item.role ===
+              "hole"
+          );
+
+        let width =
+          0;
+
+        let depth =
+          0;
+
+        let height =
+          0;
+
+        if (
+          solids.length >
+          0
+        ) {
+          const bounds =
+            new THREE.Box3();
+
+          solids.forEach(
+            (item) => {
+              try {
+                bounds.union(
+                  architectureObjectBounds(
+                    item
+                  )
+                );
+              } catch {
+                // The invalid object is already reported by integrity checks.
+              }
+            }
+          );
+
+          if (
+            !bounds.isEmpty()
+          ) {
+            const size =
+              new THREE.Vector3();
+
+            bounds.getSize(
+              size
+            );
+
+            width =
+              size.x /
+              SCENE_SCALE;
+
+            height =
+              size.y /
+              SCENE_SCALE;
+
+            depth =
+              size.z /
+              SCENE_SCALE;
+          }
+        }
+
+        return {
+          id:
+            level.id,
+          name:
+            level.name ||
+            "LEVEL",
+          elevation:
+            safeNumber(
+              level.elevation,
+              0
+            ),
+          objects:
+            levelObjects.length,
+          solids:
+            solids.length,
+          openings:
+            openings.length,
+          width,
+          depth,
+          height,
+          outsideBed:
+            width >
+              256 ||
+            depth >
+              256,
+        };
+      }
+    );
+
+  const blockers = [];
+  const warnings = [];
+  const info = [];
+
+  if (
+    visibleSolids.length ===
+    0
+  ) {
+    blockers.push({
+      code:
+        "NO_SOLIDS",
+      title:
+        "No printable Architecture solids",
+      detail:
+        "Add at least one visible Architecture solid before export.",
+      objectId:
+        null,
+    });
+  }
+
+  if (
+    duplicateIds.length >
+    0
+  ) {
+    blockers.push({
+      code:
+        "DUPLICATE_IDS",
+      title:
+        `${duplicateIds.length} duplicate object ID(s)`,
+      detail:
+        "Duplicate IDs can corrupt selection, grouping and export.",
+      objectId:
+        duplicateIds[0],
+    });
+  }
+
+  invalidGeometryObjects.forEach(
+    (item) => {
+      blockers.push({
+        code:
+          "INVALID_GEOMETRY",
+        title:
+          `Invalid geometry · ${item.name}`,
+        detail:
+          "Dimensions / position contain invalid or non-positive values.",
+        objectId:
+          item.id,
+      });
+    }
+  );
+
+  missingLevelObjects.forEach(
+    (item) => {
+      blockers.push({
+        code:
+          "MISSING_LEVEL",
+        title:
+          `Missing level · ${item.name}`,
+        detail:
+          "This Architecture object references a level that no longer exists.",
+        objectId:
+          item.id,
+      });
+    }
+  );
+
+  orphanOpenings.forEach(
+    (item) => {
+      blockers.push({
+        code:
+          "ORPHAN_OPENING",
+        title:
+          `Orphan opening · ${item.name}`,
+        detail:
+          "The smart opening no longer has a valid host wall.",
+        objectId:
+          item.id,
+      });
+    }
+  );
+
+  unappliedOpenings
+    .filter(
+      (item) =>
+        !orphanOpenings.some(
+          (orphan) =>
+            orphan.id ===
+            item.id
+        )
+    )
+    .forEach(
+      (item) => {
+        blockers.push({
+          code:
+            "UNAPPLIED_OPENING",
+          title:
+            `Opening not cut · ${item.name}`,
+          detail:
+            "HOLE objects are ignored by export. Use CUT OPENING before production export.",
+          objectId:
+            item.id,
+        });
+      }
+    );
+
+  if (
+    printCheck
+      .thinWalls >
+    0
+  ) {
+    warnings.push({
+      code:
+        "THIN_WALLS",
+      title:
+        `${printCheck.thinWalls} thin wall(s)`,
+      detail:
+        `Below ${ARCH_MIN_PRINT_WALL_MM} mm at print scale.`,
+      objectId:
+        architectureObjects.find(
+          (item) =>
+            item.parameters
+              ?.archType ===
+              "wall" &&
+            Math.min(
+              item.dimensions
+                .width,
+              item.dimensions
+                .depth
+            ) <
+              ARCH_MIN_PRINT_WALL_MM
+        )?.id ||
+        null,
+    });
+  }
+
+  if (
+    printCheck
+      .thinColumns >
+    0
+  ) {
+    warnings.push({
+      code:
+        "THIN_COLUMNS",
+      title:
+        `${printCheck.thinColumns} thin column(s)`,
+      detail:
+        `Below ${ARCH_MIN_PRINT_WALL_MM} mm at print scale.`,
+      objectId:
+        architectureObjects.find(
+          (item) =>
+            item.parameters
+              ?.archType ===
+              "column" &&
+            Math.min(
+              item.dimensions
+                .width,
+              item.dimensions
+                .depth
+            ) <
+              ARCH_MIN_PRINT_WALL_MM
+        )?.id ||
+        null,
+    });
+  }
+
+  if (
+    printCheck
+      .outsideBed
+  ) {
+    warnings.push({
+      code:
+        "OUTSIDE_BED",
+      title:
+        "Model exceeds 256 × 256 mm build plate",
+      detail:
+        "Use Split by Level, reduce scale, or divide the model before printing.",
+      objectId:
+        null,
+    });
+  }
+
+  cutWallsMissingFrame.forEach(
+    (item) => {
+      warnings.push({
+        code:
+          "CUT_WALL_FRAME",
+        title:
+          `Cut wall metadata incomplete · ${item.name}`,
+        detail:
+          "The wall exports, but adding another smart opening may be unreliable.",
+        objectId:
+          item.id,
+      });
+    }
+  );
+
+  if (
+    hiddenSolids.length >
+    0
+  ) {
+    warnings.push({
+      code:
+        "HIDDEN_SOLIDS",
+      title:
+        `${hiddenSolids.length} hidden Architecture solid(s)`,
+      detail:
+        "Hidden solids are excluded from the normal STL / 3MF export.",
+      objectId:
+        hiddenSolids[0].id,
+    });
+  }
+
+  if (
+    architectureObjects.length >=
+    Math.floor(
+      MAX_OBJECTS *
+      0.85
+    )
+  ) {
+    warnings.push({
+      code:
+        "OBJECT_LIMIT",
+      title:
+        `${architectureObjects.length} / ${MAX_OBJECTS} Architecture objects`,
+      detail:
+        "The project is close to the Creator object limit. Performance may decrease.",
+      objectId:
+        null,
+    });
+  }
+
+  if (
+    emptyLevels.length >
+    0
+  ) {
+    info.push({
+      code:
+        "EMPTY_LEVELS",
+      title:
+        `${emptyLevels.length} empty level(s)`,
+      detail:
+        "Empty levels are safe but will not create geometry in exports.",
+    });
+  }
+
+  levelStats
+    .filter(
+      (level) =>
+        level.outsideBed
+    )
+    .forEach(
+      (level) => {
+        info.push({
+          code:
+            "LEVEL_BED",
+          title:
+            `${level.name} footprint · ${level.width.toFixed(
+              1
+            )} × ${level.depth.toFixed(
+              1
+            )} mm`,
+          detail:
+            "This individual level exceeds the 256 × 256 mm build plate.",
+        });
+      }
+    );
+
+  const status =
+    blockers.length >
+    0
+      ? "BLOCKED"
+      : warnings.length >
+          0
+        ? "CHECK"
+        : visibleSolids.length >
+            0
+          ? "READY"
+          : "EMPTY";
+
+  return {
+    status,
+    blockerCount:
+      blockers.length,
+    warningCount:
+      warnings.length,
+    infoCount:
+      info.length,
+    blockers,
+    warnings,
+    info,
+    levelStats,
+    architectureObjectCount:
+      architectureObjects.length,
+    visibleSolidCount:
+      visibleSolids.length,
+    hiddenSolidCount:
+      hiddenSolids.length,
+    unappliedOpeningCount:
+      unappliedOpenings.length,
+    orphanOpeningCount:
+      orphanOpenings.length,
+  };
+}
 
 const FONT_5X7 = {
   A: ["01110","10001","10001","11111","10001","10001","10001"],
@@ -353,17 +1874,24 @@ function makeObject(
   };
 }
 
-function materialColor(
+function materialPreset(
   id
 ) {
   return (
     MATERIALS.find(
       (item) =>
         item.id === id
-    )?.color ||
+    ) ||
     MATERIALS[0]
-      .color
   );
+}
+
+function materialColor(
+  id
+) {
+  return materialPreset(
+    id
+  ).color;
 }
 
 function getPattern(
@@ -1306,8 +2834,161 @@ function makeBooleanObject(
   };
 }
 
+function creatorOrbitTargetFor(
+  objects,
+  primaryId
+) {
+  const target =
+    new THREE.Vector3(
+      0,
+      0,
+      0
+    );
+
+  const primary =
+    objects.find(
+      (item) =>
+        item.id ===
+          primaryId &&
+        item.visible !==
+          false
+    );
+
+  if (primary) {
+    let geometry =
+      null;
+
+    try {
+      geometry =
+        localGeometryForObject(
+          primary
+        );
+
+      geometry.computeBoundingBox();
+
+      const box =
+        geometry.boundingBox
+          ?.clone();
+
+      if (
+        box &&
+        Number.isFinite(
+          box.min.x
+        )
+      ) {
+        box.applyMatrix4(
+          creatorObjectWorldMatrix(
+            primary
+          )
+        );
+
+        box.getCenter(
+          target
+        );
+
+        return target;
+      }
+    } catch (
+      error
+    ) {
+      console.warn(
+        "Creator selected-object orbit target fallback:",
+        error
+      );
+    } finally {
+      geometry?.dispose?.();
+    }
+
+    target.set(
+      primary.position.x *
+        SCENE_SCALE,
+      primary.position.y *
+        SCENE_SCALE,
+      primary.position.z *
+        SCENE_SCALE
+    );
+
+    return target;
+  }
+
+  const visibleObjects =
+    objects.filter(
+      (item) =>
+        item.visible !==
+        false
+    );
+
+  if (
+    visibleObjects.length ===
+    0
+  ) {
+    return target;
+  }
+
+  const sceneBounds =
+    new THREE.Box3();
+
+  let hasBounds =
+    false;
+
+  visibleObjects.forEach(
+    (item) => {
+      let geometry =
+        null;
+
+      try {
+        geometry =
+          localGeometryForObject(
+            item
+          );
+
+        geometry.computeBoundingBox();
+
+        const box =
+          geometry.boundingBox
+            ?.clone();
+
+        if (
+          box &&
+          Number.isFinite(
+            box.min.x
+          )
+        ) {
+          box.applyMatrix4(
+            creatorObjectWorldMatrix(
+              item
+            )
+          );
+
+          sceneBounds.union(
+            box
+          );
+
+          hasBounds =
+            true;
+        }
+      } catch {
+        // Ignore one invalid object while finding the visible-model center.
+      } finally {
+        geometry?.dispose?.();
+      }
+    }
+  );
+
+  if (
+    hasBounds
+  ) {
+    sceneBounds.getCenter(
+      target
+    );
+  }
+
+  return target;
+}
+
 function CameraController({
   view,
+  target,
 }) {
   const {
     camera,
@@ -1319,10 +3000,11 @@ function CameraController({
       return;
     }
 
-    const target =
+    const safeTarget =
+      target?.clone?.() ||
       new THREE.Vector3(
         0,
-        0.8,
+        0,
         0
       );
 
@@ -1349,18 +3031,22 @@ function CameraController({
       ],
     };
 
-    const position =
+    const offset =
       positions[view] ||
       positions.perspective;
 
     camera.position.set(
-      position[0],
-      position[1],
-      position[2]
+      safeTarget.x +
+        offset[0],
+      safeTarget.y +
+        offset[1],
+      safeTarget.z +
+        offset[2]
     );
 
     if (
-      view === "top"
+      view ===
+      "top"
     ) {
       camera.up.set(
         0,
@@ -1376,14 +3062,15 @@ function CameraController({
     }
 
     camera.lookAt(
-      target
+      safeTarget
     );
 
     camera.updateProjectionMatrix();
+    camera.updateMatrixWorld();
 
     if (controls) {
       controls.target.copy(
-        target
+        safeTarget
       );
 
       controls.update?.();
@@ -1391,7 +3078,42 @@ function CameraController({
   }, [
     camera,
     controls,
+    target,
     view,
+  ]);
+
+  return null;
+}
+
+function SelectedObjectOrbitTarget({
+  controlsRef,
+  target,
+}) {
+  useEffect(() => {
+    const controls =
+      controlsRef.current;
+
+    if (!controls) {
+      return;
+    }
+
+    const safeTarget =
+      target?.clone?.() ||
+      new THREE.Vector3(
+        0,
+        0,
+        0
+      );
+
+    // IMPORTANT:
+    // Selection may change the future orbit pivot, but it must NEVER
+    // reposition, rotate or focus the camera by itself.
+    controls.target.copy(
+      safeTarget
+    );
+  }, [
+    controlsRef,
+    target,
   ]);
 
   return null;
@@ -1556,6 +3278,9 @@ function CreatorMesh({
   meshEditEnabled,
   meshSelection,
   onEditSelect,
+  plan2D = false,
+  elevation2D = null,
+  presentationYOffset = 0,
 }) {
   const groupRef =
     useRef(null);
@@ -1603,7 +3328,546 @@ function CreatorMesh({
       false &&
     transformMode !==
       "select" &&
-    !meshEditEnabled;
+    !meshEditEnabled &&
+    !elevation2D &&
+    Math.abs(
+      presentationYOffset
+    ) <
+      0.000001;
+
+  function handleObjectClick(
+    event
+  ) {
+    if (
+      item.locked
+    ) {
+      return;
+    }
+
+    event
+      .stopPropagation();
+
+    if (
+      meshEditEnabled &&
+      primary &&
+      item.type ===
+        "mesh"
+    ) {
+      const localPoint =
+        event.object
+          .worldToLocal(
+            event.point.clone()
+          );
+
+      onEditSelect(
+        item.id,
+        event.face,
+        event.faceIndex,
+        localPoint,
+        geometry,
+        Boolean(
+          event.shiftKey ||
+            event.ctrlKey ||
+            event.metaKey
+        )
+      );
+
+      return;
+    }
+
+    onSelect(
+      item.id,
+      Boolean(
+        event.shiftKey ||
+          event.ctrlKey ||
+          event.metaKey
+      )
+    );
+  }
+
+  const isArchitecturePlanObject =
+    plan2D &&
+    item.source ===
+      "architecture";
+
+  const planFrame =
+    isArchitecturePlanObject &&
+    item.parameters
+      ?.archType ===
+      "wall"
+      ? architectureWallFrameFor(
+          item,
+          item.parameters
+            ?.archScale ||
+            100
+        )
+      : null;
+
+  const planWidth =
+    Math.max(
+      0.02,
+      (
+        planFrame
+          ? planFrame.width /
+            (
+              item.parameters
+                ?.archScale ||
+              100
+            )
+          : item.dimensions.width
+      ) *
+        SCENE_SCALE
+    );
+
+  const planDepth =
+    Math.max(
+      0.02,
+      (
+        planFrame
+          ? planFrame.depth /
+            (
+              item.parameters
+                ?.archScale ||
+              100
+            )
+          : item.dimensions.depth
+      ) *
+        SCENE_SCALE
+    );
+
+  const planX =
+    (
+      planFrame
+        ? planFrame.x /
+          (
+            item.parameters
+              ?.archScale ||
+            100
+          )
+        : item.position.x
+    ) *
+    SCENE_SCALE;
+
+  const planZ =
+    (
+      planFrame
+        ? planFrame.z /
+          (
+            item.parameters
+              ?.archScale ||
+            100
+          )
+        : item.position.z
+    ) *
+    SCENE_SCALE;
+
+  const planRotationY =
+    THREE.MathUtils.degToRad(
+      planFrame
+        ? planFrame.rotationY
+        : item.rotation.y
+    );
+
+  const planY =
+    (
+      safeNumber(
+        item.parameters
+          ?.archLevelElevation,
+        0
+      ) /
+      Math.max(
+        1,
+        safeNumber(
+          item.parameters
+            ?.archScale,
+          100
+        )
+      )
+    ) *
+      SCENE_SCALE +
+    0.006;
+
+  const planArchType =
+    item.parameters
+      ?.archType;
+
+  const planOpeningLeaf =
+    Math.max(
+      0.02,
+      planWidth *
+        0.9
+    );
+
+  const planDoorArcPoints =
+    planArchType ===
+      "door"
+      ? Array.from(
+          {
+            length: 13,
+          },
+          (
+            _,
+            index
+          ) => {
+            const angle =
+              (
+                Math.PI /
+                2
+              ) *
+              (
+                index /
+                12
+              );
+
+            return [
+              -planWidth /
+                2 +
+                Math.cos(
+                  angle
+                ) *
+                  planOpeningLeaf,
+              0.012,
+              Math.sin(
+                angle
+              ) *
+                planOpeningLeaf,
+            ];
+          }
+        )
+      : [];
+
+  const planObjectGroup =
+    isArchitecturePlanObject
+      ? (
+        <group
+          ref={
+            groupRef
+          }
+          position={[
+            planX,
+            planY,
+            planZ,
+          ]}
+          rotation={[
+            0,
+            planRotationY,
+            0,
+          ]}
+          onClick={
+            handleObjectClick
+          }
+        >
+          <mesh
+            rotation={[
+              -Math.PI /
+                2,
+              0,
+              0,
+            ]}
+          >
+            <planeGeometry
+              args={[
+                planWidth,
+                planDepth,
+              ]}
+            />
+
+            <meshBasicMaterial
+              color={
+                item.role ===
+                  "hole"
+                  ? "#b56572"
+                  : materialColor(
+                      item.materialId
+                    )
+              }
+              transparent={
+                item.role ===
+                  "hole"
+              }
+              opacity={
+                item.role ===
+                  "hole"
+                  ? 0.42
+                  : selected
+                    ? 0.98
+                    : 0.86
+              }
+              side={
+                THREE.DoubleSide
+              }
+              depthWrite
+            />
+
+            <Edges
+              threshold={1}
+              color={
+                selected
+                  ? "#83c8fa"
+                  : item.role ===
+                      "hole"
+                    ? "#ef8998"
+                    : "#6f91a8"
+              }
+            />
+          </mesh>
+
+          {planArchType ===
+            "door" && (
+            <>
+              <Line
+                points={[
+                  [
+                    -planWidth /
+                      2,
+                    0.012,
+                    0,
+                  ],
+                  [
+                    -planWidth /
+                      2,
+                    0.012,
+                    planOpeningLeaf,
+                  ],
+                ]}
+                color="#e4a0ab"
+                lineWidth={1}
+              />
+
+              <Line
+                points={
+                  planDoorArcPoints
+                }
+                color="#d98c99"
+                lineWidth={1}
+              />
+            </>
+          )}
+
+          {planArchType ===
+            "window" && (
+            <>
+              <Line
+                points={[
+                  [
+                    -planWidth /
+                      2,
+                    0.012,
+                    -planDepth *
+                      0.18,
+                  ],
+                  [
+                    planWidth /
+                      2,
+                    0.012,
+                    -planDepth *
+                      0.18,
+                  ],
+                ]}
+                color="#83c5e8"
+                lineWidth={1}
+              />
+
+              <Line
+                points={[
+                  [
+                    -planWidth /
+                      2,
+                    0.012,
+                    planDepth *
+                      0.18,
+                  ],
+                  [
+                    planWidth /
+                      2,
+                    0.012,
+                    planDepth *
+                      0.18,
+                  ],
+                ]}
+                color="#83c5e8"
+                lineWidth={1}
+              />
+            </>
+          )}
+        </group>
+      )
+      : null;
+
+  const isArchitectureElevationObject =
+    Boolean(
+      elevation2D
+    ) &&
+    item.source ===
+      "architecture";
+
+  const elevationBounds =
+    useMemo(
+      () =>
+        isArchitectureElevationObject
+          ? architectureObjectBounds(
+              item
+            )
+          : null,
+      [
+        isArchitectureElevationObject,
+        elevation2D,
+        item,
+      ]
+    );
+
+  const elevationProjection =
+    elevationBounds
+      ? (() => {
+          const widthWorld =
+            elevation2D ===
+            "front"
+              ? elevationBounds.max.x -
+                elevationBounds.min.x
+              : elevationBounds.max.z -
+                elevationBounds.min.z;
+
+          const heightWorld =
+            elevationBounds.max.y -
+            elevationBounds.min.y;
+
+          const centerHorizontal =
+            elevation2D ===
+            "front"
+              ? (
+                  elevationBounds.min.x +
+                  elevationBounds.max.x
+                ) /
+                2
+              : (
+                  elevationBounds.min.z +
+                  elevationBounds.max.z
+                ) /
+                2;
+
+          const centerY =
+            (
+              elevationBounds.min.y +
+              elevationBounds.max.y
+            ) /
+            2;
+
+          return {
+            width:
+              Math.max(
+                0.012,
+                widthWorld
+              ),
+            height:
+              Math.max(
+                0.012,
+                heightWorld
+              ),
+            horizontal:
+              centerHorizontal,
+            y:
+              centerY,
+          };
+        })()
+      : null;
+
+  const elevationObjectGroup =
+    isArchitectureElevationObject &&
+    elevationProjection
+      ? (
+        <group
+          ref={
+            groupRef
+          }
+          position={
+            elevation2D ===
+            "front"
+              ? [
+                  elevationProjection
+                    .horizontal,
+                  elevationProjection
+                    .y,
+                  0,
+                ]
+              : [
+                  0,
+                  elevationProjection
+                    .y,
+                  elevationProjection
+                    .horizontal,
+                ]
+          }
+          rotation={
+            elevation2D ===
+            "front"
+              ? [
+                  0,
+                  0,
+                  0,
+                ]
+              : [
+                  0,
+                  Math.PI /
+                    2,
+                  0,
+                ]
+          }
+          onClick={
+            handleObjectClick
+          }
+        >
+          <mesh>
+            <planeGeometry
+              args={[
+                elevationProjection
+                  .width,
+                elevationProjection
+                  .height,
+              ]}
+            />
+
+            <meshBasicMaterial
+              color={
+                item.role ===
+                  "hole"
+                  ? "#b56572"
+                  : materialColor(
+                      item.materialId
+                    )
+              }
+              transparent={
+                item.role ===
+                  "hole"
+              }
+              opacity={
+                item.role ===
+                  "hole"
+                  ? 0.28
+                  : selected
+                    ? 0.98
+                    : 0.84
+              }
+              side={
+                THREE.DoubleSide
+              }
+              depthWrite
+            />
+
+            <Edges
+              threshold={1}
+              color={
+                selected
+                  ? "#83c8fa"
+                  : item.role ===
+                      "hole"
+                    ? "#ef8998"
+                    : "#6f91a8"
+              }
+            />
+          </mesh>
+        </group>
+      )
+      : null;
 
   const objectGroup = (
     <group
@@ -1612,7 +3876,8 @@ function CreatorMesh({
         item.position.x *
           SCENE_SCALE,
         item.position.y *
-          SCENE_SCALE,
+          SCENE_SCALE +
+          presentationYOffset,
         item.position.z *
           SCENE_SCALE,
       ]}
@@ -1628,55 +3893,9 @@ function CreatorMesh({
             180),
       ]}
       scale={scale}
-      onClick={(
-        event
-      ) => {
-        if (
-          item.locked
-        ) {
-          return;
-        }
-
-        event
-          .stopPropagation();
-
-        if (
-          meshEditEnabled &&
-          primary &&
-          item.type ===
-            "mesh"
-        ) {
-          const localPoint =
-            event.object
-              .worldToLocal(
-                event.point.clone()
-              );
-
-          onEditSelect(
-            item.id,
-            event.face,
-            event.faceIndex,
-            localPoint,
-            geometry,
-            Boolean(
-              event.shiftKey ||
-                event.ctrlKey ||
-                event.metaKey
-            )
-          );
-
-          return;
-        }
-
-        onSelect(
-          item.id,
-          Boolean(
-            event.shiftKey ||
-              event.ctrlKey ||
-              event.metaKey
-          )
-        );
-      }}
+      onClick={
+        handleObjectClick
+      }
     >
       <mesh
         geometry={
@@ -1700,25 +3919,49 @@ function CreatorMesh({
           roughness={
             isHole
               ? 0.52
-              : 0.36
+              : materialPreset(
+                  item.materialId
+                ).roughness ??
+                0.36
           }
           metalness={
             isHole
               ? 0
-              : 0.14
+              : materialPreset(
+                  item.materialId
+                ).metalness ??
+                0.14
           }
           transparent={
-            isHole
+            isHole ||
+            Boolean(
+              materialPreset(
+                item.materialId
+              ).transparent
+            )
           }
           opacity={
             isHole
               ? 0.28
-              : item.locked
-                ? 0.82
-                : 1
+              : (
+                  materialPreset(
+                    item.materialId
+                  ).opacity ??
+                  1
+                ) *
+                (
+                  item.locked
+                    ? 0.82
+                    : 1
+                )
           }
           depthWrite={
-            !isHole
+            !isHole &&
+            !Boolean(
+              materialPreset(
+                item.materialId
+              ).transparent
+            )
           }
           emissive={
             selected
@@ -1784,9 +4027,15 @@ function CreatorMesh({
 
   return (
     <>
-      {objectGroup}
+      {isArchitecturePlanObject
+        ? planObjectGroup
+        : isArchitectureElevationObject
+          ? elevationObjectGroup
+          : objectGroup}
 
-      {canTransform && (
+      {!isArchitecturePlanObject &&
+        !isArchitectureElevationObject &&
+        canTransform && (
         <TransformControls
           object={
             groupRef
@@ -1830,6 +4079,689 @@ function CreatorMesh({
           }
         />
       )}
+    </>
+  );
+}
+
+function PlanRoomLabels({
+  objects,
+  activeLevelId,
+}) {
+  const rooms =
+    useMemo(
+      () => {
+        const grouped =
+          new Map();
+
+        objects.forEach(
+          (item) => {
+            const roomId =
+              item.parameters
+                ?.archRoomId;
+
+            if (
+              !roomId ||
+              item.visible ===
+                false ||
+              (
+                activeLevelId &&
+                item.parameters
+                  ?.archLevelId !==
+                  activeLevelId
+              )
+            ) {
+              return;
+            }
+
+            if (
+              !grouped.has(
+                roomId
+              )
+            ) {
+              grouped.set(
+                roomId,
+                []
+              );
+            }
+
+            grouped.get(
+              roomId
+            ).push(
+              item
+            );
+          }
+        );
+
+        return Array.from(
+          grouped.entries()
+        ).map(
+          ([
+            roomId,
+            roomObjects,
+          ]) => {
+            const floor =
+              roomObjects.find(
+                (item) =>
+                  item.parameters
+                    ?.archType ===
+                  "floor"
+              );
+
+            const source =
+              floor ||
+              roomObjects[0];
+
+            const centerX =
+              floor
+                ? floor.position.x
+                : roomObjects.reduce(
+                    (
+                      total,
+                      item
+                    ) =>
+                      total +
+                      item.position.x,
+                    0
+                  ) /
+                  roomObjects.length;
+
+            const centerZ =
+              floor
+                ? floor.position.z
+                : roomObjects.reduce(
+                    (
+                      total,
+                      item
+                    ) =>
+                      total +
+                      item.position.z,
+                    0
+                  ) /
+                  roomObjects.length;
+
+            return {
+              id:
+                roomId,
+              name:
+                source.parameters
+                  ?.archRoomName ||
+                source.groupName ||
+                "ROOM",
+              areaM2:
+                roomObjects.reduce(
+                  (
+                    value,
+                    item
+                  ) =>
+                    Math.max(
+                      value,
+                      safeNumber(
+                        item.parameters
+                          ?.archRoomAreaM2,
+                        0
+                      )
+                    ),
+                  0
+                ),
+              x:
+                centerX *
+                SCENE_SCALE,
+              z:
+                centerZ *
+                SCENE_SCALE,
+              y:
+                (
+                  safeNumber(
+                    source.parameters
+                      ?.archLevelElevation,
+                    0
+                  ) /
+                  Math.max(
+                    1,
+                    safeNumber(
+                      source.parameters
+                        ?.archScale,
+                      100
+                    )
+                  )
+                ) *
+                  SCENE_SCALE +
+                0.018,
+            };
+          }
+        );
+      },
+      [
+        objects,
+      ]
+    );
+
+  return (
+    <>
+      {rooms.map(
+        (room) => (
+          <Html
+            key={
+              room.id
+            }
+            position={[
+              room.x,
+              room.y,
+              room.z,
+            ]}
+            center
+            transform={false}
+            zIndexRange={[
+              20,
+              0,
+            ]}
+          >
+            <div className="creator-plan-room-label">
+              <strong>
+                {
+                  room.name
+                }
+              </strong>
+
+              {room.areaM2 >
+                0 && (
+                <span>
+                  {room.areaM2.toFixed(
+                    2
+                  )} M²
+                </span>
+              )}
+            </div>
+          </Html>
+        )
+      )}
+    </>
+  );
+}
+
+function PlanMeasurement({
+  measurement,
+  scale,
+  elevationMm,
+}) {
+  const safeScale =
+    Math.max(
+      1,
+      safeNumber(
+        scale,
+        100
+      )
+    );
+
+  const x1 =
+    measurement.a.realX /
+    safeScale *
+    SCENE_SCALE;
+
+  const z1 =
+    measurement.a.realZ /
+    safeScale *
+    SCENE_SCALE;
+
+  const x2 =
+    measurement.b.realX /
+    safeScale *
+    SCENE_SCALE;
+
+  const z2 =
+    measurement.b.realZ /
+    safeScale *
+    SCENE_SCALE;
+
+  const midX =
+    (
+      x1 +
+      x2
+    ) /
+    2;
+
+  const midZ =
+    (
+      z1 +
+      z2
+    ) /
+    2;
+
+  const length =
+    Math.hypot(
+      x2 -
+      x1,
+      z2 -
+      z1
+    );
+
+  const angle =
+    -Math.atan2(
+      z2 -
+      z1,
+      x2 -
+      x1
+    );
+
+  const y =
+    (
+      safeNumber(
+        elevationMm,
+        0
+      ) /
+      safeScale
+    ) *
+      SCENE_SCALE +
+    0.025;
+
+  return (
+    <>
+      <mesh
+        position={[
+          midX,
+          y,
+          midZ,
+        ]}
+        rotation={[
+          -Math.PI /
+            2,
+          0,
+          angle,
+        ]}
+        raycast={() =>
+          null
+        }
+      >
+        <planeGeometry
+          args={[
+            Math.max(
+              0.01,
+              length
+            ),
+            0.008,
+          ]}
+        />
+
+        <meshBasicMaterial
+          color="#72bce8"
+          transparent
+          opacity={0.9}
+          side={
+            THREE.DoubleSide
+          }
+          depthTest={false}
+        />
+      </mesh>
+
+      <Html
+        position={[
+          midX,
+          y +
+            0.004,
+          midZ,
+        ]}
+        center
+        transform={false}
+        zIndexRange={[
+          24,
+          0,
+        ]}
+      >
+        <div className="creator-plan-dimension-label creator-plan-measure-label">
+          {Math.round(
+            measurement.distanceMm
+          )} MM
+        </div>
+      </Html>
+    </>
+  );
+}
+
+function PlanArchitectureAnnotations({
+  objects,
+  measurements,
+  activeLevel,
+  architectureScale,
+  showDimensions,
+}) {
+  const visible =
+    objects.filter(
+      (item) =>
+        item.source ===
+          "architecture" &&
+        item.visible !==
+          false &&
+        (
+          !activeLevel ||
+          item.parameters
+            ?.archLevelId ===
+            activeLevel.id
+        )
+    );
+
+  const walls =
+    visible.filter(
+      (item) =>
+        item.parameters
+          ?.archType ===
+        "wall"
+    );
+
+  const openings =
+    visible.filter(
+      (item) =>
+        [
+          "door",
+          "window",
+        ].includes(
+          item.parameters
+            ?.archType
+        )
+    );
+
+  if (
+    !showDimensions
+  ) {
+    return null;
+  }
+
+  return (
+    <>
+      {walls.map(
+        (wall) => {
+          const frame =
+            architectureWallFrameFor(
+              wall,
+              architectureScale
+            );
+
+          const x =
+            frame.x /
+            architectureScale *
+            SCENE_SCALE;
+
+          const z =
+            frame.z /
+            architectureScale *
+            SCENE_SCALE;
+
+          const y =
+            (
+              safeNumber(
+                wall.parameters
+                  ?.archLevelElevation,
+                0
+              ) /
+              architectureScale
+            ) *
+              SCENE_SCALE +
+            0.021;
+
+          return (
+            <Html
+              key={
+                `wall-dim-${wall.id}`
+              }
+              position={[
+                x,
+                y,
+                z,
+              ]}
+              center
+              transform={false}
+              zIndexRange={[
+                22,
+                0,
+              ]}
+            >
+              <div className="creator-plan-dimension-label">
+                {Math.round(
+                  frame.width
+                )} MM
+              </div>
+            </Html>
+          );
+        }
+      )}
+
+      {openings.map(
+        (opening) => {
+          const type =
+            opening.parameters
+              ?.archType;
+
+          const width =
+            safeNumber(
+              opening.parameters
+                ?.archRealDimensions
+                ?.width,
+              opening.dimensions
+                .width *
+                architectureScale
+            );
+
+          const y =
+            (
+              safeNumber(
+                opening.parameters
+                  ?.archLevelElevation,
+                0
+              ) /
+              architectureScale
+            ) *
+              SCENE_SCALE +
+            0.023;
+
+          return (
+            <Html
+              key={
+                `opening-label-${opening.id}`
+              }
+              position={[
+                opening.position.x *
+                  SCENE_SCALE,
+                y,
+                opening.position.z *
+                  SCENE_SCALE,
+              ]}
+              center
+              transform={false}
+              zIndexRange={[
+                23,
+                0,
+              ]}
+            >
+              <div
+                className={`creator-plan-opening-label ${type}`}
+              >
+                {type ===
+                "door"
+                  ? "D"
+                  : "W"} · {Math.round(
+                  width
+                )}
+              </div>
+            </Html>
+          );
+        }
+      )}
+
+      {measurements
+        .filter(
+          (measurement) =>
+            !activeLevel ||
+            measurement.levelId ===
+              activeLevel.id
+        )
+        .map(
+          (measurement) => (
+            <PlanMeasurement
+              key={
+                measurement.id
+              }
+              measurement={
+                measurement
+              }
+              scale={
+                architectureScale
+              }
+              elevationMm={
+                activeLevel
+                  ?.elevation ||
+                0
+              }
+            />
+          )
+        )}
+    </>
+  );
+}
+
+function ElevationLevelMarkers({
+  levels,
+  scale,
+  view,
+}) {
+  if (
+    ![
+      "front",
+      "right",
+    ].includes(
+      view
+    )
+  ) {
+    return null;
+  }
+
+  const safeScale =
+    Math.max(
+      1,
+      safeNumber(
+        scale,
+        100
+      )
+    );
+
+  return (
+    <>
+      {levels
+        .filter(
+          (level) =>
+            level.visible !==
+            false
+        )
+        .map(
+          (level) => {
+            const y =
+              (
+                safeNumber(
+                  level.elevation,
+                  0
+                ) /
+                safeScale
+              ) *
+              SCENE_SCALE;
+
+            const points =
+              view ===
+              "front"
+                ? [
+                    [
+                      -4.8,
+                      y,
+                      0.008,
+                    ],
+                    [
+                      4.8,
+                      y,
+                      0.008,
+                    ],
+                  ]
+                : [
+                    [
+                      0.008,
+                      y,
+                      -4.8,
+                    ],
+                    [
+                      0.008,
+                      y,
+                      4.8,
+                    ],
+                  ];
+
+            const labelPosition =
+              view ===
+              "front"
+                ? [
+                    -4.4,
+                    y +
+                      0.04,
+                    0.015,
+                  ]
+                : [
+                    0.015,
+                    y +
+                      0.04,
+                    -4.4,
+                  ];
+
+            return (
+              <group
+                key={
+                  `elevation-level-${level.id}`
+                }
+              >
+                <Line
+                  points={
+                    points
+                  }
+                  color="#315f7c"
+                  lineWidth={1}
+                  dashed
+                  dashSize={0.08}
+                  gapSize={0.06}
+                />
+
+                <Html
+                  position={
+                    labelPosition
+                  }
+                  center
+                  transform={false}
+                  zIndexRange={[
+                    18,
+                    0,
+                  ]}
+                >
+                  <div className="creator-elevation-level-label">
+                    <strong>
+                      {
+                        level.name
+                      }
+                    </strong>
+
+                    <span>
+                      {safeNumber(
+                        level.elevation,
+                        0
+                      ) >=
+                      0
+                        ? "+"
+                        : ""}
+                      {Math.round(
+                        safeNumber(
+                          level.elevation,
+                          0
+                        )
+                      )} MM
+                    </span>
+                  </div>
+                </Html>
+              </group>
+            );
+          }
+        )}
     </>
   );
 }
@@ -1926,10 +4858,56 @@ function CreatorScene({
   meshEditEnabled,
   meshSelection,
   onEditSelect,
-  navigationEnabled = true,
+  gridCellSize = 0.36,
+  gridSectionSize = 1.8,
+  plan2D = false,
+  elevation2D = null,
+  levelExplodeOffsets = {},
+  planAnnotations = true,
+  planMeasurements = [],
+  architectureActiveLevel = null,
+  architectureActiveLevelId = null,
+  architectureLevels = [],
+  architectureScale = 100,
 }) {
   const orbitControlsRef =
     useRef(null);
+
+  const cameraTarget =
+    useMemo(
+      () =>
+        creatorOrbitTargetFor(
+          objects,
+          null
+        ),
+      [
+        objects,
+      ]
+    );
+
+  const orbitTarget =
+    useMemo(
+      () =>
+        creatorOrbitTargetFor(
+          objects,
+          primaryId
+        ),
+      [
+        objects,
+        primaryId,
+      ]
+    );
+
+  const flat2D =
+    plan2D ||
+    Boolean(
+      elevation2D
+    );
+
+  const activeOrbitTarget =
+    flat2D
+      ? cameraTarget
+      : orbitTarget;
 
   return (
     <>
@@ -1937,38 +4915,60 @@ function CreatorScene({
         view={
           cameraView
         }
+        target={
+          cameraTarget
+        }
       />
 
-      <ambientLight
-        intensity={0.72}
-      />
+      {!flat2D && (
+        <>
+          <ambientLight
+            intensity={0.72}
+          />
 
-      <directionalLight
-        position={[
-          5,
-          7,
-          6,
-        ]}
-        intensity={2.05}
-        color="#dceeff"
-        castShadow
-      />
+          <directionalLight
+            position={[
+              5,
+              7,
+              6,
+            ]}
+            intensity={2.05}
+            color="#dceeff"
+            castShadow
+          />
 
-      <pointLight
-        position={[
-          -4,
-          2,
-          3,
-        ]}
-        intensity={1.05}
-        color="#238fe1"
-      />
+          <pointLight
+            position={[
+              -4,
+              2,
+              3,
+            ]}
+            intensity={1.05}
+            color="#238fe1"
+          />
+        </>
+      )}
 
       {objects
         .filter(
           (item) =>
             item.visible !==
-            false
+              false &&
+            (
+              !plan2D ||
+              (
+                item.source ===
+                  "architecture" &&
+                item.parameters
+                  ?.archLevelId ===
+                  architectureActiveLevelId
+              )
+            ) &&
+            (
+              !elevation2D ||
+              item.source ===
+                "architecture"
+            )
         )
         .map(
           (item) => (
@@ -2024,67 +5024,143 @@ function CreatorScene({
               onEditSelect={
                 onEditSelect
               }
+              plan2D={
+                plan2D
+              }
+              elevation2D={
+                elevation2D
+              }
+              presentationYOffset={
+                plan2D
+                  ? 0
+                  : safeNumber(
+                      levelExplodeOffsets[
+                        item.parameters
+                          ?.archLevelId
+                      ],
+                      0
+                    )
+              }
             />
           )
         )}
 
-      <BuildPlate />
+      {plan2D && (
+        <>
+          <PlanRoomLabels
+            objects={
+              objects
+            }
+            activeLevelId={
+              architectureActiveLevelId
+            }
+          />
 
-      <ContactShadows
-        position={[
-          0,
-          -0.02,
-          0,
-        ]}
-        opacity={0.2}
-        scale={10}
-        blur={3.4}
-        far={6}
-      />
+          <PlanArchitectureAnnotations
+            objects={
+              objects
+            }
+            measurements={
+              planMeasurements
+            }
+            activeLevel={
+              architectureActiveLevel
+            }
+            architectureScale={
+              architectureScale
+            }
+            showDimensions={
+              planAnnotations
+            }
+          />
+        </>
+      )}
 
-      <Grid
-        position={[
-          0,
-          -0.04,
-          0,
-        ]}
-        args={[
-          12,
-          12,
-        ]}
-        cellSize={0.36}
-        cellThickness={0.45}
-        cellColor="#203e56"
-        sectionSize={1.8}
-        sectionThickness={0.75}
-        sectionColor="#2c5c7d"
-        fadeDistance={11}
-        fadeStrength={1}
-        infiniteGrid
-      />
+      {elevation2D && (
+        <ElevationLevelMarkers
+          levels={
+            architectureLevels
+          }
+          scale={
+            architectureScale
+          }
+          view={
+            elevation2D
+          }
+        />
+      )}
 
-      <Environment
-        preset="city"
-        environmentIntensity={
-          0.22
-        }
-      />
+      {!elevation2D && (
+        <BuildPlate />
+      )}
+
+      {!flat2D && (
+        <ContactShadows
+          position={[
+            0,
+            -0.02,
+            0,
+          ]}
+          opacity={0.2}
+          scale={10}
+          blur={3.4}
+          far={6}
+        />
+      )}
+
+      {!elevation2D && (
+        <Grid
+          position={[
+            0,
+            -0.04,
+            0,
+          ]}
+          args={[
+            12,
+            12,
+          ]}
+          cellSize={
+            gridCellSize
+          }
+          cellThickness={0.45}
+          cellColor="#203e56"
+          sectionSize={
+            gridSectionSize
+          }
+          sectionThickness={0.75}
+          sectionColor="#2c5c7d"
+          fadeDistance={11}
+          fadeStrength={1}
+          infiniteGrid
+        />
+      )}
+
+      {!flat2D && (
+        <Environment
+          preset="city"
+          environmentIntensity={
+            0.22
+          }
+        />
+      )}
 
       <OrbitControls
         ref={
           orbitControlsRef
         }
         makeDefault
-        enabled={
-          navigationEnabled
-        }
+        enabled
         enablePan
-        enableRotate
+        enableRotate={
+          !flat2D
+        }
         enableZoom
         screenSpacePanning
         mouseButtons={{
           LEFT:
-            THREE.MOUSE.ROTATE,
+            flat2D
+              ? THREE.MOUSE.PAN
+              : THREE.MOUSE.ROTATE,
           MIDDLE:
             THREE.MOUSE.PAN,
           RIGHT:
@@ -2093,11 +5169,22 @@ function CreatorScene({
         minDistance={3}
         maxDistance={11}
         autoRotate={
-          advanced
+          flat2D
             ? false
-            : autoRotate
+            : advanced
+              ? false
+              : autoRotate
         }
         autoRotateSpeed={0.45}
+      />
+
+      <SelectedObjectOrbitTarget
+        controlsRef={
+          orbitControlsRef
+        }
+        target={
+          activeOrbitTarget
+        }
       />
     </>
   );
@@ -2985,6 +6072,251 @@ function BeyondCreator() {
   );
 
   const [
+    architectureUnit,
+    setArchitectureUnit,
+  ] = useState(
+    "mm"
+  );
+
+  const [
+    architectureScale,
+    setArchitectureScale,
+  ] = useState(
+    100
+  );
+
+  const [
+    architectureView,
+    setArchitectureView,
+  ] = useState(
+    "plan"
+  );
+
+  const [
+    architectureGridMm,
+    setArchitectureGridMm,
+  ] = useState(
+    1000
+  );
+
+  const [
+    architectureSnapMm,
+    setArchitectureSnapMm,
+  ] = useState(
+    100
+  );
+
+  const [
+    architectureSmartWallSnap,
+    setArchitectureSmartWallSnap,
+  ] = useState(
+    true
+  );
+
+  const [
+    architectureWallChain,
+    setArchitectureWallChain,
+  ] = useState(
+    true
+  );
+
+  const [
+    architectureAngleSnapDeg,
+    setArchitectureAngleSnapDeg,
+  ] = useState(
+    45
+  );
+
+  const [
+    architectureLevels,
+    setArchitectureLevels,
+  ] = useState([
+    {
+      id: "ground",
+      name: "GROUND",
+      elevation: 0,
+      visible: true,
+    },
+  ]);
+
+  const [
+    architectureActiveLevelId,
+    setArchitectureActiveLevelId,
+  ] = useState(
+    "ground"
+  );
+
+  const [
+    architectureWallHeightMm,
+    setArchitectureWallHeightMm,
+  ] = useState(
+    3000
+  );
+
+  const [
+    architectureWallThicknessMm,
+    setArchitectureWallThicknessMm,
+  ] = useState(
+    200
+  );
+
+  const [
+    architectureFloorThicknessMm,
+    setArchitectureFloorThicknessMm,
+  ] = useState(
+    180
+  );
+
+  const [
+    architectureRoomFloor,
+    setArchitectureRoomFloor,
+  ] = useState(
+    true
+  );
+
+  const [
+    architectureStairWidthMm,
+    setArchitectureStairWidthMm,
+  ] = useState(
+    1100
+  );
+
+  const [
+    architectureStairRunMm,
+    setArchitectureStairRunMm,
+  ] = useState(
+    3200
+  );
+
+  const [
+    architectureStairRiseMm,
+    setArchitectureStairRiseMm,
+  ] = useState(
+    3000
+  );
+
+  const [
+    architectureStairSteps,
+    setArchitectureStairSteps,
+  ] = useState(
+    16
+  );
+
+  const [
+    architectureStairDirectionDeg,
+    setArchitectureStairDirectionDeg,
+  ] = useState(
+    0
+  );
+
+  const [
+    architectureExplodedLevels,
+    setArchitectureExplodedLevels,
+  ] = useState(
+    false
+  );
+
+  const [
+    architectureExplodeGapMm,
+    setArchitectureExplodeGapMm,
+  ] = useState(
+    1200
+  );
+
+  const [
+    architectureRoofWidthMm,
+    setArchitectureRoofWidthMm,
+  ] = useState(
+    6000
+  );
+
+  const [
+    architectureRoofDepthMm,
+    setArchitectureRoofDepthMm,
+  ] = useState(
+    5000
+  );
+
+  const [
+    architectureRoofThicknessMm,
+    setArchitectureRoofThicknessMm,
+  ] = useState(
+    180
+  );
+
+  const [
+    architectureRoofOverhangMm,
+    setArchitectureRoofOverhangMm,
+  ] = useState(
+    300
+  );
+
+  const [
+    architectureRoofPitchDeg,
+    setArchitectureRoofPitchDeg,
+  ] = useState(
+    25
+  );
+
+  const [
+    architectureRoofRidgeDirection,
+    setArchitectureRoofRidgeDirection,
+  ] = useState(
+    "z"
+  );
+
+  const [
+    architectureRoofCenterXmm,
+    setArchitectureRoofCenterXmm,
+  ] = useState(
+    0
+  );
+
+  const [
+    architectureRoofCenterZmm,
+    setArchitectureRoofCenterZmm,
+  ] = useState(
+    0
+  );
+
+  const [
+    architecturePlanAnnotations,
+    setArchitecturePlanAnnotations,
+  ] = useState(
+    true
+  );
+
+  const [
+    architectureMeasurements,
+    setArchitectureMeasurements,
+  ] = useState([]);
+
+  const [
+    architectureMeasureStart,
+    setArchitectureMeasureStart,
+  ] = useState(null);
+
+  const [
+    architectureMeasurePointer,
+    setArchitectureMeasurePointer,
+  ] = useState(null);
+
+  const [
+    architectureDrawTool,
+    setArchitectureDrawTool,
+  ] = useState(null);
+
+  const [
+    architectureWallStart,
+    setArchitectureWallStart,
+  ] = useState(null);
+
+  const [
+    architecturePointer,
+    setArchitecturePointer,
+  ] = useState(null);
+
+  const [
     transformMode,
     setTransformMode,
   ] = useState(
@@ -3200,6 +6532,213 @@ function BeyondCreator() {
         primaryId
     ) || null;
 
+  const architectureActiveLevel =
+    architectureLevels.find(
+      (level) =>
+        level.id ===
+        architectureActiveLevelId
+    ) ||
+    architectureLevels[0];
+
+  const architectureCheck =
+    useMemo(
+      () =>
+        architecturePrintCheck(
+          objects
+        ),
+      [
+        objects,
+      ]
+    );
+
+  const architectureProductionQA =
+    useMemo(
+      () =>
+        architectureProductionCheck(
+          objects,
+          architectureLevels,
+          architectureCheck
+        ),
+      [
+        objects,
+        architectureLevels,
+        architectureCheck,
+      ]
+    );
+
+  const architectureExportBlocked =
+    creatorMode ===
+      "architecture" &&
+    architectureProductionQA
+      .blockerCount >
+      0;
+
+  const architectureLevelExplodeOffsets =
+    useMemo(
+      () => {
+        if (
+          !architectureExplodedLevels
+        ) {
+          return {};
+        }
+
+        const sorted =
+          [...architectureLevels]
+            .sort(
+              (
+                first,
+                second
+              ) =>
+                safeNumber(
+                  first.elevation,
+                  0
+                ) -
+                safeNumber(
+                  second.elevation,
+                  0
+                )
+            );
+
+        const offsets = {};
+
+        sorted.forEach(
+          (
+            level,
+            index
+          ) => {
+            offsets[
+              level.id
+            ] =
+              (
+                architectureExplodeGapMm *
+                index /
+                architectureScale
+              ) *
+              SCENE_SCALE;
+          }
+        );
+
+        return offsets;
+      },
+      [
+        architectureExplodedLevels,
+        architectureExplodeGapMm,
+        architectureLevels,
+        architectureScale,
+      ]
+    );
+
+  const architectureObjects =
+    objects.filter(
+      (item) =>
+        item.source ===
+        "architecture"
+    );
+
+  const selectedArchitectureOpening =
+    selected &&
+    selected.source ===
+      "architecture" &&
+    selected.role ===
+      "hole" &&
+    [
+      "door",
+      "window",
+    ].includes(
+      selected.parameters
+        ?.archType
+    )
+      ? selected
+      : null;
+
+  const architectureOpeningHost =
+    selectedArchitectureOpening
+      ? objects.find(
+          (item) =>
+            item.id ===
+            selectedArchitectureOpening
+              .parameters
+              ?.archHostWallId
+        ) ||
+        null
+      : null;
+
+  const architectureRooms =
+    useMemo(
+      () => {
+        const roomMap =
+          new Map();
+
+        objects.forEach(
+          (item) => {
+            const roomId =
+              item.parameters
+                ?.archRoomId;
+
+            if (!roomId) {
+              return;
+            }
+
+            const existing =
+              roomMap.get(
+                roomId
+              ) || {
+                id:
+                  roomId,
+                name:
+                  item.parameters
+                    ?.archRoomName ||
+                  item.groupName ||
+                  "ROOM",
+                areaM2: 0,
+                levelName:
+                  item.parameters
+                    ?.archLevelName ||
+                  "GROUND",
+                objectIds: [],
+              };
+
+            existing.objectIds.push(
+              item.id
+            );
+
+            existing.areaM2 =
+              Math.max(
+                existing.areaM2,
+                safeNumber(
+                  item.parameters
+                    ?.archRoomAreaM2,
+                  0
+                )
+              );
+
+            roomMap.set(
+              roomId,
+              existing
+            );
+          }
+        );
+
+        return Array.from(
+          roomMap.values()
+        ).sort(
+          (
+            first,
+            second
+          ) =>
+            first.levelName.localeCompare(
+              second.levelName
+            ) ||
+            first.name.localeCompare(
+              second.name
+            )
+        );
+      },
+      [
+        objects,
+      ]
+    );
+
   const selectedObjects =
     objects.filter(
       (item) =>
@@ -3221,6 +6760,93 @@ function BeyondCreator() {
         item.role ===
         "hole"
     );
+
+  const selectedArchitectureWalls =
+    selectedObjects.filter(
+      (item) =>
+        item.source ===
+          "architecture" &&
+        item.parameters
+          ?.archType ===
+          "wall" &&
+        item.role ===
+          "solid"
+    );
+
+  const canJoinArchitectureWalls =
+    selectedArchitectureWalls.length ===
+      2 &&
+    selectedArchitectureWalls.every(
+      (item) =>
+        !item.locked &&
+        !item.parameters
+          ?.architectureCut
+    );
+
+  const selectedEditableArchitectureWall =
+    selected &&
+    selected.source ===
+      "architecture" &&
+    selected.parameters
+      ?.archType ===
+      "wall" &&
+    selected.role ===
+      "solid" &&
+    !selected.parameters
+      ?.architectureCut
+      ? selected
+      : null;
+
+  const selectedWallEndpoints =
+    selectedEditableArchitectureWall
+      ? (() => {
+          const frame =
+            architectureWallFrameFor(
+              selectedEditableArchitectureWall,
+              architectureScale
+            );
+
+          const theta =
+            THREE.MathUtils.degToRad(
+              frame.rotationY
+            );
+
+          const half =
+            frame.width /
+            2;
+
+          const dx =
+            Math.cos(
+              theta
+            ) *
+            half;
+
+          const dz =
+            -Math.sin(
+              theta
+            ) *
+            half;
+
+          return {
+            start: {
+              x:
+                frame.x -
+                dx,
+              z:
+                frame.z -
+                dz,
+            },
+            end: {
+              x:
+                frame.x +
+                dx,
+              z:
+                frame.z +
+                dz,
+            },
+          };
+        })()
+      : null;
 
   const canCombine =
     selectedObjects.length >=
@@ -3359,8 +6985,8 @@ function BeyondCreator() {
 
   useEffect(() => {
     if (
-      creatorMode !==
-      "advanced"
+      creatorMode ===
+      "simple"
     ) {
       return;
     }
@@ -3396,6 +7022,237 @@ function BeyondCreator() {
       active = false;
     };
   }, [creatorMode]);
+
+  useEffect(() => {
+    if (
+      creatorMode !==
+        "architecture" ||
+      ![
+        "wall",
+        "room",
+        "measure",
+      ].includes(
+        architectureDrawTool
+      )
+    ) {
+      return undefined;
+    }
+
+    const canvas =
+      creatorCanvasWrapRef.current
+        ?.querySelector(
+          "canvas"
+        );
+
+    if (!canvas) {
+      return undefined;
+    }
+
+    let leftPress =
+      null;
+
+    function handleDrawPointerDown(
+      event
+    ) {
+      if (
+        event.button !==
+        0
+      ) {
+        return;
+      }
+
+      leftPress = {
+        pointerId:
+          event.pointerId,
+        x:
+          event.clientX,
+        y:
+          event.clientY,
+      };
+    }
+
+    function handleDrawPointerMove(
+      event
+    ) {
+      if (
+        architectureDrawTool ===
+          "measure" &&
+        architectureMeasureStart
+      ) {
+        handleArchitectureMeasurePointerMove(
+          event
+        );
+
+        return;
+      }
+
+      if (
+        architectureWallStart
+      ) {
+        handleArchitectureDrawPointerMove(
+          event
+        );
+      }
+    }
+
+    function handleDrawPointerUp(
+      event
+    ) {
+      if (
+        event.button !==
+          0 ||
+        !leftPress ||
+        (
+          leftPress.pointerId !==
+            undefined &&
+          event.pointerId !==
+            leftPress.pointerId
+        )
+      ) {
+        return;
+      }
+
+      const distance =
+        Math.hypot(
+          event.clientX -
+            leftPress.x,
+          event.clientY -
+            leftPress.y
+        );
+
+      leftPress =
+        null;
+
+      // Drag = navigation. Do not interfere with OrbitControls.
+      if (
+        distance >
+        6
+      ) {
+        return;
+      }
+
+      // Click = architectural placement.
+      // Do NOT prevent or stop the pointer event: OrbitControls must receive
+      // the same pointer lifecycle as the regular workspace.
+      if (
+        architectureDrawTool ===
+        "room"
+      ) {
+        handleArchitectureRoomPointerDown(
+          event
+        );
+
+        return;
+      }
+
+      if (
+        architectureDrawTool ===
+        "measure"
+      ) {
+        handleArchitectureMeasurePointerDown(
+          event
+        );
+
+        return;
+      }
+
+      handleArchitectureDrawPointerDown(
+        event
+      );
+    }
+
+    function handleDrawContextMenu(
+      event
+    ) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      setArchitectureDrawTool(
+        null
+      );
+
+      setArchitectureWallStart(
+        null
+      );
+
+      setArchitecturePointer(
+        null
+      );
+
+      setArchitectureMeasureStart(
+        null
+      );
+
+      setArchitectureMeasurePointer(
+        null
+      );
+
+      setOperationMessage(
+        "Architecture drawing cancelled. Regular mouse navigation was unchanged."
+      );
+    }
+
+    canvas.addEventListener(
+      "pointerdown",
+      handleDrawPointerDown,
+      {
+        passive: true,
+      }
+    );
+
+    canvas.addEventListener(
+      "pointermove",
+      handleDrawPointerMove,
+      {
+        passive: true,
+      }
+    );
+
+    canvas.addEventListener(
+      "pointerup",
+      handleDrawPointerUp,
+      {
+        passive: true,
+      }
+    );
+
+    canvas.addEventListener(
+      "contextmenu",
+      handleDrawContextMenu,
+      {
+        capture: true,
+        passive: false,
+      }
+    );
+
+    return () => {
+      canvas.removeEventListener(
+        "pointerdown",
+        handleDrawPointerDown
+      );
+
+      canvas.removeEventListener(
+        "pointermove",
+        handleDrawPointerMove
+      );
+
+      canvas.removeEventListener(
+        "pointerup",
+        handleDrawPointerUp
+      );
+
+      canvas.removeEventListener(
+        "contextmenu",
+        handleDrawContextMenu,
+        true
+      );
+    };
+  }, [
+    architectureDrawTool,
+    architectureMeasureStart,
+    architectureWallStart,
+    creatorMode,
+  ]);
 
   function snapshotScene() {
     return {
@@ -3923,6 +7780,4074 @@ function BeyondCreator() {
     );
 
     return result.engine;
+  }
+
+  function architectureSetView(
+    view
+  ) {
+    setArchitectureView(
+      view
+    );
+
+    const cameraByView = {
+      plan:
+        "top",
+      "3d":
+        "perspective",
+      front:
+        "front",
+      right:
+        "right",
+    };
+
+    setCameraView(
+      cameraByView[
+        view
+      ] ||
+      "perspective"
+    );
+
+    if (
+      view !==
+      "3d"
+    ) {
+      setTransformMode(
+        "select"
+      );
+    }
+
+    setArchitectureDrawTool(
+      null
+    );
+
+    setArchitectureWallStart(
+      null
+    );
+
+    setArchitecturePointer(
+      null
+    );
+
+    setArchitectureMeasureStart(
+      null
+    );
+
+    setArchitectureMeasurePointer(
+      null
+    );
+  }
+
+  function changeArchitectureScale(
+    nextScale
+  ) {
+    const safeNext =
+      clamp(
+        nextScale,
+        10,
+        1000
+      );
+
+    if (
+      safeNext ===
+      architectureScale
+    ) {
+      return;
+    }
+
+    const factor =
+      architectureScale /
+      safeNext;
+
+    recordHistory();
+
+    setObjects(
+      (current) =>
+        current.map(
+          (item) => {
+            if (
+              item.source !==
+              "architecture"
+            ) {
+              return item;
+            }
+
+            return {
+              ...item,
+              dimensions: {
+                width:
+                  item.dimensions
+                    .width *
+                  factor,
+                depth:
+                  item.dimensions
+                    .depth *
+                  factor,
+                height:
+                  item.dimensions
+                    .height *
+                  factor,
+              },
+              position: {
+                x:
+                  item.position.x *
+                  factor,
+                y:
+                  item.position.y *
+                  factor,
+                z:
+                  item.position.z *
+                  factor,
+              },
+              parameters: {
+                ...(item.parameters ||
+                  {}),
+                archScale:
+                  safeNext,
+              },
+            };
+          }
+        )
+    );
+
+    setArchitectureScale(
+      safeNext
+    );
+
+    setArchitectureWallStart(
+      null
+    );
+
+    setArchitecturePointer(
+      null
+    );
+
+    setOperationMessage(
+      `Architecture model changed to 1:${safeNext}. Geometry was rescaled for print.`
+    );
+  }
+
+  function addArchitectureLevel() {
+    const highest =
+      architectureLevels.reduce(
+        (
+          value,
+          level
+        ) =>
+          Math.max(
+            value,
+            safeNumber(
+              level.elevation,
+              0
+            )
+          ),
+        0
+      );
+
+    const levelNumber =
+      architectureLevels.length;
+
+    const next = {
+      id:
+        `level-${makeId()}`,
+      name:
+        `LEVEL ${String(
+          levelNumber
+        ).padStart(
+          2,
+          "0"
+        )}`,
+      elevation:
+        highest +
+        3000,
+      visible: true,
+    };
+
+    setArchitectureLevels(
+      (current) => [
+        ...current,
+        next,
+      ]
+    );
+
+    setArchitectureActiveLevelId(
+      next.id
+    );
+
+    setOperationMessage(
+      `${next.name} added at +${next.elevation} mm.`
+    );
+  }
+
+  function duplicateArchitectureActiveLevel() {
+    const sourceLevel =
+      architectureActiveLevel;
+
+    if (!sourceLevel) {
+      return;
+    }
+
+    const sourceObjects =
+      objects.filter(
+        (item) =>
+          item.source ===
+            "architecture" &&
+          item.parameters
+            ?.archLevelId ===
+            sourceLevel.id
+      );
+
+    let targetElevation =
+      safeNumber(
+        sourceLevel.elevation,
+        0
+      ) +
+      3000;
+
+    const usedElevations =
+      new Set(
+        architectureLevels.map(
+          (level) =>
+            Math.round(
+              safeNumber(
+                level.elevation,
+                0
+              )
+            )
+        )
+      );
+
+    while (
+      usedElevations.has(
+        Math.round(
+          targetElevation
+        )
+      )
+    ) {
+      targetElevation +=
+        3000;
+    }
+
+    const levelNumber =
+      architectureLevels.length;
+
+    const nextLevel = {
+      id:
+        `level-${makeId()}`,
+      name:
+        `LEVEL ${String(
+          levelNumber
+        ).padStart(
+          2,
+          "0"
+        )}`,
+      elevation:
+        targetElevation,
+      visible: true,
+    };
+
+    if (
+      sourceObjects.length ===
+      0
+    ) {
+      setArchitectureLevels(
+        (current) => [
+          ...current,
+          nextLevel,
+        ]
+      );
+
+      setArchitectureActiveLevelId(
+        nextLevel.id
+      );
+
+      setOperationMessage(
+        `${nextLevel.name} created at +${nextLevel.elevation} mm. The source level was empty.`
+      );
+
+      return;
+    }
+
+    if (
+      objects.length +
+        sourceObjects.length >
+      MAX_OBJECTS
+    ) {
+      setOperationMessage(
+        `Duplicating this level needs ${sourceObjects.length} more objects and would exceed the ${MAX_OBJECTS}-object Creator limit.`
+      );
+
+      return;
+    }
+
+    recordHistory();
+
+    const objectIdMap =
+      new Map();
+
+    const groupIdMap =
+      new Map();
+
+    const roomIdMap =
+      new Map();
+
+    const stairIdMap =
+      new Map();
+
+    const roofIdMap =
+      new Map();
+
+    sourceObjects.forEach(
+      (item) => {
+        objectIdMap.set(
+          item.id,
+          makeId()
+        );
+
+        if (
+          item.groupId &&
+          !groupIdMap.has(
+            item.groupId
+          )
+        ) {
+          groupIdMap.set(
+            item.groupId,
+            `group-${makeId()}`
+          );
+        }
+
+        const roomId =
+          item.parameters
+            ?.archRoomId;
+
+        if (
+          roomId &&
+          !roomIdMap.has(
+            roomId
+          )
+        ) {
+          roomIdMap.set(
+            roomId,
+            `room-${makeId()}`
+          );
+        }
+
+        const stairId =
+          item.parameters
+            ?.archStairId;
+
+        if (
+          stairId &&
+          !stairIdMap.has(
+            stairId
+          )
+        ) {
+          stairIdMap.set(
+            stairId,
+            `stair-${makeId()}`
+          );
+        }
+
+        const roofId =
+          item.parameters
+            ?.archRoofId;
+
+        if (
+          roofId &&
+          !roofIdMap.has(
+            roofId
+          )
+        ) {
+          roofIdMap.set(
+            roofId,
+            `roof-${makeId()}`
+          );
+        }
+      }
+    );
+
+    const elevationDelta =
+      targetElevation -
+      safeNumber(
+        sourceLevel.elevation,
+        0
+      );
+
+    const duplicated =
+      sourceObjects.map(
+        (source) => {
+          const next =
+            cloneCreatorObject(
+              source
+            );
+
+          next.id =
+            objectIdMap.get(
+              source.id
+            );
+
+          next.groupId =
+            source.groupId
+              ? groupIdMap.get(
+                  source.groupId
+                ) ||
+                null
+              : null;
+
+          next.position = {
+            ...next.position,
+            y:
+              next.position.y +
+              elevationDelta /
+                architectureScale,
+          };
+
+          next.parameters = {
+            ...(next.parameters ||
+              {}),
+            archLevelId:
+              nextLevel.id,
+            archLevelName:
+              nextLevel.name,
+            archLevelElevation:
+              nextLevel.elevation,
+          };
+
+          if (
+            next.parameters
+              .archHostWallId
+          ) {
+            next.parameters
+              .archHostWallId =
+              objectIdMap.get(
+                next.parameters
+                  .archHostWallId
+              ) ||
+              next.parameters
+                .archHostWallId;
+          }
+
+          if (
+            next.parameters
+              .archRoomId
+          ) {
+            next.parameters
+              .archRoomId =
+              roomIdMap.get(
+                next.parameters
+                  .archRoomId
+              ) ||
+              next.parameters
+                .archRoomId;
+          }
+
+          if (
+            next.parameters
+              .archStairId
+          ) {
+            next.parameters
+              .archStairId =
+              stairIdMap.get(
+                next.parameters
+                  .archStairId
+              ) ||
+              next.parameters
+                .archStairId;
+          }
+
+          if (
+            next.parameters
+              .archRoofId
+          ) {
+            next.parameters
+              .archRoofId =
+              roofIdMap.get(
+                next.parameters
+                  .archRoofId
+              ) ||
+              next.parameters
+                .archRoofId;
+          }
+
+          if (
+            next.parameters
+              .archWallFrame
+          ) {
+            next.parameters
+              .archWallFrame = {
+              ...next.parameters
+                .archWallFrame,
+              elevation:
+                nextLevel.elevation,
+            };
+          }
+
+          return next;
+        }
+      );
+
+    setArchitectureLevels(
+      (current) => [
+        ...current,
+        nextLevel,
+      ]
+    );
+
+    setObjects(
+      (current) => [
+        ...current,
+        ...duplicated,
+      ]
+    );
+
+    setArchitectureActiveLevelId(
+      nextLevel.id
+    );
+
+    setSelectedIds(
+      duplicated.map(
+        (item) =>
+          item.id
+      )
+    );
+
+    setPrimaryId(
+      duplicated[0]?.id ||
+        null
+    );
+
+    setOperationMessage(
+      `${sourceLevel.name} duplicated to ${nextLevel.name} at +${nextLevel.elevation} mm · ${duplicated.length} objects copied.`
+    );
+  }
+
+  function updateArchitectureLevelName(
+    levelId,
+    nextName
+  ) {
+    const cleanName =
+      String(
+        nextName ||
+        ""
+      )
+        .trimStart()
+        .slice(
+          0,
+          24
+        );
+
+    setArchitectureLevels(
+      (current) =>
+        current.map(
+          (level) =>
+            level.id ===
+              levelId
+              ? {
+                  ...level,
+                  name:
+                    cleanName,
+                }
+              : level
+        )
+    );
+
+    setObjects(
+      (current) =>
+        current.map(
+          (item) =>
+            item.source ===
+              "architecture" &&
+            item.parameters
+              ?.archLevelId ===
+              levelId
+              ? {
+                  ...item,
+                  parameters: {
+                    ...(item.parameters ||
+                      {}),
+                    archLevelName:
+                      cleanName,
+                  },
+                }
+              : item
+        )
+    );
+  }
+
+  function updateArchitectureLevelElevation(
+    levelId,
+    nextElevation
+  ) {
+    const currentLevel =
+      architectureLevels.find(
+        (level) =>
+          level.id ===
+          levelId
+      );
+
+    if (!currentLevel) {
+      return;
+    }
+
+    const safeElevation =
+      clamp(
+        nextElevation,
+        -20000,
+        200000
+      );
+
+    const deltaMm =
+      safeElevation -
+      safeNumber(
+        currentLevel.elevation,
+        0
+      );
+
+    if (
+      Math.abs(
+        deltaMm
+      ) <
+      0.001
+    ) {
+      return;
+    }
+
+    recordHistory();
+
+    setArchitectureLevels(
+      (current) =>
+        current.map(
+          (level) =>
+            level.id ===
+              levelId
+              ? {
+                  ...level,
+                  elevation:
+                    safeElevation,
+                }
+              : level
+        )
+    );
+
+    setObjects(
+      (current) =>
+        current.map(
+          (item) =>
+            item.source ===
+              "architecture" &&
+            item.parameters
+              ?.archLevelId ===
+              levelId
+              ? {
+                  ...item,
+                  position: {
+                    ...item.position,
+                    y:
+                      item.position.y +
+                      deltaMm /
+                        architectureScale,
+                  },
+                  parameters: {
+                    ...(item.parameters ||
+                      {}),
+                    archLevelElevation:
+                      safeElevation,
+                  },
+                }
+              : item
+        )
+    );
+
+    setOperationMessage(
+      `${currentLevel.name} moved to ${safeElevation >= 0 ? "+" : ""}${safeElevation} mm. Objects on this level moved with it.`
+    );
+  }
+
+  function setArchitectureLevelVisibility(
+    levelId,
+    visible
+  ) {
+    setArchitectureLevels(
+      (current) =>
+        current.map(
+          (level) =>
+            level.id ===
+              levelId
+              ? {
+                  ...level,
+                  visible,
+                }
+              : level
+        )
+    );
+
+    setObjects(
+      (current) =>
+        current.map(
+          (item) =>
+            item.source ===
+              "architecture" &&
+            item.parameters
+              ?.archLevelId ===
+              levelId
+              ? {
+                  ...item,
+                  visible,
+                }
+              : item
+        )
+    );
+
+    if (
+      !visible &&
+      selected?.parameters
+        ?.archLevelId ===
+        levelId
+    ) {
+      setSelectedIds(
+        []
+      );
+
+      setPrimaryId(
+        null
+      );
+    }
+  }
+
+  function isolateArchitectureLevel(
+    levelId
+  ) {
+    setArchitectureLevels(
+      (current) =>
+        current.map(
+          (level) => ({
+            ...level,
+            visible:
+              level.id ===
+              levelId,
+          })
+        )
+    );
+
+    setObjects(
+      (current) =>
+        current.map(
+          (item) =>
+            item.source ===
+              "architecture"
+              ? {
+                  ...item,
+                  visible:
+                    item.parameters
+                      ?.archLevelId ===
+                    levelId,
+                }
+              : item
+        )
+    );
+
+    setArchitectureActiveLevelId(
+      levelId
+    );
+
+    setOperationMessage(
+      "Active level isolated."
+    );
+  }
+
+  function showAllArchitectureLevels() {
+    setArchitectureLevels(
+      (current) =>
+        current.map(
+          (level) => ({
+            ...level,
+            visible: true,
+          })
+        )
+    );
+
+    setObjects(
+      (current) =>
+        current.map(
+          (item) =>
+            item.source ===
+              "architecture"
+              ? {
+                  ...item,
+                  visible: true,
+                }
+              : item
+        )
+    );
+
+    setOperationMessage(
+      "All architecture levels visible."
+    );
+  }
+
+  function updateArchitectureRoomName(
+    roomId,
+    nextName
+  ) {
+    const cleanName =
+      String(
+        nextName ||
+        ""
+      )
+        .trimStart()
+        .slice(
+          0,
+          28
+        );
+
+    setObjects(
+      (current) =>
+        current.map(
+          (item) =>
+            item.parameters
+              ?.archRoomId ===
+              roomId
+              ? {
+                  ...item,
+                  groupName:
+                    cleanName,
+                  parameters: {
+                    ...(item.parameters ||
+                      {}),
+                    archRoomName:
+                      cleanName,
+                  },
+                }
+              : item
+        )
+    );
+  }
+
+  function selectArchitectureRoom(
+    roomId
+  ) {
+    const roomObjects =
+      objects.filter(
+        (item) =>
+          item.parameters
+            ?.archRoomId ===
+          roomId
+      );
+
+    if (
+      roomObjects.length ===
+      0
+    ) {
+      return;
+    }
+
+    setSelectedIds(
+      roomObjects.map(
+        (item) =>
+          item.id
+      )
+    );
+
+    setPrimaryId(
+      roomObjects[0].id
+    );
+
+    setOperationMessage(
+      `${roomObjects[0].parameters?.archRoomName || "Room"} selected · ${roomObjects.length} objects.`
+    );
+  }
+
+  function joinSelectedArchitectureWalls() {
+    if (
+      !canJoinArchitectureWalls
+    ) {
+      setOperationMessage(
+        "Select exactly two uncut Architecture walls to join their corner."
+      );
+
+      return;
+    }
+
+    const [
+      first,
+      second,
+    ] =
+      selectedArchitectureWalls;
+
+    const firstFrame =
+      architectureWallFrameFor(
+        first,
+        architectureScale
+      );
+
+    const secondFrame =
+      architectureWallFrameFor(
+        second,
+        architectureScale
+      );
+
+    const firstAngle =
+      THREE.MathUtils.degToRad(
+        firstFrame.rotationY
+      );
+
+    const secondAngle =
+      THREE.MathUtils.degToRad(
+        secondFrame.rotationY
+      );
+
+    const firstDirection = {
+      x:
+        Math.cos(
+          firstAngle
+        ),
+      z:
+        -Math.sin(
+          firstAngle
+        ),
+    };
+
+    const secondDirection = {
+      x:
+        Math.cos(
+          secondAngle
+        ),
+      z:
+        -Math.sin(
+          secondAngle
+        ),
+    };
+
+    const cross =
+      firstDirection.x *
+        secondDirection.z -
+      firstDirection.z *
+        secondDirection.x;
+
+    if (
+      Math.abs(
+        cross
+      ) <
+      0.0001
+    ) {
+      setOperationMessage(
+        "These two walls are parallel, so there is no corner intersection to join."
+      );
+
+      return;
+    }
+
+    const delta = {
+      x:
+        secondFrame.x -
+        firstFrame.x,
+      z:
+        secondFrame.z -
+        firstFrame.z,
+    };
+
+    const t =
+      (
+        delta.x *
+          secondDirection.z -
+        delta.z *
+          secondDirection.x
+      ) /
+      cross;
+
+    const intersection = {
+      x:
+        firstFrame.x +
+        firstDirection.x *
+          t,
+      z:
+        firstFrame.z +
+        firstDirection.z *
+          t,
+    };
+
+    function joinedWall(
+      wall,
+      frame,
+      direction
+    ) {
+      const half =
+        frame.width /
+        2;
+
+      const start = {
+        x:
+          frame.x -
+          direction.x *
+            half,
+        z:
+          frame.z -
+          direction.z *
+            half,
+      };
+
+      const end = {
+        x:
+          frame.x +
+          direction.x *
+            half,
+        z:
+          frame.z +
+          direction.z *
+            half,
+      };
+
+      const startDistance =
+        Math.hypot(
+          intersection.x -
+            start.x,
+          intersection.z -
+            start.z
+        );
+
+      const endDistance =
+        Math.hypot(
+          intersection.x -
+            end.x,
+          intersection.z -
+            end.z
+        );
+
+      const nearestDistance =
+        Math.min(
+          startDistance,
+          endDistance
+        );
+
+      if (
+        nearestDistance >
+        1500
+      ) {
+        throw new Error(
+          "The wall intersection is too far from the wall ends. Move the walls closer before joining."
+        );
+      }
+
+      const farPoint =
+        startDistance >
+        endDistance
+          ? start
+          : end;
+
+      const newWidth =
+        Math.hypot(
+          intersection.x -
+            farPoint.x,
+          intersection.z -
+            farPoint.z
+        );
+
+      if (
+        newWidth <
+        100
+      ) {
+        throw new Error(
+          "Joining these walls would make one wall too short."
+        );
+      }
+
+      const center = {
+        x:
+          (
+            intersection.x +
+            farPoint.x
+          ) /
+          2,
+        z:
+          (
+            intersection.z +
+            farPoint.z
+          ) /
+          2,
+      };
+
+      return {
+        ...wall,
+        dimensions: {
+          ...wall.dimensions,
+          width:
+            newWidth /
+            architectureScale,
+        },
+        position: {
+          ...wall.position,
+          x:
+            center.x /
+            architectureScale,
+          z:
+            center.z /
+            architectureScale,
+        },
+        parameters: {
+          ...(wall.parameters ||
+            {}),
+          archRealDimensions: {
+            ...(
+              wall.parameters
+                ?.archRealDimensions ||
+              {}
+            ),
+            width:
+              newWidth,
+          },
+          archWallFrame: {
+            ...frame,
+            x:
+              center.x,
+            z:
+              center.z,
+            width:
+              newWidth,
+          },
+        },
+      };
+    }
+
+    recordHistory();
+
+    try {
+      const joinedFirst =
+        joinedWall(
+          first,
+          firstFrame,
+          firstDirection
+        );
+
+      const joinedSecond =
+        joinedWall(
+          second,
+          secondFrame,
+          secondDirection
+        );
+
+      setObjects(
+        (current) =>
+          current.map(
+            (item) =>
+              item.id ===
+              first.id
+                ? joinedFirst
+                : item.id ===
+                    second.id
+                  ? joinedSecond
+                  : item
+          )
+      );
+
+      setOperationMessage(
+        "Wall corner joined. Both wall centerlines now meet at one clean intersection."
+      );
+    } catch (
+      error
+    ) {
+      setOperationMessage(
+        error?.message ||
+          "Unable to join these walls."
+      );
+    }
+  }
+
+  function addArchitectureStairs() {
+    const stepCount =
+      Math.round(
+        clamp(
+          architectureStairSteps,
+          3,
+          24
+        )
+      );
+
+    if (
+      objects.length +
+        stepCount >
+      MAX_OBJECTS
+    ) {
+      setOperationMessage(
+        `Stairs need ${stepCount} objects, but the Creator object limit would be exceeded.`
+      );
+
+      return;
+    }
+
+    const stairIndex =
+      architectureObjectCount(
+        objects,
+        "stair"
+      );
+
+    const groupId =
+      `group-${makeId()}`;
+
+    const groupName =
+      `STAIR ${stairIndex}`;
+
+    const treadDepth =
+      architectureStairRunMm /
+      stepCount;
+
+    const riserHeight =
+      architectureStairRiseMm /
+      stepCount;
+
+    const stairs = [];
+
+    for (
+      let index = 0;
+      index <
+        stepCount;
+      index += 1
+    ) {
+      const currentHeight =
+        riserHeight *
+        (
+          index +
+          1
+        );
+
+      const zReal =
+        -architectureStairRunMm /
+          2 +
+        treadDepth *
+          (
+            index +
+            0.5
+          );
+
+      const step =
+        makeArchitectureObject(
+          "stair",
+          index +
+            1,
+          architectureScale,
+          architectureActiveLevel,
+          {
+            width:
+              architectureStairWidthMm,
+            depth:
+              treadDepth,
+            height:
+              currentHeight,
+            z:
+              zReal,
+            materialId:
+              "concrete",
+          }
+        );
+
+      step.name =
+        `${groupName} · STEP ${String(
+          index +
+          1
+        ).padStart(
+          2,
+          "0"
+        )}`;
+
+      step.groupId =
+        groupId;
+
+      step.groupName =
+        groupName;
+
+      step.rotation.y =
+        architectureStairDirectionDeg;
+
+      step.parameters = {
+        ...(step.parameters ||
+          {}),
+        archStairId:
+          groupId,
+        archStairName:
+          groupName,
+        archStairStep:
+          index +
+          1,
+        archStairSteps:
+          stepCount,
+        archStairRunMm:
+          architectureStairRunMm,
+        archStairRiseMm:
+          architectureStairRiseMm,
+        archStairWidthMm:
+          architectureStairWidthMm,
+        archStairDirectionDeg:
+          architectureStairDirectionDeg,
+      };
+
+      stairs.push(
+        step
+      );
+    }
+
+    recordHistory();
+
+    setObjects(
+      (current) => [
+        ...current,
+        ...stairs,
+      ]
+    );
+
+    setSelectedIds(
+      stairs.map(
+        (item) =>
+          item.id
+      )
+    );
+
+    setPrimaryId(
+      stairs[0].id
+    );
+
+    setOperationMessage(
+      `${groupName} created · ${stepCount} steps · ${architectureStairRunMm} mm run · ${architectureStairRiseMm} mm rise.`
+    );
+  }
+
+  function fitArchitectureRoofToModel() {
+    const selectedArchitecture =
+      selectedObjects.filter(
+        (item) =>
+          item.source ===
+            "architecture" &&
+          item.role ===
+            "solid" &&
+          item.visible !==
+            false
+      );
+
+    const activeLevelObjects =
+      objects.filter(
+        (item) =>
+          item.source ===
+            "architecture" &&
+          item.role ===
+            "solid" &&
+          item.visible !==
+            false &&
+          item.parameters
+            ?.archLevelId ===
+            architectureActiveLevelId &&
+          ![
+            "roof",
+            "stair",
+          ].includes(
+            item.parameters
+              ?.archType
+          )
+      );
+
+    const sourceObjects =
+      selectedArchitecture.length >
+        0
+        ? selectedArchitecture
+        : activeLevelObjects;
+
+    if (
+      sourceObjects.length ===
+      0
+    ) {
+      setOperationMessage(
+        "Select Architecture objects or add walls/floors on the active level before fitting a roof."
+      );
+
+      return;
+    }
+
+    const bounds =
+      new THREE.Box3();
+
+    sourceObjects.forEach(
+      (item) => {
+        bounds.union(
+          architectureObjectBounds(
+            item
+          )
+        );
+      }
+    );
+
+    if (
+      bounds.isEmpty()
+    ) {
+      return;
+    }
+
+    const size =
+      new THREE.Vector3();
+
+    const center =
+      new THREE.Vector3();
+
+    bounds.getSize(
+      size
+    );
+
+    bounds.getCenter(
+      center
+    );
+
+    const realWidth =
+      size.x /
+      SCENE_SCALE *
+      architectureScale;
+
+    const realDepth =
+      size.z /
+      SCENE_SCALE *
+      architectureScale;
+
+    const realCenterX =
+      center.x /
+      SCENE_SCALE *
+      architectureScale;
+
+    const realCenterZ =
+      center.z /
+      SCENE_SCALE *
+      architectureScale;
+
+    setArchitectureRoofWidthMm(
+      Math.round(
+        realWidth
+      )
+    );
+
+    setArchitectureRoofDepthMm(
+      Math.round(
+        realDepth
+      )
+    );
+
+    setArchitectureRoofCenterXmm(
+      Math.round(
+        realCenterX
+      )
+    );
+
+    setArchitectureRoofCenterZmm(
+      Math.round(
+        realCenterZ
+      )
+    );
+
+    setOperationMessage(
+      `Roof fitted to ${selectedArchitecture.length > 0 ? "selection" : architectureActiveLevel?.name || "active level"} · ${Math.round(realWidth)} × ${Math.round(realDepth)} mm.`
+    );
+  }
+
+  function addArchitectureFlatRoof() {
+    if (
+      objects.length >=
+      MAX_OBJECTS
+    ) {
+      return;
+    }
+
+    const roof =
+      makeArchitectureObject(
+        "roof",
+        architectureObjectCount(
+          objects,
+          "roof"
+        ),
+        architectureScale,
+        architectureActiveLevel,
+        {
+          width:
+            architectureRoofWidthMm +
+            architectureRoofOverhangMm *
+              2,
+          depth:
+            architectureRoofDepthMm +
+            architectureRoofOverhangMm *
+              2,
+          height:
+            architectureRoofThicknessMm,
+          sill:
+            architectureWallHeightMm,
+          x:
+            architectureRoofCenterXmm,
+          z:
+            architectureRoofCenterZmm,
+          materialId:
+            "graphite",
+        }
+      );
+
+    roof.name =
+      `FLAT ROOF ${architectureObjectCount(
+        objects,
+        "roof"
+      )}`;
+
+    roof.parameters = {
+      ...(roof.parameters ||
+        {}),
+      archRoofType:
+        "flat",
+      archRoofBuildingWidthMm:
+        architectureRoofWidthMm,
+      archRoofBuildingDepthMm:
+        architectureRoofDepthMm,
+      archRoofOverhangMm:
+        architectureRoofOverhangMm,
+    };
+
+    recordHistory();
+
+    setObjects(
+      (current) => [
+        ...current,
+        roof,
+      ]
+    );
+
+    setSelectedIds([
+      roof.id,
+    ]);
+
+    setPrimaryId(
+      roof.id
+    );
+
+    setOperationMessage(
+      `Flat roof added · ${architectureRoofWidthMm} × ${architectureRoofDepthMm} mm building footprint · ${architectureRoofOverhangMm} mm overhang.`
+    );
+  }
+
+  function addArchitectureGableRoof() {
+    if (
+      objects.length +
+        2 >
+      MAX_OBJECTS
+    ) {
+      return;
+    }
+
+    const pitch =
+      clamp(
+        architectureRoofPitchDeg,
+        5,
+        60
+      );
+
+    const totalWidth =
+      architectureRoofWidthMm +
+      architectureRoofOverhangMm *
+        2;
+
+    const totalDepth =
+      architectureRoofDepthMm +
+      architectureRoofOverhangMm *
+        2;
+
+    const ridgeAlongZ =
+      architectureRoofRidgeDirection ===
+      "z";
+
+    const span =
+      ridgeAlongZ
+        ? totalWidth
+        : totalDepth;
+
+    const ridgeLength =
+      ridgeAlongZ
+        ? totalDepth
+        : totalWidth;
+
+    const halfSpan =
+      span /
+      2;
+
+    const pitchRadians =
+      THREE.MathUtils.degToRad(
+        pitch
+      );
+
+    const panelSlope =
+      halfSpan /
+      Math.cos(
+        pitchRadians
+      );
+
+    const ridgeRise =
+      halfSpan *
+      Math.tan(
+        pitchRadians
+      );
+
+    const roofIndex =
+      architectureObjectCount(
+        objects,
+        "roof"
+      );
+
+    const groupId =
+      `group-${makeId()}`;
+
+    const groupName =
+      `GABLE ROOF ${roofIndex}`;
+
+    const baseSill =
+      architectureWallHeightMm +
+      ridgeRise /
+        2;
+
+    const first =
+      makeArchitectureObject(
+        "roof",
+        roofIndex,
+        architectureScale,
+        architectureActiveLevel,
+        {
+          width:
+            ridgeAlongZ
+              ? panelSlope
+              : ridgeLength,
+          depth:
+            ridgeAlongZ
+              ? ridgeLength
+              : panelSlope,
+          height:
+            architectureRoofThicknessMm,
+          x:
+            architectureRoofCenterXmm +
+            (
+              ridgeAlongZ
+                ? -halfSpan /
+                  2
+                : 0
+            ),
+          z:
+            architectureRoofCenterZmm +
+            (
+              ridgeAlongZ
+                ? 0
+                : -halfSpan /
+                  2
+            ),
+          sill:
+            baseSill,
+          materialId:
+            "graphite",
+        }
+      );
+
+    const second =
+      makeArchitectureObject(
+        "roof",
+        roofIndex +
+          1,
+        architectureScale,
+        architectureActiveLevel,
+        {
+          width:
+            ridgeAlongZ
+              ? panelSlope
+              : ridgeLength,
+          depth:
+            ridgeAlongZ
+              ? ridgeLength
+              : panelSlope,
+          height:
+            architectureRoofThicknessMm,
+          x:
+            architectureRoofCenterXmm +
+            (
+              ridgeAlongZ
+                ? halfSpan /
+                  2
+                : 0
+            ),
+          z:
+            architectureRoofCenterZmm +
+            (
+              ridgeAlongZ
+                ? 0
+                : halfSpan /
+                  2
+            ),
+          sill:
+            baseSill,
+          materialId:
+            "graphite",
+        }
+      );
+
+    if (
+      ridgeAlongZ
+    ) {
+      first.rotation.z =
+        pitch;
+
+      second.rotation.z =
+        -pitch;
+    } else {
+      first.rotation.x =
+        -pitch;
+
+      second.rotation.x =
+        pitch;
+    }
+
+    [
+      first,
+      second,
+    ].forEach(
+      (
+        panel,
+        index
+      ) => {
+        panel.name =
+          `${groupName} · ${index === 0 ? "A" : "B"}`;
+
+        panel.groupId =
+          groupId;
+
+        panel.groupName =
+          groupName;
+
+        panel.parameters = {
+          ...(panel.parameters ||
+            {}),
+          archRoofType:
+            "gable",
+          archRoofId:
+            groupId,
+          archRoofPitchDeg:
+            pitch,
+          archRoofRidgeDirection:
+            architectureRoofRidgeDirection,
+          archRoofBuildingWidthMm:
+            architectureRoofWidthMm,
+          archRoofBuildingDepthMm:
+            architectureRoofDepthMm,
+          archRoofOverhangMm:
+            architectureRoofOverhangMm,
+          archRoofRidgeRiseMm:
+            ridgeRise,
+          archRoofCenterXmm:
+            architectureRoofCenterXmm,
+          archRoofCenterZmm:
+            architectureRoofCenterZmm,
+        };
+      }
+    );
+
+    recordHistory();
+
+    setObjects(
+      (current) => [
+        ...current,
+        first,
+        second,
+      ]
+    );
+
+    setSelectedIds([
+      first.id,
+      second.id,
+    ]);
+
+    setPrimaryId(
+      first.id
+    );
+
+    setOperationMessage(
+      `${groupName} added · ${pitch}° · ridge ${architectureRoofRidgeDirection.toUpperCase()} · rise ${Math.round(
+        ridgeRise
+      )} mm.`
+    );
+  }
+
+  function addArchitecturePrimitive(
+    kind
+  ) {
+    if (
+      objects.length >=
+      MAX_OBJECTS
+    ) {
+      setOperationMessage(
+        `Creator supports up to ${MAX_OBJECTS} objects.`
+      );
+
+      return;
+    }
+
+    const level =
+      architectureActiveLevel;
+
+    const count =
+      architectureObjectCount(
+        objects,
+        kind
+      );
+
+    let overrides = {};
+
+    if (
+      kind ===
+      "wall"
+    ) {
+      overrides = {
+        width:
+          5200,
+        depth:
+          architectureWallThicknessMm,
+        height:
+          architectureWallHeightMm,
+      };
+    }
+
+    const newObject =
+      makeArchitectureObject(
+        kind,
+        count,
+        architectureScale,
+        level,
+        overrides
+      );
+
+    recordHistory();
+
+    setObjects(
+      (current) => [
+        ...current,
+        newObject,
+      ]
+    );
+
+    setSelectedIds([
+      newObject.id,
+    ]);
+
+    setPrimaryId(
+      newObject.id
+    );
+
+    setTransformMode(
+      "translate"
+    );
+
+    setOperationMessage(
+      `${newObject.name} added on ${level?.name || "GROUND"}.`
+    );
+  }
+
+  function addArchitectureOpening(
+    kind
+  ) {
+    if (
+      ![
+        "door",
+        "window",
+      ].includes(
+        kind
+      )
+    ) {
+      return;
+    }
+
+    if (
+      objects.length >=
+      MAX_OBJECTS
+    ) {
+      return;
+    }
+
+    const wall =
+      selected &&
+      selected.source ===
+        "architecture" &&
+      selected.parameters
+        ?.archType ===
+        "wall" &&
+      selected.role ===
+        "solid"
+        ? selected
+        : null;
+
+    if (!wall) {
+      setOperationMessage(
+        "Select one Architecture WALL first, then choose DOOR or WINDOW."
+      );
+
+      return;
+    }
+
+    const level =
+      architectureLevels.find(
+        (candidate) =>
+          candidate.id ===
+          wall.parameters
+            ?.archLevelId
+      ) ||
+      architectureActiveLevel;
+
+    const defaults =
+      ARCH_DEFAULTS[
+        kind
+      ];
+
+    let opening =
+      makeArchitectureObject(
+        kind,
+        architectureObjectCount(
+          objects,
+          kind
+        ),
+        architectureScale,
+        level,
+        {
+          depth:
+            Math.max(
+              defaults.depth,
+              safeNumber(
+                wall.parameters
+                  ?.archRealDimensions
+                  ?.depth,
+                architectureWallThicknessMm
+              ) +
+                200
+            ),
+          sill:
+            defaults.sill ||
+            0,
+        }
+      );
+
+    opening =
+      architectureOpeningOnWall(
+        opening,
+        wall,
+        architectureScale,
+        0,
+        defaults.sill ||
+          0
+      );
+
+    recordHistory();
+
+    setObjects(
+      (current) => [
+        ...current,
+        opening,
+      ]
+    );
+
+    setSelectedIds([
+      wall.id,
+      opening.id,
+    ]);
+
+    setPrimaryId(
+      opening.id
+    );
+
+    setLibraryTab(
+      "create"
+    );
+
+    setInspectorTab(
+      "object"
+    );
+
+    setOperationMessage(
+      `${defaults.label} attached to ${wall.name}. Adjust OFFSET / SILL if needed, then press CUT OPENING.`
+    );
+  }
+
+  function updateHostedOpening(
+    key,
+    nextValue
+  ) {
+    if (
+      !selectedArchitectureOpening ||
+      !architectureOpeningHost ||
+      selectedArchitectureOpening.locked
+    ) {
+      return;
+    }
+
+    const currentOffset =
+      safeNumber(
+        selectedArchitectureOpening
+          .parameters
+          ?.archWallOffsetMm,
+        0
+      );
+
+    const currentSill =
+      safeNumber(
+        selectedArchitectureOpening
+          .parameters
+          ?.archSill,
+        0
+      );
+
+    recordHistory();
+
+    setObjects(
+      (current) =>
+        current.map(
+          (item) =>
+            item.id ===
+            selectedArchitectureOpening.id
+              ? architectureOpeningOnWall(
+                  item,
+                  architectureOpeningHost,
+                  architectureScale,
+                  key ===
+                    "offset"
+                    ? nextValue
+                    : currentOffset,
+                  key ===
+                    "sill"
+                    ? nextValue
+                    : currentSill
+                )
+              : item
+        )
+    );
+  }
+
+  function centerHostedOpening() {
+    updateHostedOpening(
+      "offset",
+      0
+    );
+  }
+
+  function selectHostedOpeningPair() {
+    if (
+      !selectedArchitectureOpening ||
+      !architectureOpeningHost
+    ) {
+      return;
+    }
+
+    setSelectedIds([
+      architectureOpeningHost.id,
+      selectedArchitectureOpening.id,
+    ]);
+
+    setPrimaryId(
+      selectedArchitectureOpening.id
+    );
+  }
+
+  function cutHostedOpening() {
+    if (
+      !selectedArchitectureOpening ||
+      !architectureOpeningHost ||
+      selectedArchitectureOpening.locked ||
+      architectureOpeningHost.locked
+    ) {
+      return;
+    }
+
+    const wall =
+      architectureOpeningHost;
+
+    const opening =
+      selectedArchitectureOpening;
+
+    const wallFrame =
+      architectureWallFrameFor(
+        wall,
+        architectureScale
+      );
+
+    let wallMesh =
+      null;
+
+    let holeMesh =
+      null;
+
+    let resultMesh =
+      null;
+
+    recordHistory();
+
+    try {
+      wallMesh =
+        makeCSGMesh(
+          wall
+        );
+
+      holeMesh =
+        makeCSGMesh(
+          opening
+        );
+
+      resultMesh =
+        CSG.subtract(
+          wallMesh,
+          holeMesh
+        );
+
+      resultMesh.updateMatrix();
+
+      const resultObject =
+        makeBooleanObject(
+          resultMesh,
+          wall.name,
+          wall.materialId
+        );
+
+      resultObject.source =
+        "architecture";
+
+      resultObject.name =
+        wall.name;
+
+      resultObject.groupId =
+        wall.groupId ||
+        null;
+
+      resultObject.groupName =
+        wall.groupName ||
+        null;
+
+      resultObject.engine =
+        "ARCHITECTURE SMART OPENING";
+
+      resultObject.parameters = {
+        ...(wall.parameters ||
+          {}),
+        architectureCut:
+          true,
+        archScale:
+          architectureScale,
+        archWallFrame:
+          wallFrame,
+        archLastOpening: {
+          type:
+            opening.parameters
+              ?.archType,
+          width:
+            opening.parameters
+              ?.archRealDimensions
+              ?.width,
+          height:
+            opening.parameters
+              ?.archRealDimensions
+              ?.height,
+          sill:
+            opening.parameters
+              ?.archSill,
+          offset:
+            opening.parameters
+              ?.archWallOffsetMm,
+        },
+      };
+
+      const hostIndex =
+        objects.findIndex(
+          (item) =>
+            item.id ===
+            wall.id
+        );
+
+      setObjects(
+        (current) => {
+          const next =
+            current.filter(
+              (item) =>
+                item.id !==
+                  wall.id &&
+                item.id !==
+                  opening.id
+            );
+
+          next.splice(
+            Math.max(
+              0,
+              Math.min(
+                hostIndex,
+                next.length
+              )
+            ),
+            0,
+            resultObject
+          );
+
+          return next;
+        }
+      );
+
+      setSelectedIds([
+        resultObject.id,
+      ]);
+
+      setPrimaryId(
+        resultObject.id
+      );
+
+      setOperationMessage(
+        `${opening.parameters?.archType === "door" ? "Door" : "Window"} opening cut into ${wall.name}.`
+      );
+    } catch (
+      error
+    ) {
+      console.error(
+        "Architecture smart opening cut error:",
+        error
+      );
+
+      setOperationMessage(
+        error?.message ||
+          "Unable to cut this opening."
+      );
+    } finally {
+      disposeMesh(
+        wallMesh
+      );
+
+      disposeMesh(
+        holeMesh
+      );
+
+      disposeMesh(
+        resultMesh
+      );
+    }
+  }
+
+  function toggleArchitectureRoomTool() {
+    const nextActive =
+      architectureDrawTool ===
+      "room"
+        ? null
+        : "room";
+
+    setArchitectureDrawTool(
+      nextActive
+    );
+
+    setArchitectureWallStart(
+      null
+    );
+
+    setArchitecturePointer(
+      null
+    );
+
+    if (nextActive) {
+      setArchitectureDrawTool(
+        "room"
+      );
+
+      setOperationMessage(
+        "Room Draw active. Mouse controls stay exactly like the regular workspace: left drag orbit, middle drag pan, wheel zoom; short left clicks place the two room corners."
+      );
+    } else {
+      setOperationMessage(
+        "Room Draw cancelled."
+      );
+    }
+  }
+
+  function handleArchitectureRoomPointerDown(
+    event
+  ) {
+    if (
+      architectureDrawTool !==
+        "room" ||
+      event.button !==
+        0
+    ) {
+      return;
+    }
+
+    const rawPoint =
+      architecturePointerToReal(
+        event
+      );
+
+    const point =
+      architectureSmartSnapPoint(
+        rawPoint,
+        architectureWallStart
+      );
+
+    if (!point) {
+      return;
+    }
+
+    if (
+      !architectureWallStart
+    ) {
+      setArchitectureWallStart(
+        point
+      );
+
+      setArchitecturePointer(
+        point
+      );
+
+      setOperationMessage(
+        `Room corner 1 · X ${point.realX} mm · Z ${point.realZ} mm. Click the opposite corner.`
+      );
+
+      return;
+    }
+
+    const x1 =
+      architectureWallStart
+        .realX;
+
+    const z1 =
+      architectureWallStart
+        .realZ;
+
+    const x2 =
+      point.realX;
+
+    const z2 =
+      point.realZ;
+
+    const roomWidth =
+      Math.abs(
+        x2 -
+        x1
+      );
+
+    const roomDepth =
+      Math.abs(
+        z2 -
+        z1
+      );
+
+    const minimumRoom =
+      Math.max(
+        500,
+        architectureWallThicknessMm *
+          3
+      );
+
+    if (
+      roomWidth <
+        minimumRoom ||
+      roomDepth <
+        minimumRoom
+    ) {
+      setOperationMessage(
+        `Room must be at least ${minimumRoom} mm in both directions.`
+      );
+
+      return;
+    }
+
+    const requiredObjects =
+      architectureRoomFloor
+        ? 5
+        : 4;
+
+    if (
+      objects.length +
+        requiredObjects >
+      MAX_OBJECTS
+    ) {
+      setOperationMessage(
+        `Not enough object slots. Room needs ${requiredObjects} objects.`
+      );
+
+      return;
+    }
+
+    const centerX =
+      (
+        x1 +
+        x2
+      ) /
+      2;
+
+    const centerZ =
+      (
+        z1 +
+        z2
+      ) /
+      2;
+
+    const minX =
+      Math.min(
+        x1,
+        x2
+      );
+
+    const maxX =
+      Math.max(
+        x1,
+        x2
+      );
+
+    const minZ =
+      Math.min(
+        z1,
+        z2
+      );
+
+    const maxZ =
+      Math.max(
+        z1,
+        z2
+      );
+
+    const roomIndex =
+      new Set(
+        objects
+          .map(
+            (item) =>
+              item.parameters
+                ?.archRoomId
+          )
+          .filter(
+            Boolean
+          )
+      ).size +
+      1;
+
+    const roomId =
+      `room-${makeId()}`;
+
+    const groupId =
+      `group-${makeId()}`;
+
+    const groupName =
+      `ROOM ${roomIndex}`;
+
+    const wallBaseCount =
+      architectureObjectCount(
+        objects,
+        "wall"
+      );
+
+    const wallOverrides = [
+      {
+        width:
+          roomWidth +
+          architectureWallThicknessMm,
+        x:
+          centerX,
+        z:
+          minZ,
+        rotationY: 0,
+      },
+      {
+        width:
+          roomWidth +
+          architectureWallThicknessMm,
+        x:
+          centerX,
+        z:
+          maxZ,
+        rotationY: 0,
+      },
+      {
+        width:
+          roomDepth +
+          architectureWallThicknessMm,
+        x:
+          minX,
+        z:
+          centerZ,
+        rotationY: 90,
+      },
+      {
+        width:
+          roomDepth +
+          architectureWallThicknessMm,
+        x:
+          maxX,
+        z:
+          centerZ,
+        rotationY: 90,
+      },
+    ];
+
+    const roomWalls =
+      wallOverrides.map(
+        (
+          override,
+          index
+        ) => {
+          const wall =
+            makeArchitectureObject(
+              "wall",
+              wallBaseCount +
+                index,
+              architectureScale,
+              architectureActiveLevel,
+              {
+                ...override,
+                depth:
+                  architectureWallThicknessMm,
+                height:
+                  architectureWallHeightMm,
+              }
+            );
+
+          wall.groupId =
+            groupId;
+
+          wall.groupName =
+            groupName;
+
+          wall.parameters = {
+            ...(wall.parameters ||
+              {}),
+            archRoomId:
+              roomId,
+            archRoomName:
+              groupName,
+            archRoomAreaM2:
+              (
+                roomWidth *
+                roomDepth
+              ) /
+              1000000,
+          };
+
+          return wall;
+        }
+      );
+
+    const roomObjects = [
+      ...roomWalls,
+    ];
+
+    if (
+      architectureRoomFloor
+    ) {
+      const floor =
+        makeArchitectureObject(
+          "floor",
+          architectureObjectCount(
+            objects,
+            "floor"
+          ),
+          architectureScale,
+          architectureActiveLevel,
+          {
+            width:
+              Math.max(
+                100,
+                roomWidth -
+                architectureWallThicknessMm
+              ),
+            depth:
+              Math.max(
+                100,
+                roomDepth -
+                architectureWallThicknessMm
+              ),
+            height:
+              architectureFloorThicknessMm,
+            x:
+              centerX,
+            z:
+              centerZ,
+          }
+        );
+
+      floor.groupId =
+        groupId;
+
+      floor.groupName =
+        groupName;
+
+      floor.parameters = {
+        ...(floor.parameters ||
+          {}),
+        archRoomId:
+          roomId,
+        archRoomName:
+          groupName,
+        archRoomAreaM2:
+          (
+            roomWidth *
+            roomDepth
+          ) /
+          1000000,
+      };
+
+      roomObjects.push(
+        floor
+      );
+    }
+
+    recordHistory();
+
+    setObjects(
+      (current) => [
+        ...current,
+        ...roomObjects,
+      ]
+    );
+
+    setSelectedIds(
+      roomObjects.map(
+        (item) =>
+          item.id
+      )
+    );
+
+    setPrimaryId(
+      roomWalls[0].id
+    );
+
+    setArchitectureWallStart(
+      null
+    );
+
+    setArchitecturePointer(
+      null
+    );
+
+    if (
+      architectureView ===
+      "plan"
+    ) {
+      setArchitectureDrawTool(
+        "room"
+      );
+
+      setOperationMessage(
+        `${groupName} created · ${Math.round(roomWidth)} × ${Math.round(roomDepth)} mm · ${(roomWidth * roomDepth / 1000000).toFixed(2)} m². PLAN stays 2D and ROOM DRAW remains active. Click the next first corner.`
+      );
+    } else {
+      setArchitectureDrawTool(
+        null
+      );
+
+      setOperationMessage(
+        `${groupName} created · ${Math.round(roomWidth)} × ${Math.round(roomDepth)} mm · ${(roomWidth * roomDepth / 1000000).toFixed(2)} m²${architectureRoomFloor ? " · floor included" : ""}. Regular mouse navigation remains unchanged.`
+      );
+    }
+  }
+
+  function toggleArchitectureMeasureTool() {
+    if (
+      architectureView !==
+      "plan"
+    ) {
+      setOperationMessage(
+        "MEASURE is available in PLAN view. Switch to PLAN first."
+      );
+
+      return;
+    }
+
+    const nextActive =
+      architectureDrawTool ===
+      "measure"
+        ? null
+        : "measure";
+
+    setArchitectureDrawTool(
+      nextActive
+    );
+
+    setArchitectureWallStart(
+      null
+    );
+
+    setArchitecturePointer(
+      null
+    );
+
+    setArchitectureMeasureStart(
+      null
+    );
+
+    setArchitectureMeasurePointer(
+      null
+    );
+
+    setOperationMessage(
+      nextActive
+        ? "Measure active. Short-click point A, then point B. Left drag still pans; wheel still zooms."
+        : "Measure cancelled."
+    );
+  }
+
+  function clearArchitectureMeasurements() {
+    setArchitectureMeasurements(
+      []
+    );
+
+    setArchitectureMeasureStart(
+      null
+    );
+
+    setArchitectureMeasurePointer(
+      null
+    );
+
+    setOperationMessage(
+      "Plan measurements cleared."
+    );
+  }
+
+  function handleArchitectureMeasurePointerDown(
+    event
+  ) {
+    if (
+      architectureDrawTool !==
+        "measure" ||
+      architectureView !==
+        "plan" ||
+      event.button !==
+        0
+    ) {
+      return;
+    }
+
+    const point =
+      architecturePointerToReal(
+        event
+      );
+
+    if (!point) {
+      return;
+    }
+
+    if (
+      !architectureMeasureStart
+    ) {
+      setArchitectureMeasureStart(
+        point
+      );
+
+      setArchitectureMeasurePointer(
+        point
+      );
+
+      setOperationMessage(
+        `Measure A · X ${point.realX} · Z ${point.realZ} mm. Click point B.`
+      );
+
+      return;
+    }
+
+    const distanceMm =
+      Math.hypot(
+        point.realX -
+          architectureMeasureStart.realX,
+        point.realZ -
+          architectureMeasureStart.realZ
+      );
+
+    if (
+      distanceMm <
+      1
+    ) {
+      return;
+    }
+
+    const measurement = {
+      id:
+        `measure-${makeId()}`,
+      levelId:
+        architectureActiveLevel
+          ?.id ||
+        "ground",
+      a: {
+        realX:
+          architectureMeasureStart
+            .realX,
+        realZ:
+          architectureMeasureStart
+            .realZ,
+      },
+      b: {
+        realX:
+          point.realX,
+        realZ:
+          point.realZ,
+      },
+      distanceMm,
+    };
+
+    setArchitectureMeasurements(
+      (current) => [
+        ...current,
+        measurement,
+      ]
+    );
+
+    setArchitectureMeasureStart(
+      null
+    );
+
+    setArchitectureMeasurePointer(
+      null
+    );
+
+    setOperationMessage(
+      `Dimension added · ${Math.round(distanceMm)} mm. Measure remains active.`
+    );
+  }
+
+  function handleArchitectureMeasurePointerMove(
+    event
+  ) {
+    if (
+      architectureDrawTool !==
+        "measure" ||
+      !architectureMeasureStart
+    ) {
+      return;
+    }
+
+    const point =
+      architecturePointerToReal(
+        event
+      );
+
+    if (point) {
+      setArchitectureMeasurePointer(
+        point
+      );
+    }
+  }
+
+  function toggleArchitectureWallTool() {
+    const nextActive =
+      architectureDrawTool ===
+      "wall"
+        ? null
+        : "wall";
+
+    setArchitectureDrawTool(
+      nextActive
+    );
+
+    setArchitectureWallStart(
+      null
+    );
+
+    setArchitecturePointer(
+      null
+    );
+
+    if (nextActive) {
+      setArchitectureDrawTool(
+        "wall"
+      );
+
+      setOperationMessage(
+        "Wall Draw active. Mouse controls stay exactly like the regular workspace: left drag orbit, middle drag pan, wheel zoom; short left clicks place start and end."
+      );
+    } else {
+      setOperationMessage(
+        "Wall Draw cancelled."
+      );
+    }
+  }
+
+  function architectureWallEndpointsFor(
+    wall
+  ) {
+    if (!wall) {
+      return null;
+    }
+
+    const frame =
+      architectureWallFrameFor(
+        wall,
+        architectureScale
+      );
+
+    const theta =
+      THREE.MathUtils.degToRad(
+        frame.rotationY
+      );
+
+    const half =
+      frame.width /
+      2;
+
+    const dx =
+      Math.cos(
+        theta
+      ) *
+      half;
+
+    const dz =
+      -Math.sin(
+        theta
+      ) *
+      half;
+
+    return {
+      frame,
+      start: {
+        x:
+          frame.x -
+          dx,
+        z:
+          frame.z -
+          dz,
+      },
+      end: {
+        x:
+          frame.x +
+          dx,
+        z:
+          frame.z +
+          dz,
+      },
+    };
+  }
+
+  function architectureSmartSnapPoint(
+    point,
+    startPoint = null
+  ) {
+    if (
+      !point ||
+      !architectureSmartWallSnap
+    ) {
+      return point;
+    }
+
+    const snapDistance =
+      Math.max(
+        180,
+        architectureSnapMm *
+          2
+      );
+
+    const wallCandidates =
+      objects.filter(
+        (item) =>
+          item.source ===
+            "architecture" &&
+          item.role ===
+            "solid" &&
+          item.parameters
+            ?.archType ===
+            "wall" &&
+          item.visible !==
+            false &&
+          item.parameters
+            ?.archLevelId ===
+            architectureActiveLevelId
+      );
+
+    let best =
+      null;
+
+    wallCandidates.forEach(
+      (wall) => {
+        const endpoints =
+          architectureWallEndpointsFor(
+            wall
+          );
+
+        if (!endpoints) {
+          return;
+        }
+
+        [
+          [
+            "ENDPOINT",
+            endpoints.start,
+          ],
+          [
+            "ENDPOINT",
+            endpoints.end,
+          ],
+        ].forEach(
+          ([
+            kind,
+            candidate,
+          ]) => {
+            const distance =
+              Math.hypot(
+                point.realX -
+                  candidate.x,
+                point.realZ -
+                  candidate.z
+              );
+
+            if (
+              distance <=
+                snapDistance &&
+              (
+                !best ||
+                distance <
+                  best.distance
+              )
+            ) {
+              best = {
+                kind,
+                distance,
+                x:
+                  candidate.x,
+                z:
+                  candidate.z,
+                wallId:
+                  wall.id,
+              };
+            }
+          }
+        );
+
+        const a =
+          endpoints.start;
+
+        const b =
+          endpoints.end;
+
+        const vx =
+          b.x -
+          a.x;
+
+        const vz =
+          b.z -
+          a.z;
+
+        const lengthSq =
+          vx *
+            vx +
+          vz *
+            vz;
+
+        if (
+          lengthSq >
+          0.0001
+        ) {
+          const t =
+            clamp(
+              (
+                (
+                  point.realX -
+                  a.x
+                ) *
+                  vx +
+                (
+                  point.realZ -
+                  a.z
+                ) *
+                  vz
+              ) /
+              lengthSq,
+              0,
+              1
+            );
+
+          const projected = {
+            x:
+              a.x +
+              vx *
+                t,
+            z:
+              a.z +
+              vz *
+                t,
+          };
+
+          const distance =
+            Math.hypot(
+              point.realX -
+                projected.x,
+              point.realZ -
+                projected.z
+            );
+
+          const lineThreshold =
+            Math.max(
+              120,
+              snapDistance *
+                0.7
+            );
+
+          if (
+            distance <=
+              lineThreshold &&
+            (
+              !best ||
+              distance <
+                best.distance
+            )
+          ) {
+            best = {
+              kind:
+                "WALL",
+              distance,
+              x:
+                projected.x,
+              z:
+                projected.z,
+              wallId:
+                wall.id,
+            };
+          }
+        }
+      }
+    );
+
+    if (best) {
+      return {
+        ...point,
+        realX:
+          Math.round(
+            best.x
+          ),
+        realZ:
+          Math.round(
+            best.z
+          ),
+        smartSnapKind:
+          best.kind,
+        smartSnapWallId:
+          best.wallId,
+      };
+    }
+
+    if (
+      startPoint &&
+      architectureAngleSnapDeg >
+        0
+    ) {
+      const dx =
+        point.realX -
+        startPoint.realX;
+
+      const dz =
+        point.realZ -
+        startPoint.realZ;
+
+      const length =
+        Math.hypot(
+          dx,
+          dz
+        );
+
+      if (
+        length >
+        0.0001
+      ) {
+        const step =
+          THREE.MathUtils.degToRad(
+            architectureAngleSnapDeg
+          );
+
+        const angle =
+          Math.atan2(
+            dz,
+            dx
+          );
+
+        const snappedAngle =
+          Math.round(
+            angle /
+            step
+          ) *
+          step;
+
+        return {
+          ...point,
+          realX:
+            architectureSnapReal(
+              startPoint.realX +
+              Math.cos(
+                snappedAngle
+              ) *
+                length
+            ),
+          realZ:
+            architectureSnapReal(
+              startPoint.realZ +
+              Math.sin(
+                snappedAngle
+              ) *
+                length
+            ),
+          smartSnapKind:
+            `ANGLE ${architectureAngleSnapDeg}°`,
+        };
+      }
+    }
+
+    return point;
+  }
+
+  function architectureSnapReal(
+    value
+  ) {
+    const snap =
+      Math.max(
+        1,
+        safeNumber(
+          architectureSnapMm,
+          100
+        )
+      );
+
+    return (
+      Math.round(
+        value /
+        snap
+      ) *
+      snap
+    );
+  }
+
+  function architecturePointerToReal(
+    event
+  ) {
+    const rect =
+      creatorCanvasWrapRef.current
+        ?.getBoundingClientRect();
+
+    const api =
+      viewportApiRef.current;
+
+    if (
+      !rect ||
+      !api?.camera
+    ) {
+      return null;
+    }
+
+    const ndc =
+      new THREE.Vector2(
+        (
+          (
+            event.clientX -
+            rect.left
+          ) /
+          Math.max(
+            1,
+            rect.width
+          )
+        ) *
+          2 -
+          1,
+        -(
+          (
+            event.clientY -
+            rect.top
+          ) /
+          Math.max(
+            1,
+            rect.height
+          )
+        ) *
+          2 +
+          1
+      );
+
+    const raycaster =
+      new THREE.Raycaster();
+
+    raycaster.setFromCamera(
+      ndc,
+      api.camera
+    );
+
+    const levelY =
+      (
+        safeNumber(
+          architectureActiveLevel
+            ?.elevation,
+          0
+        ) /
+        architectureScale
+      ) *
+      SCENE_SCALE;
+
+    const plane =
+      new THREE.Plane(
+        new THREE.Vector3(
+          0,
+          1,
+          0
+        ),
+        -levelY
+      );
+
+    const world =
+      new THREE.Vector3();
+
+    if (
+      !raycaster.ray
+        .intersectPlane(
+          plane,
+          world
+        )
+    ) {
+      return null;
+    }
+
+    return {
+      realX:
+        architectureSnapReal(
+          (
+            world.x /
+            SCENE_SCALE
+          ) *
+          architectureScale
+        ),
+      realZ:
+        architectureSnapReal(
+          (
+            world.z /
+            SCENE_SCALE
+          ) *
+          architectureScale
+        ),
+      screenX:
+        event.clientX -
+        rect.left,
+      screenY:
+        event.clientY -
+        rect.top,
+    };
+  }
+
+  function handleArchitectureDrawPointerDown(
+    event
+  ) {
+    if (
+      architectureDrawTool !==
+        "wall" ||
+      event.button !==
+        0
+    ) {
+      return;
+    }
+
+    const rawPoint =
+      architecturePointerToReal(
+        event
+      );
+
+    const point =
+      architectureSmartSnapPoint(
+        rawPoint,
+        architectureWallStart
+      );
+
+    if (!point) {
+      return;
+    }
+
+    if (
+      !architectureWallStart
+    ) {
+      setArchitectureWallStart(
+        point
+      );
+
+      setArchitecturePointer(
+        point
+      );
+
+      setOperationMessage(
+        `Wall start · X ${point.realX} mm · Z ${point.realZ} mm. Click the end point.`
+      );
+
+      return;
+    }
+
+    const deltaX =
+      point.realX -
+      architectureWallStart.realX;
+
+    const deltaZ =
+      point.realZ -
+      architectureWallStart.realZ;
+
+    const length =
+      Math.hypot(
+        deltaX,
+        deltaZ
+      );
+
+    if (
+      length <
+      Math.max(
+        50,
+        architectureSnapMm *
+          0.5
+      )
+    ) {
+      setOperationMessage(
+        "Wall is too short. Choose a farther end point."
+      );
+
+      return;
+    }
+
+    const midpointX =
+      (
+        point.realX +
+        architectureWallStart.realX
+      ) /
+      2;
+
+    const midpointZ =
+      (
+        point.realZ +
+        architectureWallStart.realZ
+      ) /
+      2;
+
+    const angle =
+      -THREE.MathUtils.radToDeg(
+        Math.atan2(
+          deltaZ,
+          deltaX
+        )
+      );
+
+    const wall =
+      makeArchitectureObject(
+        "wall",
+        architectureObjectCount(
+          objects,
+          "wall"
+        ),
+        architectureScale,
+        architectureActiveLevel,
+        {
+          width:
+            length,
+          depth:
+            architectureWallThicknessMm,
+          height:
+            architectureWallHeightMm,
+          x:
+            midpointX,
+          z:
+            midpointZ,
+          rotationY:
+            angle,
+        }
+      );
+
+    wall.parameters = {
+      ...(wall.parameters ||
+        {}),
+      archWallStartPoint: {
+        x:
+          architectureWallStart.realX,
+        z:
+          architectureWallStart.realZ,
+      },
+      archWallEndPoint: {
+        x:
+          point.realX,
+        z:
+          point.realZ,
+      },
+      archSmartSnap:
+        point.smartSnapKind ||
+        architectureWallStart
+          .smartSnapKind ||
+        null,
+    };
+
+    recordHistory();
+
+    setObjects(
+      (current) => [
+        ...current,
+        wall,
+      ]
+    );
+
+    setSelectedIds([
+      wall.id,
+    ]);
+
+    setPrimaryId(
+      wall.id
+    );
+
+    if (
+      architectureView ===
+        "plan" &&
+      architectureWallChain
+    ) {
+      setArchitectureWallStart(
+        point
+      );
+
+      setArchitecturePointer(
+        point
+      );
+    } else {
+      setArchitectureWallStart(
+        null
+      );
+
+      setArchitecturePointer(
+        null
+      );
+    }
+
+    if (
+      architectureView ===
+      "plan"
+    ) {
+      setArchitectureDrawTool(
+        "wall"
+      );
+
+      setOperationMessage(
+        architectureWallChain
+          ? `Wall created · ${Math.round(length)} mm${point.smartSnapKind ? ` · ${point.smartSnapKind} SNAP` : ""}. CHAIN continues from this endpoint.`
+          : `Wall created · ${Math.round(length)} mm${point.smartSnapKind ? ` · ${point.smartSnapKind} SNAP` : ""}. Click the next start point.`
+      );
+    } else {
+      setArchitectureDrawTool(
+        null
+      );
+
+      setOperationMessage(
+        `Wall created · ${Math.round(length)} × ${architectureWallThicknessMm} × ${architectureWallHeightMm} mm real size. Wall Draw closed; regular mouse navigation remains unchanged.`
+      );
+    }
+  }
+
+  function handleArchitectureDrawPointerMove(
+    event
+  ) {
+    if (
+      ![
+        "wall",
+        "room",
+      ].includes(
+        architectureDrawTool
+      ) ||
+      !architectureWallStart
+    ) {
+      return;
+    }
+
+    const rawPoint =
+      architecturePointerToReal(
+        event
+      );
+
+    const point =
+      architectureDrawTool ===
+      "wall"
+        ? architectureSmartSnapPoint(
+            rawPoint,
+            architectureWallStart
+          )
+        : rawPoint;
+
+    if (point) {
+      setArchitecturePointer(
+        point
+      );
+    }
+  }
+
+  function updateArchitectureWallFromEndpoints(
+    start,
+    end
+  ) {
+    if (
+      !selectedEditableArchitectureWall ||
+      selectedEditableArchitectureWall.locked
+    ) {
+      return;
+    }
+
+    const dx =
+      end.x -
+      start.x;
+
+    const dz =
+      end.z -
+      start.z;
+
+    const length =
+      Math.hypot(
+        dx,
+        dz
+      );
+
+    if (
+      length <
+      50
+    ) {
+      setOperationMessage(
+        "Wall endpoints must be at least 50 mm apart."
+      );
+
+      return;
+    }
+
+    const centerX =
+      (
+        start.x +
+        end.x
+      ) /
+      2;
+
+    const centerZ =
+      (
+        start.z +
+        end.z
+      ) /
+      2;
+
+    const rotationY =
+      -THREE.MathUtils.radToDeg(
+        Math.atan2(
+          dz,
+          dx
+        )
+      );
+
+    recordHistory();
+
+    setObjects(
+      (current) =>
+        current.map(
+          (item) => {
+            if (
+              item.id !==
+              selectedEditableArchitectureWall.id
+            ) {
+              return item;
+            }
+
+            const frame =
+              architectureWallFrameFor(
+                item,
+                architectureScale
+              );
+
+            return {
+              ...item,
+              dimensions: {
+                ...item.dimensions,
+                width:
+                  length /
+                  architectureScale,
+              },
+              position: {
+                ...item.position,
+                x:
+                  centerX /
+                  architectureScale,
+                z:
+                  centerZ /
+                  architectureScale,
+              },
+              rotation: {
+                ...item.rotation,
+                y:
+                  rotationY,
+              },
+              parameters: {
+                ...(item.parameters ||
+                  {}),
+                archRealDimensions: {
+                  ...(
+                    item.parameters
+                      ?.archRealDimensions ||
+                    {}
+                  ),
+                  width:
+                    length,
+                },
+                archWallFrame: {
+                  ...frame,
+                  x:
+                    centerX,
+                  z:
+                    centerZ,
+                  rotationY,
+                  width:
+                    length,
+                },
+                archWallStartPoint: {
+                  x:
+                    start.x,
+                  z:
+                    start.z,
+                },
+                archWallEndPoint: {
+                  x:
+                    end.x,
+                  z:
+                    end.z,
+                },
+              },
+            };
+          }
+        )
+    );
+
+    setOperationMessage(
+      `Wall endpoints updated · ${Math.round(length)} mm.`
+    );
+  }
+
+  function updateArchitectureWallEndpoint(
+    endpoint,
+    axis,
+    value
+  ) {
+    if (
+      !selectedWallEndpoints
+    ) {
+      return;
+    }
+
+    const nextStart = {
+      ...selectedWallEndpoints.start,
+    };
+
+    const nextEnd = {
+      ...selectedWallEndpoints.end,
+    };
+
+    const target =
+      endpoint ===
+      "start"
+        ? nextStart
+        : nextEnd;
+
+    target[
+      axis
+    ] =
+      architectureSnapReal(
+        safeNumber(
+          value,
+          target[
+            axis
+          ]
+        )
+      );
+
+    updateArchitectureWallFromEndpoints(
+      nextStart,
+      nextEnd
+    );
+  }
+
+  function snapSelectedArchitectureWallEndpoints() {
+    if (
+      !selectedWallEndpoints
+    ) {
+      return;
+    }
+
+    updateArchitectureWallFromEndpoints(
+      {
+        x:
+          architectureSnapReal(
+            selectedWallEndpoints
+              .start.x
+          ),
+        z:
+          architectureSnapReal(
+            selectedWallEndpoints
+              .start.z
+          ),
+      },
+      {
+        x:
+          architectureSnapReal(
+            selectedWallEndpoints
+              .end.x
+          ),
+        z:
+          architectureSnapReal(
+            selectedWallEndpoints
+              .end.z
+          ),
+      }
+    );
+  }
+
+  function updateArchitectureRealDimension(
+    key,
+    value
+  ) {
+    if (
+      !selected ||
+      selected.source !==
+        "architecture" ||
+      selected.locked
+    ) {
+      return;
+    }
+
+    const realValue =
+      clamp(
+        architectureToMm(
+          value,
+          architectureUnit
+        ),
+        1,
+        200000
+      );
+
+    recordHistory();
+
+    updateSelected(
+      (item) => {
+        const nextReal = {
+          ...(
+            item.parameters
+              ?.archRealDimensions ||
+            {
+              width:
+                item.dimensions
+                  .width *
+                architectureScale,
+              depth:
+                item.dimensions
+                  .depth *
+                architectureScale,
+              height:
+                item.dimensions
+                  .height *
+                architectureScale,
+            }
+          ),
+          [key]:
+            realValue,
+        };
+
+        return {
+          ...item,
+          dimensions: {
+            ...item.dimensions,
+            [key]:
+              realValue /
+              architectureScale,
+          },
+          parameters: {
+            ...(item.parameters ||
+              {}),
+            archRealDimensions:
+              nextReal,
+            archScale:
+              architectureScale,
+          },
+        };
+      }
+    );
+  }
+
+  function focusArchitectureQAIssue(
+    issue
+  ) {
+    if (!issue) {
+      return;
+    }
+
+    if (
+      issue.objectId
+    ) {
+      const item =
+        objects.find(
+          (candidate) =>
+            candidate.id ===
+            issue.objectId
+        );
+
+      if (item) {
+        const levelId =
+          item.parameters
+            ?.archLevelId;
+
+        if (
+          levelId &&
+          architectureLevels.some(
+            (level) =>
+              level.id ===
+              levelId
+          )
+        ) {
+          setArchitectureActiveLevelId(
+            levelId
+          );
+        }
+
+        setSelectedIds([
+          item.id,
+        ]);
+
+        setPrimaryId(
+          item.id
+        );
+
+        setInspectorTab(
+          "object"
+        );
+      }
+    }
+
+    setOperationMessage(
+      `${issue.title} · ${issue.detail}`
+    );
+  }
+
+  function runArchitectureProductionCheck() {
+    setInspectorTab(
+      "output"
+    );
+
+    if (
+      architectureProductionQA
+        .status ===
+      "READY"
+    ) {
+      setOperationMessage(
+        `Production check READY · ${architectureProductionQA.visibleSolidCount} printable solids · 0 blockers · 0 warnings.`
+      );
+
+      return;
+    }
+
+    if (
+      architectureProductionQA
+        .status ===
+      "BLOCKED"
+    ) {
+      setOperationMessage(
+        `Production check BLOCKED · ${architectureProductionQA.blockerCount} blocker(s) · ${architectureProductionQA.warningCount} warning(s). Resolve blockers before Architecture export.`
+      );
+
+      return;
+    }
+
+    setOperationMessage(
+      `Production check needs review · ${architectureProductionQA.warningCount} warning(s) · no export blockers.`
+    );
+  }
+
+  function downloadArchitectureQAReport() {
+    const qa =
+      architectureProductionQA;
+
+    const lines = [
+      "BEYOND CREATOR — ARCHITECTURE PRODUCTION REPORT",
+      `Generated: ${new Date().toISOString()}`,
+      "",
+      `Status: ${qa.status}`,
+      `Scale: 1:${architectureScale}`,
+      `Architecture objects: ${qa.architectureObjectCount}`,
+      `Visible printable solids: ${qa.visibleSolidCount}`,
+      `Blockers: ${qa.blockerCount}`,
+      `Warnings: ${qa.warningCount}`,
+      `Information: ${qa.infoCount}`,
+      "",
+      "MODEL PRINT SIZE",
+      `${architectureCheck.width.toFixed(2)} × ${architectureCheck.depth.toFixed(2)} × ${architectureCheck.height.toFixed(2)} mm`,
+      "",
+      "BLOCKERS",
+      ...(qa.blockers.length
+        ? qa.blockers.map(
+            (
+              issue,
+              index
+            ) =>
+              `${index + 1}. ${issue.title} — ${issue.detail}`
+          )
+        : [
+            "None",
+          ]),
+      "",
+      "WARNINGS",
+      ...(qa.warnings.length
+        ? qa.warnings.map(
+            (
+              issue,
+              index
+            ) =>
+              `${index + 1}. ${issue.title} — ${issue.detail}`
+          )
+        : [
+            "None",
+          ]),
+      "",
+      "LEVELS",
+      ...qa.levelStats.map(
+        (level) =>
+          `${level.name} @ ${level.elevation >= 0 ? "+" : ""}${level.elevation} mm · ${level.solids} solids · ${level.openings} unapplied opening(s) · ${level.width.toFixed(2)} × ${level.depth.toFixed(2)} × ${level.height.toFixed(2)} mm`
+      ),
+      "",
+      "NOTE",
+      "READY means BEYOND Creator found no blocking architecture-integrity issues and no current print warnings. Final slicer verification is still required before physical production.",
+    ];
+
+    const blob =
+      new Blob(
+        [
+          lines.join(
+            "\n"
+          ),
+        ],
+        {
+          type:
+            "text/plain;charset=utf-8",
+        }
+      );
+
+    downloadBlob(
+      blob,
+      "beyond-architecture-production-report.txt"
+    );
+
+    setExportMessage(
+      "Architecture production report downloaded."
+    );
+  }
+
+  function architecturePreparePrint() {
+    if (
+      architectureCheck
+        .objectCount ===
+      0
+    ) {
+      setOperationMessage(
+        "Add architecture solids before running the print check."
+      );
+
+      return;
+    }
+
+    setInspectorTab(
+      "output"
+    );
+
+    setOperationMessage(
+      architectureProductionQA.status ===
+        "READY"
+        ? `Architecture production check READY · ${architectureCheck.width.toFixed(
+            1
+          )} × ${architectureCheck.depth.toFixed(
+            1
+          )} × ${architectureCheck.height.toFixed(
+            1
+          )} mm at 1:${architectureScale}.`
+        : architectureProductionQA.status ===
+            "BLOCKED"
+          ? `Architecture production check BLOCKED · ${architectureProductionQA.blockerCount} blocker(s) · ${architectureProductionQA.warningCount} warning(s).`
+          : `Architecture production check needs review · ${architectureProductionQA.warningCount} warning(s) · no export blockers.`
+    );
   }
 
   function addObject(
@@ -4891,6 +12816,44 @@ function BeyondCreator() {
             .materialId
         );
 
+      if (
+        selectedSolids[0]
+          .source ===
+        "architecture"
+      ) {
+        resultObject.source =
+          "architecture";
+
+        resultObject.name =
+          selectedSolids[0]
+            .name;
+
+        resultObject.engine =
+          "ARCHITECTURE CSG";
+
+        resultObject.parameters = {
+          ...(selectedSolids[0]
+            .parameters ||
+            {}),
+          architectureCut:
+            true,
+          archScale:
+            architectureScale,
+          archWallFrame:
+            selectedSolids[0]
+              .parameters
+              ?.archType ===
+              "wall"
+              ? architectureWallFrameFor(
+                  selectedSolids[0],
+                  architectureScale
+                )
+              : selectedSolids[0]
+                  .parameters
+                  ?.archWallFrame,
+        };
+      }
+
       replaceSelectionWithResult(
         resultObject
       );
@@ -4954,6 +12917,20 @@ function BeyondCreator() {
   }
 
   function downloadSTL() {
+    if (
+      architectureExportBlocked
+    ) {
+      setInspectorTab(
+        "output"
+      );
+
+      setExportMessage(
+        `Architecture export blocked: resolve ${architectureProductionQA.blockerCount} production issue(s) first.`
+      );
+
+      return;
+    }
+
     setExporting(
       true
     );
@@ -5004,6 +12981,20 @@ function BeyondCreator() {
   }
 
   async function download3MF() {
+    if (
+      architectureExportBlocked
+    ) {
+      setInspectorTab(
+        "output"
+      );
+
+      setExportMessage(
+        `Architecture export blocked: resolve ${architectureProductionQA.blockerCount} production issue(s) first.`
+      );
+
+      return;
+    }
+
     setExporting(
       true
     );
@@ -5053,7 +13044,178 @@ function BeyondCreator() {
     }
   }
 
+  async function downloadArchitectureLevelsZip() {
+    if (
+      architectureProductionQA
+        .blockerCount >
+      0
+    ) {
+      setInspectorTab(
+        "output"
+      );
+
+      setExportMessage(
+        `Split export blocked: resolve ${architectureProductionQA.blockerCount} production issue(s) first.`
+      );
+
+      return;
+    }
+
+    setExporting(
+      true
+    );
+
+    setExportMessage(
+      "Preparing 3MF files by architecture level…"
+    );
+
+    try {
+      const zip =
+        new JSZip();
+
+      let exportedLevels =
+        0;
+
+      for (
+        const level
+        of architectureLevels
+      ) {
+        const levelObjects =
+          objects.filter(
+            (item) =>
+              item.source ===
+                "architecture" &&
+              item.parameters
+                ?.archLevelId ===
+                level.id
+          );
+
+        const solidCount =
+          levelObjects.filter(
+            (item) =>
+              item.role ===
+              "solid"
+          ).length;
+
+        if (
+          solidCount ===
+          0
+        ) {
+          continue;
+        }
+
+        const exportData =
+          collectExportData(
+            levelObjects.map(
+              (item) => ({
+                ...item,
+                visible: true,
+              })
+            )
+          );
+
+        const blob =
+          await make3MFBlob(
+            exportData
+          );
+
+        const safeName =
+          String(
+            level.name ||
+            level.id
+          )
+            .trim()
+            .replace(
+              /[^a-z0-9_-]+/gi,
+              "-"
+            )
+            .replace(
+              /^-+|-+$/g,
+              ""
+            ) ||
+          level.id;
+
+        zip.file(
+          `${String(
+            exportedLevels +
+            1
+          ).padStart(
+            2,
+            "0"
+          )}-${safeName}.3mf`,
+          await blob.arrayBuffer()
+        );
+
+        exportedLevels +=
+          1;
+      }
+
+      if (
+        exportedLevels ===
+        0
+      ) {
+        throw new Error(
+          "No architecture levels contain printable solids."
+        );
+      }
+
+      zip.file(
+        "README.txt",
+        `BEYOND Architecture\nScale: 1:${architectureScale}\nLevels exported: ${exportedLevels}\nEach 3MF contains one architecture level at print scale.`
+      );
+
+      const zipBlob =
+        await zip.generateAsync({
+          type: "blob",
+          compression:
+            "DEFLATE",
+          compressionOptions: {
+            level: 6,
+          },
+        });
+
+      downloadBlob(
+        zipBlob,
+        "beyond-architecture-levels.zip"
+      );
+
+      setExportMessage(
+        `${exportedLevels} architecture level${exportedLevels === 1 ? "" : "s"} exported as separate 3MF files.`
+      );
+    } catch (
+      error
+    ) {
+      console.error(
+        "Architecture split-by-level export error:",
+        error
+      );
+
+      setExportMessage(
+        error?.message ||
+          "Unable to export architecture levels."
+      );
+    } finally {
+      setExporting(
+        false
+      );
+    }
+  }
+
   async function sendToProject() {
+    if (
+      architectureExportBlocked
+    ) {
+      setInspectorTab(
+        "output"
+      );
+
+      setExportMessage(
+        `Architecture project transfer blocked: resolve ${architectureProductionQA.blockerCount} production issue(s) first.`
+      );
+
+      return;
+    }
+
     setExporting(
       true
     );
@@ -8611,11 +16773,12 @@ function BeyondCreator() {
         </div>
 
         <p>
-          Start simple or switch to
-          Advanced Mode for sketch and
-          revolve modeling, modifiers,
-          Manifold solids, viewport
-          gizmos and precision tools.
+          Start simple, switch to
+          Advanced for precision mesh
+          modeling, or use Architecture
+          Mode to build printable scale
+          models from walls, levels,
+          slabs and openings.
         </p>
       </div>
 
@@ -8630,6 +16793,26 @@ function BeyondCreator() {
                 : ""
             }
             onClick={() => {
+              setArchitectureDrawTool(
+                null
+              );
+
+              setArchitectureWallStart(
+                null
+              );
+
+              setArchitecturePointer(
+                null
+              );
+
+              setArchitectureView(
+                "3d"
+              );
+
+              setCameraView(
+                "perspective"
+              );
+
               setCreatorMode(
                 "simple"
               );
@@ -8650,23 +16833,420 @@ function BeyondCreator() {
                 ? "active"
                 : ""
             }
-            onClick={() =>
+            onClick={() => {
+              setArchitectureDrawTool(
+                null
+              );
+
+              setArchitectureWallStart(
+                null
+              );
+
+              setArchitecturePointer(
+                null
+              );
+
+              setArchitectureView(
+                "3d"
+              );
+
+              setCameraView(
+                "perspective"
+              );
+
               setCreatorMode(
                 "advanced"
-              )
-            }
+              );
+            }}
           >
             ADVANCED
+          </button>
+
+          <button
+            type="button"
+            className={
+              creatorMode ===
+              "architecture"
+                ? "active"
+                : ""
+            }
+            onClick={() => {
+              const onlyStarterCube =
+                objects.length ===
+                  1 &&
+                objects[0].id ===
+                  initial.id &&
+                objects[0].type ===
+                  "cube";
+
+              if (
+                onlyStarterCube
+              ) {
+                setObjects(
+                  []
+                );
+
+                setSelectedIds(
+                  []
+                );
+
+                setPrimaryId(
+                  null
+                );
+
+                setOperationMessage(
+                  "Architecture workspace ready. Draw a wall or add an architectural object."
+                );
+              }
+
+              setArchitectureDrawTool(
+                null
+              );
+
+              setArchitectureWallStart(
+                null
+              );
+
+              setArchitecturePointer(
+                null
+              );
+
+              setArchitectureView(
+                "3d"
+              );
+
+              setCameraView(
+                "perspective"
+              );
+
+              setCreatorMode(
+                "architecture"
+              );
+
+              setLibraryTab(
+                "create"
+              );
+
+              setInspectorTab(
+                "object"
+              );
+            }}
+          >
+            ARCHITECTURE
           </button>
         </div>
 
         <span>
           {creatorMode ===
           "advanced"
-            ? "SKETCH · REVOLVE · MIRROR · ARRAY · SHELL · BEVEL · G MOVE · R ROTATE · S SCALE"
-            : "Simple solid modeling with precise numeric controls"}
+            ? "SKETCH · REVOLVE · MIRROR · ARRAY · SHELL · FILLET · PRECISION MESH EDIT"
+            : creatorMode ===
+                "architecture"
+              ? `PLAN · 3D · ELEVATIONS · WALLS · OPENINGS · LEVELS · SCALE 1:${architectureScale}`
+              : "Simple solid modeling with precise numeric controls"}
         </span>
       </div>
+
+      {creatorMode ===
+        "architecture" && (
+        <div className="creator-architecture-strip">
+          <div className="creator-architecture-strip-group">
+            <span>
+              VIEW
+            </span>
+
+            <button
+              type="button"
+              className={
+                architectureView ===
+                "plan"
+                  ? "active"
+                  : ""
+              }
+              onClick={() =>
+                architectureSetView(
+                  "plan"
+                )
+              }
+            >
+              PLAN
+            </button>
+
+            <button
+              type="button"
+              className={
+                architectureView ===
+                "3d"
+                  ? "active"
+                  : ""
+              }
+              onClick={() =>
+                architectureSetView(
+                  "3d"
+                )
+              }
+            >
+              3D
+            </button>
+
+            <button
+              type="button"
+              className={
+                architectureView ===
+                "front"
+                  ? "active"
+                  : ""
+              }
+              onClick={() =>
+                architectureSetView(
+                  "front"
+                )
+              }
+            >
+              FRONT
+            </button>
+
+            <button
+              type="button"
+              className={
+                architectureView ===
+                "right"
+                  ? "active"
+                  : ""
+              }
+              onClick={() =>
+                architectureSetView(
+                  "right"
+                )
+              }
+            >
+              RIGHT
+            </button>
+          </div>
+
+          <div className="creator-architecture-explode-control">
+            <span>
+              LEVELS
+            </span>
+
+            <button
+              type="button"
+              className={
+                architectureExplodedLevels
+                  ? "active"
+                  : ""
+              }
+              disabled={
+                architectureView !==
+                "3d"
+              }
+              onClick={() =>
+                setArchitectureExplodedLevels(
+                  (value) =>
+                    !value
+                )
+              }
+            >
+              {architectureExplodedLevels
+                ? "EXPLODED"
+                : "STACKED"}
+            </button>
+          </div>
+
+          <label className="creator-architecture-strip-field">
+            <span>
+              UNITS
+            </span>
+
+            <select
+              value={
+                architectureUnit
+              }
+              onChange={(
+                event
+              ) =>
+                setArchitectureUnit(
+                  event.target
+                    .value
+                )
+              }
+            >
+              <option value="mm">
+                MM
+              </option>
+
+              <option value="cm">
+                CM
+              </option>
+
+              <option value="m">
+                M
+              </option>
+            </select>
+          </label>
+
+          <label className="creator-architecture-strip-field">
+            <span>
+              MODEL SCALE
+            </span>
+
+            <select
+              value={
+                architectureScale
+              }
+              onChange={(
+                event
+              ) =>
+                changeArchitectureScale(
+                  Number(
+                    event.target
+                      .value
+                  )
+                )
+              }
+            >
+              {ARCH_SCALE_OPTIONS.map(
+                (scale) => (
+                  <option
+                    key={
+                      scale
+                    }
+                    value={
+                      scale
+                    }
+                  >
+                    1:{
+                      scale
+                    }
+                  </option>
+                )
+              )}
+            </select>
+          </label>
+
+          <label className="creator-architecture-strip-field">
+            <span>
+              GRID
+            </span>
+
+            <select
+              value={
+                architectureGridMm
+              }
+              onChange={(
+                event
+              ) =>
+                setArchitectureGridMm(
+                  Number(
+                    event.target
+                      .value
+                  )
+                )
+              }
+            >
+              <option value="100">
+                100 MM
+              </option>
+
+              <option value="500">
+                500 MM
+              </option>
+
+              <option value="1000">
+                1 M
+              </option>
+
+              <option value="5000">
+                5 M
+              </option>
+            </select>
+          </label>
+
+          <label className="creator-architecture-strip-field">
+            <span>
+              SNAP
+            </span>
+
+            <select
+              value={
+                architectureSnapMm
+              }
+              onChange={(
+                event
+              ) =>
+                setArchitectureSnapMm(
+                  Number(
+                    event.target
+                      .value
+                  )
+                )
+              }
+            >
+              <option value="10">
+                10 MM
+              </option>
+
+              <option value="50">
+                50 MM
+              </option>
+
+              <option value="100">
+                100 MM
+              </option>
+
+              <option value="500">
+                500 MM
+              </option>
+            </select>
+          </label>
+
+          <div className="creator-architecture-annotation-control">
+            <span>
+              ANNOTATIONS
+            </span>
+
+            <button
+              type="button"
+              className={
+                architecturePlanAnnotations
+                  ? "active"
+                  : ""
+              }
+              disabled={
+                architectureView !==
+                "plan"
+              }
+              onClick={() =>
+                setArchitecturePlanAnnotations(
+                  (value) =>
+                    !value
+                )
+              }
+            >
+              {architecturePlanAnnotations
+                ? "ON"
+                : "OFF"}
+            </button>
+          </div>
+
+          <div className="creator-architecture-scale-readout">
+            <span>
+              PRINT FOOTPRINT
+            </span>
+
+            <strong>
+              {architectureCheck
+                .objectCount
+                ? `${architectureCheck.width.toFixed(
+                    1
+                  )} × ${architectureCheck.depth.toFixed(
+                    1
+                  )} MM`
+                : "NO ARCH MODEL"}
+            </strong>
+          </div>
+        </div>
+      )}
 
       <div className="creator-shell creator-shell-v2 creator-shell-v3 creator-shell-v5">
         <aside
@@ -8735,6 +17315,9 @@ function BeyondCreator() {
             </strong>
           </div>
 
+          {creatorMode !==
+            "architecture" && (
+            <>
           <div className="creator-add-grid creator-library-create">
             <button
               type="button"
@@ -8817,6 +17400,1169 @@ function BeyondCreator() {
               </span>
             </button>
           </div>
+            </>
+          )}
+
+
+          {creatorMode ===
+            "architecture" && (
+            <div className="creator-architecture-library creator-library-create">
+              <div className="creator-architecture-library-title">
+                <span>
+                  ARCHITECTURE V10
+                </span>
+
+                <strong>
+                  {
+                    architectureActiveLevel
+                      ?.name ||
+                    "GROUND"
+                  }
+                </strong>
+              </div>
+
+              <button
+                type="button"
+                className={
+                  architectureDrawTool ===
+                  "wall"
+                    ? "creator-architecture-wall-draw active"
+                    : "creator-architecture-wall-draw"
+                }
+                onClick={
+                  toggleArchitectureWallTool
+                }
+              >
+                <b>
+                  ╱
+                </b>
+
+                <span>
+                  <strong>
+                    DRAW WALL
+                  </strong>
+
+                  <small>
+                    Two clicks in PLAN view
+                  </small>
+                </span>
+
+                <i>
+                  {architectureDrawTool ===
+                  "wall"
+                    ? "ON"
+                    : "W"}
+                </i>
+              </button>
+
+              <button
+                type="button"
+                className={
+                  architectureDrawTool ===
+                  "room"
+                    ? "creator-architecture-room-draw active"
+                    : "creator-architecture-room-draw"
+                }
+                onClick={
+                  toggleArchitectureRoomTool
+                }
+              >
+                <b>
+                  □
+                </b>
+
+                <span>
+                  <strong>
+                    DRAW ROOM
+                  </strong>
+
+                  <small>
+                    Rectangle · walls + floor
+                  </small>
+                </span>
+
+                <i>
+                  {architectureDrawTool ===
+                  "room"
+                    ? "ON"
+                    : "R"}
+                </i>
+              </button>
+
+              <div className="creator-architecture-plan-tools">
+                <button
+                  type="button"
+                  className={
+                    architectureDrawTool ===
+                    "measure"
+                      ? "active"
+                      : ""
+                  }
+                  disabled={
+                    architectureView !==
+                    "plan"
+                  }
+                  onClick={
+                    toggleArchitectureMeasureTool
+                  }
+                >
+                  MEASURE
+                </button>
+
+                <button
+                  type="button"
+                  disabled={
+                    architectureMeasurements.length ===
+                    0
+                  }
+                  onClick={
+                    clearArchitectureMeasurements
+                  }
+                >
+                  CLEAR DIMS
+                </button>
+              </div>
+
+              <div className="creator-architecture-wall-settings">
+                <label>
+                  <span>
+                    WALL
+                  </span>
+
+                  <input
+                    type="number"
+                    min="50"
+                    max="2000"
+                    step="10"
+                    value={
+                      architectureWallThicknessMm
+                    }
+                    onChange={(
+                      event
+                    ) =>
+                      setArchitectureWallThicknessMm(
+                        clamp(
+                          event.target
+                            .value,
+                          50,
+                          2000
+                        )
+                      )
+                    }
+                  />
+
+                  <small>
+                    MM
+                  </small>
+                </label>
+
+                <label>
+                  <span>
+                    HEIGHT
+                  </span>
+
+                  <input
+                    type="number"
+                    min="500"
+                    max="20000"
+                    step="100"
+                    value={
+                      architectureWallHeightMm
+                    }
+                    onChange={(
+                      event
+                    ) =>
+                      setArchitectureWallHeightMm(
+                        clamp(
+                          event.target
+                            .value,
+                          500,
+                          20000
+                        )
+                      )
+                    }
+                  />
+
+                  <small>
+                    MM
+                  </small>
+                </label>
+              </div>
+
+              <details className="creator-architecture-wall-draw-settings">
+                <summary>
+                  <span>
+                    WALL DRAW SETTINGS
+                  </span>
+
+                  <b>
+                    ▾
+                  </b>
+                </summary>
+
+                <div className="creator-architecture-wall-draw-settings-body">
+                  <label>
+                    <span>
+                      SMART SNAP
+                    </span>
+
+                    <button
+                      type="button"
+                      className={
+                        architectureSmartWallSnap
+                          ? "active"
+                          : ""
+                      }
+                      onClick={() =>
+                        setArchitectureSmartWallSnap(
+                          (value) =>
+                            !value
+                        )
+                      }
+                    >
+                      {architectureSmartWallSnap
+                        ? "ON"
+                        : "OFF"}
+                    </button>
+                  </label>
+
+                  <label>
+                    <span>
+                      CHAIN
+                    </span>
+
+                    <button
+                      type="button"
+                      className={
+                        architectureWallChain
+                          ? "active"
+                          : ""
+                      }
+                      onClick={() =>
+                        setArchitectureWallChain(
+                          (value) =>
+                            !value
+                        )
+                      }
+                    >
+                      {architectureWallChain
+                        ? "ON"
+                        : "OFF"}
+                    </button>
+                  </label>
+
+                  <label>
+                    <span>
+                      ANGLE
+                    </span>
+
+                    <select
+                      value={
+                        architectureAngleSnapDeg
+                      }
+                      onChange={(
+                        event
+                      ) =>
+                        setArchitectureAngleSnapDeg(
+                          Number(
+                            event.target
+                              .value
+                          )
+                        )
+                      }
+                    >
+                      <option value="0">
+                        FREE
+                      </option>
+
+                      <option value="15">
+                        15°
+                      </option>
+
+                      <option value="30">
+                        30°
+                      </option>
+
+                      <option value="45">
+                        45°
+                      </option>
+
+                      <option value="90">
+                        90°
+                      </option>
+                    </select>
+                  </label>
+                </div>
+              </details>
+
+              <div className="creator-architecture-room-settings">
+                <label>
+                  <span>
+                    FLOOR
+                  </span>
+
+                  <button
+                    type="button"
+                    className={
+                      architectureRoomFloor
+                        ? "active"
+                        : ""
+                    }
+                    onClick={() =>
+                      setArchitectureRoomFloor(
+                        (value) =>
+                          !value
+                      )
+                    }
+                  >
+                    {architectureRoomFloor
+                      ? "ON"
+                      : "OFF"}
+                  </button>
+                </label>
+
+                <label>
+                  <span>
+                    SLAB
+                  </span>
+
+                  <input
+                    type="number"
+                    min="50"
+                    max="1000"
+                    step="10"
+                    value={
+                      architectureFloorThicknessMm
+                    }
+                    onChange={(
+                      event
+                    ) =>
+                      setArchitectureFloorThicknessMm(
+                        clamp(
+                          event.target
+                            .value,
+                          50,
+                          1000
+                        )
+                      )
+                    }
+                  />
+
+                  <small>
+                    MM
+                  </small>
+                </label>
+              </div>
+
+              <div className="creator-architecture-primitive-grid">
+                <button
+                  type="button"
+                  onClick={() =>
+                    addArchitecturePrimitive(
+                      "wall"
+                    )
+                  }
+                >
+                  <b>▯</b>
+                  <span>Wall</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    addArchitecturePrimitive(
+                      "floor"
+                    )
+                  }
+                >
+                  <b>▰</b>
+                  <span>Floor</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    addArchitecturePrimitive(
+                      "column"
+                    )
+                  }
+                >
+                  <b>▥</b>
+                  <span>Column</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    addArchitecturePrimitive(
+                      "beam"
+                    )
+                  }
+                >
+                  <b>━</b>
+                  <span>Beam</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={
+                    addArchitectureStairs
+                  }
+                >
+                  <b>▟</b>
+                  <span>Stairs</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={
+                    addArchitectureFlatRoof
+                  }
+                >
+                  <b>⌂</b>
+                  <span>Flat Roof</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={
+                    addArchitectureGableRoof
+                  }
+                >
+                  <b>△</b>
+                  <span>Gable Roof</span>
+                </button>
+              </div>
+
+              <div className="creator-architecture-openings">
+                <button
+                  type="button"
+                  onClick={() =>
+                    addArchitectureOpening(
+                      "door"
+                    )
+                  }
+                >
+                  <b>⌑</b>
+
+                  <span>
+                    <strong>
+                      DOOR
+                    </strong>
+
+                    <small>
+                      900 × 2100
+                    </small>
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    addArchitectureOpening(
+                      "window"
+                    )
+                  }
+                >
+                  <b>▣</b>
+
+                  <span>
+                    <strong>
+                      WINDOW
+                    </strong>
+
+                    <small>
+                      1200 × 1200
+                    </small>
+                  </span>
+                </button>
+              </div>
+
+              <small className="creator-field-note">
+                Select a WALL before adding a door or window. Smart openings attach to the selected wall.
+              </small>
+
+              <button
+                type="button"
+                className="creator-architecture-join-walls"
+                onClick={
+                  joinSelectedArchitectureWalls
+                }
+                disabled={
+                  !canJoinArchitectureWalls
+                }
+              >
+                JOIN 2 WALLS · CLEAN CORNER
+              </button>
+
+              <details className="creator-architecture-component-settings">
+                <summary>
+                  <span>
+                    COMPONENT SETTINGS
+                  </span>
+
+                  <b>
+                    ▾
+                  </b>
+                </summary>
+
+                <div className="creator-architecture-component-body">
+                  <div className="creator-architecture-component-title">
+                    STAIRS
+                  </div>
+
+                  <div className="creator-architecture-component-grid">
+                    <label>
+                      <span>
+                        WIDTH
+                      </span>
+
+                      <input
+                        type="number"
+                        min="500"
+                        max="5000"
+                        step="50"
+                        value={
+                          architectureStairWidthMm
+                        }
+                        onChange={(
+                          event
+                        ) =>
+                          setArchitectureStairWidthMm(
+                            clamp(
+                              event.target
+                                .value,
+                              500,
+                              5000
+                            )
+                          )
+                        }
+                      />
+
+                      <small>
+                        MM
+                      </small>
+                    </label>
+
+                    <label>
+                      <span>
+                        RUN
+                      </span>
+
+                      <input
+                        type="number"
+                        min="1000"
+                        max="20000"
+                        step="100"
+                        value={
+                          architectureStairRunMm
+                        }
+                        onChange={(
+                          event
+                        ) =>
+                          setArchitectureStairRunMm(
+                            clamp(
+                              event.target
+                                .value,
+                              1000,
+                              20000
+                            )
+                          )
+                        }
+                      />
+
+                      <small>
+                        MM
+                      </small>
+                    </label>
+
+                    <label>
+                      <span>
+                        RISE
+                      </span>
+
+                      <input
+                        type="number"
+                        min="500"
+                        max="10000"
+                        step="100"
+                        value={
+                          architectureStairRiseMm
+                        }
+                        onChange={(
+                          event
+                        ) =>
+                          setArchitectureStairRiseMm(
+                            clamp(
+                              event.target
+                                .value,
+                              500,
+                              10000
+                            )
+                          )
+                        }
+                      />
+
+                      <small>
+                        MM
+                      </small>
+                    </label>
+
+                    <label>
+                      <span>
+                        STEPS
+                      </span>
+
+                      <input
+                        type="number"
+                        min="3"
+                        max="24"
+                        step="1"
+                        value={
+                          architectureStairSteps
+                        }
+                        onChange={(
+                          event
+                        ) =>
+                          setArchitectureStairSteps(
+                            Math.round(
+                              clamp(
+                                event.target
+                                  .value,
+                                3,
+                                24
+                              )
+                            )
+                          )
+                        }
+                      />
+
+                      <small>
+                        #
+                      </small>
+                    </label>
+
+                    <label>
+                      <span>
+                        DIR
+                      </span>
+
+                      <select
+                        value={
+                          architectureStairDirectionDeg
+                        }
+                        onChange={(
+                          event
+                        ) =>
+                          setArchitectureStairDirectionDeg(
+                            Number(
+                              event.target
+                                .value
+                            )
+                          )
+                        }
+                      >
+                        <option value="0">
+                          NORTH
+                        </option>
+
+                        <option value="90">
+                          EAST
+                        </option>
+
+                        <option value="180">
+                          SOUTH
+                        </option>
+
+                        <option value="270">
+                          WEST
+                        </option>
+                      </select>
+
+                      <small>
+                        ↗
+                      </small>
+                    </label>
+                  </div>
+
+                  <div className="creator-architecture-component-title creator-architecture-roof-title">
+                    ROOF
+                  </div>
+
+                  <div className="creator-architecture-component-grid">
+                    <label>
+                      <span>
+                        WIDTH
+                      </span>
+
+                      <input
+                        type="number"
+                        min="1000"
+                        max="50000"
+                        step="100"
+                        value={
+                          architectureRoofWidthMm
+                        }
+                        onChange={(
+                          event
+                        ) =>
+                          setArchitectureRoofWidthMm(
+                            clamp(
+                              event.target
+                                .value,
+                              1000,
+                              50000
+                            )
+                          )
+                        }
+                      />
+
+                      <small>
+                        MM
+                      </small>
+                    </label>
+
+                    <label>
+                      <span>
+                        DEPTH
+                      </span>
+
+                      <input
+                        type="number"
+                        min="1000"
+                        max="50000"
+                        step="100"
+                        value={
+                          architectureRoofDepthMm
+                        }
+                        onChange={(
+                          event
+                        ) =>
+                          setArchitectureRoofDepthMm(
+                            clamp(
+                              event.target
+                                .value,
+                              1000,
+                              50000
+                            )
+                          )
+                        }
+                      />
+
+                      <small>
+                        MM
+                      </small>
+                    </label>
+
+                    <label>
+                      <span>
+                        THICK
+                      </span>
+
+                      <input
+                        type="number"
+                        min="50"
+                        max="1000"
+                        step="10"
+                        value={
+                          architectureRoofThicknessMm
+                        }
+                        onChange={(
+                          event
+                        ) =>
+                          setArchitectureRoofThicknessMm(
+                            clamp(
+                              event.target
+                                .value,
+                              50,
+                              1000
+                            )
+                          )
+                        }
+                      />
+
+                      <small>
+                        MM
+                      </small>
+                    </label>
+
+                    <label>
+                      <span>
+                        OVER
+                      </span>
+
+                      <input
+                        type="number"
+                        min="0"
+                        max="3000"
+                        step="50"
+                        value={
+                          architectureRoofOverhangMm
+                        }
+                        onChange={(
+                          event
+                        ) =>
+                          setArchitectureRoofOverhangMm(
+                            clamp(
+                              event.target
+                                .value,
+                              0,
+                              3000
+                            )
+                          )
+                        }
+                      />
+
+                      <small>
+                        MM
+                      </small>
+                    </label>
+
+                    <label>
+                      <span>
+                        PITCH
+                      </span>
+
+                      <input
+                        type="number"
+                        min="5"
+                        max="60"
+                        step="1"
+                        value={
+                          architectureRoofPitchDeg
+                        }
+                        onChange={(
+                          event
+                        ) =>
+                          setArchitectureRoofPitchDeg(
+                            clamp(
+                              event.target
+                                .value,
+                              5,
+                              60
+                            )
+                          )
+                        }
+                      />
+
+                      <small>
+                        °
+                      </small>
+                    </label>
+
+                    <label>
+                      <span>
+                        RIDGE
+                      </span>
+
+                      <select
+                        value={
+                          architectureRoofRidgeDirection
+                        }
+                        onChange={(
+                          event
+                        ) =>
+                          setArchitectureRoofRidgeDirection(
+                            event.target
+                              .value
+                          )
+                        }
+                      >
+                        <option value="z">
+                          N–S
+                        </option>
+
+                        <option value="x">
+                          E–W
+                        </option>
+                      </select>
+
+                      <small>
+                        AXIS
+                      </small>
+                    </label>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="creator-architecture-fit-roof"
+                    onClick={
+                      fitArchitectureRoofToModel
+                    }
+                  >
+                    FIT ROOF TO SELECTION / LEVEL
+                  </button>
+
+                  <div className="creator-architecture-component-title creator-architecture-roof-title">
+                    3D PRESENTATION
+                  </div>
+
+                  <div className="creator-architecture-component-grid">
+                    <label>
+                      <span>
+                        GAP
+                      </span>
+
+                      <input
+                        type="number"
+                        min="200"
+                        max="10000"
+                        step="100"
+                        value={
+                          architectureExplodeGapMm
+                        }
+                        onChange={(
+                          event
+                        ) =>
+                          setArchitectureExplodeGapMm(
+                            clamp(
+                              event.target
+                                .value,
+                              200,
+                              10000
+                            )
+                          )
+                        }
+                      />
+
+                      <small>
+                        MM
+                      </small>
+                    </label>
+                  </div>
+                </div>
+              </details>
+
+              <div className="creator-architecture-levels">
+                <div className="creator-architecture-section-head">
+                  <span>
+                    LEVELS
+                  </span>
+
+                  <button
+                    type="button"
+                    onClick={
+                      addArchitectureLevel
+                    }
+                  >
+                    + LEVEL
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  className="creator-architecture-duplicate-level"
+                  onClick={
+                    duplicateArchitectureActiveLevel
+                  }
+                >
+                  DUPLICATE ACTIVE LEVEL
+                </button>
+
+                <div className="creator-architecture-level-tools">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      isolateArchitectureLevel(
+                        architectureActiveLevelId
+                      )
+                    }
+                  >
+                    ISOLATE
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={
+                      showAllArchitectureLevels
+                    }
+                  >
+                    SHOW ALL
+                  </button>
+                </div>
+
+                <div className="creator-architecture-level-list creator-architecture-level-list-v2">
+                  {architectureLevels.map(
+                    (level) => (
+                      <div
+                        key={
+                          level.id
+                        }
+                        className={
+                          architectureActiveLevelId ===
+                          level.id
+                            ? "creator-architecture-level-row active"
+                            : "creator-architecture-level-row"
+                        }
+                      >
+                        <button
+                          type="button"
+                          className="creator-architecture-level-select"
+                          onClick={() =>
+                            setArchitectureActiveLevelId(
+                              level.id
+                            )
+                          }
+                        >
+                          <span>
+                            {
+                              level.name ||
+                              "LEVEL"
+                            }
+                          </span>
+                        </button>
+
+                        <input
+                          className="creator-architecture-level-elevation"
+                          type="number"
+                          step="100"
+                          value={
+                            level.elevation
+                          }
+                          onChange={(
+                            event
+                          ) =>
+                            updateArchitectureLevelElevation(
+                              level.id,
+                              event.target
+                                .value
+                            )
+                          }
+                          title="Elevation mm"
+                        />
+
+                        <button
+                          type="button"
+                          className={
+                            level.visible ===
+                            false
+                              ? "creator-architecture-level-eye hidden"
+                              : "creator-architecture-level-eye"
+                          }
+                          onClick={() =>
+                            setArchitectureLevelVisibility(
+                              level.id,
+                              level.visible ===
+                                false
+                            )
+                          }
+                          title={
+                            level.visible ===
+                            false
+                              ? "Show level"
+                              : "Hide level"
+                          }
+                        >
+                          {level.visible ===
+                          false
+                            ? "○"
+                            : "●"}
+                        </button>
+                      </div>
+                    )
+                  )}
+                </div>
+
+                {architectureActiveLevel && (
+                  <label className="creator-architecture-level-name-editor">
+                    <span>
+                      ACTIVE LEVEL NAME
+                    </span>
+
+                    <input
+                      type="text"
+                      value={
+                        architectureActiveLevel
+                          .name
+                      }
+                      onChange={(
+                        event
+                      ) =>
+                        updateArchitectureLevelName(
+                          architectureActiveLevel
+                            .id,
+                          event.target
+                            .value
+                        )
+                      }
+                    />
+                  </label>
+                )}
+              </div>
+
+              <details className="creator-architecture-room-schedule">
+                <summary>
+                  <span>
+                    ROOMS
+                  </span>
+
+                  <strong>
+                    {
+                      architectureRooms.length
+                    }
+                  </strong>
+
+                  <b>
+                    ▾
+                  </b>
+                </summary>
+
+                <div className="creator-architecture-room-schedule-body">
+                  {architectureRooms.length ===
+                  0 ? (
+                    <small>
+                      Draw a room to build the room schedule.
+                    </small>
+                  ) : (
+                    architectureRooms.map(
+                      (room) => (
+                        <div
+                          className="creator-architecture-room-schedule-row"
+                          key={
+                            room.id
+                          }
+                        >
+                          <input
+                            type="text"
+                            value={
+                              room.name
+                            }
+                            onChange={(
+                              event
+                            ) =>
+                              updateArchitectureRoomName(
+                                room.id,
+                                event.target
+                                  .value
+                              )
+                            }
+                          />
+
+                          <span>
+                            {room.areaM2.toFixed(
+                              2
+                            )} M²
+                          </span>
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              selectArchitectureRoom(
+                                room.id
+                              )
+                            }
+                          >
+                            SELECT
+                          </button>
+                        </div>
+                      )
+                    )
+                  )}
+                </div>
+              </details>
+
+            </div>
+          )}
 
           {creatorMode ===
             "advanced" && (
@@ -9193,8 +18939,8 @@ function BeyondCreator() {
             </button>
           </div>
 
-          {creatorMode ===
-            "advanced" && (
+          {creatorMode !==
+            "simple" && (
             <div className="creator-group-actions creator-library-scene">
               <button
                 type="button"
@@ -9378,13 +19124,16 @@ function BeyondCreator() {
             </div>
           </div>
 
-          {creatorMode ===
-            "advanced" && (
+          {creatorMode !==
+            "simple" && (
             <div
               className={
                 meshEditMode
                   ? "creator-advanced-toolbar creator-edit-mode-active"
-                  : "creator-advanced-toolbar"
+                  : creatorMode ===
+                      "architecture"
+                    ? "creator-advanced-toolbar creator-architecture-toolbar"
+                    : "creator-advanced-toolbar"
               }
             >
               <div className="creator-tool-cluster creator-object-tools">
@@ -9447,30 +19196,33 @@ function BeyondCreator() {
                   )
                 )}
 
-                <button
-                  type="button"
-                  className={
-                    meshEditMode
-                      ? "active creator-edit-mode-button"
-                      : "creator-edit-mode-button"
-                  }
-                  onClick={
-                    enterMeshEditMode
-                  }
-                  disabled={
-                    !selected ||
-                    selected.locked
-                  }
-                  title="Mesh Edit Mode · Tab"
-                >
-                  <strong>
-                    EDIT
-                  </strong>
+                {creatorMode ===
+                  "advanced" && (
+                  <button
+                    type="button"
+                    className={
+                      meshEditMode
+                        ? "active creator-edit-mode-button"
+                        : "creator-edit-mode-button"
+                    }
+                    onClick={
+                      enterMeshEditMode
+                    }
+                    disabled={
+                      !selected ||
+                      selected.locked
+                    }
+                    title="Mesh Edit Mode · Tab"
+                  >
+                    <strong>
+                      EDIT
+                    </strong>
 
-                  <small>
-                    TAB
-                  </small>
-                </button>
+                    <small>
+                      TAB
+                    </small>
+                  </button>
+                )}
               </div>
 
               <div className="creator-tool-cluster creator-mesh-edit-tools">
@@ -9604,18 +19356,38 @@ function BeyondCreator() {
 
                   <select
                     value={
-                      snapMm
+                      creatorMode ===
+                      "architecture"
+                        ? architectureSnapMm /
+                          architectureScale
+                        : snapMm
                     }
                     onChange={(
                       event
-                    ) =>
-                      setSnapMm(
+                    ) => {
+                      const value =
                         Number(
                           event.target
                             .value
-                        )
-                      )
-                    }
+                        );
+
+                      if (
+                        creatorMode ===
+                        "architecture"
+                      ) {
+                        setArchitectureSnapMm(
+                          Math.max(
+                            1,
+                            value *
+                              architectureScale
+                          )
+                        );
+                      } else {
+                        setSnapMm(
+                          value
+                        );
+                      }
+                    }}
                     disabled={
                       !snapEnabled
                     }
@@ -9631,6 +19403,38 @@ function BeyondCreator() {
                     <option value="10">
                       10 MM
                     </option>
+
+                    {creatorMode ===
+                      "architecture" && (
+                      <>
+                        <option
+                          value={
+                            50 /
+                            architectureScale
+                          }
+                        >
+                          50 MM REAL
+                        </option>
+
+                        <option
+                          value={
+                            100 /
+                            architectureScale
+                          }
+                        >
+                          100 MM REAL
+                        </option>
+
+                        <option
+                          value={
+                            500 /
+                            architectureScale
+                          }
+                        >
+                          500 MM REAL
+                        </option>
+                      </>
+                    )}
                   </select>
                 </label>
               </div>
@@ -9784,8 +19588,8 @@ function BeyondCreator() {
                   autoRotate
                 }
                 advanced={
-                  creatorMode ===
-                  "advanced"
+                  creatorMode !==
+                  "simple"
                 }
                 transformMode={
                   transformMode
@@ -9797,7 +19601,11 @@ function BeyondCreator() {
                   snapEnabled
                 }
                 snapMm={
-                  snapMm
+                  creatorMode ===
+                  "architecture"
+                    ? architectureSnapMm /
+                      architectureScale
+                    : snapMm
                 }
                 onTransformStart={
                   handleTransformStart
@@ -9817,11 +19625,258 @@ function BeyondCreator() {
                 onEditSelect={
                   handleEditElementSelect
                 }
-                navigationEnabled={
-                  !boxSelectActive
+                gridCellSize={
+                  creatorMode ===
+                  "architecture"
+                    ? Math.max(
+                        0.018,
+                        (
+                          architectureGridMm /
+                          architectureScale
+                        ) *
+                          SCENE_SCALE
+                      )
+                    : 0.36
+                }
+                gridSectionSize={
+                  creatorMode ===
+                  "architecture"
+                    ? Math.max(
+                        0.09,
+                        (
+                          architectureGridMm *
+                          5 /
+                          architectureScale
+                        ) *
+                          SCENE_SCALE
+                      )
+                    : 1.8
+                }
+                plan2D={
+                  creatorMode ===
+                    "architecture" &&
+                  architectureView ===
+                    "plan"
+                }
+                elevation2D={
+                  creatorMode ===
+                    "architecture" &&
+                  [
+                    "front",
+                    "right",
+                  ].includes(
+                    architectureView
+                  )
+                    ? architectureView
+                    : null
+                }
+                levelExplodeOffsets={
+                  creatorMode ===
+                    "architecture" &&
+                  architectureView ===
+                    "3d"
+                    ? architectureLevelExplodeOffsets
+                    : {}
+                }
+                planAnnotations={
+                  architecturePlanAnnotations
+                }
+                planMeasurements={
+                  architectureMeasurements
+                }
+                architectureActiveLevel={
+                  architectureActiveLevel
+                }
+                architectureActiveLevelId={
+                  architectureActiveLevelId
+                }
+                architectureLevels={
+                  architectureLevels
+                }
+                architectureScale={
+                  architectureScale
                 }
               />
             </Canvas>
+
+            {creatorMode ===
+              "architecture" &&
+              [
+                "wall",
+                "room",
+                "measure",
+              ].includes(
+                architectureDrawTool
+              ) && (
+              <div
+                className="creator-architecture-draw-layer creator-architecture-draw-layer-passive"
+              >
+                <div className="creator-architecture-draw-badge">
+                  {architectureDrawTool ===
+                  "room"
+                    ? "ROOM DRAW"
+                    : architectureDrawTool ===
+                        "measure"
+                      ? "MEASURE"
+                      : "WALL DRAW"} · {
+                    architectureDrawTool ===
+                    "measure"
+                      ? architectureMeasureStart
+                        ? "CLICK B"
+                        : "CLICK A"
+                      : architectureWallStart
+                        ? "CLICK END"
+                        : "CLICK START"
+                  } · RIGHT CLICK CANCEL
+                </div>
+
+                {architectureDrawTool ===
+                  "wall" &&
+                  architectureWallStart &&
+                  architecturePointer && (
+                  <div
+                    className={
+                      architecturePointer
+                        ?.smartSnapKind
+                        ? "creator-architecture-preview-line smart-snap"
+                        : "creator-architecture-preview-line"
+                    }
+                    style={{
+                      left:
+                        architectureWallStart.screenX,
+                      top:
+                        architectureWallStart.screenY,
+                      width:
+                        Math.hypot(
+                          architecturePointer.screenX -
+                            architectureWallStart.screenX,
+                          architecturePointer.screenY -
+                            architectureWallStart.screenY
+                        ),
+                      transform:
+                        `rotate(${Math.atan2(
+                          architecturePointer.screenY -
+                            architectureWallStart.screenY,
+                          architecturePointer.screenX -
+                            architectureWallStart.screenX
+                        )}rad)`,
+                    }}
+                  >
+                    <span>
+                      {Math.round(
+                        Math.hypot(
+                          architecturePointer.realX -
+                            architectureWallStart.realX,
+                          architecturePointer.realZ -
+                            architectureWallStart.realZ
+                        )
+                      )} MM
+                    </span>
+                  </div>
+                )}
+
+                {architectureDrawTool ===
+                  "room" &&
+                  architectureWallStart &&
+                  architecturePointer && (
+                  <div
+                    className="creator-architecture-room-preview"
+                    style={{
+                      left:
+                        Math.min(
+                          architectureWallStart.screenX,
+                          architecturePointer.screenX
+                        ),
+                      top:
+                        Math.min(
+                          architectureWallStart.screenY,
+                          architecturePointer.screenY
+                        ),
+                      width:
+                        Math.abs(
+                          architecturePointer.screenX -
+                          architectureWallStart.screenX
+                        ),
+                      height:
+                        Math.abs(
+                          architecturePointer.screenY -
+                          architectureWallStart.screenY
+                        ),
+                    }}
+                  >
+                    <span>
+                      {Math.round(
+                        Math.abs(
+                          architecturePointer.realX -
+                          architectureWallStart.realX
+                        )
+                      )} × {Math.round(
+                        Math.abs(
+                          architecturePointer.realZ -
+                          architectureWallStart.realZ
+                        )
+                      )} MM
+                    </span>
+
+                    <small>
+                      {(
+                        Math.abs(
+                          architecturePointer.realX -
+                          architectureWallStart.realX
+                        ) *
+                        Math.abs(
+                          architecturePointer.realZ -
+                          architectureWallStart.realZ
+                        ) /
+                        1000000
+                      ).toFixed(
+                        2
+                      )} M²
+                    </small>
+                  </div>
+                )}
+
+                {architectureDrawTool ===
+                  "measure" &&
+                  architectureMeasureStart &&
+                  architectureMeasurePointer && (
+                  <div
+                    className="creator-architecture-measure-preview"
+                    style={{
+                      left:
+                        architectureMeasureStart.screenX,
+                      top:
+                        architectureMeasureStart.screenY,
+                      width:
+                        Math.hypot(
+                          architectureMeasurePointer.screenX -
+                            architectureMeasureStart.screenX,
+                          architectureMeasurePointer.screenY -
+                            architectureMeasureStart.screenY
+                        ),
+                      transform:
+                        `rotate(${Math.atan2(
+                          architectureMeasurePointer.screenY -
+                            architectureMeasureStart.screenY,
+                          architectureMeasurePointer.screenX -
+                            architectureMeasureStart.screenX
+                        )}rad)`,
+                    }}
+                  >
+                    <span>
+                      {Math.round(
+                        Math.hypot(
+                          architectureMeasurePointer.realX -
+                            architectureMeasureStart.realX,
+                          architectureMeasurePointer.realZ -
+                            architectureMeasureStart.realZ
+                        )
+                      )} MM
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
 
             {boxSelectActive && (
               <div
@@ -9879,6 +19934,61 @@ function BeyondCreator() {
               </div>
             )}
 
+            {creatorMode ===
+              "architecture" &&
+              selected &&
+              selected.source ===
+                "architecture" && (
+              <div className="creator-architecture-dimension-hud">
+                <span>
+                  {
+                    selected.parameters
+                      ?.archType
+                      ?.toUpperCase() ||
+                    "OBJECT"
+                  }
+                </span>
+
+                <strong>
+                  {architectureFormat(
+                    selected.parameters
+                      ?.archRealDimensions
+                      ?.width ??
+                      selected.dimensions
+                        .width *
+                        architectureScale,
+                    architectureUnit
+                  )} × {architectureFormat(
+                    selected.parameters
+                      ?.archRealDimensions
+                      ?.depth ??
+                      selected.dimensions
+                        .depth *
+                        architectureScale,
+                    architectureUnit
+                  )} × {architectureFormat(
+                    selected.parameters
+                      ?.archRealDimensions
+                      ?.height ??
+                      selected.dimensions
+                        .height *
+                        architectureScale,
+                    architectureUnit
+                  )} {architectureUnit.toUpperCase()}
+                </strong>
+
+                <small>
+                  {
+                    selected.parameters
+                      ?.archLevelName ||
+                    "GROUND"
+                  } · 1:{
+                    architectureScale
+                  }
+                </small>
+              </div>
+            )}
+
             <div className="creator-view-hint">
               <Move3D
                 size={15}
@@ -9892,7 +20002,28 @@ function BeyondCreator() {
                 ? meshEditMode
                   ? "EDIT · B BOX · H BOUNDARY · K CHAIN · SHARP/FILLET · [/] SHRINK/GROW"
                   : "G MOVE · R ROTATE · S SCALE · TAB EDIT MODE"
-                : "LEFT CLICK SELECT · LEFT DRAG ORBIT · PRESS WHEEL + DRAG PAN · SCROLL ZOOM · CLICK TO SELECT"}
+                : creatorMode ===
+                    "architecture"
+                  ? architectureDrawTool ===
+                      "wall"
+                    ? "WALL DRAW · CLICK START + END · RIGHT CLICK CANCEL"
+                    : architectureDrawTool ===
+                        "room"
+                      ? "ROOM DRAW · CLICK TWO OPPOSITE CORNERS · RIGHT CLICK CANCEL"
+                      : architectureDrawTool ===
+                          "measure"
+                        ? "MEASURE · CLICK A + B · LEFT DRAG PAN · SCROLL ZOOM"
+                        : architectureView ===
+                          "plan"
+                        ? `PLAN 2D · ${architectureActiveLevel?.name || "GROUND"} ONLY · DRAW CONTINUES · LEFT DRAG PAN · SCROLL ZOOM`
+                        : architectureView ===
+                            "front"
+                          ? "FRONT ELEVATION · FLAT 2D · LEFT DRAG PAN · SCROLL ZOOM"
+                          : architectureView ===
+                              "right"
+                            ? "RIGHT ELEVATION · FLAT 2D · LEFT DRAG PAN · SCROLL ZOOM"
+                            : "3D · LEFT DRAG ORBIT · MIDDLE PAN · SCROLL ZOOM"
+                  : "LEFT CLICK SELECT · LEFT DRAG ORBIT · PRESS WHEEL + DRAG PAN · SCROLL ZOOM · CLICK TO SELECT"}
             </div>
           </div>
 
@@ -10086,8 +20217,8 @@ function BeyondCreator() {
 
           {selected && (
             <>
-              {creatorMode ===
-                "advanced" && (
+              {creatorMode !==
+                "simple" && (
                 <div className="creator-inspector-block creator-advanced-object-block creator-tab-object">
                   <label className="creator-text-field">
                     <span>
@@ -10161,6 +20292,382 @@ function BeyondCreator() {
                   {selected.locked && (
                     <small className="creator-field-note creator-locked-note">
                       Unlock this object to edit or transform it.
+                    </small>
+                  )}
+                </div>
+              )}
+
+              {creatorMode ===
+                "architecture" &&
+                selected.source ===
+                  "architecture" && (
+                <div className="creator-inspector-block creator-architecture-inspector creator-tab-object">
+                  <div className="creator-inspector-title">
+                    ARCHITECTURE
+                    <span>
+                      {
+                        selected.parameters
+                          ?.archType
+                          ?.toUpperCase() ||
+                        "OBJECT"
+                      }
+                    </span>
+                  </div>
+
+                  <div className="creator-architecture-object-meta">
+                    <span>
+                      LEVEL
+                      <strong>
+                        {selected.parameters
+                          ?.archLevelName ||
+                          "GROUND"}
+                      </strong>
+                    </span>
+
+                    <span>
+                      SCALE
+                      <strong>
+                        1:{
+                          architectureScale
+                        }
+                      </strong>
+                    </span>
+                  </div>
+
+                  <div className="creator-architecture-real-fields">
+                    {[
+                      [
+                        "width",
+                        "L / W",
+                      ],
+                      [
+                        "depth",
+                        "DEPTH",
+                      ],
+                      [
+                        "height",
+                        "HEIGHT",
+                      ],
+                    ].map(
+                      ([
+                        key,
+                        label,
+                      ]) => (
+                        <label
+                          key={
+                            key
+                          }
+                        >
+                          <span>
+                            {
+                              label
+                            }
+                          </span>
+
+                          <input
+                            type="number"
+                            step={
+                              architectureUnit ===
+                              "mm"
+                                ? 10
+                                : architectureUnit ===
+                                    "cm"
+                                  ? 1
+                                  : 0.1
+                            }
+                            value={
+                              architectureFormat(
+                                selected.parameters
+                                  ?.archRealDimensions?.[
+                                  key
+                                ] ??
+                                  selected.dimensions[
+                                    key
+                                  ] *
+                                    architectureScale,
+                                architectureUnit
+                              )
+                            }
+                            disabled={
+                              selected.locked
+                            }
+                            onChange={(
+                              event
+                            ) =>
+                              updateArchitectureRealDimension(
+                                key,
+                                event.target
+                                  .value
+                              )
+                            }
+                          />
+
+                          <small>
+                            {architectureUnit.toUpperCase()}
+                          </small>
+                        </label>
+                      )
+                    )}
+                  </div>
+
+                  <div className="creator-architecture-print-size">
+                    <span>
+                      PRINT SIZE @ 1:{
+                        architectureScale
+                      }
+                    </span>
+
+                    <strong>
+                      {selected.dimensions.width.toFixed(
+                        1
+                      )} × {selected.dimensions.depth.toFixed(
+                        1
+                      )} × {selected.dimensions.height.toFixed(
+                        1
+                      )} MM
+                    </strong>
+                  </div>
+
+                  {selectedEditableArchitectureWall &&
+                    selectedWallEndpoints && (
+                    <details className="creator-architecture-wall-endpoints">
+                      <summary>
+                        <span>
+                          WALL ENDPOINTS
+                        </span>
+
+                        <b>
+                          ▾
+                        </b>
+                      </summary>
+
+                      <div className="creator-architecture-wall-endpoints-body">
+                        {[
+                          [
+                            "start",
+                            "START",
+                            selectedWallEndpoints.start,
+                          ],
+                          [
+                            "end",
+                            "END",
+                            selectedWallEndpoints.end,
+                          ],
+                        ].map(
+                          ([
+                            endpointKey,
+                            label,
+                            point,
+                          ]) => (
+                            <div
+                              className="creator-architecture-wall-endpoint-row"
+                              key={
+                                endpointKey
+                              }
+                            >
+                              <strong>
+                                {
+                                  label
+                                }
+                              </strong>
+
+                              <label>
+                                <span>
+                                  X
+                                </span>
+
+                                <input
+                                  type="number"
+                                  step={
+                                    architectureSnapMm
+                                  }
+                                  value={
+                                    Math.round(
+                                      point.x
+                                    )
+                                  }
+                                  onChange={(
+                                    event
+                                  ) =>
+                                    updateArchitectureWallEndpoint(
+                                      endpointKey,
+                                      "x",
+                                      event.target
+                                        .value
+                                    )
+                                  }
+                                />
+                              </label>
+
+                              <label>
+                                <span>
+                                  Z
+                                </span>
+
+                                <input
+                                  type="number"
+                                  step={
+                                    architectureSnapMm
+                                  }
+                                  value={
+                                    Math.round(
+                                      point.z
+                                    )
+                                  }
+                                  onChange={(
+                                    event
+                                  ) =>
+                                    updateArchitectureWallEndpoint(
+                                      endpointKey,
+                                      "z",
+                                      event.target
+                                        .value
+                                    )
+                                  }
+                                />
+                              </label>
+                            </div>
+                          )
+                        )}
+
+                        <button
+                          type="button"
+                          onClick={
+                            snapSelectedArchitectureWallEndpoints
+                          }
+                        >
+                          SNAP ENDPOINTS TO GRID
+                        </button>
+                      </div>
+                    </details>
+                  )}
+
+                  {selectedArchitectureOpening &&
+                    architectureOpeningHost && (
+                    <div className="creator-architecture-smart-opening">
+                      <div className="creator-architecture-smart-opening-head">
+                        <span>
+                          SMART {
+                            selectedArchitectureOpening
+                              .parameters
+                              ?.archType
+                              ?.toUpperCase()
+                          }
+                        </span>
+
+                        <strong>
+                          {
+                            architectureOpeningHost.name
+                          }
+                        </strong>
+                      </div>
+
+                      <label>
+                        <span>
+                          OFFSET
+                        </span>
+
+                        <input
+                          type="number"
+                          step="50"
+                          value={
+                            Math.round(
+                              safeNumber(
+                                selectedArchitectureOpening
+                                  .parameters
+                                  ?.archWallOffsetMm,
+                                0
+                              )
+                            )
+                          }
+                          onChange={(
+                            event
+                          ) =>
+                            updateHostedOpening(
+                              "offset",
+                              event.target
+                                .value
+                            )
+                          }
+                        />
+
+                        <small>
+                          MM
+                        </small>
+                      </label>
+
+                      <label>
+                        <span>
+                          SILL
+                        </span>
+
+                        <input
+                          type="number"
+                          min="0"
+                          step="50"
+                          value={
+                            Math.round(
+                              safeNumber(
+                                selectedArchitectureOpening
+                                  .parameters
+                                  ?.archSill,
+                                0
+                              )
+                            )
+                          }
+                          onChange={(
+                            event
+                          ) =>
+                            updateHostedOpening(
+                              "sill",
+                              event.target
+                                .value
+                            )
+                          }
+                        />
+
+                        <small>
+                          MM
+                        </small>
+                      </label>
+
+                      <div className="creator-architecture-smart-opening-actions">
+                        <button
+                          type="button"
+                          onClick={
+                            centerHostedOpening
+                          }
+                        >
+                          CENTER
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={
+                            selectHostedOpeningPair
+                          }
+                        >
+                          SELECT PAIR
+                        </button>
+                      </div>
+
+                      <button
+                        type="button"
+                        className="creator-architecture-cut-opening"
+                        onClick={
+                          cutHostedOpening
+                        }
+                      >
+                        CUT OPENING
+                      </button>
+                    </div>
+                  )}
+
+                  {selected.role ===
+                    "hole" &&
+                    !selectedArchitectureOpening && (
+                    <small className="creator-field-note">
+                      This architecture object is a HOLE. Select it together with a solid and use CUT / HOLE.
                     </small>
                   )}
                 </div>
@@ -12050,58 +22557,552 @@ function BeyondCreator() {
                 </div>
               </div>
 
-              <div className="creator-inspector-block creator-tab-object">
+              <div className="creator-inspector-block creator-tab-object creator-appearance-dropdown-block">
                 <div className="creator-inspector-title">
-                  MATERIAL LOOK
+                  COLOR + MATERIAL
                 </div>
 
-                <div className="creator-materials">
-                  {MATERIALS.map(
-                    (
-                      item
-                    ) => (
-                      <button
-                        type="button"
-                        key={
-                          item.id
-                        }
-                        className={
-                          selected
-                            .materialId ===
-                          item.id
-                            ? "creator-material active"
-                            : "creator-material"
-                        }
-                        onClick={() =>
-                          setMaterial(
-                            item.id
-                          )
-                        }
-                        disabled={
-                          selected.locked
-                        }
-                        title={
-                          item.label
-                        }
-                      >
-                        <i
-                          style={{
-                            background:
-                              item.color,
-                          }}
-                        />
+                <small className="creator-material-global-note">
+                  Available in SIMPLE · ADVANCED · ARCHITECTURE
+                </small>
 
-                        <span>
-                          {
-                            item.label
-                          }
-                        </span>
-                      </button>
-                    )
-                  )}
+                <div className="creator-appearance-picker">
+                  <span className="creator-appearance-picker-label">
+                    APPEARANCE
+                  </span>
+
+                  <details className="creator-appearance-details">
+                    <summary>
+                      <i
+                        className={
+                          materialPreset(
+                            selected.materialId
+                          ).transparent
+                            ? "creator-appearance-swatch transparent"
+                            : "creator-appearance-swatch"
+                        }
+                        style={{
+                          backgroundColor:
+                            materialColor(
+                              selected.materialId
+                            ),
+                        }}
+                      />
+
+                      <span>
+                        {
+                          materialPreset(
+                            selected.materialId
+                          ).label
+                        }
+                      </span>
+
+                      <small>
+                        {materialPreset(
+                          selected.materialId
+                        ).group ===
+                        "material"
+                          ? "MATERIAL"
+                          : "COLOR"}
+                      </small>
+
+                      <b>
+                        ▾
+                      </b>
+                    </summary>
+
+                    <div className="creator-appearance-menu">
+                      <div className="creator-appearance-group-title">
+                        COLORS
+                      </div>
+
+                      {MATERIALS.filter(
+                        (item) =>
+                          item.group ===
+                          "color"
+                      ).map(
+                        (item) => (
+                          <button
+                            type="button"
+                            key={
+                              item.id
+                            }
+                            className={
+                              selected.materialId ===
+                              item.id
+                                ? "active"
+                                : ""
+                            }
+                            disabled={
+                              selected.locked
+                            }
+                            onClick={(
+                              event
+                            ) => {
+                              setMaterial(
+                                item.id
+                              );
+
+                              event.currentTarget
+                                .closest(
+                                  "details"
+                                )
+                                ?.removeAttribute(
+                                  "open"
+                                );
+                            }}
+                          >
+                            <i
+                              className="creator-appearance-swatch"
+                              style={{
+                                backgroundColor:
+                                  item.color,
+                              }}
+                            />
+
+                            <span>
+                              {
+                                item.label
+                              }
+                            </span>
+
+                            {selected.materialId ===
+                              item.id && (
+                              <small>
+                                ✓
+                              </small>
+                            )}
+                          </button>
+                        )
+                      )}
+
+                      <div className="creator-appearance-group-title creator-appearance-material-title">
+                        MATERIALS
+                      </div>
+
+                      {MATERIALS.filter(
+                        (item) =>
+                          item.group ===
+                          "material"
+                      ).map(
+                        (item) => (
+                          <button
+                            type="button"
+                            key={
+                              item.id
+                            }
+                            className={
+                              selected.materialId ===
+                              item.id
+                                ? "active"
+                                : ""
+                            }
+                            disabled={
+                              selected.locked
+                            }
+                            onClick={(
+                              event
+                            ) => {
+                              setMaterial(
+                                item.id
+                              );
+
+                              event.currentTarget
+                                .closest(
+                                  "details"
+                                )
+                                ?.removeAttribute(
+                                  "open"
+                                );
+                            }}
+                          >
+                            <i
+                              className={
+                                item.transparent
+                                  ? "creator-appearance-swatch transparent"
+                                  : "creator-appearance-swatch"
+                              }
+                              style={{
+                                backgroundColor:
+                                  item.color,
+                              }}
+                            />
+
+                            <span>
+                              {
+                                item.label
+                              }
+                            </span>
+
+                            {selected.materialId ===
+                              item.id && (
+                              <small>
+                                ✓
+                              </small>
+                            )}
+                          </button>
+                        )
+                      )}
+                    </div>
+                  </details>
+                </div>
+
+                <div className="creator-material-current">
+                  <span>
+                    SELECTED
+                  </span>
+
+                  <strong>
+                    {
+                      materialPreset(
+                        selected.materialId
+                      ).label
+                    }
+                  </strong>
+
+                  <small>
+                    {materialPreset(
+                      selected.materialId
+                    ).group ===
+                    "material"
+                      ? materialPreset(
+                          selected.materialId
+                        ).metalness >
+                        0.5
+                        ? "METALLIC MATERIAL"
+                        : materialPreset(
+                            selected.materialId
+                          ).transparent
+                          ? "TRANSPARENT MATERIAL"
+                          : "ARCHITECTURAL MATERIAL"
+                      : "COLOR PRESET"}
+                  </small>
                 </div>
               </div>
             </>
+          )}
+
+          {creatorMode ===
+            "architecture" &&
+            inspectorTab ===
+              "output" && (
+            <div className="creator-architecture-output creator-tab-output">
+              <div className="creator-export-heading">
+                <span>
+                  A1
+                </span>
+
+                <strong>
+                  ARCHITECTURAL PRINT MODEL
+                </strong>
+              </div>
+
+              <div className={`creator-architecture-production-status ${architectureProductionQA.status.toLowerCase()}`}>
+                <div>
+                  <span>
+                    PRODUCTION
+                  </span>
+
+                  <strong>
+                    {
+                      architectureProductionQA.status
+                    }
+                  </strong>
+                </div>
+
+                <div>
+                  <span>
+                    BLOCKERS
+                  </span>
+
+                  <strong>
+                    {
+                      architectureProductionQA.blockerCount
+                    }
+                  </strong>
+                </div>
+
+                <div>
+                  <span>
+                    WARNINGS
+                  </span>
+
+                  <strong>
+                    {
+                      architectureProductionQA.warningCount
+                    }
+                  </strong>
+                </div>
+
+                <div>
+                  <span>
+                    OBJECTS
+                  </span>
+
+                  <strong>
+                    {architectureProductionQA.architectureObjectCount} / {
+                      MAX_OBJECTS
+                    }
+                  </strong>
+                </div>
+              </div>
+
+              <div className="creator-architecture-production-actions">
+                <button
+                  type="button"
+                  onClick={
+                    runArchitectureProductionCheck
+                  }
+                >
+                  RUN PRODUCTION CHECK
+                </button>
+
+                <button
+                  type="button"
+                  onClick={
+                    downloadArchitectureQAReport
+                  }
+                >
+                  QA REPORT
+                </button>
+              </div>
+
+              {(architectureProductionQA.blockers.length >
+                0 ||
+                architectureProductionQA.warnings.length >
+                  0) && (
+                <div className="creator-architecture-qa-list">
+                  {[
+                    ...architectureProductionQA.blockers.map(
+                      (issue) => ({
+                        ...issue,
+                        severity:
+                          "blocker",
+                      })
+                    ),
+                    ...architectureProductionQA.warnings.map(
+                      (issue) => ({
+                        ...issue,
+                        severity:
+                          "warning",
+                      })
+                    ),
+                  ]
+                    .slice(
+                      0,
+                      8
+                    )
+                    .map(
+                      (
+                        issue,
+                        index
+                      ) => (
+                        <button
+                          type="button"
+                          className={
+                            `creator-architecture-qa-item ${issue.severity}`
+                          }
+                          key={
+                            `${issue.code}-${index}`
+                          }
+                          onClick={() =>
+                            focusArchitectureQAIssue(
+                              issue
+                            )
+                          }
+                        >
+                          <i>
+                            {issue.severity ===
+                            "blocker"
+                              ? "!"
+                              : "⚠"}
+                          </i>
+
+                          <span>
+                            <strong>
+                              {
+                                issue.title
+                              }
+                            </strong>
+
+                            <small>
+                              {
+                                issue.detail
+                              }
+                            </small>
+                          </span>
+
+                          <b>
+                            {issue.objectId
+                              ? "VIEW"
+                              : "INFO"}
+                          </b>
+                        </button>
+                      )
+                    )}
+                </div>
+              )}
+
+              <details className="creator-architecture-level-qa">
+                <summary>
+                  <span>
+                    LEVEL QA
+                  </span>
+
+                  <strong>
+                    {
+                      architectureProductionQA.levelStats.length
+                    }
+                  </strong>
+
+                  <b>
+                    ▾
+                  </b>
+                </summary>
+
+                <div className="creator-architecture-level-qa-body">
+                  {architectureProductionQA.levelStats.map(
+                    (level) => (
+                      <div
+                        className="creator-architecture-level-qa-row"
+                        key={
+                          level.id
+                        }
+                      >
+                        <span>
+                          {
+                            level.name
+                          }
+                        </span>
+
+                        <small>
+                          {level.solids} SOLID · {level.openings} HOLE
+                        </small>
+
+                        <strong>
+                          {level.width.toFixed(
+                            1
+                          )} × {level.depth.toFixed(
+                            1
+                          )} MM
+                        </strong>
+                      </div>
+                    )
+                  )}
+                </div>
+              </details>
+
+              <div className={`creator-architecture-output-status ${architectureCheck.status.toLowerCase()}`}>
+                <div>
+                  <span>
+                    STATUS
+                  </span>
+
+                  <strong>
+                    {
+                      architectureCheck.status
+                    }
+                  </strong>
+                </div>
+
+                <div>
+                  <span>
+                    SCALE
+                  </span>
+
+                  <strong>
+                    1:{
+                      architectureScale
+                    }
+                  </strong>
+                </div>
+
+                <div>
+                  <span>
+                    SIZE
+                  </span>
+
+                  <strong>
+                    {architectureCheck.width.toFixed(
+                      1
+                    )} × {architectureCheck.depth.toFixed(
+                      1
+                    )} × {architectureCheck.height.toFixed(
+                      1
+                    )} MM
+                  </strong>
+                </div>
+
+                <div>
+                  <span>
+                    MIN PRINT WALL
+                  </span>
+
+                  <strong>
+                    {
+                      ARCH_MIN_PRINT_WALL_MM
+                    } MM
+                  </strong>
+                </div>
+              </div>
+
+              {(architectureCheck.thinWalls >
+                0 ||
+                architectureCheck.thinColumns >
+                  0 ||
+                architectureCheck.outsideBed) && (
+                <div className="creator-architecture-warning-list">
+                  {architectureCheck.thinWalls >
+                    0 && (
+                    <span>
+                      ⚠ {
+                        architectureCheck.thinWalls
+                      } wall(s) below {
+                        ARCH_MIN_PRINT_WALL_MM
+                      } mm at print scale.
+                    </span>
+                  )}
+
+                  {architectureCheck.thinColumns >
+                    0 && (
+                    <span>
+                      ⚠ {
+                        architectureCheck.thinColumns
+                      } column(s) may be too thin.
+                    </span>
+                  )}
+
+                  {architectureCheck.outsideBed && (
+                    <span>
+                      ⚠ Model footprint exceeds the 256 × 256 mm Creator build plate.
+                    </span>
+                  )}
+                </div>
+              )}
+
+              <button
+                type="button"
+                className="creator-architecture-split-levels"
+                onClick={
+                  downloadArchitectureLevelsZip
+                }
+                disabled={
+                  exporting ||
+                  architectureCheck
+                    .objectCount ===
+                    0 ||
+                  architectureProductionQA
+                    .blockerCount >
+                    0
+                }
+              >
+                SPLIT BY LEVEL · 3MF ZIP
+              </button>
+
+              <small className="creator-field-note">
+                Export uses the scaled physical dimensions shown above. SPLIT BY LEVEL creates one 3MF per architecture level inside a ZIP.
+              </small>
+            </div>
           )}
 
           <div className="creator-export-tools creator-tab-output">
@@ -12122,7 +23123,8 @@ function BeyondCreator() {
                   downloadSTL
                 }
                 disabled={
-                  exporting
+                  exporting ||
+                  architectureExportBlocked
                 }
               >
                 <Download
@@ -12147,7 +23149,8 @@ function BeyondCreator() {
                   download3MF
                 }
                 disabled={
-                  exporting
+                  exporting ||
+                  architectureExportBlocked
                 }
               >
                 <Download
@@ -12173,13 +23176,10 @@ function BeyondCreator() {
                 "hole"
             ) && (
               <div className="creator-export-warning">
-                Unapplied HOLE
-                objects are not
-                exported. Use
-                CUT / HOLE first
-                if you want the
-                opening in the
-                final file.
+                {creatorMode ===
+                "architecture"
+                  ? "Architecture export is blocked while unapplied openings remain. Use CUT OPENING first."
+                  : "Unapplied HOLE objects are not exported. Use CUT / HOLE first if you want the opening in the final file."}
               </div>
             )}
 
@@ -12200,7 +23200,8 @@ function BeyondCreator() {
                 sendToProject
               }
               disabled={
-                exporting
+                exporting ||
+                architectureExportBlocked
               }
             >
               <span className="creator-send-project-label">
