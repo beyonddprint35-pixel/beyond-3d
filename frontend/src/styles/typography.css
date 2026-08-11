@@ -1,6 +1,6 @@
 /* =========================================================
    BEYOND GLOBAL TYPOGRAPHY SYSTEM
-   Single source of truth for customer-facing typography.
+   Single source of truth for typography across the website.
 
    Change these variables later and the whole website updates.
 ========================================================= */
@@ -19,10 +19,9 @@
     "Inter",
     sans-serif;
 
-  /*
-   * TYPE SCALE
-   * clamp(MOBILE MIN, FLUID DESKTOP SCALE, DESKTOP MAX)
-   */
+  /* =======================================================
+     TYPE SCALE
+     ======================================================= */
 
   /* Oversized homepage hero */
   --type-display:
@@ -50,7 +49,7 @@
 
   /* Normal readable website text */
   --type-body:
-    clamp(14px, 0.92vw, 17px);
+    clamp(15px, 0.92vw, 17px);
 
   /* Secondary supporting text */
   --type-small:
@@ -58,33 +57,58 @@
 
   /* Technical / uppercase UI labels */
   --type-label:
-    clamp(10px, 0.66vw, 12px);
+    clamp(11px, 0.66vw, 12px);
 
-  /* Very small non-essential metadata only */
+  /* Smallest supported metadata size */
   --type-micro:
-    clamp(9px, 0.58vw, 11px);
+    11px;
 
   /* Buttons / navigation */
   --type-button:
-    clamp(12px, 0.82vw, 15px);
+    clamp(13px, 0.82vw, 15px);
 
   /* Form fields */
   --type-input:
     clamp(14px, 0.92vw, 16px);
+
+  /* Important compact UI values */
+  --type-ui-value:
+    clamp(12px, 0.82vw, 14px);
 
   /* Line heights */
   --line-display: 0.95;
   --line-heading: 1.08;
   --line-card-title: 1.25;
   --line-body: 1.65;
-  --line-small: 1.55;
+  --line-small: 1.5;
+  --line-ui: 1.3;
+
+  /* Letter spacing */
+  --track-display: -0.055em;
+  --track-heading: -0.035em;
+  --track-label: 0.07em;
 }
 
-/* Global inheritance */
+/* =========================================================
+   GLOBAL INHERITANCE
+========================================================= */
+
 html,
-body {
+body,
+#root {
   font-family:
     var(--font-body-family);
+
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  font-size:
+    var(--type-body);
+
+  line-height:
+    var(--line-body);
 }
 
 button,
@@ -95,11 +119,490 @@ textarea {
     var(--font-body-family);
 }
 
-/*
- * Mobile policy:
- * Keep body/form text readable.
- * Inputs stay at 16px to avoid iOS automatic zoom.
- */
+button {
+  font-size:
+    var(--type-button);
+
+  line-height:
+    var(--line-ui);
+}
+
+input,
+select,
+textarea {
+  font-size:
+    var(--type-input);
+
+  line-height:
+    var(--line-ui);
+}
+
+p,
+li {
+  font-size:
+    var(--type-body);
+
+  line-height:
+    var(--line-body);
+}
+
+small {
+  font-size:
+    var(--type-small);
+
+  line-height:
+    var(--line-small);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family:
+    var(--font-display-family);
+}
+
+/* =========================================================
+   SHARED LABEL LANGUAGE
+========================================================= */
+
+:is(
+  .section-kicker,
+  .hero-eyebrow,
+  .process-story-kicker,
+  .process-story-eyebrow,
+  .ai-studio-kicker,
+  .auth-modal-kicker,
+  .admin-label,
+  .section-side-label,
+  .section-index,
+  .creator-panel-heading,
+  .creator-inspector-title,
+  .creator-architecture-library-title,
+  .creator-appearance-picker-label
+) {
+  font-family:
+    var(--font-body-family) !important;
+
+  font-size:
+    var(--type-label) !important;
+
+  font-weight: 700 !important;
+
+  line-height:
+    var(--line-ui) !important;
+
+  letter-spacing:
+    var(--track-label) !important;
+}
+
+/* =========================================================
+   HOME / NAVBAR / HERO
+========================================================= */
+
+.home-brand,
+.footer-brand {
+  font-family:
+    var(--font-display-family) !important;
+}
+
+.home-nav-links button,
+.home-start-small,
+.home-auth-button,
+.home-primary-button,
+.home-ghost-button {
+  font-size:
+    var(--type-button) !important;
+}
+
+.home-account-copy span,
+.hero-micro-stats span,
+.hero-micro-stats strong {
+  font-size:
+    var(--type-label) !important;
+
+  line-height:
+    var(--line-ui) !important;
+}
+
+.hero-copy h1 {
+  font-family:
+    var(--font-display-family) !important;
+
+  font-size:
+    var(--type-display) !important;
+
+  line-height:
+    var(--line-display) !important;
+
+  letter-spacing:
+    var(--track-display) !important;
+}
+
+.hero-copy > p {
+  font-size:
+    var(--type-body-large) !important;
+
+  line-height:
+    var(--line-body) !important;
+}
+
+.home-section-heading h2,
+.start-project-heading h2,
+.home-final-cta h2,
+.process-story-heading h2,
+.process-story-copy h2,
+.ai-studio-heading h2 {
+  font-family:
+    var(--font-display-family) !important;
+
+  font-size:
+    var(--type-section-title) !important;
+
+  line-height:
+    var(--line-heading) !important;
+
+  letter-spacing:
+    var(--track-heading) !important;
+}
+
+.home-section-heading > p,
+.start-project-heading p,
+.home-final-cta p,
+.process-story-heading > p,
+.process-story-copy > p,
+.ai-studio-heading > p {
+  font-size:
+    var(--type-body-large) !important;
+
+  line-height:
+    var(--line-body) !important;
+}
+
+/* =========================================================
+   PROCESS / HOW IT WORKS
+   Typography only — layout remains unchanged.
+========================================================= */
+
+.process-card-number,
+.process-number,
+.process-card-label,
+.process-state,
+.process-meta,
+.process-live-readout span,
+.process-story-topbar > span,
+.process-footer-stage span {
+  font-size:
+    var(--type-label) !important;
+
+  line-height:
+    var(--line-ui) !important;
+}
+
+.process-copy h3,
+.process-compact-card h3 {
+  font-family:
+    var(--font-display-family) !important;
+
+  font-size:
+    var(--type-heading-3) !important;
+
+  line-height:
+    var(--line-card-title) !important;
+}
+
+.process-copy p,
+.process-compact-card p {
+  font-size:
+    var(--type-small) !important;
+
+  line-height:
+    var(--line-small) !important;
+}
+
+/* =========================================================
+   AI STUDIO
+========================================================= */
+
+.ai-studio-kicker,
+.ai-input-label span,
+.ai-input-label strong,
+.ai-photo-intro span,
+.ai-text-meta,
+.ai-prompt-ideas > span,
+.ai-photo-overlay span,
+.ai-preview-top,
+.ai-preview-top strong,
+.ai-preview-footer span,
+.ai-preview-footer strong,
+.ai-studio-demo-note span,
+.ai-studio-access span,
+.ai-login-status,
+.ai-credit-readout {
+  font-size:
+    var(--type-label) !important;
+
+  line-height:
+    var(--line-ui) !important;
+}
+
+.ai-studio-mode-switch span,
+.ai-generate-button,
+.ai-preview-actions button,
+.ai-prompt-ideas button,
+.ai-photo-overlay button {
+  font-size:
+    var(--type-button) !important;
+}
+
+.ai-studio-mode-switch small,
+.ai-photo-slot small,
+.ai-photo-intro small,
+.ai-studio-disclaimer,
+.ai-studio-demo-note p,
+.ai-studio-access p,
+.ai-studio-login-note,
+.ai-viewer-error span {
+  font-size:
+    var(--type-small) !important;
+
+  line-height:
+    var(--line-small) !important;
+}
+
+.ai-text-mode textarea,
+.ai-studio-access input {
+  font-size:
+    var(--type-input) !important;
+}
+
+/* =========================================================
+   AUTH / LOGIN / SIGNUP
+========================================================= */
+
+.auth-modal-card h2 {
+  font-family:
+    var(--font-display-family) !important;
+
+  font-size:
+    var(--type-heading-1) !important;
+
+  line-height:
+    var(--line-heading) !important;
+}
+
+.auth-modal-intro,
+.auth-message,
+.auth-security-note {
+  font-size:
+    var(--type-small) !important;
+
+  line-height:
+    var(--line-small) !important;
+}
+
+.auth-mode-switch button,
+.auth-submit {
+  font-size:
+    var(--type-button) !important;
+}
+
+.auth-field > span {
+  font-size:
+    var(--type-label) !important;
+}
+
+.auth-input-shell input {
+  font-size:
+    var(--type-input) !important;
+}
+
+/* =========================================================
+   MY ACCOUNT / MY MODELS
+========================================================= */
+
+[class^="account-"],
+[class*=" account-"],
+[class^="my-model"],
+[class*=" my-model"] {
+  font-family:
+    var(--font-body-family) !important;
+}
+
+[class^="account-"] button,
+[class*=" account-"] button,
+[class^="my-model"] button,
+[class*=" my-model"] button {
+  font-size:
+    var(--type-button) !important;
+}
+
+[class^="account-"] :is(input, select, textarea),
+[class*=" account-"] :is(input, select, textarea),
+[class^="my-model"] :is(input, select, textarea),
+[class*=" my-model"] :is(input, select, textarea) {
+  font-size:
+    var(--type-input) !important;
+}
+
+[class^="account-"] :is(small, label),
+[class*=" account-"] :is(small, label),
+[class^="my-model"] :is(small, label),
+[class*=" my-model"] :is(small, label) {
+  font-size:
+    var(--type-label) !important;
+
+  line-height:
+    var(--line-ui) !important;
+}
+
+[class^="account-"] p,
+[class*=" account-"] p,
+[class^="my-model"] p,
+[class*=" my-model"] p {
+  font-size:
+    var(--type-small) !important;
+
+  line-height:
+    var(--line-small) !important;
+}
+
+.account-person strong,
+.account-person span,
+.account-brand {
+  font-size:
+    var(--type-label) !important;
+}
+
+/* =========================================================
+   START PROJECT / ORDERS / ADMIN / FORMS
+========================================================= */
+
+.project-form label > span,
+.quote-form label > span,
+.order-details-page .quote-form label > span,
+.order-file-box span,
+.order-info-grid span,
+.admin-stats span,
+.admin-order-number,
+.admin-status,
+.status-step span,
+.quote-status-badge {
+  font-size:
+    var(--type-label) !important;
+
+  line-height:
+    var(--line-ui) !important;
+}
+
+.project-form :is(input, select, textarea),
+.quote-form :is(input, select, textarea),
+.order-details-page :is(input, select, textarea) {
+  font-size:
+    var(--type-input) !important;
+}
+
+/* =========================================================
+   CREATOR — SIMPLE / ADVANCED / ARCHITECTURE
+========================================================= */
+
+[class^="creator-"],
+[class*=" creator-"] {
+  font-family:
+    var(--font-body-family) !important;
+}
+
+.creator-library :is(
+  span,
+  small,
+  strong,
+  label,
+  summary,
+  button
+),
+.creator-inspector :is(
+  span,
+  small,
+  strong,
+  label,
+  summary,
+  button
+),
+.creator-architecture-strip :is(
+  span,
+  small,
+  strong,
+  label,
+  summary,
+  button
+),
+.creator-canvas-tools :is(
+  span,
+  small,
+  strong,
+  label,
+  summary,
+  button
+) {
+  font-size:
+    var(--type-label) !important;
+
+  line-height:
+    1.2 !important;
+}
+
+.creator-library :is(input, select, textarea),
+.creator-inspector :is(input, select, textarea),
+.creator-architecture-strip :is(input, select, textarea) {
+  font-size:
+    var(--type-ui-value) !important;
+}
+
+.creator-selected-name {
+  font-size:
+    var(--type-body-large) !important;
+
+  line-height:
+    1.15 !important;
+}
+
+.creator-text-field input,
+.creator-vector-fields input,
+.creator-v6-single-field input,
+.creator-v7-two-fields input,
+.creator-v7-wide-field input,
+.creator-architecture-real-fields input {
+  font-size:
+    var(--type-ui-value) !important;
+}
+
+/* =========================================================
+   FOOTER / SECONDARY TECHNICAL META
+========================================================= */
+
+.footer-center,
+.footer-right,
+.footer-center span,
+.material-pills span,
+.transition-top,
+.transition-main,
+.capability-top span,
+.capability-top small {
+  font-size:
+    var(--type-label) !important;
+
+  line-height:
+    var(--line-ui) !important;
+}
+
+/* =========================================================
+   MOBILE POLICY
+   Keep body/form text readable.
+   Inputs stay at 16px to avoid iOS automatic zoom.
+========================================================= */
+
 @media (max-width: 700px) {
   :root {
     --type-display:
@@ -127,15 +630,18 @@ textarea {
       12px;
 
     --type-label:
-      10px;
+      11px;
 
     --type-micro:
-      9px;
+      11px;
 
     --type-button:
       13px;
 
     --type-input:
       16px;
+
+    --type-ui-value:
+      12px;
   }
 }
