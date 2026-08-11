@@ -527,6 +527,15 @@ function SketchWorkspace({
   const dragSelectionRef =
     useRef(null);
 
+  const pullExtrudeRef =
+    useRef(null);
+
+  const edgeDragRef =
+    useRef(null);
+
+  const lastFaceTapRef =
+    useRef(null);
+
   const [
     entities,
     setEntities,
@@ -644,9 +653,59 @@ function SketchWorkspace({
   ] = useState(false);
 
   const [
+    draftSolids,
+    setDraftSolids,
+  ] = useState([]);
+
+  const [
+    selectedSolidId,
+    setSelectedSolidId,
+  ] = useState(null);
+
+  const [
+    selectedSolidFace,
+    setSelectedSolidFace,
+  ] = useState({ type: "top", index: null });
+
+  const [
+    selectedFeatureId,
+    setSelectedFeatureId,
+  ] = useState(null);
+
+  const [
+    orbitAngle,
+    setOrbitAngle,
+  ] = useState(58);
+
+  const [
+    orbitElevation,
+    setOrbitElevation,
+  ] = useState(42);
+
+  const [
+    selectedEdge,
+    setSelectedEdge,
+  ] = useState(null);
+
+  const [
+    edgeTreatmentMode,
+    setEdgeTreatmentMode,
+  ] = useState("chamfer");
+
+  const [
+    edgeTreatmentAmount,
+    setEdgeTreatmentAmount,
+  ] = useState(2);
+
+  const [
     createMessage,
     setCreateMessage,
   ] = useState("");
+
+  const [
+    faceSketchTarget,
+    setFaceSketchTarget,
+  ] = useState(null);
 
   const [
     penInfo,
@@ -671,6 +730,58 @@ function SketchWorkspace({
         ),
       [entities, selectedId]
     );
+
+  const selectedSolid =
+    draftSolids.find(
+      (solid) =>
+        solid.id === selectedSolidId
+    ) || null;
+
+  const selectedFeature =
+    selectedSolid?.features?.find(
+      (feature) => feature.id === selectedFeatureId
+    ) || null;
+
+  const solidNavigationActive = Boolean(
+    draftSolids.length > 0 &&
+    tool === "select" &&
+    !faceSketchTarget
+  );
+
+  const modelHistory = useMemo(() => {
+    const entries = [];
+    draftSolids.forEach((solid, solidIndex) => {
+      entries.push({
+        id: `${solid.id}:extrude`,
+        kind: "extrude",
+        solidId: solid.id,
+        label: `Extrude ${solidIndex + 1}`,
+        value: `${Number(solid.height || 0).toFixed(1)} mm`,
+      });
+      (solid.features || []).forEach((feature, featureIndex) => {
+        entries.push({
+          id: feature.id,
+          kind: "feature",
+          solidId: solid.id,
+          featureId: feature.id,
+          label: `${feature.mode === "cut" ? "Pocket" : "Boss"} ${featureIndex + 1}`,
+          value: `${Number(feature.depth || 0).toFixed(1)} mm`,
+        });
+      });
+      (solid.edgeTreatments || []).forEach((treatment, edgeIndex) => {
+        entries.push({
+          id: treatment.id || `${solid.id}:edge:${edgeIndex}`,
+          kind: "edge",
+          solidId: solid.id,
+          edgeIndex: treatment.edgeIndex,
+          edgeType: treatment.edgeType || "top",
+          label: `${String(treatment.mode || "chamfer").toUpperCase()} · ${(treatment.edgeType || "top").toUpperCase()} EDGE ${Number(treatment.edgeIndex) + 1}`,
+          value: `${Number(treatment.amount || 0).toFixed(1)} mm`,
+        });
+      });
+    });
+    return entries;
+  }, [draftSolids]);
 
   useEffect(() => {
     if (!active) {
@@ -958,7 +1069,7 @@ function SketchWorkspace({
     const y =
       clientY - rect.top;
 
-    return {
+    const rawPoint = {
       x:
         (
           x -
@@ -976,6 +1087,23 @@ function SketchWorkspace({
         ) /
         zoom,
     };
+
+    if (faceSketchTarget?.faceType === "top") {
+      const targetSolid = draftSolids.find((solid) => solid.id === faceSketchTarget.solidId);
+      if (targetSolid) {
+        const projection = solidProjection(targetSolid.height);
+        return {
+          x: rawPoint.x - projection.x,
+          y: rawPoint.y - projection.y,
+        };
+      }
+    }
+
+    if (faceSketchTarget?.faceType === "side") {
+      return sideModelToLocal(faceSketchTarget, rawPoint);
+    }
+
+    return rawPoint;
   }
 
   function modelPointFromEvent(
@@ -1041,6 +1169,43 @@ function SketchWorkspace({
     return result;
   }
 
+  function faceSnapCandidates() {
+    if (!faceSketchTarget?.solidId) return [];
+    const solid = draftSolids.find((item) => item.id === faceSketchTarget.solidId);
+    if (!solid?.points?.length) return [];
+
+    if (faceSketchTarget.faceType === "side") {
+      const frame = sideFaceFrame(faceSketchTarget);
+      if (!frame) return [];
+      const h = Math.max(0.5, Number(solid.height) || 0.5);
+      const l = frame.length;
+      return [
+        { x: 0, y: 0, snapKind: "CORNER" },
+        { x: l, y: 0, snapKind: "CORNER" },
+        { x: 0, y: h, snapKind: "CORNER" },
+        { x: l, y: h, snapKind: "CORNER" },
+        { x: l / 2, y: 0, snapKind: "MIDPOINT" },
+        { x: l / 2, y: h, snapKind: "MIDPOINT" },
+        { x: 0, y: h / 2, snapKind: "MIDPOINT" },
+        { x: l, y: h / 2, snapKind: "MIDPOINT" },
+        { x: l / 2, y: h / 2, snapKind: "CENTER" },
+      ];
+    }
+
+    const pts = solid.points.map(([x, y]) => ({ x, y, snapKind: "CORNER" }));
+    solid.points.forEach((point, index) => {
+      const next = solid.points[(index + 1) % solid.points.length];
+      pts.push({
+        x: (point[0] + next[0]) / 2,
+        y: (point[1] + next[1]) / 2,
+        snapKind: "MIDPOINT",
+      });
+    });
+    const center = pointsCenter(solid.points);
+    if (center) pts.push({ ...center, snapKind: "CENTER" });
+    return pts;
+  }
+
   function snapPoint(
     point,
     start = null
@@ -1060,7 +1225,7 @@ function SketchWorkspace({
 
     let nearest = null;
 
-    endpointCandidates().forEach(
+    [...endpointCandidates(), ...faceSnapCandidates()].forEach(
       (candidate) => {
         const distance =
           pointDistance(
@@ -1079,8 +1244,8 @@ function SketchWorkspace({
         ) {
           nearest = {
             distance,
-            point:
-              candidate,
+            point: candidate,
+            snapKind: candidate.snapKind || "COINCIDENT",
           };
         }
       }
@@ -1093,7 +1258,7 @@ function SketchWorkspace({
         y:
           nearest.point.y,
         snapKind:
-          "COINCIDENT",
+          nearest.snapKind || "COINCIDENT",
       };
     }
 
@@ -1537,10 +1702,10 @@ function SketchWorkspace({
     event,
     entity
   ) {
-    if (
-      event.pointerType ===
-      "touch"
-    ) {
+    // Direct-touch selection: a single finger tap on geometry selects the
+    // profile instead of always being interpreted as canvas navigation.
+    // Two-finger gestures still pan/zoom from the canvas.
+    if (event.pointerType === "touch" && tool !== "select") {
       return;
     }
 
@@ -1577,7 +1742,7 @@ function SketchWorkspace({
     event.stopPropagation();
     setSelectedId(entity.id);
 
-    if (!entity.locked) {
+    if (!entity.locked && event.pointerType !== "touch") {
       const point =
         modelPointFromEvent(
           event
@@ -1622,11 +1787,14 @@ function SketchWorkspace({
       points.length === 1
     ) {
       touchGestureRef.current = {
-        type: "pan",
+        type: solidNavigationActive ? "orbit" : "pan",
         start:
           points[0],
         pan:
           {...pan},
+        orbitAngle,
+        orbitElevation,
+        moved: false,
       };
     } else if (
       points.length >= 2
@@ -1656,6 +1824,10 @@ function SketchWorkspace({
         zoom,
         pan:
           {...pan},
+        angle: Math.atan2(b.y - a.y, b.x - a.x),
+        orbitAngle,
+        orbitElevation,
+        moved: false,
       };
     }
   }
@@ -1689,8 +1861,23 @@ function SketchWorkspace({
 
     if (
       points.length === 1 &&
+      gesture?.type === "orbit"
+    ) {
+      const dx = points[0].x - gesture.start.x;
+      const dy = points[0].y - gesture.start.y;
+      if (Math.hypot(dx, dy) > 5) gesture.moved = true;
+      setOrbitAngle(clamp(gesture.orbitAngle + dx * 0.32, 5, 175));
+      setOrbitElevation(clamp(gesture.orbitElevation - dy * 0.24, 12, 78));
+      return;
+    }
+
+    if (
+      points.length === 1 &&
       gesture?.type === "pan"
     ) {
+      const panDx = points[0].x - gesture.start.x;
+      const panDy = points[0].y - gesture.start.y;
+      if (Math.hypot(panDx, panDy) > 5) gesture.moved = true;
       setPan({
         x:
           gesture.pan.x +
@@ -1733,6 +1920,8 @@ function SketchWorkspace({
           2,
       };
 
+      const fingerAngle = Math.atan2(b.y - a.y, b.x - a.x);
+
       if (
         gesture?.type !==
         "pinch"
@@ -1744,6 +1933,9 @@ function SketchWorkspace({
           zoom,
           pan:
             {...pan},
+          angle: fingerAngle,
+          orbitAngle,
+          orbitElevation,
         };
         return;
       }
@@ -1771,12 +1963,16 @@ function SketchWorkspace({
           midpoint.y -
           gesture.midpoint.y,
       });
+
+      // In solid mode one finger owns orbit. Two fingers stay predictable:
+      // pinch = zoom and midpoint movement = pan, like a direct-modeling tablet app.
     }
   }
 
   function endTouchGesture(
     event
   ) {
+    const finishedGesture = touchGestureRef.current;
     touchPointersRef.current.delete(
       event.pointerId
     );
@@ -1790,15 +1986,25 @@ function SketchWorkspace({
       points.length === 1
     ) {
       touchGestureRef.current = {
-        type: "pan",
+        type: solidNavigationActive ? "orbit" : "pan",
         start:
           points[0],
         pan:
           {...pan},
+        orbitAngle,
+        orbitElevation,
+        moved: true,
       };
     } else if (
       points.length === 0
     ) {
+      if (
+        finishedGesture &&
+        !finishedGesture.moved &&
+        tool === "select"
+      ) {
+        clearModelSelection();
+      }
       touchGestureRef.current =
         null;
     }
@@ -1839,7 +2045,7 @@ function SketchWorkspace({
     if (
       tool === "select"
     ) {
-      setSelectedId(null);
+      clearModelSelection();
       return;
     }
 
@@ -2289,6 +2495,7 @@ function SketchWorkspace({
                   "vertical",
                 ]
               : [],
+          faceSketch: faceSketchTarget ? deepClone(faceSketchTarget) : null,
         };
 
         commitEntities(
@@ -2325,6 +2532,7 @@ function SketchWorkspace({
             draft.start.y,
           r,
           locked: false,
+          faceSketch: faceSketchTarget ? deepClone(faceSketchTarget) : null,
         };
 
         commitEntities(
@@ -2471,45 +2679,638 @@ function SketchWorkspace({
     });
   }
 
-  async function extrudeProfile() {
-    if (
-      !profile ||
-      creatingSolid ||
-      objectCount >=
-        maxObjects
-    ) {
+  function setViewPreset(preset) {
+    const views = {
+      iso: { angle: 58, elevation: 42 },
+      top: { angle: 90, elevation: 78 },
+      front: { angle: 90, elevation: 14 },
+      right: { angle: 8, elevation: 22 },
+    };
+    const next = views[preset] || views.iso;
+    setOrbitAngle(next.angle);
+    setOrbitElevation(next.elevation);
+    setCreateMessage(`${String(preset).toUpperCase()} VIEW`);
+  }
+
+  function fitModelView() {
+    const points = [];
+    draftSolids.forEach((solid) => {
+      const projection = solidProjection(solid.height);
+      (solid.points || []).forEach(([x, y]) => {
+        points.push({ x, y });
+        points.push({ x: x + projection.x, y: y + projection.y });
+      });
+    });
+    if (!points.length) {
+      setPan({ x: 0, y: 0 });
+      setZoom(1.45);
+      return;
+    }
+    const xs = points.map((point) => point.x);
+    const ys = points.map((point) => point.y);
+    const minX = Math.min(...xs);
+    const maxX = Math.max(...xs);
+    const minY = Math.min(...ys);
+    const maxY = Math.max(...ys);
+    const width = Math.max(20, maxX - minX);
+    const height = Math.max(20, maxY - minY);
+    const nextZoom = clamp(Math.min(size.width * 0.62 / width, size.height * 0.62 / height), 0.22, 6);
+    const centerX = (minX + maxX) / 2;
+    const centerY = (minY + maxY) / 2;
+    setZoom(nextZoom);
+    setPan({ x: -centerX * nextZoom, y: centerY * nextZoom });
+    setCreateMessage("FIT VIEW");
+  }
+
+  function deleteSelectedFeature() {
+    if (!selectedSolid || !selectedFeature) return;
+    const featureId = selectedFeature.id;
+    setDraftSolids((current) => current.map((solid) =>
+      solid.id === selectedSolid.id
+        ? { ...solid, features: (solid.features || []).filter((feature) => feature.id !== featureId) }
+        : solid
+    ));
+    setSelectedFeatureId(null);
+    setCreateMessage("Feature removed");
+  }
+
+  function flipSelectedFeature() {
+    if (!selectedSolid || !selectedFeature) return;
+    const featureId = selectedFeature.id;
+    setDraftSolids((current) => current.map((solid) =>
+      solid.id === selectedSolid.id
+        ? {
+            ...solid,
+            features: (solid.features || []).map((feature) =>
+              feature.id === featureId
+                ? { ...feature, depth: -feature.depth, mode: feature.depth > 0 ? "cut" : "add" }
+                : feature
+            ),
+          }
+        : solid
+    ));
+    setExtrusionHeight(-Number(selectedFeature.depth || 0));
+    setCreateMessage(selectedFeature.depth > 0 ? "Feature switched to CUT" : "Feature switched to ADD");
+  }
+
+  function removeSelectedEdgeTreatment() {
+    if (!selectedSolid || !selectedEdge) return;
+    const key = edgeKey(selectedEdge.edgeType || "top", selectedEdge.edgeIndex);
+    setDraftSolids((current) => current.map((solid) =>
+      solid.id === selectedSolid.id
+        ? {
+            ...solid,
+            edgeTreatments: (solid.edgeTreatments || []).filter((item) =>
+              edgeKey(item.edgeType || "top", item.edgeIndex) !== key
+            ),
+          }
+        : solid
+    ));
+    setCreateMessage("Edge treatment removed");
+  }
+
+  function clearModelSelection() {
+    setSelectedFeatureId(null);
+    setSelectedEdge(null);
+    setSelectedSolidId(null);
+    setSelectedId(null);
+    setCreateMessage("");
+  }
+
+  function pointsCenter(points) {
+    if (!points?.length) return null;
+    const sum = points.reduce(
+      (acc, point) => ({ x: acc.x + point[0], y: acc.y + point[1] }),
+      { x: 0, y: 0 }
+    );
+    return { x: sum.x / points.length, y: sum.y / points.length };
+  }
+
+  function profileCenter() {
+    return pointsCenter(profile?.points);
+  }
+
+  function solidProjection(height) {
+    const amount = Math.max(0, Number(height) || 0);
+    const angle = orbitAngle * Math.PI / 180;
+    const elevation = orbitElevation * Math.PI / 180;
+    const depthScale = 0.7 * Math.cos((elevation - Math.PI / 4) * 0.55);
+    return {
+      x: amount * Math.cos(angle) * depthScale,
+      y: amount * Math.sin(angle) * depthScale * (0.72 + Math.sin(elevation) * 0.38),
+    };
+  }
+
+  function sideFaceFrame(target) {
+    if (!target?.solidId || target.faceType !== "side") return null;
+    const solid = draftSolids.find((item) => item.id === target.solidId);
+    if (!solid?.points?.length) return null;
+    const index = clamp(target.faceIndex ?? 0, 0, solid.points.length - 1);
+    const a = solid.points[index];
+    const b = solid.points[(index + 1) % solid.points.length];
+    if (!a || !b) return null;
+    const dx = b[0] - a[0];
+    const dy = b[1] - a[1];
+    const length = Math.hypot(dx, dy);
+    if (length < 0.001) return null;
+    const signedArea = solid.points.reduce((total, point, pointIndex) => {
+      const next = solid.points[(pointIndex + 1) % solid.points.length];
+      return total + point[0] * next[1] - next[0] * point[1];
+    }, 0) / 2;
+    const edge = { x: dx / length, y: dy / length };
+    const outward = signedArea >= 0
+      ? { x: edge.y, y: -edge.x }
+      : { x: -edge.y, y: edge.x };
+    return {
+      solid,
+      index,
+      origin: { x: a[0], y: a[1] },
+      edge,
+      outward,
+      lift: solidProjection(1),
+      length,
+    };
+  }
+
+  function sideLocalToModel(target, point) {
+    const frame = sideFaceFrame(target);
+    if (!frame) return point;
+    return {
+      x: frame.origin.x + frame.edge.x * point.x + frame.lift.x * point.y,
+      y: frame.origin.y + frame.edge.y * point.x + frame.lift.y * point.y,
+    };
+  }
+
+  function sideModelToLocal(target, point) {
+    const frame = sideFaceFrame(target);
+    if (!frame) return point;
+    const rx = point.x - frame.origin.x;
+    const ry = point.y - frame.origin.y;
+    const det = frame.edge.x * frame.lift.y - frame.edge.y * frame.lift.x;
+    if (Math.abs(det) < 0.0001) return { x: 0, y: 0 };
+    return {
+      x: (rx * frame.lift.y - ry * frame.lift.x) / det,
+      y: (frame.edge.x * ry - frame.edge.y * rx) / det,
+    };
+  }
+
+  function facePointToScreen(faceSketch, point) {
+    if (!faceSketch?.solidId) return screenPoint(point);
+    const solid = draftSolids.find((item) => item.id === faceSketch.solidId);
+    if (!solid) return screenPoint(point);
+    if (faceSketch.faceType === "side") {
+      return screenPoint(sideLocalToModel(faceSketch, point));
+    }
+    const projection = solidProjection(solid.height);
+    return screenPoint({ x: point.x + projection.x, y: point.y + projection.y });
+  }
+
+  function selectFeature(event, solid, feature) {
+    if (tool !== "select") return;
+    event.preventDefault();
+    event.stopPropagation();
+    setSelectedSolidId(solid.id);
+    setSelectedFeatureId(feature.id);
+    setSelectedSolidFace({
+      type: feature.faceType || "top",
+      index: feature.faceIndex ?? null,
+    });
+    setSelectedId(null);
+    setFaceSketchTarget(null);
+    setExtrusionHeight(Number(feature.depth) || 0);
+    setCreateMessage(`${feature.mode === "cut" ? "Pocket" : "Boss"} selected · drag to edit depth`);
+  }
+
+  function beginFeaturePull(event, solid, feature) {
+    if (creatingSolid) return;
+    event.preventDefault();
+    event.stopPropagation();
+    selectFeature(event, solid, feature);
+    pullExtrudeRef.current = {
+      pointerId: event.pointerId,
+      solidId: solid.id,
+      featureId: feature.id,
+      featureTarget: {
+        solidId: solid.id,
+        faceType: feature.faceType || "top",
+        faceIndex: feature.faceIndex ?? null,
+      },
+      startX: event.clientX,
+      startY: event.clientY,
+      startDepth: Number(feature.depth) || 0,
+      moved: false,
+    };
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+  }
+
+  function beginPullExtrude(event, solidId = null) {
+    const solid = solidId
+      ? draftSolids.find((item) => item.id === solidId)
+      : null;
+
+    if ((!profile && !solid) || creatingSolid) return;
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (solid) {
+      setSelectedSolidId(solid.id);
+      setSelectedFeatureId(null);
+      setSelectedId(null);
+      setExtrusionHeight(solid.height);
+    }
+
+    const featureTarget = !solid && selected?.faceSketch?.solidId
+      ? selected.faceSketch
+      : null;
+
+    pullExtrudeRef.current = {
+      pointerId: event.pointerId,
+      solidId: solid?.id || null,
+      featureTarget,
+      startX: event.clientX,
+      startY: event.clientY,
+      startHeight: featureTarget ? 0 : (solid?.height ?? extrusionHeight),
+      moved: false,
+    };
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+  }
+
+  function movePullExtrude(event) {
+    const drag = pullExtrudeRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    event.preventDefault();
+    event.stopPropagation();
+    let delta = drag.startY - event.clientY;
+    if (drag.featureTarget?.faceType === "side") {
+      const frame = sideFaceFrame(drag.featureTarget);
+      if (frame) {
+        const vx = frame.outward.x;
+        const vy = -frame.outward.y;
+        const magnitude = Math.hypot(vx, vy) || 1;
+        const ux = vx / magnitude;
+        const uy = vy / magnitude;
+        delta = (event.clientX - drag.startX) * ux + (event.clientY - drag.startY) * uy;
+      }
+    }
+    if (Math.abs(delta) > 3) drag.moved = true;
+    const nextHeight = drag.featureId
+      ? clamp(drag.startDepth + delta / Math.max(0.55, zoom), -500, 500)
+      : drag.featureTarget
+        ? clamp(delta / Math.max(0.55, zoom), -500, 500)
+        : clamp(drag.startHeight + delta / Math.max(0.55, zoom), 0.5, 500);
+    drag.height = nextHeight;
+    setExtrusionHeight(nextHeight);
+
+    if (drag.solidId && drag.featureId) {
+      setDraftSolids((current) => current.map((solid) =>
+        solid.id === drag.solidId
+          ? {
+              ...solid,
+              features: (solid.features || []).map((feature) =>
+                feature.id === drag.featureId
+                  ? {
+                      ...feature,
+                      depth: Math.abs(nextHeight) < 0.5 ? (nextHeight < 0 ? -0.5 : 0.5) : nextHeight,
+                      mode: nextHeight < 0 ? "cut" : "add",
+                    }
+                  : feature
+              ),
+            }
+          : solid
+      ));
+    } else if (drag.solidId) {
+      setDraftSolids((current) =>
+        current.map((solid) =>
+          solid.id === drag.solidId
+            ? { ...solid, height: nextHeight }
+            : solid
+        )
+      );
+    }
+  }
+
+  function endPullExtrude(event) {
+    const drag = pullExtrudeRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    event.preventDefault();
+    event.stopPropagation();
+    pullExtrudeRef.current = null;
+
+    if (!drag.moved) return;
+
+    if (drag.featureId) {
+      const depth = drag.height ?? drag.startDepth;
+      setCreateMessage(`${depth < 0 ? "Pocket" : "Boss"} depth · ${Math.abs(depth).toFixed(1)} mm`);
       return;
     }
 
+    if (drag.solidId || !profile) return;
+
+    const nextHeight = drag.height ?? extrusionHeight;
+
+    if (drag.featureTarget) {
+      if (Math.abs(nextHeight) < 0.5) {
+        setCreateMessage('Pull at least 0.5 mm to create the feature');
+        return;
+      }
+      const targetId = drag.featureTarget.solidId;
+      const feature = {
+        id: `feature-${makeId()}`,
+        points: deepClone(profile.points),
+        depth: nextHeight,
+        mode: nextHeight >= 0 ? 'add' : 'cut',
+        faceType: drag.featureTarget.faceType || 'top',
+        faceIndex: drag.featureTarget.faceIndex ?? null,
+      };
+      setDraftSolids((current) => current.map((item) =>
+        item.id === targetId
+          ? { ...item, features: [...(item.features || []), feature] }
+          : item
+      ));
+      setEntities((current) => current.filter((item) => item.id !== selectedId));
+      setSelectedId(null);
+      setSelectedSolidId(targetId);
+      setSelectedFeatureId(feature.id);
+      setSelectedSolidFace({
+        type: drag.featureTarget.faceType || 'top',
+        index: drag.featureTarget.faceIndex ?? null,
+      });
+      setFaceSketchTarget(null);
+      setExtrusionHeight(20);
+      setCreateMessage(nextHeight >= 0
+        ? `Boss added · ${nextHeight.toFixed(1)} mm`
+        : `Pocket cut · ${Math.abs(nextHeight).toFixed(1)} mm`);
+      return;
+    }
+
+    const solid = {
+      id: `solid-${makeId()}`,
+      points: deepClone(profile.points),
+      height: nextHeight,
+      label: profile.label,
+      plane,
+      features: [],
+      edgeTreatments: [],
+    };
+
+    setDraftSolids((current) => [...current, solid]);
+    setSelectedSolidId(solid.id);
+    setSelectedFeatureId(null);
+    setSelectedId(null);
+    setCreateMessage('3D body created · tap a face · tap again to sketch on it');
+  }
+
+  function beginFaceSketch(target) {
+    if (!target?.solidId) return;
+    setFaceSketchTarget(target);
+    setSelectedSolidId(null);
+    setSelectedFeatureId(null);
+    setSelectedId(null);
+    setExtrusionHeight(0);
+    setTool('rect');
+    setCreateMessage(target.faceType === 'top'
+      ? 'TOP FACE SKETCH · corners, midpoints and center snap automatically'
+      : `SIDE FACE ${target.faceIndex + 1} SKETCH · face snapping is active`);
+  }
+
+  function selectSolidFace(event, solid, faceType = 'top', faceIndex = null) {
+    if (tool !== 'select') return;
+    event.preventDefault();
+    event.stopPropagation();
+
+    const now = Date.now();
+    const faceKey = `${solid.id}:${faceType}:${faceIndex ?? 'top'}`;
+    const lastTap = lastFaceTapRef.current;
+    const isSecondTap = lastTap?.key === faceKey && now - lastTap.time < 520;
+    lastFaceTapRef.current = { key: faceKey, time: now };
+
+    const target = { solidId: solid.id, faceType, faceIndex };
+    if (isSecondTap) {
+      beginFaceSketch(target);
+      return;
+    }
+
+    setSelectedSolidId(solid.id);
+    setSelectedFeatureId(null);
+    setSelectedEdge(null);
+    setSelectedSolidFace({ type: faceType, index: faceIndex });
+    setSelectedId(null);
+    setExtrusionHeight(solid.height);
+    setCreateMessage(faceType === 'top'
+      ? 'Top face selected · pull to change height · tap again to sketch'
+      : `Side face ${faceIndex + 1} selected · tap again to sketch`);
+  }
+
+  function edgeKey(edgeType, edgeIndex) {
+    return `${edgeType || "top"}:${Number(edgeIndex) || 0}`;
+  }
+
+  function findEdgeTreatment(solid, edgeType, edgeIndex) {
+    const key = edgeKey(edgeType, edgeIndex);
+    return (solid.edgeTreatments || []).find((item) =>
+      edgeKey(item.edgeType || "top", item.edgeIndex) === key
+    );
+  }
+
+  function selectSolidEdge(event, solid, edgeType, edgeIndex) {
+    if (tool !== "select") return;
+    event.preventDefault();
+    event.stopPropagation();
+    const normalizedType = edgeType || "top";
+    setSelectedSolidId(solid.id);
+    setSelectedFeatureId(null);
+    setSelectedEdge({ solidId: solid.id, edgeType: normalizedType, edgeIndex });
+    setSelectedId(null);
+    const existing = findEdgeTreatment(solid, normalizedType, edgeIndex);
+    const edgeLabel = `${normalizedType.toUpperCase()} EDGE ${edgeIndex + 1}`;
+    if (existing) {
+      setEdgeTreatmentMode(existing.mode || "chamfer");
+      setEdgeTreatmentAmount(Number(existing.amount) || 2);
+      setCreateMessage(`${String(existing.mode || "chamfer").toUpperCase()} · ${edgeLabel} · drag to edit`);
+    } else {
+      setCreateMessage(`${edgeLabel} selected · drag across it to ${edgeTreatmentMode}`);
+    }
+  }
+
+  function beginEdgeTreatmentDrag(event, solid, edgeType, edgeIndex, point, next) {
+    if (tool !== "select" || creatingSolid) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const normalizedType = edgeType || "top";
+    selectSolidEdge(event, solid, normalizedType, edgeIndex);
+
+    const existing = findEdgeTreatment(solid, normalizedType, edgeIndex);
+    const mode = existing?.mode || edgeTreatmentMode;
+    const startAmount = Number(existing?.amount) || 0.25;
+    const dx = next.x - point.x;
+    const dy = next.y - point.y;
+    const length = Math.hypot(dx, dy) || 1;
+    const nx = -dy / length;
+    const ny = dx / length;
+    edgeDragRef.current = {
+      pointerId: event.pointerId,
+      solidId: solid.id,
+      edgeType: normalizedType,
+      edgeIndex,
+      mode,
+      startX: event.clientX,
+      startY: event.clientY,
+      startAmount,
+      nx,
+      ny,
+      moved: false,
+    };
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+  }
+
+  function moveEdgeTreatmentDrag(event) {
+    const drag = edgeDragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const sx = event.clientX - drag.startX;
+    const sy = event.clientY - drag.startY;
+    const projected = sx * drag.nx + sy * drag.ny;
+    if (Math.abs(projected) > 3) drag.moved = true;
+    const amount = clamp(drag.startAmount + projected / Math.max(1.8, zoom * 2.35), 0.25, 50);
+    drag.amount = amount;
+    setEdgeTreatmentMode(drag.mode);
+    setEdgeTreatmentAmount(amount);
+    setDraftSolids((current) => current.map((candidate) => {
+      if (candidate.id !== drag.solidId) return candidate;
+      const treatments = [...(candidate.edgeTreatments || [])];
+      const key = edgeKey(drag.edgeType, drag.edgeIndex);
+      const index = treatments.findIndex((item) => edgeKey(item.edgeType || "top", item.edgeIndex) === key);
+      const treatment = {
+        id: index >= 0 ? treatments[index].id : `edge-${makeId()}`,
+        edgeType: drag.edgeType,
+        edgeIndex: drag.edgeIndex,
+        mode: drag.mode,
+        amount,
+      };
+      if (index >= 0) treatments[index] = treatment;
+      else treatments.push(treatment);
+      return { ...candidate, edgeTreatments: treatments };
+    }));
+    setCreateMessage(`${drag.mode.toUpperCase()} · ${drag.edgeType.toUpperCase()} EDGE ${drag.edgeIndex + 1} · ${amount.toFixed(1)} mm`);
+  }
+
+  function endEdgeTreatmentDrag(event) {
+    const drag = edgeDragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    event.preventDefault();
+    event.stopPropagation();
+    edgeDragRef.current = null;
+    if (!drag.moved) return;
+    const amount = drag.amount ?? drag.startAmount;
+    setCreateMessage(`${drag.mode.toUpperCase()} · ${drag.edgeType.toUpperCase()} EDGE ${drag.edgeIndex + 1} · ${amount.toFixed(1)} mm`);
+  }
+
+  function applyEdgeTreatment(mode = edgeTreatmentMode, amount = edgeTreatmentAmount) {
+    if (!selectedEdge?.solidId) return;
+    const safeAmount = clamp(amount, 0.25, 50);
+    setEdgeTreatmentMode(mode);
+    setEdgeTreatmentAmount(safeAmount);
+    setDraftSolids((current) => current.map((solid) => {
+      if (solid.id !== selectedEdge.solidId) return solid;
+      const treatments = [...(solid.edgeTreatments || [])];
+      const type = selectedEdge.edgeType || "top";
+      const key = edgeKey(type, selectedEdge.edgeIndex);
+      const existingIndex = treatments.findIndex((item) => edgeKey(item.edgeType || "top", item.edgeIndex) === key);
+      const treatment = {
+        id: existingIndex >= 0 ? treatments[existingIndex].id : `edge-${makeId()}`,
+        edgeType: type,
+        edgeIndex: selectedEdge.edgeIndex,
+        mode,
+        amount: safeAmount,
+      };
+      if (existingIndex >= 0) treatments[existingIndex] = treatment;
+      else treatments.push(treatment);
+      return { ...solid, edgeTreatments: treatments };
+    }));
+    setCreateMessage(`${mode.toUpperCase()} · ${(selectedEdge.edgeType || "top").toUpperCase()} EDGE ${selectedEdge.edgeIndex + 1} · ${safeAmount.toFixed(1)} mm`);
+  }
+
+  function selectHistoryEntry(entry) {
+    const solid = draftSolids.find((item) => item.id === entry.solidId);
+    if (!solid) return;
+    setSelectedSolidId(solid.id);
+    setSelectedId(null);
+    setSelectedEdge(null);
+    if (entry.kind === "feature") {
+      setSelectedFeatureId(entry.featureId);
+      const feature = (solid.features || []).find((item) => item.id === entry.featureId);
+      if (feature) {
+        setSelectedSolidFace({ type: feature.faceType || "top", index: feature.faceIndex ?? null });
+        setExtrusionHeight(Number(feature.depth) || 0);
+      }
+    } else if (entry.kind === "edge") {
+      setSelectedFeatureId(null);
+      setSelectedEdge({ solidId: solid.id, edgeType: entry.edgeType || "top", edgeIndex: entry.edgeIndex });
+      const treatment = findEdgeTreatment(solid, entry.edgeType || "top", entry.edgeIndex);
+      if (treatment) {
+        setEdgeTreatmentMode(treatment.mode || "chamfer");
+        setEdgeTreatmentAmount(Number(treatment.amount) || 2);
+      }
+    } else {
+      setSelectedFeatureId(null);
+      setExtrusionHeight(solid.height);
+    }
+  }
+
+  function sketchOnSelectedFace() {
+    if (!selectedSolid) return;
+    beginFaceSketch({
+      solidId: selectedSolid.id,
+      faceType: selectedSolidFace.type,
+      faceIndex: selectedSolidFace.index,
+    });
+  }
+
+  async function sendSolidToStudio(solid = selectedSolid) {
+    if (!solid || creatingSolid || objectCount >= maxObjects) return;
+
     setCreatingSolid(true);
-    setCreateMessage("");
+    setCreateMessage('');
 
     try {
-      const engine =
-        await onCreateSolid({
-          points:
-            profile.points,
-          height:
-            Math.max(
-              0.5,
-              extrusionHeight
-            ),
-          twistDegrees: 0,
-          scaleTop: 1,
-          plane,
-        });
+      const engine = await onCreateSolid({
+        points: solid.points,
+        height: Math.max(0.5, solid.height),
+        twistDegrees: 0,
+        scaleTop: 1,
+        plane: solid.plane || plane,
+        features: deepClone(solid.features || []),
+        edgeTreatments: deepClone(solid.edgeTreatments || []),
+      });
 
-      setCreateMessage(
-        `${engine || "3D"} · sent to Studio`
-      );
+      setCreateMessage(`${engine || '3D'} · sent to Studio`);
+      setDraftSolids((current) => current.filter((item) => item.id !== solid.id));
+      setSelectedSolidId(null);
+      setSelectedFeatureId(null);
     } catch (error) {
-      setCreateMessage(
-        error?.message ||
-          "Unable to create the 3D solid."
-      );
+      setCreateMessage(error?.message || 'Unable to create the 3D solid.');
     } finally {
       setCreatingSolid(false);
     }
+  }
+
+  async function extrudeProfile(heightOverride) {
+    if (!profile || creatingSolid) return;
+    const solid = {
+      id: `solid-${makeId()}`,
+      points: deepClone(profile.points),
+      height: Math.max(0.5, heightOverride ?? extrusionHeight),
+      label: profile.label,
+      plane,
+      features: [],
+      edgeTreatments: [],
+    };
+    setDraftSolids((current) => [...current, solid]);
+    setSelectedSolidId(solid.id);
+    setSelectedId(null);
+    setExtrusionHeight(solid.height);
+    setCreateMessage('3D body created · keep editing in Sketch');
   }
 
   const gridLines =
@@ -2698,248 +3499,79 @@ function SketchWorkspace({
   function renderEntity(
     entity
   ) {
-    const selectedNow =
-      entity.id === selectedId;
-
-    const defined =
-      entity.locked ||
-      entity.dimensionLocked;
-
-    const stroke =
-      selectedNow
-        ? "#9bdcff"
-        : defined
-          ? "#64d69c"
-          : "#4ca9e8";
-
+    const selectedNow = entity.id === selectedId;
+    const defined = entity.locked || entity.dimensionLocked;
+    const stroke = selectedNow ? "#9bdcff" : defined ? "#64d69c" : "#4ca9e8";
+    const project = (point) => facePointToScreen(entity.faceSketch, point);
     const common = {
-      onPointerDown: (
-        event
-      ) =>
-        handleEntityPointerDown(
-          event,
-          entity
-        ),
+      onPointerDown: (event) => handleEntityPointerDown(event, entity),
     };
+    const showDimension = entity.faceSketch?.faceType !== "side";
 
-    if (
-      entity.type === "line"
-    ) {
-      const a =
-        screenPoint(
-          entity.p1
-        );
-      const b =
-        screenPoint(
-          entity.p2
-        );
-
+    if (entity.type === "line") {
+      const a = project(entity.p1);
+      const b = project(entity.p2);
       return (
-        <g
-          key={entity.id}
-          {...common}
-          className="sketch-entity"
-        >
-          <line
-            x1={a.x}
-            y1={a.y}
-            x2={b.x}
-            y2={b.y}
-            className="sketch-hit-line"
-          />
-
-          <line
-            x1={a.x}
-            y1={a.y}
-            x2={b.x}
-            y2={b.y}
-            stroke={stroke}
-            className="sketch-line"
-          />
-
-          <circle
-            cx={a.x}
-            cy={a.y}
-            r={selectedNow ? 4.5 : 3}
-            fill={stroke}
-            className="sketch-point"
-          />
-
-          <circle
-            cx={b.x}
-            cy={b.y}
-            r={selectedNow ? 4.5 : 3}
-            fill={stroke}
-            className="sketch-point"
-          />
-
-          {renderDimension(
-            entity
-          )}
+        <g key={entity.id} {...common} className="sketch-entity">
+          <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} className="sketch-hit-line" />
+          <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={stroke} className="sketch-line" />
+          <circle cx={a.x} cy={a.y} r={selectedNow ? 4.5 : 3} fill={stroke} className="sketch-point" />
+          <circle cx={b.x} cy={b.y} r={selectedNow ? 4.5 : 3} fill={stroke} className="sketch-point" />
+          {showDimension && renderDimension(entity)}
         </g>
       );
     }
 
-    if (
-      entity.type === "rect"
-    ) {
-      const a =
-        screenPoint({
-          x:
-            Math.min(
-              entity.x,
-              entity.x +
-                entity.w
-            ),
-          y:
-            Math.max(
-              entity.y,
-              entity.y +
-                entity.h
-            ),
+    if (entity.type === "rect") {
+      const corners = [
+        { x: entity.x, y: entity.y },
+        { x: entity.x + entity.w, y: entity.y },
+        { x: entity.x + entity.w, y: entity.y + entity.h },
+        { x: entity.x, y: entity.y + entity.h },
+      ].map(project);
+      const points = corners.map((point) => `${point.x},${point.y}`).join(" ");
+      return (
+        <g key={entity.id} {...common} className="sketch-entity">
+          <polygon points={points} className="sketch-hit-shape" />
+          <polygon points={points} stroke={stroke} className="sketch-shape" />
+          {showDimension && renderDimension(entity)}
+        </g>
+      );
+    }
+
+    if (entity.type === "circle") {
+      const samples = Array.from({ length: 64 }, (_, index) => {
+        const angle = index / 64 * Math.PI * 2;
+        return project({
+          x: entity.cx + Math.cos(angle) * entity.r,
+          y: entity.cy + Math.sin(angle) * entity.r,
         });
-
-      const width =
-        Math.abs(
-          entity.w
-        ) *
-        zoom;
-
-      const height =
-        Math.abs(
-          entity.h
-        ) *
-        zoom;
-
+      });
+      const points = samples.map((point) => `${point.x},${point.y}`).join(" ");
+      const center = project({ x: entity.cx, y: entity.cy });
       return (
-        <g
-          key={entity.id}
-          {...common}
-          className="sketch-entity"
-        >
-          <rect
-            x={a.x}
-            y={a.y}
-            width={width}
-            height={height}
-            className="sketch-hit-shape"
-          />
-
-          <rect
-            x={a.x}
-            y={a.y}
-            width={width}
-            height={height}
-            stroke={stroke}
-            className="sketch-shape"
-          />
-
-          {renderDimension(
-            entity
-          )}
+        <g key={entity.id} {...common} className="sketch-entity">
+          <polygon points={points} className="sketch-hit-shape" />
+          <polygon points={points} stroke={stroke} className="sketch-shape" />
+          <circle cx={center.x} cy={center.y} r="3.5" fill={stroke} />
+          {showDimension && renderDimension(entity)}
         </g>
       );
     }
 
-    if (
-      entity.type === "circle"
-    ) {
-      const center =
-        screenPoint({
-          x: entity.cx,
-          y: entity.cy,
-        });
-
+    if (entity.type === "spline") {
+      const screenPoints = entity.points.map(project);
+      const points = screenPoints.map((point) => `${point.x},${point.y}`).join(" ");
       return (
-        <g
-          key={entity.id}
-          {...common}
-          className="sketch-entity"
-        >
-          <circle
-            cx={center.x}
-            cy={center.y}
-            r={entity.r * zoom}
-            className="sketch-hit-shape"
-          />
-
-          <circle
-            cx={center.x}
-            cy={center.y}
-            r={entity.r * zoom}
-            stroke={stroke}
-            className="sketch-shape"
-          />
-
-          <circle
-            cx={center.x}
-            cy={center.y}
-            r="3.5"
-            fill={stroke}
-          />
-
-          {renderDimension(
-            entity
-          )}
-        </g>
-      );
-    }
-
-    if (
-      entity.type === "spline"
-    ) {
-      const screenPoints =
-        entity.points.map(
-          screenPoint
-        );
-
-      const points =
-        screenPoints
-          .map(
-            (point) =>
-              `${point.x},${point.y}`
-          )
-          .join(" ");
-
-      return (
-        <g
-          key={entity.id}
-          {...common}
-          className="sketch-entity"
-        >
-          <polyline
-            points={points}
-            className="sketch-hit-line"
-          />
-
-          <polyline
-            points={points}
-            stroke={stroke}
-            className="sketch-spline"
-          />
-
-          {entity.closed && (
+        <g key={entity.id} {...common} className="sketch-entity">
+          <polyline points={points} className="sketch-hit-line" />
+          <polyline points={points} stroke={stroke} className="sketch-spline" />
+          {entity.closed && screenPoints.length > 1 && (
             <line
-              x1={
-                screenPoints[0]
-                  ?.x
-              }
-              y1={
-                screenPoints[0]
-                  ?.y
-              }
-              x2={
-                screenPoints[
-                  screenPoints.length -
-                    1
-                ]?.x
-              }
-              y2={
-                screenPoints[
-                  screenPoints.length -
-                    1
-                ]?.y
-              }
+              x1={screenPoints[0]?.x}
+              y1={screenPoints[0]?.y}
+              x2={screenPoints[screenPoints.length - 1]?.x}
+              y2={screenPoints[screenPoints.length - 1]?.y}
               stroke={stroke}
               className="sketch-line"
             />
@@ -2948,36 +3580,15 @@ function SketchWorkspace({
       );
     }
 
-    if (
-      entity.type === "arc"
-    ) {
-      const points =
-        arcPoints(entity)
-          .map(
-            screenPoint
-          )
-          .map(
-            (point) =>
-              `${point.x},${point.y}`
-          )
-          .join(" ");
-
+    if (entity.type === "arc") {
+      const points = arcPoints(entity)
+        .map(project)
+        .map((point) => `${point.x},${point.y}`)
+        .join(" ");
       return (
-        <g
-          key={entity.id}
-          {...common}
-          className="sketch-entity"
-        >
-          <polyline
-            points={points}
-            className="sketch-hit-line"
-          />
-
-          <polyline
-            points={points}
-            stroke={stroke}
-            className="sketch-spline"
-          />
+        <g key={entity.id} {...common} className="sketch-entity">
+          <polyline points={points} className="sketch-hit-line" />
+          <polyline points={points} stroke={stroke} className="sketch-spline" />
         </g>
       );
     }
@@ -3131,11 +3742,11 @@ function SketchWorkspace({
 
   return (
     <div
-      className={
+      className={`${
         isFullscreen
           ? "sketch-workspace sketch-workspace-fullscreen"
           : "sketch-workspace"
-      }
+      } ${solidNavigationActive ? "sketch-solid-mode" : "sketch-sketch-mode"}`}
     >
       <div className="sketch-topbar">
         <div className="sketch-topbar-title">
@@ -3144,7 +3755,7 @@ function SketchWorkspace({
           </span>
 
           <strong>
-            Pencil-first CAD
+            Direct Modeling · iPad
           </strong>
         </div>
 
@@ -3428,9 +4039,292 @@ function SketchWorkspace({
               className="sketch-axis sketch-axis-x"
             />
 
+            {draftSolids.map((solid) => {
+              const projection = solidProjection(solid.height);
+              const base = solid.points.map(([x, y]) => screenPoint({ x, y }));
+              const top = solid.points.map(([x, y]) =>
+                screenPoint({ x: x + projection.x, y: y + projection.y })
+              );
+              const polygon = (points) => points.map((point) => `${point.x},${point.y}`).join(' ');
+              const isSelected = solid.id === selectedSolidId;
+
+              return (
+                <g key={solid.id} className={`sketch-solid ${isSelected ? 'selected' : ''}`}>
+                  {base.map((point, index) => {
+                    const nextIndex = (index + 1) % base.length;
+                    const sidePoints = [point, base[nextIndex], top[nextIndex], top[index]];
+                    return (
+                      <polygon
+                        key={`${solid.id}-side-${index}`}
+                        points={polygon(sidePoints)}
+                        className={`sketch-solid-side ${isSelected && selectedSolidFace.type === 'side' && selectedSolidFace.index === index ? 'selected-face' : ''}`}
+                        onPointerDown={(event) => selectSolidFace(event, solid, 'side', index)}
+                      />
+                    );
+                  })}
+                  <polygon
+                    points={polygon(top)}
+                    className={`sketch-solid-top ${isSelected && selectedSolidFace.type === 'top' ? 'selected-face' : ''}`}
+                    onPointerDown={(event) => selectSolidFace(event, solid, 'top')}
+                  />
+                  <polygon points={polygon(top)} className="sketch-solid-top-hit" onPointerDown={(event) => selectSolidFace(event, solid, 'top')} />
+                  {[
+                    ...top.map((point, edgeIndex) => ({ edgeType: "top", edgeIndex, point, next: top[(edgeIndex + 1) % top.length] })),
+                    ...base.map((point, edgeIndex) => ({ edgeType: "bottom", edgeIndex, point, next: base[(edgeIndex + 1) % base.length] })),
+                    ...base.map((point, edgeIndex) => ({ edgeType: "vertical", edgeIndex, point, next: top[edgeIndex] })),
+                  ].map(({ edgeType, edgeIndex, point, next }) => {
+                    const treatment = findEdgeTreatment(solid, edgeType, edgeIndex);
+                    const edgeSelected = selectedEdge?.solidId === solid.id
+                      && selectedEdge?.edgeIndex === edgeIndex
+                      && (selectedEdge?.edgeType || "top") === edgeType;
+                    return (
+                      <g key={`${solid.id}-${edgeType}-edge-${edgeIndex}`} className={`sketch-solid-edge edge-${edgeType} ${edgeSelected ? "selected-edge" : ""} ${treatment ? "treated-edge" : ""}`}>
+                        <line x1={point.x} y1={point.y} x2={next.x} y2={next.y} className="sketch-edge-visible" />
+                        <line
+                          x1={point.x}
+                          y1={point.y}
+                          x2={next.x}
+                          y2={next.y}
+                          className="sketch-edge-hit"
+                          onPointerDown={(event) => beginEdgeTreatmentDrag(event, solid, edgeType, edgeIndex, point, next)}
+                          onPointerMove={moveEdgeTreatmentDrag}
+                          onPointerUp={endEdgeTreatmentDrag}
+                          onPointerCancel={endEdgeTreatmentDrag}
+                        />
+                        {treatment && (
+                          <text x={(point.x + next.x) / 2} y={(point.y + next.y) / 2 - 8} className="sketch-edge-label">
+                            {treatment.mode === "fillet" ? "R" : "C"}{Number(treatment.amount).toFixed(1)}
+                          </text>
+                        )}
+                      </g>
+                    );
+                  })}
+                  {(solid.features || []).map((feature) => {
+                    let featureBase = [];
+                    let featureEnd = [];
+                    if (feature.faceType === 'side') {
+                      const target = {
+                        solidId: solid.id,
+                        faceType: 'side',
+                        faceIndex: feature.faceIndex ?? 0,
+                      };
+                      const frame = sideFaceFrame(target);
+                      if (!frame) return null;
+                      const direction = feature.depth >= 0 ? 1 : -1;
+                      featureBase = feature.points.map(([x, y]) =>
+                        screenPoint(sideLocalToModel(target, { x, y }))
+                      );
+                      featureEnd = feature.points.map(([x, y]) => {
+                        const model = sideLocalToModel(target, { x, y });
+                        return screenPoint({
+                          x: model.x + frame.outward.x * Math.abs(feature.depth) * direction,
+                          y: model.y + frame.outward.y * Math.abs(feature.depth) * direction,
+                        });
+                      });
+                    } else {
+                      const depthProjection = solidProjection(Math.abs(feature.depth));
+                      const direction = feature.depth >= 0 ? 1 : -1;
+                      featureBase = feature.points.map(([x, y]) =>
+                        screenPoint({ x: x + projection.x, y: y + projection.y })
+                      );
+                      featureEnd = feature.points.map(([x, y]) =>
+                        screenPoint({
+                          x: x + projection.x + depthProjection.x * direction,
+                          y: y + projection.y + depthProjection.y * direction,
+                        })
+                      );
+                    }
+                    return (
+                      <g key={feature.id} className={`sketch-feature ${feature.mode} ${isSelected && selectedFeatureId === feature.id ? 'selected-feature' : ''}`}>
+                        {featureBase.map((point, index) => {
+                          const nextIndex = (index + 1) % featureBase.length;
+                          return (
+                            <polygon
+                              key={`${feature.id}-side-${index}`}
+                              points={polygon([point, featureBase[nextIndex], featureEnd[nextIndex], featureEnd[index]])}
+                              className="sketch-feature-side"
+                            />
+                          );
+                        })}
+                        <polygon
+                          points={polygon(featureEnd)}
+                          className="sketch-feature-cap"
+                          onPointerDown={(event) => selectFeature(event, solid, feature)}
+                        />
+                      </g>
+                    );
+                  })}
+                  {isSelected && selectedFeature && (() => {
+                    const feature = selectedFeature;
+                    let center = null;
+                    let direction = { x: 0, y: -1 };
+                    const featureCenter = pointsCenter(feature.points);
+                    if (!featureCenter) return null;
+
+                    if (feature.faceType === 'side') {
+                      const target = { solidId: solid.id, faceType: 'side', faceIndex: feature.faceIndex ?? 0 };
+                      const frame = sideFaceFrame(target);
+                      if (!frame) return null;
+                      const baseModel = sideLocalToModel(target, featureCenter);
+                      const sign = feature.depth >= 0 ? 1 : -1;
+                      const endModel = {
+                        x: baseModel.x + frame.outward.x * Math.abs(feature.depth) * sign,
+                        y: baseModel.y + frame.outward.y * Math.abs(feature.depth) * sign,
+                      };
+                      center = screenPoint(endModel);
+                      const vx = frame.outward.x;
+                      const vy = -frame.outward.y;
+                      const mag = Math.hypot(vx, vy) || 1;
+                      direction = { x: vx / mag, y: vy / mag };
+                    } else {
+                      const depthProjection = solidProjection(Math.abs(feature.depth));
+                      const sign = feature.depth >= 0 ? 1 : -1;
+                      center = screenPoint({
+                        x: featureCenter.x + projection.x + depthProjection.x * sign,
+                        y: featureCenter.y + projection.y + depthProjection.y * sign,
+                      });
+                    }
+
+                    const lift = 78;
+                    const end = { x: center.x + direction.x * lift, y: center.y + direction.y * lift };
+                    const perp = { x: -direction.y, y: direction.x };
+                    const tip = { x: end.x + direction.x * 5, y: end.y + direction.y * 5 };
+                    const arrowA = { x: end.x - direction.x * 12 + perp.x * 9, y: end.y - direction.y * 12 + perp.y * 9 };
+                    const arrowB = { x: end.x - direction.x * 12 - perp.x * 9, y: end.y - direction.y * 12 - perp.y * 9 };
+                    return (
+                      <g className="sketch-pull-gizmo sketch-feature-gizmo">
+                        <circle cx={center.x} cy={center.y} r="8" className="sketch-face-anchor" />
+                        <line x1={center.x} y1={center.y} x2={end.x} y2={end.y} className="sketch-pull-line" />
+                        <path d={`M ${arrowA.x} ${arrowA.y} L ${tip.x} ${tip.y} L ${arrowB.x} ${arrowB.y} Z`} className="sketch-pull-arrow" />
+                        <circle
+                          cx={end.x}
+                          cy={end.y}
+                          r="28"
+                          className="sketch-pull-hit"
+                          onPointerDown={(event) => beginFeaturePull(event, solid, feature)}
+                          onPointerMove={movePullExtrude}
+                          onPointerUp={endPullExtrude}
+                          onPointerCancel={endPullExtrude}
+                        />
+                        <g transform={`translate(${end.x + 18} ${end.y - 12})`}>
+                          <rect x="0" y="0" width="86" height="28" rx="8" className="sketch-pull-badge" />
+                          <text x="43" y="18" textAnchor="middle" className="sketch-pull-text">
+                            {feature.depth.toFixed(1)} mm
+                          </text>
+                        </g>
+                      </g>
+                    );
+                  })()}
+                  {isSelected && !selectedFeature && selectedSolidFace.type === 'top' && (() => {
+                    const centerModel = pointsCenter(solid.points);
+                    if (!centerModel) return null;
+                    const center = screenPoint({
+                      x: centerModel.x + projection.x,
+                      y: centerModel.y + projection.y,
+                    });
+                    const lift = Math.min(128, Math.max(64, solid.height * zoom * 0.32));
+                    const topY = center.y - lift;
+                    return (
+                      <g className="sketch-pull-gizmo">
+                        <circle cx={center.x} cy={center.y} r="9" className="sketch-face-anchor" />
+                        <line x1={center.x} y1={center.y} x2={center.x} y2={topY} className="sketch-pull-line" />
+                        <path d={`M ${center.x - 9} ${topY + 12} L ${center.x} ${topY - 4} L ${center.x + 9} ${topY + 12} Z`} className="sketch-pull-arrow" />
+                        <circle
+                          cx={center.x}
+                          cy={topY}
+                          r="26"
+                          className="sketch-pull-hit"
+                          onPointerDown={(event) => beginPullExtrude(event, solid.id)}
+                          onPointerMove={movePullExtrude}
+                          onPointerUp={endPullExtrude}
+                          onPointerCancel={endPullExtrude}
+                        />
+                        <g transform={`translate(${center.x + 18} ${topY - 12})`}>
+                          <rect x="0" y="0" width="76" height="28" rx="8" className="sketch-pull-badge" />
+                          <text x="38" y="18" textAnchor="middle" className="sketch-pull-text">
+                            {solid.height.toFixed(1)} mm
+                          </text>
+                        </g>
+                      </g>
+                    );
+                  })()}
+                </g>
+              );
+            })}
+
             {entities.map(
               renderEntity
             )}
+
+            {profile && !selectedSolid && tool === "select" && (() => {
+              const centerModel = profileCenter();
+              if (!centerModel) return null;
+              const faceSketch = selected?.faceSketch || null;
+              const featureMode = Boolean(faceSketch);
+              let center = screenPoint(centerModel);
+              let direction = { x: 0, y: -1 };
+
+              if (faceSketch?.faceType === "top") {
+                center = facePointToScreen(faceSketch, centerModel);
+              } else if (faceSketch?.faceType === "side") {
+                center = facePointToScreen(faceSketch, centerModel);
+                const frame = sideFaceFrame(faceSketch);
+                if (frame) {
+                  const vx = frame.outward.x;
+                  const vy = -frame.outward.y;
+                  const magnitude = Math.hypot(vx, vy) || 1;
+                  direction = { x: vx / magnitude, y: vy / magnitude };
+                }
+              }
+
+              const lift = featureMode
+                ? 88
+                : Math.min(150, Math.max(72, extrusionHeight * zoom * 0.55));
+              const end = {
+                x: center.x + direction.x * lift,
+                y: center.y + direction.y * lift,
+              };
+              const perp = { x: -direction.y, y: direction.x };
+              const tip = {
+                x: end.x + direction.x * 5,
+                y: end.y + direction.y * 5,
+              };
+              const arrowA = {
+                x: end.x - direction.x * 12 + perp.x * 9,
+                y: end.y - direction.y * 12 + perp.y * 9,
+              };
+              const arrowB = {
+                x: end.x - direction.x * 12 - perp.x * 9,
+                y: end.y - direction.y * 12 - perp.y * 9,
+              };
+
+              return (
+                <g className="sketch-pull-gizmo">
+                  <circle cx={center.x} cy={center.y} r="9" className="sketch-face-anchor" />
+                  <line x1={center.x} y1={center.y} x2={end.x} y2={end.y} className="sketch-pull-line" />
+                  <path
+                    d={`M ${arrowA.x} ${arrowA.y} L ${tip.x} ${tip.y} L ${arrowB.x} ${arrowB.y} Z`}
+                    className="sketch-pull-arrow"
+                  />
+                  <circle
+                    cx={end.x}
+                    cy={end.y}
+                    r="26"
+                    className="sketch-pull-hit"
+                    onPointerDown={beginPullExtrude}
+                    onPointerMove={movePullExtrude}
+                    onPointerUp={endPullExtrude}
+                    onPointerCancel={endPullExtrude}
+                  />
+                  <g transform={`translate(${end.x + 18} ${end.y - 12})`}>
+                    <rect x="0" y="0" width="76" height="28" rx="8" className="sketch-pull-badge" />
+                    <text x="38" y="18" textAnchor="middle" className="sketch-pull-text">
+                      {extrusionHeight.toFixed(1)} mm
+                    </text>
+                  </g>
+                </g>
+              );
+            })()}
 
             {tool === "line" &&
               lineStart &&
@@ -3480,56 +4374,30 @@ function SketchWorkspace({
               </g>
             )}
 
-            {draftRect && (
-              <rect
-                x={
-                  screenPoint({
-                    x:
-                      draftRect.x,
-                    y:
-                      draftRect.y,
-                  }).x
-                }
-                y={
-                  screenPoint({
-                    x:
-                      draftRect.x,
-                    y:
-                      draftRect.y,
-                  }).y
-                }
-                width={
-                  draftRect.w *
-                  zoom
-                }
-                height={
-                  draftRect.h *
-                  zoom
-                }
-                className="sketch-preview-shape"
-              />
-            )}
+            {draftRect && (() => {
+              const target = faceSketchTarget;
+              const project = (point) => facePointToScreen(target, point);
+              const points = [
+                { x: draft.start.x, y: draft.start.y },
+                { x: draft.current.x, y: draft.start.y },
+                { x: draft.current.x, y: draft.current.y },
+                { x: draft.start.x, y: draft.current.y },
+              ].map(project).map((point) => `${point.x},${point.y}`).join(" ");
+              return <polygon points={points} className="sketch-preview-shape" />;
+            })()}
 
-            {draft?.type ===
-              "circle" && (
-              <circle
-                cx={
-                  screenPoint(
-                    draft.start
-                  ).x
-                }
-                cy={
-                  screenPoint(
-                    draft.start
-                  ).y
-                }
-                r={
-                  draftCircleRadius *
-                  zoom
-                }
-                className="sketch-preview-shape"
-              />
-            )}
+            {draft?.type === "circle" && (() => {
+              const target = faceSketchTarget;
+              const project = (point) => facePointToScreen(target, point);
+              const points = Array.from({ length: 64 }, (_, index) => {
+                const angle = index / 64 * Math.PI * 2;
+                return project({
+                  x: draft.start.x + Math.cos(angle) * draftCircleRadius,
+                  y: draft.start.y + Math.sin(angle) * draftCircleRadius,
+                });
+              }).map((point) => `${point.x},${point.y}`).join(" ");
+              return <polygon points={points} className="sketch-preview-shape" />;
+            })()}
 
             {draft?.type ===
               "spline" && (
@@ -3569,6 +4437,60 @@ function SketchWorkspace({
             )}
           </svg>
 
+          {draftSolids.length > 0 && !faceSketchTarget && (
+            <div className="sketch-view-controls" aria-label="3D view controls">
+              <div className="sketch-view-cube" aria-hidden="true">
+                <span className="cube-top">T</span>
+                <span className="cube-front">F</span>
+                <span className="cube-side">R</span>
+              </div>
+              <div className="sketch-view-buttons">
+                <button type="button" onClick={() => setViewPreset("iso")}>ISO</button>
+                <button type="button" onClick={() => setViewPreset("top")}>TOP</button>
+                <button type="button" onClick={() => setViewPreset("front")}>FRONT</button>
+                <button type="button" onClick={() => setViewPreset("right")}>RIGHT</button>
+                <button type="button" onClick={fitModelView}>FIT</button>
+              </div>
+            </div>
+          )}
+
+          {(selectedSolid || selectedFeature || selectedEdge) && !faceSketchTarget && (
+            <div className="sketch-context-toolbar" role="toolbar" aria-label="Context tools">
+              <div className="sketch-context-title">
+                <span>{selectedEdge ? "EDGE" : selectedFeature ? "FEATURE" : "FACE"}</span>
+                <strong>
+                  {selectedEdge
+                    ? `${(selectedEdge.edgeType || "top").toUpperCase()} ${selectedEdge.edgeIndex + 1}`
+                    : selectedFeature
+                      ? `${selectedFeature.mode === "cut" ? "POCKET" : "BOSS"} · ${Math.abs(Number(selectedFeature.depth || 0)).toFixed(1)} mm`
+                      : selectedSolidFace.type === "top"
+                        ? "TOP FACE"
+                        : `SIDE ${selectedSolidFace.index + 1}`}
+                </strong>
+              </div>
+              <div className="sketch-context-actions">
+                {selectedEdge ? (
+                  <>
+                    <button type="button" className={edgeTreatmentMode === "fillet" ? "active" : ""} onClick={() => applyEdgeTreatment("fillet", edgeTreatmentAmount)}>FILLET</button>
+                    <button type="button" className={edgeTreatmentMode === "chamfer" ? "active" : ""} onClick={() => applyEdgeTreatment("chamfer", edgeTreatmentAmount)}>CHAMFER</button>
+                    <button type="button" onClick={removeSelectedEdgeTreatment}>REMOVE</button>
+                  </>
+                ) : selectedFeature ? (
+                  <>
+                    <button type="button" onClick={flipSelectedFeature}>{selectedFeature.mode === "cut" ? "MAKE ADD" : "MAKE CUT"}</button>
+                    <button type="button" onClick={deleteSelectedFeature}>DELETE</button>
+                  </>
+                ) : (
+                  <>
+                    <button type="button" className="primary" onClick={sketchOnSelectedFace}>SKETCH ON FACE</button>
+                    <button type="button" onClick={fitModelView}>FIT</button>
+                  </>
+                )}
+                <button type="button" className="context-close" onClick={clearModelSelection}>×</button>
+              </div>
+            </div>
+          )}
+
           <div className="sketch-canvas-readout sketch-canvas-readout-left">
             <span>
               {plane.toUpperCase()} PLANE
@@ -3583,7 +4505,7 @@ function SketchWorkspace({
               PENCIL = DRAW / SELECT
             </span>
             <b>
-              TOUCH = PAN · PINCH = ZOOM
+              {solidNavigationActive ? "1 FINGER = ORBIT · 2 FINGERS = PAN/ZOOM" : "TOUCH = PAN · PINCH = ZOOM"}
             </b>
           </div>
 
@@ -4047,33 +4969,157 @@ function SketchWorkspace({
         </aside>
       </div>
 
+      {modelHistory.length > 0 && (
+        <aside className="sketch-model-history" aria-label="Model history">
+          <div className="sketch-model-history-head">
+            <span>MODEL HISTORY</span>
+            <small>{modelHistory.length}</small>
+          </div>
+          <div className="sketch-model-history-list">
+            {modelHistory.map((entry) => (
+              <button key={entry.id} type="button" onClick={() => selectHistoryEntry(entry)} className={(entry.kind === "feature" && entry.featureId === selectedFeatureId) || (entry.kind === "edge" && selectedEdge?.solidId === entry.solidId && selectedEdge?.edgeIndex === entry.edgeIndex && (selectedEdge?.edgeType || "top") === (entry.edgeType || "top")) || (entry.kind === "extrude" && selectedSolidId === entry.solidId && !selectedFeatureId && !selectedEdge) ? "active" : ""}>
+                <span>{entry.label}</span>
+                <strong>{entry.value}</strong>
+              </button>
+            ))}
+          </div>
+        </aside>
+      )}
+
       <div className="sketch-adaptive-bar">
         <div className="sketch-adaptive-copy">
           <span>
-            {profile
-              ? "CLOSED PROFILE"
-              : selected
-                ? entityName(
-                    selected
-                  )
-                : tool.toUpperCase()}
+            {selectedEdge
+              ? `${edgeTreatmentMode.toUpperCase()} · ${(selectedEdge.edgeType || "top").toUpperCase()} EDGE ${selectedEdge.edgeIndex + 1}`
+              : selectedFeature
+              ? `${selectedFeature.mode === 'cut' ? 'POCKET' : 'BOSS'} · FEATURE`
+              : selectedSolid
+                ? `3D BODY · ${selectedSolidFace.type === 'top' ? 'TOP FACE' : `SIDE ${selectedSolidFace.index + 1}`}`
+              : profile
+                ? "CLOSED PROFILE"
+                : selected
+                  ? entityName(selected)
+                  : tool.toUpperCase()}
           </span>
 
           <strong>
-            {profile
-              ? profile.label
-              : tool === "line" &&
-                  lineStart
-                ? "Tap next point · close the loop to create a profile"
-                : tool === "arc"
-                  ? "Center → start → end"
-                  : tool === "spline"
-                    ? "Draw freely with Apple Pencil"
-                    : "Select geometry for adaptive actions"}
+            {selectedEdge
+              ? "Choose FILLET or CHAMFER · edit the radius/distance non-destructively"
+              : selectedFeature
+              ? "Drag the feature arrow to edit depth · cross the face to switch add/cut"
+              : selectedSolid
+                ? selectedSolidFace.type === 'top'
+                  ? "Drag the arrow to push/pull · tap the face again to sketch"
+                  : "Tap the side again to sketch · face snapping is automatic"
+              : profile
+                ? selected?.faceSketch
+                  ? `${profile.label} · pull UP to add · pull DOWN to cut`
+                  : `${profile.label} · pull the face to create a body`
+                : tool === "line" && lineStart
+                  ? "Tap next point · close the loop to create a profile"
+                  : tool === "arc"
+                    ? "Center → start → end"
+                    : tool === "spline"
+                      ? "Draw freely with Apple Pencil"
+                      : "Select geometry for adaptive actions"}
           </strong>
         </div>
 
-        {profile ? (
+        {selectedEdge && selectedSolid ? (
+          <div className="sketch-extrude-control sketch-edge-control">
+            <div className="sketch-segmented-control">
+              <button type="button" className={edgeTreatmentMode === "chamfer" ? "active" : ""} onClick={() => applyEdgeTreatment("chamfer", edgeTreatmentAmount)}>CHAMFER</button>
+              <button type="button" className={edgeTreatmentMode === "fillet" ? "active" : ""} onClick={() => applyEdgeTreatment("fillet", edgeTreatmentAmount)}>FILLET</button>
+            </div>
+            <label>
+              <span>{edgeTreatmentMode === "fillet" ? "RADIUS" : "DISTANCE"}</span>
+              <input type="number" min="0.25" max="50" step="0.25" value={edgeTreatmentAmount} onChange={(event) => { const value = clamp(event.target.value, 0.25, 50); setEdgeTreatmentAmount(value); applyEdgeTreatment(edgeTreatmentMode, value); }} />
+              <small>MM</small>
+            </label>
+            <div className="sketch-edge-drag-tip">DRAG THE HIGHLIGHTED EDGE SIDEWAYS TO SET SIZE</div>
+            <button type="button" className="sketch-secondary-action" onClick={() => setSelectedEdge(null)}>DONE</button>
+          </div>
+        ) : selectedFeature && selectedSolid ? (
+          <div className="sketch-extrude-control">
+            <label>
+              <span>DEPTH</span>
+              <input
+                type="number"
+                min="-500"
+                max="500"
+                step="0.5"
+                value={selectedFeature.depth}
+                onChange={(event) => {
+                  const depth = clamp(event.target.value, -500, 500);
+                  const safeDepth = Math.abs(depth) < 0.5 ? (depth < 0 ? -0.5 : 0.5) : depth;
+                  setExtrusionHeight(safeDepth);
+                  setDraftSolids((current) => current.map((solid) =>
+                    solid.id === selectedSolid.id
+                      ? {
+                          ...solid,
+                          features: (solid.features || []).map((feature) =>
+                            feature.id === selectedFeature.id
+                              ? { ...feature, depth: safeDepth, mode: safeDepth < 0 ? 'cut' : 'add' }
+                              : feature
+                          ),
+                        }
+                      : solid
+                  ));
+                }}
+              />
+              <small>MM</small>
+            </label>
+            <button type="button" className="sketch-secondary-action" onClick={() => setSelectedFeatureId(null)}>DONE</button>
+            <button type="button" disabled={creatingSolid || objectCount >= maxObjects} onClick={() => sendSolidToStudio(selectedSolid)}>
+              {creatingSolid ? "BUILDING…" : "SEND TO STUDIO"}
+            </button>
+          </div>
+        ) : selectedSolid ? (
+          <div className="sketch-extrude-control">
+            <label>
+              <span>HEIGHT</span>
+              <input
+                type="number"
+                min="0.5"
+                max="500"
+                step="0.5"
+                value={selectedSolid.height}
+                onChange={(event) => {
+                  const height = clamp(event.target.value, 0.5, 500);
+                  setExtrusionHeight(height);
+                  setDraftSolids((current) => current.map((solid) =>
+                    solid.id === selectedSolid.id ? { ...solid, height } : solid
+                  ));
+                }}
+              />
+              <small>MM</small>
+            </label>
+            <button
+              type="button"
+              className="sketch-secondary-action"
+              onClick={sketchOnSelectedFace}
+            >
+              START FACE SKETCH
+            </button>
+            <button
+              type="button"
+              className="sketch-secondary-action"
+              onClick={() => {
+                setOrbitAngle((value) => value >= 155 ? 25 : value + 32);
+                setOrbitElevation((value) => value >= 68 ? 28 : value + 10);
+              }}
+            >
+              ORBIT VIEW
+            </button>
+            <button
+              type="button"
+              disabled={creatingSolid || objectCount >= maxObjects}
+              onClick={() => sendSolidToStudio(selectedSolid)}
+            >
+              {creatingSolid ? "BUILDING…" : "SEND TO STUDIO"}
+            </button>
+          </div>
+        ) : profile ? (
           <div className="sketch-extrude-control">
             <label>
               <span>
@@ -4081,7 +5127,7 @@ function SketchWorkspace({
               </span>
               <input
                 type="number"
-                min="0.5"
+                min={selected?.faceSketch ? "-500" : "0.5"}
                 max="500"
                 step="0.5"
                 value={
@@ -4094,7 +5140,7 @@ function SketchWorkspace({
                     clamp(
                       event.target
                         .value,
-                      0.5,
+                      selected?.faceSketch ? -500 : 0.5,
                       500
                     )
                   )
@@ -4110,7 +5156,8 @@ function SketchWorkspace({
               disabled={
                 creatingSolid ||
                 objectCount >=
-                  maxObjects
+                  maxObjects ||
+                Boolean(selected?.faceSketch)
               }
               onClick={
                 extrudeProfile
@@ -4118,7 +5165,9 @@ function SketchWorkspace({
             >
               {creatingSolid
                 ? "BUILDING…"
-                : "CREATE 3D → STUDIO"}
+                : selected?.faceSketch
+                  ? "DRAG ARROW TO APPLY"
+                  : "CREATE 3D BODY"}
             </button>
           </div>
         ) : (

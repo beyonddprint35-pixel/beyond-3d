@@ -7546,6 +7546,230 @@ function BeyondCreator() {
     );
   }
 
+  function createSketchHorizontalEdgeCutGeometry(points, edgeIndex, amountMm, mode, boundaryZ, edgeType = "top") {
+    if (!Array.isArray(points) || points.length < 3) return null;
+
+    const index = Math.max(0, Math.min(Number(edgeIndex) || 0, points.length - 1));
+    const a = points[index];
+    const b = points[(index + 1) % points.length];
+    if (!a || !b) return null;
+
+    const ax = Number(a[0]) * SCENE_SCALE;
+    const ay = Number(a[1]) * SCENE_SCALE;
+    const bx = Number(b[0]) * SCENE_SCALE;
+    const by = Number(b[1]) * SCENE_SCALE;
+    const dx = bx - ax;
+    const dy = by - ay;
+    const length = Math.hypot(dx, dy);
+    if (length < 0.00001) return null;
+
+    const ex = dx / length;
+    const ey = dy / length;
+    const signedArea = points.reduce((total, point, pointIndex) => {
+      const next = points[(pointIndex + 1) % points.length];
+      return total + Number(point[0]) * Number(next[1]) - Number(next[0]) * Number(point[1]);
+    }, 0) / 2;
+    const nx = signedArea >= 0 ? -ey : ey;
+    const ny = signedArea >= 0 ? ex : -ex;
+    const amount = Math.max(0.001, Number(amountMm) * SCENE_SCALE);
+    const epsilon = Math.max(0.00002, amount * 0.002);
+    const zSign = edgeType === "bottom" ? 1 : -1;
+    const outsideZ = boundaryZ - zSign * epsilon;
+    const insideZ = boundaryZ + zSign * amount;
+
+    let crossSection;
+    if (mode === "fillet") {
+      const segments = 12;
+      crossSection = [
+        [0, outsideZ],
+        [-epsilon, insideZ],
+      ];
+      for (let i = 0; i <= segments; i += 1) {
+        const theta = Math.PI - (Math.PI / 2) * (i / segments);
+        const n = amount + Math.cos(theta) * amount;
+        const z = boundaryZ + zSign * (amount - Math.sin(theta) * amount);
+        crossSection.push([n, z]);
+      }
+    } else {
+      crossSection = [
+        [-epsilon, outsideZ],
+        [-epsilon, insideZ],
+        [amount, outsideZ],
+      ];
+    }
+
+    const count = crossSection.length;
+    const positions = [];
+    const indices = [];
+    const s0 = -epsilon;
+    const s1 = length + epsilon;
+    const pushVertex = (sAlong, nIn, z) => {
+      positions.push(
+        ax + ex * sAlong + nx * nIn,
+        ay + ey * sAlong + ny * nIn,
+        z
+      );
+    };
+
+    for (const [nIn, z] of crossSection) pushVertex(s0, nIn, z);
+    for (const [nIn, z] of crossSection) pushVertex(s1, nIn, z);
+    for (let i = 1; i < count - 1; i += 1) {
+      indices.push(0, i + 1, i);
+      indices.push(count, count + i, count + i + 1);
+    }
+    for (let i = 0; i < count; i += 1) {
+      const j = (i + 1) % count;
+      indices.push(i, j, count + j);
+      indices.push(i, count + j, count + i);
+    }
+
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+    geometry.setIndex(indices);
+    geometry.computeVertexNormals();
+    geometry.computeBoundingBox();
+    geometry.computeBoundingSphere();
+    return geometry;
+  }
+
+  function createSketchVerticalEdgeCutGeometry(points, edgeIndex, amountMm, mode, minZ, maxZ) {
+    if (!Array.isArray(points) || points.length < 3) return null;
+    const count = points.length;
+    const index = ((Number(edgeIndex) || 0) % count + count) % count;
+    const prev = points[(index - 1 + count) % count];
+    const corner = points[index];
+    const next = points[(index + 1) % count];
+    if (!prev || !corner || !next) return null;
+
+    const c = { x: Number(corner[0]) * SCENE_SCALE, y: Number(corner[1]) * SCENE_SCALE };
+    const p = { x: Number(prev[0]) * SCENE_SCALE, y: Number(prev[1]) * SCENE_SCALE };
+    const n = { x: Number(next[0]) * SCENE_SCALE, y: Number(next[1]) * SCENE_SCALE };
+    const pv = { x: p.x - c.x, y: p.y - c.y };
+    const nv = { x: n.x - c.x, y: n.y - c.y };
+    const pl = Math.hypot(pv.x, pv.y);
+    const nl = Math.hypot(nv.x, nv.y);
+    if (pl < 0.00001 || nl < 0.00001) return null;
+    const up = { x: pv.x / pl, y: pv.y / pl };
+    const un = { x: nv.x / nl, y: nv.y / nl };
+    const amount = Math.min(
+      Math.max(0.001, Number(amountMm) * SCENE_SCALE),
+      Math.max(0.001, Math.min(pl, nl) * 0.46)
+    );
+    const tangentPrev = { x: c.x + up.x * amount, y: c.y + up.y * amount };
+    const tangentNext = { x: c.x + un.x * amount, y: c.y + un.y * amount };
+
+    const section = [c, tangentPrev];
+    if (mode === "fillet") {
+      const segments = 12;
+      for (let i = 1; i < segments; i += 1) {
+        const t = i / segments;
+        const mt = 1 - t;
+        // Quadratic arc from one tangent to the other, biased toward the original corner.
+        section.push({
+          x: mt * mt * tangentPrev.x + 2 * mt * t * c.x + t * t * tangentNext.x,
+          y: mt * mt * tangentPrev.y + 2 * mt * t * c.y + t * t * tangentNext.y,
+        });
+      }
+    }
+    section.push(tangentNext);
+
+    const z0 = minZ - Math.max(0.00002, amount * 0.002);
+    const z1 = maxZ + Math.max(0.00002, amount * 0.002);
+    const positions = [];
+    const indices = [];
+    section.forEach((point) => positions.push(point.x, point.y, z0));
+    section.forEach((point) => positions.push(point.x, point.y, z1));
+    const m = section.length;
+    for (let i = 1; i < m - 1; i += 1) {
+      indices.push(0, i + 1, i);
+      indices.push(m, m + i, m + i + 1);
+    }
+    for (let i = 0; i < m; i += 1) {
+      const j = (i + 1) % m;
+      indices.push(i, j, m + j);
+      indices.push(i, m + j, m + i);
+    }
+
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+    geometry.setIndex(indices);
+    geometry.computeVertexNormals();
+    geometry.computeBoundingBox();
+    geometry.computeBoundingSphere();
+    return geometry;
+  }
+
+  async function applySketchEdgeTreatments(workingGeometry, sketch) {
+    const treatments = Array.isArray(sketch.edgeTreatments)
+      ? sketch.edgeTreatments.filter((item) => Number(item?.amount) > 0)
+      : [];
+    if (!treatments.length) return workingGeometry;
+
+    let workingMesh = new THREE.Mesh(
+      workingGeometry,
+      new THREE.MeshStandardMaterial({ color: materialColor("navy") })
+    );
+    workingMesh.updateMatrix();
+    workingMesh.updateMatrixWorld(true);
+
+    for (const treatment of treatments) {
+      workingMesh.geometry.computeBoundingBox?.();
+      const box = workingMesh.geometry.boundingBox;
+      if (!box) continue;
+
+      const maxSafe = Math.max(
+        0.05,
+        Math.min(
+          Number(sketch.height) * 0.48,
+          50
+        )
+      );
+      const amountMm = Math.min(Math.max(0.05, Number(treatment.amount) || 0), maxSafe);
+      const edgeType = treatment.edgeType || "top";
+      const cutterGeometry = edgeType === "vertical"
+        ? createSketchVerticalEdgeCutGeometry(
+            sketch.points,
+            treatment.edgeIndex,
+            amountMm,
+            treatment.mode === "fillet" ? "fillet" : "chamfer",
+            box.min.z,
+            box.max.z
+          )
+        : createSketchHorizontalEdgeCutGeometry(
+            sketch.points,
+            treatment.edgeIndex,
+            amountMm,
+            treatment.mode === "fillet" ? "fillet" : "chamfer",
+            edgeType === "bottom" ? box.min.z : box.max.z,
+            edgeType
+          );
+      if (!cutterGeometry) continue;
+
+      const cutterMesh = new THREE.Mesh(
+        cutterGeometry,
+        new THREE.MeshStandardMaterial({ color: materialColor("navy") })
+      );
+      cutterMesh.updateMatrix();
+      cutterMesh.updateMatrixWorld(true);
+
+      try {
+        const nextMesh = CSG.subtract(workingMesh, cutterMesh);
+        nextMesh.updateMatrix();
+        if (workingMesh.geometry !== workingGeometry) workingMesh.geometry.dispose?.();
+        workingMesh.material?.dispose?.();
+        cutterMesh.geometry?.dispose?.();
+        cutterMesh.material?.dispose?.();
+        workingMesh = nextMesh;
+      } catch (error) {
+        console.warn("Sketch edge treatment failed:", treatment, error);
+        cutterMesh.geometry?.dispose?.();
+        cutterMesh.material?.dispose?.();
+      }
+    }
+
+    return workingMesh.geometry;
+  }
+
   async function createSketchSolid(
     sketch
   ) {
@@ -7575,29 +7799,144 @@ function BeyondCreator() {
 
     recordHistory();
 
+    let workingGeometry = result.geometry;
+
+    if (Array.isArray(sketch.features) && sketch.features.length) {
+      let workingMesh = new THREE.Mesh(
+        workingGeometry,
+        new THREE.MeshStandardMaterial({ color: materialColor("navy") })
+      );
+      workingMesh.updateMatrix();
+      workingMesh.updateMatrixWorld(true);
+
+      for (const feature of sketch.features) {
+        if (!feature?.points?.length || Math.abs(Number(feature.depth) || 0) < 0.5) continue;
+
+        const featureResult = await createExtrudedSketchGeometry(
+          feature.points,
+          {
+            height: Math.abs(feature.depth),
+            twistDegrees: 0,
+            scaleTop: 1,
+            sceneScale: SCENE_SCALE,
+          }
+        );
+
+        workingMesh.geometry.computeBoundingBox?.();
+        const baseBox = workingMesh.geometry.boundingBox;
+        if (!baseBox) {
+          featureResult.geometry.dispose?.();
+          continue;
+        }
+
+        const epsilon = 0.00001;
+
+        if (feature.faceType === "side") {
+          const sideIndex = Math.max(0, Math.min(
+            Number(feature.faceIndex) || 0,
+            Math.max(0, sketch.points.length - 1)
+          ));
+          const a = sketch.points[sideIndex];
+          const b = sketch.points[(sideIndex + 1) % sketch.points.length];
+          if (!a || !b) {
+            featureResult.geometry.dispose?.();
+            continue;
+          }
+
+          const dx = b[0] - a[0];
+          const dy = b[1] - a[1];
+          const edgeLength = Math.hypot(dx, dy);
+          if (edgeLength < 0.0001) {
+            featureResult.geometry.dispose?.();
+            continue;
+          }
+
+          const ex = dx / edgeLength;
+          const ey = dy / edgeLength;
+          const signedArea = sketch.points.reduce((total, point, index) => {
+            const next = sketch.points[(index + 1) % sketch.points.length];
+            return total + point[0] * next[1] - next[0] * point[1];
+          }, 0) / 2;
+          const nx = signedArea >= 0 ? ey : -ey;
+          const ny = signedArea >= 0 ? -ex : ex;
+          const direction = (feature.depth || 0) >= 0 ? 1 : -1;
+
+          const transform = new THREE.Matrix4();
+          transform.set(
+            ex, 0, nx * direction, a[0] * SCENE_SCALE - nx * direction * epsilon,
+            ey, 0, ny * direction, a[1] * SCENE_SCALE - ny * direction * epsilon,
+            0, 1, 0, baseBox.min.z,
+            0, 0, 0, 1
+          );
+          featureResult.geometry.applyMatrix4(transform);
+        }
+
+        featureResult.geometry.computeBoundingBox?.();
+        const toolBox = featureResult.geometry.boundingBox;
+        if (!toolBox) {
+          featureResult.geometry.dispose?.();
+          continue;
+        }
+
+        const toolMesh = new THREE.Mesh(
+          featureResult.geometry,
+          new THREE.MeshStandardMaterial({ color: materialColor("navy") })
+        );
+
+        if (feature.faceType !== "side") {
+          if ((feature.depth || 0) >= 0) {
+            toolMesh.position.z = baseBox.max.z - toolBox.min.z - epsilon;
+          } else {
+            toolMesh.position.z = baseBox.max.z - toolBox.max.z + epsilon;
+          }
+        }
+        toolMesh.updateMatrix();
+        toolMesh.updateMatrixWorld(true);
+
+        const nextMesh = (feature.depth || 0) >= 0
+          ? CSG.union(workingMesh, toolMesh)
+          : CSG.subtract(workingMesh, toolMesh);
+        nextMesh.updateMatrix();
+
+        if (workingMesh.geometry !== workingGeometry) {
+          workingMesh.geometry.dispose?.();
+        }
+        workingMesh.material?.dispose?.();
+        toolMesh.geometry?.dispose?.();
+        toolMesh.material?.dispose?.();
+        workingMesh = nextMesh;
+      }
+
+      workingGeometry = workingMesh.geometry;
+    }
+
+    if (Array.isArray(sketch.edgeTreatments) && sketch.edgeTreatments.length) {
+      workingGeometry = await applySketchEdgeTreatments(workingGeometry, sketch);
+    }
+
     if (
       sketch.plane ===
       "front"
     ) {
-      result.geometry.rotateX(
+      workingGeometry.rotateX(
         Math.PI / 2
       );
     } else if (
       sketch.plane ===
       "right"
     ) {
-      result.geometry.rotateZ(
+      workingGeometry.rotateZ(
         -Math.PI / 2
       );
     }
 
-    result.geometry.computeVertexNormals?.();
-    result.geometry.computeBoundingBox?.();
-    result.geometry.computeBoundingSphere?.();
+    workingGeometry.computeVertexNormals?.();
+    workingGeometry.computeBoundingBox?.();
+    workingGeometry.computeBoundingSphere?.();
 
     const tempMesh =
       new THREE.Mesh(
-        result.geometry,
+        workingGeometry,
         new THREE.MeshStandardMaterial({
           color:
             materialColor(
@@ -7648,9 +7987,19 @@ function BeyondCreator() {
       sketchPlane:
         sketch.plane ||
         "top",
+      sketchFeatures:
+        (sketch.features || []).map((feature) => ({
+          ...feature,
+          points: feature.points?.map((point) => [point[0], point[1]]) || [],
+        })),
+      sketchEdgeTreatments:
+        (sketch.edgeTreatments || []).map((treatment) => ({
+          ...treatment,
+          amount: Number(treatment.amount) || 0,
+        })),
     };
 
-    result.geometry.dispose();
+    workingGeometry.dispose();
     disposeMesh(
       tempMesh
     );
