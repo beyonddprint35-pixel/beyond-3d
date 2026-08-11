@@ -17,6 +17,7 @@ import { supabase } from "../lib/supabaseClient";
 import beyondLogo from "../assets/beyond-logo-transparent.png";
 
 import "./Home.css";
+import "./HomeNavbarRefresh.css";
 
 function clamp(
   value,
@@ -59,8 +60,6 @@ function Home() {
     profile,
     setProfile,
   ] = useState(null);
-
-
 
   const [
     scrollProgress,
@@ -296,30 +295,34 @@ function Home() {
         <button
           className="home-brand"
           type="button"
+          aria-label="BEYOND — back to top"
           onClick={() =>
             scrollToSection("home")
           }
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "flex-start",
-            gap: "12px",
-          }}
         >
           <img
             src={beyondLogo}
-            alt="Beyond logo"
-            style={{
-              width: "42px",
-              height: "42px",
-              objectFit: "contain",
-              display: "block",
-              flexShrink: 0,
-            }}
+            alt=""
+            aria-hidden="true"
+            className="home-brand-logo"
           />
 
-          <span>
-            BEYOND
+          <span
+            className="home-brand-wordmark"
+            aria-label="BEYOND"
+          >
+            <span>B</span>
+
+            <span
+              className="home-brand-e"
+              aria-hidden="true"
+            >
+              <i />
+              <i />
+              <i />
+            </span>
+
+            <span>YOND</span>
           </span>
         </button>
 
@@ -329,6 +332,7 @@ function Home() {
               ? "home-nav-links open"
               : "home-nav-links"
           }
+          aria-label="Main sections"
         >
           <button
             type="button"
@@ -336,18 +340,30 @@ function Home() {
               scrollToSection("how")
             }
           >
-            How it works
+            <span className="home-nav-index">
+              01
+            </span>
+
+            <span className="home-nav-label">
+              How it works
+            </span>
           </button>
 
           <button
             type="button"
             onClick={() =>
               scrollToSection(
-                "reviews"
+                "creator"
               )
             }
           >
-            Reviews
+            <span className="home-nav-index">
+              02
+            </span>
+
+            <span className="home-nav-label">
+              Beyond Crafting
+            </span>
           </button>
 
           <button
@@ -358,7 +374,30 @@ function Home() {
               )
             }
           >
-            BEYOND AI Studio
+            <span className="home-nav-index">
+              03
+            </span>
+
+            <span className="home-nav-label">
+              Beyond AI
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() =>
+              scrollToSection(
+                "reviews"
+              )
+            }
+          >
+            <span className="home-nav-index">
+              04
+            </span>
+
+            <span className="home-nav-label">
+              Beyond Reviews
+            </span>
           </button>
 
           <button
@@ -369,18 +408,13 @@ function Home() {
               )
             }
           >
-            Start a project
-          </button>
+            <span className="home-nav-index">
+              05
+            </span>
 
-          <button
-            type="button"
-            onClick={() =>
-              scrollToSection(
-                "contact"
-              )
-            }
-          >
-            Contact
+            <span className="home-nav-label">
+              Beyond Order
+            </span>
           </button>
         </nav>
 
