@@ -1,7 +1,6 @@
 /* =========================================================
-   BEYOND CREATOR â€” SKETCH MODE (real 3D)
-   Direct-modeling canvas: WebGL, real orbit camera, real shaded
-   solids. Styled to sit alongside BeyondCreator's dark UI.
+   BEYOND CREATOR — SKETCH MODE V12
+   Direct-modeling workspace
 ========================================================= */
 
 .sketch3d-root {
@@ -20,6 +19,8 @@
     0 22px 70px rgba(0, 0, 0, 0.24);
   color: #dcecf6;
   font-family: inherit;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 /* ---------- top bar ---------- */
@@ -28,16 +29,19 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 14px;
-  border-bottom: 1px solid rgba(80, 151, 204, 0.16);
-  background: rgba(6, 18, 28, 0.85);
-  backdrop-filter: blur(6px);
+  min-height: 56px;
+  padding: 9px 12px 9px 14px;
+  border-bottom: 1px solid rgba(80, 151, 204, 0.15);
+  background: rgba(5, 16, 25, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   flex-shrink: 0;
+  z-index: 5;
 }
 
 .sketch3d-engine-pill {
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 750;
   letter-spacing: 0.08em;
   padding: 5px 10px;
   border-radius: 999px;
@@ -46,9 +50,20 @@
   white-space: nowrap;
 }
 
-.sketch3d-engine-ready { color: #7be0a0; background: rgba(60, 200, 130, 0.14); }
-.sketch3d-engine-loading { color: #ffd35c; background: rgba(255, 211, 92, 0.14); }
-.sketch3d-engine-fallback { color: #8fb8d6; background: rgba(80, 151, 204, 0.16); }
+.sketch3d-engine-ready {
+  color: #7be0a0;
+  background: rgba(60, 200, 130, 0.14);
+}
+
+.sketch3d-engine-loading {
+  color: #ffd35c;
+  background: rgba(255, 211, 92, 0.14);
+}
+
+.sketch3d-engine-fallback {
+  color: #8fb8d6;
+  background: rgba(80, 151, 204, 0.16);
+}
 
 .sketch3d-object-count {
   font-size: 11px;
@@ -68,37 +83,67 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
+  gap: 6px;
+  min-width: 34px;
   height: 34px;
+  padding: 0 9px;
   border-radius: 10px;
   border: 1px solid rgba(80, 151, 204, 0.22);
-  background: rgba(12, 28, 40, 0.7);
+  background: rgba(12, 28, 40, 0.74);
   color: #cfe4f2;
   cursor: pointer;
-  transition: background 0.15s ease, opacity 0.15s ease;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease,
+    opacity 0.15s ease;
 }
 
-.sketch3d-topbar-actions button:hover { background: rgba(63, 169, 255, 0.16); }
-.sketch3d-topbar-actions button:disabled { opacity: 0.35; cursor: default; }
+.sketch3d-topbar-actions button:hover:not(:disabled) {
+  background: rgba(63, 169, 255, 0.16);
+  border-color: rgba(81, 178, 255, 0.4);
+}
+
+.sketch3d-topbar-actions button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.sketch3d-topbar-actions button:disabled {
+  opacity: 0.32;
+  cursor: default;
+}
+
+.sketch3d-finish-btn {
+  width: auto !important;
+  padding: 0 12px !important;
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(46, 180, 111, 0.14) !important;
+  border-color: rgba(76, 213, 142, 0.32) !important;
+  color: #a8ecc8 !important;
+}
 
 .sketch3d-studio-btn {
   width: auto !important;
-  padding: 0 14px;
+  padding: 0 14px !important;
   font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
+  font-weight: 750;
+  letter-spacing: 0.035em;
   background: linear-gradient(180deg, #2d8fe0, #1f6fb8) !important;
   border-color: transparent !important;
   color: #fff !important;
 }
 
-/* ---------- canvas area ---------- */
+/* ---------- canvas ---------- */
 
 .sketch3d-canvas-wrap {
   position: relative;
   flex: 1;
   min-height: 0;
   touch-action: none;
+  background:
+    radial-gradient(circle at 50% 28%, rgba(32, 82, 116, 0.08), transparent 42%),
+    #020b12;
 }
 
 .sketch3d-canvas-wrap canvas {
@@ -106,35 +151,119 @@
   width: 100%;
   height: 100%;
   touch-action: none;
+  outline: none;
 }
 
-/* ---------- view cube ---------- */
+/* ---------- CAD tool rail ---------- */
+
+.sketch3d-toolrail {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px;
+  border: 1px solid rgba(80, 151, 204, 0.23);
+  border-radius: 14px;
+  background: rgba(5, 16, 25, 0.84);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.sketch3d-toolrail button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: #8eabc0;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.sketch3d-toolrail button span {
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%) translateX(-4px);
+  pointer-events: none;
+  opacity: 0;
+  padding: 6px 8px;
+  border-radius: 7px;
+  background: rgba(4, 13, 21, 0.95);
+  border: 1px solid rgba(80, 151, 204, 0.2);
+  color: #d8ebf7;
+  font-size: 11px;
+  white-space: nowrap;
+  transition: opacity 0.14s ease, transform 0.14s ease;
+}
+
+.sketch3d-toolrail button:hover span {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+.sketch3d-toolrail button:hover {
+  color: #e8f6ff;
+  background: rgba(63, 169, 255, 0.11);
+}
+
+.sketch3d-toolrail button.is-active {
+  color: #ffffff;
+  border-color: rgba(83, 178, 255, 0.45);
+  background: linear-gradient(
+    180deg,
+    rgba(63, 169, 255, 0.3),
+    rgba(63, 169, 255, 0.15)
+  );
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.025);
+}
+
+/* ---------- view controls ---------- */
 
 .sketch3d-viewcube {
   position: absolute;
-  top: 14px;
-  right: 14px;
+  top: 16px;
+  right: 16px;
   display: grid;
-  grid-template-columns: repeat(2, 56px);
+  grid-template-columns: repeat(2, 54px);
   gap: 6px;
-  z-index: 3;
+  z-index: 4;
 }
 
 .sketch3d-viewcube button {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  padding: 8px 0;
+  min-height: 32px;
+  padding: 7px 0;
   border-radius: 8px;
-  border: 1px solid rgba(80, 151, 204, 0.28);
-  background: rgba(6, 18, 28, 0.72);
-  color: #b9d4e6;
+  border: 1px solid rgba(80, 151, 204, 0.26);
+  background: rgba(5, 16, 25, 0.78);
+  color: #a9c9de;
+  font-size: 9.5px;
+  font-weight: 750;
+  letter-spacing: 0.065em;
   cursor: pointer;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition:
+    background 0.14s ease,
+    color 0.14s ease,
+    border-color 0.14s ease;
 }
 
 .sketch3d-viewcube button:hover {
-  background: rgba(63, 169, 255, 0.2);
+  background: rgba(63, 169, 255, 0.17);
+  border-color: rgba(63, 169, 255, 0.42);
   color: #fff;
 }
 
@@ -146,53 +275,70 @@
   gap: 5px;
 }
 
-/* ---------- floating context toolbar ---------- */
+/* ---------- floating adaptive toolbar ---------- */
 
 .sketch3d-floating-toolbar {
   position: absolute;
   left: 50%;
   bottom: 18px;
   transform: translateX(-50%);
-  z-index: 3;
-  width: min(94%, 640px);
+  z-index: 5;
+  width: min(94%, 840px);
+  pointer-events: none;
 }
 
 .sketch3d-context-bar {
+  pointer-events: auto;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
+  gap: 9px;
+  min-height: 48px;
+  padding: 9px 11px 9px 14px;
   border-radius: 14px;
-  border: 1px solid rgba(80, 151, 204, 0.3);
-  background: rgba(6, 18, 28, 0.86);
-  backdrop-filter: blur(8px);
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(80, 151, 204, 0.29);
+  background: rgba(5, 16, 25, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow:
+    0 16px 44px rgba(0, 0, 0, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.025);
 }
 
-.sketch3d-context-bar span {
-  font-size: 12.5px;
-  color: #9fc2da;
+.sketch3d-context-bar > span {
   flex: 1;
   min-width: 0;
+  color: #9fc2da;
+  font-size: 12.5px;
+  line-height: 1.3;
 }
 
 .sketch3d-context-bar button {
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 5px;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 8px 12px;
+  min-height: 32px;
+  padding: 7px 11px;
   border-radius: 9px;
   border: 1px solid rgba(80, 151, 204, 0.3);
-  background: rgba(63, 169, 255, 0.12);
+  background: rgba(63, 169, 255, 0.1);
   color: #d7ebfa;
+  font-size: 11.5px;
+  font-weight: 650;
   cursor: pointer;
+  transition: background 0.14s ease, border-color 0.14s ease;
 }
 
-.sketch3d-context-bar button:hover { background: rgba(63, 169, 255, 0.26); }
-.sketch3d-context-bar button:disabled { opacity: 0.35; cursor: default; }
+.sketch3d-context-bar button:hover:not(:disabled) {
+  background: rgba(63, 169, 255, 0.23);
+  border-color: rgba(79, 177, 255, 0.5);
+}
+
+.sketch3d-context-bar button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
 
 .sketch3d-context-bar .sketch3d-primary {
   background: linear-gradient(180deg, #2d8fe0, #1f6fb8);
@@ -200,71 +346,233 @@
   color: #fff;
 }
 
-.sketch3d-context-bar-edge { flex-wrap: wrap; }
+.sketch3d-context-bar-edge {
+  flex-wrap: wrap;
+}
+
+.sketch3d-context-bar-profile {
+  width: 100%;
+}
+
+/* ---------- numeric CAD input ---------- */
+
+.sketch3d-numeric-pull {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.sketch3d-numeric-pull input {
+  width: 84px;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid rgba(90, 172, 229, 0.32);
+  border-radius: 8px;
+  outline: none;
+  background: rgba(255, 255, 255, 0.055);
+  color: #edf8ff;
+  font: inherit;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.sketch3d-numeric-pull input:focus {
+  border-color: rgba(63, 169, 255, 0.72);
+  box-shadow: 0 0 0 3px rgba(63, 169, 255, 0.1);
+}
+
+.sketch3d-numeric-pull > span {
+  color: #6f8ba1;
+  font-size: 11px;
+}
 
 .sketch3d-amount-stepper {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 4px 8px;
+  gap: 7px;
+  padding: 3px 6px;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.045);
   font-size: 12px;
   font-variant-numeric: tabular-nums;
 }
 
 .sketch3d-amount-stepper button {
-  width: 22px;
-  height: 22px;
+  width: 25px;
+  min-height: 25px;
   padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   border-radius: 6px;
+}
+
+.sketch3d-amount-stepper span {
+  min-width: 54px;
+  text-align: center;
+  color: #d9ecf8;
 }
 
 /* ---------- overlays ---------- */
 
 .sketch3d-busy {
   position: absolute;
-  top: 14px;
-  left: 14px;
-  z-index: 3;
-  font-size: 11px;
-  letter-spacing: 0.05em;
-  padding: 6px 12px;
+  top: 76px;
+  left: 16px;
+  z-index: 6;
+  padding: 7px 12px;
   border-radius: 999px;
   background: rgba(63, 169, 255, 0.18);
   color: #cfe6fb;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
 }
 
 .sketch3d-toast {
   position: absolute;
-  top: 14px;
+  top: 16px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 4;
-  font-size: 12px;
-  font-weight: 600;
+  z-index: 7;
+  max-width: min(78%, 520px);
   padding: 8px 16px;
   border-radius: 999px;
-  background: rgba(20, 40, 30, 0.9);
-  border: 1px solid rgba(123, 224, 160, 0.35);
+  border: 1px solid rgba(123, 224, 160, 0.34);
+  background: rgba(18, 41, 29, 0.93);
   color: #bdf2cf;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+  font-size: 12px;
+  font-weight: 650;
+  text-align: center;
   animation: sketch3d-toast-in 0.18s ease;
 }
 
 @keyframes sketch3d-toast-in {
-  from { opacity: 0; transform: translate(-50%, -6px); }
-  to { opacity: 1; transform: translate(-50%, 0); }
+  from {
+    opacity: 0;
+    transform: translate(-50%, -6px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
 }
 
-@media (max-width: 720px) {
+/* ---------- tablet / mobile ---------- */
+
+@media (max-width: 900px) {
+  .sketch3d-root {
+    min-height: 660px;
+    height: 80dvh;
+    border-radius: 16px;
+  }
+
+  .sketch3d-topbar {
+    gap: 7px;
+    padding-inline: 10px;
+  }
+
+  .sketch3d-object-count {
+    display: none;
+  }
+
+  .sketch3d-topbar-actions {
+    gap: 4px;
+  }
+
+  .sketch3d-topbar-actions button {
+    min-width: 32px;
+    height: 32px;
+    padding-inline: 8px;
+  }
+
+  .sketch3d-studio-btn {
+    padding-inline: 10px !important;
+  }
+
   .sketch3d-viewcube {
     grid-template-columns: repeat(2, 48px);
   }
 
-  .sketch3d-context-bar span {
+  .sketch3d-context-bar {
+    flex-wrap: wrap;
+  }
+
+  .sketch3d-context-bar > span {
+    flex-basis: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .sketch3d-root {
+    min-height: 600px;
+    height: 82dvh;
+    margin-top: 8px;
+  }
+
+  .sketch3d-engine-pill {
+    display: none;
+  }
+
+  .sketch3d-finish-btn {
+    font-size: 0;
+    width: 34px !important;
+    padding: 0 !important;
+  }
+
+  .sketch3d-finish-btn svg {
+    margin: 0;
+  }
+
+  .sketch3d-studio-btn {
+    font-size: 11px;
+  }
+
+  .sketch3d-toolrail {
+    top: 12px;
+    left: 10px;
+    flex-direction: row;
+  }
+
+  .sketch3d-toolrail button {
+    width: 38px;
+    height: 38px;
+  }
+
+  .sketch3d-toolrail button span {
+    display: none;
+  }
+
+  .sketch3d-viewcube {
+    top: 62px;
+    right: 10px;
+    grid-template-columns: repeat(2, 44px);
+  }
+
+  .sketch3d-viewcube button {
+    min-height: 29px;
+    font-size: 8.5px;
+  }
+
+  .sketch3d-floating-toolbar {
+    bottom: 10px;
+    width: calc(100% - 20px);
+  }
+
+  .sketch3d-context-bar {
+    gap: 7px;
+    padding: 9px;
+    border-radius: 12px;
+  }
+
+  .sketch3d-context-bar > span {
     font-size: 11.5px;
+  }
+
+  .sketch3d-numeric-pull {
+    flex: 1;
+  }
+
+  .sketch3d-numeric-pull input {
+    width: 72px;
   }
 }
