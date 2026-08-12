@@ -1,69 +1,24 @@
-import openCascadeFactory from "opencascade.js/dist/opencascade.full.js";
-import openCascadeWasmUrl from "opencascade.js/dist/opencascade.full.wasm?url";
+/* ======================================================================
+   BEYOND CREATOR — OPENCASCADE LOADER
+   TEMPORARY DEPLOY-SAFE FALLBACK
 
-import { createOpenCascadeKernelAdapter } from "./OpenCascadeKernelAdapter";
+   Native OpenCascade loading is intentionally disabled for now.
+   SketchWorkspace will automatically continue with the mesh/CSG fallback.
+   We will restore the BRep loader when development resumes.
+   ====================================================================== */
 
 let initPromise = null;
-let cachedOc = null;
-let cachedAdapter = null;
 
-export async function initializeBeyondOpenCascade(options = {}) {
-  if (cachedOc && cachedAdapter) {
-    return {
-      oc: cachedOc,
-      adapter: cachedAdapter,
-      reused: true,
-    };
-  }
+export function initializeBeyondOpenCascade() {
+  if (initPromise) return initPromise;
 
-  if (initPromise) {
-    return initPromise;
-  }
-
-  initPromise = (async () => {
-    try {
-      const oc = await openCascadeFactory({
-        locateFile(path) {
-          if (path.endsWith(".wasm")) {
-            return openCascadeWasmUrl;
-          }
-
-          return path;
-        },
-      });
-
-      const adapter = createOpenCascadeKernelAdapter(oc, options);
-
-      cachedOc = oc;
-      cachedAdapter = adapter;
-
-      return {
-        oc,
-        adapter,
-        reused: false,
-      };
-    } catch (error) {
-      console.error("[Beyond CAD] OpenCascade initialization failed:", error);
-
-      initPromise = null;
-
-      throw error;
-    }
-  })();
+  initPromise = Promise.reject(
+    new Error("OpenCascade temporarily disabled — mesh fallback active")
+  );
 
   return initPromise;
 }
 
-export function getBeyondOpenCascadeInstance() {
-  return cachedOc;
-}
-
-export function getBeyondOpenCascadeAdapter() {
-  return cachedAdapter;
-}
-
 export function resetBeyondOpenCascade() {
-  cachedOc = null;
-  cachedAdapter = null;
   initPromise = null;
 }
