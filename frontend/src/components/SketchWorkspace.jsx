@@ -24,7 +24,7 @@ import { solveSketchConstraints, sketchConstraintStatus } from "./ConstraintSolv
 import "./SketchWorkspace.css";
 
 /* ======================================================================
-   BEYOND CREATOR — SKETCH MODE V29
+   BEYOND CREATOR — SKETCH MODE V30
    ----------------------------------------------------------------------
    Direct-modeling interaction layer inspired by tablet CAD workflows.
 
@@ -103,11 +103,28 @@ import "./SketchWorkspace.css";
    - advanced tool dispatch routed through the active kernel contract
    - OpenCascade adapter template kept out of the build until the project bundler is configured for WASM
 
-   V29 adds:
+   V28 adds:
    - continuous Pencil stroke capture with automatic line/circle/arc/profile recognition
    - live stroke classification feedback while drawing
    - smart freehand closed-profile creation and inferred H/V constraints
    - Pencil tool keeps finger navigation separate from sketch input
+
+   V29 adds:
+   - lightweight constraint solving and endpoint coincidence repair
+   - fixed / parallel / perpendicular / equal sketch relations
+   - midpoint snapping and constraint status feedback
+
+   V30 adds:
+   - Shapr-style one-gesture profile pull: press/drag a closed profile to extrude it
+   - Shapr-style one-gesture face offset: Pencil/mouse press-drag directly on a face
+   - finger tap selects faces/profiles while finger drag stays camera navigation-first
+   - explicit pull gizmos accept touch, Pencil and mouse with larger tablet hit targets
+   - modeling drags temporarily own the pointer so OrbitControls cannot jitter the camera
+   - newly closed profiles become active immediately and show the pull manipulator
+   - newly created extrusions keep their resulting cap selected for continuous modeling
+   - filled side-face preselection/selection instead of outline-only feedback
+   - rAF-throttled high-frequency pull updates for smoother iPad/Pencil interaction
+   - explicit one-finger orbit / two-finger dolly-pan navigation mapping
 
    V19 adds:
    - actual OpenCascade.js loader and initialized BRep backend registration
@@ -124,9 +141,13 @@ const MIN_FEATURE_MM = 0.5;
 const SNAP_MM = 2.2;
 const GRID_MM = 1;
 const CIRCLE_SEGMENTS = 48;
-const PREVIEW_KERNEL = "Hybrid topology fallback V29";
+const PREVIEW_KERNEL = "Hybrid topology fallback V30";
 const SMART_STROKE_MIN_MM = 3;
 const SMART_LINE_TOLERANCE_MM = 1.4;
+const DIRECT_DRAG_STEP_MM = 0.1;
+const TOUCH_DRAG_STEP_MM = 0.5;
+const TOUCH_TAP_MAX_PX = 10;
+const TOUCH_TAP_MAX_MS = 360;
 
 const KERNEL_CAPABILITIES = Object.freeze({
   persistentTopology: true,
@@ -319,6 +340,39 @@ function topologyFaceId(face) {
     return `face:feature:${face.featureId}:cap`;
   }
   return null;
+}
+
+function baseTopSelectionFace() {
+  return { topologyId: "face:base:top", type: "cap", index: null, source: "base" };
+}
+
+function featureCapSelectionFace(feature) {
+  if (!feature?.id) return null;
+  return {
+    topologyId: `face:feature:${feature.id}:cap`,
+    type: "feature-cap",
+    featureId: feature.id,
+    faceType: feature.faceType,
+    faceIndex: feature.faceIndex ?? null,
+    source: "feature",
+  };
+}
+
+function keepFaceSelected(state, face) {
+  if (!face) return state;
+  const id = topologyFaceId(face);
+  return {
+    ...state,
+    selectedFace: face,
+    selectedFaceIds: id ? [id] : [],
+    selectedEdgeKey: null,
+    selectedEdgeMeta: null,
+    selectedBody: false,
+    activeTool: "select",
+    numericValue: "5",
+    hoveredFace: null,
+    hoveredEdgeKey: null,
+  };
 }
 
 function topologyFacesForDraft(draft) {
@@ -1047,6 +1101,28 @@ function isTouchPointer(event) {
   return event?.pointerType === "touch" || event?.nativeEvent?.pointerType === "touch";
 }
 
+function pointerTypeOf(event) {
+  return event?.pointerType || event?.nativeEvent?.pointerType || "mouse";
+}
+
+function quantizeDragMM(value, event) {
+  const step = isTouchPointer(event) ? TOUCH_DRAG_STEP_MM : DIRECT_DRAG_STEP_MM;
+  return Math.round(value / step) * step;
+}
+
+function pointerClientPoint(event) {
+  return {
+    x: Number(event?.clientX ?? event?.nativeEvent?.clientX ?? 0),
+    y: Number(event?.clientY ?? event?.nativeEvent?.clientY ?? 0),
+  };
+}
+
+function pointerTravelPx(start, event) {
+  if (!start) return Infinity;
+  const point = pointerClientPoint(event);
+  return Math.hypot(point.x - start.x, point.y - start.y);
+}
+
 function usePlaneRaycast() {
   const { camera, gl, raycaster } = useThree();
 
@@ -1379,7 +1455,7 @@ function CameraRig({ requestRef, controlsRef }) {
   return null;
 }
 
-function SketchPlaneSurface({ plane, onPointerDown, onPointerMove, onPointerUp, onPointerLeave }) {
+function SketchPlaneSurface({ plane, onPointerDown, onPointerMove, onPointerUp, onPointerCancel, onPointerLeave }) {
   const groupRef = useRef(null);
 
   useEffect(() => {
@@ -1394,6 +1470,7 @@ function SketchPlaneSurface({ plane, onPointerDown, onPointerMove, onPointerUp, 
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
+        onPointerCancel={onPointerCancel}
         onPointerLeave={onPointerLeave}
       >
         <planeGeometry args={[24, 24]} />
@@ -1595,11 +1672,21 @@ function SnapMarker({ plane, hoverPoint }) {
   );
 }
 
-function ProfileRegion({ plane, profile, selected, selectable = true, onSelect }) {
+function ProfileRegion({
+  plane,
+  profile,
+  selected,
+  selectable = true,
+  onSelect,
+  onDirectPointerDown = null,
+  onDirectPointerMove = null,
+  onDirectPointerUp = null,
+}) {
   const geometry = useMemo(
     () => flatWorldGeometry(profile.points, plane, 0.025),
     [profile.points, plane]
   );
+  const touchTapRef = useRef(null);
 
   useEffect(() => () => geometry.dispose(), [geometry]);
 
@@ -1607,9 +1694,64 @@ function ProfileRegion({ plane, profile, selected, selectable = true, onSelect }
     <mesh
       geometry={geometry}
       onPointerDown={(event) => {
-        if (!selectable || isTouchPointer(event)) return;
+        if (!selectable) return;
+        if (isTouchPointer(event)) {
+          const point = pointerClientPoint(event);
+          touchTapRef.current = {
+            pointerId: event.pointerId,
+            x: point.x,
+            y: point.y,
+            at: performance.now(),
+            moved: false,
+          };
+          return;
+        }
         event.stopPropagation();
-        onSelect(profile.id);
+        if (onDirectPointerDown) {
+          onDirectPointerDown(event, profile);
+        } else {
+          onSelect(profile.id);
+        }
+      }}
+      onPointerMove={(event) => {
+        if (isTouchPointer(event)) {
+          const tap = touchTapRef.current;
+          if (tap?.pointerId === event.pointerId && pointerTravelPx(tap, event) > TOUCH_TAP_MAX_PX) {
+            tap.moved = true;
+          }
+          return;
+        }
+        if (onDirectPointerMove) onDirectPointerMove(event);
+      }}
+      onPointerUp={(event) => {
+        if (isTouchPointer(event)) {
+          const tap = touchTapRef.current;
+          touchTapRef.current = null;
+          if (
+            tap?.pointerId === event.pointerId &&
+            !tap.moved &&
+            pointerTravelPx(tap, event) <= TOUCH_TAP_MAX_PX &&
+            performance.now() - tap.at <= TOUCH_TAP_MAX_MS
+          ) {
+            onSelect(profile.id);
+          }
+          return;
+        }
+        if (onDirectPointerUp) {
+          event.stopPropagation();
+          event.target?.releasePointerCapture?.(event.pointerId);
+          onDirectPointerUp(event);
+        }
+      }}
+      onPointerCancel={(event) => {
+        if (isTouchPointer(event)) {
+          touchTapRef.current = null;
+          return;
+        }
+        if (onDirectPointerUp) {
+          event.target?.releasePointerCapture?.(event.pointerId);
+          onDirectPointerUp(event);
+        }
       }}
     >
       <meshBasicMaterial
@@ -1678,18 +1820,20 @@ function PullGizmo({ origin, axis, active, onPointerDown, onPointerMove, onPoint
 
   const handlers = {
     onPointerDown: (event) => {
-      if (isTouchPointer(event)) return;
       event.stopPropagation();
       event.target?.setPointerCapture?.(event.pointerId);
       onPointerDown(event);
     },
     onPointerMove: (event) => {
-      if (isTouchPointer(event)) return;
       event.stopPropagation();
       onPointerMove(event);
     },
     onPointerUp: (event) => {
-      if (isTouchPointer(event)) return;
+      event.stopPropagation();
+      event.target?.releasePointerCapture?.(event.pointerId);
+      onPointerUp(event);
+    },
+    onPointerCancel: (event) => {
       event.stopPropagation();
       event.target?.releasePointerCapture?.(event.pointerId);
       onPointerUp(event);
@@ -1707,7 +1851,7 @@ function PullGizmo({ origin, axis, active, onPointerDown, onPointerMove, onPoint
         lineWidth={4}
       />
       <mesh position={[0, 0.27, 0]} {...handlers}>
-        <cylinderGeometry args={[0.045, 0.045, 0.46, 18]} />
+        <cylinderGeometry args={[0.085, 0.085, 0.5, 18]} />
         <meshBasicMaterial
           color={active ? SNAP_COLOR : SELECT_COLOR}
           transparent
@@ -1716,8 +1860,16 @@ function PullGizmo({ origin, axis, active, onPointerDown, onPointerMove, onPoint
         />
       </mesh>
       <mesh position={[0, 0.55, 0]} {...handlers}>
+        <sphereGeometry args={[0.115, 18, 18]} />
+        <meshBasicMaterial transparent opacity={0.001} depthWrite={false} />
+      </mesh>
+      <mesh position={[0, 0.55, 0]} {...handlers}>
         <coneGeometry args={[0.072, 0.16, 20]} />
         <meshBasicMaterial color={active ? SNAP_COLOR : SELECT_COLOR} />
+      </mesh>
+      <mesh position={[0, 0, 0]} {...handlers}>
+        <sphereGeometry args={[0.11, 18, 18]} />
+        <meshBasicMaterial transparent opacity={0.001} depthWrite={false} />
       </mesh>
       <mesh position={[0, 0, 0]} {...handlers}>
         <sphereGeometry args={[0.055, 18, 18]} />
@@ -1750,6 +1902,44 @@ function PullGizmo({ origin, axis, active, onPointerDown, onPointerMove, onPoint
   );
 }
 
+function sideFaceOverlayGeometry(draft, faceIndex) {
+  if (!draft?.points?.length || faceIndex == null) return null;
+  const i = ((faceIndex % draft.points.length) + draft.points.length) % draft.points.length;
+  const a = draft.points[i];
+  const b = draft.points[(i + 1) % draft.points.length];
+  if (!a || !b) return null;
+
+  const outward = edgeOutwardNormal(draft.points, i);
+  const worldNormal = TOP_PLANE.xAxis
+    .clone()
+    .multiplyScalar(outward.x)
+    .addScaledVector(TOP_PLANE.yAxis, outward.y)
+    .normalize();
+  const nudge = worldNormal.multiplyScalar(0.0008);
+
+  const p1 = worldFromLocalMM(TOP_PLANE, a[0], a[1], 0).add(nudge);
+  const p2 = worldFromLocalMM(TOP_PLANE, b[0], b[1], 0).add(nudge);
+  const p3 = worldFromLocalMM(TOP_PLANE, b[0], b[1], draft.height).add(nudge);
+  const p4 = worldFromLocalMM(TOP_PLANE, a[0], a[1], draft.height).add(nudge);
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute(
+    "position",
+    new THREE.Float32BufferAttribute(
+      [
+        p1.x, p1.y, p1.z,
+        p2.x, p2.y, p2.z,
+        p3.x, p3.y, p3.z,
+        p4.x, p4.y, p4.z,
+      ],
+      3
+    )
+  );
+  geometry.setIndex([0, 1, 2, 0, 2, 3]);
+  geometry.computeVertexNormals();
+  return geometry;
+}
+
 function FaceHighlight({ draft, face, color = SELECT_COLOR, opacity = 0.28 }) {
   const geometry = useMemo(() => {
     if (!draft || !face) return null;
@@ -1772,6 +1962,10 @@ function FaceHighlight({ draft, face, color = SELECT_COLOR, opacity = 0.28 }) {
       return flatWorldGeometry(feature.points, plane, offset + nudge);
     }
 
+    if (face.type === "side" && face.index != null) {
+      return sideFaceOverlayGeometry(draft, face.index);
+    }
+
     return null;
   }, [draft, face]);
 
@@ -1779,34 +1973,34 @@ function FaceHighlight({ draft, face, color = SELECT_COLOR, opacity = 0.28 }) {
 
   if (!draft || !face) return null;
 
-  if ((face.type === "cap" || face.type === "feature-cap") && geometry) {
+  if (geometry) {
+    const sideFace = face.type === "side";
     return (
-      <mesh geometry={geometry}>
-        <meshBasicMaterial
-          color={color}
-          transparent
-          opacity={opacity}
-          side={THREE.DoubleSide}
-          depthWrite={false}
-          depthTest={opacity >= 0.2}
-        />
-      </mesh>
-    );
-  }
-
-  if (face.type === "side" && face.index != null) {
-    const a = draft.points[face.index];
-    const b = draft.points[(face.index + 1) % draft.points.length];
-    const p1 = worldFromLocalMM(TOP_PLANE, a[0], a[1], 0);
-    const p2 = worldFromLocalMM(TOP_PLANE, b[0], b[1], 0);
-    const p3 = worldFromLocalMM(TOP_PLANE, b[0], b[1], draft.height);
-    const p4 = worldFromLocalMM(TOP_PLANE, a[0], a[1], draft.height);
-    return (
-      <Line
-        points={[p1, p2, p3, p4, p1]}
-        color={color}
-        lineWidth={opacity < 0.2 ? 2.6 : 4}
-      />
+      <>
+        <mesh geometry={geometry}>
+          <meshBasicMaterial
+            color={color}
+            transparent
+            opacity={opacity}
+            side={THREE.DoubleSide}
+            depthWrite={false}
+            depthTest={opacity >= 0.2}
+          />
+        </mesh>
+        {sideFace && (
+          <Line
+            points={[
+              worldFromLocalMM(TOP_PLANE, draft.points[face.index][0], draft.points[face.index][1], 0),
+              worldFromLocalMM(TOP_PLANE, draft.points[(face.index + 1) % draft.points.length][0], draft.points[(face.index + 1) % draft.points.length][1], 0),
+              worldFromLocalMM(TOP_PLANE, draft.points[(face.index + 1) % draft.points.length][0], draft.points[(face.index + 1) % draft.points.length][1], draft.height),
+              worldFromLocalMM(TOP_PLANE, draft.points[face.index][0], draft.points[face.index][1], draft.height),
+              worldFromLocalMM(TOP_PLANE, draft.points[face.index][0], draft.points[face.index][1], 0),
+            ]}
+            color={color}
+            lineWidth={opacity < 0.2 ? 2.4 : 3.4}
+          />
+        )}
+      </>
     );
   }
 
@@ -1873,28 +2067,74 @@ function SketchEndpointHandles({ plane, entity, onPointerDown, onPointerMove, on
           key={`${entity.id}-${key}`}
           position={worldFromLocalMM(plane, point.x, point.y, 0.15)}
           onPointerDown={(event) => {
-            if (isTouchPointer(event)) return;
             event.stopPropagation();
             event.target?.setPointerCapture?.(event.pointerId);
             onPointerDown(event, key);
           }}
           onPointerMove={(event) => {
-            if (isTouchPointer(event)) return;
             onPointerMove(event);
           }}
           onPointerUp={(event) => {
-            if (isTouchPointer(event)) return;
+            event.stopPropagation();
+            event.target?.releasePointerCapture?.(event.pointerId);
+            onPointerUp(event);
+          }}
+          onPointerCancel={(event) => {
             event.stopPropagation();
             event.target?.releasePointerCapture?.(event.pointerId);
             onPointerUp(event);
           }}
         >
-          <sphereGeometry args={[0.045, 18, 18]} />
+          <sphereGeometry args={[0.06, 18, 18]} />
           <meshBasicMaterial color={SNAP_COLOR} depthTest={false} />
         </mesh>
       ))}
     </>
   );
+}
+
+function facePullDataFor(draft, face) {
+  if (!draft || !face) return null;
+
+  if (face.type === "cap") {
+    const center = polygonCentroid(draft.points);
+    return {
+      origin: worldFromLocalMM(TOP_PLANE, center.x, center.y, draft.height + 0.06),
+      axis: TOP_PLANE.normal.clone(),
+    };
+  }
+
+  if (face.type === "side" && face.index != null) {
+    const i = face.index;
+    const a = draft.points[i];
+    const b = draft.points[(i + 1) % draft.points.length];
+    const plane = sideFacePlane(draft.points, i);
+    if (!a || !b || !plane) return null;
+    const edgeLength = Math.hypot(b[0] - a[0], b[1] - a[1]);
+    return {
+      origin: worldFromLocalMM(plane, edgeLength / 2, draft.height / 2, 0.06),
+      axis: plane.normal.clone(),
+    };
+  }
+
+  if (face.type === "feature-cap" && face.featureId) {
+    const feature = featureById(draft, face.featureId);
+    if (!feature) return null;
+    const plane = feature.faceType === "side"
+      ? sideFacePlane(draft.points, feature.faceIndex)
+      : TOP_PLANE;
+    if (!plane) return null;
+    const center = polygonCentroid(feature.points);
+    const offset = feature.faceType === "top"
+      ? draft.height + feature.depth
+      : feature.depth;
+    return {
+      origin: worldFromLocalMM(plane, center.x, center.y, offset + 0.06),
+      axis: plane.normal.clone(),
+    };
+  }
+
+  return null;
 }
 
 /* ======================================================================
@@ -1908,6 +2148,11 @@ function SketchScene({ state, actions, cameraRigRef, controlsRef }) {
   const pickEdge = useEdgePicker(edgeSegments);
 
   const pullRef = useRef(null);
+  const pullFrameRef = useRef(null);
+  const pendingPullValueRef = useRef(null);
+  const sketchPointerRef = useRef(null);
+  const touchSolidTapRef = useRef(null);
+  const touchGroundTapRef = useRef(null);
   const endpointDragRef = useRef(null);
   const lastSolidTapRef = useRef({ id: null, at: 0 });
 
@@ -1919,6 +2164,7 @@ function SketchScene({ state, actions, cameraRigRef, controlsRef }) {
   useEffect(
     () => () => {
       committedGeometries.forEach((geo) => geo?.dispose?.());
+      if (pullFrameRef.current != null) cancelAnimationFrame(pullFrameRef.current);
     },
     [committedGeometries]
   );
@@ -2041,59 +2287,19 @@ function SketchScene({ state, actions, cameraRigRef, controlsRef }) {
     return worldFromLocalMM(state.activePlane, center.x, center.y, 0.06);
   }, [selectedProfile, state.activePlane]);
 
-  const facePull = useMemo(() => {
-    if (!state.draft || !state.selectedFace) return null;
-
-    if (state.selectedFace.type === "cap") {
-      const center = polygonCentroid(state.draft.points);
-      return {
-        origin: worldFromLocalMM(
-          TOP_PLANE,
-          center.x,
-          center.y,
-          state.draft.height + 0.06
-        ),
-        axis: TOP_PLANE.normal.clone(),
-      };
-    }
-
-    if (state.selectedFace.type === "side") {
-      const i = state.selectedFace.index;
-      const a = state.draft.points[i];
-      const b = state.draft.points[(i + 1) % state.draft.points.length];
-      const plane = sideFacePlane(state.draft.points, i);
-      if (!plane) return null;
-      const edgeLength = Math.hypot(b[0] - a[0], b[1] - a[1]);
-      return {
-        origin: worldFromLocalMM(plane, edgeLength / 2, state.draft.height / 2, 0.06),
-        axis: plane.normal.clone(),
-      };
-    }
-
-    if (state.selectedFace.type === "feature-cap" && state.selectedFace.featureId) {
-      const feature = featureById(state.draft, state.selectedFace.featureId);
-      if (!feature) return null;
-      const plane = feature.faceType === "side"
-        ? sideFacePlane(state.draft.points, feature.faceIndex)
-        : TOP_PLANE;
-      if (!plane) return null;
-      const center = polygonCentroid(feature.points);
-      const offset = feature.faceType === "top"
-        ? state.draft.height + feature.depth
-        : feature.depth;
-      return {
-        origin: worldFromLocalMM(plane, center.x, center.y, offset + 0.06),
-        axis: plane.normal.clone(),
-      };
-    }
-
-    return null;
-  }, [state.draft, state.selectedFace]);
+  const facePull = useMemo(
+    () => facePullDataFor(state.draft, state.selectedFace),
+    [state.draft, state.selectedFace]
+  );
 
   const smartStrokeRef = useRef(false);
 
   function handleSketchPointerMove(event) {
     if (isTouchPointer(event)) return;
+    if (
+      sketchPointerRef.current?.pointerId != null &&
+      sketchPointerRef.current.pointerId !== event.pointerId
+    ) return;
     const raw = planeRaycast(event, state.activePlane);
     if (!raw) return;
     if (state.activeTool === "smart" && smartStrokeRef.current) {
@@ -2106,6 +2312,9 @@ function SketchScene({ state, actions, cameraRigRef, controlsRef }) {
   function handleSketchPointerDown(event) {
     if (isTouchPointer(event)) return;
     event.stopPropagation();
+    sketchPointerRef.current = { pointerId: event.pointerId };
+    if (controlsRef.current) controlsRef.current.enabled = false;
+    event.target?.setPointerCapture?.(event.pointerId);
     if (state.activeTool === "select") {
       actions.clearSketchEntitySelection();
       return;
@@ -2122,56 +2331,110 @@ function SketchScene({ state, actions, cameraRigRef, controlsRef }) {
 
   function handleSketchPointerUp(event) {
     if (isTouchPointer(event)) return;
-    if (!smartStrokeRef.current) return;
-    smartStrokeRef.current = false;
-    actions.finishSmartStroke();
+    if (
+      sketchPointerRef.current?.pointerId != null &&
+      sketchPointerRef.current.pointerId !== event.pointerId
+    ) return;
+    event.stopPropagation();
+    event.target?.releasePointerCapture?.(event.pointerId);
+    sketchPointerRef.current = null;
+    if (controlsRef.current) controlsRef.current.enabled = true;
+    if (smartStrokeRef.current) {
+      smartStrokeRef.current = false;
+      actions.finishSmartStroke();
+    }
   }
 
-  function beginProfilePull(event) {
-    if (!selectedProfile || !profilePullOrigin) return;
-    const pointerType = event?.pointerType || event?.nativeEvent?.pointerType || "mouse";
-    if (controlsRef.current && pointerType !== "pen") controlsRef.current.enabled = false;
+  function beginProfilePull(event, profileOverride = null, source = "gizmo") {
+    const profile = profileOverride || selectedProfile;
+    const origin = profile
+      ? worldFromLocalMM(
+          state.activePlane,
+          polygonCentroid(profile.points).x,
+          polygonCentroid(profile.points).y,
+          0.06
+        )
+      : profilePullOrigin;
+    if (!profile || !origin) return;
+    if (controlsRef.current) controlsRef.current.enabled = false;
+    event.target?.setPointerCapture?.(event.pointerId);
 
     const axis = state.activePlane.normal.clone().normalize();
-    const start = axisDragFrom(event, profilePullOrigin, axis) ?? 0;
+    const start = axisDragFrom(event, origin, axis) ?? 0;
     pullRef.current = {
       type: "profile",
-      origin: profilePullOrigin.clone(),
+      source,
+      pointerId: event.pointerId,
+      origin: origin.clone(),
       axis,
       start,
     };
-    actions.beginProfilePull();
+    pendingPullValueRef.current = null;
+    actions.beginProfilePull(profile.id);
   }
 
-  function beginFacePull(event) {
-    if (!facePull) return;
-    const pointerType = event?.pointerType || event?.nativeEvent?.pointerType || "mouse";
-    if (controlsRef.current && pointerType !== "pen") controlsRef.current.enabled = false;
+  function beginFacePull(event, faceOverride = null, source = "gizmo") {
+    const face = faceOverride || state.selectedFace;
+    const pullData = faceOverride ? facePullDataFor(state.draft, faceOverride) : facePull;
+    if (!face || !pullData) return;
+    if (controlsRef.current) controlsRef.current.enabled = false;
+    event.target?.setPointerCapture?.(event.pointerId);
 
-    const start = axisDragFrom(event, facePull.origin, facePull.axis) ?? 0;
+    const start = axisDragFrom(event, pullData.origin, pullData.axis) ?? 0;
     pullRef.current = {
       type: "face",
-      origin: facePull.origin.clone(),
-      axis: facePull.axis.clone(),
+      source,
+      pointerId: event.pointerId,
+      origin: pullData.origin.clone(),
+      axis: pullData.axis.clone(),
       start,
     };
-    actions.beginFacePull();
+    pendingPullValueRef.current = null;
+    actions.beginFacePull(face);
   }
 
   function movePull(event) {
     if (!pullRef.current) return;
+    if (
+      pullRef.current.pointerId != null &&
+      event.pointerId != null &&
+      pullRef.current.pointerId !== event.pointerId
+    ) return;
     const current = axisDragFrom(
       event,
       pullRef.current.origin,
       pullRef.current.axis
     );
     if (current == null) return;
-    actions.updatePull(current - pullRef.current.start);
+    const value = quantizeDragMM(current - pullRef.current.start, event);
+    pendingPullValueRef.current = value;
+    if (pullFrameRef.current != null) return;
+    pullFrameRef.current = requestAnimationFrame(() => {
+      pullFrameRef.current = null;
+      if (pendingPullValueRef.current == null) return;
+      const nextValue = pendingPullValueRef.current;
+      pendingPullValueRef.current = null;
+      actions.updatePull(nextValue);
+    });
   }
 
-  function endPull() {
+  function endPull(event = null) {
     if (!pullRef.current) return;
+    if (
+      event?.pointerId != null &&
+      pullRef.current.pointerId != null &&
+      pullRef.current.pointerId !== event.pointerId
+    ) return;
     const type = pullRef.current.type;
+    if (pullFrameRef.current != null) {
+      cancelAnimationFrame(pullFrameRef.current);
+      pullFrameRef.current = null;
+    }
+    if (pendingPullValueRef.current != null) {
+      const finalValue = pendingPullValueRef.current;
+      pendingPullValueRef.current = null;
+      actions.updatePull(finalValue);
+    }
     pullRef.current = null;
     if (controlsRef.current) controlsRef.current.enabled = true;
 
@@ -2244,10 +2507,21 @@ function SketchScene({ state, actions, cameraRigRef, controlsRef }) {
   }
 
   function handleSolidPointerMove(event) {
-    if (state.mode !== "idle" || isTouchPointer(event)) return;
+    if (pullRef.current?.source === "surface") {
+      movePull(event);
+      return;
+    }
+    if (isTouchPointer(event)) {
+      const tap = touchSolidTapRef.current;
+      if (tap?.pointerId === event.pointerId && pointerTravelPx(tap, event) > TOUCH_TAP_MAX_PX) {
+        tap.moved = true;
+      }
+      return;
+    }
+    if (state.mode !== "idle") return;
     const face = classifySolidFace(event);
     const edgeHit = state.multiSelect ? null : pickEdge(event);
-    const pointerType = event?.pointerType || event?.nativeEvent?.pointerType || "mouse";
+    const pointerType = pointerTypeOf(event);
     const preciseEdgeDistance = pointerType === "pen" ? 8 : 6;
 
     // V27 adaptive priority: face wins across the surface; an edge only
@@ -2327,12 +2601,30 @@ function SketchScene({ state, actions, cameraRigRef, controlsRef }) {
   }
 
   function handleSolidPointerDown(event) {
-    if (state.mode !== "idle" || isTouchPointer(event)) return;
+    if (state.mode !== "idle") return;
+
+    if (isTouchPointer(event)) {
+      const point = pointerClientPoint(event);
+      const face = classifySolidFace(event);
+      const edgeHit = state.multiSelect ? null : pickEdge(event);
+      touchSolidTapRef.current = {
+        pointerId: event.pointerId,
+        x: point.x,
+        y: point.y,
+        at: performance.now(),
+        moved: false,
+        face,
+        edgeHit,
+      };
+      // Do not stop propagation: a finger drag must remain OrbitControls navigation.
+      return;
+    }
+
     event.stopPropagation();
 
     const face = classifySolidFace(event);
     const edgeHit = state.multiSelect ? null : pickEdge(event);
-    const pointerType = event?.pointerType || event?.nativeEvent?.pointerType || "mouse";
+    const pointerType = pointerTypeOf(event);
     const preciseEdgeDistance = pointerType === "pen" ? 8 : 6;
 
     // Double tap/click a face to look straight at it, matching tablet CAD
@@ -2359,7 +2651,13 @@ function SketchScene({ state, actions, cameraRigRef, controlsRef }) {
       return;
     }
     if (face) {
-      actions.selectFace(face);
+      if (state.multiSelect) {
+        actions.selectFace(face);
+      } else {
+        // One Pencil/mouse gesture now does both selection and direct face offset.
+        // A tap ends at 0 mm and leaves the face selected; a drag immediately edits it.
+        beginFacePull(event, face, "surface");
+      }
       return;
     }
     if (edgeHit) {
@@ -2367,6 +2665,53 @@ function SketchScene({ state, actions, cameraRigRef, controlsRef }) {
       return;
     }
     if (!state.multiSelect) actions.selectBody();
+  }
+
+  function handleSolidPointerUp(event) {
+    if (isTouchPointer(event)) {
+      const tap = touchSolidTapRef.current;
+      touchSolidTapRef.current = null;
+      if (
+        !tap ||
+        tap.pointerId !== event.pointerId ||
+        tap.moved ||
+        pointerTravelPx(tap, event) > TOUCH_TAP_MAX_PX ||
+        performance.now() - tap.at > TOUCH_TAP_MAX_MS
+      ) return;
+
+      const edgeDistance = tap.edgeHit?.hitDistance ?? Infinity;
+      if (!state.multiSelect && tap.edgeHit && edgeDistance <= 10) {
+        actions.selectEdge(tap.edgeHit);
+        return;
+      }
+      if (tap.face) {
+        const id = topologyFaceId(tap.face);
+        const now = performance.now();
+        const previous = lastSolidTapRef.current;
+        actions.selectFace(tap.face);
+        if (previous.id === id && now - previous.at < 360) {
+          lastSolidTapRef.current = { id: null, at: 0 };
+          focusFace(tap.face);
+        } else {
+          lastSolidTapRef.current = { id, at: now };
+        }
+      }
+      return;
+    }
+
+    if (pullRef.current?.source === "surface") {
+      event.stopPropagation();
+      event.target?.releasePointerCapture?.(event.pointerId);
+      endPull(event);
+    }
+  }
+
+  function handleSolidPointerCancel(event) {
+    if (isTouchPointer(event)) {
+      touchSolidTapRef.current = null;
+      return;
+    }
+    if (pullRef.current?.source === "surface") endPull(event);
   }
 
   function handleSolidContextMenu(event) {
@@ -2397,8 +2742,42 @@ function SketchScene({ state, actions, cameraRigRef, controlsRef }) {
         rotation={[-Math.PI / 2, 0, 0]}
         position={[0, -0.001, 0]}
         onPointerDown={(event) => {
-          if (isTouchPointer(event)) return;
+          if (isTouchPointer(event)) {
+            const point = pointerClientPoint(event);
+            touchGroundTapRef.current = {
+              pointerId: event.pointerId,
+              x: point.x,
+              y: point.y,
+              at: performance.now(),
+              moved: false,
+            };
+            return;
+          }
           if (state.mode === "idle") actions.clearSelection();
+        }}
+        onPointerMove={(event) => {
+          if (!isTouchPointer(event)) return;
+          const tap = touchGroundTapRef.current;
+          if (tap?.pointerId === event.pointerId && pointerTravelPx(tap, event) > TOUCH_TAP_MAX_PX) {
+            tap.moved = true;
+          }
+        }}
+        onPointerUp={(event) => {
+          if (!isTouchPointer(event)) return;
+          const tap = touchGroundTapRef.current;
+          touchGroundTapRef.current = null;
+          if (
+            state.mode === "idle" &&
+            tap?.pointerId === event.pointerId &&
+            !tap.moved &&
+            pointerTravelPx(tap, event) <= TOUCH_TAP_MAX_PX &&
+            performance.now() - tap.at <= TOUCH_TAP_MAX_MS
+          ) {
+            actions.clearSelection();
+          }
+        }}
+        onPointerCancel={() => {
+          touchGroundTapRef.current = null;
         }}
       >
         <planeGeometry args={[40, 40]} />
@@ -2431,6 +2810,8 @@ function SketchScene({ state, actions, cameraRigRef, controlsRef }) {
         <group
           onPointerDown={handleSolidPointerDown}
           onPointerMove={handleSolidPointerMove}
+          onPointerUp={handleSolidPointerUp}
+          onPointerCancel={handleSolidPointerCancel}
           onContextMenu={handleSolidContextMenu}
           onPointerOut={() => actions.setHoverSelection({ edgeKey: null, face: null })}
         >
@@ -2474,12 +2855,9 @@ function SketchScene({ state, actions, cameraRigRef, controlsRef }) {
             onPointerDown={handleSketchPointerDown}
             onPointerMove={handleSketchPointerMove}
             onPointerUp={handleSketchPointerUp}
+            onPointerCancel={handleSketchPointerUp}
             onPointerLeave={() => {
-              actions.setHoverPoint(null);
-              if (smartStrokeRef.current) {
-                smartStrokeRef.current = false;
-                actions.finishSmartStroke();
-              }
+              if (!sketchPointerRef.current) actions.setHoverPoint(null);
             }}
           />
 
@@ -2517,6 +2895,13 @@ function SketchScene({ state, actions, cameraRigRef, controlsRef }) {
               selected={profile.id === state.activeProfileId}
               selectable={state.activeTool === "select"}
               onSelect={actions.selectProfile}
+              onDirectPointerDown={
+                state.sketchContext?.kind === "construction"
+                  ? null
+                  : (event, directProfile) => beginProfilePull(event, directProfile, "profile-surface")
+              }
+              onDirectPointerMove={movePull}
+              onDirectPointerUp={endPull}
             />
           ))}
 
@@ -2592,7 +2977,21 @@ function SketchScene({ state, actions, cameraRigRef, controlsRef }) {
         enablePan
         enableRotate
         enableZoom
+        enableDamping
+        dampingFactor={0.08}
+        rotateSpeed={0.75}
+        zoomSpeed={0.9}
+        panSpeed={0.8}
         screenSpacePanning
+        mouseButtons={{
+          LEFT: THREE.MOUSE.ROTATE,
+          MIDDLE: THREE.MOUSE.DOLLY,
+          RIGHT: THREE.MOUSE.PAN,
+        }}
+        touches={{
+          ONE: THREE.TOUCH.ROTATE,
+          TWO: THREE.TOUCH.DOLLY_PAN,
+        }}
         minDistance={0.55}
         maxDistance={10}
         maxPolarAngle={Math.PI * 0.96}
@@ -2752,7 +3151,6 @@ function SweepPathPoint({ nativePoint, index, selected, actions, controlsRef }) 
   function begin(event) {
     event.stopPropagation();
     actions.selectSweepPathPoint(index);
-    if (isTouchPointer(event)) return;
     dragRef.current = true;
     if (controlsRef.current) controlsRef.current.enabled = false;
     event.target?.setPointerCapture?.(event.pointerId);
@@ -2821,22 +3219,18 @@ function DraftTransformGizmo({ draft, actions, controlsRef, readout }) {
   const rotatePlane = makePlane(origin, xAxis, yAxis, upAxis);
 
   const beginAxis = (event, kind, axis) => {
-    if (isTouchPointer(event)) return;
     event.stopPropagation();
     event.target?.setPointerCapture?.(event.pointerId);
-    const pointerType = event?.pointerType || event?.nativeEvent?.pointerType || "mouse";
-    if (controlsRef.current && pointerType !== "pen") controlsRef.current.enabled = false;
+    if (controlsRef.current) controlsRef.current.enabled = false;
     const start = axisDragFrom(event, origin, axis) ?? 0;
     dragRef.current = { kind, axis: axis.clone(), start };
     actions.beginBodyTransform(kind);
   };
 
   const beginRotate = (event) => {
-    if (isTouchPointer(event)) return;
     event.stopPropagation();
     event.target?.setPointerCapture?.(event.pointerId);
-    const pointerType = event?.pointerType || event?.nativeEvent?.pointerType || "mouse";
-    if (controlsRef.current && pointerType !== "pen") controlsRef.current.enabled = false;
+    if (controlsRef.current) controlsRef.current.enabled = false;
     const point = planeRaycast(event, rotatePlane);
     if (!point) return;
     const startAngle = Math.atan2(point.y, point.x);
@@ -2845,7 +3239,7 @@ function DraftTransformGizmo({ draft, actions, controlsRef, readout }) {
   };
 
   const move = (event) => {
-    if (isTouchPointer(event) || !dragRef.current) return;
+    if (!dragRef.current) return;
     event.stopPropagation();
     if (dragRef.current.kind === "rotate") {
       const point = planeRaycast(event, rotatePlane);
@@ -3455,8 +3849,8 @@ function ContextToolbar({ state, actions, objectCount, maxObjects }) {
               ? Number(state.sketchContext.hostDepth || 0) >= 0
                 ? "Stacked profile · pull outward to add on this boss"
                 : "Stacked profile · push inward to deepen this pocket"
-              : "Profile selected · drag the arrow outward to add or inward to cut"
-            : "Profile selected · drag the arrow to create the solid"}
+              : "Profile selected · drag the profile or arrow outward to add or inward to cut"
+            : "Profile selected · drag the profile or arrow to create the solid"}
         </span>
         <ProfileDimensionEditor state={state} actions={actions} />
         <NumericPull
@@ -3564,8 +3958,8 @@ function ContextToolbar({ state, actions, objectCount, maxObjects }) {
       <div className="sketch3d-context-bar sketch3d-context-bar-profile">
         <span>
           {state.selectedFace.type === "feature-cap"
-            ? "Feature face selected · drag to edit depth, or choose a sketch tool to sketch on it"
-            : "Face selected · drag the arrow to offset, or choose a sketch tool"}
+            ? "Feature face selected · drag the face or arrow to edit depth, or choose a sketch tool"
+            : "Face selected · drag the face or arrow to offset, or choose a sketch tool"}
         </span>
         <NumericPull
           value={state.numericValue}
@@ -3585,7 +3979,7 @@ function ContextToolbar({ state, actions, objectCount, maxObjects }) {
   if (state.mode === "idle" && state.draft) {
     return (
       <div className="sketch3d-context-bar">
-        <span>Tap a face to offset · move close to an edge for fillet/chamfer · double-tap a face to look straight at it</span>
+        <span>Tap a face to select · Pencil-drag the face to offset · finger-drag empty space to orbit · double-tap a face to look straight at it</span>
         <button type="button" onClick={actions.selectBody}>Body</button>
         <button type="button" onClick={actions.toggleAdvancedPanel}>
           {state.showAdvancedPanel ? "Hide tools" : "More tools"}
@@ -3843,7 +4237,17 @@ function SketchWorkspace({
   const actions = useMemo(() => {
     const api = {
       setHoverPoint(point) {
-        setState((s) => ({ ...s, hoverPoint: point }));
+        setState((s) => {
+          if (!s.hoverPoint && !point) return s;
+          if (
+            s.hoverPoint &&
+            point &&
+            s.hoverPoint.x === point.x &&
+            s.hoverPoint.y === point.y &&
+            s.hoverPoint.snap === point.snap
+          ) return s;
+          return { ...s, hoverPoint: point };
+        });
       },
 
       setNumericValue(value) {
@@ -4198,7 +4602,18 @@ function SketchWorkspace({
               points: circlePoints(result.center, result.radius),
             };
             setToast(`Circle recognized · Ø ${(result.radius * 2).toFixed(1)} mm`);
-            return { ...s, sketchProfiles: [...s.sketchProfiles, profile], smartStrokePoints: [], smartStrokeKind: null, activeTool: "select" };
+            const autoReady = s.sketchContext?.kind !== "construction";
+            return {
+              ...s,
+              mode: autoReady ? "profile-ready" : "sketching",
+              sketchProfiles: [...s.sketchProfiles, profile],
+              smartStrokePoints: [],
+              smartStrokeKind: null,
+              activeTool: "select",
+              activeProfileId: autoReady ? profile.id : null,
+              numericValue: s.sketchContext?.kind === "feature" ? "5" : "10",
+              dimensionDraft: autoReady ? dimensionDraftForProfile(profile) : s.dimensionDraft,
+            };
           }
 
           if (result.type === "arc") {
@@ -4210,6 +4625,7 @@ function SketchWorkspace({
           if (result.type === "closed-polyline") {
             const profileId = uid("profile");
             const pts = ensureCCW(result.points.map((p) => [p.x, p.y]));
+            const profile = { id: profileId, type: "polyline", points: pts };
             const entities = pts.map((p, index) => {
               const next = pts[(index + 1) % pts.length];
               const start = { x: p[0], y: p[1] };
@@ -4217,11 +4633,18 @@ function SketchWorkspace({
               return { id: uid("line"), type: "line", start, end, constraint: inferLineConstraint(start, end), profileId };
             });
             setToast(`Closed profile recognized · ${pts.length} edges`);
+            const autoReady = s.sketchContext?.kind !== "construction";
             return {
               ...s,
+              mode: autoReady ? "profile-ready" : "sketching",
               sketchEntities: [...s.sketchEntities, ...entities],
-              sketchProfiles: [...s.sketchProfiles, { id: profileId, type: "polyline", points: pts }],
-              smartStrokePoints: [], smartStrokeKind: null, activeTool: "select",
+              sketchProfiles: [...s.sketchProfiles, profile],
+              smartStrokePoints: [],
+              smartStrokeKind: null,
+              activeTool: "select",
+              activeProfileId: autoReady ? profileId : null,
+              numericValue: s.sketchContext?.kind === "feature" ? "5" : "10",
+              dimensionDraft: autoReady ? dimensionDraftForProfile(profile) : s.dimensionDraft,
             };
           }
 
@@ -4276,15 +4699,20 @@ function SketchWorkspace({
               const taggedExisting = s.sketchEntities.map((item, index) =>
                 index >= splitIndex ? { ...item, profileId } : item
               );
+              const autoReady = s.sketchContext?.kind !== "construction";
 
               return {
                 ...s,
+                mode: autoReady ? "profile-ready" : "sketching",
                 sketchEntities: [...taggedExisting, { ...entity, profileId }],
                 sketchProfiles: [...s.sketchProfiles, profile],
                 lineChain: [],
                 toolStart: null,
                 hoverPoint: null,
                 activeTool: "select",
+                activeProfileId: autoReady ? profileId : null,
+                numericValue: s.sketchContext?.kind === "feature" ? "5" : "10",
+                dimensionDraft: autoReady ? dimensionDraftForProfile(profile) : s.dimensionDraft,
               };
             }
 
@@ -4315,6 +4743,7 @@ function SketchWorkspace({
 
             const profilePoints = rectanglePoints(s.toolStart, point);
             const profileId = uid("profile");
+            const profile = { id: profileId, type: "rectangle", points: profilePoints };
             const entities = profilePoints.map((p, index) => {
               const endPoint = profilePoints[(index + 1) % profilePoints.length];
               const start = { x: p[0], y: p[1] };
@@ -4328,17 +4757,19 @@ function SketchWorkspace({
                 profileId,
               };
             });
+            const autoReady = s.sketchContext?.kind !== "construction";
 
             return {
               ...s,
+              mode: autoReady ? "profile-ready" : "sketching",
               sketchEntities: [...s.sketchEntities, ...entities],
-              sketchProfiles: [
-                ...s.sketchProfiles,
-                { id: profileId, type: "rectangle", points: profilePoints },
-              ],
+              sketchProfiles: [...s.sketchProfiles, profile],
               toolStart: null,
               hoverPoint: null,
               activeTool: "select",
+              activeProfileId: autoReady ? profileId : null,
+              numericValue: s.sketchContext?.kind === "feature" ? "5" : "10",
+              dimensionDraft: autoReady ? dimensionDraftForProfile(profile) : s.dimensionDraft,
             };
           }
 
@@ -4356,21 +4787,25 @@ function SketchWorkspace({
             );
             if (radius < 0.5) return s;
 
+            const profile = {
+              id: uid("profile"),
+              type: "circle",
+              center: { ...s.toolStart },
+              radius,
+              points: circlePoints(s.toolStart, radius),
+            };
+            const autoReady = s.sketchContext?.kind !== "construction";
+
             return {
               ...s,
-              sketchProfiles: [
-                ...s.sketchProfiles,
-                {
-                  id: uid("profile"),
-                  type: "circle",
-                  center: { ...s.toolStart },
-                  radius,
-                  points: circlePoints(s.toolStart, radius),
-                },
-              ],
+              mode: autoReady ? "profile-ready" : "sketching",
+              sketchProfiles: [...s.sketchProfiles, profile],
               toolStart: null,
               hoverPoint: null,
               activeTool: "select",
+              activeProfileId: autoReady ? profile.id : null,
+              numericValue: s.sketchContext?.kind === "feature" ? "5" : "10",
+              dimensionDraft: autoReady ? dimensionDraftForProfile(profile) : s.dimensionDraft,
             };
           }
 
@@ -4444,20 +4879,51 @@ function SketchWorkspace({
         }));
       },
 
-      beginProfilePull() {
-        setState((s) => ({
-          ...s,
-          mode: "pulling-profile",
-          pendingPull: 0,
-        }));
+      beginProfilePull(profileId = null) {
+        setState((s) => {
+          const nextProfileId = profileId || s.activeProfileId;
+          const profile = s.sketchProfiles.find((item) => item.id === nextProfileId);
+          if (!profile) return s;
+          if (s.sketchContext?.hostFeatureId) {
+            const hostFeature = featureById(s.draft, s.sketchContext.hostFeatureId);
+            if (!hostFeature || !profileInsideHost(profile, hostFeature)) {
+              setToast("Keep the stacked sketch inside the selected feature face");
+              return s;
+            }
+          }
+          return {
+            ...s,
+            mode: "pulling-profile",
+            activeProfileId: nextProfileId,
+            activeTool: "select",
+            selectedSketchEntityId: null,
+            pendingPull: 0,
+            numericValue: s.sketchContext?.kind === "feature" ? "5" : "10",
+            dimensionDraft: dimensionDraftForProfile(profile),
+          };
+        });
       },
 
-      beginFacePull() {
-        setState((s) => ({
-          ...s,
-          mode: "pulling-face",
-          pendingPull: 0,
-        }));
+      beginFacePull(face = null) {
+        setState((s) => {
+          const nextFace = face || s.selectedFace;
+          if (!nextFace || !s.draft) return s;
+          const id = topologyFaceId(nextFace);
+          return {
+            ...s,
+            mode: "pulling-face",
+            selectedFace: nextFace,
+            selectedFaceIds: id ? [id] : [],
+            selectedEdgeKey: null,
+            selectedEdgeMeta: null,
+            selectedBody: false,
+            activeTool: "select",
+            pendingPull: 0,
+            numericValue: "5",
+            hoveredFace: null,
+            hoveredEdgeKey: null,
+          };
+        });
       },
 
       updatePull(value) {
@@ -4500,7 +4966,10 @@ function SketchWorkspace({
               edgeTreatments: [],
             });
             pushHistory(snapshotOf(s));
-            return clearSketchFields({ ...s, draft });
+            return keepFaceSelected(
+              clearSketchFields({ ...s, draft }),
+              baseTopSelectionFace()
+            );
           }
 
           if (Math.abs(s.pendingPull) < MIN_FEATURE_MM) {
@@ -4530,7 +4999,10 @@ function SketchWorkspace({
             features: [...(s.draft?.features || []), feature],
           };
           pushHistory(snapshotOf(s));
-          return clearSketchFields({ ...s, draft });
+          return keepFaceSelected(
+            clearSketchFields({ ...s, draft }),
+            featureCapSelectionFace(feature)
+          );
         });
       },
 
@@ -4553,7 +5025,10 @@ function SketchWorkspace({
               edgeTreatments: [],
             });
             pushHistory(snapshotOf(s));
-            return clearSketchFields({ ...s, draft });
+            return keepFaceSelected(
+              clearSketchFields({ ...s, draft }),
+              baseTopSelectionFace()
+            );
           }
 
           if (Math.abs(amount) < MIN_FEATURE_MM) {
@@ -4571,26 +5046,27 @@ function SketchWorkspace({
           }
 
           const depth = stackedFeatureDepth(s.sketchContext, amount);
+          const feature = {
+            id: uid("feature"),
+            points: profile.points,
+            depth,
+            operation: depth >= 0 ? "add" : "cut",
+            sourceProfileId: profile.id,
+            faceType: s.sketchContext.faceType,
+            faceIndex: s.sketchContext.faceIndex,
+            hostFeatureId: s.sketchContext.hostFeatureId || null,
+            relativeDepth: s.sketchContext.hostFeatureId ? amount : null,
+            hostTopologyId: s.sketchContext.hostTopologyId || null,
+          };
           const draft = {
             ...s.draft,
-            features: [
-              ...(s.draft?.features || []),
-              {
-                id: uid("feature"),
-                points: profile.points,
-                depth,
-                operation: depth >= 0 ? "add" : "cut",
-                sourceProfileId: profile.id,
-                faceType: s.sketchContext.faceType,
-                faceIndex: s.sketchContext.faceIndex,
-                hostFeatureId: s.sketchContext.hostFeatureId || null,
-                relativeDepth: s.sketchContext.hostFeatureId ? amount : null,
-                hostTopologyId: s.sketchContext.hostTopologyId || null,
-              },
-            ],
+            features: [...(s.draft?.features || []), feature],
           };
           pushHistory(snapshotOf(s));
-          return clearSketchFields({ ...s, draft });
+          return keepFaceSelected(
+            clearSketchFields({ ...s, draft }),
+            featureCapSelectionFace(feature)
+          );
         });
       },
 

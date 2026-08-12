@@ -8,6 +8,7 @@ import HeroObject3D from "../components/HeroObject3D";
 import ProcessStory from "../components/ProcessStory";
 import BeyondCreator from "../components/BeyondCreator";
 import AIModelStudio from "../components/AIModelStudio";
+import BeyondCommunity from "../components/BeyondCommunity";
 import MyAccount from "../components/MyAccount";
 import ReviewsSection from "../components/ReviewsSection";
 import AuthModal from "../components/AuthModal";
@@ -365,6 +366,17 @@ function Home() {
             type="button"
             onClick={() =>
               scrollToSection(
+                "community"
+              )
+            }
+          >
+            Beyond Community
+          </button>
+
+          <button
+            type="button"
+            onClick={() =>
+              scrollToSection(
                 "start"
               )
             }
@@ -622,7 +634,12 @@ function Home() {
           BEYOND CREATOR
       ========================================= */}
 
-      <BeyondCreator />
+      <BeyondCreator
+        session={session}
+        onRequireAuth={() =>
+          setAuthOpen(true)
+        }
+      />
 
       {/* =========================================
           AI MODEL STUDIO
@@ -634,6 +651,17 @@ function Home() {
       >
         <AIModelStudio />
       </div>
+
+      {/* =========================================
+          BEYOND COMMUNITY
+      ========================================= */}
+
+      <BeyondCommunity
+        session={session}
+        onRequireAuth={() =>
+          setAuthOpen(true)
+        }
+      />
 
       {/* =========================================
           REVIEWS
@@ -658,7 +686,7 @@ function Home() {
         <div className="start-project-heading">
           <div>
             <div className="section-index">
-              04 / START PROJECT
+              05 / START PROJECT
             </div>
 
             <h2>
@@ -700,7 +728,7 @@ function Home() {
         <div className="final-cta-glow" />
 
         <div className="section-index">
-          05 / BEYOND
+          06 / BEYOND
         </div>
 
         <h2>

@@ -1,5 +1,5 @@
 /* =========================================================
-   BEYOND CREATOR â€” SKETCH MODE V27
+   BEYOND CREATOR â€” SKETCH MODE V30
    Direct-modeling workspace
 ========================================================= */
 
@@ -21,6 +21,8 @@
   font-family: inherit;
   user-select: none;
   -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  overscroll-behavior: contain;
 }
 
 /* ---------- top bar ---------- */
@@ -141,6 +143,8 @@
   flex: 1;
   min-height: 0;
   touch-action: none;
+  overscroll-behavior: contain;
+  -webkit-touch-callout: none;
   background:
     radial-gradient(circle at 50% 28%, rgba(32, 82, 116, 0.08), transparent 42%),
     #020b12;
@@ -151,7 +155,15 @@
   width: 100%;
   height: 100%;
   touch-action: none;
+  -webkit-touch-callout: none;
   outline: none;
+}
+
+.sketch3d-root input,
+.sketch3d-root textarea {
+  user-select: text;
+  -webkit-user-select: text;
+  -webkit-touch-callout: default;
 }
 
 /* ---------- CAD tool rail ---------- */
@@ -1391,6 +1403,18 @@
   .sketch3d-gizmo-input,
   .sketch3d-pull-tag {
     height: 36px;
+  }
+
+  .sketch3d-context-bar button,
+  .sketch3d-profile-dimensions > button {
+    min-height: 42px;
+  }
+
+  .sketch3d-numeric-pull input,
+  .sketch3d-profile-dimensions input,
+  .sketch3d-pull-tag input {
+    min-height: 38px;
+    font-size: 16px;
   }
 }
 

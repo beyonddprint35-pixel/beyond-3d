@@ -1,0 +1,337 @@
+import * as THREE from "three";
+import * as BufferGeometryUtils from "three/examples/jsm/utils/BufferGeometryUtils.js";
+import {
+  STLLoader,
+} from "three/examples/jsm/loaders/STLLoader.js";
+import {
+  ThreeMFLoader,
+} from "three/examples/jsm/loaders/3MFLoader.js";
+import {
+  OBJLoader,
+} from "three/examples/jsm/loaders/OBJLoader.js";
+
+function mergeGeometryList(
+  geometries
+) {
+  const merge =
+    BufferGeometryUtils
+      .mergeGeometries ||
+    BufferGeometryUtils
+      .mergeBufferGeometries;
+
+  if (!merge) {
+    throw new Error(
+      "Three.js geometry merge utility is unavailable."
+    );
+  }
+
+  return merge(
+    geometries,
+    false
+  );
+}
+
+function positionsOnlyGeometry(
+  source
+) {
+  let geometry =
+    source.clone();
+
+  if (
+    geometry.index
+  ) {
+    const nonIndexed =
+      geometry.toNonIndexed();
+
+    geometry.dispose();
+    geometry =
+      nonIndexed;
+  }
+
+  const position =
+    geometry.getAttribute(
+      "position"
+    );
+
+  if (
+    !position ||
+    position.count < 3
+  ) {
+    geometry.dispose();
+
+    throw new Error(
+      "The imported mesh has no triangle geometry."
+    );
+  }
+
+  const clean =
+    new THREE.BufferGeometry();
+
+  clean.setAttribute(
+    "position",
+    position.clone()
+  );
+
+  geometry.dispose();
+
+  return clean;
+}
+
+function objectToGeometry(
+  object
+) {
+  object.updateMatrixWorld(
+    true
+  );
+
+  const geometries = [];
+
+  object.traverse(
+    (child) => {
+      if (
+        !child.isMesh ||
+        !child.geometry
+      ) {
+        return;
+      }
+
+      const geometry =
+        positionsOnlyGeometry(
+          child.geometry
+        );
+
+      geometry.applyMatrix4(
+        child.matrixWorld
+      );
+
+      geometries.push(
+        geometry
+      );
+    }
+  );
+
+  if (
+    geometries.length ===
+    0
+  ) {
+    throw new Error(
+      "No mesh objects were found in this file."
+    );
+  }
+
+  if (
+    geometries.length ===
+    1
+  ) {
+    return geometries[0];
+  }
+
+  const merged =
+    mergeGeometryList(
+      geometries
+    );
+
+  geometries.forEach(
+    (geometry) =>
+      geometry.dispose()
+  );
+
+  if (!merged) {
+    throw new Error(
+      "The imported mesh parts could not be merged."
+    );
+  }
+
+  return merged;
+}
+
+function prepareImportedGeometry(
+  sourceGeometry,
+  {
+    sceneScale,
+    zUp,
+  }
+) {
+  const geometry =
+    positionsOnlyGeometry(
+      sourceGeometry
+    );
+
+  if (zUp) {
+    // Typical printable STL/3MF coordinates use Z as vertical.
+    // BEYOND Creator uses Three.js Y-up coordinates.
+    geometry.rotateX(
+      -Math.PI / 2
+    );
+  }
+
+  geometry.scale(
+    sceneScale,
+    sceneScale,
+    sceneScale
+  );
+
+  geometry.computeVertexNormals();
+  geometry.computeBoundingBox();
+  geometry.computeBoundingSphere();
+
+  return geometry;
+}
+
+function triangleCount(
+  geometry
+) {
+  if (
+    geometry.index
+  ) {
+    return Math.floor(
+      geometry.index.count /
+        3
+    );
+  }
+
+  return Math.floor(
+    geometry.getAttribute(
+      "position"
+    ).count / 3
+  );
+}
+
+export async function parseCreatorModelFile(
+  file,
+  sceneScale = 0.018
+) {
+  const extension =
+    file.name
+      .split(".")
+      .pop()
+      ?.toLowerCase();
+
+  let geometry = null;
+  let format = "";
+  let engine = "THREE LOADER";
+  let unitsLabel =
+    "millimeters";
+
+  if (
+    extension === "stl"
+  ) {
+    const buffer =
+      await file.arrayBuffer();
+
+    const loader =
+      new STLLoader();
+
+    const parsed =
+      loader.parse(
+        buffer
+      );
+
+    geometry =
+      prepareImportedGeometry(
+        parsed,
+        {
+          sceneScale,
+          zUp: true,
+        }
+      );
+
+    parsed.dispose();
+    format = "STL";
+    engine = "THREE STL";
+  } else if (
+    extension === "3mf"
+  ) {
+    const buffer =
+      await file.arrayBuffer();
+
+    const loader =
+      new ThreeMFLoader();
+
+    const group =
+      loader.parse(
+        buffer
+      );
+
+    const raw =
+      objectToGeometry(
+        group
+      );
+
+    geometry =
+      prepareImportedGeometry(
+        raw,
+        {
+          sceneScale,
+          zUp: true,
+        }
+      );
+
+    raw.dispose();
+    format = "3MF";
+    engine = "THREE 3MF";
+  } else if (
+    extension === "obj"
+  ) {
+    const text =
+      await file.text();
+
+    const loader =
+      new OBJLoader();
+
+    const group =
+      loader.parse(
+        text
+      );
+
+    const raw =
+      objectToGeometry(
+        group
+      );
+
+    geometry =
+      prepareImportedGeometry(
+        raw,
+        {
+          sceneScale,
+          // OBJ has no universal unit/up-axis declaration.
+          // We keep the common Three.js Y-up interpretation.
+          zUp: false,
+        }
+      );
+
+    raw.dispose();
+    format = "OBJ";
+    engine = "THREE OBJ";
+    unitsLabel =
+      "millimeters / Y-up";
+  } else {
+    throw new Error(
+      "Unsupported format. Import STL, 3MF or OBJ."
+    );
+  }
+
+  const count =
+    triangleCount(
+      geometry
+    );
+
+  if (
+    count > 500000
+  ) {
+    geometry.dispose();
+
+    throw new Error(
+      "This model is too dense for browser editing (over 500,000 triangles). Simplify it first, then import again."
+    );
+  }
+
+  return {
+    geometry,
+    format,
+    engine,
+    triangleCount:
+      count,
+    unitsLabel,
+  };
+}

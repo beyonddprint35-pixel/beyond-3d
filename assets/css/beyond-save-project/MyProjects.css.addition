@@ -1,0 +1,35 @@
+/* ================================================================
+   BEYOND COMMUNITY — ACCOUNT SHARING CONTROLS
+   ================================================================ */
+.account-community-button {
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid rgba(82, 151, 207, 0.26);
+  border-radius: 11px;
+  background: rgba(20, 72, 111, 0.18);
+  color: #86bce0;
+  font-size: 9px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.account-community-button.is-published {
+  border-color: rgba(91, 174, 128, 0.25);
+  background: rgba(34, 96, 62, 0.15);
+  color: #83c49d;
+}
+
+.account-community-button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.account-community-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #6994b1;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+}

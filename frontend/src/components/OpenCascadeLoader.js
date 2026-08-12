@@ -1,24 +1,56 @@
 /* ======================================================================
-   BEYOND CREATOR — OPENCASCADE LOADER
-   TEMPORARY DEPLOY-SAFE FALLBACK
-
-   Native OpenCascade loading is intentionally disabled for now.
-   SketchWorkspace will automatically continue with the mesh/CSG fallback.
-   We will restore the BRep loader when development resumes.
+   BEYOND CREATOR — OPENCASCADE LOADER V30
+   ----------------------------------------------------------------------
+   Vite-compatible OpenCascade loader.
+   Loads the WASM binary as a URL instead of letting Vite parse it
+   as a JavaScript/WebAssembly module.
    ====================================================================== */
+
+import initOpenCascade from "opencascade.js/dist/opencascade.full.js";
+import openCascadeWasmUrl from "opencascade.js/dist/opencascade.full.wasm?url";
+
+import { createOpenCascadeKernelAdapter } from "./OpenCascadeKernelAdapter";
 
 let initPromise = null;
 
-export function initializeBeyondOpenCascade() {
+export function initializeBeyondOpenCascade({
+  fallbackBuildPreview,
+  fallbackTopology,
+} = {}) {
   if (initPromise) return initPromise;
 
-  initPromise = Promise.reject(
-    new Error("OpenCascade temporarily disabled — mesh fallback active")
-  );
+  initPromise = (async () => {
+    const oc = await initOpenCascade({
+      locateFile: (path) => {
+        if (path.endsWith(".wasm")) {
+          return openCascadeWasmUrl;
+        }
+
+        return path;
+      },
+    });
+
+    const adapter = createOpenCascadeKernelAdapter(oc, {
+      fallbackBuildPreview,
+      fallbackTopology,
+    });
+
+    if (typeof window === "undefined" || !window.BeyondCadKernel) {
+      throw new Error("BeyondCadKernel bridge is not installed yet");
+    }
+
+    window.BeyondCadKernel.register(adapter);
+
+    return {
+      oc,
+      adapter,
+    };
+  })().catch((error) => {
+    console.error("[BEYOND CAD] OpenCascade initialization failed:", error);
+
+    initPromise = null;
+    throw error;
+  });
 
   return initPromise;
-}
-
-export function resetBeyondOpenCascade() {
-  initPromise = null;
 }

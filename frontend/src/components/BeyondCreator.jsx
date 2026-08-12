@@ -95,6 +95,12 @@ import {
   warmManifoldEngine,
 } from "./manifoldEngine";
 
+import {
+  deserializeCreatorObjects,
+  saveProjectRecord,
+  serializeCreatorObjects,
+} from "../lib/projectStore";
+
 import "./BeyondCreator.css";
 import "./SketchExtrudeModal.css";
 import "./RevolveModal.css";
@@ -2996,13 +3002,42 @@ function CameraController({
     controls,
   } = useThree();
 
+  // Keep the latest model/scene center available for an EXPLICIT camera
+  // command, but never use object movement itself as a camera command.
+  // This is the Studio camera-lock rule:
+  //   select object  -> camera stays fixed
+  //   drag object    -> camera stays fixed
+  //   release object -> camera stays fixed
+  const targetRef =
+    useRef(
+      target?.clone?.() ||
+        new THREE.Vector3(
+          0,
+          0,
+          0
+        )
+    );
+
+  useEffect(() => {
+    targetRef.current =
+      target?.clone?.() ||
+      new THREE.Vector3(
+        0,
+        0,
+        0
+      );
+  }, [target]);
+
   useEffect(() => {
     if (!camera) {
       return;
     }
 
+    // Camera presets are allowed to move the camera. Object/selection
+    // changes are NOT. Because `target` is intentionally not a dependency
+    // of this effect, moving geometry cannot re-center the viewport.
     const safeTarget =
-      target?.clone?.() ||
+      targetRef.current?.clone?.() ||
       new THREE.Vector3(
         0,
         0,
@@ -3079,42 +3114,7 @@ function CameraController({
   }, [
     camera,
     controls,
-    target,
     view,
-  ]);
-
-  return null;
-}
-
-function SelectedObjectOrbitTarget({
-  controlsRef,
-  target,
-}) {
-  useEffect(() => {
-    const controls =
-      controlsRef.current;
-
-    if (!controls) {
-      return;
-    }
-
-    const safeTarget =
-      target?.clone?.() ||
-      new THREE.Vector3(
-        0,
-        0,
-        0
-      );
-
-    // IMPORTANT:
-    // Selection may change the future orbit pivot, but it must NEVER
-    // reposition, rotate or focus the camera by itself.
-    controls.target.copy(
-      safeTarget
-    );
-  }, [
-    controlsRef,
-    target,
   ]);
 
   return null;
@@ -4886,29 +4886,11 @@ function CreatorScene({
       ]
     );
 
-  const orbitTarget =
-    useMemo(
-      () =>
-        creatorOrbitTargetFor(
-          objects,
-          primaryId
-        ),
-      [
-        objects,
-        primaryId,
-      ]
-    );
-
   const flat2D =
     plan2D ||
     Boolean(
       elevation2D
     );
-
-  const activeOrbitTarget =
-    flat2D
-      ? cameraTarget
-      : orbitTarget;
 
   return (
     <>
@@ -5179,14 +5161,6 @@ function CreatorScene({
         autoRotateSpeed={0.45}
       />
 
-      <SelectedObjectOrbitTarget
-        controlsRef={
-          orbitControlsRef
-        }
-        target={
-          activeOrbitTarget
-        }
-      />
     </>
   );
 }
@@ -5998,7 +5972,10 @@ function isTypingTarget(
   );
 }
 
-function BeyondCreator() {
+function BeyondCreator({
+  session,
+  onRequireAuth,
+}) {
   const creatorSectionRef =
     useRef(null);
 
@@ -6030,6 +6007,43 @@ function BeyondCreator() {
   ] = useState([
     initial,
   ]);
+
+  const [
+    currentProjectId,
+    setCurrentProjectId,
+  ] = useState(null);
+
+  const [
+    currentProjectName,
+    setCurrentProjectName,
+  ] = useState("");
+
+  const [
+    projectSaving,
+    setProjectSaving,
+  ] = useState(false);
+
+  const [
+    projectSaveState,
+    setProjectSaveState,
+  ] = useState("unsaved");
+
+  const [
+    projectLastSavedAt,
+    setProjectLastSavedAt,
+  ] = useState(null);
+
+  const projectAutosaveTimerRef =
+    useRef(null);
+
+  const projectSkipNextAutosaveRef =
+    useRef(false);
+
+  const projectEditVersionRef =
+    useRef(0);
+
+  const projectSaveQueueRef =
+    useRef(Promise.resolve());
 
   const [
     selectedIds,
@@ -16529,6 +16543,9 @@ function BeyondCreator() {
       setImportMessage(
         `${file.name} imported · ${imported.triangleCount.toLocaleString()} triangles · assumed ${imported.unitsLabel}.`
       );
+
+      // BEYOND_IMPORT_RETURNS_OBJECT_V6
+      return resultObject;
     } catch (
       error
     ) {
@@ -16547,6 +16564,172 @@ function BeyondCreator() {
       );
     }
   }
+
+
+
+
+  // BEYOND_COMMUNITY_AI_REMIX_IMPORT_V7
+  // AI Community Remix is an explicit NEW IMPORT. Community downloads the
+  // GLB first and passes the actual File object here. This avoids expired URLs
+  // and CORS failures during the Community -> Studio transition.
+  useEffect(() => {
+    async function handleCommunityAiRemix(event) {
+      const detail = event?.detail || {};
+      let file = detail.file || null;
+      const modelUrl = detail.modelUrl || null;
+
+      if (!file && !modelUrl) {
+        setImportMessage(
+          "This AI Community model has no 3D source to remix."
+        );
+        return;
+      }
+
+      if (
+        !currentProjectId &&
+        objects.length > 0
+      ) {
+        const confirmed = window.confirm(
+          "Open this AI model as a new Creator project? Your current unsaved scene will be replaced."
+        );
+
+        if (!confirmed) {
+          return;
+        }
+      }
+
+      if (
+        currentProjectId &&
+        projectSaveState === "dirty"
+      ) {
+        await persistCurrentProject({
+          askForName: false,
+          showMessage: false,
+          refreshThumbnail: false,
+          editVersion: projectEditVersionRef.current,
+        });
+      }
+
+      setImportMessage(
+        `Loading ${detail.title || "AI Community model"}…`
+      );
+      setOperationMessage(
+        "Preparing AI Remix mesh…"
+      );
+
+      try {
+        // Fallback for older callers: fetch only if Community did not pass File.
+        if (!file) {
+          const response = await fetch(modelUrl);
+
+          if (!response.ok) {
+            throw new Error(
+              `Unable to load AI model (${response.status}).`
+            );
+          }
+
+          const blob = await response.blob();
+          const safeName = String(
+            detail.title || "AI Community Model"
+          )
+            .replace(/[^a-z0-9-_ ]/gi, "")
+            .trim()
+            .slice(0, 60) ||
+            "AI Community Model";
+
+          file = new File(
+            [blob],
+            `${safeName}.glb`,
+            {
+              type: blob.type || "model/gltf-binary",
+            }
+          );
+        }
+
+        projectSkipNextAutosaveRef.current = true;
+        setCurrentProjectId(null);
+        setCurrentProjectName(
+          `${detail.title || "AI Community Model"} Remix`
+        );
+        setProjectLastSavedAt(null);
+        setProjectSaveState("idle");
+
+        setObjects([]);
+        setSelectedIds([]);
+        setPrimaryId(null);
+        setCreatorMode("advanced");
+        setTransformMode("select");
+        setCameraView("perspective");
+
+        const importedObject =
+          await handleCreatorImport({
+            target: {
+              files: [file],
+              value: "",
+            },
+          });
+
+        if (!importedObject) {
+          throw new Error(
+            "Creator received the AI GLB, but could not convert it into an editable mesh."
+          );
+        }
+
+        // Explicit one-time fit for a NEW import only. Normal object movement
+        // continues to leave the Studio camera untouched.
+        window.setTimeout(() => {
+          const camera =
+            viewportApiRef.current?.camera;
+
+          if (camera) {
+            camera.position.set(
+              5.2,
+              4.1,
+              6.2
+            );
+            camera.lookAt(
+              0,
+              0.8,
+              0
+            );
+            camera.updateProjectionMatrix?.();
+          }
+        }, 180);
+
+        setImportMessage(
+          `${file.name} opened as an editable AI Remix mesh.`
+        );
+        setOperationMessage(
+          "AI model opened in Studio. Save Project to keep your Remix."
+        );
+      } catch (error) {
+        console.error(
+          "[BEYOND COMMUNITY] AI Creator import failed:",
+          error
+        );
+        const message =
+          error?.message ||
+          "Unable to remix this AI model in Creator.";
+        setImportMessage(message);
+        setOperationMessage(message);
+      }
+    }
+
+    window.addEventListener(
+      "beyond-community-ai-remix",
+      handleCommunityAiRemix
+    );
+
+    return () =>
+      window.removeEventListener(
+        "beyond-community-ai-remix",
+        handleCommunityAiRemix
+      );
+  }, [
+    currentProjectId,
+    objects,
+    projectSaveState,
+  ]);
 
   function handleCanvasMiss() {
     if (
@@ -17167,6 +17350,563 @@ function BeyondCreator() {
     meshSelectionMode,
     boxSelectActive,
   ]);
+
+
+  // BEYOND_PROJECT_SAVE_V1
+  // BEYOND_PROJECT_SAVE_PHASE_2
+  function buildCurrentProjectData() {
+    return {
+      creatorMode,
+      objects:
+        serializeCreatorObjects(
+          objects
+        ),
+      selectedIds,
+      primaryId,
+      savedAt:
+        new Date()
+          .toISOString(),
+    };
+  }
+
+  function buildFallbackProjectThumbnail(
+    projectName
+  ) {
+    const safeName = String(
+      projectName ||
+        "BEYOND PROJECT"
+    )
+      .replace(/[&<>\"]/g, "")
+      .slice(0, 44);
+
+    const objectCount =
+      objects.length;
+
+    const labels = objects
+      .slice(0, 4)
+      .map(
+        (item) =>
+          String(
+            item?.name ||
+              item?.type ||
+              "OBJECT"
+          )
+            .replace(/[&<>\"]/g, "")
+            .toUpperCase()
+            .slice(0, 16)
+      )
+      .join(" · ");
+
+    const svg = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360">
+        <defs>
+          <radialGradient id="g" cx="50%" cy="42%" r="70%">
+            <stop offset="0" stop-color="#173a56"/>
+            <stop offset="1" stop-color="#061018"/>
+          </radialGradient>
+        </defs>
+        <rect width="640" height="360" fill="url(#g)"/>
+        <g fill="none" stroke="#79a9ca" stroke-opacity=".16">
+          <path d="M0 288H640M0 240H640M0 192H640M0 144H640M0 96H640M80 0V360M160 0V360M240 0V360M320 0V360M400 0V360M480 0V360M560 0V360"/>
+        </g>
+        <text x="40" y="58" fill="#5d8eb0" font-family="Arial,Helvetica,sans-serif" font-size="12" letter-spacing="4">BEYOND CREATOR</text>
+        <text x="40" y="192" fill="#e0ebf2" font-family="Arial,Helvetica,sans-serif" font-size="30" font-weight="700">${safeName}</text>
+        <text x="40" y="228" fill="#6f8da3" font-family="Arial,Helvetica,sans-serif" font-size="13">${objectCount} ${objectCount === 1 ? "OBJECT" : "OBJECTS"}</text>
+        <text x="40" y="306" fill="#526d80" font-family="Arial,Helvetica,sans-serif" font-size="11" letter-spacing="1">${labels || "CREATOR PROJECT"}</text>
+      </svg>
+    `;
+
+    return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+  }
+
+  function captureProjectThumbnail(
+    projectName
+  ) {
+    try {
+      const sourceCanvas =
+        creatorCanvasWrapRef
+          .current
+          ?.querySelector(
+            "canvas"
+          );
+
+      if (
+        sourceCanvas &&
+        sourceCanvas.width > 0 &&
+        sourceCanvas.height > 0
+      ) {
+        const output =
+          document.createElement(
+            "canvas"
+          );
+
+        output.width = 640;
+        output.height = 360;
+
+        const context =
+          output.getContext(
+            "2d",
+            { alpha: false }
+          );
+
+        if (context) {
+          context.fillStyle =
+            "#061018";
+          context.fillRect(
+            0,
+            0,
+            output.width,
+            output.height
+          );
+
+          const sourceRatio =
+            sourceCanvas.width /
+            sourceCanvas.height;
+          const targetRatio =
+            output.width /
+            output.height;
+
+          let sx = 0;
+          let sy = 0;
+          let sw =
+            sourceCanvas.width;
+          let sh =
+            sourceCanvas.height;
+
+          if (
+            sourceRatio >
+            targetRatio
+          ) {
+            sw =
+              sourceCanvas.height *
+              targetRatio;
+            sx =
+              (sourceCanvas.width -
+                sw) /
+              2;
+          } else {
+            sh =
+              sourceCanvas.width /
+              targetRatio;
+            sy =
+              (sourceCanvas.height -
+                sh) /
+              2;
+          }
+
+          context.drawImage(
+            sourceCanvas,
+            sx,
+            sy,
+            sw,
+            sh,
+            0,
+            0,
+            output.width,
+            output.height
+          );
+
+          const image =
+            output.toDataURL(
+              "image/jpeg",
+              0.72
+            );
+
+          if (
+            image &&
+            image.length > 2200
+          ) {
+            return image;
+          }
+        }
+      }
+    } catch (error) {
+      console.warn(
+        "[BEYOND PROJECTS] Thumbnail capture fallback:",
+        error
+      );
+    }
+
+    return buildFallbackProjectThumbnail(
+      projectName
+    );
+  }
+
+  async function persistCurrentProject({
+    askForName = false,
+    showMessage = false,
+    refreshThumbnail = false,
+    editVersion =
+      projectEditVersionRef.current,
+  } = {}) {
+    if (!session?.user?.id) {
+      if (showMessage) {
+        setOperationMessage(
+          "Log in to save your BEYOND project."
+        );
+        onRequireAuth?.();
+      }
+      return null;
+    }
+
+    let projectName =
+      currentProjectName;
+
+    if (
+      askForName ||
+      !currentProjectId
+    ) {
+      projectName =
+        window.prompt(
+          "Name your BEYOND project",
+          currentProjectName ||
+            "Untitled Project"
+        );
+
+      if (projectName == null) {
+        return null;
+      }
+
+      projectName =
+        projectName.trim() ||
+        "Untitled Project";
+    }
+
+    const projectIdAtStart =
+      currentProjectId;
+
+    const projectData =
+      buildCurrentProjectData();
+
+    const thumbnailUrl =
+      refreshThumbnail
+        ? captureProjectThumbnail(
+            projectName
+          )
+        : undefined;
+
+    setProjectSaving(true);
+    setProjectSaveState(
+      "saving"
+    );
+
+    if (showMessage) {
+      setOperationMessage(
+        projectIdAtStart
+          ? "Saving project…"
+          : "Creating project…"
+      );
+    }
+
+    try {
+      const saveTask = async () =>
+        saveProjectRecord({
+          id: projectIdAtStart,
+          userId:
+            session.user.id,
+          name: projectName,
+          projectType:
+            creatorMode ||
+            "creator",
+          projectData,
+          thumbnailUrl,
+          visibility:
+            "private",
+        });
+
+      const queued =
+        projectSaveQueueRef.current
+          .catch(() => null)
+          .then(saveTask);
+
+      projectSaveQueueRef.current =
+        queued;
+
+      const saved =
+        await queued;
+
+      if (!projectIdAtStart) {
+        projectSkipNextAutosaveRef.current =
+          true;
+        setCurrentProjectId(
+          saved.id
+        );
+      }
+
+      setCurrentProjectName(
+        saved.name
+      );
+      setProjectLastSavedAt(
+        saved.updated_at ||
+          new Date()
+            .toISOString()
+      );
+
+      if (
+        editVersion ===
+        projectEditVersionRef.current
+      ) {
+        setProjectSaveState(
+          "saved"
+        );
+      } else {
+        setProjectSaveState(
+          "dirty"
+        );
+      }
+
+      if (showMessage) {
+        setOperationMessage(
+          `Project “${saved.name}” saved.`
+        );
+      }
+
+      window.dispatchEvent(
+        new CustomEvent(
+          "beyond-project-saved",
+          { detail: saved }
+        )
+      );
+
+      return saved;
+    } catch (error) {
+      console.error(
+        "[BEYOND PROJECTS] Save failed:",
+        error
+      );
+      setProjectSaveState(
+        "error"
+      );
+      if (showMessage) {
+        setOperationMessage(
+          error?.message ||
+            "Could not save project."
+        );
+      }
+      return null;
+    } finally {
+      setProjectSaving(false);
+    }
+  }
+
+  async function handleSaveProject() {
+    if (
+      projectAutosaveTimerRef.current
+    ) {
+      window.clearTimeout(
+        projectAutosaveTimerRef.current
+      );
+      projectAutosaveTimerRef.current =
+        null;
+    }
+
+    await persistCurrentProject({
+      askForName:
+        !currentProjectId,
+      showMessage: true,
+      refreshThumbnail: true,
+      editVersion:
+        projectEditVersionRef.current,
+    });
+  }
+
+  useEffect(() => {
+    if (
+      !currentProjectId ||
+      !session?.user?.id
+    ) {
+      return undefined;
+    }
+
+    if (
+      projectSkipNextAutosaveRef.current
+    ) {
+      projectSkipNextAutosaveRef.current =
+        false;
+      return undefined;
+    }
+
+    projectEditVersionRef.current +=
+      1;
+
+    const editVersion =
+      projectEditVersionRef.current;
+
+    setProjectSaveState(
+      "dirty"
+    );
+
+    if (
+      projectAutosaveTimerRef.current
+    ) {
+      window.clearTimeout(
+        projectAutosaveTimerRef.current
+      );
+    }
+
+    projectAutosaveTimerRef.current =
+      window.setTimeout(
+        () => {
+          projectAutosaveTimerRef.current =
+            null;
+
+          persistCurrentProject({
+            askForName: false,
+            showMessage: false,
+            refreshThumbnail: false,
+            editVersion,
+          });
+        },
+        1800
+      );
+
+    return () => {
+      if (
+        projectAutosaveTimerRef.current
+      ) {
+        window.clearTimeout(
+          projectAutosaveTimerRef.current
+        );
+        projectAutosaveTimerRef.current =
+          null;
+      }
+    };
+  }, [
+    objects,
+    creatorMode,
+    currentProjectId,
+    session?.user?.id,
+  ]);
+
+  useEffect(() => {
+    function handleProjectRenamed(
+      event
+    ) {
+      const renamed =
+        event?.detail;
+
+      if (
+        renamed?.id &&
+        renamed.id ===
+          currentProjectId
+      ) {
+        setCurrentProjectName(
+          renamed.name ||
+            currentProjectName
+        );
+        setProjectLastSavedAt(
+          renamed.updated_at ||
+            new Date()
+              .toISOString()
+        );
+        setProjectSaveState(
+          "saved"
+        );
+      }
+    }
+
+    window.addEventListener(
+      "beyond-project-renamed",
+      handleProjectRenamed
+    );
+
+    return () =>
+      window.removeEventListener(
+        "beyond-project-renamed",
+        handleProjectRenamed
+      );
+  }, [
+    currentProjectId,
+    currentProjectName,
+  ]);
+
+  useEffect(() => {
+    function handleOpenProject(event) {
+      const project =
+        event?.detail;
+      const data =
+        project?.project_data ||
+        project?.projectData;
+
+      if (!project || !data) {
+        return;
+      }
+
+      try {
+        const restoredObjects =
+          deserializeCreatorObjects(
+            data.objects || []
+          );
+
+        setObjects(
+          restoredObjects
+        );
+        setSelectedIds(
+          Array.isArray(
+            data.selectedIds
+          )
+            ? data.selectedIds
+            : []
+        );
+        setPrimaryId(
+          data.primaryId ||
+            null
+        );
+
+        if (data.creatorMode) {
+          setCreatorMode(
+            data.creatorMode
+          );
+        }
+
+        projectSkipNextAutosaveRef.current =
+          true;
+        projectEditVersionRef.current =
+          0;
+        setCurrentProjectId(
+          project.id
+        );
+        setCurrentProjectName(
+          project.name ||
+            "Untitled Project"
+        );
+        setProjectLastSavedAt(
+          project.updated_at ||
+            project.created_at ||
+            null
+        );
+        setProjectSaveState(
+          "saved"
+        );
+        setOperationMessage(
+          `Project “${
+            project.name ||
+            "Untitled Project"
+          }” opened.`
+        );
+      } catch (error) {
+        console.error(
+          "[BEYOND PROJECTS] Open failed:",
+          error
+        );
+        setOperationMessage(
+          "Could not open this project."
+        );
+      }
+    }
+
+    window.addEventListener(
+      "beyond-project-open",
+      handleOpenProject
+    );
+
+    return () => {
+      window.removeEventListener(
+        "beyond-project-open",
+        handleOpenProject
+      );
+    };
+  }, []);
 
   return (
     <section
@@ -23651,6 +24391,42 @@ function BeyondCreator() {
           </div>
 
           <div className="creator-inspector-actions">
+            <button
+              type="button"
+              className="creator-save-project-button"
+              onClick={handleSaveProject}
+              disabled={projectSaving}
+            >
+              {projectSaving
+                ? "Saving Project…"
+                : currentProjectId
+                  ? `Save ${currentProjectName || "Project"}`
+                  : "Save Project"}
+            </button>
+
+            <div
+              className={`creator-project-save-status is-${projectSaveState}`}
+            >
+              <span className="creator-save-dot" />
+              <strong>
+                {projectSaveState === "saving"
+                  ? "Saving…"
+                  : projectSaveState === "dirty"
+                    ? "Unsaved changes"
+                    : projectSaveState === "saved"
+                      ? "Saved"
+                      : projectSaveState === "error"
+                        ? "Save failed"
+                        : "Not saved yet"}
+              </strong>
+              <small>
+                {currentProjectName ||
+                  (projectLastSavedAt
+                    ? "BEYOND project"
+                    : "Save once to enable autosave")}
+              </small>
+            </div>
+
             <button
               type="button"
               className="creator-primary-action creator-send-project-action"

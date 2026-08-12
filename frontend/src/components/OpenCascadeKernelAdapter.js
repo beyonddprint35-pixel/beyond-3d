@@ -152,6 +152,130 @@ function makeRevolve(oc, points, axisName = "x", angleDegrees = 360) {
   }
 }
 
+
+
+function makeEdge3D(oc, a, b) {
+  const pa = point3(oc, Number(a[0]), Number(a[1]), Number(a[2] || 0));
+  const pb = point3(oc, Number(b[0]), Number(b[1]), Number(b[2] || 0));
+  try {
+    const maker = constructAny(oc, "BRepBuilderAPI_MakeEdge", [[pa, pb]]);
+    if (typeof maker.IsDone === "function" && !maker.IsDone()) throw new Error("OCCT could not build sweep path edge");
+    return { maker, edge: callFirst(maker, ["Edge", "Shape"]) };
+  } finally {
+    deleteSafe(pa);
+    deleteSafe(pb);
+  }
+}
+
+function makeOpenWire3D(oc, points) {
+  if (!Array.isArray(points) || points.length < 2) throw new Error("Sweep path needs at least two 3D points");
+  const wireMaker = constructAny(oc, "BRepBuilderAPI_MakeWire", [[]]);
+  const owned = [];
+  try {
+    for (let i = 0; i < points.length - 1; i += 1) {
+      const edge = makeEdge3D(oc, points[i], points[i + 1]);
+      owned.push(edge.maker);
+      callFirst(wireMaker, ["Add"], edge.edge);
+    }
+    if (typeof wireMaker.IsDone === "function" && !wireMaker.IsDone()) throw new Error("OCCT could not build sweep path wire");
+    return { maker: wireMaker, wire: callFirst(wireMaker, ["Wire"]), owned };
+  } catch (error) {
+    owned.forEach(deleteSafe);
+    deleteSafe(wireMaker);
+    throw error;
+  }
+}
+
+function makeSweep(oc, profilePoints, path) {
+  if (!profilePoints?.length || profilePoints.length < 3) throw new Error("Sweep needs a closed profile");
+  if (!path?.length || path.length < 2) throw new Error("Sweep needs a path");
+
+  const z0 = Number(path[0]?.[2] || 0);
+  const { polygon, wire } = makeWireFromPoints(oc, profilePoints, z0);
+  const faceMaker = constructAny(oc, "BRepBuilderAPI_MakeFace", [[wire, true], [wire]]);
+  const profileFace = callFirst(faceMaker, ["Face", "Shape"]);
+  const spine = makeOpenWire3D(oc, path);
+  try {
+    const maker = constructAny(oc, "BRepOffsetAPI_MakePipe", [
+      [spine.wire, profileFace],
+      [spine.wire, wire],
+    ]);
+    if (typeof maker.IsDone === "function" && !maker.IsDone()) throw new Error("OCCT sweep failed");
+    return { maker, shape: callFirst(maker, ["Shape"]), owned: [polygon, faceMaker, spine.maker, ...spine.owned] };
+  } catch (error) {
+    deleteSafe(faceMaker);
+    deleteSafe(polygon);
+    spine.owned.forEach(deleteSafe);
+    deleteSafe(spine.maker);
+    throw error;
+  }
+}
+
+function makeClosedWire3D(oc, points) {
+  if (!Array.isArray(points) || points.length < 3) throw new Error("Section needs at least three 3D points");
+  const wireMaker = constructAny(oc, "BRepBuilderAPI_MakeWire", [[]]);
+  const owned = [];
+  try {
+    for (let i = 0; i < points.length; i += 1) {
+      const edge = makeEdge3D(oc, points[i], points[(i + 1) % points.length]);
+      owned.push(edge.maker);
+      callFirst(wireMaker, ["Add"], edge.edge);
+    }
+    if (typeof wireMaker.IsDone === "function" && !wireMaker.IsDone()) throw new Error("OCCT could not build loft section wire");
+    return { maker: wireMaker, wire: callFirst(wireMaker, ["Wire"]), owned };
+  } catch (error) {
+    owned.forEach(deleteSafe);
+    deleteSafe(wireMaker);
+    throw error;
+  }
+}
+
+function sectionWorldPoints(section) {
+  const ax = Number(section.angleX || 0) * Math.PI / 180;
+  const ay = Number(section.angleY || 0) * Math.PI / 180;
+  const z = Number(section.offset || 0);
+  const cx = Math.cos(ax), sx = Math.sin(ax), cy = Math.cos(ay), sy = Math.sin(ay);
+  return (section.points || []).map(([x0, y0]) => {
+    let x = Number(x0), y = Number(y0), zz = 0;
+    // Rotate local section around X then Y, then translate along the base extrusion axis.
+    let y1 = y * cx - zz * sx, z1 = y * sx + zz * cx;
+    let x2 = x * cy + z1 * sy, z2 = -x * sy + z1 * cy;
+    return [x2, y1, z + z2];
+  });
+}
+
+function makeLoft(oc, sections, solid = true) {
+  if (!Array.isArray(sections) || sections.length < 2) throw new Error("Loft needs at least two sections");
+  const maker = constructAny(oc, "BRepOffsetAPI_ThruSections", [
+    [Boolean(solid), false, 1e-4],
+    [Boolean(solid), false],
+    [],
+  ]);
+  const owned = [];
+  try {
+    for (const section of sections) {
+      if (Number(section.angleX || 0) !== 0 || Number(section.angleY || 0) !== 0) {
+        const built = makeClosedWire3D(oc, sectionWorldPoints(section));
+        owned.push(built.maker, ...built.owned);
+        callFirst(maker, ["AddWire"], built.wire);
+      } else {
+        const z = Number(section.offset || 0);
+        const built = makeWireFromPoints(oc, section.points, z);
+        owned.push(built.polygon);
+        callFirst(maker, ["AddWire"], built.wire);
+      }
+    }
+    if (typeof maker.CheckCompatibility === "function") maker.CheckCompatibility(true);
+    if (typeof maker.Build === "function") maker.Build();
+    if (typeof maker.IsDone === "function" && !maker.IsDone()) throw new Error("OCCT loft failed");
+    return { maker, shape: callFirst(maker, ["Shape"]), owned };
+  } catch (error) {
+    owned.forEach(deleteSafe);
+    deleteSafe(maker);
+    throw error;
+  }
+}
+
 function booleanShape(oc, mode, left, right) {
   const base = mode === "cut" ? "BRepAlgoAPI_Cut" : "BRepAlgoAPI_Fuse";
   const progress = ctorCandidates(oc, "Message_ProgressRange").length
@@ -372,14 +496,26 @@ function buildShapeForDraft(oc, draft) {
     throw new Error("native-unsupported:side-feature");
   }
 
-  const revolveOperation = (draft.nativeOperations || []).find((operation) => operation.type === "revolve");
-  let current = revolveOperation
-    ? makeRevolve(oc, draft.points, revolveOperation.axis || "x", revolveOperation.angleDegrees || 360)
-    : makePrism(oc, draft.points, 0, draft.height);
-  const owned = [current.maker];
+  const generatorOperation = (draft.nativeOperations || []).find((operation) =>
+    operation.type === "revolve" || operation.type === "sweep" || operation.type === "loft"
+  );
+  let current;
+  let generatorOwned = [];
+  if (generatorOperation?.type === "revolve") {
+    current = makeRevolve(oc, draft.points, generatorOperation.axis || "x", generatorOperation.angleDegrees || 360);
+  } else if (generatorOperation?.type === "sweep") {
+    current = makeSweep(oc, generatorOperation.profile || draft.points, generatorOperation.path || []);
+    generatorOwned = current.owned || [];
+  } else if (generatorOperation?.type === "loft") {
+    current = makeLoft(oc, generatorOperation.sections || [], generatorOperation.solid !== false);
+    generatorOwned = current.owned || [];
+  } else {
+    current = makePrism(oc, draft.points, 0, draft.height);
+  }
+  const owned = [current.maker, ...generatorOwned];
 
-  if (revolveOperation && (draft.features || []).length) {
-    throw new Error("native-unsupported:revolve-with-extrude-features");
+  if (generatorOperation && (draft.features || []).length) {
+    throw new Error(`native-unsupported:${generatorOperation.type}-with-extrude-features`);
   }
 
   for (const feature of draft.features || []) {
@@ -405,7 +541,7 @@ function buildShapeForDraft(oc, draft) {
   }
 
   for (const operation of draft.nativeOperations || []) {
-    if (operation.type === "revolve") continue;
+    if (operation.type === "revolve" || operation.type === "sweep" || operation.type === "loft") continue;
     if (operation.type === "shell") {
       const next = applyShellNative(oc, current.shape, draft, operation);
       owned.push(next.maker);
@@ -605,8 +741,8 @@ export function createOpenCascadeKernelAdapter(oc, { fallbackBuildPreview, fallb
 
   return {
     apiVersion: CAD_KERNEL_API_VERSION,
-    id: "opencascade-wasm-native-v21",
-    name: "OpenCascade BRep V21",
+    id: "opencascade-wasm-native-v23",
+    name: "OpenCascade BRep V23",
     capabilities: {
       persistentTopology: true,
       featureFaceSketching: true,
@@ -614,8 +750,8 @@ export function createOpenCascadeKernelAdapter(oc, { fallbackBuildPreview, fallb
       exactFeatureEdgeFillet: true,
       shell: true,
       revolve: true,
-      sweep: false,
-      loft: false,
+      sweep: true,
+      loft: true,
       planarBodyTransform: true,
       multiFaceSelection: true,
       constructionReferences: true,
@@ -627,6 +763,8 @@ export function createOpenCascadeKernelAdapter(oc, { fallbackBuildPreview, fallb
       nativeChamfer: true,
       nativeShell: true,
       nativeRevolve: true,
+      nativeSweep: true,
+      nativeLoft: true,
       stepExport: false,
     },
 
@@ -699,10 +837,69 @@ export function createOpenCascadeKernelAdapter(oc, { fallbackBuildPreview, fallb
         ensureNative(nextDraft);
         return { ok: true, nextDraft, message: `Revolve ${angleDegrees.toFixed(0)}° around ${axis.toUpperCase()} axis applied natively` };
       }
+      if (tool === "sweep") {
+        const draft = context.draft;
+        if (!draft?.points?.length) return { ok: false, message: "Create a closed base profile before Sweep" };
+        if ((draft.features || []).length) return { ok: false, message: "V23 Sweep currently requires a clean base profile" };
+        const length = Math.max(1, Number(context.sweepLength || 40));
+        const first = draft.points[0];
+        const customPath = Array.isArray(context.sweepPath) ? context.sweepPath : [];
+        const path = customPath.length >= 2
+          ? customPath.map((point) => [Number(point[0]), Number(point[1]), Number(point[2] || 0)])
+          : [
+              [Number(first[0]), Number(first[1]), 0],
+              [Number(first[0]), Number(first[1]), length],
+            ];
+        const nextDraft = {
+          ...draft,
+          nativeOperations: [
+            ...(draft.nativeOperations || []).filter((item) => !["revolve", "sweep", "loft"].includes(item.type)),
+            { id: "native-sweep", type: "sweep", profile: draft.points, path, operation: "new-body" },
+          ],
+        };
+        clearCache();
+        ensureNative(nextDraft);
+        return { ok: true, nextDraft, message: `Sweep ${path.length - 1} segment${path.length === 2 ? "" : "s"} applied natively` };
+      }
+      if (tool === "loft") {
+        const draft = context.draft;
+        if (!draft?.points?.length) return { ok: false, message: "Create a closed base profile before Loft" };
+        if ((draft.features || []).length) return { ok: false, message: "V23 Loft currently requires a clean base profile" };
+        const offset = Math.max(1, Number(context.loftOffset || 40));
+        const scale = Math.max(0.05, Number(context.loftScale || 0.65));
+        const capturedPlanes = (context.constructionPlanes || [])
+          .filter((plane) => Array.isArray(plane.points) && plane.points.length >= 3)
+          .sort((a, b) => context.loftManualOrder ? Number(a.order || 0) - Number(b.order || 0) : Number(a.offset || 0) - Number(b.offset || 0));
+        let sections;
+        if (capturedPlanes.length) {
+          sections = [
+            { plane: "top", offset: 0, points: draft.points },
+            ...capturedPlanes.map((plane) => ({ plane: plane.id || "construction", offset: Number(plane.offset || 0), angleX: Number(plane.angleX || 0), angleY: Number(plane.angleY || 0), order: Number(plane.order || 0), points: plane.points })),
+          ];
+        } else {
+          const cx = draft.points.reduce((sum, p) => sum + Number(p[0]), 0) / draft.points.length;
+          const cy = draft.points.reduce((sum, p) => sum + Number(p[1]), 0) / draft.points.length;
+          const top = draft.points.map(([x, y]) => [cx + (x - cx) * scale, cy + (y - cy) * scale]);
+          sections = [
+            { plane: "top", offset: 0, points: draft.points },
+            { plane: "top", offset, points: top },
+          ];
+        }
+        const nextDraft = {
+          ...draft,
+          nativeOperations: [
+            ...(draft.nativeOperations || []).filter((item) => !["revolve", "sweep", "loft"].includes(item.type)),
+            { id: "native-loft", type: "loft", sections, solid: true },
+          ],
+        };
+        clearCache();
+        ensureNative(nextDraft);
+        return { ok: true, nextDraft, message: `Loft through ${sections.length} sections applied natively` };
+      }
       return {
         ok: false,
-        reason: "v21-tool-not-enabled",
-        message: `${tool} is not enabled in the V21 native tool set`,
+        reason: "v25-tool-not-enabled",
+        message: `${tool} is not enabled in the V25 native kernel`,
       };
     },
   };
