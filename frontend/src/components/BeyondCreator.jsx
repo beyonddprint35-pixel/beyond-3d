@@ -3080,22 +3080,15 @@ function CameraController({
         offset[2]
     );
 
-    if (
-      view ===
-      "top"
-    ) {
-      camera.up.set(
-        0,
-        0,
-        -1
-      );
-    } else {
-      camera.up.set(
-        0,
-        1,
-        0
-      );
-    }
+    // BEYOND_STUDIO_PHASE7_TOP_VIEW_Y_UP
+    // Keep one navigation coordinate system for every preset.
+    // The old Top preset switched camera.up to Z-up, which made OrbitControls
+    // feel like a different camera mode after pressing Top.
+    camera.up.set(
+      0,
+      1,
+      0
+    );
 
     camera.lookAt(
       safeTarget
@@ -4870,7 +4863,97 @@ function CreatorScene({
   architectureActiveLevelId = null,
   architectureLevels = [],
   architectureScale = 100,
+  showBuildPlate = true,
 }) {
+
+  // BEYOND_STUDIO_PHASE8_MODEL_AWARE_ZOOM_STOP
+  // Prevent OrbitControls from dollying the camera through the model.
+  // The stop distance follows the largest visible object's physical size,
+  // so it works for primitives and imported / AI meshes without camera-follow.
+  const studioCameraMinDistance =
+    useMemo(
+      () => {
+        const visibleObjects =
+          (objects || []).filter(
+            (item) =>
+              item &&
+              item.visible !== false
+          );
+
+        if (
+          visibleObjects.length === 0
+        ) {
+          return 0.45;
+        }
+
+        const largestRadius =
+          visibleObjects.reduce(
+            (
+              largest,
+              item
+            ) => {
+              const dimensions =
+                item.dimensions || {};
+
+              const width =
+                Math.max(
+                  0,
+                  Number(
+                    dimensions.width
+                  ) || 0
+                ) *
+                SCENE_SCALE;
+
+              const depth =
+                Math.max(
+                  0,
+                  Number(
+                    dimensions.depth
+                  ) || 0
+                ) *
+                SCENE_SCALE;
+
+              const height =
+                Math.max(
+                  0,
+                  Number(
+                    dimensions.height
+                  ) || 0
+                ) *
+                SCENE_SCALE;
+
+              const radius =
+                Math.hypot(
+                  width,
+                  depth,
+                  height
+                ) /
+                2;
+
+              return Math.max(
+                largest,
+                radius
+              );
+            },
+            0
+          );
+
+        /*
+          1.12 leaves a small visual gap at the surface instead of allowing
+          the near plane to clip into the object.
+        */
+        return Math.max(
+          0.45,
+          Math.min(
+            14,
+            largestRadius *
+              1.12
+          )
+        );
+      },
+      [objects]
+    );
+
   const orbitControlsRef =
     useRef(null);
 
@@ -5073,7 +5156,9 @@ function CreatorScene({
         />
       )}
 
-      {!elevation2D && (
+      {/* BEYOND_STUDIO_PHASE17_HIDE_BUILD_PLATE */}
+      {!elevation2D &&
+        showBuildPlate && (
         <BuildPlate />
       )}
 
@@ -5127,7 +5212,8 @@ function CreatorScene({
         />
       )}
 
-      <OrbitControls
+      {/* BEYOND_STUDIO_PHASE6_ZOOM_RANGE */}
+<OrbitControls
         ref={
           orbitControlsRef
         }
@@ -5149,8 +5235,8 @@ function CreatorScene({
           RIGHT:
             null,
         }}
-        minDistance={3}
-        maxDistance={11}
+        minDistance={studioCameraMinDistance}
+        maxDistance={80}
         autoRotate={
           flat2D
             ? false
@@ -5159,7 +5245,10 @@ function CreatorScene({
               : autoRotate
         }
         autoRotateSpeed={0.45}
-      />
+      
+        minZoom={0.05}
+        maxZoom={40}
+        zoomSpeed={1.2}/>
 
     </>
   );
@@ -6423,6 +6512,23 @@ function BeyondCreator({
     inspectorTab,
     setInspectorTab,
   ] = useState("transform");
+
+  // BEYOND_STUDIO_DIRECT_LAYOUT_STATE
+  const [
+    studioPanel,
+    setStudioPanel,
+  ] = useState(null);
+
+  // BEYOND_STUDIO_PHASE4_MODIFY_STATE
+  const [
+    studioModifyTool,
+    setStudioModifyTool,
+  ] = useState(null);
+
+  const [
+    studioInspectorCollapsed,
+    setStudioInspectorCollapsed,
+  ] = useState(false);
 
   const [
     meshEditMode,
@@ -12283,6 +12389,43 @@ function BeyondCreator({
     );
   }
 
+  // BEYOND_STUDIO_DIRECT_LAYOUT_HELPERS
+  function toggleStudioPanel(
+    panel
+  ) {
+    setStudioPanel(
+      (current) =>
+        current === panel
+          ? null
+          : panel
+    );
+
+    if (panel === "add") {
+      setLibraryTab("create");
+      return;
+    }
+
+    if (panel === "object") {
+      setLibraryTab("scene");
+      setInspectorTab("object");
+      return;
+    }
+
+    if (
+      ["transform", "edit", "modify", "output"].includes(panel)
+    ) {
+      setInspectorTab(panel);
+    }
+  }
+
+  function showStudioInspector(
+    tab
+  ) {
+    setInspectorTab(tab);
+    setStudioInspectorCollapsed(false);
+    setStudioPanel(null);
+  }
+
   function addObject(
     type
   ) {
@@ -12331,6 +12474,16 @@ function BeyondCreator({
     setOperationMessage(
       ""
     );
+
+    // BEYOND_STUDIO_CLOSE_ADD_AFTER_CREATE
+    if (
+      creatorMode ===
+      "advanced"
+    ) {
+      setStudioPanel(
+        null
+      );
+    }
   }
 
   function duplicateSelected() {
@@ -18438,7 +18591,22 @@ function BeyondCreator({
       />
 
       <div
-        className="creator-shell creator-shell-v2 creator-shell-v3 creator-shell-v5"
+        // BEYOND_STUDIO_DIRECT_LAYOUT_SHELL
+        className={`creator-shell creator-shell-v2 creator-shell-v3 creator-shell-v5${
+          creatorMode === "advanced"
+            ? " creator-studio-direct-layout"
+            : ""
+        }${
+          creatorMode === "advanced" &&
+          studioInspectorCollapsed
+            ? " creator-studio-direct-inspector-collapsed"
+            : ""
+        }${
+          creatorMode === "advanced" &&
+          studioPanel
+            ? ` creator-studio-direct-panel-${studioPanel}`
+            : ""
+        }`}
         style={{
           display:
             creatorMode ===
@@ -18447,6 +18615,1816 @@ function BeyondCreator({
               : undefined,
         }}
       >
+        {/* BEYOND_STUDIO_DIRECT_LAYOUT_RAIL */}
+        {/* BEYOND_STUDIO_PHASE11_REMOVE_DETAIL_BUTTONS */}
+        {creatorMode === "advanced" && (
+          <nav
+            className="creator-studio-direct-rail"
+            aria-label="Studio tools"
+          >
+            {[
+              ["add", "+", "ADD"],
+              ["object", "◈", "OBJECT"],
+              // BEYOND_STUDIO_PHASE10_BOOLEAN_RAIL
+              ["boolean", "∪", "BOOLEAN"],
+              ["transform", "↔", "TRANSFORM"],
+              ["edit", "✎", "EDIT"],
+              ["modify", "◇", "MODIFY"],
+              ["output", "⇧", "OUTPUT"],
+            ].map(([panel, icon, label]) => (
+              <button
+                type="button"
+                key={panel}
+                className={studioPanel === panel ? "active" : ""}
+                onClick={() => toggleStudioPanel(panel)}
+                title={label}
+              >
+                <span>{icon}</span>
+                <small>{label}</small>
+              </button>
+            ))}
+          </nav>
+        )}
+
+        {creatorMode === "advanced" &&
+          ["add", "object", "boolean", "transform", "edit", "modify", "output"].includes(studioPanel) && (
+          <section
+            className={`creator-studio-direct-flyout creator-studio-direct-flyout-${studioPanel}`}
+          >
+            <header>
+              <div>
+                <span>STUDIO</span>
+                <strong>
+                  {/* BEYOND_STUDIO_PHASE3_ADD_OBJECT_FLYOUT */}
+                  {studioPanel === "add"
+                    ? "ADD"
+                    : studioPanel === "object"
+                      ? "OBJECT"
+                      : studioPanel === "boolean"
+                        ? "BOOLEAN"
+                        : studioPanel === "transform"
+                          ? "TRANSFORM"
+                        : studioPanel === "edit"
+                          ? "EDIT"
+                          : studioPanel === "modify"
+                            ? "MODIFY"
+                            : "OUTPUT"}
+                </strong>
+              </div>
+
+              <button
+                type="button"
+                className="creator-studio-direct-close"
+                onClick={() => setStudioPanel(null)}
+                aria-label="Close panel"
+              >
+                ×
+              </button>
+            </header>
+
+            <div className="creator-studio-direct-flyout-body">
+              {/* BEYOND_STUDIO_PHASE3_FLYOUT_CONTENT */}
+              {studioPanel === "add" && (
+                <>
+                  <span className="creator-studio-direct-section-label">
+                    BASIC
+                  </span>
+
+                  <div className="creator-studio-direct-command-grid">
+                    {[
+                      ["cube", "CUBE", "BOX"],
+                      ["cylinder", "CYLINDER", "ROUND"],
+                      ["sphere", "SPHERE", "BALL"],
+                      ["text", "3D TEXT", "TYPE"],
+                    ].map(([type, label, copy]) => (
+                      <button
+                        type="button"
+                        key={type}
+                        onClick={() => addObject(type)}
+                      >
+                        <strong>{label}</strong>
+                        <small>{copy}</small>
+                      </button>
+                    ))}
+                  </div>
+
+                  <span className="creator-studio-direct-section-label">
+                    STUDIO SOLIDS
+                  </span>
+
+                  <div className="creator-studio-direct-command-grid">
+                    {[
+                      ["cone", "CONE", "TAPER"],
+                      ["torus", "TORUS", "RING"],
+                      ["tube", "TUBE", "HOLLOW"],
+                      ["roundedBox", "ROUND BOX", "FILLETED"],
+                    ].map(([type, label, copy]) => (
+                      <button
+                        type="button"
+                        key={type}
+                        onClick={() => addObject(type)}
+                      >
+                        <strong>{label}</strong>
+                        <small>{copy}</small>
+                      </button>
+                    ))}
+                  </div>
+
+                  <span className="creator-studio-direct-section-label">
+                    CREATE
+                  </span>
+
+                  <button
+                    type="button"
+                    className="creator-studio-direct-wide-command"
+                    onClick={() => {
+                      setStudioPanel(null);
+                      setSketchOpen(true);
+                    }}
+                  >
+                    <strong>QUICK EXTRUDE</strong>
+                    <small>DRAW PROFILE → SOLID</small>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="creator-studio-direct-wide-command"
+                    onClick={() => {
+                      setStudioPanel(null);
+                      setRevolveOpen(true);
+                    }}
+                  >
+                    <strong>REVOLVE PROFILE</strong>
+                    <small>SPIN PROFILE → SOLID</small>
+                  </button>
+
+                  <label className="creator-studio-direct-import-command">
+                    <strong>
+                      {importingModel ? "IMPORTING…" : "IMPORT MODEL"}
+                    </strong>
+                    <small>STL · 3MF · OBJ · GLB</small>
+
+                    <input
+                      type="file"
+                      accept=".stl,.3mf,.obj,.glb,.gltf,model/stl,model/3mf,model/gltf-binary,model/gltf+json,text/plain"
+                      hidden
+                      disabled={importingModel}
+                      onChange={(event) => {
+                        setStudioPanel(null);
+                        handleCreatorImport(event);
+                      }}
+                    />
+                  </label>
+
+                  {importMessage && (
+                    <div className="creator-import-message">
+                      {importMessage}
+                    </div>
+                  )}
+
+                  <div className="creator-studio-direct-object-count">
+                    {objects.length} / {MAX_OBJECTS} OBJECTS
+                  </div>
+                </>
+              )}
+
+              {studioPanel === "object" && (
+                <>
+                  <span className="creator-studio-direct-section-label">
+                    SCENE
+                  </span>
+
+                  <div className="creator-studio-direct-object-list">
+                    {objects.length === 0 ? (
+                      <div className="creator-studio-direct-empty">
+                        NO OBJECTS
+                      </div>
+                    ) : (
+                      objects.map((item, index) => (
+                        <button
+                          type="button"
+                          key={item.id}
+                          className={
+                            selectedIds.includes(item.id)
+                              ? "active"
+                              : ""
+                          }
+                          onClick={() => {
+                            setSelectedIds([item.id]);
+                            setPrimaryId(item.id);
+                          }}
+                        >
+                          <span>
+                            {String(index + 1).padStart(2, "0")}
+                          </span>
+
+                          <strong>{item.name}</strong>
+
+                          <small>
+                            {item.visible === false
+                              ? "HIDDEN"
+                              : item.locked
+                                ? "LOCKED"
+                                : item.role === "hole"
+                                  ? "HOLE"
+                                  : "SOLID"}
+                          </small>
+                        </button>
+                      ))
+                    )}
+                  </div>
+
+                  <span className="creator-studio-direct-section-label">
+                    SELECTED OBJECT
+                  </span>
+
+                  <div className="creator-studio-direct-command-grid">
+                    <button
+                      type="button"
+                      disabled={
+                        !selected ||
+                        selected.locked ||
+                        objects.length >= MAX_OBJECTS
+                      }
+                      onClick={() => {
+                        duplicateSelected();
+                        setStudioPanel(null);
+                      }}
+                    >
+                      <strong>DUPLICATE</strong>
+                      <small>COPY</small>
+                    </button>
+
+                    <button
+                      type="button"
+                      disabled={
+                        selectedIds.length === 0 ||
+                        selectedObjects.every((item) => item.locked)
+                      }
+                      onClick={() => {
+                        deleteSelected();
+                        setStudioPanel(null);
+                      }}
+                    >
+                      <strong>DELETE</strong>
+                      <small>REMOVE</small>
+                    </button>
+
+                    <button
+                      type="button"
+                      disabled={!selected}
+                      onClick={() => {
+                        if (selected) {
+                          toggleObjectVisibility(selected.id);
+                        }
+                      }}
+                    >
+                      <strong>
+                        {selected?.visible === false ? "SHOW" : "HIDE"}
+                      </strong>
+                      <small>VISIBILITY</small>
+                    </button>
+
+                    <button
+                      type="button"
+                      disabled={!selected}
+                      onClick={() => {
+                        if (selected) {
+                          toggleObjectLock(selected.id);
+                        }
+                      }}
+                    >
+                      <strong>
+                        {selected?.locked ? "UNLOCK" : "LOCK"}
+                      </strong>
+                      <small>OBJECT</small>
+                    </button>
+
+                    <button
+                      type="button"
+                      disabled={!selected || selected.locked}
+                      onClick={() => {
+                        updatePosition("y", 0);
+                        setStudioPanel(null);
+                      }}
+                    >
+                      <strong>DROP TO BED</strong>
+                      <small>Y = 0</small>
+                    </button>
+
+                    <button
+                      type="button"
+                      disabled={!selected || selected.locked}
+                      onClick={() => {
+                        setRole(
+                          selected?.role === "hole"
+                            ? "solid"
+                            : "hole"
+                        );
+                      }}
+                    >
+                      <strong>
+                        {selected?.role === "hole"
+                          ? "MAKE SOLID"
+                          : "MAKE HOLE"}
+                      </strong>
+                      <small>BOOLEAN ROLE</small>
+                    </button>
+                  </div>
+
+                  {/* BEYOND_STUDIO_PHASE10_OBJECT_APPEARANCE */}
+                  <span className="creator-studio-direct-section-label">
+                    COLOR + MATERIAL
+                  </span>
+
+                  {selected ? (
+                    <div className="creator-studio-phase10-appearance">
+                      <details>
+                        <summary>
+                          <i
+                            className={
+                              materialPreset(
+                                selected.materialId
+                              ).transparent
+                                ? "transparent"
+                                : ""
+                            }
+                            style={{
+                              backgroundColor:
+                                materialColor(
+                                  selected.materialId
+                                ),
+                            }}
+                          />
+
+                          <span>
+                            {
+                              materialPreset(
+                                selected.materialId
+                              ).label
+                            }
+                          </span>
+
+                          <small>
+                            {materialPreset(
+                              selected.materialId
+                            ).group === "material"
+                              ? "MATERIAL"
+                              : "COLOR"}
+                          </small>
+
+                          <b>▾</b>
+                        </summary>
+
+                        <div className="creator-studio-phase10-appearance-menu">
+                          <div className="creator-studio-phase10-appearance-title">
+                            COLORS
+                          </div>
+
+                          {MATERIALS.filter(
+                            (item) =>
+                              item.group === "color"
+                          ).map((item) => (
+                            <button
+                              type="button"
+                              key={item.id}
+                              className={
+                                selected.materialId === item.id
+                                  ? "active"
+                                  : ""
+                              }
+                              disabled={selected.locked}
+                              onClick={(event) => {
+                                setMaterial(item.id);
+                                event.currentTarget
+                                  .closest("details")
+                                  ?.removeAttribute("open");
+                              }}
+                            >
+                              <i
+                                style={{
+                                  backgroundColor: item.color,
+                                }}
+                              />
+
+                              <span>{item.label}</span>
+
+                              {selected.materialId === item.id && (
+                                <small>✓</small>
+                              )}
+                            </button>
+                          ))}
+
+                          <div className="creator-studio-phase10-appearance-title">
+                            MATERIALS
+                          </div>
+
+                          {MATERIALS.filter(
+                            (item) =>
+                              item.group === "material"
+                          ).map((item) => (
+                            <button
+                              type="button"
+                              key={item.id}
+                              className={
+                                selected.materialId === item.id
+                                  ? "active"
+                                  : ""
+                              }
+                              disabled={selected.locked}
+                              onClick={(event) => {
+                                setMaterial(item.id);
+                                event.currentTarget
+                                  .closest("details")
+                                  ?.removeAttribute("open");
+                              }}
+                            >
+                              <i
+                                className={
+                                  item.transparent
+                                    ? "transparent"
+                                    : ""
+                                }
+                                style={{
+                                  backgroundColor: item.color,
+                                }}
+                              />
+
+                              <span>{item.label}</span>
+
+                              {selected.materialId === item.id && (
+                                <small>✓</small>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      </details>
+                    </div>
+                  ) : (
+                    <div className="creator-studio-direct-empty">
+                      SELECT AN OBJECT TO CHANGE APPEARANCE
+                    </div>
+                  )}
+
+                  <span className="creator-studio-direct-section-label">
+                    GROUP
+                  </span>
+
+                  <div className="creator-studio-direct-command-grid">
+                    <button
+                      type="button"
+                      disabled={selectedIds.length < 2}
+                      onClick={() => {
+                        groupSelected();
+                        setStudioPanel(null);
+                      }}
+                    >
+                      <strong>GROUP</strong>
+                      <small>SELECTED</small>
+                    </button>
+
+                    <button
+                      type="button"
+                      disabled={
+                        !selectedObjects.some((item) => item.groupId)
+                      }
+                      onClick={() => {
+                        ungroupSelected();
+                        setStudioPanel(null);
+                      }}
+                    >
+                      <strong>UNGROUP</strong>
+                      <small>SELECTED</small>
+                    </button>
+                  </div>
+
+                </>
+              )}
+
+              {/* BEYOND_STUDIO_PHASE10_BOOLEAN_CONTENT */}
+              {studioPanel === "boolean" && (
+                <>
+                  <span className="creator-studio-direct-section-label">
+                    BOOLEAN OPERATIONS
+                  </span>
+
+                  <div className="creator-studio-phase10-boolean-summary">
+                    <div>
+                      <span>SELECTED</span>
+                      <strong>{selectedIds.length}</strong>
+                    </div>
+
+                    <div>
+                      <span>SOLIDS</span>
+                      <strong>{selectedSolids.length}</strong>
+                    </div>
+
+                    <div>
+                      <span>HOLES</span>
+                      <strong>{selectedHoles.length}</strong>
+                    </div>
+                  </div>
+
+                  <div className="creator-studio-direct-command-grid">
+                    <button
+                      type="button"
+                      disabled={!canCombine}
+                      onClick={() => {
+                        combineSelected();
+                        setStudioPanel(null);
+                      }}
+                    >
+                      <strong>COMBINE</strong>
+                      <small>UNION SOLIDS</small>
+                    </button>
+
+                    <button
+                      type="button"
+                      disabled={!canCut}
+                      onClick={() => {
+                        cutSelected();
+                        setStudioPanel(null);
+                      }}
+                    >
+                      <strong>CUT / HOLE</strong>
+                      <small>SUBTRACT HOLES</small>
+                    </button>
+                  </div>
+
+                  <span className="creator-studio-direct-section-label">
+                    BOOLEAN ROLE
+                  </span>
+
+                  <div className="creator-studio-direct-command-grid">
+                    <button
+                      type="button"
+                      disabled={!selected || selected.locked}
+                      className={
+                        selected?.role !== "hole"
+                          ? "active"
+                          : ""
+                      }
+                      onClick={() =>
+                        setRole("solid")
+                      }
+                    >
+                      <strong>MAKE SOLID</strong>
+                      <small>ADD MATERIAL</small>
+                    </button>
+
+                    <button
+                      type="button"
+                      disabled={!selected || selected.locked}
+                      className={
+                        selected?.role === "hole"
+                          ? "active"
+                          : ""
+                      }
+                      onClick={() =>
+                        setRole("hole")
+                      }
+                    >
+                      <strong>MAKE HOLE</strong>
+                      <small>SUBTRACT TOOL</small>
+                    </button>
+                  </div>
+
+                  <div className="creator-studio-phase10-boolean-help">
+                    <strong>COMBINE</strong>
+                    <span>Select 2 or more solid objects.</span>
+
+                    <strong>CUT / HOLE</strong>
+                    <span>
+                      Mark the cutter as HOLE, select the solid + hole,
+                      then apply Cut / Hole.
+                    </span>
+                  </div>
+
+                  {operationMessage && (
+                    <div className="creator-operation-message">
+                      {operationMessage}
+                    </div>
+                  )}
+                </>
+              )}
+
+              {studioPanel === "transform" && (
+                <>
+                  <span className="creator-studio-direct-section-label">
+                    TOOL
+                  </span>
+
+                  <div className="creator-studio-direct-command-grid">
+                    {[
+                      ["select", "SELECT", "ESC"],
+                      ["translate", "MOVE", "G"],
+                      ["rotate", "ROTATE", "R"],
+                      ["scale", "SCALE", "S"],
+                    ].map(([mode, label, shortcut]) => (
+                      <button
+                        type="button"
+                        key={mode}
+                        className={transformMode === mode ? "active" : ""}
+                        onClick={() => {
+                          setTransformMode(mode);
+                          setStudioPanel(null);
+                        }}
+                      >
+                        <strong>{label}</strong>
+                        <small>{shortcut}</small>
+                      </button>
+                    ))}
+                  </div>
+
+                  <span className="creator-studio-direct-section-label">
+                    SETTINGS
+                  </span>
+
+                  <div className="creator-studio-direct-command-grid">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setTransformSpace((value) =>
+                          value === "world" ? "local" : "world"
+                        )
+                      }
+                    >
+                      <strong>SPACE</strong>
+                      <small>{transformSpace.toUpperCase()}</small>
+                    </button>
+
+                    <button
+                      type="button"
+                      className={snapEnabled ? "active" : ""}
+                      onClick={() => setSnapEnabled((value) => !value)}
+                    >
+                      <strong>SNAP</strong>
+                      <small>{snapEnabled ? "ON" : "OFF"}</small>
+                    </button>
+                  </div>
+
+                  {/* BEYOND_STUDIO_PHASE4_PRECISION_TRANSFORM */}
+                  {selected ? (
+                    <>
+                      <span className="creator-studio-direct-section-label">
+                        SIZE · MM
+                      </span>
+
+                      <div className="creator-studio-phase4-vector-grid">
+                        {[
+                          ["width", "W"],
+                          ["depth", "D"],
+                          ["height", "H"],
+                        ].map(([key, label]) => (
+                          <label key={key}>
+                            <span>{label}</span>
+                            <input
+                              type="number"
+                              step="1"
+                              value={selected.dimensions[key]}
+                              disabled={selected.locked}
+                              onChange={(event) =>
+                                updateDimension(
+                                  key,
+                                  event.target.value
+                                )
+                              }
+                            />
+                          </label>
+                        ))}
+                      </div>
+
+                      <span className="creator-studio-direct-section-label">
+                        POSITION · MM
+                      </span>
+
+                      {/* BEYOND_STUDIO_PHASE16_CAD_AXIS_MAPPING */}
+                      <div className="creator-studio-phase4-vector-grid">
+                        {[
+                          {
+                            axis: "x",
+                            internal: "x",
+                            label: "X",
+                          },
+                          {
+                            axis: "y",
+                            internal: "z",
+                            label: "Y",
+                          },
+                          {
+                            axis: "z",
+                            internal: "y",
+                            label: "Z",
+                          },
+                        ].map(
+                          ({
+                            axis,
+                            internal,
+                            label,
+                          }) => (
+                            <label key={axis}>
+                              <span>{label}</span>
+
+                              <input
+                                type="number"
+                                step="1"
+                                value={
+                                  selected.position[
+                                    internal
+                                  ]
+                                }
+                                disabled={
+                                  selected.locked
+                                }
+                                onChange={(event) =>
+                                  updatePosition(
+                                    internal,
+                                    event.target.value
+                                  )
+                                }
+                              />
+                            </label>
+                          )
+                        )}
+                      </div>
+
+                      {/* BEYOND_STUDIO_PHASE5_POSITION_ARROWS */}
+                      {/* BEYOND_STUDIO_PHASE11_DIRECT_ARROW_AXES */}
+                      {/* BEYOND_STUDIO_PHASE16_CAD_NUDGE_MAPPING */}
+                      <div className="creator-studio-phase5-position-arrows">
+                        <div className="creator-studio-phase5-axis-nudge">
+                          <span>X</span>
+
+                          <button
+                            type="button"
+                            disabled={selected.locked}
+                            onClick={() =>
+                              updatePosition(
+                                "x",
+                                selected.position.x -
+                                  (snapEnabled ? snapMm : 1)
+                              )
+                            }
+                          >
+                            ← X
+                          </button>
+
+                          <button
+                            type="button"
+                            disabled={selected.locked}
+                            onClick={() =>
+                              updatePosition(
+                                "x",
+                                selected.position.x +
+                                  (snapEnabled ? snapMm : 1)
+                              )
+                            }
+                          >
+                            X →
+                          </button>
+                        </div>
+
+                        <div className="creator-studio-phase5-axis-nudge">
+                          <span>Y</span>
+
+                          <button
+                            type="button"
+                            disabled={selected.locked}
+                            onClick={() =>
+                              updatePosition(
+                                "z",
+                                selected.position.z -
+                                  (snapEnabled ? snapMm : 1)
+                              )
+                            }
+                          >
+                            ← Y
+                          </button>
+
+                          <button
+                            type="button"
+                            disabled={selected.locked}
+                            onClick={() =>
+                              updatePosition(
+                                "z",
+                                selected.position.z +
+                                  (snapEnabled ? snapMm : 1)
+                              )
+                            }
+                          >
+                            Y →
+                          </button>
+                        </div>
+
+                        <div className="creator-studio-phase5-axis-nudge">
+                          <span>Z</span>
+
+                          <button
+                            type="button"
+                            disabled={selected.locked}
+                            onClick={() =>
+                              updatePosition(
+                                "y",
+                                selected.position.y -
+                                  (snapEnabled ? snapMm : 1)
+                              )
+                            }
+                          >
+                            ↓ Z
+                          </button>
+
+                          <button
+                            type="button"
+                            disabled={selected.locked}
+                            onClick={() =>
+                              updatePosition(
+                                "y",
+                                selected.position.y +
+                                  (snapEnabled ? snapMm : 1)
+                              )
+                            }
+                          >
+                            Z ↑
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="creator-studio-phase5-step-readout">
+                        <span>ARROW STEP</span>
+                        <strong>
+                          {snapEnabled
+                            ? `${snapMm} MM · SNAP`
+                            : "1 MM"}
+                        </strong>
+                      </div>
+
+                      <span className="creator-studio-direct-section-label">
+                        ROTATION · DEG
+                      </span>
+
+                      <div className="creator-studio-phase4-vector-grid">
+                        {[
+                          ["x", "X"],
+                          ["z", "Y"],
+                          ["y", "Z"],
+                        ].map(([key, label]) => (
+                          <label key={key}>
+                            <span>{label}</span>
+                            <input
+                              type="number"
+                              step="1"
+                              value={selected.rotation[key]}
+                              disabled={selected.locked}
+                              onChange={(event) =>
+                                updateRotation(
+                                  key,
+                                  event.target.value
+                                )
+                              }
+                            />
+                          </label>
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="creator-studio-direct-empty">
+                      SELECT AN OBJECT FOR PRECISION TRANSFORM
+                    </div>
+                  )}
+
+                </>
+              )}
+
+              {studioPanel === "edit" && (
+                <>
+                  <span className="creator-studio-direct-section-label">
+                    MESH EDIT
+                  </span>
+
+                  {!meshEditMode ? (
+                    <button
+                      type="button"
+                      className="creator-studio-direct-wide-command"
+                      disabled={!selected || selected.locked}
+                      onClick={() => {
+                        enterMeshEditMode();
+                        setStudioPanel(null);
+                      }}
+                    >
+                      <strong>ENTER MESH EDIT</strong>
+                      <small>TAB · EDIT TOPOLOGY</small>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className="creator-studio-direct-wide-command"
+                      onClick={() => {
+                        exitMeshEditMode();
+                        setStudioPanel(null);
+                      }}
+                    >
+                      <strong>EXIT EDIT MODE</strong>
+                      <small>TAB · OBJECT MODE</small>
+                    </button>
+                  )}
+
+                  <span className="creator-studio-direct-section-label">
+                    SELECTION
+                  </span>
+
+                  <div className="creator-studio-direct-command-grid">
+                    {[
+                      ["vertex", "VERTEX"],
+                      ["edge", "EDGE"],
+                      ["face", "FACE"],
+                    ].map(([mode, label]) => (
+                      <button
+                        type="button"
+                        key={mode}
+                        disabled={!meshEditMode}
+                        className={meshSelectionMode === mode ? "active" : ""}
+                        onClick={() => {
+                          changeMeshSelectionMode(mode);
+                          setStudioPanel(null);
+                        }}
+                      >
+                        <strong>{label}</strong>
+                        <small>SELECT</small>
+                      </button>
+                    ))}
+                  </div>
+
+                
+                  {/* BEYOND_EDIT_CONTROLS_INSIDE_PANEL_V1 */}
+                  {meshEditMode && (
+                    <div className="creator-edit-inpanel">
+                      <div
+                        className={`creator-edit-inpanel__status${
+                          meshSelection ? " active" : ""
+                        }`}
+                      >
+                        <span>
+                          {meshSelection
+                            ? "SELECTED"
+                            : "EDIT READY"}
+                        </span>
+
+                        <strong>
+                          {meshSelection
+                            ? `${meshSelectionMode.toUpperCase()} SELECTED`
+                            : `SELECT A ${meshSelectionMode.toUpperCase()}`}
+                        </strong>
+                      </div>
+
+                      {meshSelectionMode === "vertex" && (
+                        <>
+                          <span className="creator-studio-direct-section-label">
+                            VERTEX MOVEMENT
+                          </span>
+
+                          <div className="creator-edit-inpanel__step">
+                            <span>MOVE STEP</span>
+
+                            <input
+                              type="number"
+                              min="0.1"
+                              max="50"
+                              step="0.5"
+                              value={editNudgeMm}
+                              onChange={(event) =>
+                                setEditNudgeMm(
+                                  clamp(
+                                    event.target.value,
+                                    0.1,
+                                    50
+                                  )
+                                )
+                              }
+                            />
+
+                            <small>MM</small>
+                          </div>
+
+                          <div className="creator-edit-inpanel__nudge">
+                            <button
+                              type="button"
+                              disabled={!meshSelection}
+                              onClick={() =>
+                                nudgeEditableSelection("x", -1)
+                              }
+                            >
+                              X−
+                            </button>
+
+                            <button
+                              type="button"
+                              disabled={!meshSelection}
+                              onClick={() =>
+                                nudgeEditableSelection("x", 1)
+                              }
+                            >
+                              X+
+                            </button>
+
+                            <button
+                              type="button"
+                              disabled={!meshSelection}
+                              onClick={() =>
+                                nudgeEditableSelection("z", -1)
+                              }
+                            >
+                              Y−
+                            </button>
+
+                            <button
+                              type="button"
+                              disabled={!meshSelection}
+                              onClick={() =>
+                                nudgeEditableSelection("z", 1)
+                              }
+                            >
+                              Y+
+                            </button>
+
+                            <button
+                              type="button"
+                              disabled={!meshSelection}
+                              onClick={() =>
+                                nudgeEditableSelection("y", -1)
+                              }
+                            >
+                              Z−
+                            </button>
+
+                            <button
+                              type="button"
+                              disabled={!meshSelection}
+                              onClick={() =>
+                                nudgeEditableSelection("y", 1)
+                              }
+                            >
+                              Z+
+                            </button>
+                          </div>
+
+                          <div className="creator-edit-inpanel__actions">
+
+                            <button
+                              type="button"
+                              disabled={!meshSelection}
+                              onClick={selectConnectedMeshElements}
+                            >
+                              CONNECTED
+                            </button>
+
+                            <button
+                              type="button"
+                              disabled={!meshSelection}
+                              onClick={() =>
+                                setMeshSelection(null)
+                              }
+                            >
+                              CLEAR
+                            </button>
+                          </div>
+                        </>
+                      )}
+
+                      {meshSelectionMode === "face" && (
+                        <>
+                          <span className="creator-studio-direct-section-label">
+                            FACE EDIT
+                          </span>
+
+                          <div className="creator-edit-inpanel__fields">
+
+                            <label>
+                              <span>EXTRUDE</span>
+
+                              <input
+                                type="number"
+                                min="-80"
+                                max="80"
+                                step="0.5"
+                                value={faceExtrudeMm}
+                                onChange={(event) =>
+                                  setFaceExtrudeMm(
+                                    clamp(
+                                      event.target.value,
+                                      -80,
+                                      80
+                                    )
+                                  )
+                                }
+                              />
+
+                              <small>MM</small>
+                            </label>
+
+                            <label>
+                              <span>INSET</span>
+
+                              <input
+                                type="number"
+                                min="0"
+                                max="80"
+                                step="1"
+                                value={faceInsetPercent}
+                                onChange={(event) =>
+                                  setFaceInsetPercent(
+                                    clamp(
+                                      event.target.value,
+                                      0,
+                                      80
+                                    )
+                                  )
+                                }
+                              />
+
+                              <small>%</small>
+                            </label>
+
+                          </div>
+
+                          <button
+                            type="button"
+                            className="creator-edit-inpanel__primary"
+                            disabled={!meshSelection}
+                            onClick={applyEditableFaceExtrude}
+                          >
+                            {faceExtrudeMm < 0
+                              ? "APPLY POCKET"
+                              : "APPLY EXTRUDE"}
+                          </button>
+
+                          <div className="creator-edit-inpanel__nudge">
+                            <button type="button" disabled={!meshSelection} onClick={() => nudgeEditableSelection("x", -1)}>X−</button>
+                            <button type="button" disabled={!meshSelection} onClick={() => nudgeEditableSelection("x", 1)}>X+</button>
+                            <button type="button" disabled={!meshSelection} onClick={() => nudgeEditableSelection("z", -1)}>Y−</button>
+                            <button type="button" disabled={!meshSelection} onClick={() => nudgeEditableSelection("z", 1)}>Y+</button>
+                            <button type="button" disabled={!meshSelection} onClick={() => nudgeEditableSelection("y", -1)}>Z−</button>
+                            <button type="button" disabled={!meshSelection} onClick={() => nudgeEditableSelection("y", 1)}>Z+</button>
+                          </div>
+
+                          <div className="creator-edit-inpanel__actions">
+
+                            <button
+                              type="button"
+                              disabled={!meshSelection}
+                              onClick={selectConnectedMeshElements}
+                            >
+                              CONNECTED
+                            </button>
+
+                            <button
+                              type="button"
+                              disabled={!meshSelection}
+                              onClick={() =>
+                                setMeshSelection(null)
+                              }
+                            >
+                              CLEAR
+                            </button>
+                          </div>
+                        </>
+                      )}
+
+                      {meshSelectionMode === "edge" && (
+                        <>
+                          <span className="creator-studio-direct-section-label">
+                            EDGE EDIT
+                          </span>
+
+                          <div className="creator-edit-inpanel__grid">
+
+                            <button
+                              type="button"
+                              disabled={!meshSelection}
+                              onClick={selectEdgeChain}
+                            >
+                              <strong>EDGE CHAIN</strong>
+                              <small>FOLLOW</small>
+                            </button>
+
+                            <button
+                              type="button"
+                              disabled={!meshSelection}
+                              onClick={selectConnectedMeshElements}
+                            >
+                              <strong>CONNECTED</strong>
+                              <small>EXPAND</small>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={selectSharpEdges}
+                            >
+                              <strong>SHARP</strong>
+                              <small>AUTO SELECT</small>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={selectBoundaryEdges}
+                            >
+                              <strong>BOUNDARY</strong>
+                              <small>OPEN EDGES</small>
+                            </button>
+
+                          </div>
+
+                          <span className="creator-studio-direct-section-label">
+                            FILLET
+                          </span>
+
+                          <div className="creator-edit-inpanel__fields">
+
+                            <label>
+                              <span>ANGLE</span>
+                              <input
+                                type="number"
+                                min="1"
+                                max="179"
+                                step="1"
+                                value={sharpEdgeAngle}
+                                onChange={(event) =>
+                                  setSharpEdgeAngle(
+                                    clamp(
+                                      event.target.value,
+                                      1,
+                                      179
+                                    )
+                                  )
+                                }
+                              />
+                              <small>DEG</small>
+                            </label>
+
+                            <label>
+                              <span>REFINE</span>
+                              <input
+                                type="number"
+                                min="2"
+                                max="4"
+                                step="1"
+                                value={edgeFilletRefine}
+                                onChange={(event) =>
+                                  setEdgeFilletRefine(
+                                    Math.round(
+                                      clamp(
+                                        event.target.value,
+                                        2,
+                                        4
+                                      )
+                                    )
+                                  )
+                                }
+                              />
+                              <small>X</small>
+                            </label>
+
+                          </div>
+
+                          <label className="creator-edit-inpanel__range">
+                            <span>
+                              SMOOTHNESS
+                              <strong>
+                                {edgeFilletSmoothness}%
+                              </strong>
+                            </span>
+
+                            <input
+                              type="range"
+                              min="5"
+                              max="100"
+                              step="1"
+                              value={edgeFilletSmoothness}
+                              onChange={(event) =>
+                                setEdgeFilletSmoothness(
+                                  clamp(
+                                    event.target.value,
+                                    5,
+                                    100
+                                  )
+                                )
+                              }
+                            />
+                          </label>
+
+                          <button
+                            type="button"
+                            className="creator-edit-inpanel__primary"
+                            disabled={!meshSelection || edgeFilletWorking}
+                            onClick={applySelectedEdgeFillet}
+                          >
+                            {edgeFilletWorking
+                              ? "BUILDING FILLET…"
+                              : "APPLY FILLET"}
+                          </button>
+
+                          <div className="creator-edit-inpanel__actions">
+
+                            <button
+                              type="button"
+                              disabled={!meshSelection}
+                              onClick={fillSelectedHole}
+                            >
+                              FILL BOUNDARY
+                            </button>
+
+                            <button
+                              type="button"
+                              disabled={!meshSelection}
+                              onClick={() =>
+                                setMeshSelection(null)
+                              }
+                            >
+                              CLEAR
+                            </button>
+                          </div>
+                        </>
+                      )}
+
+                    </div>
+                  )}
+</>
+              )}
+
+              {/* BEYOND_STUDIO_PHASE4_EXACT_MODIFY */}
+              {studioPanel === "modify" && (
+                <>
+                  {studioModifyTool && (
+                    <button
+                      type="button"
+                      className="creator-studio-phase4-back"
+                      onClick={() => setStudioModifyTool(null)}
+                    >
+                      ← ALL MODIFY TOOLS
+                    </button>
+                  )}
+
+                  {!studioModifyTool && (
+                    <>
+                      <span className="creator-studio-direct-section-label">
+                        BOOLEAN
+                      </span>
+
+                      <div className="creator-studio-direct-command-grid">
+                        <button
+                          type="button"
+                          disabled={!canCombine}
+                          onClick={() => {
+                            combineSelected();
+                            setStudioPanel(null);
+                          }}
+                        >
+                          <strong>COMBINE</strong>
+                          <small>UNION SOLIDS</small>
+                        </button>
+
+                        <button
+                          type="button"
+                          disabled={!canCut}
+                          onClick={() => {
+                            cutSelected();
+                            setStudioPanel(null);
+                          }}
+                        >
+                          <strong>CUT / HOLE</strong>
+                          <small>SUBTRACT</small>
+                        </button>
+                      </div>
+
+                      <span className="creator-studio-direct-section-label">
+                        SOLID TOOLS
+                      </span>
+
+                      <div className="creator-studio-direct-command-grid">
+                        {[
+                          ["mirror", "MIRROR", "COPY"],
+                          ["array", "ARRAY", "PATTERN"],
+                          ["shell", "SHELL", "HOLLOW"],
+                          ["bevel", "BEVEL", "ROUND BOX"],
+                          ["fillet", "FILLET", "MESH EDGES"],
+                          ["all", "ADVANCED", "ALL SETTINGS"],
+                        ].map(([tool, label, copy]) => (
+                          <button
+                            type="button"
+                            key={tool}
+                            onClick={() => {
+                              if (tool === "all") {
+                                showStudioInspector("modify");
+                                return;
+                              }
+                              setStudioModifyTool(tool);
+                            }}
+                          >
+                            <strong>{label}</strong>
+                            <small>{copy}</small>
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+
+                  {studioModifyTool === "mirror" && (
+                    <>
+                      <div className="creator-studio-phase4-tool-title">
+                        <span>MIRROR COPY</span>
+                        <strong>GLOBAL PLANE</strong>
+                      </div>
+
+                      <span className="creator-studio-direct-section-label">
+                        AXIS
+                      </span>
+
+                      <div className="creator-studio-phase4-axis-row">
+                        {["x", "y", "z"].map((axis) => (
+                          <button
+                            type="button"
+                            key={axis}
+                            className={mirrorAxis === axis ? "active" : ""}
+                            onClick={() => setMirrorAxis(axis)}
+                          >
+                            {axis.toUpperCase()}
+                          </button>
+                        ))}
+                      </div>
+
+                      <button
+                        type="button"
+                        className="creator-studio-phase4-apply"
+                        disabled={
+                          !selected ||
+                          selected.locked ||
+                          selected.visible === false ||
+                          objects.length >= MAX_OBJECTS
+                        }
+                        onClick={() => {
+                          applyMirrorCopy();
+                          setStudioModifyTool(null);
+                        }}
+                      >
+                        APPLY MIRROR COPY
+                      </button>
+                    </>
+                  )}
+
+                  {studioModifyTool === "array" && (
+                    <>
+                      <div className="creator-studio-phase4-tool-title">
+                        <span>ARRAY</span>
+                        <strong>LINEAR PATTERN</strong>
+                      </div>
+
+                      <span className="creator-studio-direct-section-label">
+                        AXIS
+                      </span>
+
+                      <div className="creator-studio-phase4-axis-row">
+                        {["x", "y", "z"].map((axis) => (
+                          <button
+                            type="button"
+                            key={axis}
+                            className={arrayAxis === axis ? "active" : ""}
+                            onClick={() => setArrayAxis(axis)}
+                          >
+                            {axis.toUpperCase()}
+                          </button>
+                        ))}
+                      </div>
+
+                      <div className="creator-studio-phase4-fields">
+                        <label>
+                          <span>COUNT</span>
+                          <input
+                            type="number"
+                            min="2"
+                            max="10"
+                            step="1"
+                            value={arrayCount}
+                            onChange={(event) =>
+                              setArrayCount(
+                                Math.round(
+                                  clamp(event.target.value, 2, 10)
+                                )
+                              )
+                            }
+                          />
+                        </label>
+
+                        <label>
+                          <span>SPACING</span>
+                          <input
+                            type="number"
+                            min="1"
+                            max="300"
+                            step="1"
+                            value={arraySpacing}
+                            onChange={(event) =>
+                              setArraySpacing(
+                                clamp(event.target.value, 1, 300)
+                              )
+                            }
+                          />
+                          <small>MM</small>
+                        </label>
+                      </div>
+
+                      <button
+                        type="button"
+                        className="creator-studio-phase4-apply"
+                        disabled={
+                          !selected ||
+                          selected.locked ||
+                          selected.visible === false
+                        }
+                        onClick={() => {
+                          applyArray();
+                          setStudioModifyTool(null);
+                        }}
+                      >
+                        CREATE ARRAY
+                      </button>
+                    </>
+                  )}
+
+                  {studioModifyTool === "shell" && (
+                    <>
+                      <div className="creator-studio-phase4-tool-title">
+                        <span>HOLLOW / SHELL</span>
+                        <strong>OPEN TOP</strong>
+                      </div>
+
+                      <div className="creator-studio-phase4-fields one">
+                        <label>
+                          <span>WALL THICKNESS</span>
+                          <input
+                            type="number"
+                            min="0.8"
+                            max="30"
+                            step="0.2"
+                            value={shellWall}
+                            onChange={(event) =>
+                              setShellWall(
+                                clamp(event.target.value, 0.8, 30)
+                              )
+                            }
+                          />
+                          <small>MM</small>
+                        </label>
+                      </div>
+
+                      <button
+                        type="button"
+                        className="creator-studio-phase4-apply"
+                        disabled={
+                          !selected ||
+                          selected.locked ||
+                          selected.visible === false
+                        }
+                        onClick={() => {
+                          applyOpenShell();
+                          setStudioModifyTool(null);
+                        }}
+                      >
+                        APPLY OPEN SHELL
+                      </button>
+
+                      <small className="creator-studio-phase4-note">
+                        Creates a hollow printable solid with an open top.
+                      </small>
+                    </>
+                  )}
+
+                  {studioModifyTool === "bevel" && (
+                    <>
+                      <div className="creator-studio-phase4-tool-title">
+                        <span>BEVEL</span>
+                        <strong>ROUNDED SOLID</strong>
+                      </div>
+
+                      <div className="creator-studio-phase4-fields">
+                        <label>
+                          <span>RADIUS</span>
+                          <input
+                            type="number"
+                            min="0.5"
+                            max="40"
+                            step="0.5"
+                            value={bevelRadius}
+                            onChange={(event) =>
+                              setBevelRadius(
+                                clamp(event.target.value, 0.5, 40)
+                              )
+                            }
+                          />
+                          <small>MM</small>
+                        </label>
+
+                        <label>
+                          <span>SEGMENTS</span>
+                          <input
+                            type="number"
+                            min="1"
+                            max="12"
+                            step="1"
+                            value={bevelSegments}
+                            onChange={(event) =>
+                              setBevelSegments(
+                                Math.round(
+                                  clamp(event.target.value, 1, 12)
+                                )
+                              )
+                            }
+                          />
+                        </label>
+                      </div>
+
+                      <button
+                        type="button"
+                        className="creator-studio-phase4-apply"
+                        disabled={
+                          !selected ||
+                          selected.locked ||
+                          selected.visible === false
+                        }
+                        onClick={() => {
+                          applyBevel();
+                          setStudioModifyTool(null);
+                        }}
+                      >
+                        APPLY BEVEL
+                      </button>
+                    </>
+                  )}
+
+                  {studioModifyTool === "fillet" && (
+                    <>
+                      <div className="creator-studio-phase4-tool-title">
+                        <span>EDGE FILLET</span>
+                        <strong>PRINTABLE SMOOTH</strong>
+                      </div>
+
+                      {!meshEditMode ? (
+                        <>
+                          <p className="creator-studio-phase4-copy">
+                            Fillet works on editable mesh edges. Enter Edge Edit,
+                            then select edges manually or use Select Sharp Edges.
+                          </p>
+
+                          <button
+                            type="button"
+                            className="creator-studio-phase4-apply"
+                            disabled={!selected || selected.locked}
+                            onClick={() => {
+                              enterMeshEditMode();
+                              changeMeshSelectionMode("edge");
+                            }}
+                          >
+                            ENTER EDGE EDIT
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <div className="creator-studio-phase4-selection-status">
+                            <span>SELECTION</span>
+                            <strong>
+                              {meshSelection &&
+                              meshSelection.mode === "edge"
+                                ? `${editableSelectionCount(
+                                    meshSelection
+                                  )} EDGE${
+                                    editableSelectionCount(
+                                      meshSelection
+                                    ) === 1
+                                      ? ""
+                                      : "S"
+                                  }`
+                                : "SELECT EDGES"}
+                            </strong>
+                          </div>
+
+                          <div className="creator-studio-phase4-fields">
+                            <label>
+                              <span>SHARP ANGLE</span>
+                              <input
+                                type="number"
+                                min="1"
+                                max="179"
+                                step="1"
+                                value={sharpEdgeAngle}
+                                onChange={(event) =>
+                                  setSharpEdgeAngle(
+                                    clamp(event.target.value, 1, 179)
+                                  )
+                                }
+                              />
+                              <small>DEG</small>
+                            </label>
+
+                            <label>
+                              <span>REFINE</span>
+                              <input
+                                type="number"
+                                min="2"
+                                max="4"
+                                step="1"
+                                value={edgeFilletRefine}
+                                onChange={(event) =>
+                                  setEdgeFilletRefine(
+                                    Math.round(
+                                      clamp(event.target.value, 2, 4)
+                                    )
+                                  )
+                                }
+                              />
+                              <small>X</small>
+                            </label>
+                          </div>
+
+                          <button
+                            type="button"
+                            className="creator-studio-phase4-secondary"
+                            onClick={() => {
+                              changeMeshSelectionMode("edge");
+                              selectSharpEdges();
+                            }}
+                          >
+                            SELECT SHARP EDGES
+                          </button>
+
+                          <label className="creator-studio-phase4-range">
+                            <span>
+                              FILLET SMOOTHNESS
+                              <strong>{edgeFilletSmoothness}%</strong>
+                            </span>
+
+                            <input
+                              type="range"
+                              min="5"
+                              max="100"
+                              step="1"
+                              value={edgeFilletSmoothness}
+                              onChange={(event) =>
+                                setEdgeFilletSmoothness(
+                                  clamp(event.target.value, 5, 100)
+                                )
+                              }
+                            />
+                          </label>
+
+                          <button
+                            type="button"
+                            className="creator-studio-phase4-apply"
+                            disabled={
+                              !meshSelection ||
+                              meshSelection.mode !== "edge" ||
+                              selected?.locked ||
+                              edgeFilletWorking
+                            }
+                            onClick={applySelectedEdgeFillet}
+                          >
+                            {edgeFilletWorking
+                              ? "BUILDING FILLET…"
+                              : "APPLY FILLET"}
+                          </button>
+                        </>
+                      )}
+
+                    </>
+                  )}
+                </>
+              )}
+
+              {studioPanel === "output" && (
+                <>
+                  <span className="creator-studio-direct-section-label">
+                    OUTPUT
+                  </span>
+
+                  {[
+                    ["EXPORT MODEL", "STL · 3MF"],
+                    ["SEND MODEL", "TO PROJECT"],
+                    ["MODEL CHECK", "PRINT READY"],
+                  ].map(([label, copy]) => (
+                    <button
+                      type="button"
+                      key={label}
+                      className="creator-studio-direct-wide-command"
+                      onClick={() => showStudioInspector("output")}
+                    >
+                      <strong>{label}</strong>
+                      <small>{copy}</small>
+                    </button>
+                  ))}
+
+                </>
+              )}
+            </div>
+          </section>
+        )}
+
         <aside
           className={`creator-library creator-library-tab-${libraryTab}`}
         >
@@ -19837,11 +21815,15 @@ function BeyondCreator({
               <button
                 type="button"
                 className="creator-sketch-launch"
-                onClick={() =>
+                onClick={() => {
+                  // BEYOND_STUDIO_CLOSE_QUICK_EXTRUDE
+                  setStudioPanel(
+                    null
+                  );
                   setSketchOpen(
                     true
-                  )
-                }
+                  );
+                }}
               >
                 <span className="creator-sketch-launch-icon">
                   ✎
@@ -19863,11 +21845,15 @@ function BeyondCreator({
               <button
                 type="button"
                 className="creator-sketch-launch creator-revolve-launch"
-                onClick={() =>
+                onClick={() => {
+                  // BEYOND_STUDIO_CLOSE_REVOLVE
+                  setStudioPanel(
+                    null
+                  );
                   setRevolveOpen(
                     true
-                  )
-                }
+                  );
+                }}
               >
                 <span className="creator-sketch-launch-icon">
                   ◒
@@ -20673,26 +22659,27 @@ function BeyondCreator({
                 </button>
               </div>
 
+              {/* BEYOND_STUDIO_PHASE7_FULL_VIEW_NAMES */}
               <div className="creator-view-controls">
                 {[
                   [
                     "perspective",
-                    "P",
+                    "PERSPECTIVE",
                     "5",
                   ],
                   [
                     "front",
-                    "F",
+                    "FRONT",
                     "1",
                   ],
                   [
                     "right",
-                    "R",
+                    "RIGHT",
                     "3",
                   ],
                   [
                     "top",
-                    "T",
+                    "TOP",
                     "7",
                   ],
                 ].map(
@@ -20893,6 +22880,10 @@ function BeyondCreator({
                 }
                 architectureScale={
                   architectureScale
+                }
+                showBuildPlate={
+                  creatorMode !==
+                  "advanced"
                 }
               />
             </Canvas>
@@ -21267,8 +23258,31 @@ function BeyondCreator({
         </div>
 
         <aside
-          className={`creator-inspector creator-inspector-tab-${inspectorTab}`}
+          // BEYOND_STUDIO_DIRECT_LAYOUT_INSPECTOR
+          className={`creator-inspector creator-inspector-tab-${inspectorTab}${
+            creatorMode === "advanced" &&
+            studioInspectorCollapsed
+              ? " creator-studio-direct-inspector-is-collapsed"
+              : ""
+          }`}
         >
+          {creatorMode === "advanced" && (
+            <button
+              type="button"
+              className="creator-studio-direct-inspector-toggle"
+              onClick={() =>
+                setStudioInspectorCollapsed((value) => !value)
+              }
+              title={
+                studioInspectorCollapsed
+                  ? "Open inspector"
+                  : "Collapse inspector"
+              }
+            >
+              {studioInspectorCollapsed ? "‹" : "›"}
+            </button>
+          )}
+
           <div className="creator-inspector-top">
             <div className="creator-panel-heading">
               <span>
@@ -21276,7 +23290,10 @@ function BeyondCreator({
               </span>
 
               <strong>
-                OBJECT INSPECTOR
+                {/* BEYOND_STUDIO_DIRECT_CONTEXT_TITLE */}
+                {creatorMode === "advanced"
+                  ? "CONTEXT INSPECTOR"
+                  : "OBJECT INSPECTOR"}
               </strong>
             </div>
 
@@ -24452,7 +26469,7 @@ function BeyondCreator({
               </span>
 
               <span>
-                ↗
+                
               </span>
             </button>
 
