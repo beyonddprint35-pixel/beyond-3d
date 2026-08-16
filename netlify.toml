@@ -6,3 +6,14 @@
 
 [build.environment]
   NODE_VERSION = "22"
+
+# BEYOND_MENU_PLATFORM_PHASE1
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
