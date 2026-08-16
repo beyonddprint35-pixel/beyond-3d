@@ -787,6 +787,7 @@ export function BeyondMenuStudio() {
   const [showAddCategory, setShowAddCategory] = useState(false);
   const [showAddItem, setShowAddItem] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [logoUploading, setLogoUploading] = useState(false);
   const [siteDraft, setSiteDraft] = useState({
     name: "",
     slug: ""
@@ -800,10 +801,19 @@ export function BeyondMenuStudio() {
 
   const [newItem, setNewItem] = useState({
     section_id: "",
+    type: "item",
     name_en: "",
     name_he: "",
+    category_en: "",
+    category_he: "",
     description: "",
-    price: ""
+    description_en: "",
+    description_he: "",
+    price: "",
+    origin_en: "",
+    origin_he: "",
+    wine_glass: "",
+    wine_bottle: ""
   });
 
   const [editingSectionId, setEditingSectionId] = useState("");
@@ -815,10 +825,19 @@ export function BeyondMenuStudio() {
   const [editingItemId, setEditingItemId] = useState("");
   const [itemDraft, setItemDraft] = useState({
     section_id: "",
+    type: "item",
     name_en: "",
     name_he: "",
+    category_en: "",
+    category_he: "",
     description: "",
-    price: ""
+    description_en: "",
+    description_he: "",
+    price: "",
+    origin_en: "",
+    origin_he: "",
+    wine_glass: "",
+    wine_bottle: ""
   });
 
   const selected = sites.find(s => s.id === siteId);
@@ -1134,12 +1153,25 @@ export function BeyondMenuStudio() {
       sections[0]?.id ||
       "";
 
+    const sectionKey = String(
+      sections.find(section => section.id === sectionId)?.section_key || ""
+    ).toLowerCase();
+
     setNewItem({
       section_id: sectionId,
+      type: sectionKey === "wine" ? "wine" : "item",
       name_en: "",
       name_he: "",
+      category_en: "",
+      category_he: "",
       description: "",
-      price: ""
+      description_en: "",
+      description_he: "",
+      price: "",
+      origin_en: "",
+      origin_he: "",
+      wine_glass: "",
+      wine_bottle: ""
     });
 
     setShowAddItem(true);
@@ -1163,14 +1195,82 @@ export function BeyondMenuStudio() {
       .insert({
         site_id: selected.id,
         section_id: newItem.section_id,
+
+        type: newItem.type === "wine"
+          ? "wine"
+          : "item",
+
         name_en: newItem.name_en.trim(),
+
         name_he:
           newItem.name_he.trim() ||
           newItem.name_en.trim(),
+
+        category_en:
+          newItem.category_en.trim() || null,
+
+        category_he:
+          newItem.category_he.trim() || null,
+
+        category:
+          (
+            newItem.category_en.trim() &&
+            newItem.category_he.trim()
+          )
+            ? `${newItem.category_en.trim()} · ${newItem.category_he.trim()}`
+            : newItem.category_en.trim() ||
+              newItem.category_he.trim() ||
+              null,
+
+        description_en:
+          newItem.description_en.trim() || null,
+
+        description_he:
+          newItem.description_he.trim() || null,
+
         description:
-          newItem.description.trim() || null,
+          newItem.description_en.trim() ||
+          newItem.description_he.trim() ||
+          newItem.description.trim() ||
+          null,
+
         price:
-          newItem.price.trim() || null,
+          newItem.type === "wine"
+            ? null
+            : newItem.price.trim() || null,
+
+        origin_en:
+          newItem.type === "wine"
+            ? newItem.origin_en.trim() || null
+            : null,
+
+        origin_he:
+          newItem.type === "wine"
+            ? newItem.origin_he.trim() || null
+            : null,
+
+        origin:
+          newItem.type === "wine"
+            ? (
+                newItem.origin_en.trim() &&
+                newItem.origin_he.trim()
+              )
+                ? `${newItem.origin_en.trim()} · ${newItem.origin_he.trim()}`
+                : newItem.origin_en.trim() ||
+                  newItem.origin_he.trim() ||
+                  null
+            : null,
+
+        wine_glass:
+          newItem.type === "wine"
+            ? newItem.wine_glass.trim() || null
+            : null,
+
+        wine_bottle:
+          newItem.type === "wine"
+            ? newItem.wine_bottle.trim() || null
+            : null,
+
         visible: true,
         sort_order: sectionItems.length
       });
@@ -1192,10 +1292,46 @@ export function BeyondMenuStudio() {
 
     setItemDraft({
       section_id: menuItem.section_id || "",
+
+      type:
+        menuItem.type === "wine"
+          ? "wine"
+          : "item",
+
       name_en: menuItem.name_en || "",
       name_he: menuItem.name_he || "",
-      description: menuItem.description || "",
-      price: menuItem.price || ""
+
+      category_en:
+        menuItem.category_en || "",
+
+      category_he:
+        menuItem.category_he || "",
+
+      description:
+        menuItem.description || "",
+
+      description_en:
+        menuItem.description_en ||
+        menuItem.description ||
+        "",
+
+      description_he:
+        menuItem.description_he || "",
+
+      price:
+        menuItem.price || "",
+
+      origin_en:
+        menuItem.origin_en || "",
+
+      origin_he:
+        menuItem.origin_he || "",
+
+      wine_glass:
+        menuItem.wine_glass || "",
+
+      wine_bottle:
+        menuItem.wine_bottle || ""
     });
   };
 
@@ -1210,14 +1346,83 @@ export function BeyondMenuStudio() {
       .from("menu_items")
       .update({
         section_id: itemDraft.section_id,
-        name_en: itemDraft.name_en.trim(),
+
+        type:
+          itemDraft.type === "wine"
+            ? "wine"
+            : "item",
+
+        name_en:
+          itemDraft.name_en.trim(),
+
         name_he:
           itemDraft.name_he.trim() ||
           itemDraft.name_en.trim(),
+
+        category_en:
+          itemDraft.category_en.trim() || null,
+
+        category_he:
+          itemDraft.category_he.trim() || null,
+
+        category:
+          (
+            itemDraft.category_en.trim() &&
+            itemDraft.category_he.trim()
+          )
+            ? `${itemDraft.category_en.trim()} · ${itemDraft.category_he.trim()}`
+            : itemDraft.category_en.trim() ||
+              itemDraft.category_he.trim() ||
+              null,
+
+        description_en:
+          itemDraft.description_en.trim() || null,
+
+        description_he:
+          itemDraft.description_he.trim() || null,
+
         description:
-          itemDraft.description.trim() || null,
+          itemDraft.description_en.trim() ||
+          itemDraft.description_he.trim() ||
+          itemDraft.description.trim() ||
+          null,
+
         price:
-          itemDraft.price.trim() || null
+          itemDraft.type === "wine"
+            ? null
+            : itemDraft.price.trim() || null,
+
+        origin_en:
+          itemDraft.type === "wine"
+            ? itemDraft.origin_en.trim() || null
+            : null,
+
+        origin_he:
+          itemDraft.type === "wine"
+            ? itemDraft.origin_he.trim() || null
+            : null,
+
+        origin:
+          itemDraft.type === "wine"
+            ? (
+                itemDraft.origin_en.trim() &&
+                itemDraft.origin_he.trim()
+              )
+                ? `${itemDraft.origin_en.trim()} · ${itemDraft.origin_he.trim()}`
+                : itemDraft.origin_en.trim() ||
+                  itemDraft.origin_he.trim() ||
+                  null
+            : null,
+
+        wine_glass:
+          itemDraft.type === "wine"
+            ? itemDraft.wine_glass.trim() || null
+            : null,
+
+        wine_bottle:
+          itemDraft.type === "wine"
+            ? itemDraft.wine_bottle.trim() || null
+            : null
       })
       .eq("id", editingItemId);
 
@@ -1361,6 +1566,123 @@ export function BeyondMenuStudio() {
     setMsg("Item order updated.");
   };
 
+  const uploadRestaurantLogo = async file => {
+    if (
+      !selected ||
+      !user ||
+      !file ||
+      logoUploading
+    ) return;
+
+    const allowedTypes = new Set([
+      "image/png",
+      "image/jpeg",
+      "image/webp",
+      "image/svg+xml"
+    ]);
+
+    if (!allowedTypes.has(file.type)) {
+      setMsg(
+        "Logo must be PNG, JPG, WEBP or SVG."
+      );
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setMsg(
+        "Logo must be smaller than 5 MB."
+      );
+      return;
+    }
+
+    const extension =
+      file.type === "image/jpeg"
+        ? "jpg"
+        : file.type === "image/svg+xml"
+          ? "svg"
+          : file.type.split("/")[1];
+
+    const objectPath =
+      `${user.id}/${selected.id}/logo-${Date.now()}.${extension}`;
+
+    setLogoUploading(true);
+    setMsg("Uploading logo…");
+
+    const { error: uploadError } =
+      await supabase.storage
+        .from("menu-logos")
+        .upload(
+          objectPath,
+          file,
+          {
+            cacheControl: "3600",
+            upsert: false,
+            contentType: file.type
+          }
+        );
+
+    if (uploadError) {
+      setLogoUploading(false);
+      setMsg(uploadError.message);
+      return;
+    }
+
+    const { data: publicData } =
+      supabase.storage
+        .from("menu-logos")
+        .getPublicUrl(objectPath);
+
+    const publicUrl =
+      publicData?.publicUrl || "";
+
+    if (!publicUrl) {
+      setLogoUploading(false);
+      setMsg(
+        "Logo uploaded, but its public URL could not be created."
+      );
+      return;
+    }
+
+    const { error: updateError } =
+      await supabase
+        .from("menu_sites")
+        .update({
+          logo_url: publicUrl
+        })
+        .eq("id", selected.id);
+
+    if (updateError) {
+      setLogoUploading(false);
+      setMsg(updateError.message);
+      return;
+    }
+
+    await loadSites(selected.id);
+
+    setLogoUploading(false);
+    setMsg("Restaurant logo updated.");
+  };
+
+  const removeRestaurantLogo = async () => {
+    if (!selected) return;
+
+    const { error } =
+      await supabase
+        .from("menu_sites")
+        .update({
+          logo_url: null
+        })
+        .eq("id", selected.id);
+
+    if (error) {
+      setMsg(error.message);
+      return;
+    }
+
+    await loadSites(selected.id);
+    setMsg("Restaurant logo removed.");
+  };
+
   const saveRestaurantSettings = async () => {
     if (!selected) return;
 
@@ -1416,6 +1738,309 @@ export function BeyondMenuStudio() {
   const activeItems = items.filter(
     item => item.section_id === activeSectionId
   );
+
+  const itemSectionKey = sectionId =>
+    String(
+      sections.find(
+        section => section.id === sectionId
+      )?.section_key || ""
+    )
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, "");
+
+  const isDualPriceSection = sectionId =>
+    new Set([
+      "mix",
+      "drinkstomix",
+      "whiskey",
+      "whisky",
+      "liquor",
+      "cognac"
+    ]).has(itemSectionKey(sectionId));
+
+  const studioPrice = menuItem => {
+    if (menuItem.type !== "wine") {
+      return menuItem.price || "—";
+    }
+
+    const glass = String(
+      menuItem.wine_glass || ""
+    ).trim();
+
+    const bottle = String(
+      menuItem.wine_bottle || ""
+    ).trim();
+
+    const money = value => {
+      if (!value) return "";
+      return /[₪€$£]/.test(value)
+        ? value
+        : `₪${value}`;
+    };
+
+    if (glass && bottle) {
+      return `${money(glass)} / ${money(bottle)}`;
+    }
+
+    return money(glass || bottle) || "—";
+  };
+
+  const renderItemFields = (
+    draft,
+    setDraft
+  ) => {
+    const isWine = draft.type === "wine";
+
+    return (
+      <>
+        <label>
+          Menu category
+
+          <select
+            value={draft.section_id}
+            onChange={e => {
+              const sectionId = e.target.value;
+
+              setDraft(current => ({
+                ...current,
+                section_id: sectionId,
+                type:
+                  itemSectionKey(sectionId) === "wine"
+                    ? "wine"
+                    : current.type
+              }));
+            }}
+          >
+            {sections.map(section => (
+              <option
+                key={section.id}
+                value={section.id}
+              >
+                {section.name_en}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label>
+          Item type
+
+          <select
+            value={draft.type}
+            onChange={e =>
+              setDraft(current => ({
+                ...current,
+                type: e.target.value
+              }))
+            }
+          >
+            <option value="item">
+              Regular item
+            </option>
+
+            <option value="wine">
+              Wine
+            </option>
+          </select>
+        </label>
+
+        <label>
+          English name
+
+          <input
+            value={draft.name_en}
+            onChange={e =>
+              setDraft(current => ({
+                ...current,
+                name_en: e.target.value
+              }))
+            }
+            placeholder="Margherita Pizza"
+          />
+        </label>
+
+        <label>
+          Hebrew name
+
+          <input
+            dir="rtl"
+            value={draft.name_he}
+            onChange={e =>
+              setDraft(current => ({
+                ...current,
+                name_he: e.target.value
+              }))
+            }
+            placeholder="פיצה מרגריטה"
+          />
+        </label>
+
+        <label>
+          Subcategory EN
+
+          <input
+            value={draft.category_en}
+            onChange={e =>
+              setDraft(current => ({
+                ...current,
+                category_en: e.target.value
+              }))
+            }
+            placeholder="Pizza"
+          />
+        </label>
+
+        <label>
+          Subcategory HE
+
+          <input
+            dir="rtl"
+            value={draft.category_he}
+            onChange={e =>
+              setDraft(current => ({
+                ...current,
+                category_he: e.target.value
+              }))
+            }
+            placeholder="פיצה"
+          />
+        </label>
+
+        {isWine ? (
+          <>
+            <label>
+              Origin EN
+
+              <input
+                value={draft.origin_en}
+                onChange={e =>
+                  setDraft(current => ({
+                    ...current,
+                    origin_en: e.target.value
+                  }))
+                }
+                placeholder="France"
+              />
+            </label>
+
+            <label>
+              Origin HE
+
+              <input
+                dir="rtl"
+                value={draft.origin_he}
+                onChange={e =>
+                  setDraft(current => ({
+                    ...current,
+                    origin_he: e.target.value
+                  }))
+                }
+                placeholder="צרפת"
+              />
+            </label>
+
+            <label>
+              Glass price
+
+              <input
+                inputMode="decimal"
+                value={draft.wine_glass}
+                onChange={e =>
+                  setDraft(current => ({
+                    ...current,
+                    wine_glass: e.target.value
+                  }))
+                }
+                placeholder="35"
+              />
+            </label>
+
+            <label>
+              Bottle price
+
+              <input
+                inputMode="decimal"
+                value={draft.wine_bottle}
+                onChange={e =>
+                  setDraft(current => ({
+                    ...current,
+                    wine_bottle: e.target.value
+                  }))
+                }
+                placeholder="150"
+              />
+            </label>
+          </>
+        ) : (
+          <label>
+            Price
+
+            <input
+              value={draft.price}
+              onChange={e =>
+                setDraft(current => ({
+                  ...current,
+                  price: e.target.value
+                }))
+              }
+              placeholder={
+                isDualPriceSection(
+                  draft.section_id
+                )
+                  ? "₪18 / ₪35"
+                  : "₪32"
+              }
+            />
+          </label>
+        )}
+
+        <label className="bm-v10-wide">
+          Description EN
+
+          <textarea
+            rows="3"
+            value={draft.description_en}
+            onChange={e =>
+              setDraft(current => ({
+                ...current,
+                description_en:
+                  e.target.value
+              }))
+            }
+          />
+        </label>
+
+        <label className="bm-v10-wide">
+          Description HE
+
+          <textarea
+            dir="rtl"
+            rows="3"
+            value={draft.description_he}
+            onChange={e =>
+              setDraft(current => ({
+                ...current,
+                description_he:
+                  e.target.value
+              }))
+            }
+          />
+        </label>
+
+        {!isWine &&
+        isDualPriceSection(
+          draft.section_id
+        ) ? (
+          <div className="bm-v10-note">
+            Enter both prices separated by /
+            — for example ₪18 / ₪35.
+            The public menu will display
+            shot and glass pricing.
+          </div>
+        ) : null}
+      </>
+    );
+  };
 
   return (
     <div className="bm-shell bm-owner-dashboard">
@@ -1708,36 +2333,84 @@ export function BeyondMenuStudio() {
                   </div>
                 </label>
 
-                <label className="bm-owner-logo-setting">
-                  Logo URL
+                <div className="bm-owner-logo-setting bm-owner-logo-upload">
+                  <span className="bm-owner-setting-label">
+                    Restaurant logo
+                  </span>
 
-                  <input
-                    value={
-                      selected.logo_url || ""
-                    }
-                    onChange={e =>
-                      setSites(current =>
-                        current.map(site =>
-                          site.id === selected.id
-                            ? {
-                                ...site,
-                                logo_url:
-                                  e.target.value
-                              }
-                            : site
-                        )
-                      )
-                    }
-                    onBlur={e =>
-                      updateSite({
-                        logo_url:
-                          e.target.value.trim() ||
-                          null
-                      })
-                    }
-                    placeholder="https://..."
-                  />
-                </label>
+                  <div className="bm-owner-logo-upload-inner">
+
+                    <div className="bm-owner-logo-preview">
+                      {selected.logo_url ? (
+                        <img
+                          src={selected.logo_url}
+                          alt=""
+                        />
+                      ) : (
+                        <strong>
+                          {selected.name
+                            ?.trim()
+                            ?.slice(0, 2)
+                            ?.toUpperCase() ||
+                            "BM"}
+                        </strong>
+                      )}
+                    </div>
+
+                    <div className="bm-owner-logo-upload-actions">
+
+                      <input
+                        id={`bm-menu-logo-${selected.id}`}
+                        className="bm-owner-logo-file"
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                        disabled={logoUploading}
+                        onChange={e => {
+                          const file =
+                            e.target.files?.[0];
+
+                          if (file) {
+                            uploadRestaurantLogo(
+                              file
+                            );
+                          }
+
+                          e.target.value = "";
+                        }}
+                      />
+
+                      <label
+                        className="bm-owner-logo-upload-button"
+                        htmlFor={`bm-menu-logo-${selected.id}`}
+                      >
+                        {logoUploading
+                          ? "UPLOADING…"
+                          : selected.logo_url
+                            ? "CHANGE LOGO"
+                            : "UPLOAD LOGO"}
+                      </label>
+
+                      {selected.logo_url ? (
+                        <button
+                          type="button"
+                          className="bm-owner-logo-remove"
+                          disabled={logoUploading}
+                          onClick={
+                            removeRestaurantLogo
+                          }
+                        >
+                          REMOVE
+                        </button>
+                      ) : null}
+
+                      <small>
+                        PNG, JPG, WEBP or SVG · max 5 MB
+                      </small>
+
+                    </div>
+
+                  </div>
+                </div>
 
                 <label className="bm-owner-color-setting">
                   Brand color
@@ -1755,6 +2428,31 @@ export function BeyondMenuStudio() {
                       })
                     }
                   />
+                </label>
+
+                <label className="bm-owner-language-setting">
+                  Default language
+
+                  <select
+                    value={
+                      selected.default_language ||
+                      "he"
+                    }
+                    onChange={e =>
+                      updateSite({
+                        default_language:
+                          e.target.value
+                      })
+                    }
+                  >
+                    <option value="he">
+                      Hebrew — עברית
+                    </option>
+
+                    <option value="en">
+                      English
+                    </option>
+                  </select>
                 </label>
 
               </div>
@@ -2050,101 +2748,14 @@ export function BeyondMenuStudio() {
 
               {showAddItem ? (
                 <form
-                  className="bm-owner-item-form"
+                  className="bm-owner-item-form bm-v10-item-form"
                   onSubmit={addItem}
                 >
 
-                  <label>
-                    Category
-
-                    <select
-                      value={
-                        newItem.section_id
-                      }
-                      onChange={e =>
-                        setNewItem(v => ({
-                          ...v,
-                          section_id:
-                            e.target.value
-                        }))
-                      }
-                    >
-                      {sections.map(section => (
-                        <option
-                          key={section.id}
-                          value={section.id}
-                        >
-                          {section.name_en}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-
-                  <label>
-                    English name
-
-                    <input
-                      autoFocus
-                      value={newItem.name_en}
-                      onChange={e =>
-                        setNewItem(v => ({
-                          ...v,
-                          name_en:
-                            e.target.value
-                        }))
-                      }
-                    />
-                  </label>
-
-                  <label>
-                    Hebrew name
-
-                    <input
-                      dir="rtl"
-                      value={newItem.name_he}
-                      onChange={e =>
-                        setNewItem(v => ({
-                          ...v,
-                          name_he:
-                            e.target.value
-                        }))
-                      }
-                    />
-                  </label>
-
-                  <label>
-                    Price
-
-                    <input
-                      value={newItem.price}
-                      onChange={e =>
-                        setNewItem(v => ({
-                          ...v,
-                          price:
-                            e.target.value
-                        }))
-                      }
-                      placeholder="32"
-                    />
-                  </label>
-
-                  <label className="wide">
-                    Description
-
-                    <textarea
-                      rows="3"
-                      value={
-                        newItem.description
-                      }
-                      onChange={e =>
-                        setNewItem(v => ({
-                          ...v,
-                          description:
-                            e.target.value
-                        }))
-                      }
-                    />
-                  </label>
+                  {renderItemFields(
+                    newItem,
+                    setNewItem
+                  )}
 
                   <div className="bm-owner-form-actions">
                     <button
@@ -2195,108 +2806,19 @@ export function BeyondMenuStudio() {
                     ) {
                       return (
                         <div
-                          className="bm-owner-item-edit"
+                          className="bm-owner-item-edit bm-v10-item-form"
                           key={menuItem.id}
                         >
 
-                          <label>
-                            Category
-
-                            <select
-                              value={
-                                itemDraft.section_id
-                              }
-                              onChange={e =>
-                                setItemDraft(v => ({
-                                  ...v,
-                                  section_id:
-                                    e.target.value
-                                }))
-                              }
-                            >
-                              {sections.map(section => (
-                                <option
-                                  key={section.id}
-                                  value={section.id}
-                                >
-                                  {section.name_en}
-                                </option>
-                              ))}
-                            </select>
-                          </label>
-
-                          <label>
-                            English name
-
-                            <input
-                              value={
-                                itemDraft.name_en
-                              }
-                              onChange={e =>
-                                setItemDraft(v => ({
-                                  ...v,
-                                  name_en:
-                                    e.target.value
-                                }))
-                              }
-                            />
-                          </label>
-
-                          <label>
-                            Hebrew name
-
-                            <input
-                              dir="rtl"
-                              value={
-                                itemDraft.name_he
-                              }
-                              onChange={e =>
-                                setItemDraft(v => ({
-                                  ...v,
-                                  name_he:
-                                    e.target.value
-                                }))
-                              }
-                            />
-                          </label>
-
-                          <label>
-                            Price
-
-                            <input
-                              value={
-                                itemDraft.price
-                              }
-                              onChange={e =>
-                                setItemDraft(v => ({
-                                  ...v,
-                                  price:
-                                    e.target.value
-                                }))
-                              }
-                            />
-                          </label>
-
-                          <label className="wide">
-                            Description
-
-                            <textarea
-                              rows="3"
-                              value={
-                                itemDraft.description
-                              }
-                              onChange={e =>
-                                setItemDraft(v => ({
-                                  ...v,
-                                  description:
-                                    e.target.value
-                                }))
-                              }
-                            />
-                          </label>
+                          {renderItemFields(
+                            itemDraft,
+                            setItemDraft
+                          )}
 
                           <div className="bm-owner-form-actions">
+
                             <button
+                              type="button"
                               onClick={() =>
                                 setEditingItemId("")
                               }
@@ -2305,10 +2827,12 @@ export function BeyondMenuStudio() {
                             </button>
 
                             <button
+                              type="button"
                               onClick={saveItem}
                             >
                               SAVE CHANGES
                             </button>
+
                           </div>
 
                         </div>
@@ -2351,7 +2875,7 @@ export function BeyondMenuStudio() {
                           </div>
 
                           <b className="bm-owner-item-price">
-                            {menuItem.price || "—"}
+                            {studioPrice(menuItem)}
                           </b>
 
                         </button>
