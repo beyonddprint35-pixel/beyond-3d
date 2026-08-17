@@ -11,6 +11,10 @@ import {
   Clock3,
   FileBox,
   FolderOpen,
+  Globe2,
+  ExternalLink,
+  Settings2,
+  ShieldCheck,
   LogOut,
   PackageCheck,
   RefreshCw,
@@ -137,6 +141,21 @@ function MyAccount({
     projects,
     setProjects,
   ] = useState([]);
+
+  const [
+    menuSites,
+    setMenuSites,
+  ] = useState([]);
+
+  const [
+    isMenuAdmin,
+    setIsMenuAdmin,
+  ] = useState(false);
+
+  const [
+    websitesLoading,
+    setWebsitesLoading,
+  ] = useState(false);
 
   const [
     communityShares,
@@ -378,6 +397,128 @@ function MyAccount({
     );
     onClose();
   }
+
+
+  // BEYOND_MY_WEBSITES_ACCOUNT_V1
+  const loadMenuSites =
+    useCallback(
+      async () => {
+        if (!session?.user?.id) {
+          setMenuSites([]);
+          setIsMenuAdmin(false);
+          setWebsitesLoading(false);
+          return;
+        }
+
+        setWebsitesLoading(true);
+
+        const {
+          data: adminRow,
+          error: adminError,
+        } = await supabase
+          .from("menu_admins")
+          .select("user_id")
+          .eq(
+            "user_id",
+            session.user.id
+          )
+          .maybeSingle();
+
+        if (adminError) {
+          console.error(
+            "Menu admin check failed:",
+            adminError
+          );
+
+          setMenuSites([]);
+          setIsMenuAdmin(false);
+          setWebsitesLoading(false);
+          return;
+        }
+
+        const adminMode =
+          Boolean(adminRow);
+
+        setIsMenuAdmin(
+          adminMode
+        );
+
+        let query =
+          supabase
+            .from("menu_sites")
+            .select(
+              "id,owner_id,name,slug,published,created_at"
+            )
+            .order(
+              "created_at",
+              {
+                ascending: false,
+              }
+            );
+
+        if (!adminMode) {
+          query =
+            query.eq(
+              "owner_id",
+              session.user.id
+            );
+        }
+
+        const {
+          data,
+          error: sitesError,
+        } = await query;
+
+        if (sitesError) {
+          console.error(
+            "Website load failed:",
+            sitesError
+          );
+
+          setMenuSites([]);
+          setWebsitesLoading(false);
+          return;
+        }
+
+        setMenuSites(
+          data || []
+        );
+
+        setWebsitesLoading(
+          false
+        );
+      },
+      [
+        session?.user?.id,
+      ]
+    );
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    loadMenuSites();
+  }, [
+    open,
+    loadMenuSites,
+  ]);
+
+  useEffect(() => {
+    if (
+      activeTab === "websites" &&
+      !websitesLoading &&
+      !isMenuAdmin &&
+      menuSites.length === 0
+    ) {
+      setActiveTab("overview");
+    }
+  }, [
+    activeTab,
+    websitesLoading,
+    isMenuAdmin,
+    menuSites.length,
+  ]);
 
   // BEYOND_COMMUNITY_ACCOUNT_V1
   const loadCommunityShares =
@@ -1246,6 +1387,42 @@ function MyAccount({
               </span>
             </button>
 
+            {(isMenuAdmin ||
+              menuSites.length > 0) && (
+              <button
+                type="button"
+                className={
+                  activeTab ===
+                  "websites"
+                    ? "active"
+                    : ""
+                }
+                onClick={() =>
+                  setActiveTab(
+                    "websites"
+                  )
+                }
+              >
+                <Globe2
+                  size={16}
+                  strokeWidth={
+                    1.5
+                  }
+                />
+
+                {isMenuAdmin ||
+                menuSites.length > 1
+                  ? "My Websites"
+                  : "My Website"}
+
+                <span>
+                  {
+                    menuSites.length
+                  }
+                </span>
+              </button>
+            )}
+
             <button
               type="button"
               className={
@@ -1309,7 +1486,10 @@ function MyAccount({
                       : activeTab ===
                           "models"
                         ? "My Models"
-                        : "Profile"}
+                        : activeTab ===
+                            "websites"
+                          ? "My Websites"
+                          : "Profile"}
               </h2>
             </div>
 
@@ -1317,9 +1497,10 @@ function MyAccount({
               <button
                 type="button"
                 className="account-refresh"
-                onClick={
-                  loadAccountData
-                }
+                onClick={() => {
+                  loadAccountData();
+                  loadMenuSites();
+                }}
                 disabled={
                   loading
                 }
@@ -1418,6 +1599,30 @@ function MyAccount({
 
                   <small>
                     {readyModels} ready
+                  </small>
+                </article>
+
+                <article>
+                  <span>
+                    WEBSITES
+                  </span>
+
+                  <strong>
+                    {
+                      menuSites.length
+                    }
+                  </strong>
+
+                  <small>
+                    {isMenuAdmin
+                      ? `${menuSites.filter(
+                          site =>
+                            site.published
+                        ).length} live · admin`
+                      : `${menuSites.filter(
+                          site =>
+                            site.published
+                        ).length} live`}
                   </small>
                 </article>
 
@@ -2083,6 +2288,213 @@ function MyAccount({
                         </article>
                       );
                     }
+                  )}
+                </div>
+              )}
+            </div>
+          ) : activeTab ===
+            "websites" ? (
+            <div className="account-websites">
+
+              <div className="account-websites-intro">
+                <div className="account-websites-intro-copy">
+
+                  <div className="account-websites-icon">
+                    <Globe2
+                      size={25}
+                      strokeWidth={1.25}
+                    />
+                  </div>
+
+                  <div>
+                    <span>
+                      {isMenuAdmin
+                        ? "BEYOND ADMIN"
+                        : "MY WEBSITES"}
+                    </span>
+
+                    <h3>
+                      {isMenuAdmin
+                        ? "Website portfolio"
+                        : "Your websites"}
+                    </h3>
+
+                    <p>
+                      {isMenuAdmin
+                        ? "View and manage every restaurant website connected to BEYOND."
+                        : "View and manage the restaurant websites connected to your BEYOND account."}
+                    </p>
+                  </div>
+
+                </div>
+
+                {isMenuAdmin && (
+                  <button
+                    type="button"
+                    className="account-websites-admin-button"
+                    onClick={() => {
+                      window.location.href =
+                        "/admin/menus";
+                    }}
+                  >
+                    <ShieldCheck
+                      size={14}
+                      strokeWidth={1.5}
+                    />
+
+                    Website Admin
+                  </button>
+                )}
+              </div>
+
+              {websitesLoading ? (
+                <div className="account-loading">
+                  <RefreshCw
+                    size={22}
+                    strokeWidth={1.4}
+                  />
+
+                  Loading websites...
+                </div>
+              ) : !menuSites.length ? (
+                <div className="account-empty account-websites-empty">
+                  <Globe2
+                    size={38}
+                    strokeWidth={1.1}
+                  />
+
+                  <strong>
+                    {isMenuAdmin
+                      ? "No websites yet."
+                      : "No website assigned yet."}
+                  </strong>
+
+                  <span>
+                    {isMenuAdmin
+                      ? "Restaurant websites created in BEYOND will appear here."
+                      : "Your BEYOND administrator can assign a restaurant website to this account."}
+                  </span>
+                </div>
+              ) : (
+                <div className="account-website-grid">
+                  {menuSites.map(
+                    site => (
+                      <article
+                        className="account-website-card"
+                        key={site.id}
+                      >
+                        <div className="account-website-card-top">
+
+                          <div>
+                            <span
+                              className={`account-website-status ${
+                                site.published
+                                  ? "live"
+                                  : "draft"
+                              }`}
+                            >
+                              {site.published
+                                ? "● LIVE"
+                                : "● DRAFT"}
+                            </span>
+
+                            <h3>
+                              {site.name ||
+                                "Untitled website"}
+                            </h3>
+                          </div>
+
+                          {isMenuAdmin && (
+                            <span className="account-website-admin-badge">
+                              <ShieldCheck
+                                size={11}
+                                strokeWidth={1.5}
+                              />
+                              ADMIN
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="account-website-url">
+                          /menu/{site.slug}
+                        </div>
+
+                        <div className="account-website-meta">
+                          <div>
+                            <span>
+                              STATUS
+                            </span>
+
+                            <strong>
+                              {site.published
+                                ? "Published"
+                                : "Draft"}
+                            </strong>
+                          </div>
+
+                          <div>
+                            <span>
+                              ACCESS
+                            </span>
+
+                            <strong>
+                              {isMenuAdmin
+                                ? "Administrator"
+                                : "Customer"}
+                            </strong>
+                          </div>
+                        </div>
+
+                        <div className="account-website-actions">
+
+                          <button
+                            type="button"
+                            className="account-primary-button"
+                            disabled={
+                              !site.published
+                            }
+                            onClick={() =>
+                              window.open(
+                                `/menu/${encodeURIComponent(
+                                  site.slug || ""
+                                )}`,
+                                "_blank",
+                                "noopener,noreferrer"
+                              )
+                            }
+                          >
+                            <ExternalLink
+                              size={13}
+                              strokeWidth={1.5}
+                            />
+
+                            {site.published
+                              ? "Open Website"
+                              : "Not Live Yet"}
+                          </button>
+
+                          <button
+                            type="button"
+                            className="account-secondary-button"
+                            onClick={() => {
+                              window.location.href =
+                                `/menu-studio?site=${encodeURIComponent(
+                                  site.id
+                                )}`;
+                            }}
+                          >
+                            <Settings2
+                              size={13}
+                              strokeWidth={1.5}
+                            />
+
+                            Manage Website
+                          </button>
+
+                        </div>
+
+                      </article>
+                    )
                   )}
                 </div>
               )}

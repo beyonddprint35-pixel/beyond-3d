@@ -434,7 +434,7 @@ function Home() {
                 )
               }
             >
-              Log In
+              Log In / Sign Up
             </button>
           )}
 
@@ -447,11 +447,7 @@ function Home() {
               )
             }
           >
-            Start a project
-
-            <span>
-              ↗
-            </span>
+            Send us your project
           </button>
 
           <button
