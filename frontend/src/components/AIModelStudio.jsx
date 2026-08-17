@@ -13,7 +13,6 @@ import {
 
 import {
   Bounds,
-  Environment,
   OrbitControls,
   useGLTF,
 } from "@react-three/drei";
@@ -190,12 +189,7 @@ function RealModelViewer({
           }
         />
 
-        <Environment
-          preset="city"
-          environmentIntensity={
-            0.45
-          }
-        />
+        
       </Suspense>
 
       <OrbitControls

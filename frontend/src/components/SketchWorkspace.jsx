@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Environment, Grid, Html, Line, OrbitControls } from "@react-three/drei";
+import { Grid, Html, Line, OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 import { CSG } from "three-csg-ts";
 import {
@@ -2736,7 +2736,7 @@ function SketchScene({ state, actions, cameraRigRef, controlsRef }) {
         castShadow
       />
       <pointLight position={[-4, 2.5, 3]} intensity={0.75} color="#3fa9ff" />
-      <Environment preset="city" environmentIntensity={0.18} />
+      
 
       <mesh
         rotation={[-Math.PI / 2, 0, 0]}

@@ -14,7 +14,6 @@ import {
 
 import {
   ContactShadows,
-  Environment,
 } from "@react-three/drei";
 
 import * as THREE from "three";
@@ -674,12 +673,7 @@ function Scene({
         far={5}
       />
 
-      <Environment
-        preset="city"
-        environmentIntensity={
-          0.08
-        }
-      />
+      
     </>
   );
 }

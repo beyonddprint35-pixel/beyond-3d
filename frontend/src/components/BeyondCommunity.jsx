@@ -13,7 +13,6 @@ import {
 
 import {
   Bounds,
-  Environment,
   OrbitControls,
   useGLTF,
 } from "@react-three/drei";
@@ -310,10 +309,7 @@ function CommunityCardProjectPreview({ item }) {
         <Suspense fallback={null}>
           <CommunityProjectScene item={item} />
 
-          <Environment
-            preset="city"
-            environmentIntensity={0.3}
-          />
+          
         </Suspense>
       </Canvas>
     </div>
@@ -466,10 +462,7 @@ function CommunityAiViewer({ item, session }) {
           <Suspense fallback={null}>
             <CommunityAiModel url={modelUrl} />
 
-            <Environment
-              preset="city"
-              environmentIntensity={0.45}
-            />
+            
           </Suspense>
 
           <OrbitControls
@@ -528,10 +521,7 @@ function CommunityProjectViewer({ item }) {
         <Suspense fallback={null}>
           <CommunityProjectScene item={item} />
 
-          <Environment
-            preset="city"
-            environmentIntensity={0.35}
-          />
+         
         </Suspense>
 
         <gridHelper
