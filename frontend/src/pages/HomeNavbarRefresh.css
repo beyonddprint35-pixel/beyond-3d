@@ -1,0 +1,175 @@
+/* =========================================================
+   BEYOND NAVBAR REFRESH
+   Brand wordmark + numbered section navigation.
+   Keeps the existing navbar layout and behavior intact.
+========================================================= */
+
+.home-brand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  min-width: max-content;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #f5f7fa;
+  letter-spacing: 0;
+}
+
+.home-brand-logo {
+  width: 46px;
+  height: 46px;
+  display: block;
+  flex-shrink: 0;
+  object-fit: contain;
+  filter:
+    brightness(1.08)
+    contrast(1.04)
+    drop-shadow(0 5px 8px rgba(0, 0, 0, 0.42));
+}
+
+.home-brand-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  font-family: var(--font-display-family, "Space Grotesk", sans-serif);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.075em;
+  color: #edf0f3;
+  text-shadow:
+    0 1px 0 #ffffff,
+    0 2px 0 rgba(125, 132, 139, 0.82),
+    0 4px 7px rgba(0, 0, 0, 0.48);
+}
+
+.home-brand-e {
+  width: 17px;
+  height: 15px;
+  margin: 0 2px 0 1px;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.home-brand-e i {
+  width: 100%;
+  height: 3px;
+  display: block;
+  border-radius: 1px;
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff 0%,
+      #e9ecef 48%,
+      #a5abb1 100%
+    );
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.45),
+    0 2px 3px rgba(0, 0, 0, 0.45);
+}
+
+.home-nav-links {
+  gap: clamp(18px, 2vw, 32px);
+}
+
+.home-nav-links button {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+  white-space: nowrap;
+  font-family: var(--font-body-family, "Inter", sans-serif);
+  font-size: var(--type-button, 13px);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.home-nav-index {
+  color: #5e86ad;
+  font-size: var(--type-label, 11px);
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  transition: color 0.2s ease;
+}
+
+.home-nav-label {
+  color: rgba(224, 233, 246, 0.62);
+  transition: color 0.2s ease;
+}
+
+.home-nav-links button:hover .home-nav-index {
+  color: #8fbcec;
+}
+
+.home-nav-links button:hover .home-nav-label {
+  color: #ffffff;
+}
+
+@media (max-width: 1180px) {
+  .home-brand-wordmark {
+    font-size: 17px;
+  }
+
+  .home-brand-logo {
+    width: 42px;
+    height: 42px;
+  }
+
+  .home-nav-links {
+    gap: 16px;
+  }
+
+  .home-nav-links button {
+    gap: 5px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 900px) {
+  .home-brand-logo {
+    width: 40px;
+    height: 40px;
+  }
+
+  .home-brand-wordmark {
+    font-size: 17px;
+  }
+
+  .home-nav-links.open button {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 10px;
+  }
+
+  .home-nav-links.open .home-nav-index {
+    min-width: 24px;
+  }
+}
+
+@media (max-width: 700px) {
+  .home-brand {
+    gap: 8px;
+  }
+
+  .home-brand-logo {
+    width: 37px;
+    height: 37px;
+  }
+
+  .home-brand-wordmark {
+    font-size: 15px;
+    letter-spacing: 0.055em;
+  }
+
+  .home-brand-e {
+    width: 14px;
+    height: 13px;
+  }
+
+  .home-brand-e i {
+    height: 2.5px;
+  }
+}
