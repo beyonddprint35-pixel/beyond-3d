@@ -3509,3 +3509,346 @@ button:disabled {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* ==========================================================
+   BEYOND_ADMIN_CONTACT_SETTINGS_STYLE_V1
+   ========================================================== */
+
+.account-admin-settings {
+  display:
+    grid;
+
+  gap:
+    18px;
+}
+
+
+.account-admin-settings-hero {
+  padding:
+    24px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    18px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.075);
+
+  border-radius:
+    20px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(44, 112, 230, 0.1),
+      rgba(255, 255, 255, 0.02)
+    );
+}
+
+
+.account-admin-settings-icon {
+  width:
+    58px;
+
+  height:
+    58px;
+
+  flex:
+    0 0 58px;
+
+  display:
+    grid;
+
+  place-items:
+    center;
+
+  border-radius:
+    16px;
+
+  color:
+    #75adff;
+
+  background:
+    rgba(55, 126, 255, 0.1);
+
+  border:
+    1px solid
+    rgba(80, 150, 255, 0.14);
+}
+
+
+.account-admin-settings-hero span,
+.account-admin-contact-form label > span,
+.account-admin-contact-preview span {
+  color:
+    #617b9f;
+
+  font-size:
+    9px;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    1.5px;
+}
+
+
+.account-admin-settings-hero h3 {
+  margin:
+    5px 0 6px;
+
+  color:
+    #f3f7ff;
+
+  font-size:
+    23px;
+}
+
+
+.account-admin-settings-hero p {
+  max-width:
+    600px;
+
+  margin:
+    0;
+
+  color:
+    #788ba5;
+
+  font-size:
+    13px;
+
+  line-height:
+    1.65;
+}
+
+
+.account-admin-contact-form {
+  padding:
+    24px;
+
+  display:
+    grid;
+
+  gap:
+    18px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.07);
+
+  border-radius:
+    20px;
+
+  background:
+    rgba(255, 255, 255, 0.018);
+}
+
+
+.account-admin-contact-form label {
+  display:
+    grid;
+
+  gap:
+    9px;
+}
+
+
+.account-admin-contact-form input {
+  width:
+    100%;
+
+  min-height:
+    52px;
+
+  padding:
+    0 15px;
+
+  box-sizing:
+    border-box;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.09);
+
+  border-radius:
+    12px;
+
+  outline:
+    none;
+
+  color:
+    #eef5ff;
+
+  background:
+    rgba(0, 0, 0, 0.18);
+
+  font-size:
+    15px;
+}
+
+
+.account-admin-contact-form input:focus {
+  border-color:
+    rgba(75, 151, 255, 0.46);
+
+  box-shadow:
+    0 0 0 3px
+    rgba(50, 125, 255, 0.07);
+}
+
+
+.account-admin-contact-form small {
+  color:
+    #60738d;
+
+  font-size:
+    11px;
+
+  line-height:
+    1.5;
+}
+
+
+.account-admin-contact-preview {
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap:
+    10px;
+}
+
+
+.account-admin-contact-preview > div {
+  min-width:
+    0;
+
+  padding:
+    16px;
+
+  display:
+    grid;
+
+  gap:
+    6px;
+
+  border-radius:
+    13px;
+
+  background:
+    rgba(255, 255, 255, 0.025);
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.055);
+}
+
+
+.account-admin-contact-preview strong {
+  color:
+    #eaf3ff;
+
+  font-size:
+    14px;
+
+  overflow-wrap:
+    anywhere;
+}
+
+
+.account-admin-contact-save {
+  width:
+    fit-content;
+
+  min-width:
+    210px;
+
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  gap:
+    8px;
+}
+
+
+.account-admin-contact-message {
+  padding:
+    11px 13px;
+
+  border-radius:
+    10px;
+
+  color:
+    #a8caee;
+
+  background:
+    rgba(55, 126, 255, 0.08);
+
+  font-size:
+    12px;
+}
+
+
+@media (max-width: 700px) {
+
+  .account-admin-settings-hero,
+  .account-admin-contact-form {
+    padding:
+      17px;
+  }
+
+
+  .account-admin-settings-hero {
+    align-items:
+      flex-start;
+  }
+
+
+  .account-admin-settings-icon {
+    width:
+      48px;
+
+    height:
+      48px;
+
+    flex-basis:
+      48px;
+  }
+
+
+  .account-admin-contact-preview {
+    grid-template-columns:
+      1fr;
+  }
+
+
+  .account-admin-contact-save {
+    width:
+      100%;
+
+    min-width:
+      0;
+  }
+
+}
+

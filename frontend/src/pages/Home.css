@@ -4363,3 +4363,311 @@ span {
 
 }
 
+
+
+/* ==========================================================
+   BEYOND_CONTACT_INTERACTIVE_STYLE_V3
+   ========================================================== */
+
+.home-contact-action-wrap {
+  position:
+    relative;
+
+  display:
+    inline-grid;
+
+  justify-items:
+    center;
+}
+
+
+.home-contact-trigger {
+  min-width:
+    190px;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.home-contact-trigger.is-open {
+  transform:
+    translateY(-2px);
+}
+
+
+/* ----------------------------------------------------------
+   Floating contact choices
+   ---------------------------------------------------------- */
+
+.home-contact-action-panel {
+  position:
+    absolute;
+
+  z-index:
+    20;
+
+  bottom:
+    calc(100% + 12px);
+
+  left:
+    50%;
+
+  width:
+    300px;
+
+  padding:
+    8px;
+
+  display:
+    grid;
+
+  gap:
+    7px;
+
+  transform:
+    translateX(-50%);
+
+  border:
+    1px solid
+    rgba(111, 170, 255, 0.18);
+
+  border-radius:
+    18px;
+
+  background:
+    rgba(6, 20, 40, 0.97);
+
+  box-shadow:
+    0 20px 55px
+    rgba(0, 0, 0, 0.42);
+
+  backdrop-filter:
+    blur(18px);
+
+  -webkit-backdrop-filter:
+    blur(18px);
+
+  animation:
+    beyondContactOpen
+    0.18s ease-out;
+}
+
+
+@keyframes beyondContactOpen {
+
+  from {
+    opacity:
+      0;
+
+    transform:
+      translateX(-50%)
+      translateY(8px)
+      scale(0.98);
+  }
+
+  to {
+    opacity:
+      1;
+
+    transform:
+      translateX(-50%)
+      translateY(0)
+      scale(1);
+  }
+
+}
+
+
+/* ----------------------------------------------------------
+   Call / WhatsApp choices
+   ---------------------------------------------------------- */
+
+.home-contact-action-choice {
+  width:
+    100%;
+
+  min-height:
+    67px;
+
+  padding:
+    0 14px;
+
+  display:
+    grid;
+
+  grid-template-columns:
+    39px
+    minmax(0, 1fr)
+    auto;
+
+  align-items:
+    center;
+
+  gap:
+    11px;
+
+  box-sizing:
+    border-box;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.055);
+
+  border-radius:
+    13px;
+
+  color:
+    #edf5ff;
+
+  text-decoration:
+    none;
+
+  background:
+    rgba(255, 255, 255, 0.025);
+
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease;
+}
+
+
+.home-contact-action-choice:hover {
+  transform:
+    translateY(-1px);
+
+  border-color:
+    rgba(89, 158, 255, 0.25);
+
+  background:
+    rgba(55, 121, 226, 0.09);
+}
+
+
+.home-contact-choice-icon {
+  width:
+    39px;
+
+  height:
+    39px;
+
+  display:
+    grid;
+
+  place-items:
+    center;
+
+  border-radius:
+    11px;
+
+  color:
+    #87b9ff;
+
+  background:
+    rgba(58, 128, 237, 0.1);
+
+  border:
+    1px solid
+    rgba(89, 158, 255, 0.12);
+
+  font-size:
+    17px;
+}
+
+
+.home-contact-action-choice > span:nth-child(2) {
+  min-width:
+    0;
+
+  display:
+    grid;
+
+  gap:
+    3px;
+
+  text-align:
+    left;
+}
+
+
+.home-contact-action-choice small {
+  color:
+    #607b9f;
+
+  font-size:
+    8px;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    1.5px;
+}
+
+
+.home-contact-action-choice strong {
+  color:
+    #f1f6ff;
+
+  font-size:
+    13px;
+
+  font-weight:
+    600;
+}
+
+
+.home-contact-action-choice b {
+  color:
+    #668ab9;
+
+  font-size:
+    15px;
+
+  font-weight:
+    400;
+}
+
+
+/* ----------------------------------------------------------
+   Mobile
+   ---------------------------------------------------------- */
+
+@media (max-width: 700px) {
+
+  .home-contact-action-wrap {
+    width:
+      min(
+        100%,
+        330px
+      );
+  }
+
+
+  .home-contact-trigger {
+    width:
+      100%;
+
+    min-width:
+      0;
+  }
+
+
+  .home-contact-action-panel {
+    width:
+      min(
+        300px,
+        calc(100vw - 36px)
+      );
+  }
+
+
+  .home-contact-action-choice {
+    min-height:
+      64px;
+  }
+
+}
+

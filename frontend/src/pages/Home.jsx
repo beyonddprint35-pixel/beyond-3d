@@ -79,10 +79,106 @@ function Home() {
     setIsMenuStudioAdmin,
   ] = useState(false);
 
+  // BEYOND_DYNAMIC_CONTACT_PHONE_V1
+  const [
+    contactPhone,
+    setContactPhone,
+  ] = useState(
+    "+972-537707072"
+  );
+
+  const [
+    contactActionsOpen,
+    setContactActionsOpen,
+  ] = useState(false);
+
   const [
     scrollProgress,
     setScrollProgress,
   ] = useState(0);
+
+  // BEYOND_LOAD_PUBLIC_CONTACT_PHONE_V1
+  useEffect(() => {
+    let alive = true;
+
+    async function loadContactPhone() {
+      const {
+        data,
+        error,
+      } = await supabase
+        .from("app_settings")
+        .select("value")
+        .eq(
+          "key",
+          "contact_phone"
+        )
+        .maybeSingle();
+
+      if (!alive) {
+        return;
+      }
+
+      if (error) {
+        console.error(
+          "Unable to load contact phone:",
+          error
+        );
+
+        return;
+      }
+
+      if (data?.value) {
+        setContactPhone(
+          data.value
+        );
+      }
+    }
+
+    loadContactPhone();
+
+    function handleContactUpdated(
+      event
+    ) {
+      if (
+        event.detail?.phone
+      ) {
+        setContactPhone(
+          event.detail.phone
+        );
+      } else {
+        loadContactPhone();
+      }
+    }
+
+    window.addEventListener(
+      "beyond-contact-phone-updated",
+      handleContactUpdated
+    );
+
+    return () => {
+      alive = false;
+
+      window.removeEventListener(
+        "beyond-contact-phone-updated",
+        handleContactUpdated
+      );
+    };
+  }, []);
+
+  const contactTel =
+    contactPhone
+      .replace(
+        /[^\d+]/g,
+        ""
+      );
+
+  const contactWhatsApp =
+    contactPhone
+      .replace(
+        /\D/g,
+        ""
+      );
+
 
   useEffect(() => {
     let mounted = true;
@@ -930,24 +1026,103 @@ function Home() {
         </h2>
 
         <p>
-          Send it through.
+          Have a question or want to talk about your project?
         </p>
 
-        <button
-          type="button"
-          className="home-primary-button final-cta-button"
-          onClick={() =>
-            scrollToSection(
-              "start"
-            )
-          }
-        >
-          Start Your Project
+        {/* BEYOND_CONTACT_INTERACTIVE_V3 */}
+        <div className="home-contact-action-wrap">
 
-          <span>
-            ↗
-          </span>
-        </button>
+          <button
+            type="button"
+            className={`home-primary-button final-cta-button home-contact-trigger ${
+              contactActionsOpen
+                ? "is-open"
+                : ""
+            }`}
+            aria-expanded={
+              contactActionsOpen
+            }
+            aria-controls="home-contact-action-panel"
+            onClick={() =>
+              setContactActionsOpen(
+                current =>
+                  !current
+              )
+            }
+          >
+            Contact Us
+          </button>
+
+
+          {contactActionsOpen && (
+            <div
+              id="home-contact-action-panel"
+              className="home-contact-action-panel"
+            >
+
+              <a
+                className="home-contact-action-choice"
+                href={`tel:${contactTel}`}
+                onClick={() =>
+                  setContactActionsOpen(
+                    false
+                  )
+                }
+              >
+                <span className="home-contact-choice-icon">
+                  ☎
+                </span>
+
+                <span>
+                  <small>
+                    PHONE
+                  </small>
+
+                  <strong>
+                    Call now
+                  </strong>
+                </span>
+
+                <b>
+                  ↗
+                </b>
+              </a>
+
+
+              <a
+                className="home-contact-action-choice"
+                href={`https://wa.me/${contactWhatsApp}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() =>
+                  setContactActionsOpen(
+                    false
+                  )
+                }
+              >
+                <span className="home-contact-choice-icon">
+                  ◉
+                </span>
+
+                <span>
+                  <small>
+                    WHATSAPP
+                  </small>
+
+                  <strong>
+                    Start a chat
+                  </strong>
+                </span>
+
+                <b>
+                  ↗
+                </b>
+              </a>
+
+            </div>
+          )}
+
+        </div>
       </section>
 
       {/* =========================================

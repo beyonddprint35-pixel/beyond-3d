@@ -176,6 +176,26 @@ function MyAccount({
     setWebsitesLoading,
   ] = useState(false);
 
+  // BEYOND_ADMIN_CONTACT_SETTINGS_V1
+  const [
+    adminContactPhone,
+    setAdminContactPhone,
+  ] = useState(
+    "+972-537707072"
+  );
+
+  const [
+    adminContactSaving,
+    setAdminContactSaving,
+  ] = useState(false);
+
+  const [
+    adminContactMessage,
+    setAdminContactMessage,
+  ] = useState("");
+
+
+
   // BEYOND_ADMIN_REQUESTS_IN_MY_WEBSITES_V1
   const [
     adminRestaurantRequests,
@@ -629,6 +649,162 @@ function MyAccount({
     isMenuAdmin,
     menuSites.length,
   ]);
+
+  // BEYOND_ADMIN_CONTACT_LOGIC_V1
+  const loadAdminContactPhone =
+    useCallback(
+      async () => {
+        if (
+          !session?.user?.id ||
+          !isMenuAdmin
+        ) {
+          return;
+        }
+
+        const {
+          data,
+          error,
+        } = await supabase
+          .from("app_settings")
+          .select("value")
+          .eq(
+            "key",
+            "contact_phone"
+          )
+          .maybeSingle();
+
+        if (error) {
+          console.error(
+            "Admin contact phone load failed:",
+            error
+          );
+
+          return;
+        }
+
+        setAdminContactPhone(
+          data?.value ||
+          "+972-537707072"
+        );
+      },
+      [
+        session?.user?.id,
+        isMenuAdmin,
+      ]
+    );
+
+  useEffect(() => {
+    if (
+      open &&
+      isMenuAdmin
+    ) {
+      loadAdminContactPhone();
+    }
+  }, [
+    open,
+    isMenuAdmin,
+    loadAdminContactPhone,
+  ]);
+
+
+  async function handleSaveAdminContact(
+    event
+  ) {
+    event.preventDefault();
+
+    if (
+      !isMenuAdmin ||
+      !session?.user?.id
+    ) {
+      return;
+    }
+
+    const clean =
+      adminContactPhone.trim();
+
+    const digits =
+      clean.replace(
+        /\D/g,
+        ""
+      );
+
+    if (
+      !clean.startsWith("+") ||
+      digits.length < 9
+    ) {
+      setAdminContactMessage(
+        "Enter the phone number in international format, for example +972-537707072."
+      );
+
+      return;
+    }
+
+    setAdminContactSaving(true);
+    setAdminContactMessage("");
+
+    const {
+      error,
+    } = await supabase
+      .from("app_settings")
+      .upsert(
+        {
+          key:
+            "contact_phone",
+
+          value:
+            clean,
+
+          updated_by:
+            session.user.id,
+
+          updated_at:
+            new Date()
+              .toISOString(),
+        },
+        {
+          onConflict:
+            "key",
+        }
+      );
+
+    if (error) {
+      console.error(
+        "Contact phone update failed:",
+        error
+      );
+
+      setAdminContactMessage(
+        "Could not update the contact number."
+      );
+
+      setAdminContactSaving(false);
+
+      return;
+    }
+
+    setAdminContactPhone(
+      clean
+    );
+
+    setAdminContactMessage(
+      "Website contact number updated."
+    );
+
+    window.dispatchEvent(
+      new CustomEvent(
+        "beyond-contact-phone-updated",
+        {
+          detail: {
+            phone:
+              clean,
+          },
+        }
+      )
+    );
+
+    setAdminContactSaving(false);
+  }
+
 
   // BEYOND_ADMIN_REQUESTS_IN_MY_WEBSITES_V1
   const loadAdminRestaurantRequests =
@@ -2047,6 +2223,31 @@ function MyAccount({
               </button>
             )}
 
+            {/* BEYOND_ADMIN_SETTINGS_TAB_V1 */}
+            {isMenuAdmin && (
+              <button
+                type="button"
+                className={
+                  activeTab ===
+                  "adminSettings"
+                    ? "active"
+                    : ""
+                }
+                onClick={() =>
+                  setActiveTab(
+                    "adminSettings"
+                  )
+                }
+              >
+                <ShieldCheck
+                  size={16}
+                  strokeWidth={1.5}
+                />
+
+                Admin Settings
+              </button>
+            )}
+
             <button
               type="button"
               className={
@@ -2116,7 +2317,10 @@ function MyAccount({
                           : activeTab ===
                               "restaurantService"
                             ? "Restaurant Service"
-                            : "Profile"}
+                            : activeTab ===
+                                "adminSettings"
+                              ? "Admin Settings"
+                              : "Profile"}
               </h2>
             </div>
 
@@ -2129,6 +2333,10 @@ function MyAccount({
                   loadMenuSites();
                   loadRestaurantService();
                   loadAdminRestaurantRequests();
+
+                  if (isMenuAdmin) {
+                    loadAdminContactPhone();
+                  }
                 }}
                 disabled={
                   loading
@@ -3711,6 +3919,132 @@ function MyAccount({
                 </div>
               )}
             </div>
+          ) : activeTab ===
+            "adminSettings" &&
+            isMenuAdmin ? (
+
+            <div className="account-admin-settings">
+              {/* BEYOND_ADMIN_SETTINGS_CONTENT_V1 */}
+
+              <section className="account-admin-settings-hero">
+                <div className="account-admin-settings-icon">
+                  <ShieldCheck
+                    size={30}
+                    strokeWidth={1.2}
+                  />
+                </div>
+
+                <div>
+                  <span>
+                    BEYOND ADMIN
+                  </span>
+
+                  <h3>
+                    Website contact
+                  </h3>
+
+                  <p>
+                    Control the public phone number used
+                    by the Call and WhatsApp buttons on
+                    the BEYOND website.
+                  </p>
+                </div>
+              </section>
+
+
+              <form
+                className="account-admin-contact-form"
+                onSubmit={
+                  handleSaveAdminContact
+                }
+              >
+                <label>
+                  <span>
+                    PUBLIC CONTACT NUMBER
+                  </span>
+
+                  <input
+                    type="tel"
+                    value={
+                      adminContactPhone
+                    }
+                    onChange={event =>
+                      setAdminContactPhone(
+                        event.target.value
+                      )
+                    }
+                    placeholder="+972-537707072"
+                    autoComplete="tel"
+                  />
+
+                  <small>
+                    Use international format. This
+                    number controls both telephone
+                    dialing and WhatsApp.
+                  </small>
+                </label>
+
+
+                <div className="account-admin-contact-preview">
+
+                  <div>
+                    <span>
+                      CALL
+                    </span>
+
+                    <strong>
+                      {
+                        adminContactPhone ||
+                        "—"
+                      }
+                    </strong>
+                  </div>
+
+                  <div>
+                    <span>
+                      WHATSAPP
+                    </span>
+
+                    <strong>
+                      {
+                        adminContactPhone ||
+                        "—"
+                      }
+                    </strong>
+                  </div>
+
+                </div>
+
+
+                <button
+                  type="submit"
+                  className="account-primary-button account-admin-contact-save"
+                  disabled={
+                    adminContactSaving
+                  }
+                >
+                  <Save
+                    size={14}
+                    strokeWidth={1.5}
+                  />
+
+                  {adminContactSaving
+                    ? "Saving..."
+                    : "Save Contact Number"}
+                </button>
+
+
+                {adminContactMessage && (
+                  <div className="account-admin-contact-message">
+                    {
+                      adminContactMessage
+                    }
+                  </div>
+                )}
+
+              </form>
+            </div>
+
           ) : (
             <div className="account-profile">
               <div className="account-profile-intro">
