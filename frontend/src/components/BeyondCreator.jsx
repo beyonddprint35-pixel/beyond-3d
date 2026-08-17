@@ -13,7 +13,6 @@ import {
 import {
   ContactShadows,
   Edges,
-  Environment,
   Grid,
   Html,
   Line,
@@ -5200,15 +5199,6 @@ function CreatorScene({
           fadeDistance={11}
           fadeStrength={1}
           infiniteGrid
-        />
-      )}
-
-      {!flat2D && (
-        <Environment
-          preset="city"
-          environmentIntensity={
-            0.22
-          }
         />
       )}
 
