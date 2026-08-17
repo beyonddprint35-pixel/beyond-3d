@@ -1,0 +1,2260 @@
+.restaurant-skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 1000001;
+
+  padding: 11px 15px;
+
+  border-radius: 10px;
+
+  color: #fff;
+  background: #111;
+
+  font-weight: 700;
+  text-decoration: none;
+
+  transform:
+    translateY(-160%);
+
+  transition:
+    transform 0.2s ease;
+}
+
+.restaurant-skip-link:focus {
+  transform:
+    translateY(0);
+}
+
+.restaurant-a11y-status {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+
+  padding: 0;
+  margin: -1px;
+
+  overflow: hidden;
+
+  clip:
+    rect(0, 0, 0, 0);
+
+  white-space: nowrap;
+
+  border: 0;
+}
+
+.restaurant-a11y-toggle {
+  position: fixed;
+
+  left: 18px;
+  bottom: 18px;
+
+  z-index: 999999;
+
+  width: 58px;
+  height: 58px;
+
+  display: grid;
+  place-items: center;
+
+  padding: 0;
+
+  border:
+    2px solid #fff;
+
+  border-radius: 50%;
+
+  color: #fff;
+
+  background: #111;
+
+  box-shadow:
+    0 10px 28px
+    rgba(0, 0, 0, 0.28);
+
+  cursor: pointer;
+}
+
+.restaurant-a11y-toggle svg {
+  width: 36px;
+  height: 36px;
+
+  fill: none;
+
+  stroke: currentColor;
+
+  stroke-width: 2.2;
+
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.restaurant-a11y-toggle
+.restaurant-a11y-head {
+  fill: currentColor;
+  stroke: none;
+}
+
+.restaurant-a11y-panel {
+  position: fixed;
+
+  left: 18px;
+  bottom: 87px;
+
+  z-index: 999999;
+
+  width:
+    min(
+      330px,
+      calc(100vw - 36px)
+    );
+
+  max-height:
+    min(78vh, 640px);
+
+  overflow: auto;
+
+  border:
+    1px solid #ddd3c2;
+
+  border-radius: 22px;
+
+  color: #121212;
+
+  background: #fffdf8;
+
+  box-shadow:
+    0 22px 60px
+    rgba(0, 0, 0, 0.22);
+
+  direction: rtl;
+}
+
+.restaurant-a11y-panel-head {
+  padding: 14px 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  color: #fff;
+
+  background: #111;
+}
+
+.restaurant-a11y-panel-head
+strong {
+  font-size: 18px;
+}
+
+.restaurant-a11y-panel-head
+button {
+  width: 38px;
+  height: 38px;
+
+  border: 0;
+
+  border-radius: 50%;
+
+  color: #111;
+  background: #fff;
+
+  font-size: 23px;
+
+  cursor: pointer;
+}
+
+.restaurant-a11y-actions {
+  padding: 14px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 10px;
+}
+
+.restaurant-a11y-actions
+button {
+  min-height: 54px;
+
+  padding: 10px;
+
+  border:
+    1px solid #ddd3c2;
+
+  border-radius: 14px;
+
+  color: #111;
+  background: #fff;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.restaurant-a11y-actions
+button[aria-pressed="true"] {
+  color: #fff;
+  background: #111;
+  border-color: #111;
+}
+
+.restaurant-a11y-note {
+  margin: 0;
+
+  padding:
+    0 16px 16px;
+
+  color: #6f675d;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.restaurant-a11y-toggle:focus-visible,
+.restaurant-a11y-panel button:focus-visible,
+.restaurant-a11y-statement button:focus-visible,
+.restaurant-skip-link:focus-visible {
+  outline:
+    3px solid #111;
+
+  outline-offset: 4px;
+}
+
+
+/* ==========================================================
+   ACCESSIBILITY MODES
+   ========================================================== */
+
+body.restaurant-a11y-text-1
+.ep-app {
+  font-size: 112%;
+}
+
+body.restaurant-a11y-text-2
+.ep-app {
+  font-size: 125%;
+}
+
+body.restaurant-a11y-text-3
+.ep-app {
+  font-size: 140%;
+}
+
+body.restaurant-a11y-text-4
+.ep-app {
+  font-size: 155%;
+}
+
+
+html.restaurant-a11y-readable
+.ep-page,
+html.restaurant-a11y-readable
+.ep-page button {
+  font-family:
+    Arial,
+    "Heebo",
+    sans-serif !important;
+}
+
+
+html.restaurant-a11y-contrast
+.ep-page {
+  color: #000 !important;
+
+  background:
+    #fff !important;
+}
+
+html.restaurant-a11y-contrast
+.ep-app,
+html.restaurant-a11y-contrast
+.ep-item-row,
+html.restaurant-a11y-contrast
+.ep-wine-row {
+  color: #000 !important;
+
+  background:
+    #fff !important;
+
+  border-color:
+    #000 !important;
+}
+
+html.restaurant-a11y-contrast
+.ep-tabs button {
+  border-color:
+    #000 !important;
+
+  color:
+    #000 !important;
+
+  background:
+    #fff !important;
+}
+
+html.restaurant-a11y-contrast
+.ep-tabs button.active {
+  color:
+    #fff !important;
+
+  background:
+    #000 !important;
+}
+
+
+html.restaurant-a11y-dark
+.ep-page,
+html.restaurant-a11y-dark
+.ep-app {
+  color:
+    #fff !important;
+
+  background:
+    #111 !important;
+}
+
+html.restaurant-a11y-dark
+.ep-page * {
+  color:
+    #fff !important;
+}
+
+html.restaurant-a11y-dark
+.ep-item-row,
+html.restaurant-a11y-dark
+.ep-wine-row,
+html.restaurant-a11y-dark
+.ep-tabs button {
+  border-color:
+    #555 !important;
+
+  background:
+    #1b1b1b !important;
+}
+
+html.restaurant-a11y-dark
+.ep-tabs button.active {
+  color:
+    #111 !important;
+
+  background:
+    #fff !important;
+}
+
+
+html.restaurant-a11y-grayscale
+.ep-app {
+  filter:
+    grayscale(1);
+}
+
+/* Keep accessibility controls outside the grayscale filter
+   so fixed positioning and the menu layout remain stable. */
+html.restaurant-a11y-grayscale
+.restaurant-a11y-panel,
+html.restaurant-a11y-grayscale
+.restaurant-a11y-toggle,
+html.restaurant-a11y-grayscale
+.restaurant-a11y-statement-backdrop {
+  filter: none !important;
+}
+
+
+html.restaurant-a11y-links
+.ep-page button,
+html.restaurant-a11y-links
+.ep-page a {
+  outline:
+    2px solid
+    var(
+      --ep-accent,
+      #556b2f
+    ) !important;
+
+  outline-offset:
+    2px !important;
+}
+
+
+html.restaurant-a11y-motion
+.ep-page *,
+html.restaurant-a11y-motion
+.ep-page *::before,
+html.restaurant-a11y-motion
+.ep-page *::after {
+  animation:
+    none !important;
+
+  transition:
+    none !important;
+
+  scroll-behavior:
+    auto !important;
+}
+
+
+/* ==========================================================
+   ACCESSIBILITY STATEMENT
+   ========================================================== */
+
+.restaurant-a11y-statement-backdrop {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 1000002;
+
+  padding: 20px;
+
+  display: grid;
+
+  place-items: center;
+
+  background:
+    rgba(0, 0, 0, 0.58);
+}
+
+.restaurant-a11y-statement {
+  width:
+    min(680px, 100%);
+
+  max-height:
+    min(82vh, 760px);
+
+  overflow: auto;
+
+  border-radius: 20px;
+
+  color: #171717;
+
+  background: #fffdf8;
+
+  box-shadow:
+    0 25px 80px
+    rgba(0, 0, 0, 0.32);
+
+  direction: rtl;
+}
+
+.restaurant-a11y-statement
+header {
+  padding: 20px;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  border-bottom:
+    1px solid #e1d9cd;
+}
+
+.restaurant-a11y-statement
+header span {
+  color: #7b756e;
+
+  font-size: 9px;
+  font-weight: 700;
+
+  letter-spacing: 1.5px;
+}
+
+.restaurant-a11y-statement
+h2 {
+  margin: 5px 0 0;
+
+  font-size: 25px;
+}
+
+.restaurant-a11y-statement
+header button {
+  width: 40px;
+  height: 40px;
+
+  flex-shrink: 0;
+
+  border:
+    1px solid #ddd3c2;
+
+  border-radius: 50%;
+
+  color: #111;
+  background: #fff;
+
+  font-size: 23px;
+
+  cursor: pointer;
+}
+
+.restaurant-a11y-statement-body {
+  padding: 22px;
+
+  line-height: 1.75;
+}
+
+.restaurant-a11y-statement-body
+h3 {
+  margin:
+    22px 0 5px;
+}
+
+.restaurant-a11y-statement-body
+ul {
+  padding-inline-start: 22px;
+}
+
+.restaurant-a11y-statement-note {
+  margin-top: 20px;
+
+  padding: 13px 15px;
+
+  border-radius: 12px;
+
+  background: #f0ece3;
+}
+
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+  *,
+  *::before,
+  *::after {
+    animation:
+      none !important;
+
+    transition:
+      none !important;
+
+    scroll-behavior:
+      auto !important;
+  }
+}
+
+
+@media (max-width: 600px) {
+  .restaurant-a11y-toggle {
+    left: 14px;
+    bottom: 14px;
+
+    width: 56px;
+    height: 56px;
+  }
+
+  .restaurant-a11y-panel {
+    left: 14px;
+    bottom: 80px;
+
+    width:
+      calc(
+        100vw - 28px
+      );
+  }
+
+  .restaurant-a11y-actions {
+    grid-template-columns:
+      1fr 1fr;
+  }
+
+  .restaurant-a11y-statement-backdrop {
+    padding: 10px;
+  }
+}
+
+/* ==========================================================
+   BEYOND RESTAURANT ACCESSIBILITY TEXT SCALE V3
+   Matches original HTML behaviour
+   ========================================================== */
+
+
+/*
+   IMPORTANT:
+   Just like the original template,
+   these do NOT scale with A+/A−:
+
+   - restaurant logo
+   - restaurant name
+   - hero heading
+   - hero kicker
+   - main section heading
+
+   Only menu reading content scales.
+*/
+
+
+/* Keep structural headings fixed */
+
+body.restaurant-a11y-text-1 .ep-brand-title,
+body.restaurant-a11y-text-2 .ep-brand-title,
+body.restaurant-a11y-text-3 .ep-brand-title,
+body.restaurant-a11y-text-4 .ep-brand-title {
+  font-size: 28px !important;
+}
+
+body.restaurant-a11y-text-1 .ep-brand-sub,
+body.restaurant-a11y-text-2 .ep-brand-sub,
+body.restaurant-a11y-text-3 .ep-brand-sub,
+body.restaurant-a11y-text-4 .ep-brand-sub {
+  font-size: 9px !important;
+}
+
+body.restaurant-a11y-text-1 .ep-hero-kicker,
+body.restaurant-a11y-text-2 .ep-hero-kicker,
+body.restaurant-a11y-text-3 .ep-hero-kicker,
+body.restaurant-a11y-text-4 .ep-hero-kicker {
+  font-size: 10px !important;
+}
+
+body.restaurant-a11y-text-1 .ep-hero-title,
+body.restaurant-a11y-text-2 .ep-hero-title,
+body.restaurant-a11y-text-3 .ep-hero-title,
+body.restaurant-a11y-text-4 .ep-hero-title {
+  font-size:
+    clamp(
+      40px,
+      10vw,
+      54px
+    ) !important;
+}
+
+body.restaurant-a11y-text-1 .ep-section-head h2,
+body.restaurant-a11y-text-2 .ep-section-head h2,
+body.restaurant-a11y-text-3 .ep-section-head h2,
+body.restaurant-a11y-text-4 .ep-section-head h2 {
+  font-size:
+    clamp(
+      36px,
+      9vw,
+      44px
+    ) !important;
+}
+
+
+/* ==========================================================
+   LEVEL 1
+   ========================================================== */
+
+body.restaurant-a11y-text-1
+.ep-tabs button {
+  font-size: 13.8px !important;
+
+  padding-inline:
+    17.25px !important;
+}
+
+body.restaurant-a11y-text-1
+.ep-app[dir="rtl"]
+.ep-tabs button {
+  font-size:
+    12.65px !important;
+}
+
+body.restaurant-a11y-text-1
+.ep-item-category {
+  font-size:
+    11.5px !important;
+}
+
+body.restaurant-a11y-text-1
+.ep-item-name {
+  font-size:
+    19.55px !important;
+}
+
+body.restaurant-a11y-text-1
+.ep-item-description,
+body.restaurant-a11y-text-1
+.ep-wine-origin {
+  font-size:
+    12.65px !important;
+}
+
+body.restaurant-a11y-text-1
+.ep-item-price,
+body.restaurant-a11y-text-1
+.ep-dual-price strong,
+body.restaurant-a11y-text-1
+.ep-wine-prices strong {
+  font-size:
+    19.55px !important;
+}
+
+body.restaurant-a11y-text-1
+.ep-section-count {
+  font-size:
+    12.65px !important;
+}
+
+
+/* ==========================================================
+   LEVEL 2
+   ========================================================== */
+
+body.restaurant-a11y-text-2
+.ep-tabs button {
+  font-size:
+    15.6px !important;
+
+  padding-inline:
+    19.5px !important;
+}
+
+body.restaurant-a11y-text-2
+.ep-app[dir="rtl"]
+.ep-tabs button {
+  font-size:
+    14.3px !important;
+}
+
+body.restaurant-a11y-text-2
+.ep-item-category {
+  font-size:
+    13px !important;
+}
+
+body.restaurant-a11y-text-2
+.ep-item-name {
+  font-size:
+    22.1px !important;
+}
+
+body.restaurant-a11y-text-2
+.ep-item-description,
+body.restaurant-a11y-text-2
+.ep-wine-origin {
+  font-size:
+    14.3px !important;
+}
+
+body.restaurant-a11y-text-2
+.ep-item-price,
+body.restaurant-a11y-text-2
+.ep-dual-price strong,
+body.restaurant-a11y-text-2
+.ep-wine-prices strong {
+  font-size:
+    22.1px !important;
+}
+
+body.restaurant-a11y-text-2
+.ep-section-count {
+  font-size:
+    14.3px !important;
+}
+
+
+/* ==========================================================
+   LEVEL 3
+   ========================================================== */
+
+body.restaurant-a11y-text-3
+.ep-tabs button {
+  font-size:
+    17.4px !important;
+
+  padding-inline:
+    21.75px !important;
+}
+
+body.restaurant-a11y-text-3
+.ep-app[dir="rtl"]
+.ep-tabs button {
+  font-size:
+    15.95px !important;
+}
+
+body.restaurant-a11y-text-3
+.ep-item-category {
+  font-size:
+    14.5px !important;
+}
+
+body.restaurant-a11y-text-3
+.ep-item-name {
+  font-size:
+    24.65px !important;
+}
+
+body.restaurant-a11y-text-3
+.ep-item-description,
+body.restaurant-a11y-text-3
+.ep-wine-origin {
+  font-size:
+    15.95px !important;
+}
+
+body.restaurant-a11y-text-3
+.ep-item-price,
+body.restaurant-a11y-text-3
+.ep-dual-price strong,
+body.restaurant-a11y-text-3
+.ep-wine-prices strong {
+  font-size:
+    24.65px !important;
+}
+
+body.restaurant-a11y-text-3
+.ep-section-count {
+  font-size:
+    15.95px !important;
+}
+
+
+/* ==========================================================
+   LEVEL 4 — MAX
+   ========================================================== */
+
+body.restaurant-a11y-text-4
+.ep-tabs button {
+  font-size:
+    19.2px !important;
+
+  padding-inline:
+    24px !important;
+}
+
+body.restaurant-a11y-text-4
+.ep-app[dir="rtl"]
+.ep-tabs button {
+  font-size:
+    17.6px !important;
+}
+
+body.restaurant-a11y-text-4
+.ep-item-category {
+  font-size:
+    16px !important;
+}
+
+body.restaurant-a11y-text-4
+.ep-item-name {
+  font-size:
+    27.2px !important;
+}
+
+body.restaurant-a11y-text-4
+.ep-item-description,
+body.restaurant-a11y-text-4
+.ep-wine-origin {
+  font-size:
+    17.6px !important;
+}
+
+body.restaurant-a11y-text-4
+.ep-item-price,
+body.restaurant-a11y-text-4
+.ep-dual-price strong,
+body.restaurant-a11y-text-4
+.ep-wine-prices strong {
+  font-size:
+    27.2px !important;
+}
+
+body.restaurant-a11y-text-4
+.ep-section-count {
+  font-size:
+    17.6px !important;
+}
+
+
+/* ==========================================================
+   PRESERVE CARD PROPORTIONS
+   Let text naturally increase the height.
+   Do not artificially stretch cards.
+   ========================================================== */
+
+body.restaurant-a11y-text-1
+.ep-item-row,
+body.restaurant-a11y-text-1
+.ep-wine-row,
+body.restaurant-a11y-text-2
+.ep-item-row,
+body.restaurant-a11y-text-2
+.ep-wine-row,
+body.restaurant-a11y-text-3
+.ep-item-row,
+body.restaurant-a11y-text-3
+.ep-wine-row,
+body.restaurant-a11y-text-4
+.ep-item-row,
+body.restaurant-a11y-text-4
+.ep-wine-row {
+  padding:
+    15px 16px !important;
+
+  gap:
+    13px !important;
+}
+
+
+/* Accessibility widget stays fixed-size */
+
+body.restaurant-a11y-text-1
+.restaurant-a11y-panel,
+body.restaurant-a11y-text-2
+.restaurant-a11y-panel,
+body.restaurant-a11y-text-3
+.restaurant-a11y-panel,
+body.restaurant-a11y-text-4
+.restaurant-a11y-panel {
+  font-size:
+    16px !important;
+}
+
+body.restaurant-a11y-text-1
+.restaurant-a11y-actions button,
+body.restaurant-a11y-text-2
+.restaurant-a11y-actions button,
+body.restaurant-a11y-text-3
+.restaurant-a11y-actions button,
+body.restaurant-a11y-text-4
+.restaurant-a11y-actions button {
+  font-size:
+    13.3333px !important;
+}
+
+
+/* ==========================================================
+   BEYOND RESTAURANT DARK MODE FIX V2
+   ========================================================== */
+
+/* Main restaurant background */
+html.restaurant-a11y-dark .ep-page,
+html.restaurant-a11y-dark .ep-app {
+  background: #111 !important;
+  color: #fff !important;
+}
+
+
+/* ----------------------------------------------------------
+   HEADER
+   ---------------------------------------------------------- */
+
+html.restaurant-a11y-dark .ep-brand-title,
+html.restaurant-a11y-dark .ep-brand-sub {
+  color: #fff !important;
+}
+
+html.restaurant-a11y-dark .ep-lang-pill {
+  background: #1b1b1b !important;
+  border-color: #555 !important;
+}
+
+html.restaurant-a11y-dark .ep-lang-pill button {
+  color: #ddd !important;
+}
+
+html.restaurant-a11y-dark .ep-lang-pill button.active {
+  background: #fff !important;
+  color: #111 !important;
+}
+
+
+/* ----------------------------------------------------------
+   HERO
+   ---------------------------------------------------------- */
+
+html.restaurant-a11y-dark .ep-hero {
+  background:
+    linear-gradient(
+      135deg,
+      #202020,
+      #181818
+    ) !important;
+}
+
+html.restaurant-a11y-dark .ep-hero-title {
+  color: #fff !important;
+}
+
+html.restaurant-a11y-dark .ep-hero-kicker {
+  color: #d4c48c !important;
+}
+
+html.restaurant-a11y-dark .ep-hero-orb {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(210, 192, 128, 0.18),
+      rgba(210, 192, 128, 0.04)
+    ) !important;
+}
+
+
+/* ----------------------------------------------------------
+   CATEGORY BAR
+   ---------------------------------------------------------- */
+
+html.restaurant-a11y-dark .ep-tabs-wrap {
+  background:
+    rgba(17, 17, 17, 0.96) !important;
+
+  border-color: #444 !important;
+}
+
+html.restaurant-a11y-dark .ep-tabs button {
+  background: #252525 !important;
+
+  color: #fff !important;
+
+  border-color: #555 !important;
+}
+
+html.restaurant-a11y-dark .ep-tabs button:hover {
+  background: #333 !important;
+
+  color: #fff !important;
+}
+
+html.restaurant-a11y-dark .ep-tabs button.active {
+  background: #fff !important;
+
+  color: #111 !important;
+
+  border-color: #fff !important;
+}
+
+
+/* ----------------------------------------------------------
+   SECTION TITLE
+   ---------------------------------------------------------- */
+
+html.restaurant-a11y-dark .ep-section-head h2 {
+  color: #fff !important;
+}
+
+html.restaurant-a11y-dark .ep-section-count {
+  background: #242424 !important;
+
+  color: #fff !important;
+
+  border-color: #555 !important;
+}
+
+
+/* ----------------------------------------------------------
+   MENU ITEMS
+   ---------------------------------------------------------- */
+
+html.restaurant-a11y-dark .ep-item-row,
+html.restaurant-a11y-dark .ep-wine-row {
+  background: #1d1d1d !important;
+
+  border-color: #444 !important;
+}
+
+html.restaurant-a11y-dark .ep-item-name,
+html.restaurant-a11y-dark .ep-item-price,
+html.restaurant-a11y-dark .ep-dual-price strong,
+html.restaurant-a11y-dark .ep-wine-prices strong {
+  color: #fff !important;
+}
+
+html.restaurant-a11y-dark .ep-item-description,
+html.restaurant-a11y-dark .ep-wine-origin {
+  color: #c5c5c5 !important;
+}
+
+html.restaurant-a11y-dark .ep-item-category {
+  color: #bbb !important;
+
+  border-color: #444 !important;
+}
+
+
+/* ----------------------------------------------------------
+   FOOTER
+   ---------------------------------------------------------- */
+
+html.restaurant-a11y-dark .ep-footer {
+  color: #ccc !important;
+
+  border-color: #444 !important;
+}
+
+html.restaurant-a11y-dark .ep-footer strong {
+  color: #fff !important;
+}
+
+html.restaurant-a11y-dark
+.ep-accessibility-statement-link {
+  color: #ddd !important;
+}
+
+
+/* ==========================================================
+   ACCESSIBILITY PANEL
+   IMPORTANT:
+   Do not let restaurant dark-mode rules make its text vanish.
+   ========================================================== */
+
+html.restaurant-a11y-dark
+.restaurant-a11y-panel {
+  background: #181818 !important;
+
+  color: #fff !important;
+
+  border-color: #555 !important;
+}
+
+html.restaurant-a11y-dark
+.restaurant-a11y-panel-head {
+  background: #111 !important;
+
+  color: #fff !important;
+}
+
+html.restaurant-a11y-dark
+.restaurant-a11y-panel-head strong {
+  color: #fff !important;
+}
+
+html.restaurant-a11y-dark
+.restaurant-a11y-panel-head button {
+  background: #fff !important;
+
+  color: #111 !important;
+}
+
+html.restaurant-a11y-dark
+.restaurant-a11y-actions button {
+  background: #252525 !important;
+
+  color: #fff !important;
+
+  border-color: #555 !important;
+}
+
+html.restaurant-a11y-dark
+.restaurant-a11y-actions
+button[aria-pressed="true"] {
+  background: #fff !important;
+
+  color: #111 !important;
+
+  border-color: #fff !important;
+}
+
+html.restaurant-a11y-dark
+.restaurant-a11y-note {
+  color: #bbb !important;
+}
+
+
+
+/* ==========================================================
+   BEYOND_ORIGINAL_HTML_EXACT_PROPORTIONS_V4
+   Matches index (6).html typography + sizing
+   ========================================================== */
+
+
+/* ==========================================================
+   BASE TYPOGRAPHY
+   ========================================================== */
+
+.ep-brand-title {
+  font-family:
+    "Playfair Display",
+    serif !important;
+
+  font-size:
+    27px !important;
+
+  font-weight:
+    900 !important;
+
+  letter-spacing:
+    0.06em !important;
+
+  line-height:
+    1 !important;
+}
+
+
+.ep-brand-sub {
+  font-size:
+    10px !important;
+
+  letter-spacing:
+    0.28em !important;
+}
+
+
+/* Hero stays fixed when A+/A- changes */
+
+.ep-hero-kicker {
+  font-size:
+    11px !important;
+
+  font-weight:
+    700 !important;
+
+  letter-spacing:
+    0.24em !important;
+}
+
+
+.ep-hero-title {
+  font-family:
+    "Playfair Display",
+    serif !important;
+
+  font-size:
+    34px !important;
+
+  font-weight:
+    900 !important;
+
+  line-height:
+    1.02 !important;
+
+  letter-spacing:
+    0 !important;
+}
+
+
+/* Original Hebrew hero */
+
+.ep-app[dir="rtl"]
+.ep-hero {
+  direction:
+    rtl;
+}
+
+
+.ep-app[dir="rtl"]
+.ep-hero-kicker,
+.ep-app[dir="rtl"]
+.ep-hero-title {
+  width:
+    56% !important;
+
+  max-width:
+    56% !important;
+
+  margin-left:
+    auto !important;
+
+  margin-right:
+    0 !important;
+
+  text-align:
+    right !important;
+}
+
+
+.ep-app[dir="rtl"]
+.ep-hero-title {
+  font-family:
+    "Heebo",
+    "Rubik",
+    Arial,
+    sans-serif !important;
+
+  font-weight:
+    500 !important;
+}
+
+
+/* Section heading stays fixed */
+
+.ep-section-head h2 {
+  font-family:
+    "Playfair Display",
+    serif !important;
+
+  font-size:
+    38px !important;
+
+  font-weight:
+    900 !important;
+
+  line-height:
+    1 !important;
+}
+
+
+.ep-app[dir="rtl"]
+.ep-section-head h2 {
+  font-family:
+    "Heebo",
+    "Rubik",
+    Arial,
+    sans-serif !important;
+
+  font-weight:
+    500 !important;
+}
+
+
+/* ==========================================================
+   CATEGORY PILLS — ORIGINAL SHAPE
+   ========================================================== */
+
+.ep-tabs button {
+  min-width:
+    max-content;
+
+  min-height:
+    44px;
+
+  padding:
+    10px 15px !important;
+
+  border-radius:
+    999px !important;
+
+  font-family:
+    Inter,
+    Arial,
+    sans-serif !important;
+
+  font-size:
+    12px !important;
+
+  font-weight:
+    600 !important;
+
+  line-height:
+    1.2 !important;
+}
+
+
+.ep-app[dir="rtl"]
+.ep-tabs button {
+  font-family:
+    "Heebo",
+    "Rubik",
+    Arial,
+    sans-serif !important;
+
+  font-size:
+    11px !important;
+
+  font-weight:
+    500 !important;
+
+  letter-spacing:
+    0 !important;
+}
+
+
+/* ==========================================================
+   MENU CARDS — ORIGINAL SHAPE
+   ========================================================== */
+
+.ep-item-row,
+.ep-wine-row {
+  min-height:
+    0 !important;
+
+  margin:
+    12px 0 !important;
+
+  padding:
+    10px !important;
+
+  gap:
+    13px !important;
+
+  border-radius:
+    22px !important;
+}
+
+
+/* English item name */
+
+.ep-item-name {
+  font-family:
+    "Playfair Display",
+    serif !important;
+
+  font-size:
+    17px !important;
+
+  font-weight:
+    700 !important;
+
+  line-height:
+    1.18 !important;
+}
+
+
+/* Hebrew item name matches original .item-he */
+
+.ep-app[dir="rtl"]
+.ep-item-name {
+  font-family:
+    "Heebo",
+    "Rubik",
+    Arial,
+    sans-serif !important;
+
+  font-size:
+    12px !important;
+
+  font-weight:
+    500 !important;
+
+  letter-spacing:
+    0 !important;
+}
+
+
+.ep-item-description,
+.ep-wine-origin {
+  font-size:
+    11px !important;
+
+  color:
+    #9a9287 !important;
+
+  font-style:
+    italic;
+
+  line-height:
+    1.35 !important;
+}
+
+
+.ep-item-price,
+.ep-wine-prices strong,
+.ep-dual-price strong {
+  font-family:
+    "Playfair Display",
+    serif !important;
+
+  font-size:
+    17px !important;
+
+  font-weight:
+    700 !important;
+
+  line-height:
+    1 !important;
+}
+
+
+.ep-item-category {
+  font-size:
+    10px !important;
+
+  font-weight:
+    800 !important;
+
+  letter-spacing:
+    0.32em !important;
+}
+
+
+/* ==========================================================
+   A+ LEVEL 1
+   ORIGINAL HTML VALUES
+   ========================================================== */
+
+body.restaurant-a11y-text-1
+.ep-tabs button {
+  font-size:
+    13.8px !important;
+
+  padding:
+    11.5px 17.25px !important;
+}
+
+
+body.restaurant-a11y-text-1
+.ep-app[dir="rtl"]
+.ep-tabs button {
+  font-size:
+    12.65px !important;
+}
+
+
+body.restaurant-a11y-text-1
+.ep-item-category {
+  font-size:
+    11.5px !important;
+}
+
+
+body.restaurant-a11y-text-1
+.ep-item-name {
+  font-size:
+    19.55px !important;
+}
+
+
+body.restaurant-a11y-text-1
+.ep-app[dir="rtl"]
+.ep-item-name {
+  font-size:
+    13.8px !important;
+}
+
+
+body.restaurant-a11y-text-1
+.ep-item-description,
+body.restaurant-a11y-text-1
+.ep-wine-origin {
+  font-size:
+    12.65px !important;
+}
+
+
+body.restaurant-a11y-text-1
+.ep-item-price,
+body.restaurant-a11y-text-1
+.ep-wine-prices strong,
+body.restaurant-a11y-text-1
+.ep-dual-price strong {
+  font-size:
+    19.55px !important;
+}
+
+
+body.restaurant-a11y-text-1
+.ep-section-count {
+  font-size:
+    12.65px !important;
+}
+
+
+/* ==========================================================
+   A+ LEVEL 2
+   ========================================================== */
+
+body.restaurant-a11y-text-2
+.ep-tabs button {
+  font-size:
+    15.6px !important;
+
+  padding:
+    13px 19.5px !important;
+}
+
+
+body.restaurant-a11y-text-2
+.ep-app[dir="rtl"]
+.ep-tabs button {
+  font-size:
+    14.3px !important;
+}
+
+
+body.restaurant-a11y-text-2
+.ep-item-category {
+  font-size:
+    13px !important;
+}
+
+
+body.restaurant-a11y-text-2
+.ep-item-name {
+  font-size:
+    22.1px !important;
+}
+
+
+body.restaurant-a11y-text-2
+.ep-app[dir="rtl"]
+.ep-item-name {
+  font-size:
+    15.6px !important;
+}
+
+
+body.restaurant-a11y-text-2
+.ep-item-description,
+body.restaurant-a11y-text-2
+.ep-wine-origin {
+  font-size:
+    14.3px !important;
+}
+
+
+body.restaurant-a11y-text-2
+.ep-item-price,
+body.restaurant-a11y-text-2
+.ep-wine-prices strong,
+body.restaurant-a11y-text-2
+.ep-dual-price strong {
+  font-size:
+    22.1px !important;
+}
+
+
+body.restaurant-a11y-text-2
+.ep-section-count {
+  font-size:
+    14.3px !important;
+}
+
+
+/* ==========================================================
+   A+ LEVEL 3
+   ========================================================== */
+
+body.restaurant-a11y-text-3
+.ep-tabs button {
+  font-size:
+    17.4px !important;
+
+  padding:
+    14.5px 21.75px !important;
+}
+
+
+body.restaurant-a11y-text-3
+.ep-app[dir="rtl"]
+.ep-tabs button {
+  font-size:
+    15.95px !important;
+}
+
+
+body.restaurant-a11y-text-3
+.ep-item-category {
+  font-size:
+    14.5px !important;
+}
+
+
+body.restaurant-a11y-text-3
+.ep-item-name {
+  font-size:
+    24.65px !important;
+}
+
+
+body.restaurant-a11y-text-3
+.ep-app[dir="rtl"]
+.ep-item-name {
+  font-size:
+    17.4px !important;
+}
+
+
+body.restaurant-a11y-text-3
+.ep-item-description,
+body.restaurant-a11y-text-3
+.ep-wine-origin {
+  font-size:
+    15.95px !important;
+}
+
+
+body.restaurant-a11y-text-3
+.ep-item-price,
+body.restaurant-a11y-text-3
+.ep-wine-prices strong,
+body.restaurant-a11y-text-3
+.ep-dual-price strong {
+  font-size:
+    24.65px !important;
+}
+
+
+body.restaurant-a11y-text-3
+.ep-section-count {
+  font-size:
+    15.95px !important;
+}
+
+
+/* ==========================================================
+   A+ LEVEL 4 — EXACT ORIGINAL MAXIMUM
+   ========================================================== */
+
+body.restaurant-a11y-text-4
+.ep-tabs button {
+  font-size:
+    19.2px !important;
+
+  padding:
+    16px 24px !important;
+}
+
+
+body.restaurant-a11y-text-4
+.ep-app[dir="rtl"]
+.ep-tabs button {
+  font-size:
+    17.6px !important;
+}
+
+
+body.restaurant-a11y-text-4
+.ep-item-category {
+  font-size:
+    16px !important;
+}
+
+
+body.restaurant-a11y-text-4
+.ep-item-name {
+  font-size:
+    27.2px !important;
+}
+
+
+/*
+  CRITICAL:
+  Hebrew item names in the original are
+  smaller than English item names.
+*/
+
+body.restaurant-a11y-text-4
+.ep-app[dir="rtl"]
+.ep-item-name {
+  font-size:
+    19.2px !important;
+
+  font-family:
+    "Heebo",
+    "Rubik",
+    Arial,
+    sans-serif !important;
+
+  font-weight:
+    500 !important;
+}
+
+
+body.restaurant-a11y-text-4
+.ep-item-description,
+body.restaurant-a11y-text-4
+.ep-wine-origin {
+  font-size:
+    17.6px !important;
+}
+
+
+body.restaurant-a11y-text-4
+.ep-item-price,
+body.restaurant-a11y-text-4
+.ep-wine-prices strong,
+body.restaurant-a11y-text-4
+.ep-dual-price strong {
+  font-size:
+    27.2px !important;
+}
+
+
+body.restaurant-a11y-text-4
+.ep-section-count {
+  font-size:
+    17.6px !important;
+}
+
+
+/* Keep structural elements unchanged at every A+ level */
+
+body.restaurant-a11y-text-1 .ep-hero-title,
+body.restaurant-a11y-text-2 .ep-hero-title,
+body.restaurant-a11y-text-3 .ep-hero-title,
+body.restaurant-a11y-text-4 .ep-hero-title {
+  font-size:
+    34px !important;
+}
+
+
+body.restaurant-a11y-text-1 .ep-section-head h2,
+body.restaurant-a11y-text-2 .ep-section-head h2,
+body.restaurant-a11y-text-3 .ep-section-head h2,
+body.restaurant-a11y-text-4 .ep-section-head h2 {
+  font-size:
+    38px !important;
+}
+
+
+body.restaurant-a11y-text-1 .ep-item-row,
+body.restaurant-a11y-text-1 .ep-wine-row,
+body.restaurant-a11y-text-2 .ep-item-row,
+body.restaurant-a11y-text-2 .ep-wine-row,
+body.restaurant-a11y-text-3 .ep-item-row,
+body.restaurant-a11y-text-3 .ep-wine-row,
+body.restaurant-a11y-text-4 .ep-item-row,
+body.restaurant-a11y-text-4 .ep-wine-row {
+  padding:
+    10px !important;
+
+  gap:
+    13px !important;
+}
+
+
+/* Small mobile behaviour from original */
+
+@media (max-width: 390px) {
+
+  .ep-brand-title {
+    font-size:
+      25px !important;
+  }
+
+  .ep-app[dir="rtl"]
+  .ep-hero-kicker,
+  .ep-app[dir="rtl"]
+  .ep-hero-title {
+    width:
+      58% !important;
+
+    max-width:
+      58% !important;
+  }
+}
+
+
+/* ==========================================================
+   BEYOND ACCESSIBILITY + HEBREW FONT FIX V5
+   Match original index (6).html
+   ========================================================== */
+
+
+/* ==========================================================
+   1. ACCESSIBILITY PANEL NEVER CHANGES SIZE
+   ========================================================== */
+
+.restaurant-a11y-panel {
+  font-family:
+    Inter,
+    Arial,
+    sans-serif !important;
+
+  font-size:
+    16px !important;
+}
+
+.restaurant-a11y-panel-head strong {
+  font-family:
+    Inter,
+    Arial,
+    sans-serif !important;
+
+  font-size:
+    18px !important;
+
+  font-weight:
+    700 !important;
+}
+
+.restaurant-a11y-actions button {
+  font-family:
+    "Heebo",
+    "Rubik",
+    Arial,
+    sans-serif !important;
+
+  font-size:
+    13.3333px !important;
+
+  font-weight:
+    700 !important;
+
+  line-height:
+    1.25 !important;
+
+  letter-spacing:
+    0 !important;
+}
+
+.restaurant-a11y-note {
+  font-family:
+    "Heebo",
+    "Rubik",
+    Arial,
+    sans-serif !important;
+
+  font-size:
+    12px !important;
+
+  line-height:
+    1.5 !important;
+}
+
+
+/*
+   Force the SAME sizes at every A+/A− level.
+   This fixes the bug where A+ made the
+   accessibility controls smaller.
+*/
+
+body.restaurant-a11y-text-1
+.restaurant-a11y-panel,
+body.restaurant-a11y-text-2
+.restaurant-a11y-panel,
+body.restaurant-a11y-text-3
+.restaurant-a11y-panel,
+body.restaurant-a11y-text-4
+.restaurant-a11y-panel {
+  font-size:
+    16px !important;
+}
+
+body.restaurant-a11y-text-1
+.restaurant-a11y-panel-head strong,
+body.restaurant-a11y-text-2
+.restaurant-a11y-panel-head strong,
+body.restaurant-a11y-text-3
+.restaurant-a11y-panel-head strong,
+body.restaurant-a11y-text-4
+.restaurant-a11y-panel-head strong {
+  font-size:
+    18px !important;
+}
+
+body.restaurant-a11y-text-1
+.restaurant-a11y-actions button,
+body.restaurant-a11y-text-2
+.restaurant-a11y-actions button,
+body.restaurant-a11y-text-3
+.restaurant-a11y-actions button,
+body.restaurant-a11y-text-4
+.restaurant-a11y-actions button {
+  font-size:
+    13.3333px !important;
+}
+
+body.restaurant-a11y-text-1
+.restaurant-a11y-note,
+body.restaurant-a11y-text-2
+.restaurant-a11y-note,
+body.restaurant-a11y-text-3
+.restaurant-a11y-note,
+body.restaurant-a11y-text-4
+.restaurant-a11y-note {
+  font-size:
+    12px !important;
+}
+
+
+/* ==========================================================
+   2. HEBREW — SAME FONT AS ORIGINAL HTML
+   Heebo → Rubik → Arial
+   ========================================================== */
+
+.ep-app[dir="rtl"]
+.ep-hero-title,
+
+.ep-app[dir="rtl"]
+.ep-hero-kicker,
+
+.ep-app[dir="rtl"]
+.ep-section-head h2,
+
+.ep-app[dir="rtl"]
+.ep-tabs button,
+
+.ep-app[dir="rtl"]
+.ep-item-name,
+
+.ep-app[dir="rtl"]
+.ep-item-description,
+
+.ep-app[dir="rtl"]
+.ep-item-category,
+
+.ep-app[dir="rtl"]
+.ep-wine-origin {
+  font-family:
+    "Heebo",
+    "Rubik",
+    Arial,
+    sans-serif !important;
+
+  letter-spacing:
+    0 !important;
+}
+
+
+/* Original Hebrew normal weight */
+
+.ep-app[dir="rtl"]
+.ep-item-name,
+
+.ep-app[dir="rtl"]
+.ep-item-description,
+
+.ep-app[dir="rtl"]
+.ep-tabs button,
+
+.ep-app[dir="rtl"]
+.ep-hero-title,
+
+.ep-app[dir="rtl"]
+.ep-section-head h2 {
+  font-weight:
+    500 !important;
+}
+
+
+/* Hebrew language button */
+
+.ep-lang-pill button:last-child {
+  font-family:
+    "Heebo",
+    "Rubik",
+    Arial,
+    sans-serif !important;
+
+  letter-spacing:
+    0 !important;
+}
+
+
+/* ==========================================================
+   3. PRESERVE ORIGINAL HEBREW A+ SIZES
+   ========================================================== */
+
+body.restaurant-a11y-text-1
+.ep-app[dir="rtl"]
+.ep-item-name {
+  font-size:
+    13.8px !important;
+}
+
+body.restaurant-a11y-text-2
+.ep-app[dir="rtl"]
+.ep-item-name {
+  font-size:
+    15.6px !important;
+}
+
+body.restaurant-a11y-text-3
+.ep-app[dir="rtl"]
+.ep-item-name {
+  font-size:
+    17.4px !important;
+}
+
+body.restaurant-a11y-text-4
+.ep-app[dir="rtl"]
+.ep-item-name {
+  font-size:
+    19.2px !important;
+}
+
+
+body.restaurant-a11y-text-1
+.ep-app[dir="rtl"]
+.ep-tabs button {
+  font-size:
+    12.65px !important;
+}
+
+body.restaurant-a11y-text-2
+.ep-app[dir="rtl"]
+.ep-tabs button {
+  font-size:
+    14.3px !important;
+}
+
+body.restaurant-a11y-text-3
+.ep-app[dir="rtl"]
+.ep-tabs button {
+  font-size:
+    15.95px !important;
+}
+
+body.restaurant-a11y-text-4
+.ep-app[dir="rtl"]
+.ep-tabs button {
+  font-size:
+    17.6px !important;
+}
+
+
+/* ==========================================================
+   BEYOND ORIGINAL HTML FONT COLORS V6
+   Exact colors from index (6).html
+
+   Does NOT override Dark Mode or High Contrast.
+   ========================================================== */
+
+
+/* ==========================================================
+   MAIN TEXT
+   ========================================================== */
+
+html:not(.restaurant-a11y-dark):not(.restaurant-a11y-contrast)
+.ep-page,
+
+html:not(.restaurant-a11y-dark):not(.restaurant-a11y-contrast)
+.ep-app {
+  color: #121212 !important;
+}
+
+
+/* ==========================================================
+   RESTAURANT BRAND
+   ========================================================== */
+
+html:not(.restaurant-a11y-dark):not(.restaurant-a11y-contrast)
+.ep-brand-title {
+  color: #121212 !important;
+}
+
+html:not(.restaurant-a11y-dark):not(.restaurant-a11y-contrast)
+.ep-brand-sub {
+  color: #7b756e !important;
+}
+
+
+/* ==========================================================
+   LANGUAGE SWITCH
+   Original: #6f675d inactive / white active
+   ========================================================== */
+
+html:not(.restaurant-a11y-dark):not(.restaurant-a11y-contrast)
+.ep-lang-pill button {
+  color: #6f675d !important;
+}
+
+html:not(.restaurant-a11y-dark):not(.restaurant-a11y-contrast)
+.ep-lang-pill button.active {
+  color: #ffffff !important;
+}
+
+
+/* ==========================================================
+   HERO
+   ========================================================== */
+
+html:not(.restaurant-a11y-dark):not(.restaurant-a11y-contrast)
+.ep-hero-kicker {
+  color: #556b2f !important;
+}
+
+html:not(.restaurant-a11y-dark):not(.restaurant-a11y-contrast)
+.ep-hero-title {
+  color: #121212 !important;
+}
+
+
+/* ==========================================================
+   CATEGORY TABS
+   ========================================================== */
+
+html:not(.restaurant-a11y-dark):not(.restaurant-a11y-contrast)
+.ep-tabs button {
+  color: #7b756e !important;
+}
+
+html:not(.restaurant-a11y-dark):not(.restaurant-a11y-contrast)
+.ep-tabs button.active {
+  color: #ffffff !important;
+}
+
+
+/* ==========================================================
+   SECTION TITLE + COUNT
+   ========================================================== */
+
+html:not(.restaurant-a11y-dark):not(.restaurant-a11y-contrast)
+.ep-section-head h2 {
+  color: #121212 !important;
+}
+
+html:not(.restaurant-a11y-dark):not(.restaurant-a11y-contrast)
+.ep-section-count {
+  color: #7b756e !important;
+}
+
+
+/* ==========================================================
+   SMALL CATEGORY / BRAND LABELS
+   ========================================================== */
+
+html:not(.restaurant-a11y-dark):not(.restaurant-a11y-contrast)
+.ep-item-category,
+
+html:not(.restaurant-a11y-dark):not(.restaurant-a11y-contrast)
+.ep-beer-brand {
+  color: #a59d92 !important;
+}
+
+
+/* ==========================================================
+   ENGLISH PRODUCT NAMES
+   Original .item-en = #161616
+   ========================================================== */
+
+html:not(.restaurant-a11y-dark):not(.restaurant-a11y-contrast)
+.ep-app[dir="ltr"]
+.ep-item-name {
+  color: #161616 !important;
+}
+
+
+/* ==========================================================
+   HEBREW PRODUCT NAMES
+   Original .item-he = muted #7b756e
+   ========================================================== */
+
+html:not(.restaurant-a11y-dark):not(.restaurant-a11y-contrast)
+.ep-app[dir="rtl"]
+.ep-item-name {
+  color: #7b756e !important;
+}
+
+
+/* ==========================================================
+   DESCRIPTIONS
+   Original = #9a9287
+   ========================================================== */
+
+html:not(.restaurant-a11y-dark):not(.restaurant-a11y-contrast)
+.ep-item-description,
+
+html:not(.restaurant-a11y-dark):not(.restaurant-a11y-contrast)
+.ep-wine-origin,
+
+html:not(.restaurant-a11y-dark):not(.restaurant-a11y-contrast)
+.ep-wine-description {
+  color: #9a9287 !important;
+}
+
+
+/* ==========================================================
+   PRICES
+   Original = #2b2b2b
+   ========================================================== */
+
+html:not(.restaurant-a11y-dark):not(.restaurant-a11y-contrast)
+.ep-item-price,
+
+html:not(.restaurant-a11y-dark):not(.restaurant-a11y-contrast)
+.ep-dual-price strong,
+
+html:not(.restaurant-a11y-dark):not(.restaurant-a11y-contrast)
+.ep-wine-prices strong {
+  color: #2b2b2b !important;
+}
+
+
+/* ==========================================================
+   FOOTER / SECONDARY TEXT
+   ========================================================== */
+
+html:not(.restaurant-a11y-dark):not(.restaurant-a11y-contrast)
+.ep-footer {
+  color: #aaaaaa !important;
+}
+
+html:not(.restaurant-a11y-dark):not(.restaurant-a11y-contrast)
+.ep-footer strong {
+  color: #121212 !important;
+}
+
+html:not(.restaurant-a11y-dark):not(.restaurant-a11y-contrast)
+.ep-accessibility-statement-link {
+  color: #556b2f !important;
+}
+

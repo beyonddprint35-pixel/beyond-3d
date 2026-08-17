@@ -9,7 +9,9 @@ import ProcessStory from "../components/ProcessStory";
 import BeyondCreator from "../components/BeyondCreator";
 import AIModelStudio from "../components/AIModelStudio";
 import BeyondCommunity from "../components/BeyondCommunity";
-
+import {
+  BeyondMenuStudio,
+} from "../components/BeyondMenuPlatform";
 import MyAccount from "../components/MyAccount";
 import ReviewsSection from "../components/ReviewsSection";
 import AuthModal from "../components/AuthModal";
@@ -63,20 +65,11 @@ function Home() {
   ] = useState(null);
 
 
-  // BEYOND_MENU_STUDIO_ACCESS_STATE_V2
-  const [
-    hasMenuStudioAccess,
-    setHasMenuStudioAccess,
-  ] = useState(false);
 
+  // BEYOND_HOME_BUSINESS_STUDIO_V1
   const [
-    menuStudioSiteId,
-    setMenuStudioSiteId,
-  ] = useState("");
-
-  const [
-    isMenuStudioAdmin,
-    setIsMenuStudioAdmin,
+    isBusinessAccount,
+    setIsBusinessAccount,
   ] = useState(false);
 
   const [
@@ -133,16 +126,14 @@ function Home() {
     };
   }, []);
 
-  // BEYOND_MENU_STUDIO_ACCESS_V2
+  // BEYOND_LOAD_HOME_BUSINESS_ACCOUNT_V1
   useEffect(() => {
     let alive = true;
 
-    async function loadMenuStudioAccess() {
+    async function loadBusinessAccount() {
       if (!session?.user?.id) {
         if (alive) {
-          setHasMenuStudioAccess(false);
-          setMenuStudioSiteId("");
-          setIsMenuStudioAdmin(false);
+          setIsBusinessAccount(false);
         }
 
         return;
@@ -150,10 +141,8 @@ function Home() {
 
       const [
         businessResult,
-        siteResult,
         adminResult,
       ] = await Promise.all([
-
         supabase
           .from("business_accounts")
           .select("user_id")
@@ -164,20 +153,6 @@ function Home() {
           .maybeSingle(),
 
         supabase
-          .from("menu_sites")
-          .select("id,owner_id")
-          .eq(
-            "owner_id",
-            session.user.id
-          )
-          .order(
-            "created_at",
-            { ascending: true }
-          )
-          .limit(1)
-          .maybeSingle(),
-
-        supabase
           .from("menu_admins")
           .select("user_id")
           .eq(
@@ -185,7 +160,6 @@ function Home() {
             session.user.id
           )
           .maybeSingle(),
-
       ]);
 
       if (!alive) {
@@ -194,63 +168,27 @@ function Home() {
 
       if (
         businessResult.error ||
-        siteResult.error ||
         adminResult.error
       ) {
         console.error(
           "Menu Studio access check failed:",
           businessResult.error,
-          siteResult.error,
           adminResult.error
         );
 
-        setHasMenuStudioAccess(false);
-        setMenuStudioSiteId("");
-        setIsMenuStudioAdmin(false);
-
+        setIsBusinessAccount(false);
         return;
       }
 
-      const adminMode =
+      setIsBusinessAccount(
         Boolean(
+          businessResult.data ||
           adminResult.data
-        );
-
-      const businessGranted =
-        Boolean(
-          businessResult.data &&
-          siteResult.data?.id
-        );
-
-      const granted =
-        adminMode ||
-        businessGranted;
-
-      setIsMenuStudioAdmin(
-        adminMode
-      );
-
-      setHasMenuStudioAccess(
-        granted
-      );
-
-      /*
-        Admin does not need a specific site ID.
-        /menu-studio will load ALL websites.
-
-        Business customer receives only
-        their assigned site.
-      */
-      setMenuStudioSiteId(
-        adminMode
-          ? ""
-          : businessGranted
-            ? siteResult.data.id
-            : ""
+        )
       );
     }
 
-    loadMenuStudioAccess();
+    loadBusinessAccount();
 
     return () => {
       alive = false;
@@ -258,6 +196,37 @@ function Home() {
   }, [
     session?.user?.id,
   ]);
+
+
+  // Open the homepage Menu Studio from My Account.
+  useEffect(() => {
+    function handleOpenMenuStudio() {
+      setAccountOpen(false);
+      setMenuOpen(false);
+
+      window.setTimeout(() => {
+        document
+          .getElementById(
+            "business-menu-studio"
+          )
+          ?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+      }, 80);
+    }
+
+    window.addEventListener(
+      "beyond-open-menu-studio",
+      handleOpenMenuStudio
+    );
+
+    return () =>
+      window.removeEventListener(
+        "beyond-open-menu-studio",
+        handleOpenMenuStudio
+      );
+  }, []);
 
 
   async function handleSignOut() {
@@ -483,7 +452,19 @@ function Home() {
             How it works
           </button>
 
-
+          {/* BEYOND_BUSINESS_STUDIO_NAV_V1 */}
+          {isBusinessAccount && (
+            <button
+              type="button"
+              onClick={() =>
+                scrollToSection(
+                  "business-menu-studio"
+                )
+              }
+            >
+              Menu Studio
+            </button>
+          )}
 
           <button
             type="button"
@@ -595,33 +576,6 @@ function Home() {
               Log In / Sign Up
             </button>
           )}
-
-          {/* BEYOND_MENU_STUDIO_HEADER_BUTTON_V2 */}
-          {authReady &&
-          session &&
-          hasMenuStudioAccess ? (
-            <button
-              type="button"
-              className="home-menu-studio-button"
-              onClick={() =>
-                window.open(
-                  isMenuStudioAdmin
-                    ? "/menu-studio"
-                    : `/menu-studio?site=${menuStudioSiteId}`,
-                  "beyond-menu-studio",
-                  "width=1440,height=950,noopener,noreferrer"
-                )
-              }
-            >
-              <span className="home-menu-studio-full">
-                Menu Studio
-              </span>
-
-              <span className="home-menu-studio-short">
-                Studio
-              </span>
-            </button>
-          ) : null}
 
           <button
             type="button"
@@ -812,7 +766,46 @@ function Home() {
 
       <ProcessStory />
 
+      {/* =========================================
+          BUSINESS MENU STUDIO
+          BEYOND_BUSINESS_MENU_STUDIO_SECTION_V1
+      ========================================= */}
 
+      {isBusinessAccount && (
+        <section
+          id="business-menu-studio"
+          className="home-business-menu-studio"
+        >
+          <div className="home-business-studio-heading">
+
+            <div>
+              <div className="section-index">
+                BUSINESS / MENU STUDIO
+              </div>
+
+              <h2>
+                Manage your
+                <br />
+
+                <span>
+                  restaurant menu.
+                </span>
+              </h2>
+            </div>
+
+            <p>
+              Update categories, items,
+              prices, languages and your
+              restaurant website directly
+              from your BEYOND account.
+            </p>
+
+          </div>
+
+          <BeyondMenuStudio />
+
+        </section>
+      )}
 
       {/* =========================================
           BEYOND CREATOR

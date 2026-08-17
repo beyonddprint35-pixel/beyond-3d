@@ -15,7 +15,6 @@ import {
   ExternalLink,
   Settings2,
   ShieldCheck,
-  Store,
   LogOut,
   PackageCheck,
   RefreshCw,
@@ -80,24 +79,6 @@ function formatDate(
       day: "numeric",
     }
   );
-}
-
-function formatServiceStatus(
-  value,
-  fallback = "Not started"
-) {
-  if (!value) {
-    return fallback;
-  }
-
-  return String(value)
-    .split("_")
-    .map(
-      word =>
-        word.charAt(0).toUpperCase() +
-        word.slice(1)
-    )
-    .join(" ");
 }
 
 function modelTitle(
@@ -175,78 +156,6 @@ function MyAccount({
     websitesLoading,
     setWebsitesLoading,
   ] = useState(false);
-
-  // BEYOND_ADMIN_REQUESTS_IN_MY_WEBSITES_V1
-  const [
-    adminRestaurantRequests,
-    setAdminRestaurantRequests,
-  ] = useState([]);
-
-  const [
-    adminRequestsLoading,
-    setAdminRequestsLoading,
-  ] = useState(false);
-
-  const [
-    adminSiteSelections,
-    setAdminSiteSelections,
-  ] = useState({});
-
-  const [
-    adminLinkingRequest,
-    setAdminLinkingRequest,
-  ] = useState("");
-
-  const [
-    adminRequestMessage,
-    setAdminRequestMessage,
-  ] = useState("");
-
-  // BEYOND_RESTAURANT_SERVICE_V1
-  const [
-    businessAccount,
-    setBusinessAccount,
-  ] = useState(null);
-
-  const [
-    restaurantSubscription,
-    setRestaurantSubscription,
-  ] = useState(null);
-
-  const [
-    websiteRequest,
-    setWebsiteRequest,
-  ] = useState(null);
-
-  const [
-    restaurantServiceLoading,
-    setRestaurantServiceLoading,
-  ] = useState(false);
-
-  const [
-    restaurantServiceActionLoading,
-    setRestaurantServiceActionLoading,
-  ] = useState(false);
-
-  const [
-    restaurantServiceMessage,
-    setRestaurantServiceMessage,
-  ] = useState("");
-
-  const [
-    restaurantPromoCode,
-    setRestaurantPromoCode,
-  ] = useState("");
-
-  const [
-    restaurantPromoLoading,
-    setRestaurantPromoLoading,
-  ] = useState(false);
-
-  const [
-    restaurantPromoMessage,
-    setRestaurantPromoMessage,
-  ] = useState("");
 
   const [
     communityShares,
@@ -490,25 +399,6 @@ function MyAccount({
   }
 
 
-  // BEYOND_HIDE_EMPTY_ACCOUNT_TABS_V1
-  useEffect(() => {
-    if (
-      (activeTab === "orders" &&
-        orders.length === 0) ||
-      (activeTab === "projects" &&
-        projects.length === 0) ||
-      (activeTab === "models" &&
-        models.length === 0)
-    ) {
-      setActiveTab("overview");
-    }
-  }, [
-    activeTab,
-    orders.length,
-    projects.length,
-    models.length,
-  ]);
-
   // BEYOND_MY_WEBSITES_ACCOUNT_V1
   const loadMenuSites =
     useCallback(
@@ -629,477 +519,6 @@ function MyAccount({
     isMenuAdmin,
     menuSites.length,
   ]);
-
-  // BEYOND_ADMIN_REQUESTS_IN_MY_WEBSITES_V1
-  const loadAdminRestaurantRequests =
-    useCallback(
-      async () => {
-        if (
-          !session?.user?.id ||
-          !isMenuAdmin
-        ) {
-          setAdminRestaurantRequests([]);
-          setAdminRequestsLoading(false);
-          return;
-        }
-
-        setAdminRequestsLoading(true);
-
-        const [
-          requestsResult,
-          subscriptionsResult,
-          businessesResult,
-          directoryResult,
-        ] = await Promise.all([
-          supabase
-            .from("website_requests")
-            .select(
-              "id,user_id,subscription_id,restaurant_name,plan_id,status,site_id,created_at,updated_at"
-            )
-            .order(
-              "created_at",
-              { ascending: false }
-            ),
-
-          supabase
-            .from("website_subscriptions")
-            .select(
-              "id,user_id,plan_id,status,current_period_start,current_period_end,created_at"
-            ),
-
-          supabase
-            .from("business_accounts")
-            .select(
-              "user_id,restaurant_name,contact_name,phone,requested_plan"
-            ),
-
-          supabase
-            .from("menu_user_directory")
-            .select(
-              "user_id,email"
-            ),
-        ]);
-
-        const requestError =
-          requestsResult.error ||
-          subscriptionsResult.error ||
-          businessesResult.error ||
-          directoryResult.error;
-
-        if (requestError) {
-          console.error(
-            "Admin restaurant requests load failed:",
-            requestError
-          );
-
-          setAdminRestaurantRequests([]);
-          setAdminRequestsLoading(false);
-          return;
-        }
-
-        const subscriptions =
-          new Map(
-            (subscriptionsResult.data || [])
-              .map(item => [
-                item.id,
-                item
-              ])
-          );
-
-        const businesses =
-          new Map(
-            (businessesResult.data || [])
-              .map(item => [
-                item.user_id,
-                item
-              ])
-          );
-
-        const emails =
-          new Map(
-            (directoryResult.data || [])
-              .map(item => [
-                item.user_id,
-                item.email
-              ])
-          );
-
-        const combined =
-          (requestsResult.data || [])
-            .map(request => ({
-              ...request,
-
-              subscription:
-                subscriptions.get(
-                  request.subscription_id
-                ) || null,
-
-              business:
-                businesses.get(
-                  request.user_id
-                ) || null,
-
-              customerEmail:
-                emails.get(
-                  request.user_id
-                ) || "",
-            }));
-
-        setAdminRestaurantRequests(
-          combined
-        );
-
-        setAdminRequestsLoading(false);
-      },
-      [
-        session?.user?.id,
-        isMenuAdmin,
-      ]
-    );
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    loadAdminRestaurantRequests();
-  }, [
-    open,
-    loadAdminRestaurantRequests,
-  ]);
-
-  // BEYOND_RESTAURANT_SERVICE_V1
-  const loadRestaurantService =
-    useCallback(
-      async () => {
-        if (!session?.user?.id) {
-          setBusinessAccount(null);
-          setRestaurantSubscription(null);
-          setWebsiteRequest(null);
-          setRestaurantServiceLoading(false);
-          return;
-        }
-
-        setRestaurantServiceLoading(true);
-
-        const {
-          data: business,
-          error: businessError,
-        } = await supabase
-          .from("business_accounts")
-          .select(
-            "user_id,restaurant_name,contact_name,phone,requested_plan,created_at,updated_at"
-          )
-          .eq(
-            "user_id",
-            session.user.id
-          )
-          .maybeSingle();
-
-        if (businessError) {
-          console.error(
-            "Business account load failed:",
-            businessError
-          );
-
-          setBusinessAccount(null);
-          setRestaurantSubscription(null);
-          setWebsiteRequest(null);
-          setRestaurantServiceLoading(false);
-          return;
-        }
-
-        setBusinessAccount(
-          business || null
-        );
-
-        if (!business) {
-          setRestaurantSubscription(null);
-          setWebsiteRequest(null);
-          setRestaurantServiceLoading(false);
-          return;
-        }
-
-        const [
-          subscriptionResult,
-          requestResult,
-        ] = await Promise.all([
-          supabase
-            .from("website_subscriptions")
-            .select(
-              "id,user_id,plan_id,status,payment_provider,current_period_start,current_period_end,cancelled_at,created_at,updated_at"
-            )
-            .eq(
-              "user_id",
-              session.user.id
-            )
-            .order(
-              "created_at",
-              { ascending: false }
-            )
-            .limit(1)
-            .maybeSingle(),
-
-          supabase
-            .from("website_requests")
-            .select(
-              "id,user_id,subscription_id,restaurant_name,plan_id,status,site_id,created_at,updated_at"
-            )
-            .eq(
-              "user_id",
-              session.user.id
-            )
-            .order(
-              "created_at",
-              { ascending: false }
-            )
-            .limit(1)
-            .maybeSingle(),
-        ]);
-
-        if (subscriptionResult.error) {
-          console.error(
-            "Restaurant subscription load failed:",
-            subscriptionResult.error
-          );
-        }
-
-        if (requestResult.error) {
-          console.error(
-            "Website request load failed:",
-            requestResult.error
-          );
-        }
-
-        setRestaurantSubscription(
-          subscriptionResult.data || null
-        );
-
-        setWebsiteRequest(
-          requestResult.data || null
-        );
-
-        setRestaurantServiceLoading(false);
-      },
-      [session?.user?.id]
-    );
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    loadRestaurantService();
-  }, [
-    open,
-    loadRestaurantService,
-  ]);
-
-  useEffect(() => {
-    if (
-      activeTab === "restaurantService" &&
-      !restaurantServiceLoading &&
-      !businessAccount
-    ) {
-      setActiveTab("overview");
-    }
-  }, [
-    activeTab,
-    restaurantServiceLoading,
-    businessAccount,
-  ]);
-
-  async function handleAdminLinkRestaurantSite(
-    request
-  ) {
-    const siteId =
-      adminSiteSelections[
-        request.id
-      ] || "";
-
-    if (!siteId) {
-      setAdminRequestMessage(
-        "Choose a website first."
-      );
-      return;
-    }
-
-    const site =
-      menuSites.find(
-        item =>
-          item.id === siteId
-      );
-
-    if (!site) {
-      setAdminRequestMessage(
-        "Selected website could not be found."
-      );
-      return;
-    }
-
-    const confirmed =
-      window.confirm(
-        `Link "${site.name}" to "${request.restaurant_name}"?
-
-` +
-        "This will transfer website ownership to that restaurant customer."
-      );
-
-    if (!confirmed) {
-      return;
-    }
-
-    setAdminLinkingRequest(
-      request.id
-    );
-
-    setAdminRequestMessage("");
-
-    try {
-      const {
-        data,
-        error: linkError,
-      } = await supabase.rpc(
-        "admin_link_restaurant_site",
-        {
-          p_request_id:
-            request.id,
-
-          p_site_id:
-            siteId,
-        }
-      );
-
-      if (linkError) {
-        throw linkError;
-      }
-
-      await Promise.all([
-        loadMenuSites(),
-        loadAdminRestaurantRequests(),
-      ]);
-
-      setAdminSiteSelections(
-        current => ({
-          ...current,
-          [request.id]: "",
-        })
-      );
-
-      setAdminRequestMessage(
-        `${data?.site_name || site.name} linked successfully.`
-      );
-    } catch (linkError) {
-      console.error(
-        "Admin website link failed:",
-        linkError
-      );
-
-      setAdminRequestMessage(
-        linkError?.message ||
-          "Could not link the website."
-      );
-    } finally {
-      setAdminLinkingRequest("");
-    }
-  }
-
-  async function handleRedeemRestaurantPromo() {
-    const code =
-      restaurantPromoCode.trim();
-
-    if (!code) {
-      setRestaurantPromoMessage(
-        "Enter a promo code."
-      );
-      return;
-    }
-
-    setRestaurantPromoLoading(true);
-    setRestaurantPromoMessage("");
-    setError("");
-
-    try {
-      const {
-        data,
-        error: promoError,
-      } = await supabase.rpc(
-        "redeem_restaurant_promo",
-        {
-          p_code: code,
-        }
-      );
-
-      if (promoError) {
-        throw promoError;
-      }
-
-      setRestaurantPromoCode("");
-
-      await loadRestaurantService();
-
-      setRestaurantPromoMessage(
-        data?.success
-          ? "Promo applied successfully. Your restaurant subscription is now active."
-          : "Promo could not be applied."
-      );
-    } catch (promoError) {
-      console.error(
-        "Restaurant promo failed:",
-        promoError
-      );
-
-      setRestaurantPromoMessage(
-        promoError?.message ||
-          "Promo code could not be applied."
-      );
-    } finally {
-      setRestaurantPromoLoading(false);
-    }
-  }
-
-  async function handleStartRestaurantSubscription() {
-    if (!businessAccount) {
-      return;
-    }
-
-    setRestaurantServiceActionLoading(true);
-    setRestaurantServiceMessage("");
-    setError("");
-
-    try {
-      const {
-        data,
-        error: startError,
-      } = await supabase.rpc(
-        "start_restaurant_subscription"
-      );
-
-      if (startError) {
-        throw startError;
-      }
-
-      await loadRestaurantService();
-
-      setRestaurantServiceMessage(
-        data?.created
-          ? "Subscription request created. No payment has been taken yet."
-          : "Your subscription request is already prepared."
-      );
-    } catch (startError) {
-      console.error(
-        "Restaurant subscription start failed:",
-        startError
-      );
-
-      setRestaurantServiceMessage(
-        startError?.message ||
-          "Could not prepare the subscription."
-      );
-    } finally {
-      setRestaurantServiceActionLoading(false);
-    }
-  }
 
   // BEYOND_COMMUNITY_ACCOUNT_V1
   const loadCommunityShares =
@@ -1878,89 +1297,95 @@ function MyAccount({
               Overview
             </button>
 
-            {orders.length > 0 && (
-              <button
-                type="button"
-                className={
-                  activeTab ===
+            <button
+              type="button"
+              className={
+                activeTab ===
+                "orders"
+                  ? "active"
+                  : ""
+              }
+              onClick={() =>
+                setActiveTab(
                   "orders"
-                    ? "active"
-                    : ""
+                )
+              }
+            >
+              <PackageCheck
+                size={16}
+                strokeWidth={
+                  1.5
                 }
-                onClick={() =>
-                  setActiveTab(
-                    "orders"
-                  )
+              />
+
+              My Orders
+
+              <span>
+                {
+                  orders.length
                 }
-              >
-                <PackageCheck
-                  size={16}
-                  strokeWidth={1.5}
-                />
+              </span>
+            </button>
 
-                My Orders
-
-                <span>
-                  {orders.length}
-                </span>
-              </button>
-            )}
-
-            {projects.length > 0 && (
-              <button
-                type="button"
-                className={
-                  activeTab ===
+            <button
+              type="button"
+              className={
+                activeTab ===
+                "projects"
+                  ? "active"
+                  : ""
+              }
+              onClick={() =>
+                setActiveTab(
                   "projects"
-                    ? "active"
-                    : ""
+                )
+              }
+            >
+              <FolderOpen
+                size={16}
+                strokeWidth={
+                  1.5
                 }
-                onClick={() =>
-                  setActiveTab(
-                    "projects"
-                  )
+              />
+
+              My Projects
+
+              <span>
+                {
+                  projects.length
                 }
-              >
-                <FolderOpen
-                  size={16}
-                  strokeWidth={1.5}
-                />
+              </span>
+            </button>
 
-                My Projects
-
-                <span>
-                  {projects.length}
-                </span>
-              </button>
-            )}
-
-            {models.length > 0 && (
-              <button
-                type="button"
-                className={
-                  activeTab ===
+            <button
+              type="button"
+              className={
+                activeTab ===
+                "models"
+                  ? "active"
+                  : ""
+              }
+              onClick={() =>
+                setActiveTab(
                   "models"
-                    ? "active"
-                    : ""
+                )
+              }
+            >
+              <Box
+                size={16}
+                strokeWidth={
+                  1.5
                 }
-                onClick={() =>
-                  setActiveTab(
-                    "models"
-                  )
+              />
+
+              My Models
+
+              <span>
+                {
+                  models.length
                 }
-              >
-                <Box
-                  size={16}
-                  strokeWidth={1.5}
-                />
-
-                My Models
-
-                <span>
-                  {models.length}
-                </span>
-              </button>
-            )}
+              </span>
+            </button>
 
             {(isMenuAdmin ||
               menuSites.length > 0) && (
@@ -1995,55 +1420,6 @@ function MyAccount({
                     menuSites.length
                   }
                 </span>
-              </button>
-            )}
-
-            {businessAccount && (
-              <button
-                type="button"
-                className={
-                  activeTab ===
-                  "restaurantService"
-                    ? "active"
-                    : ""
-                }
-                onClick={() =>
-                  setActiveTab(
-                    "restaurantService"
-                  )
-                }
-              >
-                <Store
-                  size={16}
-                  strokeWidth={1.5}
-                />
-
-                Restaurant Service
-              </button>
-            )}
-
-            {(isMenuAdmin ||
-              (businessAccount &&
-                menuSites.length > 0)) && (
-
-              <button
-                type="button"
-                onClick={() => {
-                    window.open(
-                      isMenuAdmin
-                        ? "/menu-studio"
-                        : `/menu-studio?site=${menuSites[0].id}`,
-                      "beyond-menu-studio",
-                      "width=1440,height=950,noopener,noreferrer"
-                    );
-                  }}
-              >
-                <Settings2
-                  size={16}
-                  strokeWidth={1.5}
-                />
-
-                Menu Studio
               </button>
             )}
 
@@ -2113,10 +1489,7 @@ function MyAccount({
                         : activeTab ===
                             "websites"
                           ? "My Websites"
-                          : activeTab ===
-                              "restaurantService"
-                            ? "Restaurant Service"
-                            : "Profile"}
+                          : "Profile"}
               </h2>
             </div>
 
@@ -2127,8 +1500,6 @@ function MyAccount({
                 onClick={() => {
                   loadAccountData();
                   loadMenuSites();
-                  loadRestaurantService();
-                  loadAdminRestaurantRequests();
                 }}
                 disabled={
                   loading
@@ -2976,255 +2347,6 @@ function MyAccount({
                 )}
               </div>
 
-              {isMenuAdmin && (
-                <section className="account-admin-requests">
-
-                  <div className="account-admin-requests-head">
-                    <div>
-                      <span>
-                        RESTAURANT REQUESTS
-                      </span>
-
-                      <h3>
-                        Waiting for setup
-                      </h3>
-
-                      <p>
-                        Subscription requests that have
-                        not yet become an assigned
-                        restaurant website.
-                      </p>
-                    </div>
-
-                    <strong>
-                      {
-                        adminRestaurantRequests
-                          .filter(
-                            request =>
-                              !request.site_id
-                          )
-                          .length
-                      }
-                    </strong>
-                  </div>
-
-                  {adminRequestMessage && (
-                    <div className="account-admin-request-message">
-                      {adminRequestMessage}
-                    </div>
-                  )}
-
-                  {adminRequestsLoading ? (
-                    <div className="account-admin-requests-empty">
-                      Loading requests...
-                    </div>
-                  ) : !adminRestaurantRequests
-                      .filter(
-                        request =>
-                          !request.site_id
-                      )
-                      .length ? (
-                    <div className="account-admin-requests-empty">
-                      No restaurant requests waiting for setup.
-                    </div>
-                  ) : (
-                    <div className="account-admin-request-grid">
-
-                      {adminRestaurantRequests
-                        .filter(
-                          request =>
-                            !request.site_id
-                        )
-                        .map(request => {
-
-                          const plan =
-                            request.plan_id ||
-                            request.subscription?.plan_id ||
-                            request.business?.requested_plan ||
-                            "basic";
-
-                          const paymentStatus =
-                            request.subscription?.status ||
-                            "pending_payment";
-
-                          return (
-                            <article
-                              className="account-admin-request-card"
-                              key={request.id}
-                            >
-
-                              <div className="account-admin-request-card-top">
-
-                                <span className="account-admin-request-badge">
-                                  {
-                                    String(plan)
-                                      .toUpperCase()
-                                  }
-                                </span>
-
-                                <span className="account-admin-request-payment">
-                                  {
-                                    formatServiceStatus(
-                                      paymentStatus
-                                    )
-                                  }
-                                </span>
-
-                              </div>
-
-                              <h3>
-                                {
-                                  request.restaurant_name ||
-                                  request.business?.restaurant_name ||
-                                  "Restaurant"
-                                }
-                              </h3>
-
-                              <div className="account-admin-request-email">
-                                {
-                                  request.customerEmail ||
-                                  "No customer email"
-                                }
-                              </div>
-
-                              <div className="account-admin-request-meta">
-
-                                <div>
-                                  <span>
-                                    WEBSITE
-                                  </span>
-
-                                  <strong>
-                                    Not assigned
-                                  </strong>
-                                </div>
-
-                                <div>
-                                  <span>
-                                    SETUP STATUS
-                                  </span>
-
-                                  <strong>
-                                    {
-                                      formatServiceStatus(
-                                        request.status
-                                      )
-                                    }
-                                  </strong>
-                                </div>
-
-                                <div>
-                                  <span>
-                                    CONTACT
-                                  </span>
-
-                                  <strong>
-                                    {
-                                      request.business
-                                        ?.contact_name ||
-                                      "—"
-                                    }
-                                  </strong>
-                                </div>
-
-                              </div>
-
-                              {request.business?.phone && (
-                                <div className="account-admin-request-phone">
-                                  {
-                                    request.business.phone
-                                  }
-                                </div>
-                              )}
-
-                              <div className="account-admin-link-site">
-
-                                <select
-                                  value={
-                                    adminSiteSelections[
-                                      request.id
-                                    ] || ""
-                                  }
-                                  onChange={event =>
-                                    setAdminSiteSelections(
-                                      current => ({
-                                        ...current,
-                                        [request.id]:
-                                          event.target.value,
-                                      })
-                                    )
-                                  }
-                                >
-                                  <option value="">
-                                    Select existing website
-                                  </option>
-
-                                  {menuSites.map(site => (
-                                    <option
-                                      key={site.id}
-                                      value={site.id}
-                                    >
-                                      {site.name}
-                                      {site.published
-                                        ? " — LIVE"
-                                        : " — DRAFT"}
-                                    </option>
-                                  ))}
-                                </select>
-
-                                <button
-                                  type="button"
-                                  className="account-primary-button"
-                                  disabled={
-                                    !adminSiteSelections[
-                                      request.id
-                                    ] ||
-                                    adminLinkingRequest ===
-                                      request.id ||
-                                    request.subscription
-                                      ?.status !==
-                                      "active"
-                                  }
-                                  onClick={() =>
-                                    handleAdminLinkRestaurantSite(
-                                      request
-                                    )
-                                  }
-                                >
-                                  {adminLinkingRequest ===
-                                  request.id
-                                    ? "Linking..."
-                                    : "Link Existing Website"}
-                                </button>
-
-                              </div>
-
-                              <button
-                                type="button"
-                                className="account-secondary-button"
-                                onClick={() => {
-                                  window.location.href =
-                                    "/admin/menus";
-                                }}
-                              >
-                                <Settings2
-                                  size={13}
-                                  strokeWidth={1.5}
-                                />
-
-                                Manage Request
-                              </button>
-
-                            </article>
-                          );
-                        })}
-
-                    </div>
-                  )}
-
-                </section>
-              )}
-
               {websitesLoading ? (
                 <div className="account-loading">
                   <RefreshCw
@@ -3374,340 +2496,6 @@ function MyAccount({
                       </article>
                     )
                   )}
-                </div>
-              )}
-            </div>
-          ) : activeTab ===
-            "restaurantService" ? (
-            <div className="account-restaurant-service">
-              {restaurantServiceLoading ? (
-                <div className="account-loading">
-                  <RefreshCw
-                    size={22}
-                    strokeWidth={1.4}
-                  />
-
-                  Loading restaurant service...
-                </div>
-              ) : businessAccount ? (
-                <>
-                  <section className="account-service-hero">
-                    <div className="account-service-hero-copy">
-                      <div className="account-service-icon">
-                        <Store
-                          size={25}
-                          strokeWidth={1.25}
-                        />
-                      </div>
-
-                      <div>
-                        <span>
-                          BEYOND FOR RESTAURANTS
-                        </span>
-
-                        <h3>
-                          {businessAccount.restaurant_name}
-                        </h3>
-
-                        <p>
-                          Manage your restaurant plan,
-                          subscription and website setup
-                          from your BEYOND account.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="account-service-plan">
-                      {(restaurantSubscription?.plan_id ||
-                        websiteRequest?.plan_id ||
-                        businessAccount.requested_plan) ===
-                      "premium"
-                        ? "PREMIUM"
-                        : "BASIC"}
-                    </div>
-                  </section>
-
-                  <div className="account-service-grid">
-                    <article>
-                      <span>PLAN</span>
-
-                      <strong>
-                        {(restaurantSubscription?.plan_id ||
-                          websiteRequest?.plan_id ||
-                          businessAccount.requested_plan) ===
-                        "premium"
-                          ? "Premium"
-                          : "Basic"}
-                      </strong>
-
-                      <p>
-                        {(restaurantSubscription?.plan_id ||
-                          websiteRequest?.plan_id ||
-                          businessAccount.requested_plan) ===
-                        "premium"
-                          ? "Digital restaurant menu website plus branded NFC and QR stand."
-                          : "Digital restaurant menu website and management platform."}
-                      </p>
-                    </article>
-
-                    <article>
-                      <span>SUBSCRIPTION</span>
-
-                      <strong>
-                        {formatServiceStatus(
-                          restaurantSubscription?.status,
-                          "Not activated"
-                        )}
-                      </strong>
-
-                      <p>
-                        {restaurantSubscription
-                          ? restaurantSubscription.current_period_end
-                            ? `Current period ends ${formatDate(
-                                restaurantSubscription.current_period_end
-                              )}.`
-                            : "Your recurring subscription record is connected."
-                          : "Recurring payment has not been activated yet."}
-                      </p>
-                    </article>
-
-                    <article>
-                      <span>WEBSITE SETUP</span>
-
-                      <strong>
-                        {menuSites.length
-                          ? "Website assigned"
-                          : formatServiceStatus(
-                              websiteRequest?.status,
-                              "Not started"
-                            )}
-                      </strong>
-
-                      <p>
-                        {menuSites.length
-                          ? "Your restaurant website is available under My Website."
-                          : websiteRequest
-                            ? "BEYOND is tracking the setup of your restaurant website."
-                            : "Website setup will begin after the service is activated."}
-                      </p>
-                    </article>
-
-                    <article>
-                      <span>RESTAURANT</span>
-
-                      <strong>
-                        {businessAccount.restaurant_name}
-                      </strong>
-
-                      <p>
-                        {businessAccount.contact_name}
-                        {businessAccount.phone
-                          ? ` · ${businessAccount.phone}`
-                          : ""}
-                      </p>
-                    </article>
-                  </div>
-
-                  <section className="account-service-action">
-                    {!restaurantSubscription ||
-                    restaurantSubscription.status ===
-                      "cancelled" ? (
-                      <>
-                        <div>
-                          <span>
-                            NEXT STEP
-                          </span>
-
-                          <strong>
-                            Activate your{" "}
-                            {businessAccount.requested_plan ===
-                            "premium"
-                              ? "Premium"
-                              : "Basic"}{" "}
-                            subscription
-                          </strong>
-
-                          <p>
-                            {businessAccount.requested_plan ===
-                            "premium"
-                              ? "₪129"
-                              : "₪79"}{" "}
-                            per month. This testing step
-                            prepares the subscription only.
-                            No payment will be taken yet.
-                          </p>
-                        </div>
-
-                        <button
-                          type="button"
-                          className="account-primary-button account-service-action-button"
-                          disabled={
-                            restaurantServiceActionLoading
-                          }
-                          onClick={
-                            handleStartRestaurantSubscription
-                          }
-                        >
-                          {restaurantServiceActionLoading
-                            ? "Preparing..."
-                            : "Activate Subscription"}
-                        </button>
-                      </>
-                    ) : restaurantSubscription.status ===
-                      "pending_payment" ? (
-                      <>
-                        <div>
-                          <span>
-                            PAYMENT
-                          </span>
-
-                          <strong>
-                            Subscription prepared
-                          </strong>
-
-                          <p>
-                            Your subscription is waiting
-                            for secure payment activation.
-                            We will connect PayPlus here
-                            later.
-                          </p>
-                        </div>
-
-                        <button
-                          type="button"
-                          className="account-secondary-button account-service-action-button"
-                          disabled
-                        >
-                          Payment Pending
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <div>
-                          <span>
-                            SUBSCRIPTION
-                          </span>
-
-                          <strong>
-                            {formatServiceStatus(
-                              restaurantSubscription.status
-                            )}
-                          </strong>
-
-                          <p>
-                            Your restaurant subscription
-                            is connected to this account.
-                          </p>
-                        </div>
-                      </>
-                    )}
-                  </section>
-
-                  {restaurantServiceMessage && (
-                    <div className="account-service-message">
-                      {restaurantServiceMessage}
-                    </div>
-                  )}
-
-                  {restaurantSubscription?.status !==
-                    "active" && (
-                    <section className="account-service-promo">
-
-                      <div className="account-service-promo-copy">
-                        <span>
-                          HAVE A PROMO CODE?
-                        </span>
-
-                        <strong>
-                          Apply a restaurant promo
-                        </strong>
-
-                        <p>
-                          Enter your BEYOND promo code
-                          to activate an eligible
-                          restaurant subscription.
-                        </p>
-                      </div>
-
-                      <div className="account-service-promo-form">
-
-                        <input
-                          type="text"
-                          value={restaurantPromoCode}
-                          onChange={event =>
-                            setRestaurantPromoCode(
-                              event.target.value
-                                .toUpperCase()
-                            )
-                          }
-                          onKeyDown={event => {
-                            if (
-                              event.key === "Enter"
-                            ) {
-                              event.preventDefault();
-                              handleRedeemRestaurantPromo();
-                            }
-                          }}
-                          placeholder="PROMO CODE"
-                          autoComplete="off"
-                        />
-
-                        <button
-                          type="button"
-                          className="account-secondary-button"
-                          disabled={
-                            restaurantPromoLoading ||
-                            !restaurantPromoCode.trim()
-                          }
-                          onClick={
-                            handleRedeemRestaurantPromo
-                          }
-                        >
-                          {restaurantPromoLoading
-                            ? "Applying..."
-                            : "Apply Promo"}
-                        </button>
-
-                      </div>
-
-                    </section>
-                  )}
-
-                  {restaurantPromoMessage && (
-                    <div className="account-service-promo-message">
-                      {restaurantPromoMessage}
-                    </div>
-                  )}
-
-                  <div className="account-service-security">
-                    <ShieldCheck
-                      size={18}
-                      strokeWidth={1.4}
-                    />
-
-                    <div>
-                      <strong>
-                        Secure subscription status
-                      </strong>
-
-                      <span>
-                        Payment activation will be based
-                        on the verified payment status
-                        received by BEYOND.
-                      </span>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <div className="account-empty">
-                  <Store
-                    size={36}
-                    strokeWidth={1.1}
-                  />
-
-                  <strong>
-                    No restaurant service found.
-                  </strong>
                 </div>
               )}
             </div>

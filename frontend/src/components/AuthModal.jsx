@@ -4,10 +4,13 @@ import {
 } from "react";
 
 import {
+  Building2,
+  Check,
   Eye,
   EyeOff,
   LockKeyhole,
   Mail,
+  Phone,
   User,
   X,
 } from "lucide-react";
@@ -30,6 +33,21 @@ function AuthModal({
     setFullName,
   ] = useState("");
 
+  const [
+    restaurantName,
+    setRestaurantName,
+  ] = useState("");
+
+  const [
+    phone,
+    setPhone,
+  ] = useState("");
+
+  const [
+    businessPlan,
+    setBusinessPlan,
+  ] = useState("basic");
+
   const [email, setEmail] =
     useState("");
 
@@ -48,6 +66,11 @@ function AuthModal({
     setLoading,
   ] = useState(false);
 
+  const [
+    businessCreated,
+    setBusinessCreated,
+  ] = useState(false);
+
   const [error, setError] =
     useState("");
 
@@ -56,6 +79,13 @@ function AuthModal({
     setMessage,
   ] = useState("");
 
+  const isBusiness =
+    mode === "business";
+
+  const isSignup =
+    mode === "signup" ||
+    mode === "business";
+
   useEffect(() => {
     if (!open) {
       return;
@@ -63,6 +93,7 @@ function AuthModal({
 
     setError("");
     setMessage("");
+    setBusinessCreated(false);
   }, [open, mode]);
 
   useEffect(() => {
@@ -118,9 +149,7 @@ function AuthModal({
     setLoading(true);
 
     try {
-      if (
-        mode === "signup"
-      ) {
+      if (isSignup) {
         if (
           fullName.trim()
             .length < 2
@@ -129,6 +158,52 @@ function AuthModal({
             "Please enter your name."
           );
         }
+
+        if (
+          isBusiness &&
+          restaurantName.trim()
+            .length < 2
+        ) {
+          throw new Error(
+            "Please enter your restaurant name."
+          );
+        }
+
+        if (
+          isBusiness &&
+          phone.trim()
+            .length < 6
+        ) {
+          throw new Error(
+            "Please enter your phone number."
+          );
+        }
+
+        const userMetadata =
+          isBusiness
+            ? {
+                full_name:
+                  fullName.trim(),
+
+                account_type:
+                  "business",
+
+                restaurant_name:
+                  restaurantName.trim(),
+
+                phone:
+                  phone.trim(),
+
+                requested_plan:
+                  businessPlan,
+              }
+            : {
+                full_name:
+                  fullName.trim(),
+
+                account_type:
+                  "customer",
+              };
 
         const {
           data,
@@ -144,18 +219,36 @@ function AuthModal({
               password,
 
               options: {
-                data: {
-                  full_name:
-                    fullName.trim(),
-                },
+                data:
+                  userMetadata,
 
                 emailRedirectTo:
-  "https://beyond3dshop.com",
+                  "https://beyond3dshop.com",
               },
             });
 
         if (signUpError) {
           throw signUpError;
+        }
+
+        if (isBusiness) {
+          if (data.session) {
+            setBusinessCreated(
+              true
+            );
+
+            setMessage(
+              "Your BEYOND business account has been created."
+            );
+          } else {
+            setMessage(
+              "Business account created. Check your email to confirm your account, then log in."
+            );
+          }
+
+          setPassword("");
+
+          return;
         }
 
         if (data.session) {
@@ -213,13 +306,20 @@ function AuthModal({
       }}
     >
       <section
-        className="auth-modal-card"
+        className={`auth-modal-card ${
+          isBusiness
+            ? "auth-business-card"
+            : ""
+        }`}
         role="dialog"
         aria-modal="true"
         aria-label={
           mode === "login"
             ? "Log in"
-            : "Create account"
+            : mode ===
+                "business"
+              ? "Create business account"
+              : "Create account"
         }
       >
         <button
@@ -235,19 +335,25 @@ function AuthModal({
         </button>
 
         <div className="auth-modal-kicker">
-          BEYOND ACCOUNT
+          {isBusiness
+            ? "BEYOND FOR RESTAURANTS"
+            : "BEYOND ACCOUNT"}
         </div>
 
         <h2>
           {mode === "login"
             ? "Welcome back."
-            : "Create your account."}
+            : isBusiness
+              ? "Grow your restaurant."
+              : "Create your account."}
         </h2>
 
         <p className="auth-modal-intro">
           {mode === "login"
             ? "Log in to your BEYOND account."
-            : "Create an account to keep your future projects and models connected to you."}
+            : isBusiness
+              ? "Create your restaurant account and choose the digital menu service that fits your business."
+              : "Create an account to keep your future projects and models connected to you."}
         </p>
 
         <div className="auth-mode-switch">
@@ -278,23 +384,403 @@ function AuthModal({
           >
             Sign Up
           </button>
+
+          <button
+            type="button"
+            className={
+              mode === "business"
+                ? "active"
+                : ""
+            }
+            onClick={() =>
+              setMode(
+                "business"
+              )
+            }
+          >
+            Business
+          </button>
         </div>
 
-        <form
-          className="auth-form"
-          onSubmit={
-            handleSubmit
-          }
-        >
-          {mode ===
-            "signup" && (
+        {isBusiness &&
+        businessCreated ? (
+          <div className="auth-business-success">
+            <div className="auth-business-success-icon">
+              <Check
+                size={26}
+                strokeWidth={1.5}
+              />
+            </div>
+
+            <span>
+              BUSINESS ACCOUNT
+            </span>
+
+            <h3>
+              Welcome to BEYOND.
+            </h3>
+
+            <p>
+              Your restaurant account
+              has been created with the{" "}
+              <strong>
+                {businessPlan ===
+                "premium"
+                  ? "Premium"
+                  : "Basic"}
+              </strong>{" "}
+              plan selected.
+            </p>
+
+            <div className="auth-business-next">
+              <span>
+                NEXT STEP
+              </span>
+
+              <strong>
+                Connect recurring
+                payment
+              </strong>
+
+              <p>
+                We will connect your
+                selected subscription
+                to the secure payment
+                system in the next
+                phase.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              className="auth-submit"
+              onClick={onClose}
+            >
+              Continue to BEYOND
+            </button>
+          </div>
+        ) : (
+          <form
+            className="auth-form"
+            onSubmit={
+              handleSubmit
+            }
+          >
+            {isBusiness && (
+              <div className="auth-plan-section">
+                <div className="auth-plan-heading">
+                  <span>
+                    CHOOSE YOUR PLAN
+                  </span>
+
+                  <strong>
+                    One restaurant.
+                    Two simple options.
+                  </strong>
+                </div>
+
+                <div className="auth-plan-grid">
+                  <button
+                    type="button"
+                    className={`auth-plan-card ${
+                      businessPlan ===
+                      "basic"
+                        ? "selected"
+                        : ""
+                    }`}
+                    onClick={() =>
+                      setBusinessPlan(
+                        "basic"
+                      )
+                    }
+                  >
+                    <div className="auth-plan-top">
+                      <div>
+                        <span>
+                          BASIC
+                        </span>
+
+                        <h3>
+                          Digital Menu
+                        </h3>
+                      </div>
+
+                      <div className="auth-plan-radio">
+                        {businessPlan ===
+                          "basic" && (
+                          <Check
+                            size={13}
+                            strokeWidth={
+                              2
+                            }
+                          />
+                        )}
+                      </div>
+                    </div>
+
+                    <p>
+                      Everything you
+                      need to put your
+                      restaurant menu
+                      online.
+                    </p>
+
+                    <div className="auth-plan-features">
+                      <span>
+                        <Check
+                          size={12}
+                        />
+                        Restaurant
+                        website
+                      </span>
+
+                      <span>
+                        <Check
+                          size={12}
+                        />
+                        Digital menu
+                      </span>
+
+                      <span>
+                        <Check
+                          size={12}
+                        />
+                        Multi language
+                      </span>
+
+                      <span>
+                        <Check
+                          size={12}
+                        />
+                        Menu editor
+                      </span>
+
+                      <span>
+                        <Check
+                          size={12}
+                        />
+                        Hosting &
+                        maintenance
+                      </span>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`auth-plan-card premium ${
+                      businessPlan ===
+                      "premium"
+                        ? "selected"
+                        : ""
+                    }`}
+                    onClick={() =>
+                      setBusinessPlan(
+                        "premium"
+                      )
+                    }
+                  >
+                    <div className="auth-plan-badge">
+                      RECOMMENDED
+                    </div>
+
+                    <div className="auth-plan-top">
+                      <div>
+                        <span>
+                          PREMIUM
+                        </span>
+
+                        <h3>
+                          Tap-to-Menu
+                        </h3>
+                      </div>
+
+                      <div className="auth-plan-radio">
+                        {businessPlan ===
+                          "premium" && (
+                          <Check
+                            size={13}
+                            strokeWidth={
+                              2
+                            }
+                          />
+                        )}
+                      </div>
+                    </div>
+
+                    <p>
+                      Your digital menu
+                      plus the physical
+                      BEYOND experience.
+                    </p>
+
+                    <div className="auth-plan-features">
+                      <span>
+                        <Check
+                          size={12}
+                        />
+                        Everything in
+                        Basic
+                      </span>
+
+                      <span>
+                        <Check
+                          size={12}
+                        />
+                        Branded NFC stand
+                      </span>
+
+                      <span>
+                        <Check
+                          size={12}
+                        />
+                        QR menu stand
+                      </span>
+
+                      <span>
+                        <Check
+                          size={12}
+                        />
+                        Tap-to-menu NFC
+                      </span>
+
+                      <span>
+                        <Check
+                          size={12}
+                        />
+                        Priority support
+                      </span>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {isSignup && (
+              <div
+                className={
+                  isBusiness
+                    ? "auth-business-fields"
+                    : ""
+                }
+              >
+                <label className="auth-field">
+                  <span>
+                    {isBusiness
+                      ? "CONTACT PERSON"
+                      : "NAME"}
+                  </span>
+
+                  <div className="auth-input-shell">
+                    <User
+                      size={17}
+                      strokeWidth={
+                        1.5
+                      }
+                    />
+
+                    <input
+                      type="text"
+                      value={
+                        fullName
+                      }
+                      onChange={(
+                        event
+                      ) =>
+                        setFullName(
+                          event
+                            .target
+                            .value
+                        )
+                      }
+                      placeholder={
+                        isBusiness
+                          ? "Your name"
+                          : "Your name"
+                      }
+                      autoComplete="name"
+                      required
+                    />
+                  </div>
+                </label>
+
+                {isBusiness && (
+                  <>
+                    <label className="auth-field">
+                      <span>
+                        RESTAURANT NAME
+                      </span>
+
+                      <div className="auth-input-shell">
+                        <Building2
+                          size={17}
+                          strokeWidth={
+                            1.5
+                          }
+                        />
+
+                        <input
+                          type="text"
+                          value={
+                            restaurantName
+                          }
+                          onChange={(
+                            event
+                          ) =>
+                            setRestaurantName(
+                              event
+                                .target
+                                .value
+                            )
+                          }
+                          placeholder="Restaurant name"
+                          required
+                        />
+                      </div>
+                    </label>
+
+                    <label className="auth-field">
+                      <span>
+                        PHONE
+                      </span>
+
+                      <div className="auth-input-shell">
+                        <Phone
+                          size={17}
+                          strokeWidth={
+                            1.5
+                          }
+                        />
+
+                        <input
+                          type="tel"
+                          value={phone}
+                          onChange={(
+                            event
+                          ) =>
+                            setPhone(
+                              event
+                                .target
+                                .value
+                            )
+                          }
+                          placeholder="050-0000000"
+                          autoComplete="tel"
+                          required
+                        />
+                      </div>
+                    </label>
+                  </>
+                )}
+              </div>
+            )}
+
             <label className="auth-field">
               <span>
-                NAME
+                EMAIL
               </span>
 
               <div className="auth-input-shell">
-                <User
+                <Mail
                   size={17}
                   strokeWidth={
                     1.5
@@ -302,166 +788,142 @@ function AuthModal({
                 />
 
                 <input
-                  type="text"
-                  value={
-                    fullName
-                  }
+                  type="email"
+                  value={email}
                   onChange={(
                     event
                   ) =>
-                    setFullName(
+                    setEmail(
                       event
                         .target
                         .value
                     )
                   }
-                  placeholder="Your name"
-                  autoComplete="name"
+                  placeholder={
+                    isBusiness
+                      ? "restaurant@example.com"
+                      : "you@example.com"
+                  }
+                  autoComplete="email"
                   required
                 />
               </div>
             </label>
-          )}
 
-          <label className="auth-field">
-            <span>
-              EMAIL
-            </span>
+            <label className="auth-field">
+              <span>
+                PASSWORD
+              </span>
 
-            <div className="auth-input-shell">
-              <Mail
-                size={17}
-                strokeWidth={
-                  1.5
-                }
-              />
+              <div className="auth-input-shell">
+                <LockKeyhole
+                  size={17}
+                  strokeWidth={
+                    1.5
+                  }
+                />
 
-              <input
-                type="email"
-                value={email}
-                onChange={(
-                  event
-                ) =>
-                  setEmail(
+                <input
+                  type={
+                    showPassword
+                      ? "text"
+                      : "password"
+                  }
+                  value={
+                    password
+                  }
+                  onChange={(
                     event
-                      .target
-                      .value
-                  )
-                }
-                placeholder="you@example.com"
-                autoComplete="email"
-                required
-              />
-            </div>
-          </label>
+                  ) =>
+                    setPassword(
+                      event
+                        .target
+                        .value
+                    )
+                  }
+                  placeholder={
+                    isSignup
+                      ? "At least 6 characters"
+                      : "Your password"
+                  }
+                  autoComplete={
+                    isSignup
+                      ? "new-password"
+                      : "current-password"
+                  }
+                  minLength={6}
+                  required
+                />
 
-          <label className="auth-field">
-            <span>
-              PASSWORD
-            </span>
+                <button
+                  type="button"
+                  className="auth-password-toggle"
+                  aria-label={
+                    showPassword
+                      ? "Hide password"
+                      : "Show password"
+                  }
+                  onClick={() =>
+                    setShowPassword(
+                      !showPassword
+                    )
+                  }
+                >
+                  {showPassword ? (
+                    <EyeOff
+                      size={16}
+                      strokeWidth={
+                        1.5
+                      }
+                    />
+                  ) : (
+                    <Eye
+                      size={16}
+                      strokeWidth={
+                        1.5
+                      }
+                    />
+                  )}
+                </button>
+              </div>
+            </label>
 
-            <div className="auth-input-shell">
-              <LockKeyhole
-                size={17}
-                strokeWidth={
-                  1.5
-                }
-              />
+            {error && (
+              <div className="auth-message error">
+                {error}
+              </div>
+            )}
 
-              <input
-                type={
-                  showPassword
-                    ? "text"
-                    : "password"
-                }
-                value={
-                  password
-                }
-                onChange={(
-                  event
-                ) =>
-                  setPassword(
-                    event
-                      .target
-                      .value
-                  )
-                }
-                placeholder={
-                  mode ===
-                  "signup"
-                    ? "At least 6 characters"
-                    : "Your password"
-                }
-                autoComplete={
-                  mode ===
-                  "signup"
-                    ? "new-password"
-                    : "current-password"
-                }
-                minLength={6}
-                required
-              />
+            {message && (
+              <div className="auth-message success">
+                {message}
+              </div>
+            )}
 
-              <button
-                type="button"
-                className="auth-password-toggle"
-                aria-label={
-                  showPassword
-                    ? "Hide password"
-                    : "Show password"
-                }
-                onClick={() =>
-                  setShowPassword(
-                    !showPassword
-                  )
-                }
-              >
-                {showPassword ? (
-                  <EyeOff
-                    size={16}
-                    strokeWidth={
-                      1.5
-                    }
-                  />
-                ) : (
-                  <Eye
-                    size={16}
-                    strokeWidth={
-                      1.5
-                    }
-                  />
-                )}
-              </button>
-            </div>
-          </label>
-
-          {error && (
-            <div className="auth-message error">
-              {error}
-            </div>
-          )}
-
-          {message && (
-            <div className="auth-message success">
-              {message}
-            </div>
-          )}
-
-          <button
-            className="auth-submit"
-            type="submit"
-            disabled={
-              loading
-            }
-          >
-            {loading
-              ? "Please wait..."
-              : mode ===
-                  "login"
-                ? "Log In"
-                : "Create Account"}
-          </button>
-        </form>
+            <button
+              className="auth-submit"
+              type="submit"
+              disabled={
+                loading
+              }
+            >
+              {loading
+                ? "Please wait..."
+                : mode ===
+                    "login"
+                  ? "Log In"
+                  : mode ===
+                      "business"
+                    ? `Create ${
+                        businessPlan ===
+                        "premium"
+                          ? "Premium"
+                          : "Basic"
+                      } Business Account`
+                    : "Create Account"}
+            </button>
+          </form>
+        )}
 
         <div className="auth-security-note">
           Secure authentication

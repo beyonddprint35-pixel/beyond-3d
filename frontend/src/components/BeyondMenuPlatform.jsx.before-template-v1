@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import RestaurantAccessibility from "./RestaurantAccessibility";
 import { createClient } from "@supabase/supabase-js";
 
 const url = import.meta.env.VITE_SUPABASE_URL || import.meta.env.VITE_SUPABASE_PROJECT_URL || "";
@@ -593,14 +592,8 @@ export function BeyondPublicMenu({ slug }) {
           "#556b2f"
       }}
     >
-      <RestaurantAccessibility
-        restaurantName={site.name || "Restaurant"}
-      />
-
       <div
-        id="restaurant-main-content"
         className="ep-app"
-        tabIndex={-1}
         dir={
           lang === "he"
             ? "rtl"
@@ -676,14 +669,7 @@ export function BeyondPublicMenu({ slug }) {
               : "Drinks & Food"}
           </h1>
 
-          {site.logo_url && (
-            <img
-              className="ep-hero-background-logo"
-              src={site.logo_url}
-              alt=""
-              aria-hidden="true"
-            />
-          )}
+          <div className="ep-hero-orb" />
         </section>
 
         <nav
@@ -768,29 +754,13 @@ export function BeyondPublicMenu({ slug }) {
         </section>
 
         <footer className="ep-footer">
-
-          <div className="ep-footer-responsible">
+          <div>
             Enjoy responsibly
           </div>
-
-          <button
-            type="button"
-            className="ep-accessibility-statement-link"
-            onClick={() =>
-              window.dispatchEvent(
-                new CustomEvent(
-                  "beyond-open-accessibility-statement"
-                )
-              )
-            }
-          >
-            הצהרת נגישות / Accessibility Statement
-          </button>
 
           <span>
             Powered by <strong>Beyond</strong>
           </span>
-
         </footer>
       </div>
     </div>
@@ -1815,55 +1785,6 @@ export function BeyondMenuStudio() {
     return money(glass || bottle) || "—";
   };
 
-  // BEYOND_PRICE_CURRENCY_HELPERS_V1
-
-  const getPriceCurrency = value => {
-    const text = String(
-      value || ""
-    ).trim();
-
-    return text.includes("$")
-      ? "$"
-      : "₪";
-  };
-
-  const getPriceAmount = value =>
-    String(value || "")
-      .replace(/[₪$]/g, "")
-      .replace(/\s*\/\s*/g, " / ")
-      .trim();
-
-  const buildPriceValue = (
-    amount,
-    currency = "₪"
-  ) => {
-    const clean = String(
-      amount || ""
-    ).trim();
-
-    if (!clean) {
-      return "";
-    }
-
-    /*
-      Supports both:
-      57
-      and dual prices such as:
-      18 / 35
-
-      Result:
-      ₪57
-      ₪18 / ₪35
-    */
-    return clean
-      .split("/")
-      .map(part => part.trim())
-      .filter(Boolean)
-      .map(part => `${currency}${part}`)
-      .join(" / ");
-  };
-
-
   const renderItemFields = (
     draft,
     setDraft
@@ -2021,194 +1942,55 @@ export function BeyondMenuStudio() {
             <label>
               Glass price
 
-              <div className="bm-price-field">
-
-                <select
-                  className="bm-price-currency"
-                  aria-label="Glass price currency"
-                  value={
-                    getPriceCurrency(
-                      draft.wine_glass
-                    )
-                  }
-                  onChange={e =>
-                    setDraft(current => ({
-                      ...current,
-                      wine_glass:
-                        buildPriceValue(
-                          getPriceAmount(
-                            current.wine_glass
-                          ),
-                          e.target.value
-                        )
-                    }))
-                  }
-                >
-                  <option value="₪">
-                    ₪
-                  </option>
-
-                  <option value="$">
-                    $
-                  </option>
-                </select>
-
-                <input
-                  inputMode="decimal"
-                  value={
-                    getPriceAmount(
-                      draft.wine_glass
-                    )
-                  }
-                  onChange={e =>
-                    setDraft(current => ({
-                      ...current,
-                      wine_glass:
-                        buildPriceValue(
-                          e.target.value,
-                          getPriceCurrency(
-                            current.wine_glass
-                          )
-                        )
-                    }))
-                  }
-                  placeholder="35"
-                />
-
-              </div>
+              <input
+                inputMode="decimal"
+                value={draft.wine_glass}
+                onChange={e =>
+                  setDraft(current => ({
+                    ...current,
+                    wine_glass: e.target.value
+                  }))
+                }
+                placeholder="35"
+              />
             </label>
 
             <label>
               Bottle price
 
-              <div className="bm-price-field">
-
-                <select
-                  className="bm-price-currency"
-                  aria-label="Bottle price currency"
-                  value={
-                    getPriceCurrency(
-                      draft.wine_bottle
-                    )
-                  }
-                  onChange={e =>
-                    setDraft(current => ({
-                      ...current,
-                      wine_bottle:
-                        buildPriceValue(
-                          getPriceAmount(
-                            current.wine_bottle
-                          ),
-                          e.target.value
-                        )
-                    }))
-                  }
-                >
-                  <option value="₪">
-                    ₪
-                  </option>
-
-                  <option value="$">
-                    $
-                  </option>
-                </select>
-
-                <input
-                  inputMode="decimal"
-                  value={
-                    getPriceAmount(
-                      draft.wine_bottle
-                    )
-                  }
-                  onChange={e =>
-                    setDraft(current => ({
-                      ...current,
-                      wine_bottle:
-                        buildPriceValue(
-                          e.target.value,
-                          getPriceCurrency(
-                            current.wine_bottle
-                          )
-                        )
-                    }))
-                  }
-                  placeholder="150"
-                />
-
-              </div>
+              <input
+                inputMode="decimal"
+                value={draft.wine_bottle}
+                onChange={e =>
+                  setDraft(current => ({
+                    ...current,
+                    wine_bottle: e.target.value
+                  }))
+                }
+                placeholder="150"
+              />
             </label>
           </>
         ) : (
           <label>
             Price
 
-            <div className="bm-price-field">
-
-              <select
-                className="bm-price-currency"
-                aria-label="Price currency"
-                value={
-                  getPriceCurrency(
-                    draft.price
-                  )
-                }
-                onChange={e =>
-                  setDraft(current => ({
-                    ...current,
-                    price:
-                      buildPriceValue(
-                        getPriceAmount(
-                          current.price
-                        ),
-                        e.target.value
-                      )
-                  }))
-                }
-              >
-                <option value="₪">
-                  ₪
-                </option>
-
-                <option value="$">
-                  $
-                </option>
-              </select>
-
-              <input
-                inputMode={
-                  isDualPriceSection(
-                    draft.section_id
-                  )
-                    ? "text"
-                    : "decimal"
-                }
-                value={
-                  getPriceAmount(
-                    draft.price
-                  )
-                }
-                onChange={e =>
-                  setDraft(current => ({
-                    ...current,
-                    price:
-                      buildPriceValue(
-                        e.target.value,
-                        getPriceCurrency(
-                          current.price
-                        )
-                      )
-                  }))
-                }
-                placeholder={
-                  isDualPriceSection(
-                    draft.section_id
-                  )
-                    ? "18 / 35"
-                    : "32"
-                }
-              />
-
-            </div>
+            <input
+              value={draft.price}
+              onChange={e =>
+                setDraft(current => ({
+                  ...current,
+                  price: e.target.value
+                }))
+              }
+              placeholder={
+                isDualPriceSection(
+                  draft.section_id
+                )
+                  ? "₪18 / ₪35"
+                  : "₪32"
+              }
+            />
           </label>
         )}
 

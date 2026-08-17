@@ -2022,21 +2022,17 @@ function MyAccount({
               </button>
             )}
 
-            {(isMenuAdmin ||
-              (businessAccount &&
-                menuSites.length > 0)) && (
-
+            {(businessAccount ||
+              isMenuAdmin) && (
               <button
                 type="button"
                 onClick={() => {
-                    window.open(
-                      isMenuAdmin
-                        ? "/menu-studio"
-                        : `/menu-studio?site=${menuSites[0].id}`,
-                      "beyond-menu-studio",
-                      "width=1440,height=950,noopener,noreferrer"
-                    );
-                  }}
+                  window.dispatchEvent(
+                    new CustomEvent(
+                      "beyond-open-menu-studio"
+                    )
+                  );
+                }}
               >
                 <Settings2
                   size={16}
