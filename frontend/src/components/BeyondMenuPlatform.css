@@ -5482,15 +5482,13 @@ input {
      Items disappears temporarily.
      ======================================================== */
 
-  .bm-owner-workspace:
-  has(.bm-owner-category-form) {
+  .bm-owner-workspace:has(.bm-owner-category-form) {
     grid-template-columns:
       minmax(0, 1fr) !important;
   }
 
 
-  .bm-owner-workspace:
-  has(.bm-owner-category-form)
+  .bm-owner-workspace:has(.bm-owner-category-form)
   .bm-owner-categories {
     grid-column:
       1 / -1 !important;
@@ -5500,23 +5498,20 @@ input {
   }
 
 
-  .bm-owner-workspace:
-  has(.bm-owner-category-form)
+  .bm-owner-workspace:has(.bm-owner-category-form)
   .bm-owner-items {
     display:
       none !important;
   }
 
 
-  .bm-owner-workspace:
-  has(.bm-owner-category-edit) {
+  .bm-owner-workspace:has(.bm-owner-category-edit) {
     grid-template-columns:
       minmax(0, 1fr) !important;
   }
 
 
-  .bm-owner-workspace:
-  has(.bm-owner-category-edit)
+  .bm-owner-workspace:has(.bm-owner-category-edit)
   .bm-owner-categories {
     grid-column:
       1 / -1 !important;
@@ -5526,8 +5521,7 @@ input {
   }
 
 
-  .bm-owner-workspace:
-  has(.bm-owner-category-edit)
+  .bm-owner-workspace:has(.bm-owner-category-edit)
   .bm-owner-items {
     display:
       none !important;
@@ -5603,23 +5597,20 @@ input {
      Categories disappears temporarily.
      ======================================================== */
 
-  .bm-owner-workspace:
-  has(.bm-owner-item-form) {
+  .bm-owner-workspace:has(.bm-owner-item-form) {
     grid-template-columns:
       minmax(0, 1fr) !important;
   }
 
 
-  .bm-owner-workspace:
-  has(.bm-owner-item-form)
+  .bm-owner-workspace:has(.bm-owner-item-form)
   .bm-owner-categories {
     display:
       none !important;
   }
 
 
-  .bm-owner-workspace:
-  has(.bm-owner-item-form)
+  .bm-owner-workspace:has(.bm-owner-item-form)
   .bm-owner-items {
     grid-column:
       1 / -1 !important;
@@ -5629,23 +5620,20 @@ input {
   }
 
 
-  .bm-owner-workspace:
-  has(.bm-owner-item-edit) {
+  .bm-owner-workspace:has(.bm-owner-item-edit) {
     grid-template-columns:
       minmax(0, 1fr) !important;
   }
 
 
-  .bm-owner-workspace:
-  has(.bm-owner-item-edit)
+  .bm-owner-workspace:has(.bm-owner-item-edit)
   .bm-owner-categories {
     display:
       none !important;
   }
 
 
-  .bm-owner-workspace:
-  has(.bm-owner-item-edit)
+  .bm-owner-workspace:has(.bm-owner-item-edit)
   .bm-owner-items {
     grid-column:
       1 / -1 !important;
