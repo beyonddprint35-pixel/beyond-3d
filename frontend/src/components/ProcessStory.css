@@ -490,3 +490,169 @@
   line-height:
     var(--line-body);
 }
+
+
+/* =========================================================
+   PROCESS STORY — HEBREW RTL
+========================================================= */
+
+
+/* ---------------------------------------------------------
+   HEADING
+
+   RIGHT = title
+   LEFT  = description
+--------------------------------------------------------- */
+
+html[data-beyond-language="he"]
+#root
+.process-story-heading > div {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+
+html[data-beyond-language="he"]
+#root
+.process-story-heading h2,
+html[data-beyond-language="he"]
+#root
+.process-story-kicker {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+
+html[data-beyond-language="he"]
+#root
+.process-story-heading > p {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+
+/* Desktop — physically swap the two columns */
+
+@media (min-width: 981px) {
+
+  html[data-beyond-language="he"]
+  #root
+  .process-story-heading {
+    grid-template-columns:
+      minmax(300px, 0.8fr)
+      minmax(0, 1.2fr) !important;
+
+    direction: ltr !important;
+  }
+
+
+  /* Title → RIGHT */
+  html[data-beyond-language="he"]
+  #root
+  .process-story-heading > div {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+  }
+
+
+  /* Description → LEFT */
+  html[data-beyond-language="he"]
+  #root
+  .process-story-heading > p {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+
+    justify-self: start !important;
+
+    margin:
+      0 0 4px 0 !important;
+  }
+
+}
+
+
+/* ---------------------------------------------------------
+   CARDS
+
+   RIGHT → LEFT:
+   01 העלאה
+   02 בדיקה
+   03 אישור
+   04 הדפסה
+--------------------------------------------------------- */
+
+html[data-beyond-language="he"]
+#root
+.process-compact-flow {
+  direction: rtl !important;
+}
+
+
+html[data-beyond-language="he"]
+#root
+.process-compact-card {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+
+html[data-beyond-language="he"]
+#root
+.process-card-top {
+  direction: rtl !important;
+}
+
+
+html[data-beyond-language="he"]
+#root
+.process-card-icon {
+  margin:
+    28px 0 26px auto !important;
+}
+
+
+html[data-beyond-language="he"]
+#root
+.process-compact-card h3,
+html[data-beyond-language="he"]
+#root
+.process-compact-card p {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+
+/* Arrow moves to LEFT side of each card */
+
+html[data-beyond-language="he"]
+#root
+.process-card-arrow {
+  right: auto !important;
+  left: -16px !important;
+
+  transform:
+    rotate(180deg) !important;
+}
+
+
+/* Mobile */
+
+@media (max-width: 700px) {
+
+  html[data-beyond-language="he"]
+  #root
+  .process-card-icon {
+    margin:
+      18px 0 0 auto !important;
+  }
+
+}
+
+
+/* Hide "01 / איך זה עובד" in Hebrew only */
+html[data-beyond-language="he"]
+#root
+.process-story-kicker {
+  display: none !important;
+}
+

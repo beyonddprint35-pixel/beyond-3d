@@ -12001,3 +12001,602 @@ strong {
   border-radius: 999px;
   background: rgba(83, 145, 190, 0.36);
 }
+
+
+/* =========================================================
+   BEYOND CREATOR — FOUR MODES SINGLE ROW V2
+   STUDIO · SKETCH · ARCHITECT · AI
+========================================================= */
+
+.creator-mode-switch.creator-mode-switch-v11 {
+  width: min(100%, 600px) !important;
+
+  display: grid !important;
+
+  grid-template-columns:
+    repeat(
+      4,
+      minmax(0, 1fr)
+    ) !important;
+
+  grid-template-rows:
+    1fr !important;
+
+  gap: 4px !important;
+}
+
+.creator-mode-switch.creator-mode-switch-v11 button,
+.creator-mode-switch.creator-mode-switch-v11 button:last-child {
+  width: 100% !important;
+
+  min-width: 0 !important;
+
+  margin: 0 !important;
+}
+
+
+/* =========================================================
+   AI IS NOW PART OF CREATOR — NOT A SECOND SECTION
+========================================================= */
+
+.creator-ai-mode {
+  width: 100%;
+
+  max-width: 1400px;
+
+  margin: 0 auto;
+
+  padding: 0;
+
+  position: relative;
+
+  z-index: 3;
+}
+
+
+/*
+  Remove the standalone AI section appearance.
+*/
+
+.creator-ai-mode .ai-studio-section {
+  min-height: 0 !important;
+
+  padding:
+    0 !important;
+
+  margin: 0 !important;
+
+  border: 0 !important;
+
+  background:
+    transparent !important;
+}
+
+
+/*
+  Remove the old independent AI heading:
+  "02 / CREATE WITH AI"
+  "Turn an idea into a 3D model."
+  Creator already provides the section heading above.
+*/
+
+.creator-ai-mode .ai-studio-heading {
+  display: none !important;
+}
+
+
+/*
+  Let the actual AI controls begin immediately.
+*/
+
+.creator-ai-mode .ai-studio-shell {
+  width: 100% !important;
+
+  max-width: none !important;
+
+  margin: 0 !important;
+
+  padding: 0 !important;
+}
+
+
+/* Give AI workspace same visual spacing as the other modes */
+
+.creator-ai-mode .ai-studio-panel {
+  margin-top: 0 !important;
+
+  border-radius: 18px !important;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+  .creator-mode-switch.creator-mode-switch-v11 {
+    width: 100% !important;
+
+    grid-template-columns:
+      repeat(
+        4,
+        minmax(0, 1fr)
+      ) !important;
+  }
+
+  .creator-mode-switch.creator-mode-switch-v11 button {
+    min-width: 0 !important;
+
+    padding:
+      0 7px !important;
+
+    font-size: 8px !important;
+
+    letter-spacing:
+      .06em !important;
+  }
+
+}
+
+
+/* =========================================================
+   BEYOND CREATOR — HEBREW + LIGHT MODE POLISH
+========================================================= */
+
+
+/* ---------------------------------------------------------
+   HIDE EMPTY CREATOR KICKER
+--------------------------------------------------------- */
+
+#root
+.home-creator-anchor
+.creator-heading
+:empty {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+
+/* ---------------------------------------------------------
+   HEBREW MODE BAR
+
+   Move:
+   סטודיו | סקיצה | אדריכלות | AI
+   to the RIGHT side.
+--------------------------------------------------------- */
+
+html[data-beyond-language="he"]
+#root
+.home-creator-anchor
+[data-beyond-creator-modes="true"] {
+  margin-left: auto !important;
+  margin-right: 0 !important;
+
+  justify-self: end !important;
+
+  direction: rtl !important;
+
+  display: flex !important;
+  flex-direction: row !important;
+
+  justify-content: flex-start !important;
+  align-items: center !important;
+}
+
+
+/* Keep technical AI text readable */
+html[data-beyond-language="he"]
+#root
+.home-creator-anchor
+[data-beyond-creator-modes="true"]
+button {
+  text-align: center !important;
+}
+
+
+/* ---------------------------------------------------------
+   LIGHT MODE — MODE SELECTOR
+--------------------------------------------------------- */
+
+html[data-beyond-theme="light"]
+#root
+.home-creator-anchor
+[data-beyond-creator-modes="true"] {
+  background:
+    rgba(239, 244, 249, 0.96) !important;
+
+  border-color:
+    rgba(35, 67, 95, 0.16) !important;
+
+  box-shadow:
+    0 10px 30px
+    rgba(29, 52, 73, 0.06) !important;
+}
+
+
+html[data-beyond-theme="light"]
+#root
+.home-creator-anchor
+[data-beyond-creator-modes="true"]
+button {
+  background:
+    transparent !important;
+
+  color:
+    #526b82 !important;
+
+  border-color:
+    transparent !important;
+}
+
+
+html[data-beyond-theme="light"]
+#root
+.home-creator-anchor
+[data-beyond-creator-modes="true"]
+button:is(
+  .active,
+  [aria-selected="true"]
+) {
+  background:
+    #e3edf5 !important;
+
+  color:
+    #142638 !important;
+
+  border-color:
+    rgba(74, 119, 155, 0.30) !important;
+
+  box-shadow:
+    inset 0 0 0 1px
+    rgba(95, 145, 188, 0.15) !important;
+}
+
+
+/* ---------------------------------------------------------
+   LIGHT MODE — CREATOR EDITOR CHROME
+
+   The viewport stays light.
+   Dark navigation/tool bars become soft white / blue-grey.
+--------------------------------------------------------- */
+
+html[data-beyond-theme="light"]
+#root
+.home-creator-anchor
+:is(
+  [class*="topbar"],
+  [class*="top-bar"],
+  [class*="toolbar"],
+  [class*="side-bar"],
+  [class*="sidebar"],
+  [class*="tool-rail"],
+  [class*="toolrail"],
+  [class*="workspace-header"],
+  [class*="workspace-top"]
+) {
+  background:
+    #f2f6fa !important;
+
+  color:
+    #193047 !important;
+
+  border-color:
+    rgba(48, 82, 111, 0.14) !important;
+}
+
+
+/* Buttons inside those bars */
+html[data-beyond-theme="light"]
+#root
+.home-creator-anchor
+:is(
+  [class*="topbar"],
+  [class*="top-bar"],
+  [class*="toolbar"],
+  [class*="side-bar"],
+  [class*="sidebar"],
+  [class*="tool-rail"],
+  [class*="toolrail"],
+  [class*="workspace-header"],
+  [class*="workspace-top"]
+)
+button {
+  color:
+    #35536d !important;
+
+  border-color:
+    rgba(55, 92, 122, 0.12) !important;
+}
+
+
+/* Active editor buttons */
+html[data-beyond-theme="light"]
+#root
+.home-creator-anchor
+:is(
+  [class*="topbar"],
+  [class*="top-bar"],
+  [class*="toolbar"],
+  [class*="side-bar"],
+  [class*="sidebar"],
+  [class*="tool-rail"],
+  [class*="toolrail"],
+  [class*="workspace-header"],
+  [class*="workspace-top"]
+)
+button:is(
+  .active,
+  [aria-pressed="true"],
+  [aria-selected="true"]
+) {
+  background:
+    #e1edf6 !important;
+
+  color:
+    #17334a !important;
+
+  border-color:
+    rgba(95, 145, 188, 0.38) !important;
+}
+
+
+/* Workspace frame */
+html[data-beyond-theme="light"]
+#root
+.home-creator-anchor
+:is(
+  [class*="workspace"],
+  [class*="editor-shell"],
+  [class*="studio-shell"]
+) {
+  border-color:
+    rgba(45, 78, 106, 0.14) !important;
+}
+
+
+/* Keep BEYOND accent blue */
+html[data-beyond-theme="light"]
+#root
+.home-creator-anchor
+.creator-heading h2 span {
+  color:
+    #5F91BC !important;
+
+  -webkit-text-fill-color:
+    #5F91BC !important;
+}
+
+
+
+/* =========================================================
+   CREATOR — HEBREW MODE BAR + LIGHT MODE FINAL FIX
+========================================================= */
+
+
+/* ---------------------------------------------------------
+   HEBREW:
+   Put Studio / Sketch / Architect / AI on the RIGHT
+--------------------------------------------------------- */
+
+html[data-beyond-language="he"]
+#root
+.home-creator-anchor
+.creator-mode-row {
+  display: flex !important;
+  flex-direction: row-reverse !important;
+
+  justify-content: space-between !important;
+  align-items: center !important;
+
+  direction: ltr !important;
+}
+
+
+/* The mode selector itself sits on the RIGHT */
+html[data-beyond-language="he"]
+#root
+.home-creator-anchor
+.creator-mode-switch,
+html[data-beyond-language="he"]
+#root
+.home-creator-anchor
+.creator-mode-switch-v11 {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+
+  direction: rtl !important;
+
+  display: flex !important;
+  flex-direction: row !important;
+
+  justify-content: flex-start !important;
+}
+
+
+/*
+  Visual Hebrew order:
+  סטודיו | סקיצה | אדריכלות | AI
+  starting from the RIGHT
+*/
+html[data-beyond-language="he"]
+#root
+.home-creator-anchor
+.creator-mode-switch button {
+  text-align: center !important;
+}
+
+
+/* Technical text moves to the LEFT */
+html[data-beyond-language="he"]
+#root
+.home-creator-anchor
+.creator-mode-row > span {
+  text-align: left !important;
+  direction: ltr !important;
+}
+
+
+/* ---------------------------------------------------------
+   LIGHT MODE — MODE BAR
+--------------------------------------------------------- */
+
+html[data-beyond-theme="light"]
+#root
+.home-creator-anchor
+.creator-mode-switch,
+html[data-beyond-theme="light"]
+#root
+.home-creator-anchor
+.creator-mode-switch-v11 {
+  background: #f0f4f8 !important;
+
+  border: 1px solid
+    rgba(42, 72, 98, 0.16) !important;
+
+  box-shadow:
+    0 8px 24px
+    rgba(29, 51, 71, 0.05) !important;
+}
+
+
+html[data-beyond-theme="light"]
+#root
+.home-creator-anchor
+.creator-mode-switch button {
+  background: transparent !important;
+  color: #5b7184 !important;
+
+  border-color: transparent !important;
+}
+
+
+html[data-beyond-theme="light"]
+#root
+.home-creator-anchor
+.creator-mode-switch button.active {
+  background: #e3edf5 !important;
+
+  color: #14283b !important;
+
+  border-color:
+    rgba(95, 145, 188, 0.48) !important;
+
+  box-shadow:
+    inset 0 0 0 1px
+    rgba(95, 145, 188, 0.12) !important;
+}
+
+
+/* ---------------------------------------------------------
+   LIGHT MODE — MAIN STUDIO FRAME
+--------------------------------------------------------- */
+
+html[data-beyond-theme="light"]
+#root
+.home-creator-anchor
+.creator-shell.creator-studio-direct-layout {
+  background: #f7fafc !important;
+
+  border-color:
+    rgba(45, 77, 104, 0.16) !important;
+}
+
+
+/* ---------------------------------------------------------
+   LIGHT MODE — LEFT TOOL RAIL
+   This is the black vertical bar visible in your screenshot
+--------------------------------------------------------- */
+
+html[data-beyond-theme="light"]
+#root
+.home-creator-anchor
+.creator-shell-v5
+.creator-library {
+  background: #eef3f7 !important;
+
+  border-color:
+    rgba(45, 77, 104, 0.14) !important;
+
+  color: #29455d !important;
+}
+
+
+html[data-beyond-theme="light"]
+#root
+.home-creator-anchor
+.creator-shell-v5
+.creator-library button {
+  background: transparent !important;
+
+  color: #45647d !important;
+
+  border-color: transparent !important;
+}
+
+
+html[data-beyond-theme="light"]
+#root
+.home-creator-anchor
+.creator-shell-v5
+.creator-library button:hover {
+  background:
+    rgba(95, 145, 188, 0.10) !important;
+
+  color: #18354c !important;
+}
+
+
+/* ---------------------------------------------------------
+   LIGHT MODE — TOP TOOLBAR
+--------------------------------------------------------- */
+
+html[data-beyond-theme="light"]
+#root
+.home-creator-anchor
+.creator-advanced-toolbar {
+  background: #eef3f7 !important;
+
+  border-color:
+    rgba(45, 77, 104, 0.14) !important;
+}
+
+
+html[data-beyond-theme="light"]
+#root
+.home-creator-anchor
+.creator-advanced-toolbar button {
+  color: #3d5b73 !important;
+
+  background: transparent !important;
+
+  border-color:
+    rgba(54, 87, 114, 0.10) !important;
+}
+
+
+/* ---------------------------------------------------------
+   LIGHT MODE — CANVAS / WORKSPACE
+--------------------------------------------------------- */
+
+html[data-beyond-theme="light"]
+#root
+.home-creator-anchor
+.creator-shell-v5
+.creator-canvas-wrap {
+  background: #f4f8fb !important;
+
+  border-color:
+    rgba(45, 77, 104, 0.12) !important;
+}
+
+
+/* Keep headline accent blue */
+html[data-beyond-theme="light"]
+#root
+.home-creator-anchor
+.creator-heading h2 span {
+  color: #5F91BC !important;
+  -webkit-text-fill-color: #5F91BC !important;
+}
+

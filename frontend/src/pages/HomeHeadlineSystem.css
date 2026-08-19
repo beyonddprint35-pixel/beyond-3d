@@ -1,0 +1,1442 @@
+/* =========================================================
+   BEYOND — FINAL HOMEPAGE HEADLINE SYSTEM
+
+   Loaded LAST.
+   One visual language across all major homepage headlines.
+========================================================= */
+
+.beyond-home {
+  --beyond-headline-font:
+    var(
+      --font-display-family,
+      "Space Grotesk",
+      "Inter",
+      sans-serif
+    );
+
+  --beyond-headline-white:
+    #f5f8ff;
+
+  --beyond-headline-blue:
+    #609cff;
+
+  --beyond-headline-weight:
+    600;
+
+  --beyond-headline-spacing:
+    -0.067em;
+
+  --beyond-headline-line:
+    0.88;
+}
+
+
+/* =========================================================
+   MAIN HERO HEADLINES
+========================================================= */
+
+.beyond-home .digital-menu-copy h1,
+.beyond-home .digital-menu-title,
+.beyond-home .hero-copy h1 {
+  font-family:
+    var(--beyond-headline-font) !important;
+
+  font-weight:
+    var(--beyond-headline-weight) !important;
+
+  font-style:
+    normal !important;
+
+  line-height:
+    var(--beyond-headline-line) !important;
+
+  letter-spacing:
+    var(--beyond-headline-spacing) !important;
+
+  color:
+    var(--beyond-headline-white) !important;
+
+  -webkit-text-stroke:
+    0 !important;
+
+  text-shadow:
+    none !important;
+}
+
+
+/* =========================================================
+   ALL NORMAL HOMEPAGE SECTION HEADLINES
+========================================================= */
+
+.beyond-home .digital-benefits-heading h2,
+.beyond-home .process-story-heading h2,
+.beyond-home .creator-heading h2,
+.beyond-home .community-heading h2,
+.beyond-home .reviews-heading h2,
+.beyond-home .start-project-heading h2,
+.beyond-home .home-section-heading h2,
+.beyond-home .home-final-cta h2,
+.beyond-home .ai-studio-heading h2 {
+  font-family:
+    var(--beyond-headline-font) !important;
+
+  font-size:
+    clamp(
+      56px,
+      5.8vw,
+      88px
+    ) !important;
+
+  font-weight:
+    var(--beyond-headline-weight) !important;
+
+  font-style:
+    normal !important;
+
+  line-height:
+    var(--beyond-headline-line) !important;
+
+  letter-spacing:
+    var(--beyond-headline-spacing) !important;
+
+  color:
+    var(--beyond-headline-white) !important;
+
+  -webkit-text-stroke:
+    0 !important;
+
+  text-shadow:
+    none !important;
+}
+
+
+/* =========================================================
+   SECOND / ACCENT PART OF EVERY HEADLINE
+   ALWAYS BEYOND BLUE
+========================================================= */
+
+.beyond-home .digital-menu-copy h1 span,
+.beyond-home .digital-menu-title span,
+.beyond-home .hero-copy h1 span,
+
+.beyond-home .digital-benefits-heading h2 span,
+.beyond-home .process-story-heading h2 span,
+.beyond-home .creator-heading h2 span,
+.beyond-home .community-heading h2 span,
+.beyond-home .reviews-heading h2 span,
+.beyond-home .start-project-heading h2 span,
+.beyond-home .home-section-heading h2 span,
+.beyond-home .home-final-cta h2 span,
+.beyond-home .ai-studio-heading h2 span {
+  font-family:
+    inherit !important;
+
+  font-size:
+    inherit !important;
+
+  font-weight:
+    inherit !important;
+
+  line-height:
+    inherit !important;
+
+  letter-spacing:
+    inherit !important;
+
+  color:
+    var(--beyond-headline-blue) !important;
+
+  -webkit-text-fill-color:
+    var(--beyond-headline-blue) !important;
+
+  -webkit-text-stroke:
+    0 !important;
+
+  text-shadow:
+    none !important;
+}
+
+
+/* =========================================================
+   REMOVE OLD OUTLINED 3D HERO WORD
+========================================================= */
+
+.beyond-home .hero-copy h1 .outline,
+.beyond-home .hero-copy h1 .outlined,
+.beyond-home .hero-copy h1 .hero-outline,
+.beyond-home .hero-copy h1 .outline-text,
+.beyond-home .hero-copy h1 [class*="outline"] {
+  color:
+    var(--beyond-headline-blue) !important;
+
+  -webkit-text-fill-color:
+    var(--beyond-headline-blue) !important;
+
+  -webkit-text-stroke:
+    0 !important;
+
+  text-shadow:
+    none !important;
+}
+
+
+/* =========================================================
+   LIGHT MODE
+========================================================= */
+
+html[data-beyond-theme="light"]
+.beyond-home {
+  --beyond-headline-white:
+    #101827;
+
+  --beyond-headline-blue:
+    #2872cf;
+}
+
+
+/* =========================================================
+   HEBREW
+========================================================= */
+
+html[data-beyond-language="he"]
+.beyond-home :is(
+  .digital-menu-copy h1,
+  .digital-menu-title,
+  .hero-copy h1,
+  .digital-benefits-heading h2,
+  .process-story-heading h2,
+  .creator-heading h2,
+  .community-heading h2,
+  .reviews-heading h2,
+  .start-project-heading h2,
+  .home-section-heading h2,
+  .home-final-cta h2,
+  .ai-studio-heading h2
+) {
+  direction:
+    rtl !important;
+
+  text-align:
+    right !important;
+
+  letter-spacing:
+    normal !important;
+
+  unicode-bidi:
+    plaintext !important;
+}
+
+
+html[data-beyond-language="he"]
+.beyond-home :is(
+  .digital-menu-copy h1,
+  .digital-menu-title,
+  .hero-copy h1,
+  .digital-benefits-heading h2,
+  .process-story-heading h2,
+  .creator-heading h2,
+  .community-heading h2,
+  .reviews-heading h2,
+  .start-project-heading h2,
+  .home-section-heading h2,
+  .home-final-cta h2,
+  .ai-studio-heading h2
+) span {
+  letter-spacing:
+    normal !important;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:700px) {
+
+  .beyond-home .digital-benefits-heading h2,
+  .beyond-home .process-story-heading h2,
+  .beyond-home .creator-heading h2,
+  .beyond-home .community-heading h2,
+  .beyond-home .reviews-heading h2,
+  .beyond-home .start-project-heading h2,
+  .beyond-home .home-section-heading h2,
+  .beyond-home .home-final-cta h2,
+  .beyond-home .ai-studio-heading h2 {
+    font-size:
+      clamp(
+        46px,
+        12vw,
+        66px
+      ) !important;
+  }
+
+}
+
+
+/* DIGITAL MENU HERO FIRST LINE WHITE */
+.beyond-home .digital-menu-copy h1 > span:first-child,
+.beyond-home .digital-menu-title > span:first-child,
+.beyond-home .digital-menu-copy h1 > div:first-child,
+.beyond-home .digital-menu-title > div:first-child {
+  color: var(--beyond-headline-white) !important;
+  -webkit-text-fill-color: var(--beyond-headline-white) !important;
+  -webkit-text-stroke: 0 !important;
+  text-shadow: none !important;
+}
+
+/* DIGITAL MENU HERO SECOND LINE BLUE */
+.beyond-home .digital-menu-copy h1 > span:last-child,
+.beyond-home .digital-menu-title > span:last-child,
+.beyond-home .digital-menu-copy h1 > div:last-child,
+.beyond-home .digital-menu-title > div:last-child {
+  color: var(--beyond-headline-blue) !important;
+  -webkit-text-fill-color: var(--beyond-headline-blue) !important;
+  -webkit-text-stroke: 0 !important;
+  text-shadow: none !important;
+}
+
+
+/* =========================================================
+   HEBREW DIGITAL MENU TITLE — FINAL SIZE/FIT OVERRIDE
+   Higher specificity than previous global headline rules.
+========================================================= */
+
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.digital-menu-title.is-hebrew {
+  width: 100% !important;
+  max-width: 100% !important;
+
+  font-size:
+    clamp(
+      48px,
+      4.6vw,
+      78px
+    ) !important;
+
+  line-height:
+    0.94 !important;
+
+  direction: rtl !important;
+  text-align: right !important;
+
+  align-items: flex-end !important;
+
+  overflow: visible !important;
+}
+
+
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.digital-menu-title.is-hebrew
+.digital-menu-title-line {
+  width: auto !important;
+  max-width: 100% !important;
+
+  white-space: nowrap !important;
+
+  direction: rtl !important;
+  text-align: right !important;
+
+  margin: 0 !important;
+}
+
+
+/* First line */
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.digital-menu-title.is-hebrew
+.digital-menu-title-line-one {
+  color: #f5f8ff !important;
+  -webkit-text-fill-color: #f5f8ff !important;
+}
+
+
+/* Second line */
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.digital-menu-title.is-hebrew
+.digital-menu-title-line-two {
+  color: #609cff !important;
+  -webkit-text-fill-color: #609cff !important;
+}
+
+
+/* Tablet */
+@media (max-width: 1100px) {
+  html[data-beyond-language="he"]
+  #root
+  .beyond-home
+  .digital-menu-title.is-hebrew {
+    font-size:
+      clamp(
+        46px,
+        6.3vw,
+        68px
+      ) !important;
+  }
+}
+
+
+/* Mobile */
+@media (max-width: 700px) {
+  html[data-beyond-language="he"]
+  #root
+  .beyond-home
+  .digital-menu-title.is-hebrew {
+    font-size:
+      clamp(
+        38px,
+        10vw,
+        54px
+      ) !important;
+  }
+}
+
+
+
+/* =========================================================
+   HEBREW DIGITAL MENU — MATCH 3D HERO SIZE
+========================================================= */
+
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.digital-menu-title.is-hebrew {
+  font-size:
+    var(--beyond-headline-hero-size) !important;
+
+  line-height:
+    var(--beyond-headline-line) !important;
+
+  width: 100% !important;
+  max-width: 100% !important;
+
+  direction: rtl !important;
+  text-align: right !important;
+
+  align-items: flex-end !important;
+}
+
+
+/* Keep each sentence on one line */
+
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.digital-menu-title.is-hebrew
+.digital-menu-title-line {
+  width: auto !important;
+  max-width: 100% !important;
+
+  white-space: nowrap !important;
+
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+
+/* Mobile uses the same hero scale system too */
+
+@media(max-width:700px) {
+
+  html[data-beyond-language="he"]
+  #root
+  .beyond-home
+  .digital-menu-title.is-hebrew {
+    font-size:
+      var(--beyond-headline-hero-size) !important;
+  }
+
+}
+
+
+/* =========================================================
+   HEBREW DIGITAL MENU — LARGE BUT FITS VIEW
+========================================================= */
+
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.digital-menu-title.is-hebrew {
+  width: 100% !important;
+  max-width: 100% !important;
+
+  /*
+    Keep the large hero feeling.
+    Only slightly smaller than the English hero
+    so the Hebrew sentence stays inside the view.
+  */
+  font-size:
+    clamp(
+      64px,
+      5.4vw,
+      92px
+    ) !important;
+
+  line-height:
+    0.92 !important;
+
+  direction:
+    rtl !important;
+
+  text-align:
+    right !important;
+
+  align-items:
+    flex-end !important;
+}
+
+
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.digital-menu-title.is-hebrew
+.digital-menu-title-line {
+  display: block !important;
+
+  width: auto !important;
+  max-width: 100% !important;
+
+  white-space:
+    nowrap !important;
+
+  margin:
+    0 !important;
+
+  direction:
+    rtl !important;
+
+  text-align:
+    right !important;
+}
+
+
+/* Tablet only */
+
+@media(max-width:1100px) {
+
+  html[data-beyond-language="he"]
+  #root
+  .beyond-home
+  .digital-menu-title.is-hebrew {
+    font-size:
+      clamp(
+        58px,
+        7vw,
+        80px
+      ) !important;
+  }
+
+}
+
+
+/* Mobile only */
+
+@media(max-width:700px) {
+
+  html[data-beyond-language="he"]
+  #root
+  .beyond-home
+  .digital-menu-title.is-hebrew {
+    font-size:
+      clamp(
+        44px,
+        11vw,
+        62px
+      ) !important;
+  }
+
+}
+
+
+/* =========================================================
+   DIGITAL MENU HERO — EXACT SAME SIZE AS 3D HERO
+========================================================= */
+
+/*
+  Both hero headlines now use the exact same size variable.
+*/
+
+#root
+.beyond-home
+.digital-menu-title,
+
+#root
+.beyond-home
+.hero-copy h1 {
+  font-size:
+    var(--beyond-headline-hero-size) !important;
+
+  line-height:
+    var(--beyond-headline-line) !important;
+}
+
+
+/* Hebrew Digital Menu:
+   override the smaller Hebrew-specific rules added earlier.
+*/
+
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.digital-menu-title.is-hebrew {
+  font-size:
+    var(--beyond-headline-hero-size) !important;
+
+  line-height:
+    var(--beyond-headline-line) !important;
+
+  direction:
+    rtl !important;
+
+  text-align:
+    right !important;
+
+  align-items:
+    flex-end !important;
+}
+
+
+/* Same mobile scale for both heroes */
+
+@media(max-width:700px) {
+
+  #root
+  .beyond-home
+  .digital-menu-title,
+
+  #root
+  .beyond-home
+  .hero-copy h1,
+
+  html[data-beyond-language="he"]
+  #root
+  .beyond-home
+  .digital-menu-title.is-hebrew {
+    font-size:
+      var(--beyond-headline-hero-size) !important;
+  }
+
+}
+
+
+/* =========================================================
+   3D PRINTING HERO — HEBREW LAYOUT
+========================================================= */
+
+/* Entire text side stays on the same side,
+   but Hebrew content aligns from the right */
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.hero-copy {
+  direction: rtl !important;
+  text-align: right !important;
+  align-items: flex-start !important;
+}
+
+
+/* BEYOND · הדפסת תלת ממד */
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.hero-copy > :first-child {
+  direction: rtl !important;
+  text-align: right !important;
+  justify-content: flex-start !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+
+/* Main 3D headline */
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.hero-copy h1 {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+
+/* Description */
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.hero-copy p {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+
+/* ---------------------------------------------------------
+   BUTTONS
+
+   RIGHT:  התחל פרויקט
+   LEFT:   ראה את התהליך
+--------------------------------------------------------- */
+
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.hero-actions {
+  width: 100% !important;
+
+  display: flex !important;
+  flex-direction: row-reverse !important;
+
+  justify-content: flex-end !important;
+  align-items: center !important;
+
+  direction: ltr !important;
+}
+
+
+/* Fallback for the current hero action wrapper */
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.hero-copy > div:has(> a):has(> a + a),
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.hero-copy > div:has(> button):has(> button + button) {
+  flex-direction: row-reverse !important;
+  justify-content: flex-end !important;
+}
+
+
+/* ---------------------------------------------------------
+   PROCESS STEPS
+
+   Hebrew visual order from RIGHT to LEFT:
+   העלה → בדיקה → אישור → הדפסה
+--------------------------------------------------------- */
+
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.hero-steps,
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.hero-process,
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.hero-meta,
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.hero-stats {
+  width: 100% !important;
+
+  direction: rtl !important;
+
+  display: flex !important;
+  flex-direction: row !important;
+
+  justify-content: flex-start !important;
+
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+
+  text-align: right !important;
+}
+
+
+/* Individual step text */
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.hero-steps > *,
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.hero-process > *,
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.hero-meta > *,
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.hero-stats > * {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+
+/* Keep technical Latin words such as BEYOND / PLA / FDM readable */
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.hero-copy strong,
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.hero-copy small {
+  unicode-bidi: plaintext;
+}
+
+
+
+/* =========================================================
+   3D HERO HEBREW — BUTTON ORDER FINAL
+   RIGHT: ראה את התהליך
+   LEFT: התחל פרויקט
+========================================================= */
+
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.hero-actions {
+  width: 100% !important;
+
+  display: flex !important;
+  flex-direction: row !important;
+
+  direction: ltr !important;
+
+  justify-content: flex-end !important;
+  align-items: center !important;
+}
+
+
+/* fallback for current hero markup */
+
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.hero-copy > div:has(> a):has(> a + a),
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.hero-copy > div:has(> button):has(> button + button) {
+  flex-direction: row !important;
+  direction: ltr !important;
+  justify-content: flex-end !important;
+}
+
+
+
+/* =========================================================
+   3D HERO HEBREW — FORCE BUTTON ORDER
+   RIGHT: התחל פרויקט
+   LEFT:  ראה את התהליך
+========================================================= */
+
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.hero-copy div:has(> :is(a, button) + :is(a, button)) {
+  display: flex !important;
+  flex-direction: row-reverse !important;
+  direction: ltr !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+}
+
+
+/* First button in JSX = Start Project → RIGHT */
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.hero-copy div:has(> :is(a, button) + :is(a, button))
+> :is(a, button):first-child {
+  order: 2 !important;
+}
+
+
+/* Second button = See Process → LEFT */
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.hero-copy div:has(> :is(a, button) + :is(a, button))
+> :is(a, button):nth-child(2) {
+  order: 1 !important;
+}
+
+
+
+
+
+/* =========================================================
+   HEADLINE BLUE — #5F91BC
+   Only changes blue text inside homepage headlines
+========================================================= */
+
+#root .beyond-home .digital-menu-title-line-two,
+#root .beyond-home .digital-benefits-heading h2 span,
+#root .beyond-home .process-story-heading h2 span,
+#root .beyond-home .creator-heading h2 span,
+#root .beyond-home .community-heading h2 span,
+#root .beyond-home .reviews-heading h2 span,
+#root .beyond-home .start-project-heading h2 span,
+#root .beyond-home .home-section-heading h2 span,
+#root .beyond-home .home-final-cta h2 span,
+#root .beyond-home .ai-studio-heading h2 span,
+#root .beyond-home .hero-copy h1 .outline,
+#root .beyond-home .hero-copy h1 .outlined,
+#root .beyond-home .hero-copy h1 .hero-outline,
+#root .beyond-home .hero-copy h1 .outline-text {
+  color: #5F91BC !important;
+  -webkit-text-fill-color: #5F91BC !important;
+  -webkit-text-stroke: 0 !important;
+}
+
+
+
+/* =========================================================
+   HERO HEADLINES — FORCE NEW BLUE
+   First + second sections only
+========================================================= */
+
+
+/* FIRST SECTION — Digital Menu */
+html #root .beyond-home
+.digital-menu-title
+.digital-menu-title-line-two,
+
+html[data-beyond-language="he"] #root .beyond-home
+.digital-menu-title.is-hebrew
+.digital-menu-title-line-two {
+  color: #5F91BC !important;
+  -webkit-text-fill-color: #5F91BC !important;
+  -webkit-text-stroke: 0 !important;
+}
+
+
+/* SECOND SECTION — 3D Printing accent word */
+html #root .beyond-home
+.hero-copy h1 .outline,
+
+html #root .beyond-home
+.hero-copy h1 .outlined,
+
+html #root .beyond-home
+.hero-copy h1 .hero-outline,
+
+html #root .beyond-home
+.hero-copy h1 .outline-text,
+
+html #root .beyond-home
+.hero-copy h1 [class*="outline"] {
+  color: #5F91BC !important;
+  -webkit-text-fill-color: #5F91BC !important;
+  -webkit-text-stroke: 0 !important;
+  text-shadow: none !important;
+}
+
+
+/* Update shared headline accent variable too */
+#root .beyond-home {
+  --beyond-headline-blue: #5F91BC !important;
+}
+
+
+
+/* =========================================================
+   LIGHT MODE — HEADLINE WHITE TEXT -> DARK
+   Blue accent remains unchanged
+========================================================= */
+
+html[data-beyond-theme="light"]
+#root
+.beyond-home {
+  --beyond-headline-white: #101827 !important;
+}
+
+
+/* FIRST SECTION — YOUR MENU / התפריט שלך */
+html[data-beyond-theme="light"]
+#root
+.beyond-home
+.digital-menu-title
+.digital-menu-title-line-one,
+
+html[data-beyond-theme="light"][data-beyond-language="he"]
+#root
+.beyond-home
+.digital-menu-title.is-hebrew
+.digital-menu-title-line-one {
+  color: #101827 !important;
+  -webkit-text-fill-color: #101827 !important;
+  -webkit-text-stroke: 0 !important;
+}
+
+
+/* SECOND SECTION + OTHER HOMEPAGE HEADLINES:
+   default/white portions become dark */
+html[data-beyond-theme="light"]
+#root
+.beyond-home
+.hero-copy h1,
+
+html[data-beyond-theme="light"]
+#root
+.beyond-home
+.process-story-heading h2,
+
+html[data-beyond-theme="light"]
+#root
+.beyond-home
+.creator-heading h2,
+
+html[data-beyond-theme="light"]
+#root
+.beyond-home
+.community-heading h2,
+
+html[data-beyond-theme="light"]
+#root
+.beyond-home
+.reviews-heading h2,
+
+html[data-beyond-theme="light"]
+#root
+.beyond-home
+.start-project-heading h2 {
+  color: #101827 !important;
+  -webkit-text-fill-color: #101827 !important;
+}
+
+
+/* Keep all blue accent headline text blue */
+html[data-beyond-theme="light"]
+#root
+.beyond-home
+.digital-menu-title-line-two,
+
+html[data-beyond-theme="light"]
+#root
+.beyond-home
+.hero-copy h1 .outline,
+
+html[data-beyond-theme="light"]
+#root
+.beyond-home
+.hero-copy h1 .outlined,
+
+html[data-beyond-theme="light"]
+#root
+.beyond-home
+.hero-copy h1 [class*="outline"],
+
+html[data-beyond-theme="light"]
+#root
+.beyond-home
+.process-story-heading h2 span,
+
+html[data-beyond-theme="light"]
+#root
+.beyond-home
+.creator-heading h2 span,
+
+html[data-beyond-theme="light"]
+#root
+.beyond-home
+.community-heading h2 span,
+
+html[data-beyond-theme="light"]
+#root
+.beyond-home
+.reviews-heading h2 span {
+  color: #5F91BC !important;
+  -webkit-text-fill-color: #5F91BC !important;
+}
+
+
+
+/* =========================================================
+   TRANSFORMATION BAR — HEBREW RTL
+   רעיון ← מודל דיגיטלי ← אובייקט פיזי
+========================================================= */
+
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.material-transition
+.transition-main {
+  direction: rtl !important;
+  flex-direction: row !important;
+  text-align: right !important;
+}
+
+
+/* Make the arrows point from right to left */
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.material-transition
+.transition-main > strong {
+  transform: rotate(180deg) !important;
+}
+
+
+/* Hebrew labels */
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.material-transition
+.transition-main > span {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+
+/* Progress line starts from the RIGHT */
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.material-transition
+.transition-line {
+  direction: rtl !important;
+  display: flex !important;
+  justify-content: flex-start !important;
+}
+
+
+/* Anchor the blue active line to the right */
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.material-transition
+.transition-line > span {
+  left: auto !important;
+  right: 0 !important;
+
+  margin-left: auto !important;
+  margin-right: 0 !important;
+
+  transform-origin: right center !important;
+}
+
+
+
+/* =========================================================
+   UPLOAD PROJECT — MATCH ALL OTHER SECTION HEADLINES
+========================================================= */
+
+#root
+.beyond-home
+.upload-heading h2 {
+  font-family:
+    var(
+      --beyond-headline-font,
+      "Space Grotesk",
+      "Inter",
+      sans-serif
+    ) !important;
+
+  font-size:
+    clamp(56px, 5.8vw, 88px) !important;
+
+  font-weight:
+    600 !important;
+
+  font-style:
+    normal !important;
+
+  line-height:
+    0.88 !important;
+
+  letter-spacing:
+    -0.067em !important;
+
+  color:
+    var(
+      --beyond-headline-white,
+      #f5f8ff
+    ) !important;
+
+  -webkit-text-fill-color:
+    var(
+      --beyond-headline-white,
+      #f5f8ff
+    ) !important;
+
+  -webkit-text-stroke:
+    0 !important;
+
+  text-shadow:
+    none !important;
+}
+
+
+/* Accent part — same BEYOND blue as all other headlines */
+
+#root
+.beyond-home
+.upload-heading h2 span {
+  font-family:
+    inherit !important;
+
+  font-size:
+    inherit !important;
+
+  font-weight:
+    inherit !important;
+
+  line-height:
+    inherit !important;
+
+  letter-spacing:
+    inherit !important;
+
+  color:
+    #5F91BC !important;
+
+  -webkit-text-fill-color:
+    #5F91BC !important;
+
+  -webkit-text-stroke:
+    0 !important;
+
+  text-shadow:
+    none !important;
+}
+
+
+/* Light mode */
+
+html[data-beyond-theme="light"]
+#root
+.beyond-home
+.upload-heading h2 {
+  color:
+    #101827 !important;
+
+  -webkit-text-fill-color:
+    #101827 !important;
+}
+
+
+html[data-beyond-theme="light"]
+#root
+.beyond-home
+.upload-heading h2 span {
+  color:
+    #5F91BC !important;
+
+  -webkit-text-fill-color:
+    #5F91BC !important;
+}
+
+
+/* Hebrew — same design, without Latin letter spacing */
+
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.upload-heading h2,
+
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.upload-heading h2 span {
+  letter-spacing:
+    normal !important;
+}
+
+
+/* Mobile */
+
+@media (max-width: 700px) {
+
+  #root
+  .beyond-home
+  .upload-heading h2 {
+    font-size:
+      clamp(46px, 12vw, 66px) !important;
+  }
+
+}
+
+
+
+/* =========================================================
+   UPLOAD PROJECT — HEBREW RTL / RIGHT ALIGN
+========================================================= */
+
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.upload-heading {
+  direction: rtl !important;
+  text-align: right !important;
+
+  align-items: flex-end !important;
+}
+
+
+/* Small label */
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.upload-heading
+.section-kicker {
+  width: 100% !important;
+
+  direction: rtl !important;
+  text-align: right !important;
+
+  margin-left: auto !important;
+  margin-right: 0 !important;
+}
+
+
+/* Main headline */
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.upload-heading
+h2 {
+  width: 100% !important;
+
+  direction: rtl !important;
+  text-align: right !important;
+
+  unicode-bidi: plaintext !important;
+
+  margin-left: auto !important;
+  margin-right: 0 !important;
+}
+
+
+/* Blue part of headline */
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.upload-heading
+h2 span {
+  direction: rtl !important;
+  text-align: right !important;
+
+  unicode-bidi: plaintext !important;
+}
+
+
+/* Description */
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.upload-heading
+p {
+  width: 100% !important;
+
+  direction: rtl !important;
+  text-align: right !important;
+
+  unicode-bidi: plaintext !important;
+
+  margin-left: auto !important;
+  margin-right: 0 !important;
+}
+
+
+
+/* =========================================================
+   UPLOAD PROJECT — HEBREW RIGHT POSITION FINAL
+========================================================= */
+
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.upload-heading {
+  width: min(900px, 100%) !important;
+  max-width: 900px !important;
+
+  margin-left: auto !important;
+  margin-right: 0 !important;
+
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+
+  direction: rtl !important;
+  text-align: right !important;
+
+  justify-items: end !important;
+  justify-content: end !important;
+  align-items: end !important;
+}
+
+
+/* Small heading */
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.upload-heading
+.section-kicker {
+  width: 100% !important;
+
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+
+  direction: rtl !important;
+  text-align: right !important;
+
+  justify-self: end !important;
+}
+
+
+/* Main headline */
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.upload-heading
+h2 {
+  width: 100% !important;
+  max-width: none !important;
+
+  margin: 0 !important;
+
+  direction: rtl !important;
+  text-align: right !important;
+
+  justify-self: end !important;
+
+  unicode-bidi: plaintext !important;
+}
+
+
+/* Blue part */
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.upload-heading
+h2 span {
+  display: inline !important;
+
+  direction: rtl !important;
+  text-align: right !important;
+
+  unicode-bidi: plaintext !important;
+}
+
+
+/* Description */
+html[data-beyond-language="he"]
+#root
+.beyond-home
+.upload-heading
+p {
+  width: 100% !important;
+  max-width: 620px !important;
+
+  margin-left: auto !important;
+  margin-right: 0 !important;
+
+  direction: rtl !important;
+  text-align: right !important;
+
+  justify-self: end !important;
+
+  unicode-bidi: plaintext !important;
+}
+

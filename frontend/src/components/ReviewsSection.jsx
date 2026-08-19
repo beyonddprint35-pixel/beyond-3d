@@ -1,42 +1,102 @@
+import {
+  useEffect,
+  useState,
+} from "react";
+
 import "./ReviewsSection.css";
+
 
 const reviews = [
   {
     name: "Daniel R.",
-    company:
+
+    companyEn:
       "Product Designer",
-    project:
+
+    companyHe:
+      "מעצב מוצר",
+
+    projectEn:
       "Prototype",
+
+    projectHe:
+      "אב־טיפוס",
+
     rating: 5,
 
-    text:
+    textEn:
       "The process was incredibly smooth. I uploaded the model, received a clear quote, and the final print came out exactly as expected.",
+
+    textHe:
+      "התהליך היה חלק במיוחד. העליתי את המודל, קיבלתי הצעת מחיר ברורה, וההדפסה הסופית יצאה בדיוק כפי שציפיתי.",
   },
 
   {
     name: "Maya L.",
-    company:
+
+    companyEn:
       "Small Business Owner",
-    project:
+
+    companyHe:
+      "בעלת עסק קטן",
+
+    projectEn:
       "Custom Product",
+
+    projectHe:
+      "מוצר בהתאמה אישית",
+
     rating: 5,
 
-    text:
+    textEn:
       "What I liked most was the communication. Everything was clear from the beginning and the finished parts looked very professional.",
+
+    textHe:
+      "מה שהכי אהבתי היה התקשורת. הכול היה ברור מההתחלה, והחלקים המוגמרים נראו מקצועיים מאוד.",
   },
 
   {
     name: "Eli S.",
-    company:
+
+    companyEn:
       "Engineer",
-    project:
+
+    companyHe:
+      "מהנדס",
+
+    projectEn:
       "Functional Part",
+
+    projectHe:
+      "חלק פונקציונלי",
+
     rating: 5,
 
-    text:
+    textEn:
       "Fast turnaround, clean finish and good attention to the details of the model. I would definitely use Beyond again.",
+
+    textHe:
+      "זמן ביצוע מהיר, גימור נקי ותשומת לב מצוינת לפרטים של המודל. בהחלט אשתמש שוב ב־BEYOND.",
   },
 ];
+
+
+function getIsHebrew() {
+  if (
+    typeof document ===
+    "undefined"
+  ) {
+    return false;
+  }
+
+  return (
+    document.documentElement
+      .getAttribute(
+        "data-beyond-language"
+      ) === "he"
+  );
+}
+
 
 function Stars({
   rating,
@@ -70,91 +130,206 @@ function Stars({
   );
 }
 
+
 function ReviewsSection() {
+
+  const [
+    isHebrew,
+    setIsHebrew,
+  ] = useState(
+    getIsHebrew
+  );
+
+
+  useEffect(
+    () => {
+
+      const syncLanguage = () => {
+        setIsHebrew(
+          getIsHebrew()
+        );
+      };
+
+
+      window.addEventListener(
+        "beyond-language-change",
+        syncLanguage
+      );
+
+
+      const observer =
+        new MutationObserver(
+          syncLanguage
+        );
+
+
+      observer.observe(
+        document.documentElement,
+        {
+          attributes: true,
+
+          attributeFilter: [
+            "data-beyond-language",
+          ],
+        }
+      );
+
+
+      syncLanguage();
+
+
+      return () => {
+
+        window.removeEventListener(
+          "beyond-language-change",
+          syncLanguage
+        );
+
+        observer.disconnect();
+      };
+
+    },
+    []
+  );
+
+
   return (
     <section
       className="reviews-section"
       id="reviews"
+      data-beyond-reviews="true"
+      data-no-beyond-translate="true"
     >
+
       <div className="reviews-glow reviews-glow-one" />
       <div className="reviews-glow reviews-glow-two" />
 
+
       <div className="section-side-label">
-        REVIEWS
+        {isHebrew
+          ? "ביקורות"
+          : "REVIEWS"}
       </div>
 
+
       <div className="reviews-heading">
+
         <div>
-          <div className="section-index">
-            03 / CUSTOMER REVIEWS
+
+          <div
+            className="section-index"
+            data-reviews-kicker="true"
+          >
+            {isHebrew
+              ? ""
+              : "03 / CUSTOMER REVIEWS"}
           </div>
 
-          <h2>
-            Made real.
+
+          <h2 data-reviews-title="true">
+
+            {isHebrew
+              ? "הפך למציאות."
+              : "Made real."}
+
             <br />
 
             <span>
-              Trusted by people.
+              {isHebrew
+                ? "לקוחות שסומכים עלינו."
+                : "Trusted by people."}
             </span>
+
           </h2>
+
         </div>
 
-        <p>
-          Real projects, clear
-          communication and
-          physical results that
-          match the digital idea.
+
+        <p data-reviews-description="true">
+
+          {isHebrew
+            ? "פרויקטים אמיתיים, תקשורת ברורה ותוצאה פיזית שתואמת לרעיון הדיגיטלי."
+            : "Real projects, clear communication and physical results that match the digital idea."}
+
         </p>
+
       </div>
 
+
       <div className="reviews-summary">
+
         <div className="reviews-score">
+
           <strong>
             5.0
           </strong>
 
+
           <Stars rating={5} />
 
+
           <span>
-            CUSTOMER RATING
+            {isHebrew
+              ? "דירוג לקוחות"
+              : "CUSTOMER RATING"}
           </span>
+
         </div>
+
 
         <div className="reviews-summary-line" />
 
+
         <div className="reviews-summary-copy">
+
           <span>
-            CUSTOMER EXPERIENCE
+            {isHebrew
+              ? "חוויית הלקוח"
+              : "CUSTOMER EXPERIENCE"}
           </span>
 
+
           <strong>
-            From upload to finished object.
+            {isHebrew
+              ? "מהעלאת הקובץ ועד לאובייקט המוגמר."
+              : "From upload to finished object."}
           </strong>
+
         </div>
+
       </div>
 
+
       <div className="reviews-grid">
+
         {reviews.map(
           (
             review,
             index
           ) => (
+
             <article
               className={
                 index === 0
                   ? "review-card review-card-featured"
                   : "review-card"
               }
-              key={
-                review.name
+              key={review.name}
+              dir={
+                isHebrew
+                  ? "rtl"
+                  : "ltr"
               }
             >
+
               <div className="review-card-top">
+
                 <Stars
                   rating={
                     review.rating
                   }
                 />
+
 
                 <span>
                   {String(
@@ -164,55 +339,79 @@ function ReviewsSection() {
                     "0"
                   )}
                 </span>
+
               </div>
+
 
               <blockquote>
+
                 “
-                {
-                  review.text
-                }
+                {isHebrew
+                  ? review.textHe
+                  : review.textEn}
                 ”
+
               </blockquote>
 
+
               <div className="review-card-footer">
+
                 <div>
+
                   <strong>
-                    {
-                      review.name
-                    }
+                    {review.name}
                   </strong>
 
+
                   <span>
-                    {
-                      review.company
-                    }
+                    {isHebrew
+                      ? review.companyHe
+                      : review.companyEn}
                   </span>
+
                 </div>
+
 
                 <div className="review-project">
+
                   <span>
-                    PROJECT
+                    {isHebrew
+                      ? "פרויקט"
+                      : "PROJECT"}
                   </span>
 
+
                   <strong>
-                    {
-                      review.project
-                    }
+                    {isHebrew
+                      ? review.projectHe
+                      : review.projectEn}
                   </strong>
+
                 </div>
+
               </div>
+
 
               <div className="review-verified">
+
                 <i />
 
-                CUSTOMER REVIEW
+                {isHebrew
+                  ? "חוות דעת לקוח"
+                  : "CUSTOMER REVIEW"}
+
               </div>
+
             </article>
+
           )
         )}
+
       </div>
+
     </section>
   );
 }
+
 
 export default ReviewsSection;

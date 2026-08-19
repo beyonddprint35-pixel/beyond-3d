@@ -86,6 +86,7 @@ import {
 import SketchExtrudeModal from "./SketchExtrudeModal";
 import RevolveModal from "./RevolveModal";
 import SketchWorkspace from "./SketchWorkspace";
+import AIModelStudio from "./AIModelStudio";
 import {
   cleanCreatorGeometryWithManifold,
   createExtrudedSketchGeometry,
@@ -18070,7 +18071,7 @@ function BeyondCreator({
       <div className="creator-heading">
         <div>
           <div className="creator-index">
-            03 / BEYOND CREATOR
+            
           </div>
 
           <h2>
@@ -18084,11 +18085,12 @@ function BeyondCreator({
         </div>
 
         <p>
-          Use Studio for precision solid
-          and mesh modeling, Sketch for a
-          Pencil-first CAD workflow, or
-          Architect for printable scale
-          models, plans and buildings.
+          Create your model your way.
+          Use Studio for precision 3D,
+          Sketch for Pencil-first CAD,
+          Architect for printable buildings,
+          or AI to generate a 3D model
+          from text or photos.
         </p>
       </div>
 
@@ -18244,6 +18246,44 @@ function BeyondCreator({
           >
             ARCHITECT
           </button>
+
+          {/* BEYOND_CREATOR_AI_MODE_V1 */}
+          <button
+            type="button"
+            className={
+              creatorMode ===
+              "ai"
+                ? "active"
+                : ""
+            }
+            onClick={() => {
+              setArchitectureDrawTool(
+                null
+              );
+
+              setArchitectureWallStart(
+                null
+              );
+
+              setArchitecturePointer(
+                null
+              );
+
+              setTransformMode(
+                "select"
+              );
+
+              setCreatorMode(
+                "ai"
+              );
+
+              setOperationMessage(
+                "AI workspace ready. Generate a 3D model from text or photos."
+              );
+            }}
+          >
+            AI
+          </button>
         </div>
 
         <span>
@@ -18253,7 +18293,10 @@ function BeyondCreator({
             : creatorMode ===
                 "sketch"
               ? "APPLE PENCIL · LINE · RECTANGLE · CIRCLE · ARC · SPLINE · CONSTRAINTS · DIMENSIONS · EXTRUDE"
-              : `PLAN · 3D · ELEVATIONS · WALLS · OPENINGS · LEVELS · SCALE 1:${architectureScale}`}
+              : creatorMode ===
+                  "ai"
+                ? "TEXT TO 3D · IMAGE TO 3D · AI GENERATION · 3D PREVIEW · SEND TO PROJECT"
+                : `PLAN · 3D · ELEVATIONS · WALLS · OPENINGS · LEVELS · SCALE 1:${architectureScale}`}
         </span>
       </div>
 
@@ -18558,6 +18601,17 @@ function BeyondCreator({
         </div>
       )}
 
+
+      {/* =====================================================
+          BEYOND CREATOR AI WORKSPACE
+      ===================================================== */}
+
+      {creatorMode === "ai" && (
+        <div className="creator-ai-mode">
+          <AIModelStudio />
+        </div>
+      )}
+
       <SketchWorkspace
         active={
           creatorMode ===
@@ -18599,8 +18653,8 @@ function BeyondCreator({
         }`}
         style={{
           display:
-            creatorMode ===
-            "sketch"
+            creatorMode === "sketch" ||
+            creatorMode === "ai"
               ? "none"
               : undefined,
         }}

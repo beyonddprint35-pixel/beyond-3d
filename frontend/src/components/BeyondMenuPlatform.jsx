@@ -1,5 +1,8 @@
+import BeyondLanguageToggle from "../i18n/BeyondLanguageToggle";
 import React, { useEffect, useMemo, useState } from "react";
+import { Moon, Sun } from "lucide-react";
 import RestaurantAccessibility from "./RestaurantAccessibility";
+import "./BeyondMenuStudioTheme.css";
 import { createClient } from "@supabase/supabase-js";
 
 const url = import.meta.env.VITE_SUPABASE_URL || import.meta.env.VITE_SUPABASE_PROJECT_URL || "";
@@ -800,6 +803,38 @@ export function BeyondPublicMenu({ slug }) {
 export function BeyondMenuStudio() {
   const session = useSession();
   const user = session?.user;
+
+  // BEYOND_MENU_STUDIO_THEME_V1
+  const [studioTheme, setStudioTheme] = useState(() => {
+    try {
+      return (
+        window.localStorage.getItem("beyond-theme") === "light"
+          ? "light"
+          : "dark"
+      );
+    } catch {
+      return "dark";
+    }
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute(
+      "data-beyond-theme",
+      studioTheme
+    );
+
+    document.documentElement.style.colorScheme =
+      studioTheme;
+
+    try {
+      window.localStorage.setItem(
+        "beyond-theme",
+        studioTheme
+      );
+    } catch {
+      // Theme still works without localStorage.
+    }
+  }, [studioTheme]);
 
   const [sites, setSites] = useState([]);
   const [siteId, setSiteId] = useState(
@@ -2261,7 +2296,9 @@ export function BeyondMenuStudio() {
   };
 
   return (
-    <div className="bm-shell bm-owner-dashboard">
+    <div
+      className={`bm-shell bm-owner-dashboard bm-theme-${studioTheme}`}
+    >
 
       <header className="bm-head bm-owner-header">
         <div>
@@ -2271,6 +2308,41 @@ export function BeyondMenuStudio() {
         </div>
 
         <div className="bm-owner-header-actions">
+
+          {/* BEYOND_MENU_LANGUAGE_TOGGLE_V2 */}
+          <BeyondLanguageToggle
+            className="bm-language-toggle"
+          />
+
+
+          <button
+            type="button"
+            className="bm-theme-toggle"
+            aria-label={
+              studioTheme === "dark"
+                ? "Switch to light mode"
+                : "Switch to dark mode"
+            }
+            onClick={() =>
+              setStudioTheme(current =>
+                current === "dark"
+                  ? "light"
+                  : "dark"
+              )
+            }
+          >
+            {studioTheme === "dark" ? (
+              <Sun size={17} strokeWidth={1.8} />
+            ) : (
+              <Moon size={17} strokeWidth={1.8} />
+            )}
+
+            <span>
+              {studioTheme === "dark"
+                ? "LIGHT"
+                : "DARK"}
+            </span>
+          </button>
           {isMenuAdmin ? (
             <>
               <button

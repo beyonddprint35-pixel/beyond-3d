@@ -3257,3 +3257,953 @@ a {
     font-size: 30px !important;
   }
 }
+
+
+/* =========================================================
+   BEYOND_GLOBAL_HEBREW_RTL_V1
+   HEBREW TEXT DIRECTION
+   TEXT ONLY — NEVER MIRROR APPLICATION LAYOUT
+========================================================= */
+
+
+/* ---------------------------------------------------------
+   GLOBAL HEBREW ALIGNMENT
+
+   text-align does NOT reverse flex/grid structures.
+   It only changes how text is positioned.
+--------------------------------------------------------- */
+
+html[data-beyond-language="he"] #root {
+  text-align: right;
+}
+
+
+/* ---------------------------------------------------------
+   REAL TEXT ELEMENTS
+
+   These elements receive proper Hebrew RTL direction.
+   We intentionally DO NOT put direction:rtl on layout
+   containers such as main/section/grid/flex wrappers.
+--------------------------------------------------------- */
+
+html[data-beyond-language="he"]
+#root :where(
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  blockquote,
+  figcaption,
+  label,
+  legend,
+  li,
+  dt,
+  dd,
+  th,
+  td,
+  small,
+  strong,
+  em
+):not(.bm-public *):not([data-no-beyond-rtl]) {
+  direction: rtl !important;
+
+  text-align: right !important;
+
+  unicode-bidi:
+    plaintext;
+}
+
+
+/* ---------------------------------------------------------
+   INLINE TEXT
+
+   Safe to apply RTL because span itself does not control
+   the parent flex/grid direction.
+--------------------------------------------------------- */
+
+html[data-beyond-language="he"]
+#root span:not(.bm-public *):not(
+  .home-language-toggle *
+):not(
+  .beyond-language-toggle *
+):not(
+  [data-no-beyond-rtl]
+) {
+  direction: rtl;
+
+  unicode-bidi:
+    plaintext;
+}
+
+
+/* ---------------------------------------------------------
+   BUTTONS / LINKS
+
+   Right-align the label but DON'T set direction:rtl on
+   the button container. Some buttons contain icons and use
+   display:flex — changing direction there could swap them.
+--------------------------------------------------------- */
+
+html[data-beyond-language="he"]
+#root :where(
+  button,
+  a,
+  [role="button"],
+  [role="tab"]
+):not(.bm-public *):not(
+  .home-language-toggle
+):not(
+  .beyond-language-toggle
+):not(
+  [data-no-beyond-rtl]
+) {
+  text-align: right;
+
+  unicode-bidi:
+    plaintext;
+}
+
+
+/* ---------------------------------------------------------
+   COMMON BEYOND TEXT BLOCKS
+--------------------------------------------------------- */
+
+html[data-beyond-language="he"]
+.section-index,
+
+html[data-beyond-language="he"]
+.section-side-label,
+
+html[data-beyond-language="he"]
+.digital-menu-kicker,
+
+html[data-beyond-language="he"]
+.digital-benefits-kicker,
+
+html[data-beyond-language="he"]
+.community-kicker,
+
+html[data-beyond-language="he"]
+.community-card-kicker,
+
+html[data-beyond-language="he"]
+.creator-intro,
+
+html[data-beyond-language="he"]
+.creator-heading,
+
+html[data-beyond-language="he"]
+.ai-studio-heading,
+
+html[data-beyond-language="he"]
+.start-project-heading,
+
+html[data-beyond-language="he"]
+.final-cta-copy {
+  direction: rtl;
+
+  text-align: right;
+
+  unicode-bidi:
+    plaintext;
+}
+
+
+/* ---------------------------------------------------------
+   MENU STUDIO
+
+   RTL text only.
+   Do NOT reverse columns/cards/editor structure.
+--------------------------------------------------------- */
+
+html[data-beyond-language="he"]
+.bm-owner-dashboard {
+  text-align: right;
+}
+
+
+html[data-beyond-language="he"]
+.bm-owner-dashboard :where(
+  h1,
+  h2,
+  h3,
+  h4,
+  p,
+  label,
+  small,
+  strong
+) {
+  direction: rtl !important;
+
+  text-align: right !important;
+
+  unicode-bidi:
+    plaintext;
+}
+
+
+html[data-beyond-language="he"]
+.bm-owner-dashboard :where(
+  .bm-owner-header,
+  .bm-owner-sitebar,
+  .bm-owner-settings,
+  .bm-owner-categories,
+  .bm-owner-items,
+  .bm-owner-header-actions
+) {
+  /*
+    Keep structural layout LTR.
+  */
+  direction: ltr;
+}
+
+
+/*
+  Then put the actual text inside those structures
+  back into proper Hebrew direction.
+*/
+
+html[data-beyond-language="he"]
+.bm-owner-dashboard
+:where(
+  h1,
+  h2,
+  h3,
+  p,
+  label,
+  span,
+  strong,
+  small
+) {
+  unicode-bidi:
+    plaintext;
+}
+
+
+/* ---------------------------------------------------------
+   FORM PLACEHOLDERS
+
+   Translate/right-align UI hints without forcing user data
+   such as email, URLs, English product names, measurements,
+   etc. into RTL.
+--------------------------------------------------------- */
+
+html[data-beyond-language="he"]
+#root input::placeholder,
+
+html[data-beyond-language="he"]
+#root textarea::placeholder {
+  direction: rtl;
+
+  text-align: right;
+
+  unicode-bidi:
+    plaintext;
+}
+
+
+/*
+  Textareas are typically natural-language descriptions.
+*/
+
+html[data-beyond-language="he"]
+#root textarea:not(.bm-public textarea) {
+  text-align: right;
+
+  unicode-bidi:
+    plaintext;
+}
+
+
+/* ---------------------------------------------------------
+   KEEP TECHNICAL / MACHINE VALUES LTR
+--------------------------------------------------------- */
+
+html[data-beyond-language="he"]
+#root :where(
+  code,
+  pre,
+  kbd,
+  samp
+) {
+  direction: ltr !important;
+
+  text-align: left !important;
+
+  unicode-bidi:
+    normal !important;
+}
+
+
+html[data-beyond-language="he"]
+#root input:is(
+  [type="email"],
+  [type="url"],
+  [type="tel"],
+  [type="number"]
+) {
+  direction: ltr;
+
+  text-align: left;
+}
+
+
+/* Utility for anything we later want to explicitly keep LTR */
+
+html[data-beyond-language="he"]
+[data-no-beyond-rtl] {
+  direction: ltr !important;
+
+  unicode-bidi:
+    normal !important;
+}
+
+
+/* ---------------------------------------------------------
+   LANGUAGE SWITCH MUST ALWAYS STAY EN | עב
+--------------------------------------------------------- */
+
+html[data-beyond-language="he"]
+.home-language-toggle,
+
+html[data-beyond-language="he"]
+.home-language-toggle *,
+
+html[data-beyond-language="he"]
+.beyond-language-toggle,
+
+html[data-beyond-language="he"]
+.beyond-language-toggle *,
+
+html[data-beyond-language="he"]
+.bm-language-toggle,
+
+html[data-beyond-language="he"]
+.bm-language-toggle * {
+  direction: ltr !important;
+
+  text-align: center !important;
+
+  unicode-bidi:
+    normal !important;
+}
+
+
+/* ---------------------------------------------------------
+   PUBLIC RESTAURANT MENU
+
+   Completely excluded.
+   Each restaurant menu controls its own EN/HE direction.
+--------------------------------------------------------- */
+
+html[data-beyond-language="he"]
+.bm-public {
+  text-align: initial;
+}
+
+
+/* ---------------------------------------------------------
+   HEBREW LETTER SPACING
+
+   English technical tracking looks bad on Hebrew.
+   This affects typography only — not dimensions.
+--------------------------------------------------------- */
+
+html[data-beyond-language="he"]
+#root :where(
+  h1,
+  h2,
+  h3,
+  h4,
+  p,
+  label,
+  button,
+  small,
+  strong
+):not(.bm-public *) {
+  letter-spacing:
+    normal !important;
+}
+
+
+
+/* =========================================================
+   BEYOND BRANDING — NEVER CHANGE WITH LANGUAGE
+========================================================= */
+
+/*
+  BEYOND is a brand name, not translated UI text.
+  Preserve the exact English logo typography in EN and HE.
+*/
+
+html[data-beyond-language="he"] .home-brand,
+html[data-beyond-language="he"] .home-brand * {
+  direction: ltr !important;
+
+  text-align: left !important;
+
+  unicode-bidi: isolate !important;
+}
+
+
+/*
+  Original BEYOND navbar branding uses 9px tracking.
+  Restore it exactly in Hebrew mode.
+*/
+
+html[data-beyond-language="he"] .home-brand {
+  letter-spacing: 9px !important;
+}
+
+
+/*
+  If the word is wrapped in a child span,
+  inherit the exact same brand spacing.
+*/
+
+html[data-beyond-language="he"] .home-brand span,
+html[data-beyond-language="he"] .home-brand strong {
+  letter-spacing: inherit !important;
+}
+
+
+/* =========================================================
+   BEYOND WORDMARK — FINAL LANGUAGE IMMUNITY FIX
+   Must visually remain identical in EN and HE.
+========================================================= */
+
+/*
+  Higher specificity than the global Hebrew typography rules.
+*/
+
+html[data-beyond-language="he"]
+#root .home-brand {
+  direction: ltr !important;
+
+  text-align: left !important;
+
+  unicode-bidi: isolate !important;
+
+  letter-spacing: 9px !important;
+}
+
+
+html[data-beyond-language="he"]
+#root .home-brand span,
+
+html[data-beyond-language="he"]
+#root .home-brand strong,
+
+html[data-beyond-language="he"]
+#root .home-brand * {
+  direction: ltr !important;
+
+  text-align: left !important;
+
+  unicode-bidi: isolate !important;
+
+  letter-spacing: inherit !important;
+}
+
+
+/*
+  Match the existing responsive BEYOND spacing.
+*/
+
+@media (max-width: 900px) {
+
+  html[data-beyond-language="he"]
+  #root .home-brand {
+    letter-spacing: 6px !important;
+  }
+
+}
+
+
+/* =========================================================
+   BEYOND — UNIFIED SECTION HEADLINE DESIGN V1
+
+   Matches the Digital Menu hero typography.
+   IMPORTANT:
+   - does NOT change font-size
+   - does NOT change section width
+   - does NOT change margins/padding
+   - does NOT change grid/layout
+========================================================= */
+
+:root {
+  --beyond-section-headline-font:
+    var(
+      --font-display-family,
+      "Space Grotesk",
+      "Inter",
+      sans-serif
+    );
+
+  --beyond-section-headline-weight:
+    600;
+
+  --beyond-section-headline-tracking:
+    -0.067em;
+}
+
+
+/* =========================================================
+   ALL MAIN WEBSITE SECTION HEADLINES
+========================================================= */
+
+.digital-menu-copy h1,
+.digital-menu-title,
+
+.digital-benefits-heading h2,
+
+.hero-copy h1,
+
+.process-story-heading h2,
+
+.creator-heading h2,
+
+.community-heading h2,
+
+.reviews-heading h2,
+
+.start-project-heading h2,
+
+.home-section-heading h2,
+
+.home-final-cta h2,
+
+.ai-studio-heading h2 {
+  font-family:
+    var(
+      --beyond-section-headline-font
+    ) !important;
+
+  font-weight:
+    var(
+      --beyond-section-headline-weight
+    ) !important;
+
+  font-style:
+    normal !important;
+
+  letter-spacing:
+    var(
+      --beyond-section-headline-tracking
+    ) !important;
+
+  text-rendering:
+    geometricPrecision;
+}
+
+
+/* =========================================================
+   SECOND-LINE / COLORED WORDS
+
+   Inherit the exact same headline typography.
+   Existing colors remain untouched.
+========================================================= */
+
+.digital-menu-copy h1 span,
+.digital-menu-title span,
+
+.digital-benefits-heading h2 span,
+
+.hero-copy h1 span,
+
+.process-story-heading h2 span,
+
+.creator-heading h2 span,
+
+.community-heading h2 span,
+
+.reviews-heading h2 span,
+
+.start-project-heading h2 span,
+
+.home-section-heading h2 span,
+
+.home-final-cta h2 span,
+
+.ai-studio-heading h2 span {
+  font-family:
+    inherit !important;
+
+  font-weight:
+    inherit !important;
+}
+
+
+/* =========================================================
+   HEBREW
+
+   Same headline family and weight.
+   Hebrew must NOT use aggressive Latin letter spacing.
+========================================================= */
+
+html[data-beyond-language="he"]
+:is(
+  .digital-menu-copy h1,
+  .digital-menu-title,
+  .digital-benefits-heading h2,
+  .hero-copy h1,
+  .process-story-heading h2,
+  .creator-heading h2,
+  .community-heading h2,
+  .reviews-heading h2,
+  .start-project-heading h2,
+  .home-section-heading h2,
+  .home-final-cta h2,
+  .ai-studio-heading h2
+) {
+  font-family:
+    var(
+      --beyond-section-headline-font
+    ) !important;
+
+  font-weight:
+    600 !important;
+
+  letter-spacing:
+    normal !important;
+
+  direction:
+    rtl !important;
+
+  text-align:
+    right !important;
+
+  unicode-bidi:
+    plaintext;
+}
+
+
+/* English stays LTR */
+
+html[data-beyond-language="en"]
+:is(
+  .digital-menu-copy h1,
+  .digital-menu-title,
+  .digital-benefits-heading h2,
+  .hero-copy h1,
+  .process-story-heading h2,
+  .creator-heading h2,
+  .community-heading h2,
+  .reviews-heading h2,
+  .start-project-heading h2,
+  .home-section-heading h2,
+  .home-final-cta h2,
+  .ai-studio-heading h2
+) {
+  direction:
+    ltr !important;
+}
+
+
+
+/* =========================================================
+   BEYOND HEADLINE SYSTEM V2
+   ONE VISUAL LANGUAGE ACROSS THE ENTIRE WEBSITE
+========================================================= */
+
+:root {
+
+  /* Exact typography language of the first hero */
+
+  --beyond-headline-family:
+    var(
+      --font-display-family,
+      "Space Grotesk",
+      "Inter",
+      sans-serif
+    );
+
+  --beyond-headline-weight:
+    600;
+
+  --beyond-headline-line:
+    .86;
+
+  --beyond-headline-track:
+    -.067em;
+
+
+  /* HERO SCALE */
+
+  --beyond-headline-hero-size:
+    clamp(
+      68px,
+      7vw,
+      118px
+    );
+
+
+  /* ALL NORMAL SECTIONS USE ONE SCALE */
+
+  --beyond-headline-section-size:
+    clamp(
+      58px,
+      6vw,
+      92px
+    );
+}
+
+
+/* =========================================================
+   HERO 01 — DIGITAL MENU
+========================================================= */
+
+#root .digital-menu-copy h1,
+#root .digital-menu-title {
+
+  font-family:
+    var(--beyond-headline-family) !important;
+
+  font-size:
+    var(--beyond-headline-hero-size) !important;
+
+  font-weight:
+    var(--beyond-headline-weight) !important;
+
+  line-height:
+    var(--beyond-headline-line) !important;
+
+  letter-spacing:
+    var(--beyond-headline-track) !important;
+
+  font-style:
+    normal !important;
+
+  font-stretch:
+    normal !important;
+}
+
+
+/* =========================================================
+   HERO 02 — 3D PRINTING
+   SAME DESIGN + SAME HERO SCALE
+========================================================= */
+
+#root .hero-copy h1 {
+
+  font-family:
+    var(--beyond-headline-family) !important;
+
+  font-size:
+    var(--beyond-headline-hero-size) !important;
+
+  font-weight:
+    var(--beyond-headline-weight) !important;
+
+  line-height:
+    var(--beyond-headline-line) !important;
+
+  letter-spacing:
+    var(--beyond-headline-track) !important;
+
+  font-style:
+    normal !important;
+
+  font-stretch:
+    normal !important;
+}
+
+
+/* =========================================================
+   ALL MAIN SECTION HEADLINES
+   SAME SIZE + SAME TYPOGRAPHY
+========================================================= */
+
+#root :is(
+  .digital-benefits-heading h2,
+  .process-story-heading h2,
+  .creator-heading h2,
+  .community-heading h2,
+  .reviews-heading h2,
+  .start-project-heading h2,
+  .home-section-heading h2,
+  .home-final-cta h2,
+  .ai-studio-heading h2
+) {
+
+  font-family:
+    var(--beyond-headline-family) !important;
+
+  font-size:
+    var(--beyond-headline-section-size) !important;
+
+  font-weight:
+    var(--beyond-headline-weight) !important;
+
+  line-height:
+    var(--beyond-headline-line) !important;
+
+  letter-spacing:
+    var(--beyond-headline-track) !important;
+
+  font-style:
+    normal !important;
+
+  font-stretch:
+    normal !important;
+
+  text-rendering:
+    geometricPrecision;
+}
+
+
+/* =========================================================
+   HEADLINE CHILD SPANS
+   No section may introduce a different font treatment.
+   Existing colors are preserved.
+========================================================= */
+
+#root :is(
+  .digital-menu-copy h1,
+  .digital-menu-title,
+  .hero-copy h1,
+  .digital-benefits-heading h2,
+  .process-story-heading h2,
+  .creator-heading h2,
+  .community-heading h2,
+  .reviews-heading h2,
+  .start-project-heading h2,
+  .home-section-heading h2,
+  .home-final-cta h2,
+  .ai-studio-heading h2
+) > span,
+
+#root :is(
+  .digital-menu-copy h1,
+  .digital-menu-title,
+  .hero-copy h1,
+  .digital-benefits-heading h2,
+  .process-story-heading h2,
+  .creator-heading h2,
+  .community-heading h2,
+  .reviews-heading h2,
+  .start-project-heading h2,
+  .home-section-heading h2,
+  .home-final-cta h2,
+  .ai-studio-heading h2
+) span {
+
+  font-family:
+    inherit !important;
+
+  font-size:
+    inherit !important;
+
+  font-weight:
+    inherit !important;
+
+  line-height:
+    inherit !important;
+}
+
+
+/* =========================================================
+   HEBREW
+   Same visual design — proper Hebrew typography.
+========================================================= */
+
+html[data-beyond-language="he"]
+#root :is(
+  .digital-menu-copy h1,
+  .digital-menu-title,
+  .hero-copy h1,
+  .digital-benefits-heading h2,
+  .process-story-heading h2,
+  .creator-heading h2,
+  .community-heading h2,
+  .reviews-heading h2,
+  .start-project-heading h2,
+  .home-section-heading h2,
+  .home-final-cta h2,
+  .ai-studio-heading h2
+) {
+
+  font-family:
+    var(--beyond-headline-family) !important;
+
+  font-weight:
+    var(--beyond-headline-weight) !important;
+
+  line-height:
+    .92 !important;
+
+  /*
+    Don't apply Latin negative tracking to Hebrew.
+  */
+
+  letter-spacing:
+    normal !important;
+
+  direction:
+    rtl !important;
+
+  text-align:
+    right !important;
+
+  unicode-bidi:
+    plaintext !important;
+}
+
+
+/* Hebrew headline lines align consistently */
+
+html[data-beyond-language="he"]
+#root :is(
+  .digital-menu-copy h1,
+  .digital-menu-title,
+  .hero-copy h1,
+  .digital-benefits-heading h2,
+  .process-story-heading h2,
+  .creator-heading h2,
+  .community-heading h2,
+  .reviews-heading h2,
+  .start-project-heading h2,
+  .home-section-heading h2,
+  .home-final-cta h2,
+  .ai-studio-heading h2
+) span {
+
+  direction:
+    rtl !important;
+
+  text-align:
+    right !important;
+
+  letter-spacing:
+    normal !important;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:700px) {
+
+  :root {
+
+    --beyond-headline-hero-size:
+      clamp(
+        52px,
+        15vw,
+        76px
+      );
+
+    --beyond-headline-section-size:
+      clamp(
+        46px,
+        12vw,
+        66px
+      );
+
+  }
+
+}

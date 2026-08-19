@@ -1,0 +1,551 @@
+@import "../styles/typography.css";
+
+/* =========================================================
+   BEYOND MENU STUDIO THEME
+   Public restaurant menus are intentionally NOT affected.
+========================================================= */
+
+.bm-owner-dashboard {
+  font-family:
+    var(--font-body-family),
+    Inter,
+    system-ui,
+    -apple-system,
+    sans-serif;
+
+  font-size: 16px;
+}
+
+.bm-owner-dashboard h1,
+.bm-owner-dashboard h2,
+.bm-owner-dashboard h3 {
+  font-family:
+    var(--font-display-family),
+    "Space Grotesk",
+    Inter,
+    system-ui,
+    sans-serif;
+}
+
+.bm-owner-dashboard button,
+.bm-owner-dashboard input,
+.bm-owner-dashboard select,
+.bm-owner-dashboard textarea {
+  font-family: inherit;
+}
+
+
+/* =========================================================
+   THEME BUTTON
+========================================================= */
+
+.bm-owner-dashboard .bm-theme-toggle {
+  min-height: 42px;
+  padding: 0 14px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  border-radius: 999px;
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+
+/* =========================================================
+   LIGHT — ROOT
+========================================================= */
+
+html[data-beyond-theme="light"] .bm-owner-dashboard {
+  color: #172437;
+
+  background:
+    radial-gradient(
+      circle at 88% 3%,
+      rgba(52, 119, 199, 0.08),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 10% 70%,
+      rgba(81, 127, 180, 0.04),
+      transparent 30%
+    ),
+    #f4f7fa !important;
+}
+
+
+/* =========================================================
+   MAIN SURFACES
+========================================================= */
+
+html[data-beyond-theme="light"]
+.bm-owner-dashboard
+:is(
+  .bm-head,
+  .bm-card,
+  .bm-owner-sitebar,
+  .bm-owner-settings,
+  .bm-owner-categories,
+  .bm-owner-items,
+  .bm-sites,
+  .bm-editor,
+  .bm-admin-table,
+  .bm-ai-review
+) {
+  color: #172437;
+
+  border-color:
+    rgba(31, 53, 80, 0.11) !important;
+
+  background:
+    rgba(255, 255, 255, 0.94) !important;
+
+  box-shadow:
+    0 16px 50px
+    rgba(35, 57, 82, 0.055);
+}
+
+
+/* =========================================================
+   HEADINGS
+========================================================= */
+
+html[data-beyond-theme="light"]
+.bm-owner-dashboard
+:is(
+  h1,
+  h2,
+  h3
+) {
+  color: #111b2b !important;
+}
+
+html[data-beyond-theme="light"]
+.bm-owner-header h1 {
+  color: #101a2a !important;
+}
+
+html[data-beyond-theme="light"]
+.bm-owner-header p {
+  color: #5b6f86 !important;
+}
+
+html[data-beyond-theme="light"]
+.bm-owner-dashboard .bm-label,
+html[data-beyond-theme="light"]
+.bm-owner-header > div > span {
+  color: #567a9e !important;
+}
+
+
+/* =========================================================
+   RESTAURANT BAR
+========================================================= */
+
+html[data-beyond-theme="light"]
+.bm-owner-site-title h2 {
+  color: #142136 !important;
+}
+
+html[data-beyond-theme="light"]
+.bm-owner-site-main a {
+  color: #286aa8 !important;
+}
+
+html[data-beyond-theme="light"]
+.bm-owner-status.live {
+  color: #267250 !important;
+
+  background:
+    rgba(38, 135, 93, 0.08) !important;
+}
+
+html[data-beyond-theme="light"]
+.bm-owner-status.draft {
+  color: #68798d !important;
+
+  background:
+    rgba(68, 88, 111, 0.07) !important;
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+html[data-beyond-theme="light"]
+.bm-owner-dashboard button {
+  color: #36536f;
+
+  border-color:
+    rgba(33, 61, 92, 0.14);
+
+  background:
+    rgba(247, 250, 253, 0.95);
+
+  box-shadow:
+    0 3px 10px
+    rgba(29, 49, 73, 0.025);
+}
+
+html[data-beyond-theme="light"]
+.bm-owner-dashboard button:hover:not(:disabled) {
+  color: #184c7c;
+
+  border-color:
+    rgba(45, 108, 174, 0.27);
+
+  background: #ffffff;
+}
+
+html[data-beyond-theme="light"]
+.bm-owner-dashboard .bm-theme-toggle {
+  color: #245a8d;
+
+  border-color:
+    rgba(45, 106, 170, 0.2);
+
+  background:
+    rgba(225, 238, 250, 0.72);
+}
+
+html[data-beyond-theme="light"]
+.bm-owner-dashboard .bm-owner-add,
+html[data-beyond-theme="light"]
+.bm-owner-dashboard .primary {
+  color: #175a93 !important;
+
+  border-color:
+    rgba(41, 115, 185, 0.27) !important;
+
+  background:
+    rgba(52, 128, 201, 0.09) !important;
+}
+
+
+/* =========================================================
+   PANELS
+========================================================= */
+
+html[data-beyond-theme="light"]
+.bm-owner-panel-head {
+  border-color:
+    rgba(31, 54, 82, 0.1) !important;
+}
+
+html[data-beyond-theme="light"]
+.bm-owner-panel-head h2 {
+  color: #152238 !important;
+}
+
+html[data-beyond-theme="light"]
+.bm-owner-items-head p {
+  color: #60748a !important;
+}
+
+
+/* =========================================================
+   CATEGORY CARDS
+========================================================= */
+
+html[data-beyond-theme="light"]
+.bm-owner-category {
+  border-color:
+    rgba(31, 55, 83, 0.08);
+}
+
+html[data-beyond-theme="light"]
+.bm-owner-category:hover {
+  border-color:
+    rgba(43, 101, 160, 0.15);
+
+  background:
+    rgba(56, 117, 178, 0.035);
+}
+
+html[data-beyond-theme="light"]
+.bm-owner-category.active {
+  border-color:
+    rgba(44, 112, 180, 0.25);
+
+  background:
+    rgba(58, 127, 194, 0.075);
+}
+
+html[data-beyond-theme="light"]
+.bm-owner-category-main strong {
+  color: #1b2b40 !important;
+}
+
+html[data-beyond-theme="light"]
+.bm-owner-category-main small {
+  color: #64788e !important;
+}
+
+html[data-beyond-theme="light"]
+.bm-owner-category-main em {
+  color: #416e98;
+
+  background:
+    rgba(70, 126, 181, 0.08);
+}
+
+
+/* =========================================================
+   ITEMS
+========================================================= */
+
+html[data-beyond-theme="light"]
+.bm-owner-item {
+  border-color:
+    rgba(31, 55, 82, 0.09);
+
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff,
+      #fafbfd
+    ) !important;
+
+  box-shadow:
+    0 8px 25px
+    rgba(31, 51, 76, 0.035);
+}
+
+html[data-beyond-theme="light"]
+.bm-owner-item:hover {
+  border-color:
+    rgba(46, 108, 169, 0.18);
+}
+
+html[data-beyond-theme="light"]
+.bm-owner-item-copy strong {
+  color: #17283d !important;
+}
+
+html[data-beyond-theme="light"]
+.bm-owner-item-copy span {
+  color: #516f8a !important;
+}
+
+html[data-beyond-theme="light"]
+.bm-owner-item-copy p {
+  color: #64778c !important;
+}
+
+html[data-beyond-theme="light"]
+.bm-owner-item-price {
+  color: #255e91 !important;
+}
+
+
+/* =========================================================
+   FORMS
+========================================================= */
+
+html[data-beyond-theme="light"]
+.bm-owner-dashboard label {
+  color: #455f78 !important;
+}
+
+html[data-beyond-theme="light"]
+.bm-owner-dashboard
+:is(
+  input,
+  select,
+  textarea
+) {
+  color: #16273b !important;
+
+  border-color:
+    rgba(31, 57, 86, 0.14) !important;
+
+  background:
+    #ffffff !important;
+
+  box-shadow:
+    inset 0 1px 2px
+    rgba(30, 48, 69, 0.02);
+}
+
+html[data-beyond-theme="light"]
+.bm-owner-dashboard
+:is(
+  input,
+  textarea
+)::placeholder {
+  color: #8c9aa8 !important;
+  opacity: 1;
+}
+
+html[data-beyond-theme="light"]
+.bm-owner-dashboard
+:is(
+  input,
+  select,
+  textarea
+):focus {
+  border-color:
+    rgba(45, 111, 178, 0.42) !important;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(54, 123, 191, 0.08) !important;
+}
+
+
+/* =========================================================
+   ADD / EDIT FORM SURFACES
+========================================================= */
+
+html[data-beyond-theme="light"]
+.bm-owner-dashboard
+:is(
+  .bm-owner-item-form,
+  .bm-owner-item-edit,
+  .bm-owner-category-edit,
+  .bm-owner-category-form
+) {
+  border-color:
+    rgba(36, 68, 101, 0.11) !important;
+
+  background:
+    rgba(244, 248, 252, 0.9) !important;
+}
+
+
+/* =========================================================
+   MUTED TEXT
+========================================================= */
+
+html[data-beyond-theme="light"]
+.bm-owner-dashboard
+:is(
+  p,
+  small
+) {
+  color: #60758b;
+}
+
+html[data-beyond-theme="light"]
+.bm-owner-empty-items h3,
+html[data-beyond-theme="light"]
+.bm-owner-empty h2 {
+  color: #17283c !important;
+}
+
+html[data-beyond-theme="light"]
+.bm-owner-empty-items p,
+html[data-beyond-theme="light"]
+.bm-owner-empty p {
+  color: #65798e !important;
+}
+
+
+/* =========================================================
+   MOVE / UTILITY BUTTONS
+========================================================= */
+
+html[data-beyond-theme="light"]
+.bm-owner-dashboard .bm-move-button {
+  color: #2e6695 !important;
+
+  border-color:
+    rgba(47, 109, 167, 0.18) !important;
+
+  background:
+    rgba(67, 131, 190, 0.07) !important;
+}
+
+
+/* =========================================================
+   DANGER
+========================================================= */
+
+html[data-beyond-theme="light"]
+.bm-owner-dashboard
+:is(
+  .bm-owner-category-actions,
+  .bm-owner-item-actions
+)
+.danger {
+  color: #9e4646 !important;
+
+  border-color:
+    rgba(170, 67, 67, 0.18) !important;
+
+  background:
+    rgba(185, 65, 65, 0.035) !important;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 640px) {
+
+  .bm-owner-dashboard {
+    font-size: 16px;
+  }
+
+  .bm-owner-header-actions
+  .bm-theme-toggle {
+    grid-column: 1 / -1;
+  }
+
+}
+
+
+/* =========================================================
+   MENU STUDIO LANGUAGE TOGGLE
+========================================================= */
+
+.bm-language-toggle {
+  height: 42px;
+
+  flex:
+    0 0 auto;
+}
+
+
+/*
+  Hebrew translates text only.
+  Never mirror the Menu Studio structure.
+*/
+
+html[data-beyond-language="he"]
+.bm-owner-dashboard,
+html[data-beyond-language="he"]
+.bm-owner-sitebar,
+html[data-beyond-language="he"]
+.bm-owner-categories,
+html[data-beyond-language="he"]
+.bm-owner-items,
+html[data-beyond-language="he"]
+.bm-owner-header-actions {
+  direction: ltr;
+}
+
+
+/*
+  Hebrew text itself can render correctly
+  without reversing cards or columns.
+*/
+
+html[data-beyond-language="he"]
+.bm-owner-dashboard h1,
+html[data-beyond-language="he"]
+.bm-owner-dashboard h2,
+html[data-beyond-language="he"]
+.bm-owner-dashboard h3,
+html[data-beyond-language="he"]
+.bm-owner-dashboard p,
+html[data-beyond-language="he"]
+.bm-owner-dashboard label {
+  unicode-bidi:
+    plaintext;
+}

@@ -541,3 +541,103 @@ export async function setCommunitySave({ itemId, userId, saved }) {
   if (error && error.code !== "23505") throw error;
   return true;
 }
+
+
+// =========================================================
+// BEYOND COMMUNITY FEATURED V1
+// =========================================================
+
+export async function listCommunityFeatured() {
+  const {
+    data,
+    error,
+  } = await supabase
+    .from("community_featured")
+    .select(
+      "item_id,position,updated_by,created_at,updated_at"
+    )
+    .order(
+      "position",
+      { ascending: true }
+    );
+
+  if (error) {
+    throw error;
+  }
+
+  return data || [];
+}
+
+
+export async function setCommunityFeatured({
+  itemId,
+  position,
+  userId,
+}) {
+  if (!itemId) {
+    throw new Error(
+      "Community item is required."
+    );
+  }
+
+  if (
+    position < 1 ||
+    position > 3
+  ) {
+    throw new Error(
+      "Featured position must be between 1 and 3."
+    );
+  }
+
+  const now =
+    new Date().toISOString();
+
+  const {
+    data,
+    error,
+  } = await supabase
+    .from("community_featured")
+    .upsert(
+      {
+        item_id: itemId,
+        position,
+        updated_by:
+          userId || null,
+        updated_at: now,
+      },
+      {
+        onConflict: "item_id",
+      }
+    )
+    .select()
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
+
+export async function removeCommunityFeatured({
+  itemId,
+}) {
+  if (!itemId) {
+    return;
+  }
+
+  const {
+    error,
+  } = await supabase
+    .from("community_featured")
+    .delete()
+    .eq(
+      "item_id",
+      itemId
+    );
+
+  if (error) {
+    throw error;
+  }
+}

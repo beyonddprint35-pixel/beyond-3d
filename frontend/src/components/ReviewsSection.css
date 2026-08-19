@@ -689,3 +689,332 @@ div:first-child span {
     font-size: 20px;
   }
 }
+
+/* =========================================================
+   REVIEWS — HEBREW LAYOUT + LIGHT MODE READABILITY
+========================================================= */
+
+
+/* ---------------------------------------------------------
+   HEBREW — remove 03 / CUSTOMER REVIEWS
+--------------------------------------------------------- */
+
+html[data-beyond-language="he"]
+#root
+section[data-beyond-reviews="true"]
+[data-reviews-kicker="true"] {
+  display: none !important;
+}
+
+
+/* Existing-class fallback */
+html[data-beyond-language="he"]
+#root
+section[data-beyond-reviews="true"]
+.reviews-kicker {
+  display: none !important;
+}
+
+
+/* =========================================================
+   HEBREW DESKTOP HEADER
+
+   RIGHT = headline
+   LEFT  = description
+========================================================= */
+
+@media (min-width: 981px) {
+
+  /* Case: title is inside a child DIV */
+  html[data-beyond-language="he"]
+  #root
+  section[data-beyond-reviews="true"]
+  *:has(> * > [data-reviews-title="true"])
+  :is([data-reviews-description="true"]) {
+    direction: rtl;
+  }
+
+
+  html[data-beyond-language="he"]
+  #root
+  section[data-beyond-reviews="true"]
+  .reviews-heading {
+    display: grid !important;
+
+    grid-template-columns:
+      minmax(300px, 0.8fr)
+      minmax(0, 1.2fr) !important;
+
+    gap: 60px !important;
+
+    direction: ltr !important;
+
+    align-items: end !important;
+  }
+
+
+  /* TITLE BLOCK → RIGHT */
+
+  html[data-beyond-language="he"]
+  #root
+  section[data-beyond-reviews="true"]
+  .reviews-heading
+  > div {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+
+    direction: rtl !important;
+
+    text-align: right !important;
+
+    justify-self: stretch !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  #root
+  section[data-beyond-reviews="true"]
+  [data-reviews-title="true"] {
+    direction: rtl !important;
+
+    text-align: right !important;
+
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+
+  /* DESCRIPTION → LEFT */
+
+  html[data-beyond-language="he"]
+  #root
+  section[data-beyond-reviews="true"]
+  [data-reviews-description="true"] {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+
+    direction: rtl !important;
+
+    text-align: left !important;
+
+    justify-self: start !important;
+
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+
+    max-width: 430px !important;
+  }
+
+}
+
+
+/* =========================================================
+   LIGHT MODE — HEADER READABILITY
+========================================================= */
+
+html[data-beyond-theme="light"]
+#root
+section[data-beyond-reviews="true"]
+[data-reviews-title="true"] {
+  color: #101827 !important;
+  -webkit-text-fill-color: #101827 !important;
+}
+
+
+/* Blue part of title */
+
+html[data-beyond-theme="light"]
+#root
+section[data-beyond-reviews="true"]
+[data-reviews-title="true"]
+span {
+  color: #5F91BC !important;
+  -webkit-text-fill-color: #5F91BC !important;
+}
+
+
+/* Description */
+
+html[data-beyond-theme="light"]
+#root
+section[data-beyond-reviews="true"]
+[data-reviews-description="true"] {
+  color: #50677b !important;
+
+  opacity: 1 !important;
+}
+
+
+/* =========================================================
+   LIGHT MODE — REVIEW CARDS
+========================================================= */
+
+html[data-beyond-theme="light"]
+#root
+section[data-beyond-reviews="true"]
+article {
+  background:
+    rgba(255,255,255,0.96) !important;
+
+  border-color:
+    rgba(42, 70, 94, 0.15) !important;
+
+  color:
+    #182838 !important;
+
+  box-shadow:
+    0 16px 44px
+    rgba(26, 47, 65, 0.06) !important;
+}
+
+
+/* Main review text */
+
+html[data-beyond-theme="light"]
+#root
+section[data-beyond-reviews="true"]
+article
+:is(
+  h2,
+  h3,
+  h4,
+  blockquote,
+  q,
+  strong
+) {
+  color:
+    #1a2a39 !important;
+
+  opacity:
+    1 !important;
+}
+
+
+/* Review paragraphs */
+
+html[data-beyond-theme="light"]
+#root
+section[data-beyond-reviews="true"]
+article p {
+  color:
+    #52697c !important;
+
+  opacity:
+    1 !important;
+}
+
+
+/* Meta / small information */
+
+html[data-beyond-theme="light"]
+#root
+section[data-beyond-reviews="true"]
+article
+:is(
+  small,
+  time
+) {
+  color:
+    #5d7386 !important;
+
+  opacity:
+    1 !important;
+}
+
+
+/* Stars */
+
+html[data-beyond-theme="light"]
+#root
+section[data-beyond-reviews="true"]
+[class*="star"] {
+  color:
+    #5F91BC !important;
+
+  opacity:
+    1 !important;
+}
+
+
+/* =========================================================
+   LIGHT MODE — SUMMARY / RATING AREA
+========================================================= */
+
+html[data-beyond-theme="light"]
+#root
+section[data-beyond-reviews="true"]
+[class*="rating"],
+
+html[data-beyond-theme="light"]
+#root
+section[data-beyond-reviews="true"]
+[class*="summary"] {
+  color:
+    #29465e !important;
+
+  opacity:
+    1 !important;
+}
+
+
+html[data-beyond-theme="light"]
+#root
+section[data-beyond-reviews="true"]
+[class*="rating"]
+:is(
+  p,
+  span,
+  strong,
+  small
+),
+
+html[data-beyond-theme="light"]
+#root
+section[data-beyond-reviews="true"]
+[class*="summary"]
+:is(
+  p,
+  span,
+  strong,
+  small
+) {
+  color:
+    #4e677b !important;
+
+  opacity:
+    1 !important;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 980px) {
+
+  html[data-beyond-language="he"]
+  #root
+  section[data-beyond-reviews="true"]
+  .reviews-heading {
+    direction: rtl !important;
+
+    text-align: right !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  #root
+  section[data-beyond-reviews="true"]
+  [data-reviews-title="true"],
+
+  html[data-beyond-language="he"]
+  #root
+  section[data-beyond-reviews="true"]
+  [data-reviews-description="true"] {
+    direction: rtl !important;
+
+    text-align: right !important;
+  }
+
+}
+

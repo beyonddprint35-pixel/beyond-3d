@@ -1,0 +1,100 @@
+.beyond-language-toggle {
+  min-height: 42px;
+
+  padding:
+    0 12px;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  flex:
+    0 0 auto;
+
+  border:
+    1px solid
+    rgba(
+      113,
+      158,
+      196,
+      .16
+    );
+
+  border-radius: 999px;
+
+  color: #627d94;
+
+  background:
+    rgba(
+      8,
+      19,
+      30,
+      .58
+    );
+
+  font: inherit;
+
+  font-size: 9px;
+  font-weight: 850;
+
+  letter-spacing: .08em;
+
+  cursor: pointer;
+}
+
+
+.beyond-language-toggle span {
+  opacity: .42;
+}
+
+
+.beyond-language-toggle span.active {
+  color: #e0edf7;
+
+  opacity: 1;
+}
+
+
+.beyond-language-toggle i {
+  width: 1px;
+  height: 13px;
+
+  background:
+    rgba(
+      112,
+      156,
+      191,
+      .18
+    );
+}
+
+
+html[data-beyond-theme="light"]
+.beyond-language-toggle {
+  color: #627a90;
+
+  border-color:
+    rgba(
+      34,
+      68,
+      100,
+      .14
+    );
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      .86
+    );
+}
+
+
+html[data-beyond-theme="light"]
+.beyond-language-toggle span.active {
+  color: #174f82;
+}

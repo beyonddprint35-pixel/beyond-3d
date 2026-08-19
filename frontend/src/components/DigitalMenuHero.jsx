@@ -1,0 +1,348 @@
+import {
+  useBeyondLanguage,
+} from "../i18n/BeyondLanguage";
+
+import "./DigitalMenuHero.css";
+
+export default function DigitalMenuHero({
+  onStartMenu,
+}) {
+  const {
+    isHebrew,
+  } = useBeyondLanguage();
+
+  return (
+    <section
+      className="digital-menu-hero"
+      id="digital-menus"
+    >
+      <div className="digital-menu-copy">
+        <div className="digital-menu-kicker">
+          <span />
+          {isHebrew
+            ? "תפריט BEYOND"
+            : "BEYOND MENU"}
+        </div>
+
+        <h1
+          className={`digital-menu-title ${
+            isHebrew
+              ? "is-hebrew"
+              : ""
+          }`}
+          dir={
+            isHebrew
+              ? "rtl"
+              : "ltr"
+          }
+        >
+          <span className="digital-menu-title-line digital-menu-title-line-one">
+            {isHebrew
+              ? "התפריט שלך."
+              : "YOUR MENU."}
+          </span>
+
+          <span className="digital-menu-title-line digital-menu-title-line-two">
+            {isHebrew
+              ? "עכשיו דיגיטלי."
+              : "NOW DIGITAL."}
+          </span>
+        </h1>
+
+        <p
+          dir={
+            isHebrew
+              ? "rtl"
+              : "ltr"
+          }
+        >
+          {isHebrew
+            ? "תפריטים דיגיטליים למסעדות, בתי קפה וברים — עם מעמדי QR ו־NFC, תמיכה במספר שפות וניהול תפריט פשוט."
+            : "Digital menus for restaurants, cafés and bars — with QR and NFC stands, multi-language support and simple menu management."}
+        </p>
+
+        <div className="digital-menu-actions">
+          <button
+            type="button"
+            className="digital-menu-primary"
+            onClick={onStartMenu}
+          >
+            {isHebrew
+              ? "צור תפריט"
+              : "Start your menu"}
+          </button>
+
+          <button
+            type="button"
+            className="digital-menu-secondary"
+            onClick={() =>
+              window.open(
+                "/menu/el-puerto",
+                "_blank",
+                "noopener,noreferrer"
+              )
+            }
+          >
+            {isHebrew
+              ? "צפה בתפריט לדוגמה"
+              : "View menu demo"}
+            <span>↗</span>
+          </button>
+        </div>
+
+        <div className="digital-menu-features">
+          <div>
+            <strong>01</strong>
+            <span>
+              {isHebrew
+                ? "תפריט דיגיטלי"
+                : "DIGITAL MENU"}
+            </span>
+          </div>
+
+          <div>
+            <strong>02</strong>
+            <span>
+              QR + NFC
+            </span>
+          </div>
+
+          <div>
+            <strong>03</strong>
+            <span>
+              {isHebrew
+                ? "עדכון פשוט"
+                : "EASY UPDATES"}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="digital-menu-product">
+        <div className="digital-menu-glow" />
+
+        {/* PHONE */}
+        <div className="digital-menu-phone">
+          <div className="digital-phone-island" />
+
+          <div className="digital-phone-screen">
+
+            {/* BEYOND_NFC_PHONE_INTERACTION_V1 */}
+            <div className="digital-phone-nfc-ready">
+
+              <div className="digital-phone-nfc-symbol">
+                <span />
+                <span />
+                <span />
+              </div>
+
+              <small>
+                NFC READY
+              </small>
+
+              <strong>
+                BEYOND
+                <br />
+                MENU
+              </strong>
+
+              <p>
+                Hold your phone
+                near the stand
+              </p>
+
+            </div>
+            <div className="digital-phone-live">
+              <span>LIVE MENU</span>
+              <i />
+            </div>
+
+            <div className="digital-phone-brand">
+
+              <span className="digital-phone-brand-title">
+
+                <span className="digital-phone-brand-beyond">
+                  BEYOND
+                </span>
+
+                <span className="digital-phone-brand-menu">
+                  {isHebrew
+                    ? "תפריט"
+                    : "MENU"}
+                </span>
+
+              </span>
+
+              <small>
+                QR · NFC · MULTI LANGUAGE
+              </small>
+
+            </div>
+
+            <div className="digital-phone-tabs">
+              <span className="active">FOOD</span>
+              <span>DRINKS</span>
+              <span>DESSERT</span>
+            </div>
+
+            <div className="digital-phone-list">
+              <div>
+                <span>
+                  House Burger
+                  <small>Beef burger with fries</small>
+                </span>
+                <strong>₪18</strong>
+              </div>
+
+              <div>
+                <span>
+                  Caesar Salad
+                  <small>Romaine, parmesan, croutons</small>
+                </span>
+                <strong>₪12</strong>
+              </div>
+
+              <div>
+                <span>
+                  Fresh Pasta
+                  <small>Cream sauce & herbs</small>
+                </span>
+                <strong>₪16</strong>
+              </div>
+
+              <div>
+                <span>
+                  Signature Lemonade
+                  <small>Fresh citrus drink</small>
+                </span>
+                <strong>₪6</strong>
+              </div>
+            </div>
+
+            <div className="digital-phone-footer">
+              SCAN TO VIEW FULL MENU
+            </div>
+          </div>
+        </div>
+
+        {/* PHYSICAL QR / NFC STAND */}
+        <div className="digital-stand">
+          <div className="digital-stand-shadow" />
+
+          <div className="digital-stand-board">
+            <div className="digital-stand-brand">
+              <strong>BEYOND</strong>
+              <span>MENU</span>
+            </div>
+
+            <div className="digital-stand-heading">
+              OUR MENU
+            </div>
+
+            <div className="digital-stand-qr">
+              <svg
+                viewBox="0 0 100 100"
+                aria-hidden="true"
+              >
+                <g
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="6"
+                >
+                  <rect
+                    x="6"
+                    y="6"
+                    width="27"
+                    height="27"
+                    rx="2"
+                  />
+                  <rect
+                    x="67"
+                    y="6"
+                    width="27"
+                    height="27"
+                    rx="2"
+                  />
+                  <rect
+                    x="6"
+                    y="67"
+                    width="27"
+                    height="27"
+                    rx="2"
+                  />
+                </g>
+
+                <g fill="currentColor">
+                  <rect x="41" y="7" width="8" height="8" />
+                  <rect x="54" y="7" width="7" height="8" />
+                  <rect x="41" y="21" width="10" height="8" />
+                  <rect x="55" y="24" width="7" height="8" />
+
+                  <rect x="40" y="39" width="9" height="9" />
+                  <rect x="53" y="39" width="11" height="8" />
+                  <rect x="68" y="40" width="8" height="8" />
+                  <rect x="83" y="40" width="10" height="8" />
+
+                  <rect x="7" y="40" width="9" height="8" />
+                  <rect x="21" y="41" width="10" height="8" />
+
+                  <rect x="7" y="54" width="8" height="8" />
+                  <rect x="21" y="53" width="9" height="9" />
+                  <rect x="39" y="53" width="11" height="9" />
+                  <rect x="55" y="52" width="8" height="8" />
+                  <rect x="68" y="55" width="12" height="8" />
+                  <rect x="85" y="53" width="8" height="9" />
+
+                  <rect x="40" y="68" width="8" height="8" />
+                  <rect x="53" y="68" width="9" height="9" />
+                  <rect x="68" y="69" width="8" height="8" />
+                  <rect x="83" y="68" width="10" height="8" />
+
+                  <rect x="40" y="83" width="10" height="10" />
+                  <rect x="55" y="84" width="8" height="9" />
+                  <rect x="69" y="82" width="10" height="11" />
+                  <rect x="85" y="84" width="8" height="8" />
+                </g>
+              </svg>
+            </div>
+
+            <div className="digital-stand-instruction">
+              SCAN OR TAP
+            </div>
+
+            <div className="digital-stand-nfc">
+              <svg
+                viewBox="0 0 36 36"
+                aria-hidden="true"
+              >
+                <path d="M12 11c4 4 4 10 0 14" />
+                <path d="M17 7c7 6 7 16 0 22" />
+                <path d="M22 4c10 8 10 20 0 28" />
+              </svg>
+
+              <span>NFC</span>
+            </div>
+          </div>
+
+          <div className="digital-stand-neck" />
+
+          <div className="digital-stand-base">
+            <span />
+          </div>
+        </div>
+
+        {/* FLOATING UI */}
+        <div className="digital-floating-card digital-floating-top">
+          <span>ACCESS</span>
+          <strong>QR + NFC</strong>
+        </div>
+
+        <div className="digital-floating-card digital-floating-bottom">
+          <span>MENU STATUS</span>
+          <strong>LIVE</strong>
+          <i />
+        </div>
+      </div>
+    </section>
+  );
+}

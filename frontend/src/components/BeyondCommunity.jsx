@@ -54,6 +54,9 @@ import {
   listCommunityFollows,
   listCommunityRecentComments,
   listCommunitySaves,
+  listCommunityFeatured,
+  setCommunityFeatured,
+  removeCommunityFeatured,
   remixCommunityProject,
   resolveOwnedAiGenerationAssets,
   setCommunityLike,
@@ -567,9 +570,17 @@ function communityPermissions(item) {
 function BeyondCommunity({
   session,
   onRequireAuth,
+  isAdmin = false,
 }) {
   const [items, setItems] = useState([]);
   const [likes, setLikes] = useState([]);
+
+  // BEYOND_COMMUNITY_FEATURED_V1
+  const [featuredRows, setFeaturedRows] =
+    useState([]);
+
+  const [communityExpanded, setCommunityExpanded] =
+    useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [filter, setFilter] = useState("new");
@@ -609,6 +620,24 @@ function BeyondCommunity({
 
       setItems(nextItems);
       setLikes(nextLikes);
+
+      // Homepage highlights are optional and must never
+      // take the full Community feed offline.
+      try {
+        const nextFeatured =
+          await listCommunityFeatured();
+
+        setFeaturedRows(
+          nextFeatured
+        );
+      } catch (featuredLoadError) {
+        console.warn(
+          "[BEYOND COMMUNITY] Featured creations unavailable:",
+          featuredLoadError
+        );
+
+        setFeaturedRows([]);
+      }
 
       // Following is deliberately optional. A new social table must never
       // take the public Community feed, previews, likes, comments or Remix offline.
@@ -1039,6 +1068,67 @@ function BeyondCommunity({
     savedByMe,
     searchQuery,
   ]);
+
+  // ========================================================
+  // BEYOND COMMUNITY FEATURED HOMEPAGE
+  // ========================================================
+
+  const featuredPositionByItem =
+    useMemo(() => {
+      const map = new Map();
+
+      featuredRows.forEach(
+        (row) => {
+          map.set(
+            row.item_id,
+            Number(
+              row.position
+            )
+          );
+        }
+      );
+
+      return map;
+    }, [featuredRows]);
+
+
+  const featuredItems =
+    useMemo(() => {
+      const byId =
+        new Map(
+          items.map(
+            (item) => [
+              item.id,
+              item,
+            ]
+          )
+        );
+
+      return [...featuredRows]
+        .sort(
+          (a, b) =>
+            Number(a.position) -
+            Number(b.position)
+        )
+        .map(
+          (row) =>
+            byId.get(
+              row.item_id
+            )
+        )
+        .filter(Boolean)
+        .slice(0, 3);
+    }, [
+      items,
+      featuredRows,
+    ]);
+
+
+  const displayItems =
+    communityExpanded
+      ? visibleItems
+      : featuredItems;
+
 
   const creatorProfileItems = useMemo(() => {
     if (!creatorProfileUserId) return [];
@@ -1552,6 +1642,91 @@ function BeyondCommunity({
     }
   }
 
+  async function toggleCommunityFeatured(
+    item
+  ) {
+    if (
+      !isAdmin ||
+      !session?.user?.id ||
+      !item?.id
+    ) {
+      return;
+    }
+
+    const existingPosition =
+      featuredPositionByItem.get(
+        item.id
+      );
+
+    setBusyId(
+      `feature:${item.id}`
+    );
+
+    setError("");
+
+    try {
+      if (existingPosition) {
+        await removeCommunityFeatured({
+          itemId: item.id,
+        });
+      } else {
+        const occupied =
+          new Set(
+            featuredRows.map(
+              (row) =>
+                Number(
+                  row.position
+                )
+            )
+          );
+
+        const nextPosition =
+          [1, 2, 3].find(
+            (position) =>
+              !occupied.has(
+                position
+              )
+          );
+
+        if (!nextPosition) {
+          throw new Error(
+            "You already have 3 highlighted models. Remove one first."
+          );
+        }
+
+        await setCommunityFeatured({
+          itemId: item.id,
+          position:
+            nextPosition,
+          userId:
+            session.user.id,
+        });
+      }
+
+      const nextFeatured =
+        await listCommunityFeatured();
+
+      setFeaturedRows(
+        nextFeatured
+      );
+    } catch (
+      featureError
+    ) {
+      console.error(
+        "[BEYOND COMMUNITY] Feature update failed:",
+        featureError
+      );
+
+      setError(
+        featureError?.message ||
+          "Could not update Community highlights."
+      );
+    } finally {
+      setBusyId(null);
+    }
+  }
+
+
   function useAiModel(item) {
     const modelData = item.source_payload || {};
 
@@ -1575,7 +1750,14 @@ function BeyondCommunity({
   }
 
   return (
-    <section className="beyond-community" id="community">
+    <section
+      className={`beyond-community ${
+        communityExpanded
+          ? "is-expanded"
+          : "is-compact"
+      }`}
+      id="community"
+    >
       <div className="community-shell">
         <div className="community-heading">
           <div>
@@ -1760,7 +1942,7 @@ function BeyondCommunity({
             <RefreshCw size={22} strokeWidth={1.35} />
             Loading Beyond Community…
           </div>
-        ) : !visibleItems.length ? (
+        ) : !displayItems.length ? (
           <div className="community-empty">
             <Sparkles size={32} strokeWidth={1.15} />
 
@@ -1786,7 +1968,7 @@ function BeyondCommunity({
           </div>
         ) : (
           <div className="community-grid">
-            {visibleItems.map((item) => {
+            {displayItems.map((item) => {
               const liked = likedByMe.has(item.id);
               const saved = savedByMe.has(item.id);
               const likeCount = likeCountByItem.get(item.id) || 0;
@@ -1846,6 +2028,30 @@ function BeyondCommunity({
                         {formatCommunityDate(item.created_at)}
                       </span>
                     </div>
+
+                    {isAdmin && (
+                      <button
+                        type="button"
+                        className={`community-feature-control ${
+                          featuredPositionByItem.has(item.id)
+                            ? "active"
+                            : ""
+                        }`}
+                        disabled={
+                          busyId ===
+                          `feature:${item.id}`
+                        }
+                        onClick={() =>
+                          toggleCommunityFeatured(
+                            item
+                          )
+                        }
+                      >
+                        {featuredPositionByItem.has(item.id)
+                          ? `FEATURED ${featuredPositionByItem.get(item.id)}`
+                          : "HIGHLIGHT"}
+                      </button>
+                    )}
 
                     <h3>
                       {item.title || "Untitled Creation"}
@@ -1969,6 +2175,53 @@ function BeyondCommunity({
             })}
           </div>
         )}
+        <div className="community-show-more-wrap">
+
+          {!communityExpanded &&
+            featuredItems.length === 0 && (
+              <span className="community-featured-empty-note">
+                No highlighted creations selected yet.
+              </span>
+            )}
+
+          <button
+            type="button"
+            className="community-show-more"
+            onClick={() => {
+              setCommunityExpanded(
+                (current) =>
+                  !current
+              );
+
+              if (
+                communityExpanded
+              ) {
+                setFilter("new");
+                setSearchQuery("");
+                setActivityOpen(false);
+              }
+            }}
+          >
+            {communityExpanded
+              ? "Show less"
+              : "Show more"}
+
+            <span>
+              {communityExpanded
+                ? "↑"
+                : "→"}
+            </span>
+          </button>
+
+          {isAdmin &&
+            !communityExpanded && (
+              <small>
+                ADMIN · Open all models to manage highlights
+              </small>
+            )}
+
+        </div>
+
       </div>
 
       {viewerItem && (

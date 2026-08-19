@@ -1,3 +1,7 @@
+import BeyondAutoTranslate from "./i18n/BeyondAutoTranslate";
+import {
+  BeyondLanguageProvider,
+} from "./i18n/BeyondLanguage";
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
@@ -9,6 +13,12 @@ import "./components/BeyondMenuPlatform.css";
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <BeyondMenuRoute fallback={<App />} />
+    <BeyondLanguageProvider>
+      <BeyondAutoTranslate />
+
+      <BeyondMenuRoute
+        fallback={<App />}
+      />
+    </BeyondLanguageProvider>
   </StrictMode>,
 )

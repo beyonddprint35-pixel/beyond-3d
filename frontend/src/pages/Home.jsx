@@ -3,11 +3,20 @@ import {
   useState,
 } from "react";
 
+import {
+  Moon,
+  Sun,
+} from "lucide-react";
+
+import {
+  useBeyondLanguage,
+} from "../i18n/BeyondLanguage";
+
 import UploadProject from "../components/UploadProject";
 import HeroObject3D from "../components/HeroObject3D";
 import ProcessStory from "../components/ProcessStory";
+import DigitalMenuHero from "../components/DigitalMenuHero";
 import BeyondCreator from "../components/BeyondCreator";
-import AIModelStudio from "../components/AIModelStudio";
 import BeyondCommunity from "../components/BeyondCommunity";
 
 import MyAccount from "../components/MyAccount";
@@ -19,6 +28,8 @@ import { supabase } from "../lib/supabaseClient";
 import beyondLogo from "../assets/beyond-logo-transparent.png";
 
 import "./Home.css";
+import "./HomeTheme.css";
+import "./HomeHeadlineSystem.css";
 
 function clamp(
   value,
@@ -32,6 +43,12 @@ function clamp(
 }
 
 function Home() {
+  const {
+    language,
+    isHebrew,
+    toggleLanguage,
+  } = useBeyondLanguage();
+
   const [
     menuOpen,
     setMenuOpen,
@@ -61,6 +78,43 @@ function Home() {
     profile,
     setProfile,
   ] = useState(null);
+
+  // BEYOND_THEME_V1
+  const [
+    theme,
+    setTheme,
+  ] = useState(() => {
+    try {
+      return (
+        window.localStorage.getItem(
+          "beyond-theme"
+        ) === "light"
+          ? "light"
+          : "dark"
+      );
+    } catch {
+      return "dark";
+    }
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute(
+      "data-beyond-theme",
+      theme
+    );
+
+    document.documentElement.style.colorScheme =
+      theme;
+
+    try {
+      window.localStorage.setItem(
+        "beyond-theme",
+        theme
+      );
+    } catch {
+      // Theme still works if storage is unavailable.
+    }
+  }, [theme]);
 
 
   // BEYOND_MENU_STUDIO_ACCESS_STATE_V2
@@ -510,7 +564,7 @@ function Home() {
 
   return (
     <main
-      className="beyond-home"
+      className={`beyond-home beyond-theme-${theme}`}
       style={{
         "--scroll-progress":
           scrollProgress,
@@ -570,6 +624,30 @@ function Home() {
               : "home-nav-links"
           }
         >
+          {/* BEYOND_BUSINESS_NAV_V2 */}
+
+          <button
+            type="button"
+            onClick={() =>
+              scrollToSection(
+                "digital-menus"
+              )
+            }
+          >
+            Digital Menus
+          </button>
+
+          <button
+            type="button"
+            onClick={() =>
+              scrollToSection(
+                "3d-printing"
+              )
+            }
+          >
+            3D Printing
+          </button>
+
           <button
             type="button"
             onClick={() =>
@@ -592,16 +670,7 @@ function Home() {
             Beyond Creator
           </button>
 
-          <button
-            type="button"
-            onClick={() =>
-              scrollToSection(
-                "ai-studio"
-              )
-            }
-          >
-            BEYOND AI Studio
-          </button>
+          
 
           <button
             type="button"
@@ -651,6 +720,93 @@ function Home() {
         </nav>
 
         <div className="home-nav-actions">
+
+          {/* BEYOND_THEME_TOGGLE_V1 */}
+          {/* BEYOND_LANGUAGE_TOGGLE_V1 */}
+          <button
+            type="button"
+            className="home-language-toggle"
+            onClick={
+              toggleLanguage
+            }
+            aria-label={
+              isHebrew
+                ? "Switch to English"
+                : "עבור לעברית"
+            }
+            title={
+              isHebrew
+                ? "English"
+                : "עברית"
+            }
+          >
+            <span
+              className={
+                language === "en"
+                  ? "active"
+                  : ""
+              }
+            >
+              EN
+            </span>
+
+            <i />
+
+            <span
+              className={
+                language === "he"
+                  ? "active"
+                  : ""
+              }
+            >
+              עב
+            </span>
+          </button>
+
+
+          <button
+            type="button"
+            className="home-theme-toggle"
+            aria-label={
+              theme === "dark"
+                ? "Switch to light mode"
+                : "Switch to dark mode"
+            }
+            title={
+              theme === "dark"
+                ? "Light mode"
+                : "Dark mode"
+            }
+            aria-pressed={
+              theme === "light"
+            }
+            onClick={() =>
+              setTheme(
+                current =>
+                  current === "dark"
+                    ? "light"
+                    : "dark"
+              )
+            }
+          >
+            {theme === "dark" ? (
+              <Sun
+                size={17}
+                strokeWidth={1.7}
+              />
+            ) : (
+              <Moon
+                size={17}
+                strokeWidth={1.7}
+              />
+            )}
+
+            <span>
+              {theme === "dark"
+                ? "Light"
+                : "Dark"}
+            </span>
+          </button>
           {authReady &&
             session ? (
             <button
@@ -728,7 +884,7 @@ function Home() {
               )
             }
           >
-            Send us your project
+            Start 3D project
           </button>
 
           <button
@@ -752,11 +908,25 @@ function Home() {
           HERO
       ========================================= */}
 
+      {/* BEYOND_DIGITAL_MENU_ENTRY_V2 */}
+      <DigitalMenuHero
+        onStartMenu={() =>
+          scrollToSection("contact")
+        }
+      />
+
+      {/* BEYOND_3D_PRINTING_HERO_V2 */}
       <section
         className="home-hero"
-        id="home"
+        id="3d-printing"
       >
         <div className="hero-copy">
+
+          {/* BEYOND_3D_PRINTING_LABEL_V2 */}
+          <div className="hero-eyebrow">
+            <span className="eyebrow-dot" />
+            BEYOND 3D PRINTING
+          </div>
           <h1>
             FROM
             <br />
@@ -930,12 +1100,8 @@ function Home() {
           AI MODEL STUDIO
       ========================================= */}
 
-      <div
-        id="ai-studio"
-        className="home-ai-studio-anchor"
-      >
-        <AIModelStudio />
-      </div>
+      
+
 
       {/* =========================================
           BEYOND COMMUNITY
@@ -943,6 +1109,9 @@ function Home() {
 
       <BeyondCommunity
         session={session}
+        isAdmin={
+          isMenuStudioAdmin
+        }
         onRequireAuth={() =>
           setAuthOpen(true)
         }
@@ -968,30 +1137,7 @@ function Home() {
           BUILD
         </div>
 
-        <div className="start-project-heading">
-          <div>
-            <div className="section-index">
-              05 / START PROJECT
-            </div>
-
-            <h2>
-              Make it
-              <br />
-
-              <span>
-                real.
-              </span>
-            </h2>
-          </div>
-
-          <p>
-            Upload your project.
-            We’ll review the model
-            and send you a clear
-            quotation before
-            production begins.
-          </p>
-        </div>
+        
 
         <div className="home-upload-wrapper">
           <UploadProject />

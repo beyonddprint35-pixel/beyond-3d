@@ -1763,3 +1763,456 @@
   opacity: 0.55;
   cursor: wait;
 }
+
+
+/* =========================================================
+   BEYOND COMMUNITY — COMPACT FEATURED V1
+========================================================= */
+
+.beyond-community.is-compact {
+  padding:
+    78px 0 88px;
+}
+
+.beyond-community.is-compact
+.community-heading {
+  margin-bottom: 30px;
+}
+
+.beyond-community.is-compact
+.community-heading h2 {
+  font-size:
+    clamp(
+      42px,
+      4.3vw,
+      64px
+    );
+}
+
+.beyond-community.is-compact
+.community-heading > p {
+  max-width: 390px;
+
+  font-size: 13px;
+
+  line-height: 1.7;
+}
+
+
+/* Full discovery controls only appear after Show more */
+
+.beyond-community.is-compact
+.community-toolbar,
+.beyond-community.is-compact
+.community-activity-panel,
+.beyond-community.is-compact
+.community-search-summary {
+  display: none !important;
+}
+
+
+/* Keep the homepage preview focused on exactly 3 cards */
+
+.beyond-community.is-compact
+.community-grid {
+  grid-template-columns:
+    repeat(
+      3,
+      minmax(0, 1fr)
+    );
+
+  gap: 15px;
+}
+
+.beyond-community.is-compact
+.community-card-preview {
+  aspect-ratio:
+    16 / 9;
+}
+
+.beyond-community.is-compact
+.community-card-body {
+  padding: 15px;
+}
+
+.beyond-community.is-compact
+.community-card p {
+  display:
+    -webkit-box;
+
+  overflow: hidden;
+
+  -webkit-box-orient:
+    vertical;
+
+  -webkit-line-clamp: 2;
+}
+
+
+/* =========================================================
+   ADMIN HIGHLIGHT CONTROL
+========================================================= */
+
+.community-feature-control {
+  min-height: 27px;
+
+  margin:
+    0 0 10px;
+
+  padding:
+    0 10px;
+
+  border:
+    1px solid
+    rgba(
+      99,
+      151,
+      193,
+      .18
+    );
+
+  border-radius: 999px;
+
+  color: #6487a2;
+
+  background:
+    rgba(
+      38,
+      92,
+      133,
+      .06
+    );
+
+  font: inherit;
+
+  font-size: 7px;
+  font-weight: 850;
+
+  letter-spacing: .11em;
+
+  cursor: pointer;
+}
+
+.community-feature-control:hover {
+  color: #b9d9ee;
+
+  border-color:
+    rgba(
+      77,
+      153,
+      210,
+      .35
+    );
+}
+
+.community-feature-control.active {
+  color: #b7dbf3;
+
+  border-color:
+    rgba(
+      65,
+      150,
+      217,
+      .42
+    );
+
+  background:
+    rgba(
+      36,
+      116,
+      178,
+      .16
+    );
+}
+
+
+/* =========================================================
+   SHOW MORE
+========================================================= */
+
+.community-show-more-wrap {
+  margin-top: 28px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 10px;
+}
+
+.community-show-more {
+  min-width: 150px;
+  min-height: 46px;
+
+  padding:
+    0 19px;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 30px;
+
+  border:
+    1px solid
+    rgba(
+      83,
+      150,
+      202,
+      .25
+    );
+
+  border-radius: 999px;
+
+  color: #9ec6e1;
+
+  background:
+    rgba(
+      31,
+      91,
+      137,
+      .08
+    );
+
+  font: inherit;
+
+  font-size: 10px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition:
+    transform .2s ease,
+    border-color .2s ease,
+    background .2s ease;
+}
+
+.community-show-more:hover {
+  transform:
+    translateY(-2px);
+
+  border-color:
+    rgba(
+      78,
+      157,
+      217,
+      .43
+    );
+
+  background:
+    rgba(
+      37,
+      108,
+      162,
+      .13
+    );
+}
+
+.community-show-more-wrap small,
+.community-featured-empty-note {
+  color: #516e84;
+
+  font-size: 8px;
+
+  letter-spacing: .08em;
+}
+
+
+/* =========================================================
+   LIGHT MODE
+========================================================= */
+
+html[data-beyond-theme="light"]
+.community-feature-control {
+  color: #426985;
+
+  border-color:
+    rgba(
+      34,
+      78,
+      115,
+      .14
+    );
+
+  background:
+    rgba(
+      52,
+      112,
+      160,
+      .05
+    );
+}
+
+html[data-beyond-theme="light"]
+.community-feature-control.active {
+  color: #155b94;
+
+  border-color:
+    rgba(
+      38,
+      113,
+      173,
+      .28
+    );
+
+  background:
+    rgba(
+      47,
+      121,
+      181,
+      .09
+    );
+}
+
+html[data-beyond-theme="light"]
+.community-show-more {
+  color: #235f8f;
+
+  border-color:
+    rgba(
+      36,
+      91,
+      137,
+      .18
+    );
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      .78
+    );
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width: 800px) {
+
+  .beyond-community.is-compact
+  .community-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .beyond-community.is-compact {
+    padding:
+      70px 0 78px;
+  }
+
+}
+
+
+/* =========================================================
+   BEYOND COMMUNITY — HEBREW HEADER LAYOUT
+   RIGHT = headline
+   LEFT  = description
+========================================================= */
+
+
+/* Remove 04 / BEYOND COMMUNITY in Hebrew */
+html[data-beyond-language="he"]
+#root
+.community-kicker {
+  display: none !important;
+}
+
+
+/* Hebrew desktop layout */
+@media (min-width: 981px) {
+
+  html[data-beyond-language="he"]
+  #root
+  .community-heading {
+    display: grid !important;
+
+    grid-template-columns:
+      minmax(300px, 0.8fr)
+      minmax(0, 1.2fr) !important;
+
+    gap: 60px !important;
+
+    direction: ltr !important;
+
+    align-items: end !important;
+  }
+
+
+  /* Headline block → RIGHT */
+  html[data-beyond-language="he"]
+  #root
+  .community-heading > div {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+
+    direction: rtl !important;
+
+    text-align: right !important;
+
+    justify-self: stretch !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  #root
+  .community-heading h2 {
+    direction: rtl !important;
+
+    text-align: right !important;
+
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+
+  /* Description → LEFT */
+  html[data-beyond-language="he"]
+  #root
+  .community-heading > p {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+
+    direction: rtl !important;
+
+    text-align: left !important;
+
+    justify-self: start !important;
+
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+}
+
+
+/* Tablet/mobile stays stacked and RTL */
+@media (max-width: 980px) {
+
+  html[data-beyond-language="he"]
+  #root
+  .community-heading {
+    direction: rtl !important;
+
+    text-align: right !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  #root
+  .community-heading h2,
+
+  html[data-beyond-language="he"]
+  #root
+  .community-heading > p {
+    direction: rtl !important;
+
+    text-align: right !important;
+  }
+
+}
+
