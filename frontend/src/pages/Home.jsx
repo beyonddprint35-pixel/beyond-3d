@@ -30,6 +30,7 @@ import beyondLogo from "../assets/beyond-logo-transparent.png";
 import "./Home.css";
 import "./HomeTheme.css";
 import "./HomeHeadlineSystem.css";
+import "./HomeMobile.css";
 
 function clamp(
   value,

@@ -1,0 +1,1006 @@
+/* =========================================================
+   BEYOND — MOBILE POLISH V1
+   MOBILE ONLY
+   Desktop/tablet intentionally untouched
+========================================================= */
+
+
+/* =========================================================
+   PHONE NFC ANIMATION — MOBILE VERSION
+========================================================= */
+
+@keyframes beyond-phone-nfc-mobile {
+
+  0%,
+  20% {
+    transform:
+      translateY(-50%)
+      translateX(0)
+      rotateY(7deg)
+      rotateZ(-3deg)
+      scale(.97);
+  }
+
+  42%,
+  55% {
+    transform:
+      translateY(-50%)
+      translateX(28px)
+      rotateY(1deg)
+      rotateZ(-1deg)
+      scale(1);
+  }
+
+  76%,
+  100% {
+    transform:
+      translateY(-50%)
+      translateX(0)
+      rotateY(7deg)
+      rotateZ(-3deg)
+      scale(.97);
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+
+  /* =======================================================
+     GENERAL MOBILE
+  ======================================================= */
+
+  html,
+  body,
+  #root {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+
+  .beyond-home button {
+    -webkit-tap-highlight-color:
+      transparent;
+  }
+
+
+  /* Prevent iPhone Safari zooming into form fields */
+
+  .beyond-home
+  :is(
+    input,
+    select,
+    textarea
+  ) {
+    font-size:
+      16px !important;
+  }
+
+
+
+  /* =======================================================
+     HEADER
+  ======================================================= */
+
+  .beyond-home
+  .home-navbar {
+    width:
+      calc(100% - 24px) !important;
+
+    height:
+      108px !important;
+
+    min-height:
+      108px !important;
+
+    padding:
+      7px 0 12px !important;
+
+    position:
+      relative !important;
+
+    display:
+      grid !important;
+
+    grid-template-columns:
+      minmax(0, 1fr)
+      auto !important;
+
+    grid-template-rows:
+      48px
+      36px !important;
+
+    column-gap:
+      8px !important;
+
+    align-items:
+      center !important;
+  }
+
+
+  /* Logo + BEYOND */
+
+  .beyond-home
+  .home-brand {
+    grid-column:
+      1 !important;
+
+    grid-row:
+      1 !important;
+
+    justify-self:
+      start !important;
+
+    align-self:
+      center !important;
+
+    gap:
+      8px !important;
+
+    font-size:
+      13px !important;
+
+    letter-spacing:
+      5px !important;
+
+    white-space:
+      nowrap !important;
+  }
+
+
+  .beyond-home
+  .home-brand img {
+    width:
+      34px !important;
+
+    height:
+      34px !important;
+  }
+
+
+  /* Right-side mobile actions */
+
+  .beyond-home
+  .home-nav-actions {
+    grid-column:
+      2 !important;
+
+    grid-row:
+      1 !important;
+
+    min-width:
+      0 !important;
+
+    display:
+      flex !important;
+
+    align-items:
+      center !important;
+
+    justify-content:
+      flex-end !important;
+
+    gap:
+      6px !important;
+  }
+
+
+
+  /* =======================================================
+     LANGUAGE TOGGLE
+     MOBILE ONLY:
+     under logo + BEYOND
+  ======================================================= */
+
+  .beyond-home
+  .home-language-toggle {
+    position:
+      absolute !important;
+
+    left:
+      42px !important;
+
+    top:
+      65px !important;
+
+    width:
+      72px !important;
+
+    min-width:
+      72px !important;
+
+    height:
+      30px !important;
+
+    min-height:
+      30px !important;
+
+    margin:
+      0 !important;
+
+    padding:
+      0 9px !important;
+
+    z-index:
+      60 !important;
+
+    font-size:
+      9px !important;
+  }
+
+
+
+  /* =======================================================
+     LOGIN / SIGN UP
+  ======================================================= */
+
+  .beyond-home
+  .home-auth-button {
+    min-width:
+      108px !important;
+
+    width:
+      auto !important;
+
+    min-height:
+      42px !important;
+
+    height:
+      42px !important;
+
+    padding:
+      0 12px !important;
+
+    display:
+      inline-flex !important;
+
+    align-items:
+      center !important;
+
+    justify-content:
+      center !important;
+
+    white-space:
+      nowrap !important;
+
+    font-size:
+      10px !important;
+
+    line-height:
+      1 !important;
+
+    text-align:
+      center !important;
+  }
+
+
+  /* Logged-in account becomes compact */
+
+  .beyond-home
+  .home-account-button {
+    min-width:
+      42px !important;
+
+    min-height:
+      42px !important;
+
+    padding:
+      0 !important;
+  }
+
+
+  .beyond-home
+  .home-account-copy {
+    display:
+      none !important;
+  }
+
+
+  .beyond-home
+  .home-account-avatar {
+    width:
+      40px !important;
+
+    height:
+      40px !important;
+  }
+
+
+
+  /* Theme + hamburger */
+
+  .beyond-home
+  .home-theme-toggle,
+
+  .beyond-home
+  .home-mobile-menu {
+    width:
+      40px !important;
+
+    min-width:
+      40px !important;
+
+    height:
+      40px !important;
+
+    min-height:
+      40px !important;
+
+    flex:
+      0 0 40px !important;
+  }
+
+
+  /* Desktop header actions stay out of the way on mobile */
+
+  .beyond-home
+  .home-start-small {
+    display:
+      none !important;
+  }
+
+
+  /* Menu Studio: compact if logged in */
+
+  .beyond-home
+  .home-menu-studio-button {
+    min-height:
+      40px !important;
+
+    max-width:
+      76px !important;
+
+    padding:
+      0 10px !important;
+
+    white-space:
+      nowrap !important;
+
+    overflow:
+      hidden !important;
+
+    font-size:
+      9px !important;
+  }
+
+
+  .beyond-home
+  .home-menu-studio-full {
+    display:
+      none !important;
+  }
+
+
+  .beyond-home
+  .home-menu-studio-short {
+    display:
+      inline !important;
+  }
+
+
+
+  /* =======================================================
+     DIGITAL MENU HERO — BUTTONS
+  ======================================================= */
+
+  .digital-menu-actions {
+    width:
+      100% !important;
+
+    display:
+      grid !important;
+
+    grid-template-columns:
+      1fr !important;
+
+    gap:
+      10px !important;
+  }
+
+
+  .digital-menu-actions button {
+    width:
+      100% !important;
+
+    min-height:
+      50px !important;
+
+    justify-content:
+      center !important;
+
+    font-size:
+      12px !important;
+  }
+
+
+
+  /* =======================================================
+     DIGITAL MENU PRODUCT SCENE
+
+     PHONE IN FRONT
+     STAND BEHIND
+  ======================================================= */
+
+  .digital-menu-product {
+    min-height:
+      500px !important;
+
+    height:
+      500px !important;
+
+    margin-top:
+      6px !important;
+
+    transform:
+      none !important;
+
+    transform-origin:
+      center top !important;
+
+    overflow:
+      visible !important;
+  }
+
+
+  /* Phone = FRONT */
+
+  .digital-menu-phone {
+    width:
+      205px !important;
+
+    height:
+      427px !important;
+
+    left:
+      8% !important;
+
+    top:
+      50% !important;
+
+    z-index:
+      14 !important;
+
+    opacity:
+      1 !important;
+
+    animation-name:
+      beyond-phone-nfc-mobile !important;
+
+    animation-duration:
+      8s !important;
+
+    animation-timing-function:
+      cubic-bezier(.45, 0, .2, 1) !important;
+
+    animation-iteration-count:
+      infinite !important;
+  }
+
+
+  /* Stand = BEHIND phone */
+
+  .digital-stand {
+    width:
+      360px !important;
+
+    height:
+      575px !important;
+
+    right:
+      -24% !important;
+
+    top:
+      50% !important;
+
+    z-index:
+      5 !important;
+
+    transform:
+      translateY(-50%)
+      rotateY(-7deg)
+      rotateX(2deg)
+      scale(.72) !important;
+
+    transform-origin:
+      center bottom !important;
+  }
+
+
+  .digital-floating-card {
+    transform:
+      scale(.82) !important;
+  }
+
+
+  .digital-floating-top {
+    right:
+      -4% !important;
+
+    top:
+      16% !important;
+  }
+
+
+  .digital-floating-bottom {
+    right:
+      -3% !important;
+
+    bottom:
+      16% !important;
+  }
+
+
+
+  /* =======================================================
+     3D PRINTING HERO — MOBILE BUTTONS
+  ======================================================= */
+
+  .beyond-home
+  .hero-buttons {
+    width:
+      100% !important;
+
+    display:
+      grid !important;
+
+    grid-template-columns:
+      1fr !important;
+
+    gap:
+      10px !important;
+  }
+
+
+  .beyond-home
+  .hero-buttons button,
+
+  .beyond-home
+  .home-primary-button,
+
+  .beyond-home
+  .home-ghost-button {
+    width:
+      100% !important;
+
+    min-height:
+      50px !important;
+
+    justify-content:
+      center !important;
+  }
+
+
+
+  /* =======================================================
+     BEYOND CREATOR — MOBILE HEADING
+  ======================================================= */
+
+  .beyond-home
+  .beyond-creator {
+    padding:
+      48px 16px
+      54px !important;
+  }
+
+
+  .beyond-home
+  .creator-heading {
+    width:
+      100% !important;
+
+    margin:
+      0 0 20px !important;
+
+    display:
+      block !important;
+
+    gap:
+      0 !important;
+  }
+
+
+  .beyond-home
+  .creator-heading h2 {
+    width:
+      100% !important;
+
+    max-width:
+      100% !important;
+
+    font-size:
+      clamp(
+        42px,
+        12.5vw,
+        54px
+      ) !important;
+
+    line-height:
+      .91 !important;
+
+    letter-spacing:
+      -.055em !important;
+
+    overflow-wrap:
+      normal !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .beyond-home
+  .creator-heading h2 {
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+
+    letter-spacing:
+      normal !important;
+  }
+
+
+  .beyond-home
+  .creator-heading > p {
+    width:
+      100% !important;
+
+    max-width:
+      none !important;
+
+    margin:
+      17px 0 0 !important;
+
+    font-size:
+      14px !important;
+
+    line-height:
+      1.55 !important;
+  }
+
+
+
+  /* =======================================================
+     CREATOR MODE BAR
+     STUDIO / SKETCH / ARCHITECT / AI
+  ======================================================= */
+
+  .beyond-home
+  .creator-mode-row {
+    width:
+      100% !important;
+
+    margin:
+      0 0 12px !important;
+
+    display:
+      block !important;
+  }
+
+
+  .beyond-home
+  .creator-mode-switch,
+
+  .beyond-home
+  .creator-mode-switch-v11 {
+    width:
+      100% !important;
+
+    padding:
+      3px !important;
+
+    display:
+      grid !important;
+
+    grid-template-columns:
+      repeat(
+        4,
+        minmax(0, 1fr)
+      ) !important;
+
+    gap:
+      3px !important;
+
+    border-radius:
+      15px !important;
+  }
+
+
+  .beyond-home
+  .creator-mode-switch button {
+    width:
+      100% !important;
+
+    min-width:
+      0 !important;
+
+    min-height:
+      42px !important;
+
+    padding:
+      0 4px !important;
+
+    font-size:
+      8px !important;
+
+    letter-spacing:
+      .04em !important;
+
+    text-align:
+      center !important;
+  }
+
+
+  /* Technical desktop line is clutter on phone */
+
+  .beyond-home
+  .creator-mode-row > span {
+    display:
+      none !important;
+  }
+
+
+
+  /* =======================================================
+     CREATOR WORKSPACE
+  ======================================================= */
+
+  .beyond-home
+  .creator-shell,
+
+  .beyond-home
+  .creator-shell-v5,
+
+  .beyond-home
+  .creator-shell.creator-studio-direct-layout {
+    width:
+      100% !important;
+
+    max-width:
+      100% !important;
+
+    min-width:
+      0 !important;
+
+    min-height:
+      0 !important;
+
+    border-radius:
+      14px !important;
+
+    overflow:
+      hidden !important;
+  }
+
+
+  /* Keep tool rail compact */
+
+  .beyond-home
+  .creator-shell-v5
+  .creator-library {
+    padding:
+      9px 6px !important;
+  }
+
+
+  .beyond-home
+  .creator-library button {
+    min-height:
+      48px !important;
+  }
+
+
+  /* Main 3D view no longer becomes excessively tall */
+
+  .beyond-home
+  .creator-canvas-wrap,
+
+  .beyond-home
+  .creator-shell-v5
+  .creator-canvas-wrap {
+    width:
+      100% !important;
+
+    min-width:
+      0 !important;
+
+    min-height:
+      340px !important;
+
+    height:
+      52vh !important;
+
+    max-height:
+      500px !important;
+  }
+
+
+  /* View buttons can scroll rather than break layout */
+
+  .beyond-home
+  .creator-viewport-top {
+    min-height:
+      52px !important;
+
+    padding:
+      6px 8px !important;
+
+    overflow-x:
+      auto !important;
+
+    overflow-y:
+      hidden !important;
+  }
+
+
+  .beyond-home
+  .creator-viewport-controls {
+    min-width:
+      max-content !important;
+
+    gap:
+      5px !important;
+  }
+
+
+  .beyond-home
+  .creator-viewport-controls button {
+    min-height:
+      38px !important;
+
+    min-width:
+      58px !important;
+
+    padding:
+      0 9px !important;
+  }
+
+
+  /* Toolbar becomes phone-friendly horizontal scroll */
+
+  .beyond-home
+  .creator-advanced-toolbar {
+    width:
+      100% !important;
+
+    padding:
+      7px 8px !important;
+
+    display:
+      flex !important;
+
+    flex-wrap:
+      nowrap !important;
+
+    overflow-x:
+      auto !important;
+
+    overflow-y:
+      hidden !important;
+
+    -webkit-overflow-scrolling:
+      touch;
+  }
+
+
+  .beyond-home
+  .creator-advanced-toolbar button {
+    flex:
+      0 0 auto !important;
+
+    min-height:
+      40px !important;
+  }
+
+
+
+  /* =======================================================
+     UPLOAD / PROJECT FORM — PHONE
+  ======================================================= */
+
+  .beyond-home
+  .upload-layout {
+    width:
+      100% !important;
+
+    display:
+      grid !important;
+
+    grid-template-columns:
+      1fr !important;
+
+    gap:
+      18px !important;
+  }
+
+
+  .beyond-home
+  .form-grid {
+    display:
+      grid !important;
+
+    grid-template-columns:
+      1fr !important;
+
+    gap:
+      14px !important;
+  }
+
+
+  .beyond-home
+  .project-form
+  :is(
+    input,
+    select,
+    textarea
+  ) {
+    width:
+      100% !important;
+
+    min-height:
+      48px !important;
+  }
+
+
+  .beyond-home
+  .project-form button {
+    min-height:
+      50px !important;
+  }
+
+}
+
+
+/* =========================================================
+   VERY SMALL IPHONES
+========================================================= */
+
+@media (max-width: 390px) {
+
+  .beyond-home
+  .home-brand {
+    font-size:
+      12px !important;
+
+    letter-spacing:
+      4px !important;
+  }
+
+
+  .beyond-home
+  .home-auth-button {
+    min-width:
+      98px !important;
+
+    padding:
+      0 9px !important;
+
+    font-size:
+      9px !important;
+  }
+
+
+  .beyond-home
+  .home-language-toggle {
+    left:
+      39px !important;
+  }
+
+
+  .digital-menu-phone {
+    left:
+      5% !important;
+  }
+
+
+  .digital-stand {
+    right:
+      -29% !important;
+  }
+
+}
+
