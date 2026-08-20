@@ -719,273 +719,6223 @@ html[data-beyond-theme="dark"]
 
 /* MENU STUDIO SUBCATEGORY SYSTEM START */
 
-.bm-owner-subcategory-manager {
-  margin-top: 16px;
+/* =======================================================
+   SUBCATEGORY — PREMIUM DESKTOP LOOK
+======================================================= */
+
+.bm-owner-subcategory {
+  margin: 18px 0 14px;
+  border: 1px solid rgba(37, 99, 235, 0.14);
+  border-radius: 22px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(248, 250, 252, 0.98) 100%
+  );
+  box-shadow:
+    0 10px 24px rgba(15, 23, 42, 0.035),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  overflow: hidden;
 }
 
+.bm-owner-subcategory.is-active,
+.bm-owner-subcategory:has(.bm-owner-subcategory-edit) {
+  border-color: rgba(37, 99, 235, 0.45);
+  box-shadow:
+    0 14px 34px rgba(37, 99, 235, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
 
 .bm-owner-subcategory-heading {
-  margin:
-    19px 2px 8px;
-
-  padding:
-    10px 12px;
-
-  display:
-    flex;
-
-  align-items:
-    center;
-
-  justify-content:
-    space-between;
-
-  gap:
-    12px;
-
-  border-left:
-    3px solid
-    #3778ad;
-
-  border-radius:
-    8px;
-
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 20px;
+  min-height: 94px;
   background:
-    rgba(55,120,173,.055);
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,0.72) 0%,
+      rgba(248,250,252,0.92) 100%
+    );
 }
 
-
-.bm-owner-subcategory-heading
-> div {
-  min-width:
-    0;
-
-  display:
-    grid;
-
-  gap:
-    2px;
+.bm-owner-subcategory-main {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
-
-.bm-owner-subcategory-heading
-strong {
-  color:
-    inherit;
-
-  font-size:
-    13px;
-
-  font-weight:
-    750;
+.bm-owner-subcategory-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
-
-.bm-owner-subcategory-heading
-span {
-  color:
-    #70869a;
-
-  font-size:
-    10px;
+.bm-owner-subcategory-copy strong {
+  margin: 0;
+  color: #10233f;
+  font-size: 28px;
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.035em;
 }
 
-
-.bm-owner-subcategory-heading
-em {
-  flex:
-    0 0 auto;
-
-  color:
-    #688299;
-
-  font-size:
-    9px;
-
-  font-style:
-    normal;
-
-  font-weight:
-    700;
+.bm-owner-subcategory-copy span[dir="rtl"],
+.bm-owner-subcategory-copy small[dir="rtl"] {
+  color: #5d7290;
+  font-size: 15px;
+  line-height: 1.3;
+  font-weight: 650;
 }
 
-
-.bm-owner-subcategory-heading.is-empty {
-  opacity:
-    .72;
+.bm-owner-subcategory-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 78px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.08);
+  color: #315f9c;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
 }
 
-
-.bm-owner-add-subcategory {
-  width:
-    100%;
-
-  min-height:
-    46px;
-
-  margin-top:
-    14px;
-
-  border:
-    1px dashed
-    rgba(55,120,173,.30) !important;
-
-  border-radius:
-    11px !important;
-
-  color:
-    #2d6d9e !important;
-
-  background:
-    rgba(55,120,173,.055) !important;
-
-  font-size:
-    10px !important;
-
-  font-weight:
-    750 !important;
+.bm-owner-subcategory-count strong,
+.bm-owner-subcategory-count b {
+  font-weight: 800;
 }
 
-
-.bm-owner-subcategory-form {
-  margin-top:
-    14px;
-
-  padding:
-    15px;
-
-  display:
-    grid;
-
-  grid-template-columns:
-    1fr 1fr;
-
-  gap:
-    10px;
-
-  border:
-    1px solid
-    rgba(90,130,160,.14);
-
-  border-radius:
-    14px;
-
-  background:
-    rgba(255,255,255,.025);
+.bm-owner-subcategory-menu-trigger,
+.bm-owner-subcategory-heading .bm-owner-kebab,
+.bm-owner-subcategory-heading .bm-owner-dots {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: rgba(255,255,255,0.72);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #67809f;
+  box-shadow: none;
 }
 
-
-.bm-owner-subcategory-form-head {
-  grid-column:
-    1 / -1;
-
-  margin-bottom:
-    4px;
-
-  display:
-    grid;
-
-  gap:
-    3px;
+.bm-owner-subcategory-actions,
+.bm-owner-subcategory-heading .bm-owner-item-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-
-.bm-owner-subcategory-form-head
-strong {
-  font-size:
-    14px;
+.bm-owner-subcategory-actions .bm-move-button,
+.bm-owner-subcategory-heading .bm-owner-item-actions .bm-move-button,
+.bm-owner-subcategory-actions button,
+.bm-owner-subcategory-heading .bm-owner-item-actions button {
+  height: 42px;
+  min-height: 42px;
+  min-width: 42px;
+  padding: 0 16px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  box-shadow: none;
 }
 
-
-.bm-owner-subcategory-form-head
-span {
-  color:
-    #70869a;
-
-  font-size:
-    10px;
+.bm-owner-subcategory-actions .bm-move-button,
+.bm-owner-subcategory-heading .bm-owner-item-actions .bm-move-button {
+  min-width: 42px;
+  padding: 0;
 }
 
-
-.bm-owner-subcategory-form
-label {
-  display:
-    grid;
-
-  gap:
-    6px;
+.bm-owner-subcategory-actions .danger,
+.bm-owner-subcategory-heading .bm-owner-item-actions .danger {
+  color: #cf4e4e;
+  border-color: rgba(207, 78, 78, 0.2);
+  background: rgba(255, 246, 246, 0.95);
 }
 
-
-.bm-owner-subcategory-form
-input {
-  width:
-    100%;
-
-  min-height:
-    42px;
-
-  padding:
-    0 11px;
-
-  border-radius:
-    9px;
+.bm-owner-subcategory-items {
+  padding: 0 14px 14px;
 }
 
-
-.bm-owner-subcategory-form-actions {
-  grid-column:
-    1 / -1;
-
-  display:
-    grid;
-
-  grid-template-columns:
-    minmax(0,.7fr)
-    minmax(0,1.3fr);
-
-  gap:
-    8px;
+.bm-owner-subcategory-edit {
+  margin: 0 14px 14px;
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(37, 99, 235, 0.14);
+  background: rgba(255,255,255,0.95);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.85);
 }
 
-
-/* Hebrew heading uses right border instead */
-
-html[data-beyond-language="he"]
-.bm-owner-dashboard
-.bm-owner-subcategory-heading {
-  direction:
-    rtl;
-
-  text-align:
-    right;
-
-  border-left:
-    0;
-
-  border-right:
-    3px solid
-    #3778ad;
+.bm-owner-subcategory-edit .bm-owner-form-actions {
+  margin-top: 14px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
-
-html[data-beyond-language="he"]
-.bm-owner-dashboard
-.bm-owner-subcategory-form {
-  direction:
-    rtl;
-
-  text-align:
-    right;
+.bm-owner-subcategory-add {
+  margin: 12px 14px 16px;
 }
 
+.bm-owner-subcategory-add .bm-owner-add,
+.bm-owner-subcategory-add button {
+  height: 46px;
+  padding: 0 18px;
+  border-radius: 14px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
 
-html[data-beyond-theme="light"]
-.bm-owner-dashboard
-.bm-owner-subcategory-form {
-  background:
-    #ffffff;
+/* dark theme */
+
+.bm-theme-dark .bm-owner-subcategory {
+  border-color: rgba(96, 165, 250, 0.18);
+  background: linear-gradient(
+    180deg,
+    rgba(12, 20, 33, 0.96) 0%,
+    rgba(15, 23, 42, 0.96) 100%
+  );
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255,255,255,0.03);
+}
+
+.bm-theme-dark .bm-owner-subcategory.is-active,
+.bm-theme-dark .bm-owner-subcategory:has(.bm-owner-subcategory-edit) {
+  border-color: rgba(96, 165, 250, 0.38);
+  box-shadow:
+    0 14px 34px rgba(0,0,0,0.28),
+    0 0 0 1px rgba(96,165,250,0.08) inset;
+}
+
+.bm-theme-dark .bm-owner-subcategory-heading {
+  background: linear-gradient(
+    180deg,
+    rgba(17, 24, 39, 0.7) 0%,
+    rgba(15, 23, 42, 0.92) 100%
+  );
+}
+
+.bm-theme-dark .bm-owner-subcategory-copy strong {
+  color: #eef4ff;
+}
+
+.bm-theme-dark .bm-owner-subcategory-copy span[dir="rtl"],
+.bm-theme-dark .bm-owner-subcategory-copy small[dir="rtl"] {
+  color: #9eb4d0;
+}
+
+.bm-theme-dark .bm-owner-subcategory-count {
+  background: rgba(96, 165, 250, 0.14);
+  color: #b8d7ff;
+}
+
+.bm-theme-dark .bm-owner-subcategory-menu-trigger,
+.bm-theme-dark .bm-owner-subcategory-heading .bm-owner-kebab,
+.bm-theme-dark .bm-owner-subcategory-heading .bm-owner-dots {
+  border-color: rgba(148, 163, 184, 0.18);
+  background: rgba(15, 23, 42, 0.55);
+  color: #b6c7dc;
+}
+
+.bm-theme-dark .bm-owner-subcategory-edit {
+  border-color: rgba(96, 165, 250, 0.16);
+  background: rgba(15, 23, 42, 0.88);
+}
+
+/* mobile keeps existing approved style */
+@media (max-width: 760px) {
+  .bm-owner-subcategory,
+  .bm-owner-subcategory-heading,
+  .bm-owner-subcategory-items,
+  .bm-owner-subcategory-edit,
+  .bm-owner-subcategory-add {
+    all: revert;
+  }
 }
 
 /* MENU STUDIO SUBCATEGORY SYSTEM END */
+
+/* MENU STUDIO APPLE DESKTOP SYSTEM START */
+
+@media (min-width: 761px) and (hover: hover) and (pointer: fine) {
+
+  /* =========================================================
+     1. DESKTOP DESIGN TOKENS
+  ========================================================= */
+
+  .bm-owner-dashboard {
+    --studio-bg: #f5f5f7;
+    --studio-surface: rgba(255, 255, 255, .92);
+    --studio-surface-solid: #ffffff;
+    --studio-surface-soft: #f8f8fa;
+    --studio-border: rgba(15, 23, 42, .085);
+    --studio-border-strong: rgba(15, 23, 42, .14);
+
+    --studio-text: #1d1d1f;
+    --studio-text-secondary: #6e6e73;
+    --studio-text-tertiary: #8e8e93;
+
+    --studio-blue: #007aff;
+    --studio-blue-hover: #087ff5;
+    --studio-blue-soft: rgba(0, 122, 255, .075);
+
+    --studio-red: #d70015;
+    --studio-red-soft: rgba(215, 0, 21, .055);
+
+    --studio-radius-sm: 10px;
+    --studio-radius: 14px;
+    --studio-radius-lg: 18px;
+    --studio-radius-xl: 22px;
+
+    --studio-shadow:
+      0 1px 2px rgba(0, 0, 0, .025),
+      0 8px 30px rgba(0, 0, 0, .035);
+
+    --studio-shadow-hover:
+      0 2px 4px rgba(0, 0, 0, .035),
+      0 12px 34px rgba(0, 0, 0, .055);
+
+    font-family:
+      -apple-system,
+      BlinkMacSystemFont,
+      "SF Pro Text",
+      "SF Pro Display",
+      Inter,
+      system-ui,
+      sans-serif !important;
+
+    color: var(--studio-text);
+
+    background:
+      linear-gradient(
+        180deg,
+        #fafafb 0%,
+        var(--studio-bg) 100%
+      ) !important;
+
+    letter-spacing: -0.01em;
+  }
+
+
+  .bm-owner-dashboard *,
+  .bm-owner-dashboard *::before,
+  .bm-owner-dashboard *::after {
+    box-sizing: border-box;
+  }
+
+
+  /* =========================================================
+     2. TYPOGRAPHY — ONE SYSTEM EVERYWHERE
+  ========================================================= */
+
+  .bm-owner-dashboard h1,
+  .bm-owner-dashboard h2,
+  .bm-owner-dashboard h3,
+  .bm-owner-dashboard strong,
+  .bm-owner-dashboard button,
+  .bm-owner-dashboard input,
+  .bm-owner-dashboard select,
+  .bm-owner-dashboard textarea {
+    font-family:
+      -apple-system,
+      BlinkMacSystemFont,
+      "SF Pro Text",
+      "SF Pro Display",
+      Inter,
+      system-ui,
+      sans-serif !important;
+  }
+
+
+  .bm-owner-dashboard h1 {
+    font-size: 28px !important;
+    line-height: 1.12 !important;
+    font-weight: 700 !important;
+    letter-spacing: -.035em !important;
+  }
+
+
+  .bm-owner-dashboard h2 {
+    font-size: 20px !important;
+    line-height: 1.2 !important;
+    font-weight: 680 !important;
+    letter-spacing: -.025em !important;
+  }
+
+
+  .bm-owner-dashboard h3 {
+    font-size: 15px !important;
+    line-height: 1.25 !important;
+    font-weight: 650 !important;
+    letter-spacing: -.015em !important;
+  }
+
+
+  .bm-owner-dashboard .bm-label {
+    color: var(--studio-text-tertiary) !important;
+
+    font-size: 10px !important;
+    font-weight: 650 !important;
+    line-height: 1 !important;
+
+    letter-spacing: .055em !important;
+  }
+
+
+  .bm-owner-dashboard p,
+  .bm-owner-dashboard small {
+    color: var(--studio-text-secondary) !important;
+  }
+
+
+  /* =========================================================
+     3. MAIN SURFACES
+  ========================================================= */
+
+  .bm-owner-dashboard
+  :is(
+    .bm-owner-sitebar,
+    .bm-owner-categories,
+    .bm-owner-items,
+    .bm-owner-settings,
+    .bm-card
+  ) {
+    border:
+      1px solid
+      var(--studio-border) !important;
+
+    border-radius:
+      var(--studio-radius-xl) !important;
+
+    background:
+      var(--studio-surface) !important;
+
+    box-shadow:
+      var(--studio-shadow) !important;
+
+    backdrop-filter:
+      blur(22px)
+      saturate(130%);
+
+    -webkit-backdrop-filter:
+      blur(22px)
+      saturate(130%);
+  }
+
+
+  /* =========================================================
+     4. PANEL HEADERS — SAME ALIGNMENT
+  ========================================================= */
+
+  .bm-owner-dashboard
+  .bm-owner-panel-head {
+    min-height: 76px;
+
+    padding:
+      18px 20px !important;
+
+    display: flex !important;
+
+    align-items:
+      center !important;
+
+    justify-content:
+      space-between !important;
+
+    gap:
+      20px !important;
+
+    border-bottom:
+      1px solid
+      var(--studio-border) !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-panel-head > div {
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction:
+      column;
+
+    justify-content:
+      center;
+
+    gap:
+      3px;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-panel-head h2 {
+    margin:
+      0 !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-panel-head p {
+    margin:
+      0 !important;
+
+    font-size:
+      12px !important;
+
+    line-height:
+      1.35 !important;
+  }
+
+
+  /* =========================================================
+     5. UNIVERSAL APPLE-LIKE BUTTON SYSTEM
+  ========================================================= */
+
+  .bm-owner-dashboard
+  button:not(.bm-owner-item-main):not(.bm-owner-category-main) {
+    min-height:
+      36px;
+
+    padding:
+      0 13px;
+
+    display:
+      inline-flex;
+
+    align-items:
+      center;
+
+    justify-content:
+      center;
+
+    gap:
+      6px;
+
+    border:
+      1px solid
+      var(--studio-border-strong) !important;
+
+    border-radius:
+      var(--studio-radius-sm) !important;
+
+    color:
+      #303038 !important;
+
+    background:
+      linear-gradient(
+        180deg,
+        rgba(255,255,255,.98),
+        rgba(247,247,249,.98)
+      ) !important;
+
+    box-shadow:
+      0 1px 2px
+      rgba(0,0,0,.025) !important;
+
+    font-size:
+      12px !important;
+
+    font-weight:
+      590 !important;
+
+    line-height:
+      1 !important;
+
+    letter-spacing:
+      -.01em !important;
+
+    white-space:
+      nowrap;
+
+    transition:
+      background .14s ease,
+      border-color .14s ease,
+      box-shadow .14s ease,
+      transform .1s ease,
+      color .14s ease !important;
+  }
+
+
+  .bm-owner-dashboard
+  button:not(.bm-owner-item-main):not(.bm-owner-category-main):hover:not(:disabled) {
+    border-color:
+      rgba(0,122,255,.23) !important;
+
+    background:
+      #ffffff !important;
+
+    box-shadow:
+      0 3px 10px
+      rgba(0,0,0,.055) !important;
+
+    transform:
+      translateY(-1px);
+  }
+
+
+  .bm-owner-dashboard
+  button:not(.bm-owner-item-main):not(.bm-owner-category-main):active:not(:disabled) {
+    transform:
+      scale(.975);
+
+    box-shadow:
+      none !important;
+  }
+
+
+  .bm-owner-dashboard
+  button:not(.bm-owner-item-main):not(.bm-owner-category-main):focus-visible {
+    outline:
+      none;
+
+    box-shadow:
+      0 0 0 3px
+      rgba(0,122,255,.16) !important;
+  }
+
+
+  .bm-owner-dashboard
+  button:disabled {
+    opacity:
+      .38 !important;
+
+    cursor:
+      default !important;
+  }
+
+
+  /* Primary buttons */
+
+  .bm-owner-dashboard
+  :is(
+    .bm-owner-add,
+    .primary,
+    .bm-owner-save-settings
+  ) {
+    color:
+      #ffffff !important;
+
+    border-color:
+      var(--studio-blue) !important;
+
+    background:
+      linear-gradient(
+        180deg,
+        #1687ff,
+        var(--studio-blue)
+      ) !important;
+
+    box-shadow:
+      0 2px 7px
+      rgba(0,122,255,.18) !important;
+  }
+
+
+  .bm-owner-dashboard
+  :is(
+    .bm-owner-add,
+    .primary,
+    .bm-owner-save-settings
+  ):hover:not(:disabled) {
+    color:
+      #ffffff !important;
+
+    border-color:
+      var(--studio-blue-hover) !important;
+
+    background:
+      linear-gradient(
+        180deg,
+        #2490ff,
+        var(--studio-blue-hover)
+      ) !important;
+
+    box-shadow:
+      0 4px 12px
+      rgba(0,122,255,.22) !important;
+  }
+
+
+  /* Danger */
+
+  .bm-owner-dashboard
+  button.danger {
+    color:
+      var(--studio-red) !important;
+
+    border-color:
+      rgba(215,0,21,.14) !important;
+
+    background:
+      var(--studio-red-soft) !important;
+
+    box-shadow:
+      none !important;
+  }
+
+
+  .bm-owner-dashboard
+  button.danger:hover:not(:disabled) {
+    color:
+      #bd0013 !important;
+
+    border-color:
+      rgba(215,0,21,.22) !important;
+
+    background:
+      rgba(215,0,21,.085) !important;
+  }
+
+
+  /* =========================================================
+     6. MOVE BUTTONS — ICON BUTTONS
+  ========================================================= */
+
+  .bm-owner-dashboard
+  .bm-move-button {
+    width:
+      36px !important;
+
+    min-width:
+      36px !important;
+
+    height:
+      36px !important;
+
+    min-height:
+      36px !important;
+
+    padding:
+      0 !important;
+
+    color:
+      #394b5f !important;
+
+    border-radius:
+      10px !important;
+
+    background:
+      #f7f8fa !important;
+
+    font-size:
+      16px !important;
+
+    font-weight:
+      500 !important;
+  }
+
+
+  /* =========================================================
+     7. HIDE MOBILE ••• CONTROLS ON DESKTOP
+  ========================================================= */
+
+  .bm-owner-dashboard
+  :is(
+    .bm-owner-item-more,
+    .bm-owner-category-more
+  ) {
+    display:
+      none !important;
+  }
+
+
+
+  /*
+    ITEM / CATEGORY CONTENT ARE STRUCTURAL BUTTONS
+
+    They should behave like clickable native list rows,
+    not like regular toolbar buttons.
+  */
+  .bm-owner-dashboard
+  :is(
+    .bm-owner-item-main,
+    .bm-owner-category-main
+  ),
+  .bm-owner-dashboard
+  :is(
+    .bm-owner-item-main,
+    .bm-owner-category-main
+  ):hover,
+  .bm-owner-dashboard
+  :is(
+    .bm-owner-item-main,
+    .bm-owner-category-main
+  ):active,
+  .bm-owner-dashboard
+  :is(
+    .bm-owner-item-main,
+    .bm-owner-category-main
+  ):focus {
+    border:
+      0 !important;
+
+    background:
+      transparent !important;
+
+    box-shadow:
+      none !important;
+
+    transform:
+      none !important;
+
+    outline:
+      none !important;
+  }
+
+
+  /* =========================================================
+     8. CATEGORY SIDEBAR
+  ========================================================= */
+
+  .bm-owner-dashboard
+  .bm-owner-categories {
+    padding:
+      0 !important;
+
+    overflow:
+      hidden;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-categories-list {
+    padding:
+      10px !important;
+
+    display:
+      flex !important;
+
+    flex-direction:
+      column;
+
+    gap:
+      7px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-category {
+    min-height:
+      86px;
+
+    padding:
+      12px !important;
+
+    display:
+      grid !important;
+
+    grid-template-columns:
+      minmax(0,1fr)
+      auto !important;
+
+    grid-template-rows:
+      auto auto;
+
+    align-items:
+      center !important;
+
+    column-gap:
+      10px !important;
+
+    row-gap:
+      8px !important;
+
+    border:
+      1px solid
+      transparent !important;
+
+    border-radius:
+      15px !important;
+
+    background:
+      transparent !important;
+
+    box-shadow:
+      none !important;
+
+    transition:
+      background .14s ease,
+      border-color .14s ease,
+      box-shadow .14s ease !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-category:hover {
+    border-color:
+      rgba(0, 122, 255, .18) !important;
+
+    background:
+      var(--studio-surface-soft) !important;
+
+    box-shadow:
+      inset 0 0 0 1px
+      rgba(0, 122, 255, .035),
+      0 6px 20px
+      rgba(0, 0, 0, .035) !important;
+  }
+
+  .bm-owner-dashboard
+  .bm-owner-category.active:hover {
+    border-color:
+      rgba(0, 122, 255, .40) !important;
+
+    background:
+      var(--studio-blue-soft) !important;
+
+    box-shadow:
+      inset 3px 0 0
+      var(--studio-blue),
+      0 6px 22px
+      rgba(0, 122, 255, .07) !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-category.active {
+    border-color:
+      rgba(0,122,255,.32) !important;
+
+    background:
+      var(--studio-blue-soft) !important;
+
+    box-shadow:
+      inset 3px 0 0
+      var(--studio-blue) !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-category-main {
+    min-width:
+      0 !important;
+
+    padding:
+      0 !important;
+
+    justify-content:
+      space-between !important;
+
+    border:
+      0 !important;
+
+    background:
+      transparent !important;
+
+    box-shadow:
+      none !important;
+
+    text-align:
+      left !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-category-main:hover {
+    transform:
+      none !important;
+
+    box-shadow:
+      none !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-category-main span {
+    min-width:
+      0;
+
+    display:
+      flex !important;
+
+    flex-direction:
+      column;
+
+    gap:
+      3px;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-category-main strong {
+    overflow:
+      hidden;
+
+    color:
+      var(--studio-text) !important;
+
+    font-size:
+      14px !important;
+
+    font-weight:
+      650 !important;
+
+    line-height:
+      1.2 !important;
+
+    text-overflow:
+      ellipsis;
+
+    white-space:
+      nowrap;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-category-main small {
+    overflow:
+      hidden;
+
+    color:
+      var(--studio-text-secondary) !important;
+
+    font-size:
+      11px !important;
+
+    font-weight:
+      450 !important;
+
+    line-height:
+      1.2 !important;
+
+    text-overflow:
+      ellipsis;
+
+    white-space:
+      nowrap;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-category-main em {
+    min-width:
+      32px;
+
+    height:
+      28px;
+
+    padding:
+      0 9px;
+
+    display:
+      inline-flex;
+
+    align-items:
+      center;
+
+    justify-content:
+      center;
+
+    border-radius:
+      999px;
+
+    color:
+      #56606c !important;
+
+    background:
+      #f0f1f3 !important;
+
+    font-size:
+      11px !important;
+
+    font-style:
+      normal;
+
+    font-weight:
+      600 !important;
+  }
+
+
+  /* =========================================================
+     9. ONE ACTION ROW EVERYWHERE
+  ========================================================= */
+
+  .bm-owner-dashboard
+  :is(
+    .bm-owner-category-actions,
+    .bm-owner-item-actions
+  ) {
+    display:
+      flex !important;
+
+    align-items:
+      center !important;
+
+    justify-content:
+      flex-end !important;
+
+    flex-wrap:
+      nowrap !important;
+
+    gap:
+      7px !important;
+  }
+
+
+  .bm-owner-dashboard
+  :is(
+    .bm-owner-category-actions,
+    .bm-owner-item-actions
+  )
+  button:not(.bm-move-button) {
+    min-width:
+      58px;
+
+    height:
+      36px;
+
+    min-height:
+      36px;
+
+    padding:
+      0 12px !important;
+  }
+
+
+  /* Category action row */
+
+  .bm-owner-dashboard
+  .bm-owner-category-actions {
+    grid-column:
+      1 / -1;
+
+    justify-content:
+      flex-start !important;
+
+    padding-top:
+      8px;
+
+    border-top:
+      1px solid
+      var(--studio-border);
+  }
+
+
+  /* =========================================================
+     10. ITEMS PANEL
+  ========================================================= */
+
+  .bm-owner-dashboard
+  .bm-owner-items {
+    padding:
+      0 !important;
+
+    overflow:
+      hidden;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-item-list {
+    padding:
+      14px 16px 18px !important;
+
+    display:
+      flex !important;
+
+    flex-direction:
+      column;
+
+    gap:
+      8px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-item {
+    min-height:
+      104px !important;
+
+    padding:
+      15px 16px !important;
+
+    display:
+      grid !important;
+
+    grid-template-columns:
+      minmax(0, 1fr)
+      306px !important;
+
+    align-items:
+      center !important;
+
+    gap:
+      18px !important;
+
+    border:
+      1px solid
+      var(--studio-border) !important;
+
+    border-radius:
+      var(--studio-radius-lg) !important;
+
+    background:
+      var(--studio-surface-solid) !important;
+
+    box-shadow:
+      none !important;
+
+    transition:
+      border-color .14s ease,
+      box-shadow .14s ease,
+      transform .14s ease !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-item:hover {
+    border-color:
+      rgba(0, 122, 255, .20) !important;
+
+    background:
+      var(--studio-surface-soft) !important;
+
+    box-shadow:
+      inset 0 0 0 1px
+      rgba(0, 122, 255, .025),
+      0 8px 24px
+      rgba(0, 0, 0, .045) !important;
+
+    transform:
+      none !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-item-main {
+    min-width:
+      0;
+
+    padding:
+      0 !important;
+
+    display:
+      grid !important;
+
+    grid-template-columns:
+      minmax(0,1fr)
+      112px !important;
+
+    align-items:
+      center !important;
+
+    gap:
+      22px !important;
+
+    border:
+      0 !important;
+
+    background:
+      transparent !important;
+
+    box-shadow:
+      none !important;
+
+    text-align:
+      left !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-item-main:hover {
+    transform:
+      none !important;
+
+    box-shadow:
+      none !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-item-copy {
+    min-width:
+      0;
+
+    display:
+      flex;
+
+    flex-direction:
+      column;
+
+    gap:
+      4px;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-item-copy strong {
+    color:
+      var(--studio-text) !important;
+
+    font-size:
+      15px !important;
+
+    font-weight:
+      650 !important;
+
+    line-height:
+      1.2 !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-item-secondary-name {
+    color:
+      var(--studio-text-secondary) !important;
+
+    font-size:
+      11px !important;
+
+    font-weight:
+      450 !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-item-copy p {
+    max-width:
+      680px;
+
+    margin:
+      2px 0 0 !important;
+
+    color:
+      var(--studio-text-secondary) !important;
+
+    font-size:
+      12px !important;
+
+    line-height:
+      1.4 !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-item-price {
+    min-width:
+      90px;
+
+    color:
+      #1f5f9f !important;
+
+    font-size:
+      18px !important;
+
+    font-weight:
+      650 !important;
+
+    letter-spacing:
+      -.025em;
+
+    text-align:
+      right;
+  }
+
+
+  /* =========================================================
+     11. SUBCATEGORY — COMPACT PREMIUM ROW
+  ========================================================= */
+
+  .bm-owner-dashboard
+  .bm-owner-subcategory-heading {
+    min-height:
+      74px !important;
+
+    margin:
+      16px 0 8px !important;
+
+    padding:
+      13px 15px !important;
+
+    display:
+      grid !important;
+
+    grid-template-columns:
+      minmax(0,1fr)
+      72px
+      306px !important;
+
+    align-items:
+      center !important;
+
+    gap:
+      18px !important;
+
+    border:
+      1px solid
+      rgba(0,122,255,.13) !important;
+
+    border-left:
+      3px solid
+      var(--studio-blue) !important;
+
+    border-radius:
+      14px !important;
+
+    background:
+      linear-gradient(
+        180deg,
+        rgba(0,122,255,.045),
+        rgba(0,122,255,.018)
+      ) !important;
+
+    box-shadow:
+      none !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-subcategory-copy {
+    min-width:
+      0;
+
+    display:
+      flex !important;
+
+    flex-direction:
+      column;
+
+    gap:
+      3px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-subcategory-copy strong {
+    color:
+      var(--studio-text) !important;
+
+    font-size:
+      14px !important;
+
+    font-weight:
+      650 !important;
+
+    line-height:
+      1.2 !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-subcategory-copy span {
+    color:
+      var(--studio-text-secondary) !important;
+
+    font-size:
+      11px !important;
+
+    font-weight:
+      450 !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-subcategory-heading-actions {
+    display:
+      flex !important;
+
+    align-items:
+      center !important;
+
+    gap:
+      8px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-subcategory-heading-actions em {
+    min-width:
+      62px;
+
+    height:
+      28px;
+
+    padding:
+      0 10px !important;
+
+    display:
+      inline-flex !important;
+
+    align-items:
+      center;
+
+    justify-content:
+      center;
+
+    border-radius:
+      999px !important;
+
+    color:
+      #59626e !important;
+
+    background:
+      rgba(0,0,0,.045) !important;
+
+    font-size:
+      11px !important;
+
+    font-style:
+      normal;
+
+    font-weight:
+      550 !important;
+  }
+
+
+  /* Desktop subcategory action row stays horizontal */
+
+  .bm-owner-dashboard
+  .bm-owner-subcategory-heading
+  .bm-owner-item-actions {
+    display:
+      flex !important;
+
+    align-items:
+      center !important;
+
+    flex-direction:
+      row !important;
+
+    justify-content:
+      flex-end !important;
+
+    gap:
+      7px !important;
+  }
+
+
+  /* =========================================================
+     12. FORMS — NATIVE SETTINGS FEEL
+  ========================================================= */
+
+  .bm-owner-dashboard label {
+    color:
+      #54545a !important;
+
+    font-size:
+      11px !important;
+
+    font-weight:
+      580 !important;
+  }
+
+
+  .bm-owner-dashboard
+  :is(
+    input,
+    select,
+    textarea
+  ) {
+    min-height:
+      42px;
+
+    padding:
+      0 12px !important;
+
+    border:
+      1px solid
+      var(--studio-border-strong) !important;
+
+    border-radius:
+      11px !important;
+
+    color:
+      var(--studio-text) !important;
+
+    background:
+      rgba(255,255,255,.96) !important;
+
+    box-shadow:
+      inset 0 1px 1px
+      rgba(0,0,0,.018) !important;
+
+    font-size:
+      13px !important;
+
+    font-weight:
+      450 !important;
+  }
+
+
+  .bm-owner-dashboard textarea {
+    min-height:
+      96px;
+
+    padding:
+      11px 12px !important;
+  }
+
+
+  .bm-owner-dashboard
+  :is(
+    input,
+    select,
+    textarea
+  ):focus {
+    outline:
+      none !important;
+
+    border-color:
+      rgba(0,122,255,.5) !important;
+
+    box-shadow:
+      0 0 0 3px
+      rgba(0,122,255,.105) !important;
+  }
+
+
+  /* =========================================================
+     13. EDIT / ADD PANELS
+  ========================================================= */
+
+  .bm-owner-dashboard
+  :is(
+    .bm-owner-item-form,
+    .bm-owner-item-edit,
+    .bm-owner-category-form,
+    .bm-owner-category-edit,
+    .bm-owner-subcategory-editor
+  ) {
+    padding:
+      20px !important;
+
+    border:
+      1px solid
+      var(--studio-border) !important;
+
+    border-radius:
+      var(--studio-radius-lg) !important;
+
+    background:
+      #fafafb !important;
+
+    box-shadow:
+      none !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-form-actions {
+    display:
+      flex !important;
+
+    align-items:
+      center !important;
+
+    justify-content:
+      flex-end !important;
+
+    gap:
+      8px !important;
+
+    padding-top:
+      14px !important;
+
+    border-top:
+      1px solid
+      var(--studio-border) !important;
+  }
+
+
+  /* =========================================================
+     14. SITE BAR / TOP ACTIONS
+  ========================================================= */
+
+  .bm-owner-dashboard
+  .bm-owner-sitebar {
+    padding:
+      16px 18px !important;
+
+    align-items:
+      center !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-site-title {
+    display:
+      flex;
+
+    flex-direction:
+      column;
+
+    gap:
+      3px;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-site-title h2 {
+    margin:
+      0 !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-site-actions {
+    display:
+      flex !important;
+
+    align-items:
+      center !important;
+
+    gap:
+      8px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-site-actions button {
+    min-width:
+      100px;
+  }
+
+
+  /* =========================================================
+     15. URL BUTTON
+  ========================================================= */
+
+  .bm-owner-dashboard
+  .bm-owner-menu-url-button {
+    min-height:
+      36px !important;
+
+    padding:
+      0 12px !important;
+
+    border:
+      1px solid
+      var(--studio-border-strong) !important;
+
+    border-radius:
+      10px !important;
+
+    color:
+      #3a5570 !important;
+
+    background:
+      #f8f8fa !important;
+
+    box-shadow:
+      none !important;
+
+    font-size:
+      11px !important;
+
+    font-weight:
+      550 !important;
+  }
+
+
+  /* =========================================================
+     16. ALIGNMENT / CONSISTENCY
+  ========================================================= */
+
+  .bm-owner-dashboard
+  :is(
+    .bm-owner-category,
+    .bm-owner-item,
+    .bm-owner-subcategory-heading,
+    .bm-owner-panel-head
+  ) {
+    text-align:
+      left;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  :is(
+    .bm-owner-category-main small,
+    .bm-owner-item-secondary-name,
+    .bm-owner-subcategory-copy span
+  ) {
+    text-align:
+      left !important;
+  }
+
+
+  .bm-owner-dashboard
+  :is(
+    .bm-owner-category-actions,
+    .bm-owner-item-actions,
+    .bm-owner-form-actions,
+    .bm-owner-site-actions
+  )
+  button {
+    line-height:
+      1 !important;
+  }
+
+
+
+  /* APPLE DESKTOP PRECISION ALIGNMENT START */
+
+
+  /* ---------------------------------------------------------
+     ITEM ACTION COLUMN
+  --------------------------------------------------------- */
+
+  .bm-owner-dashboard
+  .bm-owner-item
+  > .bm-owner-item-actions {
+    width:
+      306px !important;
+
+    justify-self:
+      end !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-item-actions
+  button:not(.bm-move-button) {
+    width:
+      68px !important;
+
+    min-width:
+      68px !important;
+
+    padding:
+      0 10px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-item-actions
+  button.danger {
+    width:
+      74px !important;
+
+    min-width:
+      74px !important;
+  }
+
+
+  /* ---------------------------------------------------------
+     SUBCATEGORY ROW
+  --------------------------------------------------------- */
+
+  .bm-owner-dashboard
+  .bm-owner-subcategory-heading
+  > .bm-owner-subcategory-copy {
+    grid-column:
+      1 !important;
+
+    grid-row:
+      1 !important;
+
+    align-self:
+      center;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-subcategory-heading
+  > .bm-owner-subcategory-heading-actions {
+    grid-column:
+      2 !important;
+
+    grid-row:
+      1 !important;
+
+    width:
+      72px !important;
+
+    justify-content:
+      center !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-subcategory-heading
+  > .bm-owner-item-actions {
+    grid-column:
+      3 !important;
+
+    grid-row:
+      1 !important;
+
+    width:
+      306px !important;
+
+    justify-self:
+      end !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-subcategory-heading
+  .bm-owner-item-actions
+  button:not(.bm-move-button) {
+    width:
+      68px !important;
+
+    min-width:
+      68px !important;
+
+    padding:
+      0 10px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-subcategory-heading
+  .bm-owner-item-actions
+  button.danger {
+    width:
+      74px !important;
+
+    min-width:
+      74px !important;
+  }
+
+
+  /* ---------------------------------------------------------
+     COUNT PILL
+  --------------------------------------------------------- */
+
+  .bm-owner-dashboard
+  .bm-owner-subcategory-heading-actions
+  em {
+    width:
+      64px !important;
+
+    min-width:
+      64px !important;
+
+    height:
+      30px !important;
+
+    padding:
+      0 8px !important;
+  }
+
+
+  /* ---------------------------------------------------------
+     CATEGORY SIDEBAR ACTIONS
+  --------------------------------------------------------- */
+
+  .bm-owner-dashboard
+  .bm-owner-category-actions {
+    width:
+      100%;
+
+    display:
+      grid !important;
+
+    grid-template-columns:
+      32px
+      32px
+      minmax(0,1fr)
+      minmax(0,1fr)
+      minmax(0,1.1fr) !important;
+
+    gap:
+      6px !important;
+
+    align-items:
+      center !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-category-actions
+  .bm-move-button {
+    width:
+      32px !important;
+
+    min-width:
+      32px !important;
+
+    height:
+      32px !important;
+
+    min-height:
+      32px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-category-actions
+  button:not(.bm-move-button) {
+    width:
+      100% !important;
+
+    min-width:
+      0 !important;
+
+    height:
+      32px !important;
+
+    min-height:
+      32px !important;
+
+    padding:
+      0 7px !important;
+
+    font-size:
+      10px !important;
+  }
+
+
+  /* ---------------------------------------------------------
+     SELECTED CATEGORY FEELS LIKE A NATIVE SIDEBAR ROW
+  --------------------------------------------------------- */
+
+  .bm-owner-dashboard
+  .bm-owner-category.active {
+    box-shadow:
+      inset 3px 0 0
+      var(--studio-blue),
+      0 2px 8px
+      rgba(0,122,255,.045) !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-category.active
+  .bm-owner-category-main strong {
+    color:
+      #0668ce !important;
+  }
+
+
+  /* ---------------------------------------------------------
+     ACTIONS: SAME VISUAL WEIGHT EVERYWHERE
+  --------------------------------------------------------- */
+
+  .bm-owner-dashboard
+  :is(
+    .bm-owner-category-actions,
+    .bm-owner-item-actions
+  )
+  button {
+    text-transform:
+      none !important;
+
+    letter-spacing:
+      -.005em !important;
+  }
+
+
+  /* ---------------------------------------------------------
+     ADD BUTTONS
+  --------------------------------------------------------- */
+
+  .bm-owner-dashboard
+  .bm-owner-items-head
+  > .bm-owner-add {
+    min-width:
+      108px;
+
+    height:
+      38px;
+
+    min-height:
+      38px;
+
+    padding:
+      0 15px !important;
+
+    border-radius:
+      11px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-subcategory-manager
+  > .bm-owner-add {
+    width:
+      fit-content !important;
+
+    min-width:
+      146px !important;
+
+    height:
+      38px !important;
+
+    min-height:
+      38px !important;
+
+    /*
+      Align with the RIGHT edge of the Item/Subcategory
+      content instead of floating on the left.
+    */
+    margin:
+      18px 16px 14px auto !important;
+
+    padding:
+      0 14px !important;
+
+    display:
+      flex !important;
+
+    align-items:
+      center !important;
+
+    justify-content:
+      center !important;
+
+    gap:
+      6px !important;
+
+    /*
+      Secondary action.
+      Add Item remains the main blue action.
+    */
+    color:
+      #3f4d5d !important;
+
+    border:
+      1px solid
+      var(--studio-border-strong) !important;
+
+    border-radius:
+      11px !important;
+
+    background:
+      linear-gradient(
+        180deg,
+        #ffffff,
+        #f6f6f8
+      ) !important;
+
+    box-shadow:
+      0 1px 2px
+      rgba(0,0,0,.025) !important;
+
+    font-size:
+      11.5px !important;
+
+    font-weight:
+      590 !important;
+
+    letter-spacing:
+      -.01em !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-subcategory-manager
+  > .bm-owner-add:hover {
+    color:
+      #006bd6 !important;
+
+    border-color:
+      rgba(0,122,255,.24) !important;
+
+    background:
+      rgba(0,122,255,.045) !important;
+
+    box-shadow:
+      0 3px 10px
+      rgba(0,122,255,.06) !important;
+
+    transform:
+      translateY(-1px);
+  }
+
+
+  /* ---------------------------------------------------------
+     ITEM CARD RHYTHM
+  --------------------------------------------------------- */
+
+  .bm-owner-dashboard
+  .bm-owner-item {
+    padding:
+      16px 18px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-item-price {
+    width:
+      112px;
+
+    min-width:
+      112px;
+
+    padding-right:
+      4px;
+
+    text-align:
+      right !important;
+  }
+
+
+  /* ---------------------------------------------------------
+     FORM ACTIONS
+  --------------------------------------------------------- */
+
+  .bm-owner-dashboard
+  .bm-owner-form-actions
+  button {
+    min-width:
+      110px;
+
+    height:
+      38px;
+
+    min-height:
+      38px;
+  }
+
+
+  /* ---------------------------------------------------------
+     LESS NOISE
+  --------------------------------------------------------- */
+
+  .bm-owner-dashboard
+  .bm-owner-category {
+    transition:
+      background .14s ease,
+      border-color .14s ease,
+      box-shadow .14s ease !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-item {
+    transition:
+      background .14s ease,
+      border-color .14s ease,
+      box-shadow .14s ease,
+      transform .14s ease !important;
+  }
+
+
+  /* APPLE DESKTOP PRECISION ALIGNMENT END */
+
+
+
+  /* APPLE DESKTOP STRUCTURE START */
+
+
+  /* =========================================================
+     APP CANVAS
+  ========================================================= */
+
+  .bm-owner-dashboard {
+    min-height:
+      100vh !important;
+
+    padding:
+      24px 0 56px !important;
+  }
+
+
+  /*
+    All major Studio desktop sections use the same
+    maximum width and left/right alignment.
+  */
+  .bm-owner-dashboard
+  :is(
+    .bm-owner-header,
+    .bm-owner-sitebar,
+    .bm-owner-site-switcher,
+    .bm-owner-settings,
+    .bm-msg
+  ) {
+    width:
+      min(
+        1500px,
+        calc(100% - 40px)
+      ) !important;
+
+    margin-left:
+      auto !important;
+
+    margin-right:
+      auto !important;
+  }
+
+
+  /* =========================================================
+     TOP APP TOOLBAR
+  ========================================================= */
+
+  .bm-owner-dashboard
+  .bm-owner-header {
+    min-height:
+      72px !important;
+
+    margin-bottom:
+      14px !important;
+
+    padding:
+      12px 14px
+      12px 20px !important;
+
+    display:
+      flex !important;
+
+    align-items:
+      center !important;
+
+    justify-content:
+      space-between !important;
+
+    gap:
+      24px !important;
+
+    border:
+      1px solid
+      var(--studio-border) !important;
+
+    border-radius:
+      18px !important;
+
+    background:
+      rgba(
+        255,
+        255,
+        255,
+        .86
+      ) !important;
+
+    box-shadow:
+      0 1px 2px
+        rgba(0,0,0,.02),
+      0 10px 35px
+        rgba(0,0,0,.025) !important;
+
+    backdrop-filter:
+      blur(26px)
+      saturate(150%);
+
+    -webkit-backdrop-filter:
+      blur(26px)
+      saturate(150%);
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-header
+  > div:first-child {
+    min-width:
+      0;
+
+    display:
+      flex;
+
+    flex-direction:
+      column;
+
+    justify-content:
+      center;
+
+    gap:
+      2px;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-header h1 {
+    margin:
+      0 !important;
+
+    font-size:
+      23px !important;
+
+    line-height:
+      1.08 !important;
+
+    font-weight:
+      700 !important;
+
+    letter-spacing:
+      -.035em !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-header p {
+    margin:
+      2px 0 0 !important;
+
+    color:
+      var(--studio-text-secondary) !important;
+
+    font-size:
+      11px !important;
+
+    line-height:
+      1.3 !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-header-actions {
+    display:
+      flex !important;
+
+    align-items:
+      center !important;
+
+    justify-content:
+      flex-end !important;
+
+    flex-wrap:
+      nowrap !important;
+
+    gap:
+      7px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-header-actions
+  button {
+    height:
+      38px !important;
+
+    min-height:
+      38px !important;
+  }
+
+
+  /*
+    Language / theme controls should feel like toolbar
+    controls rather than large call-to-action buttons.
+  */
+  .bm-owner-dashboard
+  :is(
+    .bm-language-toggle,
+    .bm-theme-toggle
+  ) {
+    height:
+      38px !important;
+
+    min-height:
+      38px !important;
+
+    border-radius:
+      11px !important;
+  }
+
+
+  /* =========================================================
+     RESTAURANT / MENU BAR
+  ========================================================= */
+
+  .bm-owner-dashboard
+  .bm-owner-sitebar {
+    min-height:
+      82px !important;
+
+    margin-bottom:
+      16px !important;
+
+    padding:
+      14px 16px !important;
+
+    display:
+      grid !important;
+
+    grid-template-columns:
+      minmax(0,1fr)
+      auto !important;
+
+    align-items:
+      center !important;
+
+    gap:
+      22px !important;
+
+    border-radius:
+      18px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-site-main {
+    min-width:
+      0;
+
+    display:
+      flex !important;
+
+    align-items:
+      center !important;
+
+    gap:
+      14px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-site-title {
+    min-width:
+      0;
+
+    display:
+      flex !important;
+
+    flex-direction:
+      column;
+
+    justify-content:
+      center;
+
+    gap:
+      2px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-site-title h2 {
+    margin:
+      0 !important;
+
+    font-size:
+      18px !important;
+
+    font-weight:
+      680 !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-status {
+    height:
+      27px;
+
+    padding:
+      0 10px;
+
+    display:
+      inline-flex;
+
+    align-items:
+      center;
+
+    justify-content:
+      center;
+
+    border-radius:
+      999px !important;
+
+    font-size:
+      10px !important;
+
+    font-weight:
+      600 !important;
+
+    letter-spacing:
+      0 !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-site-actions {
+    display:
+      flex !important;
+
+    align-items:
+      center !important;
+
+    justify-content:
+      flex-end !important;
+
+    gap:
+      7px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-site-actions
+  button {
+    min-width:
+      94px !important;
+
+    height:
+      38px !important;
+
+    min-height:
+      38px !important;
+  }
+
+
+  /*
+    Publish is the primary action in this toolbar.
+  */
+  .bm-owner-dashboard
+  .bm-owner-desktop-publish {
+    color:
+      #fff !important;
+
+    border-color:
+      var(--studio-blue) !important;
+
+    background:
+      linear-gradient(
+        180deg,
+        #1687ff,
+        #007aff
+      ) !important;
+
+    box-shadow:
+      0 2px 8px
+      rgba(0,122,255,.18) !important;
+  }
+
+
+  /* =========================================================
+     PUBLIC MENU URL
+  ========================================================= */
+
+  .bm-owner-dashboard
+  .bm-owner-menu-url-button {
+    height:
+      34px !important;
+
+    min-height:
+      34px !important;
+
+    padding:
+      0 11px !important;
+
+    border-radius:
+      9px !important;
+
+    color:
+      #4d5967 !important;
+
+    background:
+      #f4f5f7 !important;
+
+    border-color:
+      var(--studio-border) !important;
+
+    box-shadow:
+      none !important;
+
+    font-size:
+      10.5px !important;
+
+    font-weight:
+      530 !important;
+  }
+
+
+  /* =========================================================
+     MAIN WORKSPACE
+  ========================================================= */
+
+  /*
+    We intentionally target the direct parent containing
+    Categories + Items, regardless of its class name.
+  */
+  .bm-owner-dashboard
+  :has(
+    > .bm-owner-categories
+  ):has(
+    > .bm-owner-items
+  ) {
+    width:
+      min(
+        1500px,
+        calc(100% - 40px)
+      ) !important;
+
+    margin:
+      0 auto !important;
+
+    display:
+      grid !important;
+
+    grid-template-columns:
+      320px
+      minmax(0,1fr) !important;
+
+    gap:
+      16px !important;
+
+    align-items:
+      start !important;
+  }
+
+
+  /* =========================================================
+     CATEGORY SIDEBAR PROPORTIONS
+  ========================================================= */
+
+  .bm-owner-dashboard
+  .bm-owner-categories {
+    min-width:
+      0;
+
+    align-self:
+      start;
+
+    border-radius:
+      18px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-categories
+  .bm-owner-panel-head {
+    min-height:
+      70px !important;
+
+    padding:
+      16px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-categories-list {
+    padding:
+      8px !important;
+
+    gap:
+      5px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-category {
+    min-height:
+      70px !important;
+
+    padding:
+      10px 11px !important;
+
+    border-radius:
+      13px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-category-main strong {
+    font-size:
+      13px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-category-main small {
+    margin-top:
+      1px;
+
+    font-size:
+      10.5px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-category-main em {
+    min-width:
+      30px !important;
+
+    height:
+      27px !important;
+  }
+
+
+  /*
+    Category manipulation should be secondary visually.
+  */
+  .bm-owner-dashboard
+  .bm-owner-category-actions {
+    padding-top:
+      7px !important;
+
+    opacity:
+      .74;
+
+    transition:
+      opacity .14s ease;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-category:hover
+  .bm-owner-category-actions,
+  .bm-owner-dashboard
+  .bm-owner-category.active
+  .bm-owner-category-actions {
+    opacity:
+      1;
+  }
+
+
+  /* =========================================================
+     MAIN EDITOR PANEL
+  ========================================================= */
+
+  .bm-owner-dashboard
+  .bm-owner-items {
+    min-width:
+      0;
+
+    border-radius:
+      18px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-items
+  .bm-owner-panel-head {
+    min-height:
+      76px !important;
+
+    padding:
+      17px 18px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-items-head h2 {
+    font-size:
+      19px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-items-head p {
+    max-width:
+      650px;
+
+    overflow:
+      hidden;
+
+    text-overflow:
+      ellipsis;
+
+    white-space:
+      nowrap;
+
+    font-size:
+      11px !important;
+  }
+
+
+  /* =========================================================
+     ITEMS — LESS CARD-LIKE, MORE NATIVE-LIST-LIKE
+  ========================================================= */
+
+  .bm-owner-dashboard
+  .bm-owner-item-list {
+    gap:
+      7px !important;
+
+    padding:
+      12px 14px 16px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-item {
+    min-height:
+      88px !important;
+
+    padding:
+      13px 15px !important;
+
+    border-radius:
+      14px !important;
+
+    box-shadow:
+      none !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-item:hover {
+    background:
+      #fcfcfd !important;
+
+    transform:
+      none !important;
+
+    box-shadow:
+      0 3px 14px
+      rgba(0,0,0,.035) !important;
+  }
+
+
+  /* =========================================================
+     SUBCATEGORY — SAME VERTICAL RHYTHM AS ITEMS
+  ========================================================= */
+
+  .bm-owner-dashboard
+  .bm-owner-subcategory-heading {
+    min-height:
+      66px !important;
+
+    margin:
+      12px 0 7px !important;
+
+    padding:
+      11px 14px !important;
+
+    border-radius:
+      13px !important;
+  }
+
+
+  /* =========================================================
+     SETTINGS
+  ========================================================= */
+
+  .bm-owner-dashboard
+  .bm-owner-settings {
+    margin-bottom:
+      16px !important;
+
+    border-radius:
+      18px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-settings-grid {
+    gap:
+      14px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-settings-footer {
+    padding-top:
+      16px !important;
+
+    border-top:
+      1px solid
+      var(--studio-border) !important;
+  }
+
+
+  /* =========================================================
+     TOAST / STATUS MESSAGE
+  ========================================================= */
+
+  .bm-owner-dashboard
+  .bm-msg {
+    width:
+      fit-content !important;
+
+    max-width:
+      520px;
+
+    min-height:
+      38px;
+
+    margin-top:
+      12px !important;
+
+    padding:
+      10px 14px !important;
+
+    border:
+      1px solid
+      var(--studio-border) !important;
+
+    border-radius:
+      12px !important;
+
+    color:
+      #4e5660 !important;
+
+    background:
+      rgba(255,255,255,.94) !important;
+
+    box-shadow:
+      0 8px 30px
+      rgba(0,0,0,.06) !important;
+
+    font-size:
+      11px !important;
+
+    font-weight:
+      520 !important;
+  }
+
+
+  /* =========================================================
+     WIDER SCREEN
+  ========================================================= */
+
+  @media (min-width: 1500px) {
+
+    .bm-owner-dashboard
+    :has(
+      > .bm-owner-categories
+    ):has(
+      > .bm-owner-items
+    ) {
+      grid-template-columns:
+        330px
+        minmax(0,1fr) !important;
+    }
+
+  }
+
+
+  /* APPLE DESKTOP STRUCTURE END */
+
+
+  /* =========================================================
+     17. DARK DESKTOP
+  ========================================================= */
+
+  html[data-beyond-theme="dark"]
+  .bm-owner-dashboard {
+    --studio-bg: #111214;
+    --studio-surface: rgba(28, 29, 32, .92);
+    --studio-surface-solid: #1c1d20;
+    --studio-surface-soft: #202125;
+
+    --studio-border: rgba(255,255,255,.075);
+    --studio-border-strong: rgba(255,255,255,.12);
+
+    --studio-text: #f5f5f7;
+    --studio-text-secondary: #a1a1a6;
+    --studio-text-tertiary: #86868b;
+
+    background:
+      linear-gradient(
+        180deg,
+        #17181b,
+        #101113
+      ) !important;
+  }
+
+
+  html[data-beyond-theme="dark"]
+  .bm-owner-dashboard
+  button:not(.bm-owner-item-main):not(.bm-owner-category-main) {
+    color:
+      #ececf0 !important;
+
+    background:
+      linear-gradient(
+        180deg,
+        #2b2c30,
+        #242529
+      ) !important;
+  }
+
+
+  html[data-beyond-theme="dark"]
+  .bm-owner-dashboard
+  .bm-owner-item {
+    background:
+      var(--studio-surface-solid) !important;
+  }
+
+
+  html[data-beyond-theme="dark"]
+  .bm-owner-dashboard
+  :is(
+    input,
+    select,
+    textarea
+  ) {
+    color:
+      #f5f5f7 !important;
+
+    background:
+      #242529 !important;
+  }
+
+
+  html[data-beyond-theme="dark"]
+  .bm-owner-dashboard
+  .bm-owner-category.active {
+    background:
+      rgba(10,132,255,.13) !important;
+  }
+
+
+  html[data-beyond-theme="dark"]
+  .bm-owner-dashboard
+  .bm-owner-category:hover {
+    border-color:
+      rgba(10, 132, 255, .22) !important;
+
+    background:
+      #24262b !important;
+
+    box-shadow:
+      inset 0 0 0 1px
+      rgba(255, 255, 255, .025),
+      0 8px 24px
+      rgba(0, 0, 0, .18) !important;
+  }
+
+
+  html[data-beyond-theme="dark"]
+  .bm-owner-dashboard
+  .bm-owner-category.active:hover {
+    border-color:
+      rgba(10, 132, 255, .42) !important;
+
+    background:
+      rgba(10, 132, 255, .14) !important;
+
+    box-shadow:
+      inset 3px 0 0
+      #0a84ff,
+      0 8px 26px
+      rgba(0, 90, 200, .12) !important;
+  }
+
+
+  html[data-beyond-theme="dark"]
+  .bm-owner-dashboard
+  .bm-owner-item:hover {
+    border-color:
+      rgba(10, 132, 255, .20) !important;
+
+    background:
+      linear-gradient(
+        180deg,
+        #24262b,
+        #202227
+      ) !important;
+
+    box-shadow:
+      inset 0 1px 0
+      rgba(255, 255, 255, .025),
+      0 9px 26px
+      rgba(0, 0, 0, .19) !important;
+
+    transform:
+      none !important;
+  }
+
+
+  html[data-beyond-theme="dark"]
+  .bm-owner-dashboard
+  .bm-owner-subcategory-heading {
+    background:
+      rgba(10,132,255,.075) !important;
+  }
+
+}
+
+/* MENU STUDIO DARK SUBCATEGORY FIX START */
+@media (min-width: 761px) and (hover: hover) and (pointer: fine) {
+  .bm-owner-dashboard.bm-theme-dark
+  .bm-owner-subcategory-manager {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(20,24,31,.92),
+        rgba(15,18,24,.96)
+      ) !important;
+
+    border:
+      1px solid rgba(255,255,255,.08) !important;
+
+    box-shadow:
+      0 14px 40px rgba(0,0,0,.22),
+      inset 0 1px 0 rgba(255,255,255,.04) !important;
+  }
+
+  .bm-owner-dashboard.bm-theme-dark
+  .bm-owner-subcategory-manager
+  > .bm-owner-add {
+    margin:
+      20px 18px 16px auto !important;
+
+    min-width:
+      154px !important;
+
+    height:
+      40px !important;
+
+    min-height:
+      40px !important;
+
+    padding:
+      0 16px !important;
+
+    display:
+      inline-flex !important;
+
+    align-items:
+      center !important;
+
+    justify-content:
+      center !important;
+
+    gap:
+      6px !important;
+
+    color:
+      #f4f7fb !important;
+
+    border:
+      1px solid rgba(255,255,255,.10) !important;
+
+    border-radius:
+      12px !important;
+
+    background:
+      linear-gradient(
+        180deg,
+        rgba(41,47,58,.98),
+        rgba(26,30,38,.98)
+      ) !important;
+
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.06),
+      0 10px 24px rgba(0,0,0,.22) !important;
+
+    font-size:
+      13px !important;
+
+    font-weight:
+      600 !important;
+
+    letter-spacing:
+      -.01em !important;
+  }
+
+  .bm-owner-dashboard.bm-theme-dark
+  .bm-owner-subcategory-manager
+  > .bm-owner-add:hover {
+    color:
+      #ffffff !important;
+
+    border-color:
+      rgba(0,122,255,.45) !important;
+
+    background:
+      linear-gradient(
+        180deg,
+        rgba(19,94,193,.34),
+        rgba(20,60,112,.28)
+      ) !important;
+
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.08),
+      0 14px 28px rgba(0,0,0,.26),
+      0 0 0 1px rgba(0,122,255,.16) !important;
+
+    transform:
+      translateY(-1px);
+  }
+
+  .bm-owner-dashboard.bm-theme-dark
+  .bm-owner-subcategory-manager
+  > .bm-owner-add:active {
+    transform:
+      translateY(0) !important;
+  }
+
+  .bm-owner-dashboard.bm-theme-dark
+  .bm-owner-subcategory-manager
+  > .bm-owner-add:focus-visible {
+    outline:
+      none !important;
+
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.08),
+      0 0 0 3px rgba(0,122,255,.22),
+      0 10px 24px rgba(0,0,0,.24) !important;
+  }
+}
+/* MENU STUDIO DARK SUBCATEGORY FIX END */
+
+/* MENU STUDIO DARK HEADER PREMIUM FIX START */
+@media (min-width: 761px) and (hover: hover) and (pointer: fine) {
+  .bm-owner-dashboard.bm-theme-dark .bm-owner-header {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(248,249,251,.96),
+        rgba(239,241,245,.94)
+      ) !important;
+
+    border:
+      1px solid rgba(255,255,255,.42) !important;
+
+    border-radius:
+      28px !important;
+
+    box-shadow:
+      0 18px 44px rgba(0,0,0,.22),
+      inset 0 1px 0 rgba(255,255,255,.68) !important;
+
+    padding:
+      18px 22px !important;
+  }
+
+  .bm-owner-dashboard.bm-theme-dark .bm-owner-header > div:first-child > span {
+    display:
+      inline-block !important;
+
+    color:
+      #6b7f99 !important;
+
+    font-size:
+      12px !important;
+
+    font-weight:
+      700 !important;
+
+    letter-spacing:
+      .14em !important;
+
+    text-transform:
+      uppercase !important;
+
+    margin-bottom:
+      6px !important;
+  }
+
+  .bm-owner-dashboard.bm-theme-dark .bm-owner-header h1 {
+    color:
+      #dcecff !important;
+
+    font-size:
+      44px !important;
+
+    line-height:
+      1.02 !important;
+
+    letter-spacing:
+      -.04em !important;
+
+    font-weight:
+      800 !important;
+
+    margin:
+      0 !important;
+  }
+
+  .bm-owner-dashboard.bm-theme-dark .bm-owner-header p {
+    color:
+      rgba(45,58,74,.72) !important;
+
+    font-size:
+      15px !important;
+
+    line-height:
+      1.45 !important;
+
+    margin:
+      8px 0 0 !important;
+  }
+
+  .bm-owner-dashboard.bm-theme-dark .bm-owner-header-actions {
+    display:
+      flex !important;
+
+    align-items:
+      center !important;
+
+    justify-content:
+      flex-end !important;
+
+    flex-wrap:
+      wrap !important;
+
+    gap:
+      10px !important;
+  }
+
+  .bm-owner-dashboard.bm-theme-dark .bm-owner-header-actions > * {
+    margin:
+      0 !important;
+  }
+
+  .bm-owner-dashboard.bm-theme-dark .bm-owner-header-actions button,
+  .bm-owner-dashboard.bm-theme-dark .bm-owner-header-actions .bm-theme-toggle,
+  .bm-owner-dashboard.bm-theme-dark .bm-owner-header-actions .bm-language-toggle {
+    min-height:
+      42px !important;
+
+    height:
+      42px !important;
+
+    padding:
+      0 16px !important;
+
+    border-radius:
+      14px !important;
+
+    border:
+      1px solid rgba(13,18,28,.14) !important;
+
+    background:
+      linear-gradient(
+        180deg,
+        rgba(38,41,49,.98),
+        rgba(26,28,34,.98)
+      ) !important;
+
+    color:
+      #f5f7fb !important;
+
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.06),
+      0 6px 18px rgba(0,0,0,.16) !important;
+
+    font-weight:
+      650 !important;
+
+    letter-spacing:
+      -.01em !important;
+  }
+
+  .bm-owner-dashboard.bm-theme-dark .bm-owner-header-actions button:hover,
+  .bm-owner-dashboard.bm-theme-dark .bm-owner-header-actions .bm-theme-toggle:hover,
+  .bm-owner-dashboard.bm-theme-dark .bm-owner-header-actions .bm-language-toggle:hover {
+    transform:
+      translateY(-1px);
+
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.08),
+      0 10px 22px rgba(0,0,0,.18) !important;
+  }
+
+  .bm-owner-dashboard.bm-theme-dark .bm-owner-header-actions button:active,
+  .bm-owner-dashboard.bm-theme-dark .bm-owner-header-actions .bm-theme-toggle:active,
+  .bm-owner-dashboard.bm-theme-dark .bm-owner-header-actions .bm-language-toggle:active {
+    transform:
+      translateY(0) !important;
+  }
+
+  .bm-owner-dashboard.bm-theme-dark .bm-owner-site-summary {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(21,24,31,.92),
+        rgba(16,19,25,.96)
+      ) !important;
+
+    border:
+      1px solid rgba(255,255,255,.08) !important;
+
+    border-radius:
+      24px !important;
+
+    box-shadow:
+      0 16px 34px rgba(0,0,0,.16),
+      inset 0 1px 0 rgba(255,255,255,.04) !important;
+  }
+
+  .bm-owner-dashboard.bm-theme-dark .bm-owner-site-main {
+    display:
+      flex !important;
+
+    align-items:
+      center !important;
+
+    gap:
+      14px !important;
+  }
+
+  .bm-owner-dashboard.bm-theme-dark .bm-owner-site-main a,
+  .bm-owner-dashboard.bm-theme-dark .bm-owner-site-main .bm-owner-site-link,
+  .bm-owner-dashboard.bm-theme-dark .bm-owner-site-main button.bm-owner-site-link {
+    display:
+      inline-flex !important;
+
+    align-items:
+      center !important;
+
+    min-height:
+      36px !important;
+
+    padding:
+      0 14px !important;
+
+    border-radius:
+      12px !important;
+
+    background:
+      rgba(255,255,255,.06) !important;
+
+    border:
+      1px solid rgba(255,255,255,.08) !important;
+
+    color:
+      #9cc9ff !important;
+
+    text-decoration:
+      none !important;
+
+    font-weight:
+      600 !important;
+  }
+
+  .bm-owner-dashboard.bm-theme-dark .bm-owner-site-actions {
+    display:
+      flex !important;
+
+    align-items:
+      center !important;
+
+    gap:
+      10px !important;
+  }
+
+  .bm-owner-dashboard.bm-theme-dark .bm-owner-site-actions button {
+    min-height:
+      40px !important;
+
+    height:
+      40px !important;
+
+    padding:
+      0 18px !important;
+
+    border-radius:
+      14px !important;
+
+    font-weight:
+      650 !important;
+
+    letter-spacing:
+      -.01em !important;
+
+    border:
+      1px solid rgba(255,255,255,.10) !important;
+
+    background:
+      linear-gradient(
+        180deg,
+        rgba(45,48,57,.96),
+        rgba(28,30,36,.98)
+      ) !important;
+
+    color:
+      #f4f7fb !important;
+
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.05),
+      0 8px 18px rgba(0,0,0,.18) !important;
+  }
+
+  .bm-owner-dashboard.bm-theme-dark .bm-owner-site-actions button.active {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(25,110,224,.98),
+        rgba(15,84,186,.98)
+      ) !important;
+
+    border-color:
+      rgba(82,153,255,.48) !important;
+
+    color:
+      #ffffff !important;
+
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.10),
+      0 10px 22px rgba(0,86,179,.28) !important;
+  }
+}
+/* MENU STUDIO DARK HEADER PREMIUM FIX END */
+
+/* APPLE DARK HEADER FINAL START */
+
+  @media (min-width: 761px) and (hover: hover) and (pointer: fine) {
+
+    html[data-beyond-theme="dark"]
+    .bm-owner-dashboard
+    .bm-owner-header {
+      color:
+        #f5f5f7 !important;
+
+      border:
+        1px solid
+        rgba(255,255,255,.085) !important;
+
+      background:
+        linear-gradient(
+          180deg,
+          rgba(30,31,35,.98),
+          rgba(23,24,28,.98)
+        ) !important;
+
+      box-shadow:
+        0 18px 48px
+        rgba(0,0,0,.28),
+        inset 0 1px 0
+        rgba(255,255,255,.045) !important;
+
+      backdrop-filter:
+        blur(28px)
+        saturate(135%);
+
+      -webkit-backdrop-filter:
+        blur(28px)
+        saturate(135%);
+    }
+
+
+    html[data-beyond-theme="dark"]
+    .bm-owner-dashboard
+    .bm-owner-header
+    > div:first-child
+    > span {
+      color:
+        #8397b0 !important;
+
+      opacity:
+        1 !important;
+    }
+
+
+    html[data-beyond-theme="dark"]
+    .bm-owner-dashboard
+    .bm-owner-header h1 {
+      color:
+        #f5f5f7 !important;
+
+      text-shadow:
+        none !important;
+    }
+
+
+    html[data-beyond-theme="dark"]
+    .bm-owner-dashboard
+    .bm-owner-header p {
+      color:
+        #9fa8b5 !important;
+
+      opacity:
+        1 !important;
+    }
+
+
+    /* ---------------------------------------------
+       HEADER TOOLBAR BUTTONS
+    --------------------------------------------- */
+
+    html[data-beyond-theme="dark"]
+    .bm-owner-dashboard
+    .bm-owner-header-actions
+    > button,
+
+    html[data-beyond-theme="dark"]
+    .bm-owner-dashboard
+    .bm-owner-header-actions
+    .bm-theme-toggle {
+      color:
+        #f2f3f5 !important;
+
+      border-color:
+        rgba(255,255,255,.10) !important;
+
+      background:
+        linear-gradient(
+          180deg,
+          #303136,
+          #28292d
+        ) !important;
+
+      box-shadow:
+        inset 0 1px 0
+        rgba(255,255,255,.055),
+        0 5px 15px
+        rgba(0,0,0,.18) !important;
+    }
+
+
+    html[data-beyond-theme="dark"]
+    .bm-owner-dashboard
+    .bm-owner-header-actions
+    > button:hover:not(:disabled),
+
+    html[data-beyond-theme="dark"]
+    .bm-owner-dashboard
+    .bm-owner-header-actions
+    .bm-theme-toggle:hover {
+      color:
+        #ffffff !important;
+
+      border-color:
+        rgba(10,132,255,.38) !important;
+
+      background:
+        linear-gradient(
+          180deg,
+          #37383e,
+          #2e3035
+        ) !important;
+
+      box-shadow:
+        inset 0 1px 0
+        rgba(255,255,255,.07),
+        0 7px 18px
+        rgba(0,0,0,.22) !important;
+    }
+
+
+    /* ---------------------------------------------
+       LANGUAGE CONTROL
+    --------------------------------------------- */
+
+    html[data-beyond-theme="dark"]
+    .bm-owner-dashboard
+    .bm-language-toggle {
+      border:
+        1px solid
+        rgba(255,255,255,.10) !important;
+
+      border-radius:
+        11px !important;
+
+      background:
+        #292a2f !important;
+
+      box-shadow:
+        inset 0 1px 0
+        rgba(255,255,255,.045) !important;
+    }
+
+
+    html[data-beyond-theme="dark"]
+    .bm-owner-dashboard
+    .bm-language-toggle button {
+      color:
+        #979da7 !important;
+
+      border:
+        0 !important;
+
+      background:
+        transparent !important;
+
+      box-shadow:
+        none !important;
+    }
+
+
+    html[data-beyond-theme="dark"]
+    .bm-owner-dashboard
+    .bm-language-toggle button.active {
+      color:
+        #ffffff !important;
+
+      background:
+        rgba(255,255,255,.085) !important;
+
+      box-shadow:
+        inset 0 0 0 1px
+        rgba(255,255,255,.035) !important;
+    }
+
+
+    /* ---------------------------------------------
+       ICONS
+    --------------------------------------------- */
+
+    html[data-beyond-theme="dark"]
+    .bm-owner-dashboard
+    .bm-owner-header-actions svg {
+      color:
+        currentColor !important;
+
+      stroke:
+        currentColor !important;
+    }
+
+  }
+
+  /* APPLE DARK HEADER FINAL END */
+
+/* APPLE DESKTOP HEBREW RTL START */
+
+@media (min-width: 761px) and (hover: hover) and (pointer: fine) {
+
+  /* =========================================================
+     1. TOP TOOLBAR
+
+     SAME PHYSICAL LAYOUT AS ENGLISH.
+     Do NOT mirror the toolbar itself.
+  ========================================================= */
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-header {
+    direction:
+      rtl !important;
+
+    flex-direction:
+      row !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  /*
+    Hebrew title block sits on the RIGHT.
+  */
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-header
+  > div:first-child {
+    order:
+      1 !important;
+
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+
+    align-items:
+      flex-start !important;
+
+    margin-left:
+      auto !important;
+
+    margin-right:
+      0 !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-header
+  > div:first-child
+  :is(
+    span,
+    h1,
+    p
+  ) {
+    width:
+      100% !important;
+
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  /*
+    Toolbar sits on the LEFT and flows RTL.
+  */
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-header-actions {
+    order:
+      2 !important;
+
+    direction:
+      rtl !important;
+
+    justify-content:
+      flex-start !important;
+
+    margin-left:
+      0 !important;
+
+    margin-right:
+      auto !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-header-actions
+  > * {
+    direction:
+      rtl !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-header-actions
+  button {
+    direction:
+      rtl !important;
+
+    text-align:
+      center !important;
+  }
+
+
+  /*
+    Keep the URL/domain-like language toggle text stable.
+  */
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-language-toggle {
+    direction:
+      ltr !important;
+  }
+
+
+
+  /* =========================================================
+     2. RESTAURANT TOOLBAR
+
+     Same as English:
+     restaurant LEFT
+     actions RIGHT
+  ========================================================= */
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-sitebar {
+    direction:
+      rtl !important;
+
+    grid-template-columns:
+      minmax(0, 1fr)
+      auto !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  /*
+    Restaurant information sits on the RIGHT.
+  */
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-site-main {
+    grid-column:
+      1 !important;
+
+    grid-row:
+      1 !important;
+
+    direction:
+      rtl !important;
+
+    justify-self:
+      stretch !important;
+
+    justify-content:
+      flex-start !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-site-title {
+    direction:
+      rtl !important;
+
+    align-items:
+      flex-start !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-site-title
+  :is(
+    h1,
+    h2,
+    h3,
+    p,
+    span,
+    small
+  ) {
+    width:
+      100% !important;
+
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  /*
+    Status + menu URL follow the RTL restaurant side.
+  */
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-site-main
+  > * {
+    direction:
+      rtl;
+  }
+
+
+  /*
+    URL itself must stay LTR so /menu/el-puerto
+    remains readable.
+  */
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-menu-url-button,
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-menu-url-button strong {
+    direction:
+      ltr !important;
+
+    unicode-bidi:
+      isolate !important;
+
+    text-align:
+      left !important;
+  }
+
+
+  /*
+    Settings / Preview / Publish sit on the LEFT.
+  */
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-site-actions {
+    grid-column:
+      2 !important;
+
+    grid-row:
+      1 !important;
+
+    direction:
+      rtl !important;
+
+    justify-self:
+      end !important;
+
+    justify-content:
+      flex-start !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-site-actions
+  button {
+    direction:
+      rtl !important;
+
+    text-align:
+      center !important;
+  }
+
+
+
+  /* =========================================================
+     3. ONLY MIRROR THE MAIN WORKSPACE
+
+     HEBREW:
+
+     ITEMS                    CATEGORIES
+     LEFT                     RIGHT
+  ========================================================= */
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  :has(
+    > .bm-owner-categories
+  ):has(
+    > .bm-owner-items
+  ) {
+    direction:
+      ltr !important;
+
+    display:
+      grid !important;
+
+    grid-template-columns:
+      minmax(0, 1fr)
+      320px !important;
+
+    grid-template-rows:
+      auto !important;
+
+    gap:
+      16px !important;
+
+    align-items:
+      start !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  :has(
+    > .bm-owner-categories
+  ):has(
+    > .bm-owner-items
+  )
+  > .bm-owner-items {
+    grid-column:
+      1 !important;
+
+    grid-row:
+      1 !important;
+
+    width:
+      100% !important;
+
+    min-width:
+      0 !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  :has(
+    > .bm-owner-categories
+  ):has(
+    > .bm-owner-items
+  )
+  > .bm-owner-categories {
+    grid-column:
+      2 !important;
+
+    grid-row:
+      1 !important;
+
+    width:
+      100% !important;
+
+    min-width:
+      0 !important;
+  }
+
+
+  @media (min-width: 1500px) {
+
+    html[data-beyond-language="he"]
+    .bm-owner-dashboard
+    :has(
+      > .bm-owner-categories
+    ):has(
+      > .bm-owner-items
+    ) {
+      grid-template-columns:
+        minmax(0, 1fr)
+        330px !important;
+    }
+
+  }
+
+
+
+  /* =========================================================
+     4. HEBREW CATEGORY TEXT
+  ========================================================= */
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-categories {
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-category-main {
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-category-main
+  span {
+    align-items:
+      stretch !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-category-main
+  :is(
+    strong,
+    small
+  ) {
+    width:
+      100%;
+
+    text-align:
+      right !important;
+  }
+
+
+
+  /* =========================================================
+     5. ITEMS PANEL HEADER
+  ========================================================= */
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-items
+  .bm-owner-panel-head {
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-items-head
+  > div {
+    text-align:
+      right !important;
+  }
+
+
+
+  /* =========================================================
+     6. ITEM CARD LAYOUT
+
+     Actions receive a proper fixed column.
+
+     LEFT:
+       actions
+
+     RIGHT:
+       price + Hebrew item text
+  ========================================================= */
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-item {
+    direction:
+      ltr !important;
+
+    grid-template-columns:
+      340px
+      minmax(0, 1fr) !important;
+
+    gap:
+      18px !important;
+
+    overflow:
+      visible !important;
+  }
+
+
+  /*
+    Action controls are explicitly assigned to the LEFT.
+    This prevents them being clipped by the content area.
+  */
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-item
+  > .bm-owner-item-actions {
+    grid-column:
+      1 !important;
+
+    grid-row:
+      1 !important;
+
+    width:
+      340px !important;
+
+    min-width:
+      340px !important;
+
+    display:
+      flex !important;
+
+    direction:
+      ltr !important;
+
+    align-items:
+      center !important;
+
+    justify-content:
+      flex-start !important;
+
+    flex-wrap:
+      nowrap !important;
+
+    gap:
+      7px !important;
+
+    overflow:
+      visible !important;
+  }
+
+
+  /*
+    Main item information is explicitly assigned RIGHT.
+  */
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-item
+  > .bm-owner-item-main {
+    grid-column:
+      2 !important;
+
+    grid-row:
+      1 !important;
+
+    width:
+      100% !important;
+
+    min-width:
+      0 !important;
+
+    direction:
+      ltr !important;
+
+    grid-template-columns:
+      130px
+      minmax(0, 1fr) !important;
+
+    gap:
+      18px !important;
+  }
+
+
+  /*
+    PRICE = LEFT side of the content block.
+  */
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-item-price {
+    grid-column:
+      1 !important;
+
+    direction:
+      ltr !important;
+
+    unicode-bidi:
+      isolate !important;
+
+    width:
+      130px !important;
+
+    min-width:
+      130px !important;
+
+    text-align:
+      left !important;
+  }
+
+
+  /*
+    ITEM TEXT = RIGHT side.
+  */
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-item-copy {
+    grid-column:
+      2 !important;
+
+    direction:
+      rtl !important;
+
+    min-width:
+      0 !important;
+
+    align-items:
+      stretch !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-item-copy
+  :is(
+    strong,
+    span,
+    p
+  ) {
+    width:
+      100% !important;
+
+    text-align:
+      right !important;
+  }
+
+
+
+  /* =========================================================
+     7. ITEM BUTTON SIZE
+
+     Give Edit / Hide / Delete enough width.
+  ========================================================= */
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-item-actions
+  button:not(.bm-move-button) {
+    width:
+      76px !important;
+
+    min-width:
+      76px !important;
+
+    padding:
+      0 10px !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-item-actions
+  .bm-move-button {
+    width:
+      38px !important;
+
+    min-width:
+      38px !important;
+  }
+
+
+
+  /* =========================================================
+     8. SUBCATEGORY
+  ========================================================= */
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-subcategory-heading {
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+
+    border-left:
+      1px solid
+      rgba(0,122,255,.13) !important;
+
+    border-right:
+      3px solid
+      var(--studio-blue) !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-subcategory-copy {
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-subcategory-copy
+  :is(
+    strong,
+    span
+  ) {
+    width:
+      100% !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  /*
+    Keep the action buttons orderly.
+  */
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-subcategory-heading
+  .bm-owner-item-actions {
+    direction:
+      ltr !important;
+  }
+
+
+
+  /* =========================================================
+     9. FORMS
+  ========================================================= */
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  :is(
+    .bm-owner-item-form,
+    .bm-owner-item-edit,
+    .bm-owner-category-form,
+    .bm-owner-category-edit
+  ) {
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  label {
+    text-align:
+      right !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  :is(
+    input,
+    textarea,
+    select
+  ) {
+    text-align:
+      right !important;
+  }
+
+
+  /*
+    URLs and technical values stay LTR.
+  */
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-menu-url-button {
+    direction:
+      ltr !important;
+
+    unicode-bidi:
+      isolate !important;
+  }
+
+}
+
+/* WHOLE HEBREW STUDIO RTL START */
+
+  /*
+    ========================================================
+    HEBREW = TRUE RTL THROUGHOUT MENU STUDIO
+
+    IMPORTANT:
+    - dimensions do NOT change
+    - widths do NOT change
+    - gaps do NOT change
+    - English is untouched
+    ========================================================
+  */
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard {
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  /* ======================================================
+     ALL MAIN STUDIO SURFACES
+  ====================================================== */
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  :is(
+    .bm-owner-header,
+    .bm-owner-sitebar,
+    .bm-owner-categories,
+    .bm-owner-items,
+    .bm-owner-settings,
+    .bm-owner-site-switcher,
+    .bm-card
+  ) {
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  /* ======================================================
+     ALL HEADINGS / COPY
+  ====================================================== */
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  :is(
+    .bm-owner-header-copy,
+    .bm-owner-site-title,
+    .bm-owner-panel-head,
+    .bm-owner-section-title,
+    .bm-owner-settings-intro,
+    .bm-owner-category-main,
+    .bm-owner-item-copy,
+    .bm-owner-subcategory-copy
+  ) {
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  :is(
+    h1,
+    h2,
+    h3,
+    h4,
+    p,
+    strong,
+    small,
+    label
+  ) {
+    text-align:
+      right !important;
+  }
+
+
+  /* ======================================================
+     TOP HEADER
+  ====================================================== */
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-header {
+    direction:
+      rtl !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-header-copy {
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+
+    align-items:
+      flex-start !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-header-copy
+  > * {
+    width:
+      100%;
+
+    text-align:
+      right !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-header-actions {
+    direction:
+      rtl !important;
+  }
+
+
+  /* ======================================================
+     SECOND BAR
+  ====================================================== */
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-sitebar {
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-site-main {
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-site-actions {
+    direction:
+      rtl !important;
+  }
+
+
+  /* ======================================================
+     SETTINGS PAGE
+  ====================================================== */
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-settings {
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-section-title {
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-section-title
+  > div {
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-settings-grid {
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  /*
+    Every settings card follows RTL internally,
+    but dimensions remain unchanged.
+  */
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-settings-grid
+  > * {
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-settings
+  label {
+    display:
+      block;
+
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-settings
+  :is(
+    input,
+    textarea,
+    select
+  ) {
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  /*
+    URL / slug input remains LTR because it is a technical
+    value, even though its label/card stays RTL.
+  */
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  :is(
+    .bm-owner-menu-url-button,
+    input[name="slug"],
+    input[type="url"]
+  ) {
+    direction:
+      ltr !important;
+
+    unicode-bidi:
+      isolate !important;
+
+    text-align:
+      left !important;
+  }
+
+
+  /* ======================================================
+     SETTINGS ACTION FOOTER
+  ====================================================== */
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-settings-footer {
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+
+    justify-content:
+      flex-start !important;
+  }
+
+
+  /* ======================================================
+     CATEGORY PANEL
+  ====================================================== */
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-categories {
+    direction:
+      rtl !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-category {
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-category-main {
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  /* ======================================================
+     ITEMS PANEL
+  ====================================================== */
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-items {
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-item-copy {
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-item-copy
+  > * {
+    width:
+      100%;
+
+    text-align:
+      right !important;
+  }
+
+
+  /* ======================================================
+     SUBCATEGORIES
+  ====================================================== */
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-subcategory-heading {
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-subcategory-copy {
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  /* ======================================================
+     FORMS / EDITORS
+  ====================================================== */
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  :is(
+    .bm-owner-item-form,
+    .bm-owner-item-edit,
+    .bm-owner-category-form,
+    .bm-owner-category-edit,
+    .bm-v10-item-form
+  ) {
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-form-actions {
+    direction:
+      rtl !important;
+  }
+
+
+  /* ======================================================
+     BUTTON TEXT
+  ====================================================== */
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  button {
+    text-align:
+      center !important;
+  }
+
+
+  /* ======================================================
+     TECHNICAL NUMBERS / PRICES
+  ====================================================== */
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-item-price {
+    direction:
+      ltr !important;
+
+    unicode-bidi:
+      isolate !important;
+  }
+
+  /* WHOLE HEBREW STUDIO RTL END */
+
+/* APPLE DESKTOP HEBREW RTL END */
+
+/* APPLE DESKTOP LANGUAGE-INVARIANT PROPORTIONS START */
+
+  @media (min-width: 761px) and (hover: hover) and (pointer: fine) {
+
+    /*
+      ========================================================
+      CORE RULE
+
+      EN and HE MUST use identical dimensions.
+
+      Language-specific CSS may change:
+        direction
+        text-align
+        visual order
+
+      It must NOT change:
+        width
+        height
+        padding
+        gap
+        grid proportions
+        card dimensions
+      ========================================================
+    */
+
+
+    /* ======================================================
+       MAIN APP WIDTH
+    ====================================================== */
+
+    .bm-owner-dashboard
+    :is(
+      .bm-owner-header,
+      .bm-owner-sitebar
+    ),
+
+    .bm-owner-dashboard
+    :has(
+      > .bm-owner-categories
+    ):has(
+      > .bm-owner-items
+    ) {
+      width:
+        min(
+          1500px,
+          calc(100% - 40px)
+        ) !important;
+    }
+
+
+    /* ======================================================
+       MAIN WORKSPACE
+
+       Same 330px sidebar in BOTH languages.
+    ====================================================== */
+
+    .bm-owner-dashboard
+    :has(
+      > .bm-owner-categories
+    ):has(
+      > .bm-owner-items
+    ) {
+      grid-template-columns:
+        330px
+        minmax(0, 1fr) !important;
+
+      gap:
+        16px !important;
+    }
+
+
+    /*
+      Hebrew mirrors the SAME dimensions.
+    */
+    html[data-beyond-language="he"]
+    .bm-owner-dashboard
+    :has(
+      > .bm-owner-categories
+    ):has(
+      > .bm-owner-items
+    ) {
+      grid-template-columns:
+        minmax(0, 1fr)
+        330px !important;
+
+      gap:
+        16px !important;
+    }
+
+
+    /* ======================================================
+       TOP HEADER
+
+       Reserve an identical toolbar width.
+    ====================================================== */
+
+    .bm-owner-dashboard
+    .bm-owner-header-copy {
+      flex:
+        1 1 auto !important;
+
+      min-width:
+        0 !important;
+    }
+
+
+    .bm-owner-dashboard
+    .bm-owner-header-actions {
+      width:
+        590px !important;
+
+      min-width:
+        590px !important;
+
+      flex:
+        0 0 590px !important;
+
+      gap:
+        10px !important;
+    }
+
+
+    /*
+      Give every top toolbar control its permanent width.
+
+      EN and HE now occupy exactly the same geometry.
+    */
+
+    .bm-owner-dashboard
+    .bm-owner-header-actions
+    > :nth-child(1) {
+      width:
+        86px !important;
+
+      min-width:
+        86px !important;
+    }
+
+
+    .bm-owner-dashboard
+    .bm-owner-header-actions
+    > :nth-child(2) {
+      width:
+        112px !important;
+
+      min-width:
+        112px !important;
+    }
+
+
+    .bm-owner-dashboard
+    .bm-owner-header-actions
+    > :nth-child(3) {
+      width:
+        132px !important;
+
+      min-width:
+        132px !important;
+    }
+
+
+    .bm-owner-dashboard
+    .bm-owner-header-actions
+    > :nth-child(4) {
+      width:
+        82px !important;
+
+      min-width:
+        82px !important;
+    }
+
+
+    .bm-owner-dashboard
+    .bm-owner-header-actions
+    > :nth-child(5) {
+      width:
+        96px !important;
+
+      min-width:
+        96px !important;
+    }
+
+
+    .bm-owner-dashboard
+    .bm-owner-header-actions
+    > :nth-child(6) {
+      width:
+        62px !important;
+
+      min-width:
+        62px !important;
+    }
+
+
+    .bm-owner-dashboard
+    .bm-owner-header-actions
+    > * {
+      height:
+        44px !important;
+
+      min-height:
+        44px !important;
+
+      flex-shrink:
+        0 !important;
+    }
+
+
+    /* ======================================================
+       SECOND BAR
+
+       Restaurant information can grow.
+       Action area is always identical.
+    ====================================================== */
+
+    .bm-owner-dashboard
+    .bm-owner-site-main {
+      min-width:
+        0 !important;
+    }
+
+
+    .bm-owner-dashboard
+    .bm-owner-site-actions {
+      width:
+        520px !important;
+
+      min-width:
+        520px !important;
+
+      flex:
+        0 0 520px !important;
+
+      gap:
+        10px !important;
+    }
+
+
+    .bm-owner-dashboard
+    .bm-owner-site-actions
+    > button:nth-child(1) {
+      width:
+        155px !important;
+
+      min-width:
+        155px !important;
+    }
+
+
+    .bm-owner-dashboard
+    .bm-owner-site-actions
+    > button:nth-child(2) {
+      width:
+        170px !important;
+
+      min-width:
+        170px !important;
+    }
+
+
+    .bm-owner-dashboard
+    .bm-owner-site-actions
+    > button:nth-child(3) {
+      width:
+        175px !important;
+
+      min-width:
+        175px !important;
+    }
+
+
+    .bm-owner-dashboard
+    .bm-owner-site-actions
+    > button {
+      height:
+        42px !important;
+
+      min-height:
+        42px !important;
+
+      padding:
+        0 12px !important;
+
+      flex-shrink:
+        0 !important;
+
+      white-space:
+        nowrap !important;
+    }
+
+
+    /* ======================================================
+       PANEL HEADERS
+
+       Identical geometry in both languages.
+    ====================================================== */
+
+    .bm-owner-dashboard
+    .bm-owner-panel-head {
+      min-height:
+        76px !important;
+
+      padding:
+        16px 18px !important;
+
+      gap:
+        18px !important;
+    }
+
+
+    /* ======================================================
+       ADD BUTTONS
+    ====================================================== */
+
+    .bm-owner-dashboard
+    .bm-owner-categories
+    .bm-owner-add {
+      width:
+        146px !important;
+
+      min-width:
+        146px !important;
+
+      height:
+        42px !important;
+
+      min-height:
+        42px !important;
+    }
+
+
+    .bm-owner-dashboard
+    .bm-owner-items
+    .bm-owner-items-head
+    .bm-owner-add {
+      width:
+        130px !important;
+
+      min-width:
+        130px !important;
+
+      height:
+        42px !important;
+
+      min-height:
+        42px !important;
+    }
+
+
+    .bm-owner-dashboard
+    .bm-owner-subcategory-manager
+    > .bm-owner-add {
+      width:
+        160px !important;
+
+      min-width:
+        160px !important;
+
+      height:
+        40px !important;
+
+      min-height:
+        40px !important;
+    }
+
+
+    /* ======================================================
+       CATEGORY ROWS
+    ====================================================== */
+
+    .bm-owner-dashboard
+    .bm-owner-category {
+      min-height:
+        86px !important;
+
+      padding:
+        11px 12px !important;
+    }
+
+
+    .bm-owner-dashboard
+    .bm-owner-category-main em {
+      width:
+        34px !important;
+
+      min-width:
+        34px !important;
+
+      height:
+        30px !important;
+    }
+
+
+    .bm-owner-dashboard
+    .bm-owner-category-actions {
+      min-height:
+        40px !important;
+
+      gap:
+        7px !important;
+    }
+
+
+    .bm-owner-dashboard
+    .bm-owner-category-actions
+    .bm-move-button {
+      width:
+        36px !important;
+
+      min-width:
+        36px !important;
+
+      height:
+        36px !important;
+
+      min-height:
+        36px !important;
+    }
+
+
+    .bm-owner-dashboard
+    .bm-owner-category-actions
+    button:not(.bm-move-button) {
+      width:
+        62px !important;
+
+      min-width:
+        62px !important;
+
+      height:
+        36px !important;
+
+      min-height:
+        36px !important;
+
+      padding:
+        0 7px !important;
+    }
+
+
+    /* ======================================================
+       ITEM ROWS
+
+       Same action column width in EN and HE.
+    ====================================================== */
+
+    .bm-owner-dashboard
+    .bm-owner-item {
+      min-height:
+        94px !important;
+
+      padding:
+        13px 15px !important;
+
+      gap:
+        18px !important;
+    }
+
+
+    /*
+      Both EN and HE reserve the same 340px for controls.
+    */
+    .bm-owner-dashboard
+    .bm-owner-item {
+      grid-template-columns:
+        minmax(0, 1fr)
+        340px !important;
+    }
+
+
+    html[data-beyond-language="he"]
+    .bm-owner-dashboard
+    .bm-owner-item {
+      grid-template-columns:
+        340px
+        minmax(0, 1fr) !important;
+    }
+
+
+    .bm-owner-dashboard
+    .bm-owner-item
+    > .bm-owner-item-actions {
+      width:
+        340px !important;
+
+      min-width:
+        340px !important;
+
+      gap:
+        7px !important;
+    }
+
+
+    .bm-owner-dashboard
+    .bm-owner-item-actions
+    .bm-move-button {
+      width:
+        38px !important;
+
+      min-width:
+        38px !important;
+
+      height:
+        38px !important;
+
+      min-height:
+        38px !important;
+    }
+
+
+    .bm-owner-dashboard
+    .bm-owner-item-actions
+    button:not(.bm-move-button) {
+      width:
+        76px !important;
+
+      min-width:
+        76px !important;
+
+      height:
+        38px !important;
+
+      min-height:
+        38px !important;
+
+      padding:
+        0 10px !important;
+    }
+
+
+    /* ======================================================
+       ITEM CONTENT
+
+       Same content/price proportions in both languages.
+    ====================================================== */
+
+    .bm-owner-dashboard
+    .bm-owner-item-main {
+      grid-template-columns:
+        minmax(0, 1fr)
+        130px !important;
+
+      gap:
+        18px !important;
+    }
+
+
+    html[data-beyond-language="he"]
+    .bm-owner-dashboard
+    .bm-owner-item
+    > .bm-owner-item-main {
+      grid-template-columns:
+        130px
+        minmax(0, 1fr) !important;
+
+      gap:
+        18px !important;
+    }
+
+
+    .bm-owner-dashboard
+    .bm-owner-item-price {
+      width:
+        130px !important;
+
+      min-width:
+        130px !important;
+    }
+
+
+    /* ======================================================
+       SUBCATEGORY ROW
+
+       Same dimensions regardless of language.
+    ====================================================== */
+
+    .bm-owner-dashboard
+    .bm-owner-subcategory-heading,
+
+    html[data-beyond-language="he"]
+    .bm-owner-dashboard
+    .bm-owner-subcategory-heading {
+      min-height:
+        70px !important;
+
+      padding:
+        12px 15px !important;
+
+      grid-template-columns:
+        minmax(0,1fr)
+        72px
+        340px !important;
+
+      gap:
+        14px !important;
+    }
+
+
+    .bm-owner-dashboard
+    .bm-owner-subcategory-heading
+    > .bm-owner-item-actions {
+      width:
+        340px !important;
+
+      min-width:
+        340px !important;
+    }
+
+
+    /* ======================================================
+       FORMS
+
+       Direction can change.
+       Size cannot.
+    ====================================================== */
+
+    .bm-owner-dashboard
+    :is(
+      input,
+      select
+    ) {
+      height:
+        42px !important;
+
+      min-height:
+        42px !important;
+    }
+
+
+    .bm-owner-dashboard textarea {
+      min-height:
+        96px !important;
+    }
+
+
+    .bm-owner-dashboard
+    .bm-owner-form-actions
+    button {
+      width:
+        120px !important;
+
+      min-width:
+        120px !important;
+
+      height:
+        40px !important;
+
+      min-height:
+        40px !important;
+    }
+
+
+    /* ======================================================
+       TEXT SAFETY
+
+       Longer translation must fit inside the same geometry
+       rather than resizing the UI.
+    ====================================================== */
+
+    .bm-owner-dashboard
+    button {
+      white-space:
+        nowrap !important;
+
+      overflow:
+        hidden !important;
+
+      text-overflow:
+        ellipsis !important;
+    }
+
+
+    .bm-owner-dashboard
+    :is(
+      .bm-owner-header-copy,
+      .bm-owner-site-title,
+      .bm-owner-category-main,
+      .bm-owner-item-copy,
+      .bm-owner-subcategory-copy
+    ) {
+      min-width:
+        0 !important;
+    }
+
+  }
+
+  /* APPLE DESKTOP LANGUAGE-INVARIANT PROPORTIONS END */
+
+/* APPLE INNER ROW SURFACE RESET START */
+
+  .bm-owner-dashboard
+  :is(
+    .bm-owner-item-main,
+    .bm-owner-category-main
+  ) {
+    border:
+      0 !important;
+
+    background:
+      transparent !important;
+
+    background-color:
+      transparent !important;
+
+    background-image:
+      none !important;
+
+    box-shadow:
+      none !important;
+
+    outline:
+      none !important;
+  }
+
+
+  .bm-owner-dashboard
+  :is(
+    .bm-owner-item-main,
+    .bm-owner-category-main
+  ):hover,
+
+  .bm-owner-dashboard
+  :is(
+    .bm-owner-item-main,
+    .bm-owner-category-main
+  ):active,
+
+  .bm-owner-dashboard
+  :is(
+    .bm-owner-item-main,
+    .bm-owner-category-main
+  ):focus {
+    border:
+      0 !important;
+
+    background:
+      transparent !important;
+
+    background-color:
+      transparent !important;
+
+    background-image:
+      none !important;
+
+    box-shadow:
+      none !important;
+
+    transform:
+      none !important;
+  }
+
+
+  html[data-beyond-theme="dark"]
+  .bm-owner-dashboard
+  :is(
+    .bm-owner-item-main,
+    .bm-owner-category-main
+  ) {
+    background:
+      transparent !important;
+
+    background-color:
+      transparent !important;
+
+    background-image:
+      none !important;
+
+    box-shadow:
+      none !important;
+  }
+
+  /* APPLE INNER ROW SURFACE RESET END */
+
+/* APPLE DESKTOP HIDE MOBILE MORE START */
+
+  @media (min-width: 761px) and (hover: hover) and (pointer: fine) {
+
+    /*
+      The ••• button opens the MOBILE options sheet.
+      It has no purpose on desktop because all desktop
+      actions are already visible in the toolbar.
+    */
+    .bm-owner-dashboard
+    .bm-mobile-header-more {
+      display:
+        none !important;
+    }
+
+  }
+
+  /* APPLE DESKTOP HIDE MOBILE MORE END */
+
+/* APPLE HEBREW ACTION ORDER START */
+
+@media (min-width: 761px) and (hover: hover) and (pointer: fine) {
+
+  /*
+    ========================================================
+    SAME ACTION ORDER FOR ITEMS + CATEGORIES
+
+    Physical LEFT → RIGHT order in Hebrew:
+
+    Delete | Hide | Edit | ↓ | ↑
+
+    We explicitly assign order instead of relying on
+    RTL flex-direction, so older RTL rules cannot reverse it.
+    ========================================================
+  */
+
+
+  /* -------------------------------------------------------
+     ITEM ACTIONS
+  ------------------------------------------------------- */
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-item
+  > .bm-owner-item-actions {
+    direction:
+      ltr !important;
+
+    display:
+      flex !important;
+
+    flex-direction:
+      row !important;
+
+    align-items:
+      center !important;
+
+    justify-content:
+      flex-start !important;
+
+    flex-wrap:
+      nowrap !important;
+
+    gap:
+      8px !important;
+
+    overflow:
+      visible !important;
+  }
+
+
+  /*
+    DOM:
+      1 ↑
+      2 ↓
+      3 Edit
+      4 Hide
+      5 Delete
+
+    Visual:
+      Delete Hide Edit ↓ ↑
+  */
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-item
+  > .bm-owner-item-actions
+  > :nth-child(1) {
+    order:
+      5 !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-item
+  > .bm-owner-item-actions
+  > :nth-child(2) {
+    order:
+      4 !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-item
+  > .bm-owner-item-actions
+  > :nth-child(3) {
+    order:
+      3 !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-item
+  > .bm-owner-item-actions
+  > :nth-child(4) {
+    order:
+      2 !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-item
+  > .bm-owner-item-actions
+  > :nth-child(5) {
+    order:
+      1 !important;
+  }
+
+
+  /*
+    Fit comfortably inside the existing 340px action area.
+
+    3 × 72px
+    2 × 36px
+    4 × 8px gaps
+
+    = 320px total
+  */
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-item
+  > .bm-owner-item-actions
+  button:not(.bm-move-button) {
+    width:
+      72px !important;
+
+    min-width:
+      72px !important;
+
+    height:
+      38px !important;
+
+    min-height:
+      38px !important;
+
+    padding:
+      0 8px !important;
+
+    flex:
+      0 0 72px !important;
+
+    overflow:
+      visible !important;
+
+    text-overflow:
+      clip !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-item
+  > .bm-owner-item-actions
+  .bm-move-button {
+    width:
+      36px !important;
+
+    min-width:
+      36px !important;
+
+    height:
+      38px !important;
+
+    min-height:
+      38px !important;
+
+    flex:
+      0 0 36px !important;
+  }
+
+
+
+  /* -------------------------------------------------------
+     CATEGORY ACTIONS
+  ------------------------------------------------------- */
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-category
+  .bm-owner-category-actions {
+    direction:
+      ltr !important;
+
+    display:
+      flex !important;
+
+    flex-direction:
+      row !important;
+
+    align-items:
+      center !important;
+
+    justify-content:
+      flex-start !important;
+
+    flex-wrap:
+      nowrap !important;
+
+    /*
+      Slight breathing room between category controls.
+    */
+    gap:
+      8px !important;
+  }
+
+
+  /*
+    Exact same order as Items.
+  */
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-category
+  .bm-owner-category-actions
+  > :nth-child(1) {
+    order:
+      5 !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-category
+  .bm-owner-category-actions
+  > :nth-child(2) {
+    order:
+      4 !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-category
+  .bm-owner-category-actions
+  > :nth-child(3) {
+    order:
+      3 !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-category
+  .bm-owner-category-actions
+  > :nth-child(4) {
+    order:
+      2 !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-category
+  .bm-owner-category-actions
+  > :nth-child(5) {
+    order:
+      1 !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-category
+  .bm-owner-category-actions
+  button:not(.bm-move-button) {
+    min-width:
+      58px !important;
+
+    height:
+      36px !important;
+
+    min-height:
+      36px !important;
+
+    padding:
+      0 7px !important;
+
+    flex-shrink:
+      0 !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-category
+  .bm-owner-category-actions
+  .bm-move-button {
+    width:
+      36px !important;
+
+    min-width:
+      36px !important;
+
+    height:
+      36px !important;
+
+    min-height:
+      36px !important;
+
+    flex:
+      0 0 36px !important;
+  }
+
+}
+
+/* APPLE HEBREW ACTION ORDER END */
+
+/* MENU STUDIO APPLE DESKTOP SYSTEM END */
+
+
+/* MENU STUDIO REMOVE INNER GREY PANELS START */
+.bm-owner-dashboard .bm-owner-item-main,
+.bm-owner-dashboard .bm-owner-category-main {
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+
+.bm-owner-dashboard .bm-owner-item-main::before,
+.bm-owner-dashboard .bm-owner-item-main::after,
+.bm-owner-dashboard .bm-owner-category-main::before,
+.bm-owner-dashboard .bm-owner-category-main::after {
+  content: none !important;
+  display: none !important;
+}
+
+.bm-owner-dashboard .bm-owner-item-main:hover,
+.bm-owner-dashboard .bm-owner-item-main:focus,
+.bm-owner-dashboard .bm-owner-item-main:active,
+.bm-owner-dashboard .bm-owner-category-main:hover,
+.bm-owner-dashboard .bm-owner-category-main:focus,
+.bm-owner-dashboard .bm-owner-category-main:active {
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  border: 0 !important;
+}
+/* MENU STUDIO REMOVE INNER GREY PANELS END */
+
+
+/* CATEGORY BUTTON FIT FIX START */
+
+@media (min-width: 761px) and (hover: hover) and (pointer: fine) {
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-category
+  .bm-owner-category-actions {
+    direction: ltr !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    flex-wrap: nowrap !important;
+    gap: 6px !important;
+    width: max-content !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+  }
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-category
+  .bm-owner-category-actions
+  > * {
+    flex-shrink: 0 !important;
+  }
+
+  /*
+    Keep same visual order:
+    Delete | Hide | Edit | ↓ | ↑
+  */
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-category
+  .bm-owner-category-actions
+  > :nth-child(1) { order: 5 !important; }
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-category
+  .bm-owner-category-actions
+  > :nth-child(2) { order: 4 !important; }
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-category
+  .bm-owner-category-actions
+  > :nth-child(3) { order: 3 !important; }
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-category
+  .bm-owner-category-actions
+  > :nth-child(4) { order: 2 !important; }
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-category
+  .bm-owner-category-actions
+  > :nth-child(5) { order: 1 !important; }
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-category
+  .bm-owner-category-actions
+  button:not(.bm-move-button) {
+    width: 54px !important;
+    min-width: 54px !important;
+    max-width: 54px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 0 6px !important;
+    flex: 0 0 54px !important;
+    overflow: hidden !important;
+  }
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-category
+  .bm-owner-category-actions
+  .bm-move-button {
+    width: 34px !important;
+    min-width: 34px !important;
+    max-width: 34px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    flex: 0 0 34px !important;
+  }
+}
+
+/* CATEGORY BUTTON FIT FIX END */
 

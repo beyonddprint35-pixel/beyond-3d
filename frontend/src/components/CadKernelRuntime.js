@@ -19,6 +19,7 @@ export const CAD_KERNEL_API_VERSION = 2;
 const EMPTY_CAPABILITIES = Object.freeze({
   persistentTopology: false,
   featureFaceSketching: false,
+  pushPullFace: false,
   stackedSameDirectionFeatures: false,
   exactFeatureEdgeFillet: false,
   shell: false,

@@ -1721,7 +1721,7 @@ export function BeyondMenuStudio() {
     );
   };
 
-  
+
 
   /*
     MENU STUDIO CANONICAL ITEM UI NORMALIZER
@@ -4348,6 +4348,163 @@ const loadData = async (id) => {
 
     if (!subcategory) return null;
 
+
+    /*
+      SUBCATEGORY EDIT
+
+      DESKTOP:
+      replace the Subcategory heading exactly where it is,
+      the same way Item Edit replaces the Item card.
+
+      MOBILE:
+      keep the already-approved full-screen Item Edit
+      experience by portaling into bm-owner-dashboard.
+    */
+    if (
+      editingSubcategoryId ===
+      subcategory.id
+    ) {
+
+      const editor = (
+        <form
+          className="bm-owner-item-edit bm-v10-item-form"
+          onSubmit={saveSubcategory}
+          data-editor-title={
+            isHebrew
+              ? "עריכת תת־קטגוריה"
+              : "Edit subcategory"
+          }
+        >
+
+          <div className="bm-owner-subcategory-editor-head">
+
+            <strong>
+              {isHebrew
+                ? "עריכת תת־קטגוריה"
+                : "Edit subcategory"}
+            </strong>
+
+            <span>
+              {isHebrew
+                ? "ערוך את שם תת־הקטגוריה."
+                : "Edit the subcategory name."}
+            </span>
+
+          </div>
+
+
+          <label>
+
+            {isHebrew
+              ? "שם בעברית"
+              : "Hebrew name"}
+
+            <input
+              dir="rtl"
+              value={
+                subcategoryDraft.name_he
+              }
+              onChange={e =>
+                setSubcategoryDraft(
+                  current => ({
+                    ...current,
+
+                    name_he:
+                      e.target.value
+                  })
+                )
+              }
+            />
+
+          </label>
+
+
+          <label>
+
+            {isHebrew
+              ? "שם באנגלית"
+              : "English name"}
+
+            <input
+              dir="ltr"
+              value={
+                subcategoryDraft.name_en
+              }
+              onChange={e =>
+                setSubcategoryDraft(
+                  current => ({
+                    ...current,
+
+                    name_en:
+                      e.target.value
+                  })
+                )
+              }
+            />
+
+          </label>
+
+
+          <div className="bm-owner-form-actions">
+
+            <button
+              type="button"
+              onClick={() => {
+
+                setEditingSubcategoryId("");
+
+                setSubcategoryDraft({
+                  name_en: "",
+                  name_he: ""
+                });
+
+              }}
+            >
+              {isHebrew
+                ? "ביטול"
+                : "CANCEL"}
+            </button>
+
+
+            <button
+              type="submit"
+            >
+              {isHebrew
+                ? "שמור שינויים"
+                : "SAVE CHANGES"}
+            </button>
+
+          </div>
+
+        </form>
+      );
+
+
+      const mobileViewport =
+        typeof window !== "undefined" &&
+        window.matchMedia(
+          "(max-width: 760px)"
+        ).matches;
+
+
+      /*
+        Mobile needs the portal because its approved Item
+        editor is a fixed full-screen surface.
+
+        Desktop deliberately stays inline here.
+      */
+      return (
+        mobileViewport &&
+        studioPortalTarget
+      )
+        ? createPortal(
+            editor,
+            studioPortalTarget
+          )
+        : editor;
+
+    }
+
     const primary =
       studioSubcategoryPrimaryName(
         subcategory
@@ -4436,12 +4593,106 @@ const loadData = async (id) => {
 
           </div>
 
+
+          {/* BEYOND_SUBCATEGORY_DESKTOP_ACTIONS */}
+          <div className="bm-owner-item-actions">
+
+            <button
+              type="button"
+              className="bm-move-button"
+              disabled={
+                index <= 0
+              }
+              onClick={() =>
+                moveSubcategory(
+                  subcategory,
+                  "up"
+                )
+              }
+              title="Move subcategory up"
+            >
+              ↑
+            </button>
+
+
+            <button
+              type="button"
+              className="bm-move-button"
+              disabled={
+                index === -1 ||
+                index ===
+                  activeSubcategories.length - 1
+              }
+              onClick={() =>
+                moveSubcategory(
+                  subcategory,
+                  "down"
+                )
+              }
+              title="Move subcategory down"
+            >
+              ↓
+            </button>
+
+
+            <button
+              type="button"
+              onClick={() =>
+                startSubcategoryEdit(
+                  subcategory
+                )
+              }
+            >
+              {isHebrew ? "ערוך" : "Edit"}
+            </button>
+
+
+            <button
+              type="button"
+              onClick={() =>
+                toggleSubcategoryVisibility(
+                  subcategory
+                )
+              }
+            >
+              {subcategory.visible === false
+                ? (
+                    isHebrew
+                      ? "הצג"
+                      : "Show"
+                  )
+                : (
+                    isHebrew
+                      ? "הסתר"
+                      : "Hide"
+                  )}
+            </button>
+
+
+            <button
+              type="button"
+              className="danger"
+              onClick={() =>
+                deleteSubcategory(
+                  subcategory
+                )
+              }
+            >
+              Delete
+            </button>
+
+          </div>
+
         </div>
 
 
         {openSubcategoryMenuId ===
           subcategory.id &&
-        studioPortalTarget ? (
+        studioPortalTarget &&
+        typeof window !== "undefined" &&
+        window.matchMedia(
+          "(max-width: 760px)"
+        ).matches ? (
           createPortal(
             <>
 
@@ -5655,7 +5906,7 @@ const loadData = async (id) => {
                 setShowCreateSite(false)
               }
             >
-              CLOSE
+              Close
             </button>
           </div>
 
@@ -5766,98 +6017,94 @@ const loadData = async (id) => {
               </a>
             </div>
 
-            <div className="bm-owner-site-actions">
+            <div
+              className="bm-owner-site-actions"
+              data-no-beyond-translate="true"
+              translate="no"
+            >
 
               <button
+                type="button"
                 className={
                   showSettings
                     ? "active"
                     : ""
                 }
-                onClick={() =>
-                  setShowSettings(v => !v)
-                }
+                onClick={() => {
+                  setShowSettings(
+                    current =>
+                      !current
+                  );
+
+                  setShowPreview(
+                    false
+                  );
+                }}
               >
-                <span
-                  className="bm-mobile-nav-icon"
-                  aria-hidden="true"
-                >
+                <span aria-hidden="true">
                   ⚙
                 </span>
 
-                <span className="bm-mobile-nav-label">
-                  {isHebrew
-                    ? "הגדרות"
-                    : "Settings"}
-                </span>
-
-                <span className="bm-desktop-action-label">
-                  SETTINGS
-                </span>
+                {isHebrew
+                  ? "הגדרות"
+                  : "Settings"}
               </button>
 
 
               <button
+                type="button"
+                className={
+                  showPreview
+                    ? "active"
+                    : ""
+                }
                 onClick={() => {
-                  setShowSettings(false);
-                  setShowPreview(true);
+                  setShowPreview(
+                    current =>
+                      !current
+                  );
+
+                  setShowSettings(
+                    false
+                  );
                 }}
               >
-                <span
-                  className="bm-mobile-nav-icon"
-                  aria-hidden="true"
-                >
+                <span aria-hidden="true">
                   ◉
                 </span>
 
-                <span className="bm-mobile-nav-label">
-                  {isHebrew
-                    ? "תצוגה"
-                    : "Preview"}
-                </span>
-
-                <span className="bm-desktop-action-label">
-                  VIEW MENU
-                </span>
+                {isHebrew
+                  ? "תצוגה מקדימה"
+                  : "Preview"}
               </button>
 
 
               <button
+                type="button"
                 className={`primary bm-owner-desktop-publish ${
                   selected.published
                     ? "published"
                     : ""
                 }`}
-                onClick={confirmPublishChange}
+                onClick={
+                  confirmPublishChange
+                }
               >
-                <span
-                  className="bm-mobile-nav-icon"
-                  aria-hidden="true"
-                >
-                  {selected.published
-                    ? "✓"
-                    : "↑"}
+                <span aria-hidden="true">
+                  ✓
                 </span>
 
-                <span className="bm-mobile-nav-label">
-                  {selected.published
-                    ? (
-                        isHebrew
-                          ? "פורסם"
-                          : "Live"
-                      )
-                    : (
-                        isHebrew
-                          ? "פרסום"
-                          : "Publish"
-                      )}
-                </span>
-
-                <span className="bm-desktop-action-label">
-                  {selected.published
-                    ? "UNPUBLISH"
-                    : "PUBLISH"}
-                </span>
+                {selected.published
+                  ? (
+                      isHebrew
+                        ? "בטל פרסום"
+                        : "Unpublish"
+                    )
+                  : (
+                      isHebrew
+                        ? "פרסם"
+                        : "Publish"
+                    )}
               </button>
 
             </div>
@@ -6491,7 +6738,7 @@ const loadData = async (id) => {
                 >
                   {isHebrew
                     ? "+ הוסף קטגוריה"
-                    : "+ ADD CATEGORY"}
+                    : "+ Add category"}
                 </button>
               </div>
 
@@ -6533,7 +6780,7 @@ const loadData = async (id) => {
                         setShowAddCategory(false)
                       }
                     >
-                      CANCEL
+                      Cancel
                     </button>
 
                     <button>
@@ -6598,7 +6845,7 @@ const loadData = async (id) => {
                               setEditingSectionId("")
                             }
                           >
-                            CANCEL
+                            Cancel
                           </button>
 
                           <button
@@ -6951,7 +7198,7 @@ const loadData = async (id) => {
                             )
                           }
                         >
-                          EDIT
+                          {isHebrew ? "ערוך" : "Edit"}
                         </button>
 
                         <button
@@ -6962,8 +7209,16 @@ const loadData = async (id) => {
                           }
                         >
                           {section.visible === false
-                            ? "SHOW"
-                            : "HIDE"}
+                ? (
+                    isHebrew
+                      ? "הצג"
+                      : "Show"
+                  )
+                : (
+                    isHebrew
+                      ? "הסתר"
+                      : "Hide"
+                  )}
                         </button>
 
                         <button
@@ -6974,7 +7229,7 @@ const loadData = async (id) => {
                             )
                           }
                         >
-                          DELETE
+                          Delete
                         </button>
 
                       </div>
@@ -7048,7 +7303,7 @@ const loadData = async (id) => {
                   disabled={!activeSectionId}
                   onClick={openAddItem}
                 >
-                  + ADD ITEM
+                  {isHebrew ? "+ הוסף פריט" : "+ Add item"}
                 </button>
               </div>
 
@@ -7070,11 +7325,11 @@ const loadData = async (id) => {
                         setShowAddItem(false)
                       }
                     >
-                      CANCEL
+                      Cancel
                     </button>
 
                     <button>
-                      ADD ITEM
+                      Add item
                     </button>
                   </div>
 
@@ -7102,7 +7357,7 @@ const loadData = async (id) => {
                   </p>
 
                   <button onClick={openAddItem}>
-                    + ADD ITEM
+                    {isHebrew ? "+ הוסף פריט" : "+ Add item"}
                   </button>
                 </div>
               ) : (
@@ -7118,7 +7373,7 @@ const loadData = async (id) => {
                         <div
                           className="bm-owner-item-edit bm-v10-item-form"
                           key={menuItem.id}
-                        
+
                           data-editor-title={
                             isHebrew
                               ? "עריכת פריט"
@@ -7139,14 +7394,14 @@ const loadData = async (id) => {
                                 setEditingItemId("")
                               }
                             >
-                              CANCEL
+                              Cancel
                             </button>
 
                             <button
                               type="button"
                               onClick={saveItem}
                             >
-                              SAVE CHANGES
+                              Save changes
                             </button>
 
                           </div>
@@ -7550,7 +7805,7 @@ const loadData = async (id) => {
                               )
                             }
                           >
-                            EDIT
+                            {isHebrew ? "ערוך" : "Edit"}
                           </button>
 
                           <button
@@ -7559,8 +7814,16 @@ const loadData = async (id) => {
                             }
                           >
                             {menuItem.visible === false
-                              ? "SHOW"
-                              : "HIDE"}
+                ? (
+                    isHebrew
+                      ? "הצג"
+                      : "Show"
+                  )
+                : (
+                    isHebrew
+                      ? "הסתר"
+                      : "Hide"
+                  )}
                           </button>
 
                           <button
@@ -7569,7 +7832,7 @@ const loadData = async (id) => {
                               deleteItem(menuItem)
                             }
                           >
-                            DELETE
+                            Delete
                           </button>
 
                         </div>
@@ -7615,111 +7878,7 @@ const loadData = async (id) => {
                     )}
 
 
-                  {editingSubcategoryId ? (
-                    <form
-                      className="bm-owner-item-edit bm-v10-item-form"
-                      onSubmit={saveSubcategory}
-                    
-          data-editor-title={
-            isHebrew
-              ? "עריכת תת־קטגוריה"
-              : "Edit subcategory"
-          }
-        >
 
-                      <div className="bm-owner-subcategory-editor-head">
-
-                        <strong>
-                          {isHebrew
-                            ? "עריכת תת־קטגוריה"
-                            : "Edit subcategory"}
-                        </strong>
-
-                        <span>
-                          {isHebrew
-                            ? "שינוי השם יעדכן גם את הפריטים שבתוכה."
-                            : "Renaming it will update the items inside."}
-                        </span>
-
-                      </div>
-
-
-                      <label>
-                        {isHebrew
-                          ? "שם בעברית"
-                          : "Hebrew name"}
-
-                        <input
-                          dir="rtl"
-                          value={
-                            subcategoryDraft.name_he
-                          }
-                          onChange={e =>
-                            setSubcategoryDraft(
-                              current => ({
-                                ...current,
-                                name_he:
-                                  e.target.value
-                              })
-                            )
-                          }
-                        />
-                      </label>
-
-
-                      <label>
-                        {isHebrew
-                          ? "שם באנגלית"
-                          : "English name"}
-
-                        <input
-                          dir="ltr"
-                          value={
-                            subcategoryDraft.name_en
-                          }
-                          onChange={e =>
-                            setSubcategoryDraft(
-                              current => ({
-                                ...current,
-                                name_en:
-                                  e.target.value
-                              })
-                            )
-                          }
-                        />
-                      </label>
-
-
-                      <div className="bm-owner-subcategory-editor-actions">
-
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setEditingSubcategoryId("");
-                            setSubcategoryDraft({
-                              name_en: "",
-                              name_he: ""
-                            });
-                          }}
-                        >
-                          {isHebrew
-                            ? "ביטול"
-                            : "Cancel"}
-                        </button>
-
-                        <button
-                          type="submit"
-                          className="primary"
-                        >
-                          {isHebrew
-                            ? "שמור שינויים"
-                            : "Save changes"}
-                        </button>
-
-                      </div>
-
-                    </form>
-                  ) : null}
 
 
                   {showAddSubcategory ? (
@@ -7821,7 +7980,7 @@ const loadData = async (id) => {
                     >
                       {isHebrew
                         ? "+ הוסף תת־קטגוריה"
-                        : "+ ADD SUBCATEGORY"}
+                        : "+ Add subcategory"}
                     </button>
                   )}
 

@@ -433,7 +433,7 @@ html[data-beyond-language="he"]
 
 /* BEYOND PUBLISH CONFIRM BASE END */
 
-@media (max-width: 760px) {
+@media (max-width: 760px), (hover: none) and (pointer: coarse) {
 
 /* =======================================================
      DESIGN TOKENS

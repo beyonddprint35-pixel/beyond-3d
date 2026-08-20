@@ -746,6 +746,7 @@ export function createOpenCascadeKernelAdapter(oc, { fallbackBuildPreview, fallb
     capabilities: {
       persistentTopology: true,
       featureFaceSketching: true,
+      pushPullFace: true,
       stackedSameDirectionFeatures: true,
       exactFeatureEdgeFillet: true,
       shell: true,
@@ -800,6 +801,85 @@ export function createOpenCascadeKernelAdapter(oc, { fallbackBuildPreview, fallb
     },
 
     async runTool(tool, context = {}) {
+      if (tool === "pushPullFace") {
+        const draft =
+          context.draft;
+
+        const nextDraft =
+          context.nextDraft;
+
+        const selectedFace =
+          context.selectedFace || null;
+
+        const amount =
+          Number(context.amount || 0);
+
+        if (
+          !draft ||
+          !nextDraft ||
+          !selectedFace
+        ) {
+          return {
+            ok: false,
+
+            message:
+              "Face Push/Pull requires a solid, selected face and candidate result",
+          };
+        }
+
+        /*
+          ----------------------------------------------------
+          BREP VALIDATION
+
+          Interaction remains responsive and proposes the
+          candidate geometry.
+
+          OpenCascade is the final authority deciding whether
+          that geometry is a valid B-Rep.
+
+          Invalid geometry never enters Creator history.
+          ----------------------------------------------------
+        */
+
+        clearCache();
+
+        try {
+          ensureNative(
+            nextDraft
+          );
+        } catch (error) {
+          return {
+            ok: false,
+
+            reason:
+              "invalid-brep",
+
+            message:
+              error?.message ||
+              "OpenCascade rejected this face offset",
+          };
+        }
+
+        return {
+          ok: true,
+
+          nextDraft,
+
+          topology:
+            cachedTopology || [],
+
+          selectedTopologyId:
+            selectedFace.topologyId ||
+            null,
+
+          message:
+            `Face offset ${
+              amount >= 0
+                ? "+"
+                : ""
+            }${amount.toFixed(1)} mm · BRep validated`,
+        };
+      }
       if (tool === "shell") {
         const draft = context.draft;
         if (!draft) return { ok: false, message: "Create a solid before using Shell" };

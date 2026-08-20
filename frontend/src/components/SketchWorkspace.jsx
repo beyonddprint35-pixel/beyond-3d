@@ -21,6 +21,16 @@ import { CAD_KERNEL_API_VERSION, createCadKernelRuntime } from "./CadKernelRunti
 import { initializeBeyondOpenCascade } from "./OpenCascadeLoader";
 import { createCommitEnvelope } from "./NativeCadPayload";
 import { solveSketchConstraints, sketchConstraintStatus } from "./ConstraintSolver";
+import {
+  coalescedPointerEvents,
+  createPointerSession,
+  isTouchPointer,
+  pointerClientPoint,
+  pointerTelemetry,
+  pointerTravelPx,
+  pointerTypeOf,
+  predictedPointerEvents,
+} from "./SketchInputRouter";
 import "./SketchWorkspace.css";
 
 /* ======================================================================
@@ -152,6 +162,7 @@ const TOUCH_TAP_MAX_MS = 360;
 const KERNEL_CAPABILITIES = Object.freeze({
   persistentTopology: true,
   featureFaceSketching: true,
+  pushPullFace: false,
   stackedSameDirectionFeatures: true,
   exactFeatureEdgeFillet: false,
   shell: false,
@@ -819,6 +830,229 @@ function offsetSideFacePoints(points, faceIndex, amountMM) {
   return next;
 }
 
+
+function applyFaceOffsetToDraft(
+  draft,
+  face,
+  amountMM
+) {
+  if (
+    !draft ||
+    !face ||
+    !Number.isFinite(
+      Number(amountMM)
+    )
+  ) {
+    return draft;
+  }
+
+  const amount =
+    Number(amountMM);
+
+
+  /* --------------------------------------------------------
+     BASE TOP FACE
+  -------------------------------------------------------- */
+
+  if (face.type === "cap") {
+    return {
+      ...draft,
+
+      height:
+        Math.max(
+          MIN_PULL_MM,
+          Number(
+            draft.height || 0
+          ) + amount
+        ),
+    };
+  }
+
+
+  /* --------------------------------------------------------
+     BASE SIDE FACE
+  -------------------------------------------------------- */
+
+  if (face.type === "side") {
+    return {
+      ...draft,
+
+      points:
+        offsetSideFacePoints(
+          draft.points,
+          face.index,
+          amount
+        ),
+    };
+  }
+
+
+  /* --------------------------------------------------------
+     FEATURE CAP
+  -------------------------------------------------------- */
+
+  if (
+    face.type ===
+      "feature-cap" &&
+    face.featureId
+  ) {
+    let features =
+      (
+        draft.features || []
+      ).map(feature => {
+
+        if (
+          feature.id !==
+          face.featureId
+        ) {
+          return {
+            ...feature
+          };
+        }
+
+
+        let nextDepth =
+          feature.depth >= 0
+
+            ? Math.max(
+                MIN_FEATURE_MM,
+
+                Number(
+                  feature.depth ||
+                  0
+                ) + amount
+              )
+
+            : Math.min(
+                -MIN_FEATURE_MM,
+
+                Number(
+                  feature.depth ||
+                  0
+                ) + amount
+              );
+
+
+        const next = {
+          ...feature
+        };
+
+
+        /*
+          Preserve stacked-feature relationship.
+        */
+
+        if (
+          feature.hostFeatureId
+        ) {
+          const host =
+            featureById(
+              draft,
+              feature.hostFeatureId
+            );
+
+          if (host) {
+            const hostDepth =
+              Number(
+                host.depth || 0
+              );
+
+            nextDepth =
+              hostDepth >= 0
+
+                ? Math.max(
+                    hostDepth +
+                      MIN_FEATURE_MM,
+
+                    nextDepth
+                  )
+
+                : Math.min(
+                    hostDepth -
+                      MIN_FEATURE_MM,
+
+                    nextDepth
+                  );
+
+            next.relativeDepth =
+              nextDepth -
+              hostDepth;
+          }
+        }
+
+
+        next.depth =
+          nextDepth;
+
+        next.operation =
+          nextDepth >= 0
+            ? "add"
+            : "cut";
+
+        return next;
+      });
+
+
+    features =
+      rebaseFeatureDependencies(
+        features
+      );
+
+
+    return {
+      ...draft,
+      features,
+    };
+  }
+
+
+  return draft;
+}
+
+
+/*
+  Re-resolve the SAME semantic face after the B-Rep
+  has been rebuilt.
+
+  This is what makes:
+
+      select → pull → release → pull again
+
+  feel continuous rather than losing selection.
+*/
+
+function persistentFaceAfterDraftEdit(
+  draft,
+  previousFace
+) {
+  if (
+    !draft ||
+    !previousFace
+  ) {
+    return null;
+  }
+
+  const id =
+    topologyFaceId(
+      previousFace
+    );
+
+  if (!id) {
+    return previousFace;
+  }
+
+
+  return (
+    topologyFacesForDraft(
+      draft
+    ).find(
+      face =>
+        face.topologyId === id
+    ) ||
+    null
+  );
+}
+
 /* ======================================================================
    Geometry builders
    ====================================================================== */
@@ -1097,30 +1331,9 @@ function edgeSegmentsForDraft(draft) {
    Pointer / ray helpers
    ====================================================================== */
 
-function isTouchPointer(event) {
-  return event?.pointerType === "touch" || event?.nativeEvent?.pointerType === "touch";
-}
-
-function pointerTypeOf(event) {
-  return event?.pointerType || event?.nativeEvent?.pointerType || "mouse";
-}
-
 function quantizeDragMM(value, event) {
   const step = isTouchPointer(event) ? TOUCH_DRAG_STEP_MM : DIRECT_DRAG_STEP_MM;
   return Math.round(value / step) * step;
-}
-
-function pointerClientPoint(event) {
-  return {
-    x: Number(event?.clientX ?? event?.nativeEvent?.clientX ?? 0),
-    y: Number(event?.clientY ?? event?.nativeEvent?.clientY ?? 0),
-  };
-}
-
-function pointerTravelPx(start, event) {
-  if (!start) return Infinity;
-  const point = pointerClientPoint(event);
-  return Math.hypot(point.x - start.x, point.y - start.y);
 }
 
 function usePlaneRaycast() {
@@ -1422,10 +1635,45 @@ function CameraRig({ requestRef, controlsRef }) {
   const targetUp = useRef(null);
 
   useEffect(() => {
-    requestRef.current = (position, lookAt, up = null) => {
-      targetPosition.current = position.clone();
-      targetLook.current = lookAt.clone();
-      targetUp.current = up ? up.clone().normalize() : null;
+    const request = (
+      position,
+      lookAt,
+      up = null
+    ) => {
+      targetPosition.current =
+        position.clone();
+
+      targetLook.current =
+        lookAt.clone();
+
+      targetUp.current =
+        up
+          ? up.clone().normalize()
+          : null;
+    };
+
+    /*
+      Direct modeling owns geometry only.
+
+      When Pencil/mouse manipulation begins,
+      any unfinished camera preset/focus animation
+      can be cancelled immediately.
+    */
+    request.cancel = () => {
+      targetPosition.current = null;
+      targetLook.current = null;
+      targetUp.current = null;
+    };
+
+    requestRef.current =
+      request;
+
+    return () => {
+      if (
+        requestRef.current === request
+      ) {
+        requestRef.current = null;
+      }
     };
   }, [requestRef]);
 
@@ -2172,41 +2420,16 @@ function SketchScene({ state, actions, cameraRigRef, controlsRef }) {
   const draftForPreview = useMemo(() => {
     if (!state.draft) return null;
 
-    if (state.mode === "pulling-face" && state.selectedFace) {
-      if (state.selectedFace.type === "cap") {
-        return {
-          ...state.draft,
-          height: Math.max(MIN_PULL_MM, state.draft.height + state.pendingPull),
-        };
-      }
-
-      if (state.selectedFace.type === "side") {
-        return {
-          ...state.draft,
-          points: offsetSideFacePoints(
-            state.draft.points,
-            state.selectedFace.index,
-            state.pendingPull
-          ),
-        };
-      }
-
-      if (state.selectedFace.type === "feature-cap" && state.selectedFace.featureId) {
-        return {
-          ...state.draft,
-          features: (state.draft.features || []).map((feature) =>
-            feature.id === state.selectedFace.featureId
-              ? {
-                  ...feature,
-                  depth:
-                    feature.depth >= 0
-                      ? Math.max(MIN_FEATURE_MM, feature.depth + state.pendingPull)
-                      : Math.min(-MIN_FEATURE_MM, feature.depth + state.pendingPull),
-                }
-              : feature
-          ),
-        };
-      }
+    if (
+      state.mode ===
+        "pulling-face" &&
+      state.selectedFace
+    ) {
+      return applyFaceOffsetToDraft(
+        state.draft,
+        state.selectedFace,
+        state.pendingPull
+      );
     }
 
     if (
@@ -2238,8 +2461,39 @@ function SketchScene({ state, actions, cameraRigRef, controlsRef }) {
   }, [state]);
 
   const draftGeometry = useMemo(
-    () => buildCompositeGeometry(draftForPreview),
-    [draftForPreview]
+    () => {
+      const interactivePreview =
+        state.mode === "pulling-face" ||
+        state.mode === "pulling-profile";
+
+      /*
+        Tablet CAD must feel immediate.
+
+        During the gesture we deliberately use the
+        lightweight mesh kernel.
+
+        Once released, OpenCascade validates/rebuilds
+        the final B-Rep.
+      */
+      if (
+        interactivePreview &&
+        draftForPreview
+      ) {
+        return MeshPreviewKernel
+          .buildPreview(
+            draftForPreview
+          );
+      }
+
+      return buildCompositeGeometry(
+        draftForPreview
+      );
+    },
+
+    [
+      draftForPreview,
+      state.mode,
+    ]
   );
 
   useEffect(() => () => draftGeometry?.dispose?.(), [draftGeometry]);
@@ -2295,25 +2549,134 @@ function SketchScene({ state, actions, cameraRigRef, controlsRef }) {
   const smartStrokeRef = useRef(false);
 
   function handleSketchPointerMove(event) {
-    if (isTouchPointer(event)) return;
-    if (
-      sketchPointerRef.current?.pointerId != null &&
-      sketchPointerRef.current.pointerId !== event.pointerId
-    ) return;
-    const raw = planeRaycast(event, state.activePlane);
-    if (!raw) return;
-    if (state.activeTool === "smart" && smartStrokeRef.current) {
-      actions.updateSmartStroke(raw);
+    if (isTouchPointer(event)) {
       return;
     }
-    actions.setHoverPoint(snapSketchPoint(raw, state));
+
+    if (
+      sketchPointerRef.current
+        ?.pointerId != null &&
+      sketchPointerRef.current
+        .pointerId !==
+        event.pointerId
+    ) {
+      return;
+    }
+
+    /*
+      Consume every REAL coalesced pointer sample.
+
+      This makes Apple Pencil drawing considerably
+      smoother than processing only one point per
+      browser pointermove event.
+
+      Predicted samples are deliberately NOT
+      committed to geometry.
+    */
+    const samples =
+      coalescedPointerEvents(event);
+
+    const strokePoints =
+      [];
+
+    let latestRaw =
+      null;
+
+    for (
+      const sample of samples
+    ) {
+      const raw =
+        planeRaycast(
+          sample,
+          state.activePlane
+        );
+
+      if (!raw) {
+        continue;
+      }
+
+      latestRaw =
+        raw;
+
+      if (
+        state.activeTool ===
+          "smart" &&
+        smartStrokeRef.current
+      ) {
+        strokePoints.push(
+          raw
+        );
+      }
+    }
+
+    /*
+      Capture Pencil telemetry for the interaction
+      layer without tying geometry logic to a
+      particular Apple Pencil generation.
+    */
+    if (
+      sketchPointerRef.current
+    ) {
+      sketchPointerRef
+        .current
+        .telemetry =
+        pointerTelemetry(event);
+
+      sketchPointerRef
+        .current
+        .predictedSamples =
+        predictedPointerEvents(
+          event
+        ).length;
+    }
+
+    if (
+      strokePoints.length
+    ) {
+      actions
+        .updateSmartStrokeBatch(
+          strokePoints
+        );
+
+      return;
+    }
+
+    if (latestRaw) {
+      actions.setHoverPoint(
+        snapSketchPoint(
+          latestRaw,
+          state
+        )
+      );
+    }
   }
 
   function handleSketchPointerDown(event) {
     if (isTouchPointer(event)) return;
     event.stopPropagation();
-    sketchPointerRef.current = { pointerId: event.pointerId };
-    if (controlsRef.current) controlsRef.current.enabled = false;
+
+    /*
+      Camera state becomes immutable while the
+      direct-modeling pointer owns the gesture.
+    */
+    cameraRigRef.current
+      ?.cancel?.();
+
+    sketchPointerRef.current =
+      createPointerSession(
+        event,
+        {
+          role:
+            "sketch",
+        }
+      );
+
+    if (
+      controlsRef.current
+    ) {
+      controlsRef.current
+        .enabled = false;
+    }
     event.target?.setPointerCapture?.(event.pointerId);
     if (state.activeTool === "select") {
       actions.clearSketchEntitySelection();
@@ -2356,7 +2719,16 @@ function SketchScene({ state, actions, cameraRigRef, controlsRef }) {
         )
       : profilePullOrigin;
     if (!profile || !origin) return;
-    if (controlsRef.current) controlsRef.current.enabled = false;
+
+    cameraRigRef.current
+      ?.cancel?.();
+
+    if (
+      controlsRef.current
+    ) {
+      controlsRef.current
+        .enabled = false;
+    }
     event.target?.setPointerCapture?.(event.pointerId);
 
     const axis = state.activePlane.normal.clone().normalize();
@@ -2377,7 +2749,16 @@ function SketchScene({ state, actions, cameraRigRef, controlsRef }) {
     const face = faceOverride || state.selectedFace;
     const pullData = faceOverride ? facePullDataFor(state.draft, faceOverride) : facePull;
     if (!face || !pullData) return;
-    if (controlsRef.current) controlsRef.current.enabled = false;
+
+    cameraRigRef.current
+      ?.cancel?.();
+
+    if (
+      controlsRef.current
+    ) {
+      controlsRef.current
+        .enabled = false;
+    }
     event.target?.setPointerCapture?.(event.pointerId);
 
     const start = axisDragFrom(event, pullData.origin, pullData.axis) ?? 0;
@@ -2419,27 +2800,88 @@ function SketchScene({ state, actions, cameraRigRef, controlsRef }) {
   }
 
   function endPull(event = null) {
-    if (!pullRef.current) return;
+    if (!pullRef.current) {
+      return;
+    }
+
     if (
       event?.pointerId != null &&
-      pullRef.current.pointerId != null &&
-      pullRef.current.pointerId !== event.pointerId
-    ) return;
-    const type = pullRef.current.type;
-    if (pullFrameRef.current != null) {
-      cancelAnimationFrame(pullFrameRef.current);
-      pullFrameRef.current = null;
+      pullRef.current
+        .pointerId != null &&
+      pullRef.current
+        .pointerId !==
+        event.pointerId
+    ) {
+      return;
     }
-    if (pendingPullValueRef.current != null) {
-      const finalValue = pendingPullValueRef.current;
-      pendingPullValueRef.current = null;
-      actions.updatePull(finalValue);
-    }
-    pullRef.current = null;
-    if (controlsRef.current) controlsRef.current.enabled = true;
 
-    if (type === "profile") actions.endProfilePull();
-    if (type === "face") actions.endFacePull();
+
+    const type =
+      pullRef.current.type;
+
+    let finalPullValue =
+      null;
+
+
+    if (
+      pullFrameRef.current != null
+    ) {
+      cancelAnimationFrame(
+        pullFrameRef.current
+      );
+
+      pullFrameRef.current =
+        null;
+    }
+
+
+    if (
+      pendingPullValueRef
+        .current != null
+    ) {
+      finalPullValue =
+        pendingPullValueRef
+          .current;
+
+      pendingPullValueRef
+        .current = null;
+
+      actions.updatePull(
+        finalPullValue
+      );
+    }
+
+
+    pullRef.current =
+      null;
+
+
+    if (
+      controlsRef.current
+    ) {
+      controlsRef.current
+        .enabled = true;
+    }
+
+
+    if (
+      type === "profile"
+    ) {
+      actions.endProfilePull();
+    }
+
+
+    if (
+      type === "face"
+    ) {
+      /*
+        Pass the final Pencil sample directly.
+        Do not depend on React having rendered it yet.
+      */
+      actions.endFacePull(
+        finalPullValue
+      );
+    }
   }
 
   function classifySolidFace(event) {
@@ -2535,7 +2977,16 @@ function SketchScene({ state, actions, cameraRigRef, controlsRef }) {
 
   function beginEndpointDrag(event, endpointKey) {
     if (!selectedSketchEntity) return;
-    if (controlsRef.current) controlsRef.current.enabled = false;
+
+    cameraRigRef.current
+      ?.cancel?.();
+
+    if (
+      controlsRef.current
+    ) {
+      controlsRef.current
+        .enabled = false;
+    }
     endpointDragRef.current = {
       entityId: selectedSketchEntity.id,
       profileId: selectedSketchEntity.profileId || null,
@@ -4565,14 +5016,106 @@ function SketchWorkspace({
       },
 
       updateSmartStroke(point) {
+        api.updateSmartStrokeBatch(
+          [point]
+        );
+      },
+
+      updateSmartStrokeBatch(
+        samples
+      ) {
         setState((s) => {
-          if (s.activeTool !== "smart" || !s.smartStrokePoints.length) return s;
-          const previous = s.smartStrokePoints[s.smartStrokePoints.length - 1];
-          if (Math.hypot(point.x - previous.x, point.y - previous.y) < 0.35) return s;
-          const points = [...s.smartStrokePoints, { x: point.x, y: point.y }];
-          const classified = points.length >= 5 ? classifySmartStroke(points) : null;
-          const label = classified?.type === "closed-polyline" ? "PROFILE" : classified?.type?.toUpperCase?.() || null;
-          return { ...s, smartStrokePoints: points, smartStrokeKind: label };
+          if (
+            s.activeTool !==
+              "smart" ||
+            !s.smartStrokePoints
+              .length
+          ) {
+            return s;
+          }
+
+          if (
+            !Array.isArray(
+              samples
+            ) ||
+            !samples.length
+          ) {
+            return s;
+          }
+
+          const points = [
+            ...s.smartStrokePoints,
+          ];
+
+          for (
+            const point of samples
+          ) {
+            if (!point) {
+              continue;
+            }
+
+            const previous =
+              points[
+                points.length - 1
+              ];
+
+            /*
+              Keep enough Pencil samples for smooth
+              geometry without flooding React state.
+            */
+            if (
+              Math.hypot(
+                point.x -
+                  previous.x,
+                point.y -
+                  previous.y
+              ) < 0.25
+            ) {
+              continue;
+            }
+
+            points.push({
+              x:
+                point.x,
+
+              y:
+                point.y,
+            });
+          }
+
+          if (
+            points.length ===
+            s.smartStrokePoints
+              .length
+          ) {
+            return s;
+          }
+
+          const classified =
+            points.length >= 5
+              ? classifySmartStroke(
+                  points
+                )
+              : null;
+
+          const label =
+            classified?.type ===
+              "closed-polyline"
+              ? "PROFILE"
+              : classified
+                  ?.type
+                  ?.toUpperCase?.() ||
+                null;
+
+          return {
+            ...s,
+
+            smartStrokePoints:
+              points,
+
+            smartStrokeKind:
+              label,
+          };
         });
       },
 
@@ -5070,113 +5613,376 @@ function SketchWorkspace({
         });
       },
 
-      endFacePull() {
-        setState((s) => {
-          if (s.mode !== "pulling-face" || !s.selectedFace || !s.draft) return s;
-          if (Math.abs(s.pendingPull) < 0.05) {
-            return { ...s, mode: "idle", pendingPull: 0 };
-          }
+      async endFacePull(
+        finalAmount = null
+      ) {
+        const source =
+          stateRef.current;
 
-          let draft = s.draft;
-          if (s.selectedFace.type === "cap") {
-            draft = {
-              ...s.draft,
-              height: Math.max(MIN_PULL_MM, s.draft.height + s.pendingPull),
-            };
-          } else if (s.selectedFace.type === "side") {
-            draft = {
-              ...s.draft,
-              points: offsetSideFacePoints(
-                s.draft.points,
-                s.selectedFace.index,
-                s.pendingPull
-              ),
-            };
-          } else if (s.selectedFace.type === "feature-cap" && s.selectedFace.featureId) {
-            let features = (s.draft.features || []).map((feature) => {
-              if (feature.id !== s.selectedFace.featureId) return { ...feature };
-              let nextDepth = feature.depth >= 0
-                ? Math.max(MIN_FEATURE_MM, feature.depth + s.pendingPull)
-                : Math.min(-MIN_FEATURE_MM, feature.depth + s.pendingPull);
-              const next = { ...feature };
-              if (feature.hostFeatureId) {
-                const host = featureById(s.draft, feature.hostFeatureId);
-                if (host) {
-                  const hostDepth = Number(host.depth || 0);
-                  nextDepth = hostDepth >= 0
-                    ? Math.max(hostDepth + MIN_FEATURE_MM, nextDepth)
-                    : Math.min(hostDepth - MIN_FEATURE_MM, nextDepth);
-                  next.relativeDepth = nextDepth - hostDepth;
-                }
-              }
-              next.depth = nextDepth;
-              next.operation = nextDepth >= 0 ? "add" : "cut";
-              return next;
-            });
-            features = rebaseFeatureDependencies(features);
-            draft = { ...s.draft, features };
-          }
+        if (
+          source.mode !==
+            "pulling-face" ||
+          !source.selectedFace ||
+          !source.draft
+        ) {
+          return;
+        }
 
-          pushHistory(snapshotOf(s));
-          return {
+
+        /*
+          Number(null) === 0, so null must be treated
+          explicitly as "no final pointer sample".
+        */
+        const supplied =
+          finalAmount == null
+            ? Number.NaN
+            : Number(
+                finalAmount
+              );
+
+
+        const amount =
+          Number.isFinite(
+            supplied
+          )
+            ? supplied
+            : Number(
+                source.pendingPull ||
+                0
+              );
+
+
+        /*
+          Tap without meaningful movement =
+          select only, no geometry change.
+        */
+        if (
+          Math.abs(amount) <
+          0.05
+        ) {
+          setState(s => ({
             ...s,
-            draft,
-            mode: "idle",
-            pendingPull: 0,
-            numericValue: "5",
-          };
-        });
+            mode:
+              "idle",
+            pendingPull:
+              0,
+          }));
+
+          return;
+        }
+
+
+        const candidate =
+          applyFaceOffsetToDraft(
+            source.draft,
+            source.selectedFace,
+            amount
+          );
+
+
+        let nextDraft =
+          candidate;
+
+        let validatedByBRep =
+          false;
+
+
+        /*
+          OpenCascade online:
+          validate final topology before history commit.
+
+          Mesh fallback:
+          retain current Creator behavior.
+        */
+        if (
+          cadKernelRuntime
+            .supports(
+              "pushPullFace"
+            )
+        ) {
+          const result =
+            await cadKernelRuntime
+              .runTool(
+                "pushPullFace",
+                {
+                  draft:
+                    deepClone(
+                      source.draft
+                    ),
+
+                  nextDraft:
+                    deepClone(
+                      candidate
+                    ),
+
+                  selectedFace:
+                    deepClone(
+                      source.selectedFace
+                    ),
+
+                  selectedFaceIds:
+                    deepClone(
+                      source
+                        .selectedFaceIds ||
+                      []
+                    ),
+
+                  amount,
+                }
+              );
+
+
+          if (!result?.ok) {
+            setToast(
+              result?.message ||
+              "OpenCascade rejected this face offset"
+            );
+
+            setState(s => ({
+              ...s,
+              mode:
+                "idle",
+              pendingPull:
+                0,
+            }));
+
+            return;
+          }
+
+
+          nextDraft =
+            result.nextDraft ||
+            candidate;
+
+          validatedByBRep =
+            true;
+        }
+
+
+        /*
+          Never apply an asynchronous WASM result to
+          another body if the user changed objects
+          while validation was running.
+        */
+        if (
+          stateRef.current
+            ?.draft?.id !==
+          source.draft.id
+        ) {
+          return;
+        }
+
+
+        pushHistory(
+          snapshotOf(source)
+        );
+
+
+        const selectedFace =
+          persistentFaceAfterDraftEdit(
+            nextDraft,
+            source.selectedFace
+          );
+
+
+        const selectedId =
+          topologyFaceId(
+            selectedFace
+          );
+
+
+        setState(s => ({
+          ...s,
+
+          draft:
+            nextDraft,
+
+          selectedFace,
+
+          selectedFaceIds:
+            selectedId
+              ? [selectedId]
+              : [],
+
+          mode:
+            "idle",
+
+          pendingPull:
+            0,
+
+          numericValue:
+            "5",
+        }));
+
+
+        if (
+          validatedByBRep
+        ) {
+          setToast(
+            `Face offset ${
+              amount >= 0
+                ? "+"
+                : ""
+            }${amount.toFixed(1)} mm · BRep validated`
+          );
+        }
       },
 
-      applyFaceNumeric() {
-        setState((s) => {
-          if (!s.selectedFace || !s.draft) return s;
-          const amount = Number(s.numericValue);
-          if (!Number.isFinite(amount) || Math.abs(amount) < 0.01) return s;
+      async applyFaceNumeric() {
+        const source =
+          stateRef.current;
 
-          let draft = s.draft;
-          if (s.selectedFace.type === "cap") {
-            draft = {
-              ...s.draft,
-              height: Math.max(MIN_PULL_MM, s.draft.height + amount),
-            };
-          } else if (s.selectedFace.type === "side") {
-            draft = {
-              ...s.draft,
-              points: offsetSideFacePoints(
-                s.draft.points,
-                s.selectedFace.index,
-                amount
-              ),
-            };
-          } else if (s.selectedFace.type === "feature-cap" && s.selectedFace.featureId) {
-            let features = (s.draft.features || []).map((feature) => {
-              if (feature.id !== s.selectedFace.featureId) return { ...feature };
-              let nextDepth = feature.depth >= 0
-                ? Math.max(MIN_FEATURE_MM, feature.depth + amount)
-                : Math.min(-MIN_FEATURE_MM, feature.depth + amount);
-              const next = { ...feature };
-              if (feature.hostFeatureId) {
-                const host = featureById(s.draft, feature.hostFeatureId);
-                if (host) {
-                  const hostDepth = Number(host.depth || 0);
-                  nextDepth = hostDepth >= 0
-                    ? Math.max(hostDepth + MIN_FEATURE_MM, nextDepth)
-                    : Math.min(hostDepth - MIN_FEATURE_MM, nextDepth);
-                  next.relativeDepth = nextDepth - hostDepth;
+
+        if (
+          !source.selectedFace ||
+          !source.draft
+        ) {
+          return;
+        }
+
+
+        const amount =
+          Number(
+            source.numericValue
+          );
+
+
+        if (
+          !Number.isFinite(
+            amount
+          ) ||
+          Math.abs(amount) <
+            0.01
+        ) {
+          return;
+        }
+
+
+        const candidate =
+          applyFaceOffsetToDraft(
+            source.draft,
+            source.selectedFace,
+            amount
+          );
+
+
+        let nextDraft =
+          candidate;
+
+        let validatedByBRep =
+          false;
+
+
+        if (
+          cadKernelRuntime
+            .supports(
+              "pushPullFace"
+            )
+        ) {
+          const result =
+            await cadKernelRuntime
+              .runTool(
+                "pushPullFace",
+                {
+                  draft:
+                    deepClone(
+                      source.draft
+                    ),
+
+                  nextDraft:
+                    deepClone(
+                      candidate
+                    ),
+
+                  selectedFace:
+                    deepClone(
+                      source.selectedFace
+                    ),
+
+                  selectedFaceIds:
+                    deepClone(
+                      source
+                        .selectedFaceIds ||
+                      []
+                    ),
+
+                  amount,
                 }
-              }
-              next.depth = nextDepth;
-              next.operation = nextDepth >= 0 ? "add" : "cut";
-              return next;
-            });
-            features = rebaseFeatureDependencies(features);
-            draft = { ...s.draft, features };
+              );
+
+
+          if (!result?.ok) {
+            setToast(
+              result?.message ||
+              "OpenCascade rejected this face offset"
+            );
+
+            return;
           }
 
-          pushHistory(snapshotOf(s));
-          return { ...s, draft };
-        });
+
+          nextDraft =
+            result.nextDraft ||
+            candidate;
+
+          validatedByBRep =
+            true;
+        }
+
+
+        if (
+          stateRef.current
+            ?.draft?.id !==
+          source.draft.id
+        ) {
+          return;
+        }
+
+
+        pushHistory(
+          snapshotOf(source)
+        );
+
+
+        const selectedFace =
+          persistentFaceAfterDraftEdit(
+            nextDraft,
+            source.selectedFace
+          );
+
+
+        const selectedId =
+          topologyFaceId(
+            selectedFace
+          );
+
+
+        setState(s => ({
+          ...s,
+
+          draft:
+            nextDraft,
+
+          selectedFace,
+
+          selectedFaceIds:
+            selectedId
+              ? [selectedId]
+              : [],
+        }));
+
+
+        if (
+          validatedByBRep
+        ) {
+          setToast(
+            `Face offset ${
+              amount >= 0
+                ? "+"
+                : ""
+            }${amount.toFixed(1)} mm · BRep validated`
+          );
+        }
       },
 
       selectFace(face) {
