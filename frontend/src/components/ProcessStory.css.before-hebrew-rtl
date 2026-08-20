@@ -1,0 +1,492 @@
+.process-story-section {
+  position: relative;
+  z-index: 5;
+  padding: 110px 0 120px;
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at 72% 30%,
+      rgba(40, 88, 138, 0.10),
+      transparent 32%
+    ),
+    #02050a;
+}
+
+.process-story-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.42;
+
+  background-image:
+    linear-gradient(
+      rgba(255,255,255,0.012) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255,255,255,0.012) 1px,
+      transparent 1px
+    );
+
+  background-size: 80px 80px;
+}
+
+.process-story-shell {
+  width: min(
+    1380px,
+    calc(100% - 64px)
+  );
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.process-story-heading {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1.2fr)
+    minmax(300px, 0.8fr);
+  align-items: end;
+  gap: 60px;
+  margin-bottom: 52px;
+}
+
+.process-story-kicker {
+  margin-bottom: 16px;
+  color: #527da8;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 2.2px;
+}
+
+.process-story-heading h2 {
+  margin: 0;
+  color: #f3f7fb;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(46px, 4.8vw, 72px);
+  font-weight: 500;
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+}
+
+.process-story-heading h2 span {
+  color: #8296aa;
+}
+
+.process-story-heading p {
+  max-width: 430px;
+  margin: 0 0 4px auto;
+  color: #728397;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+/* =========================
+   FLOW
+========================= */
+
+.process-compact-flow {
+  position: relative;
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.process-flow-line {
+  position: absolute;
+  left: 7%;
+  right: 7%;
+  top: 67px;
+  height: 1px;
+  background:
+    rgba(255,255,255,0.05);
+  z-index: 0;
+}
+
+.process-flow-line span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(71,116,155,0.25),
+      rgba(119,162,198,0.65),
+      rgba(71,116,155,0.25)
+    );
+}
+
+/* =========================
+   CARD
+========================= */
+
+.process-compact-card {
+  min-height: 290px;
+  position: relative;
+  z-index: 1;
+
+  padding: 24px 22px 26px;
+
+  border:
+    1px solid
+    rgba(122,156,188,0.09);
+
+  border-radius: 22px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(14,25,39,0.90),
+      rgba(5,11,18,0.96)
+    );
+
+  box-shadow:
+    0 28px 65px
+    rgba(0,0,0,0.20);
+
+  transition:
+    transform 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.process-compact-card:hover {
+  transform:
+    translateY(-6px);
+
+  border-color:
+    rgba(120,166,205,0.20);
+
+  box-shadow:
+    0 36px 80px
+    rgba(0,0,0,0.28),
+    0 0 50px
+    rgba(42,91,143,0.07);
+}
+
+.process-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.process-card-number {
+  color: #8da4b8;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.process-card-label {
+  color: #4f6f8c;
+  font-size: 6px;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+}
+
+.process-card-icon {
+  width: 68px;
+  height: 68px;
+
+  margin: 28px 0 26px;
+
+  display: grid;
+  place-items: center;
+
+  border:
+    1px solid
+    rgba(113,155,192,0.17);
+
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(37,79,116,0.28),
+      rgba(8,17,27,0.82)
+    );
+
+  color: #9fc0da;
+
+  font-family:
+    "Space Grotesk",
+    sans-serif;
+
+  font-size: 27px;
+
+  box-shadow:
+    inset 0 0 30px
+    rgba(58,112,158,0.04);
+}
+
+.process-compact-card h3 {
+  margin: 0;
+
+  color: #f1f5f9;
+
+  font-family:
+    "Space Grotesk",
+    sans-serif;
+
+  font-size: 24px;
+
+  font-weight: 500;
+
+  line-height: 1.05;
+
+  letter-spacing: -0.035em;
+}
+
+.process-compact-card p {
+  margin: 14px 0 0;
+
+  color: #718397;
+
+  font-size: 11px;
+
+  line-height: 1.7;
+}
+
+.process-card-arrow {
+  position: absolute;
+  right: -16px;
+  top: 55px;
+
+  width: 32px;
+  height: 24px;
+
+  display: grid;
+  place-items: center;
+
+  color: #5d86a8;
+
+  font-size: 15px;
+
+  z-index: 3;
+}
+
+/* =========================
+   TABLET
+========================= */
+
+@media (max-width: 980px) {
+  .process-story-heading {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .process-story-heading p {
+    margin: 0;
+  }
+
+  .process-compact-flow {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .process-flow-line,
+  .process-card-arrow {
+    display: none;
+  }
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 700px) {
+  .process-story-section {
+    padding: 80px 0 90px;
+  }
+
+  .process-story-shell {
+    width: calc(100% - 28px);
+  }
+
+  .process-story-heading {
+    margin-bottom: 34px;
+  }
+
+  .process-story-heading h2 {
+    font-size: 42px;
+  }
+
+  .process-story-heading p {
+    font-size: 12px;
+  }
+
+  .process-compact-flow {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .process-compact-card {
+    min-height: 0;
+
+    display: grid;
+
+    grid-template-columns:
+      54px 1fr;
+
+    grid-template-rows:
+      auto auto;
+
+    column-gap: 16px;
+
+    padding: 18px;
+
+    border-radius: 18px;
+  }
+
+  .process-card-top {
+    grid-column: 1 / -1;
+  }
+
+  .process-card-icon {
+    width: 54px;
+    height: 54px;
+
+    margin: 18px 0 0;
+
+    border-radius: 14px;
+
+    font-size: 22px;
+  }
+
+  .process-compact-card h3 {
+    margin-top: 18px;
+
+    font-size: 21px;
+  }
+
+  .process-compact-card p {
+    grid-column: 2;
+
+    margin-top: 8px;
+
+    font-size: 10px;
+  }
+}
+
+
+/* =========================================================
+   BEYOND TYPOGRAPHY UPDATE
+   Typography only â€” original compact four-card layout preserved.
+========================================================= */
+
+.process-story-kicker {
+  font-size: clamp(10px, 0.66vw, 12px);
+}
+
+.process-story-heading h2 {
+  font-size: clamp(54px, 5.2vw, 78px);
+  line-height: 0.98;
+}
+
+.process-story-heading > p {
+  font-size: clamp(14px, 0.95vw, 17px);
+  line-height: 1.7;
+}
+
+.process-card-number,
+.process-card-label {
+  font-size: clamp(10px, 0.66vw, 12px);
+}
+
+.process-compact-card h3 {
+  font-size: clamp(22px, 1.5vw, 28px);
+  line-height: 1.2;
+}
+
+.process-compact-card p {
+  font-size: clamp(14px, 0.92vw, 16px);
+  line-height: 1.65;
+}
+
+@media (max-width: 700px) {
+  .process-story-kicker {
+    font-size: 10px;
+  }
+
+  .process-story-heading h2 {
+    font-size: clamp(42px, 12vw, 58px);
+    line-height: 1;
+  }
+
+  .process-story-heading > p {
+    font-size: 15px;
+    line-height: 1.65;
+  }
+
+  .process-card-number,
+  .process-card-label {
+    font-size: 10px;
+  }
+
+  .process-compact-card h3 {
+    font-size: 21px;
+  }
+
+  .process-compact-card p {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+}
+
+
+/* =========================================================
+   GLOBAL TYPOGRAPHY MAPPING â€” PROCESS STORY
+   Original compact 4-card layout is untouched.
+========================================================= */
+
+.process-story-kicker,
+.process-card-number,
+.process-card-label {
+  font-size:
+    var(--type-label);
+}
+
+.process-story-heading h2 {
+  font-family:
+    var(--font-display-family);
+
+  font-size:
+    var(--type-section-title);
+
+  line-height:
+    var(--line-heading);
+}
+
+.process-story-heading > p {
+  font-size:
+    var(--type-body);
+
+  line-height:
+    var(--line-body);
+}
+
+.process-compact-card h3 {
+  font-family:
+    var(--font-display-family);
+
+  font-size:
+    var(--type-heading-3);
+
+  line-height:
+    var(--line-card-title);
+}
+
+.process-compact-card p {
+  font-size:
+    var(--type-body);
+
+  line-height:
+    var(--line-body);
+}

@@ -21,8 +21,19 @@ const SKIP_SELECTOR = [
   "svg",
   "canvas",
 
-  /* Restaurant public menus control their own language */
+  /*
+    CUSTOMERS TEMPLATE MENU
+
+    Public restaurant menus control their own
+    EN / HE language independently from BEYOND.
+
+    Never allow the main BEYOND website
+    auto-translator to modify customer menus.
+  */
   ".bm-public",
+  ".ep-page",
+  ".customers-template-menu",
+  "[data-customer-template-menu]",
 
   /* Explicit opt-out */
   "[data-no-beyond-translate]",

@@ -6,6 +6,7 @@ import React, { useEffect, useMemo, useState, useLayoutEffect, useRef } from "re
 import { createPortal } from "react-dom";
 import { Moon, Sun } from "lucide-react";
 import RestaurantAccessibility from "./RestaurantAccessibility";
+import "./CustomersTemplateMenuIsolation.css";
 import "./BeyondMenuStudioTheme.css";
 import "./BeyondMenuStudioMobile.css";
 import { createClient } from "@supabase/supabase-js";
@@ -44,15 +45,386 @@ function LoginRequired() {
 export function BeyondPublicMenu({
   slug,
   previewSite = null,
+  previewGroups = null,
   previewSections = null,
   previewItems = null
 }) {
   const [site, setSite] = useState(null);
+  const [groups, setGroups] = useState([]);
   const [sections, setSections] = useState([]);
   const [items, setItems] = useState([]);
   const [active, setActive] = useState("");
   const [lang, setLang] = useState("he");
   const [status, setStatus] = useState("Loading menu…");
+
+
+  /*
+    BEYOND GENERIC MENU HIERARCHY
+
+    menu_groups is now the canonical structure.
+
+    parent_id === null
+      -> top-level category
+
+    parent_id !== null
+      -> nested menu group
+
+    The Customers Template Menu keeps its existing markup
+    and styling. We normalize menu_groups into the structure
+    the template already expects.
+  */
+  const normalizeMenuHierarchy = (
+    sourceGroups = [],
+    sourceItems = []
+  ) => {
+
+    const rawGroups =
+      (sourceGroups || [])
+        .filter(
+          group =>
+            group &&
+            group.visible !== false
+        );
+
+
+    const groupMap =
+      new Map(
+        rawGroups.map(
+          group => [
+            group.id,
+            group
+          ]
+        )
+      );
+
+
+    /*
+      A group is displayable only when its entire parent
+      chain exists and is visible.
+
+      This also prevents a visible child from appearing
+      underneath a hidden category.
+    */
+    const validityCache =
+      new Map();
+
+
+    const groupIsDisplayable =
+      groupId => {
+
+        if (!groupId) {
+          return false;
+        }
+
+        if (
+          validityCache.has(
+            groupId
+          )
+        ) {
+          return validityCache.get(
+            groupId
+          );
+        }
+
+
+        const visited =
+          new Set();
+
+        let current =
+          groupMap.get(
+            groupId
+          );
+
+
+        if (!current) {
+          validityCache.set(
+            groupId,
+            false
+          );
+
+          return false;
+        }
+
+
+        while (current) {
+
+          if (
+            current.visible === false
+          ) {
+            validityCache.set(
+              groupId,
+              false
+            );
+
+            return false;
+          }
+
+
+          if (
+            visited.has(
+              current.id
+            )
+          ) {
+            validityCache.set(
+              groupId,
+              false
+            );
+
+            return false;
+          }
+
+
+          visited.add(
+            current.id
+          );
+
+
+          if (!current.parent_id) {
+
+            validityCache.set(
+              groupId,
+              true
+            );
+
+            return true;
+          }
+
+
+          current =
+            groupMap.get(
+              current.parent_id
+            );
+
+
+          if (!current) {
+
+            validityCache.set(
+              groupId,
+              false
+            );
+
+            return false;
+          }
+
+        }
+
+
+        validityCache.set(
+          groupId,
+          false
+        );
+
+        return false;
+      };
+
+
+    const displayGroups =
+      rawGroups.filter(
+        group =>
+          groupIsDisplayable(
+            group.id
+          )
+      );
+
+
+    const displayGroupMap =
+      new Map(
+        displayGroups.map(
+          group => [
+            group.id,
+            group
+          ]
+        )
+      );
+
+
+    const topLevelGroup =
+      groupId => {
+
+        if (!groupId) {
+          return null;
+        }
+
+
+        const visited =
+          new Set();
+
+        let current =
+          displayGroupMap.get(
+            groupId
+          );
+
+
+        while (current) {
+
+          if (
+            visited.has(
+              current.id
+            )
+          ) {
+            return null;
+          }
+
+
+          visited.add(
+            current.id
+          );
+
+
+          if (!current.parent_id) {
+            return current;
+          }
+
+
+          current =
+            displayGroupMap.get(
+              current.parent_id
+            );
+
+        }
+
+
+        return null;
+      };
+
+
+    /*
+      Keep the existing variable name "sections" locally
+      so none of the approved Customers Template Menu
+      presentation needs to change.
+    */
+    const normalizedSections =
+      displayGroups
+        .filter(
+          group =>
+            !group.parent_id
+        )
+        .map(
+          group => ({
+            ...group,
+
+            /*
+              Existing menu logic expects section_key.
+              Generic menu_groups calls it group_key.
+            */
+            section_key:
+              group.group_key || null
+          })
+        )
+        .sort(
+          (a, b) =>
+            Number(
+              a.sort_order || 0
+            ) -
+            Number(
+              b.sort_order || 0
+            )
+        );
+
+
+    const normalizedItems =
+      (sourceItems || [])
+        .filter(
+          item =>
+            item &&
+            item.visible !== false &&
+            item.group_id &&
+            groupIsDisplayable(
+              item.group_id
+            )
+        )
+        .map(
+          item => {
+
+            const ownGroup =
+              displayGroupMap.get(
+                item.group_id
+              );
+
+
+            const rootGroup =
+              topLevelGroup(
+                item.group_id
+              );
+
+
+            if (
+              !ownGroup ||
+              !rootGroup
+            ) {
+              return null;
+            }
+
+
+            /*
+              If the item belongs directly to a top-level
+              group there is no subcategory heading.
+
+              If it belongs to a nested group, the existing
+              Customers Template Menu receives the group name
+              through its existing category fields.
+
+              This keeps the approved template unchanged.
+            */
+            const nestedGroup =
+              ownGroup.parent_id
+                ? ownGroup
+                : null;
+
+
+            const legacyCategory =
+              nestedGroup
+                ? (
+                    nestedGroup.name_en &&
+                    nestedGroup.name_he
+                      ? `${nestedGroup.name_en} · ${nestedGroup.name_he}`
+                      : nestedGroup.name_en ||
+                        nestedGroup.name_he ||
+                        null
+                  )
+                : null;
+
+
+            return {
+              ...item,
+
+              /*
+                Synthetic compatibility field.
+                Existing public-menu filtering can remain
+                section_id === active.
+              */
+              section_id:
+                rootGroup.id,
+
+              category_en:
+                nestedGroup?.name_en ||
+                null,
+
+              category_he:
+                nestedGroup?.name_he ||
+                null,
+
+              category:
+                legacyCategory
+            };
+
+          }
+        )
+        .filter(Boolean);
+
+
+    return {
+      groups:
+        displayGroups,
+
+      sections:
+        normalizedSections,
+
+      items:
+        normalizedItems
+    };
+  };
+
 
   useEffect(() => {
 
@@ -67,23 +439,81 @@ export function BeyondPublicMenu({
     */
     if (previewSite) {
 
-      const loadedSections =
-        (previewSections || [])
-          .filter(
-            section =>
-              section.visible !== false
+      let loadedGroups = [];
+      let loadedSections = [];
+      let loadedItems = [];
+
+
+      /*
+        NEW GENERIC PREVIEW
+
+        Once Menu Studio is migrated it will supply
+        previewGroups directly.
+      */
+      if (
+        Array.isArray(
+          previewGroups
+        ) &&
+        previewGroups.length
+      ) {
+
+        const normalized =
+          normalizeMenuHierarchy(
+            previewGroups,
+            previewItems || []
           );
 
-      const loadedItems =
-        (previewItems || [])
-          .filter(
-            item =>
-              item.visible !== false
-          );
 
-      setSite(previewSite);
-      setSections(loadedSections);
-      setItems(loadedItems);
+        loadedGroups =
+          normalized.groups;
+
+        loadedSections =
+          normalized.sections;
+
+        loadedItems =
+          normalized.items;
+
+      } else {
+
+        /*
+          TEMPORARY LEGACY PREVIEW FALLBACK
+
+          Keep this until Menu Studio itself is migrated
+          to menu_groups in the next step.
+        */
+        loadedSections =
+          (previewSections || [])
+            .filter(
+              section =>
+                section.visible !== false
+            );
+
+
+        loadedItems =
+          (previewItems || [])
+            .filter(
+              item =>
+                item.visible !== false
+            );
+
+      }
+
+
+      setSite(
+        previewSite
+      );
+
+      setGroups(
+        loadedGroups
+      );
+
+      setSections(
+        loadedSections
+      );
+
+      setItems(
+        loadedItems
+      );
 
       setLang(
         previewSite.default_language === "en"
@@ -141,10 +571,20 @@ export function BeyondPublicMenu({
         return;
       }
 
-      const [sectionResult, itemResult] =
+      const [groupResult, itemResult] =
         await Promise.all([
+
+          /*
+            GENERIC MENU HIERARCHY
+
+            Load all visible groups belonging to this
+            published menu.
+
+            The client normalizer will resolve top-level
+            categories and nested groups.
+          */
           supabase
-            .from("menu_sections")
+            .from("menu_groups")
             .select("*")
             .eq(
               "site_id",
@@ -175,7 +615,7 @@ export function BeyondPublicMenu({
       if (!alive) return;
 
       if (
-        sectionResult.error ||
+        groupResult.error ||
         itemResult.error
       ) {
         setStatus(
@@ -184,16 +624,42 @@ export function BeyondPublicMenu({
         return;
       }
 
-      const loadedSections =
-        sectionResult.data || [];
+      const normalized =
+        normalizeMenuHierarchy(
+          groupResult.data || [],
+          itemResult.data || []
+        );
 
-      setSite(siteRow);
+
+      const loadedGroups =
+        normalized.groups;
+
+
+      const loadedSections =
+        normalized.sections;
+
+
+      const loadedItems =
+        normalized.items;
+
+
+      setSite(
+        siteRow
+      );
+
+
+      setGroups(
+        loadedGroups
+      );
+
+
       setSections(
         loadedSections
       );
 
+
       setItems(
-        itemResult.data || []
+        loadedItems
       );
 
       setLang(
@@ -217,6 +683,7 @@ export function BeyondPublicMenu({
   }, [
     slug,
     previewSite,
+    previewGroups,
     previewSections,
     previewItems
   ]);
@@ -696,7 +1163,20 @@ export function BeyondPublicMenu({
 
   return (
     <div
-      className="ep-page"
+      className={`ep-page customers-template-menu ${
+        lang === "he"
+          ? "is-he"
+          : "is-en"
+      }`}
+      data-customer-template-menu="true"
+      data-no-beyond-translate="true"
+      translate="no"
+      lang={lang}
+      dir={
+        lang === "he"
+          ? "rtl"
+          : "ltr"
+      }
       style={{
         "--ep-accent":
           site.primary_color ||
@@ -709,8 +1189,9 @@ export function BeyondPublicMenu({
 
       <div
         id="restaurant-main-content"
-        className="ep-app"
+        className={`ep-app ep-lang-${lang}`}
         tabIndex={-1}
+        lang={lang}
         dir={
           lang === "he"
             ? "rtl"
@@ -745,6 +1226,10 @@ export function BeyondPublicMenu({
           <div className="ep-lang-pill">
             <button
               type="button"
+              translate="no"
+              data-no-beyond-translate="true"
+              lang="en"
+              dir="ltr"
               className={
                 lang === "en"
                   ? "active"
@@ -759,6 +1244,10 @@ export function BeyondPublicMenu({
 
             <button
               type="button"
+              translate="no"
+              data-no-beyond-translate="true"
+              lang="he"
+              dir="rtl"
               className={
                 lang === "he"
                   ? "active"
@@ -958,7 +1447,9 @@ export function BeyondMenuStudio() {
     () => new URLSearchParams(location.search).get("site") || ""
   );
 
+  const [groups, setGroups] = useState([]);
   const [sections, setSections] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
   const [items, setItems] = useState([]);
   const [activeSectionId, setActiveSectionId] = useState("");
 
@@ -1001,7 +1492,31 @@ export function BeyondMenuStudio() {
 
   const [editingSectionId, setEditingSectionId] = useState("");
   const [openCategoryMenuId, setOpenCategoryMenuId] = useState("");
+
+  const [openSubcategoryMenuId, setOpenSubcategoryMenuId] =
+    useState("");
+
+  const [editingSubcategoryId, setEditingSubcategoryId] =
+    useState("");
+
+  const [subcategoryDraft, setSubcategoryDraft] =
+    useState({
+      name_en: "",
+      name_he: ""
+    });
+
+  const [showAddSubcategory, setShowAddSubcategory] =
+    useState(false);
+
+  const [subcatEn, setSubcatEn] = useState("");
+  const [subcatHe, setSubcatHe] = useState("");
   const [openHeaderMenu, setOpenHeaderMenu] = useState(false);
+
+  const [publishConfirmOpen, setPublishConfirmOpen] =
+    useState(false);
+
+  const [publishSaving, setPublishSaving] =
+    useState(false);
 
   const categoryScrollRef = useRef(null);
 
@@ -1050,6 +1565,7 @@ export function BeyondMenuStudio() {
   // BEYOND_CLOSE_MOBILE_MENUS_ON_LANGUAGE_CHANGE
   useEffect(() => {
     setOpenCategoryMenuId("");
+    setOpenSubcategoryMenuId("");
     setOpenItemMenuId("");
   }, [isHebrew]);
 
@@ -1205,58 +1721,413 @@ export function BeyondMenuStudio() {
     );
   };
 
-  const loadData = async (id) => {
-    if (!id) {
+  
+
+  /*
+    MENU STUDIO CANONICAL ITEM UI NORMALIZER
+
+    group_id is the ONLY hierarchy stored in the database.
+
+    Some existing approved Menu Studio JSX still expects
+    section_id / subcategory_id while rendering.
+
+    We derive those values in memory from menu_groups.
+    Nothing legacy is written back to Supabase.
+  */
+  const canonicalizeStudioItems = (
+    sourceItems = [],
+    sourceGroups = []
+  ) => {
+
+    const groupMap =
+      new Map(
+        sourceGroups.map(
+          group => [
+            group.id,
+            group
+          ]
+        )
+      );
+
+
+    const resolveRootGroup =
+      groupId => {
+
+        if (!groupId) {
+          return null;
+        }
+
+
+        let current =
+          groupMap.get(
+            groupId
+          );
+
+
+        const visited =
+          new Set();
+
+
+        while (
+          current?.parent_id
+        ) {
+
+          if (
+            visited.has(
+              current.id
+            )
+          ) {
+            return null;
+          }
+
+
+          visited.add(
+            current.id
+          );
+
+
+          current =
+            groupMap.get(
+              current.parent_id
+            );
+
+        }
+
+
+        return (
+          current ||
+          null
+        );
+      };
+
+
+    return (
+      sourceItems || []
+    ).map(
+      item => {
+
+        const ownGroup =
+          groupMap.get(
+            item.group_id
+          );
+
+
+        /*
+          If an item ever references an invalid group,
+          leave it untouched rather than inventing a
+          relationship.
+        */
+        if (!ownGroup) {
+          return item;
+        }
+
+
+        const rootGroup =
+          resolveRootGroup(
+            ownGroup.id
+          );
+
+
+        if (!rootGroup) {
+          return item;
+        }
+
+
+        /*
+          Directly attached to category:
+              NO subcategory.
+
+          Attached to child group:
+              that group is the subcategory.
+        */
+        const hasSubcategory =
+          ownGroup.id !==
+          rootGroup.id;
+
+
+        const categoryEn =
+          hasSubcategory
+            ? ownGroup.name_en || null
+            : null;
+
+
+        const categoryHe =
+          hasSubcategory
+            ? ownGroup.name_he || null
+            : null;
+
+
+        const legacyCategory =
+          hasSubcategory
+            ? (
+                categoryEn &&
+                categoryHe &&
+                categoryEn !==
+                  categoryHe
+
+                  ? `${categoryEn} · ${categoryHe}`
+
+                  : categoryEn ||
+                    categoryHe ||
+                    null
+              )
+            : null;
+
+
+        return {
+          ...item,
+
+          /*
+            UI-ONLY compatibility properties.
+          */
+          section_id:
+            rootGroup.id,
+
+          subcategory_id:
+            hasSubcategory
+              ? ownGroup.id
+              : null,
+
+          category_en:
+            categoryEn,
+
+          category_he:
+            categoryHe,
+
+          category:
+            legacyCategory
+        };
+
+      }
+    );
+  };
+
+
+const loadData = async (id) => {
+
+    if (
+      !supabase ||
+      !id
+    ) {
+
+      setGroups([]);
       setSections([]);
+      setSubcategories([]);
       setItems([]);
-      setActiveSectionId("");
+
       return;
     }
 
-    const [sectionResult, itemResult] = await Promise.all([
+
+    /*
+      MENU STUDIO CANONICAL READ MODEL
+
+      menu_groups:
+        parent_id = null
+          -> main category
+
+        parent_id = category id
+          -> subcategory
+
+      The UI keeps the existing sections/subcategories
+      variable names temporarily so NO styling or JSX
+      redesign is required.
+    */
+    const [
+      groupResult,
+      itemResult
+    ] = await Promise.all([
+
       supabase
-        .from("menu_sections")
+        .from("menu_groups")
         .select("*")
-        .eq("site_id", id)
-        .order("sort_order")
-        .order("created_at"),
+        .eq(
+          "site_id",
+          id
+        )
+        .order(
+          "sort_order"
+        )
+        .order(
+          "created_at"
+        ),
+
 
       supabase
         .from("menu_items")
         .select("*")
-        .eq("site_id", id)
-        .order("sort_order")
-        .order("created_at")
+        .eq(
+          "site_id",
+          id
+        )
+        .order(
+          "sort_order"
+        )
+        .order(
+          "created_at"
+        )
+
     ]);
 
-    if (sectionResult.error || itemResult.error) {
+
+    if (
+      groupResult.error ||
+      itemResult.error
+    ) {
+
       setMsg(
-        sectionResult.error?.message ||
-        itemResult.error?.message
+        groupResult.error?.message ||
+        itemResult.error?.message ||
+        "Could not load menu."
       );
+
       return;
     }
 
-    const nextSections = sectionResult.data || [];
-    const nextItems = itemResult.data || [];
 
-    setSections(nextSections);
-    setItems(nextItems);
+    const nextGroups =
+      groupResult.data || [];
 
-    setActiveSectionId(current =>
-      nextSections.some(s => s.id === current)
-        ? current
-        : nextSections[0]?.id || ""
+
+    /*
+      TOP-LEVEL MENU GROUPS
+
+      Adapt group_key -> section_key temporarily because
+      some existing Menu Studio logic still expects the
+      older property name.
+    */
+    const nextSections =
+      nextGroups
+        .filter(
+          group =>
+            !group.parent_id
+        )
+        .map(
+          group => ({
+            ...group,
+
+            section_key:
+              group.group_key ||
+              null
+          })
+        )
+        .sort(
+          (a, b) =>
+
+            Number(
+              a.sort_order || 0
+            ) -
+
+            Number(
+              b.sort_order || 0
+            )
+        );
+
+
+    const topLevelIds =
+      new Set(
+        nextSections.map(
+          group =>
+            group.id
+        )
+      );
+
+
+    /*
+      FIRST-LEVEL CHILDREN
+
+      Adapt parent_id -> section_id temporarily because
+      the approved Subcategory UI currently expects
+      subcategory.section_id.
+    */
+    const nextSubcategories =
+      nextGroups
+        .filter(
+          group =>
+
+            group.parent_id &&
+
+            topLevelIds.has(
+              group.parent_id
+            )
+        )
+        .map(
+          group => ({
+            ...group,
+
+            section_id:
+              group.parent_id
+          })
+        )
+        .sort(
+          (a, b) =>
+
+            Number(
+              a.sort_order || 0
+            ) -
+
+            Number(
+              b.sort_order || 0
+            )
+        );
+
+
+    const nextItems =
+      itemResult.data || [];
+
+
+    setGroups(
+      nextGroups
     );
 
-    setNewItem(v => ({
-      ...v,
-      section_id:
-        nextSections.some(s => s.id === v.section_id)
-          ? v.section_id
-          : nextSections[0]?.id || ""
-    }));
-  };
+
+    setSections(
+      nextSections
+    );
+
+
+    setSubcategories(
+      nextSubcategories
+    );
+
+
+    setItems(
+      canonicalizeStudioItems(
+        nextItems,
+        nextGroups
+      )
+    );
+
+
+    /*
+      Keep the selected category if it still exists.
+
+      Otherwise use the first top-level menu group.
+    */
+    setActiveSectionId(
+      current => {
+
+        if (
+          nextSections.some(
+            group =>
+              group.id ===
+              current
+          )
+        ) {
+          return current;
+        }
+
+
+        return (
+          nextSections[0]?.id ||
+          ""
+        );
+
+      }
+    );
+
+  }
+;
 
   useEffect(() => {
     if (user) loadSites();
@@ -1345,32 +2216,35 @@ export function BeyondMenuStudio() {
 
 
   // BEYOND_SAFE_PUBLISH_CONFIRM
-  const confirmPublishChange = async () => {
+  const confirmPublishChange = () => {
     if (!selected) return;
+
+    setPublishConfirmOpen(true);
+  };
+
+
+  const applyPublishChange = async () => {
+    if (
+      !selected ||
+      publishSaving
+    ) {
+      return;
+    }
 
     const willPublish =
       !selected.published;
 
-    const message =
-      willPublish
-        ? (
-            isHebrew
-              ? "האם אתה בטוח שברצונך לפרסם את התפריט? השינויים יהיו זמינים ללקוחות מיד."
-              : "Are you sure you want to publish this menu? Your changes will become available to customers immediately."
-          )
-        : (
-            isHebrew
-              ? "האם אתה בטוח שברצונך לבטל את פרסום התפריט? הלקוחות לא יוכלו לצפות בו עד שתפרסם אותו שוב."
-              : "Are you sure you want to unpublish this menu? Customers will not be able to view it until you publish it again."
-          );
+    setPublishSaving(true);
 
-    if (!window.confirm(message)) {
-      return;
+    try {
+      await updateSite({
+        published: willPublish
+      });
+
+      setPublishConfirmOpen(false);
+    } finally {
+      setPublishSaving(false);
     }
-
-    await updateSite({
-      published: willPublish
-    });
   };
 
 
@@ -1379,38 +2253,108 @@ export function BeyondMenuStudio() {
 
     if (!selected) return;
 
-    const cleanEn = secEn.trim();
-    const cleanHe = secHe.trim();
 
-    if (!cleanEn && !cleanHe) {
-      setMsg("Category name is required.");
+    const cleanEn =
+      secEn.trim();
+
+    const cleanHe =
+      secHe.trim();
+
+
+    if (
+      !cleanEn &&
+      !cleanHe
+    ) {
+
+      setMsg(
+        "Category name is required."
+      );
+
       return;
     }
 
-    const { data, error } = await supabase
-      .from("menu_sections")
+
+    const nextSortOrder =
+      sections.length
+        ? (
+            Math.max(
+              ...sections.map(
+                section =>
+                  Number(
+                    section.sort_order || 0
+                  )
+              )
+            ) + 1
+          )
+        : 0;
+
+
+    const {
+      data,
+      error
+    } = await supabase
+
+      .from("menu_groups")
+
       .insert({
-        site_id: selected.id,
-        name_en: cleanEn || cleanHe,
-        name_he: cleanHe || cleanEn,
-        visible: true,
-        sort_order: sections.length
+        site_id:
+          selected.id,
+
+        parent_id:
+          null,
+
+        name_en:
+          cleanEn || cleanHe,
+
+        name_he:
+          cleanHe || cleanEn,
+
+        group_key:
+          null,
+
+        visible:
+          true,
+
+        sort_order:
+          nextSortOrder
       })
+
       .select()
+
       .single();
 
+
     if (error) {
-      setMsg(error.message);
+
+      setMsg(
+        error.message
+      );
+
       return;
     }
+
 
     setSecEn("");
     setSecHe("");
-    setShowAddCategory(false);
 
-    await loadData(selected.id);
-    setActiveSectionId(data.id);
-    setMsg("Category added.");
+    setShowAddCategory(
+      false
+    );
+
+
+    await loadData(
+      selected.id
+    );
+
+
+    setActiveSectionId(
+      data.id
+    );
+
+
+    setMsg(
+      "Category added."
+    );
   };
 
   const startCategoryEdit = section => {
@@ -1423,7 +2367,6 @@ export function BeyondMenuStudio() {
   };
 
   const saveCategory = async () => {
-    if (!editingSectionId) return;
 
     const cleanEn =
       sectionDraft.name_en.trim();
@@ -1431,72 +2374,849 @@ export function BeyondMenuStudio() {
     const cleanHe =
       sectionDraft.name_he.trim();
 
-    if (!cleanEn && !cleanHe) {
-      setMsg("Category name is required.");
+
+    if (
+      !cleanEn &&
+      !cleanHe
+    ) {
+
+      setMsg(
+        "Category name is required."
+      );
+
       return;
     }
 
-    const { error } = await supabase
-      .from("menu_sections")
-      .update({
-        name_en:
-          cleanEn || cleanHe,
 
-        name_he:
-          cleanHe || cleanEn
-      })
-      .eq("id", editingSectionId);
+    const { error } =
+      await supabase
+
+        .from("menu_groups")
+
+        .update({
+          name_en:
+            cleanEn || cleanHe,
+
+          name_he:
+            cleanHe || cleanEn
+        })
+
+        .eq(
+          "id",
+          editingSectionId
+        );
+
 
     if (error) {
-      setMsg(error.message);
+
+      setMsg(
+        error.message
+      );
+
       return;
     }
 
-    setEditingSectionId("");
-    await loadData(selected.id);
-    setMsg("Category updated.");
+
+    setEditingSectionId(
+      ""
+    );
+
+
+    await loadData(
+      selected.id
+    );
+
+
+    setMsg(
+      "Category updated."
+    );
   };
 
   const toggleCategory = async section => {
-    const { error } = await supabase
-      .from("menu_sections")
-      .update({
-        visible: section.visible === false
-      })
-      .eq("id", section.id);
+
+    const { error } =
+      await supabase
+
+        .from("menu_groups")
+
+        .update({
+          visible:
+            section.visible === false
+        })
+
+        .eq(
+          "id",
+          section.id
+        );
+
 
     if (error) {
-      setMsg(error.message);
+
+      setMsg(
+        error.message
+      );
+
       return;
     }
 
-    await loadData(selected.id);
+
+    await loadData(
+      selected.id
+    );
   };
 
   const deleteCategory = async section => {
-    const categoryItems = items.filter(
-      item => item.section_id === section.id
-    );
 
-    const message = categoryItems.length
-      ? `Delete "${studioPrimaryName(section)}" and its ${categoryItems.length} item(s)?`
-      : `Delete "${studioPrimaryName(section)}"?`;
+    const descendantIds =
+      new Set([
+        section.id
+      ]);
 
-    if (!window.confirm(message)) return;
 
-    const { error } = await supabase
-      .from("menu_sections")
-      .delete()
-      .eq("id", section.id);
+    let foundMore =
+      true;
 
-    if (error) {
-      setMsg(error.message);
+
+    while (foundMore) {
+
+      foundMore =
+        false;
+
+
+      groups.forEach(
+        group => {
+
+          if (
+            group.parent_id &&
+            descendantIds.has(
+              group.parent_id
+            ) &&
+            !descendantIds.has(
+              group.id
+            )
+          ) {
+
+            descendantIds.add(
+              group.id
+            );
+
+            foundMore =
+              true;
+
+          }
+
+        }
+      );
+
+    }
+
+
+    const groupIds =
+      Array.from(
+        descendantIds
+      );
+
+
+    const categoryItems =
+      items.filter(
+        item =>
+          groupIds.includes(
+            item.group_id
+          )
+      );
+
+
+    const message =
+      categoryItems.length
+        ? (
+            `Delete "${studioPrimaryName(section)}" and its ${categoryItems.length} item(s)?`
+          )
+        : (
+            `Delete "${studioPrimaryName(section)}"?`
+          );
+
+
+    if (
+      !window.confirm(
+        message
+      )
+    ) {
       return;
     }
 
-    await loadData(selected.id);
-    setMsg("Category deleted.");
+
+    /*
+      Delete items first.
+
+      menu_items.group_id is NOT NULL, so no item may
+      become orphaned during hierarchy deletion.
+    */
+    if (
+      categoryItems.length
+    ) {
+
+      const itemResult =
+        await supabase
+
+          .from("menu_items")
+
+          .delete()
+
+          .in(
+            "group_id",
+            groupIds
+          );
+
+
+      if (
+        itemResult.error
+      ) {
+
+        setMsg(
+          itemResult.error.message
+        );
+
+        return;
+      }
+
+    }
+
+
+    /*
+      Child menu_groups are deleted automatically through
+      menu_groups.parent_id ON DELETE CASCADE.
+    */
+    const { error } =
+      await supabase
+
+        .from("menu_groups")
+
+        .delete()
+
+        .eq(
+          "id",
+          section.id
+        );
+
+
+    if (error) {
+
+      setMsg(
+        error.message
+      );
+
+      return;
+    }
+
+
+    await loadData(
+      selected.id
+    );
+
+
+    setMsg(
+      "Category deleted."
+    );
   };
+
+  const subcategoryLegacyValue = (
+    nameEn,
+    nameHe
+  ) => {
+    const en = String(nameEn || "").trim();
+    const he = String(nameHe || "").trim();
+
+    if (en && he && en !== he) {
+      return `${en} · ${he}`;
+    }
+
+    return en || he || null;
+  };
+
+
+  const startSubcategoryEdit =
+    subcategory => {
+
+      if (!subcategory) return;
+
+      setSubcategoryDraft({
+        name_en:
+          subcategory.name_en || "",
+
+        name_he:
+          subcategory.name_he || ""
+      });
+
+      setEditingSubcategoryId(
+        subcategory.id
+      );
+
+      setOpenSubcategoryMenuId("");
+      setShowAddSubcategory(false);
+    };
+
+
+  const saveSubcategory = async e => {
+    e.preventDefault();
+
+
+    if (
+      !selected ||
+      !editingSubcategoryId
+    ) {
+      return;
+    }
+
+
+    const cleanEn =
+      subcategoryDraft.name_en.trim();
+
+    const cleanHe =
+      subcategoryDraft.name_he.trim();
+
+
+    if (
+      !cleanEn &&
+      !cleanHe
+    ) {
+
+      setMsg(
+        isHebrew
+          ? "נדרש שם לתת־הקטגוריה."
+          : "Subcategory name is required."
+      );
+
+      return;
+    }
+
+
+    const finalEn =
+      cleanEn ||
+      cleanHe;
+
+    const finalHe =
+      cleanHe ||
+      cleanEn;
+
+
+    const { error } =
+      await supabase
+
+        .from("menu_groups")
+
+        .update({
+          name_en:
+            finalEn,
+
+          name_he:
+            finalHe
+        })
+
+        .eq(
+          "id",
+          editingSubcategoryId
+        );
+
+
+    if (error) {
+
+      setMsg(
+        error.message
+      );
+
+      return;
+    }
+
+
+    setOpenSubcategoryMenuId(
+      ""
+    );
+
+    setEditingSubcategoryId(
+      ""
+    );
+
+
+    await loadData(
+      selected.id
+    );
+
+
+    setMsg(
+      isHebrew
+        ? "תת־הקטגוריה עודכנה."
+        : "Subcategory updated."
+    );
+  };
+
+
+  const toggleSubcategoryVisibility =
+    async subcategory => {
+
+      if (
+        !selected ||
+        !subcategory
+      ) {
+        return;
+      }
+
+
+      const { error } =
+        await supabase
+
+          .from("menu_groups")
+
+          .update({
+            visible:
+              subcategory.visible === false
+          })
+
+          .eq(
+            "id",
+            subcategory.id
+          );
+
+
+      if (error) {
+
+        setMsg(
+          error.message
+        );
+
+        return;
+      }
+
+
+      setOpenSubcategoryMenuId(
+        ""
+      );
+
+
+      await loadData(
+        selected.id
+      );
+
+
+      setMsg(
+        subcategory.visible === false
+          ? (
+              isHebrew
+                ? "תת־הקטגוריה מוצגת."
+                : "Subcategory shown."
+            )
+          : (
+              isHebrew
+                ? "תת־הקטגוריה הוסתרה."
+                : "Subcategory hidden."
+            )
+      );
+    };
+
+
+  const moveSubcategory =
+    async (
+      subcategory,
+      direction
+    ) => {
+
+      if (
+        !selected ||
+        !subcategory
+      ) {
+        return;
+      }
+
+
+      const currentIndex =
+        activeSubcategories.findIndex(
+          value =>
+            value.id ===
+            subcategory.id
+        );
+
+
+      if (
+        currentIndex === -1
+      ) {
+        return;
+      }
+
+
+      const targetIndex =
+        direction === "up"
+          ? currentIndex - 1
+          : currentIndex + 1;
+
+
+      if (
+        targetIndex < 0 ||
+        targetIndex >=
+          activeSubcategories.length
+      ) {
+        return;
+      }
+
+
+      const next =
+        [
+          ...activeSubcategories
+        ];
+
+
+      const [moving] =
+        next.splice(
+          currentIndex,
+          1
+        );
+
+
+      next.splice(
+        targetIndex,
+        0,
+        moving
+      );
+
+
+      for (
+        let index = 0;
+        index < next.length;
+        index += 1
+      ) {
+
+        const result =
+          await supabase
+
+            .from("menu_groups")
+
+            .update({
+              sort_order:
+                (index + 1) * 10
+            })
+
+            .eq(
+              "id",
+              next[index].id
+            );
+
+
+        if (
+          result.error
+        ) {
+
+          setMsg(
+            result.error.message
+          );
+
+          return;
+        }
+
+      }
+
+
+      setOpenSubcategoryMenuId(
+        ""
+      );
+
+
+      await loadData(
+        selected.id
+      );
+    };
+
+
+  const deleteSubcategory =
+    async subcategory => {
+
+      if (
+        !selected ||
+        !subcategory
+      ) {
+        return;
+      }
+
+
+      const parentGroupId =
+        subcategory.parent_id ||
+        subcategory.section_id;
+
+
+      if (
+        !parentGroupId
+      ) {
+
+        setMsg(
+          "Parent group was not found."
+        );
+
+        return;
+      }
+
+
+      const confirmed =
+        window.confirm(
+          isHebrew
+            ? `למחוק את תת־הקטגוריה "${studioSubcategoryPrimaryName(subcategory)}"? הפריטים שבתוכה לא יימחקו.`
+            : `Delete "${studioSubcategoryPrimaryName(subcategory)}"? The items inside it will not be deleted.`
+        );
+
+
+      if (
+        !confirmed
+      ) {
+        return;
+      }
+
+
+      /*
+        Collect this group + all possible nested children.
+      */
+      const descendantIds =
+        new Set([
+          subcategory.id
+        ]);
+
+
+      let foundMore =
+        true;
+
+
+      while (
+        foundMore
+      ) {
+
+        foundMore =
+          false;
+
+
+        groups.forEach(
+          group => {
+
+            if (
+              group.parent_id &&
+              descendantIds.has(
+                group.parent_id
+              ) &&
+              !descendantIds.has(
+                group.id
+              )
+            ) {
+
+              descendantIds.add(
+                group.id
+              );
+
+              foundMore =
+                true;
+
+            }
+
+          }
+        );
+
+      }
+
+
+      const ids =
+        Array.from(
+          descendantIds
+        );
+
+
+      /*
+        Preserve every item by moving it to the parent
+        generic group.
+      */
+      const itemResult =
+        await supabase
+
+          .from("menu_items")
+
+          .update({
+            group_id:
+              parentGroupId
+          })
+
+          .in(
+            "group_id",
+            ids
+          );
+
+
+      if (
+        itemResult.error
+      ) {
+
+        setMsg(
+          itemResult.error.message
+        );
+
+        return;
+      }
+
+
+      const { error } =
+        await supabase
+
+          .from("menu_groups")
+
+          .delete()
+
+          .eq(
+            "id",
+            subcategory.id
+          );
+
+
+      if (error) {
+
+        setMsg(
+          error.message
+        );
+
+        return;
+      }
+
+
+      setOpenSubcategoryMenuId(
+        ""
+      );
+
+      setEditingSubcategoryId(
+        ""
+      );
+
+
+      await loadData(
+        selected.id
+      );
+
+
+      setMsg(
+        isHebrew
+          ? "תת־הקטגוריה נמחקה."
+          : "Subcategory deleted."
+      );
+    };
+
+
+  const addSubcategory = async e => {
+    e.preventDefault();
+
+
+    if (
+      !selected ||
+      !activeSectionId
+    ) {
+      return;
+    }
+
+
+    const cleanEn =
+      subcatEn.trim();
+
+    const cleanHe =
+      subcatHe.trim();
+
+
+    if (
+      !cleanEn &&
+      !cleanHe
+    ) {
+
+      setMsg(
+        isHebrew
+          ? "נדרש שם לתת־הקטגוריה."
+          : "Subcategory name is required."
+      );
+
+      return;
+    }
+
+
+    const finalEn =
+      cleanEn ||
+      cleanHe;
+
+    const finalHe =
+      cleanHe ||
+      cleanEn;
+
+
+    const nextSortOrder =
+      activeSubcategories.length
+        ? (
+            Math.max(
+              ...activeSubcategories.map(
+                subcategory =>
+                  Number(
+                    subcategory.sort_order ||
+                    0
+                  )
+              )
+            ) + 10
+          )
+        : 10;
+
+
+    const { error } =
+      await supabase
+
+        .from("menu_groups")
+
+        .insert({
+          site_id:
+            selected.id,
+
+          parent_id:
+            activeSectionId,
+
+          name_en:
+            finalEn,
+
+          name_he:
+            finalHe,
+
+          group_key:
+            null,
+
+          visible:
+            true,
+
+          sort_order:
+            nextSortOrder
+        });
+
+
+    if (error) {
+
+      setMsg(
+        error.message
+      );
+
+      return;
+    }
+
+
+    setSubcatEn("");
+    setSubcatHe("");
+
+    setShowAddSubcategory(
+      false
+    );
+
+
+    await loadData(
+      selected.id
+    );
+
+
+    setMsg(
+      isHebrew
+        ? "תת־הקטגוריה נוספה."
+        : "Subcategory added."
+    );
+  };
+
 
   const openAddItem = () => {
     setNewItem({
@@ -1522,136 +3242,329 @@ export function BeyondMenuStudio() {
   const addItem = async e => {
     e.preventDefault();
 
+
     if (
       !selected ||
       !newItem.section_id ||
       !newItem.type ||
       !newItem.name_en.trim()
-    ) return;
-
-    const sectionItems = items.filter(
-      i => i.section_id === newItem.section_id
-    );
-
-    const { error } = await supabase
-      .from("menu_items")
-      .insert({
-        site_id: selected.id,
-        section_id: newItem.section_id,
-
-        type: newItem.type === "wine"
-          ? "wine"
-          : "item",
-
-        name_en: newItem.name_en.trim(),
-
-        name_he:
-          newItem.name_he.trim() ||
-          newItem.name_en.trim(),
-
-        category_en:
-          newItem.category_en.trim() || null,
-
-        category_he:
-          newItem.category_he.trim() || null,
-
-        category:
-          (
-            newItem.category_en.trim() &&
-            newItem.category_he.trim()
-          )
-            ? `${newItem.category_en.trim()} · ${newItem.category_he.trim()}`
-            : newItem.category_en.trim() ||
-              newItem.category_he.trim() ||
-              null,
-
-        description_en:
-          newItem.description_en.trim() || null,
-
-        description_he:
-          newItem.description_he.trim() || null,
-
-        description:
-          newItem.description_en.trim() ||
-          newItem.description_he.trim() ||
-          newItem.description.trim() ||
-          null,
-
-        price:
-          newItem.type === "wine"
-            ? null
-            : newItem.price.trim() || null,
-
-        origin_en:
-          newItem.type === "wine"
-            ? newItem.origin_en.trim() || null
-            : null,
-
-        origin_he:
-          newItem.type === "wine"
-            ? newItem.origin_he.trim() || null
-            : null,
-
-        origin:
-          newItem.type === "wine"
-            ? (
-                newItem.origin_en.trim() &&
-                newItem.origin_he.trim()
-              )
-                ? `${newItem.origin_en.trim()} · ${newItem.origin_he.trim()}`
-                : newItem.origin_en.trim() ||
-                  newItem.origin_he.trim() ||
-                  null
-            : null,
-
-        wine_glass:
-          newItem.type === "wine"
-            ? newItem.wine_glass.trim() || null
-            : null,
-
-        wine_bottle:
-          newItem.type === "wine"
-            ? newItem.wine_bottle.trim() || null
-            : null,
-
-        visible: true,
-        sort_order: sectionItems.length
-      });
-
-    if (error) {
-      setMsg(error.message);
+    ) {
       return;
     }
 
-    setActiveSectionId(newItem.section_id);
-    setShowAddItem(false);
 
-    await loadData(selected.id);
-    setMsg("Item added.");
+    const cleanSubcategoryEn =
+      newItem.category_en.trim();
+
+    const cleanSubcategoryHe =
+      newItem.category_he.trim();
+
+
+    const selectedSubcategory =
+      (
+        cleanSubcategoryEn ||
+        cleanSubcategoryHe
+      )
+        ? activeSubcategories.find(
+            subcategory => {
+
+              const subEn =
+                String(
+                  subcategory.name_en ||
+                  ""
+                )
+                  .trim()
+                  .toLowerCase();
+
+
+              const subHe =
+                String(
+                  subcategory.name_he ||
+                  ""
+                )
+                  .trim()
+                  .toLowerCase();
+
+
+              const wantedEn =
+                cleanSubcategoryEn
+                  .toLowerCase();
+
+
+              const wantedHe =
+                cleanSubcategoryHe
+                  .toLowerCase();
+
+
+              return (
+                (
+                  !wantedEn ||
+                  subEn === wantedEn
+                )
+                &&
+                (
+                  !wantedHe ||
+                  subHe === wantedHe
+                )
+              );
+
+            }
+          )
+        : null;
+
+
+    if (
+      (
+        cleanSubcategoryEn ||
+        cleanSubcategoryHe
+      )
+      &&
+      !selectedSubcategory
+    ) {
+
+      setMsg(
+        isHebrew
+          ? "יש לבחור תת־קטגוריה קיימת."
+          : "Please choose an existing subcategory."
+      );
+
+      return;
+    }
+
+
+    /*
+      No Subcategory:
+        group_id = top-level category.
+
+      With Subcategory:
+        group_id = child menu_group.
+    */
+    const targetGroupId =
+      selectedSubcategory?.id ||
+      newItem.section_id;
+
+
+    const groupItems =
+      items.filter(
+        item =>
+          item.group_id ===
+          targetGroupId
+      );
+
+
+    const { error } =
+      await supabase
+
+        .from("menu_items")
+
+        .insert({
+          site_id:
+            selected.id,
+
+          group_id:
+            targetGroupId,
+
+          type:
+            newItem.type === "wine"
+              ? "wine"
+              : "item",
+
+          name_en:
+            newItem.name_en.trim(),
+
+          name_he:
+            newItem.name_he.trim() ||
+            newItem.name_en.trim(),
+
+          description_en:
+            newItem.description_en.trim() ||
+            null,
+
+          description_he:
+            newItem.description_he.trim() ||
+            null,
+
+          description:
+            newItem.description_en.trim() ||
+            newItem.description_he.trim() ||
+            newItem.description.trim() ||
+            null,
+
+          price:
+            newItem.type === "wine"
+              ? null
+              : newItem.price.trim() ||
+                null,
+
+          origin_en:
+            newItem.type === "wine"
+              ? (
+                  newItem.origin_en.trim() ||
+                  null
+                )
+              : null,
+
+          origin_he:
+            newItem.type === "wine"
+              ? (
+                  newItem.origin_he.trim() ||
+                  null
+                )
+              : null,
+
+          origin:
+            newItem.type === "wine"
+              ? (
+                  (
+                    newItem.origin_en.trim() &&
+                    newItem.origin_he.trim()
+                  )
+                    ? `${newItem.origin_en.trim()} · ${newItem.origin_he.trim()}`
+                    : newItem.origin_en.trim() ||
+                      newItem.origin_he.trim() ||
+                      null
+                )
+              : null,
+
+          wine_glass:
+            newItem.type === "wine"
+              ? (
+                  newItem.wine_glass.trim() ||
+                  null
+                )
+              : null,
+
+          wine_bottle:
+            newItem.type === "wine"
+              ? (
+                  newItem.wine_bottle.trim() ||
+                  null
+                )
+              : null,
+
+          visible:
+            true,
+
+          sort_order:
+            groupItems.length
+        });
+
+
+    if (error) {
+
+      setMsg(
+        error.message
+      );
+
+      return;
+    }
+
+
+    setActiveSectionId(
+      newItem.section_id
+    );
+
+    setShowAddItem(
+      false
+    );
+
+
+    await loadData(
+      selected.id
+    );
+
+
+    setMsg(
+      "Item added."
+    );
   };
 
   const startItemEdit = menuItem => {
-    setEditingItemId(menuItem.id);
+
+    setEditingItemId(
+      menuItem.id
+    );
+
+
+    const itemGroup =
+      groups.find(
+        group =>
+          group.id ===
+          menuItem.group_id
+      );
+
+
+    let rootGroup =
+      itemGroup;
+
+
+    const visited =
+      new Set();
+
+
+    while (
+      rootGroup?.parent_id
+    ) {
+
+      if (
+        visited.has(
+          rootGroup.id
+        )
+      ) {
+        break;
+      }
+
+
+      visited.add(
+        rootGroup.id
+      );
+
+
+      rootGroup =
+        groups.find(
+          group =>
+            group.id ===
+            rootGroup.parent_id
+        );
+
+    }
+
+
+    const nestedItemGroup =
+      itemGroup?.parent_id
+        ? itemGroup
+        : null;
+
 
     setItemDraft({
-      section_id: menuItem.section_id || "",
+      section_id:
+        rootGroup?.id ||
+        "",
 
       type:
         menuItem.type === "wine"
           ? "wine"
           : "item",
 
-      name_en: menuItem.name_en || "",
-      name_he: menuItem.name_he || "",
+      name_en:
+        menuItem.name_en ||
+        "",
+
+      name_he:
+        menuItem.name_he ||
+        "",
 
       category_en:
-        menuItem.category_en || "",
+        nestedItemGroup?.name_en ||
+        "",
 
       category_he:
-        menuItem.category_he || "",
+        nestedItemGroup?.name_he ||
+        "",
 
       description:
-        menuItem.description || "",
+        menuItem.description ||
+        "",
 
       description_en:
         menuItem.description_en ||
@@ -1659,126 +3572,256 @@ export function BeyondMenuStudio() {
         "",
 
       description_he:
-        menuItem.description_he || "",
+        menuItem.description_he ||
+        "",
 
       price:
-        menuItem.price || "",
+        menuItem.price ||
+        "",
 
       origin_en:
-        menuItem.origin_en || "",
+        menuItem.origin_en ||
+        "",
 
       origin_he:
-        menuItem.origin_he || "",
+        menuItem.origin_he ||
+        "",
 
       wine_glass:
-        menuItem.wine_glass || "",
+        menuItem.wine_glass ||
+        "",
 
       wine_bottle:
-        menuItem.wine_bottle || ""
+        menuItem.wine_bottle ||
+        ""
     });
   };
 
   const saveItem = async () => {
+
     if (
       !editingItemId ||
       !itemDraft.section_id ||
       !itemDraft.name_en.trim()
-    ) return;
-
-    const { error } = await supabase
-      .from("menu_items")
-      .update({
-        section_id: itemDraft.section_id,
-
-        type:
-          itemDraft.type === "wine"
-            ? "wine"
-            : "item",
-
-        name_en:
-          itemDraft.name_en.trim(),
-
-        name_he:
-          itemDraft.name_he.trim() ||
-          itemDraft.name_en.trim(),
-
-        category_en:
-          itemDraft.category_en.trim() || null,
-
-        category_he:
-          itemDraft.category_he.trim() || null,
-
-        category:
-          (
-            itemDraft.category_en.trim() &&
-            itemDraft.category_he.trim()
-          )
-            ? `${itemDraft.category_en.trim()} · ${itemDraft.category_he.trim()}`
-            : itemDraft.category_en.trim() ||
-              itemDraft.category_he.trim() ||
-              null,
-
-        description_en:
-          itemDraft.description_en.trim() || null,
-
-        description_he:
-          itemDraft.description_he.trim() || null,
-
-        description:
-          itemDraft.description_en.trim() ||
-          itemDraft.description_he.trim() ||
-          itemDraft.description.trim() ||
-          null,
-
-        price:
-          itemDraft.type === "wine"
-            ? null
-            : itemDraft.price.trim() || null,
-
-        origin_en:
-          itemDraft.type === "wine"
-            ? itemDraft.origin_en.trim() || null
-            : null,
-
-        origin_he:
-          itemDraft.type === "wine"
-            ? itemDraft.origin_he.trim() || null
-            : null,
-
-        origin:
-          itemDraft.type === "wine"
-            ? (
-                itemDraft.origin_en.trim() &&
-                itemDraft.origin_he.trim()
-              )
-                ? `${itemDraft.origin_en.trim()} · ${itemDraft.origin_he.trim()}`
-                : itemDraft.origin_en.trim() ||
-                  itemDraft.origin_he.trim() ||
-                  null
-            : null,
-
-        wine_glass:
-          itemDraft.type === "wine"
-            ? itemDraft.wine_glass.trim() || null
-            : null,
-
-        wine_bottle:
-          itemDraft.type === "wine"
-            ? itemDraft.wine_bottle.trim() || null
-            : null
-      })
-      .eq("id", editingItemId);
-
-    if (error) {
-      setMsg(error.message);
+    ) {
       return;
     }
 
-    setEditingItemId("");
-    setActiveSectionId(itemDraft.section_id);
 
-    await loadData(selected.id);
-    setMsg("Item updated.");
+    const cleanSubcategoryEn =
+      itemDraft.category_en.trim();
+
+    const cleanSubcategoryHe =
+      itemDraft.category_he.trim();
+
+
+    const draftSubcategories =
+      subcategories.filter(
+        subcategory =>
+          subcategory.parent_id ===
+          itemDraft.section_id
+      );
+
+
+    const selectedSubcategory =
+      (
+        cleanSubcategoryEn ||
+        cleanSubcategoryHe
+      )
+        ? draftSubcategories.find(
+            subcategory => {
+
+              const subEn =
+                String(
+                  subcategory.name_en ||
+                  ""
+                )
+                  .trim()
+                  .toLowerCase();
+
+
+              const subHe =
+                String(
+                  subcategory.name_he ||
+                  ""
+                )
+                  .trim()
+                  .toLowerCase();
+
+
+              const wantedEn =
+                cleanSubcategoryEn
+                  .toLowerCase();
+
+
+              const wantedHe =
+                cleanSubcategoryHe
+                  .toLowerCase();
+
+
+              return (
+                (
+                  !wantedEn ||
+                  subEn === wantedEn
+                )
+                &&
+                (
+                  !wantedHe ||
+                  subHe === wantedHe
+                )
+              );
+
+            }
+          )
+        : null;
+
+
+    if (
+      (
+        cleanSubcategoryEn ||
+        cleanSubcategoryHe
+      )
+      &&
+      !selectedSubcategory
+    ) {
+
+      setMsg(
+        isHebrew
+          ? "יש לבחור תת־קטגוריה קיימת."
+          : "Please choose an existing subcategory."
+      );
+
+      return;
+    }
+
+
+    const targetGroupId =
+      selectedSubcategory?.id ||
+      itemDraft.section_id;
+
+
+    const { error } =
+      await supabase
+
+        .from("menu_items")
+
+        .update({
+          group_id:
+            targetGroupId,
+
+          type:
+            itemDraft.type === "wine"
+              ? "wine"
+              : "item",
+
+          name_en:
+            itemDraft.name_en.trim(),
+
+          name_he:
+            itemDraft.name_he.trim() ||
+            itemDraft.name_en.trim(),
+
+          description_en:
+            itemDraft.description_en.trim() ||
+            null,
+
+          description_he:
+            itemDraft.description_he.trim() ||
+            null,
+
+          description:
+            itemDraft.description_en.trim() ||
+            itemDraft.description_he.trim() ||
+            itemDraft.description.trim() ||
+            null,
+
+          price:
+            itemDraft.type === "wine"
+              ? null
+              : itemDraft.price.trim() ||
+                null,
+
+          origin_en:
+            itemDraft.type === "wine"
+              ? (
+                  itemDraft.origin_en.trim() ||
+                  null
+                )
+              : null,
+
+          origin_he:
+            itemDraft.type === "wine"
+              ? (
+                  itemDraft.origin_he.trim() ||
+                  null
+                )
+              : null,
+
+          origin:
+            itemDraft.type === "wine"
+              ? (
+                  (
+                    itemDraft.origin_en.trim() &&
+                    itemDraft.origin_he.trim()
+                  )
+                    ? `${itemDraft.origin_en.trim()} · ${itemDraft.origin_he.trim()}`
+                    : itemDraft.origin_en.trim() ||
+                      itemDraft.origin_he.trim() ||
+                      null
+                )
+              : null,
+
+          wine_glass:
+            itemDraft.type === "wine"
+              ? (
+                  itemDraft.wine_glass.trim() ||
+                  null
+                )
+              : null,
+
+          wine_bottle:
+            itemDraft.type === "wine"
+              ? (
+                  itemDraft.wine_bottle.trim() ||
+                  null
+                )
+              : null
+        })
+
+        .eq(
+          "id",
+          editingItemId
+        );
+
+
+    if (error) {
+
+      setMsg(
+        error.message
+      );
+
+      return;
+    }
+
+
+    setEditingItemId(
+      ""
+    );
+
+
+    setActiveSectionId(
+      itemDraft.section_id
+    );
+
+
+    await loadData(
+      selected.id
+    );
+
+
+    setMsg(
+      "Item updated."
+    );
   };
 
   const toggleItem = async menuItem => {
@@ -1814,100 +3857,263 @@ export function BeyondMenuStudio() {
     setMsg("Item deleted.");
   };
 
-  const moveCategory = async (sectionId, direction) => {
-    const index = sections.findIndex(section => section.id === sectionId);
-    const targetIndex = index + direction;
+  const moveCategory =
+    async (
+      sectionId,
+      direction
+    ) => {
 
-    if (index < 0 || targetIndex < 0 || targetIndex >= sections.length) return;
+      const index =
+        sections.findIndex(
+          section =>
+            section.id ===
+            sectionId
+        );
 
-    const reordered = [...sections];
-    [reordered[index], reordered[targetIndex]] = [
-      reordered[targetIndex],
-      reordered[index]
-    ];
 
-    const normalized = reordered.map((section, sort_order) => ({
-      ...section,
-      sort_order
-    }));
+      const targetIndex =
+        index +
+        direction;
 
-    setSections(normalized);
 
-    const results = await Promise.all(
-      normalized.map(section =>
-        supabase
-          .from("menu_sections")
-          .update({ sort_order: section.sort_order })
-          .eq("id", section.id)
-      )
-    );
+      if (
+        index < 0 ||
+        targetIndex < 0 ||
+        targetIndex >=
+          sections.length
+      ) {
+        return;
+      }
 
-    const failed = results.find(result => result.error);
 
-    if (failed?.error) {
-      setMsg(failed.error.message);
-      await loadData(selected.id);
-      return;
-    }
+      const reordered =
+        [
+          ...sections
+        ];
 
-    setMsg("Category order updated.");
-  };
 
-  const moveItem = async (itemId, direction) => {
-    const categoryItems = items
-      .filter(item => item.section_id === activeSectionId)
-      .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+      [
+        reordered[index],
+        reordered[targetIndex]
+      ] = [
+        reordered[targetIndex],
+        reordered[index]
+      ];
 
-    const index = categoryItems.findIndex(item => item.id === itemId);
-    const targetIndex = index + direction;
 
-    if (
-      index < 0 ||
-      targetIndex < 0 ||
-      targetIndex >= categoryItems.length
-    ) return;
+      const normalized =
+        reordered.map(
+          (
+            section,
+            sort_order
+          ) => ({
+            ...section,
+            sort_order
+          })
+        );
 
-    const reordered = [...categoryItems];
 
-    [reordered[index], reordered[targetIndex]] = [
-      reordered[targetIndex],
-      reordered[index]
-    ];
-
-    const normalized = reordered.map((item, sort_order) => ({
-      ...item,
-      sort_order
-    }));
-
-    setItems(current => {
-      const replacements = new Map(
-        normalized.map(item => [item.id, item])
+      setSections(
+        normalized
       );
 
-      return current.map(item =>
-        replacements.get(item.id) || item
+
+      const results =
+        await Promise.all(
+
+          normalized.map(
+            section =>
+              supabase
+
+                .from("menu_groups")
+
+                .update({
+                  sort_order:
+                    section.sort_order
+                })
+
+                .eq(
+                  "id",
+                  section.id
+                )
+          )
+
+        );
+
+
+      const failed =
+        results.find(
+          result =>
+            result.error
+        );
+
+
+      if (
+        failed?.error
+      ) {
+
+        setMsg(
+          failed.error.message
+        );
+
+
+        await loadData(
+          selected.id
+        );
+
+
+        return;
+      }
+
+
+      setMsg(
+        "Category order updated."
       );
-    });
+    };
 
-    const results = await Promise.all(
-      normalized.map(item =>
-        supabase
-          .from("menu_items")
-          .update({ sort_order: item.sort_order })
-          .eq("id", item.id)
-      )
-    );
+  const moveItem =
+    async (
+      itemId,
+      direction
+    ) => {
 
-    const failed = results.find(result => result.error);
+      const movingItem =
+        items.find(
+          item =>
+            item.id ===
+            itemId
+        );
 
-    if (failed?.error) {
-      setMsg(failed.error.message);
-      await loadData(selected.id);
-      return;
-    }
 
-    setMsg("Item order updated.");
-  };
+      if (
+        !movingItem?.group_id
+      ) {
+        return;
+      }
+
+
+      const groupItems =
+        items
+
+          .filter(
+            item =>
+              item.group_id ===
+              movingItem.group_id
+          )
+
+          .sort(
+            (a, b) =>
+              Number(
+                a.sort_order || 0
+              ) -
+              Number(
+                b.sort_order || 0
+              )
+          );
+
+
+      const index =
+        groupItems.findIndex(
+          item =>
+            item.id ===
+            itemId
+        );
+
+
+      const targetIndex =
+        index +
+        direction;
+
+
+      if (
+        index < 0 ||
+        targetIndex < 0 ||
+        targetIndex >=
+          groupItems.length
+      ) {
+        return;
+      }
+
+
+      const reordered =
+        [
+          ...groupItems
+        ];
+
+
+      [
+        reordered[index],
+        reordered[targetIndex]
+      ] = [
+        reordered[targetIndex],
+        reordered[index]
+      ];
+
+
+      const normalized =
+        reordered.map(
+          (
+            item,
+            sort_order
+          ) => ({
+            ...item,
+            sort_order
+          })
+        );
+
+
+      const results =
+        await Promise.all(
+
+          normalized.map(
+            item =>
+              supabase
+
+                .from("menu_items")
+
+                .update({
+                  sort_order:
+                    item.sort_order
+                })
+
+                .eq(
+                  "id",
+                  item.id
+                )
+          )
+
+        );
+
+
+      const failed =
+        results.find(
+          result =>
+            result.error
+        );
+
+
+      if (
+        failed?.error
+      ) {
+
+        setMsg(
+          failed.error.message
+        );
+
+
+        await loadData(
+          selected.id
+        );
+
+
+        return;
+      }
+
+
+      await loadData(
+        selected.id
+      );
+    };
 
   const uploadRestaurantLogo = async file => {
     if (
@@ -2078,9 +4284,563 @@ export function BeyondMenuStudio() {
     section => section.id === activeSectionId
   );
 
-  const activeItems = items.filter(
-    item => item.section_id === activeSectionId
-  );
+  const activeSubcategories =
+    subcategories
+      .filter(
+        subcategory =>
+          subcategory.section_id ===
+          activeSectionId
+      )
+      .sort(
+        (a, b) =>
+          Number(a.sort_order || 0) -
+          Number(b.sort_order || 0)
+      );
+
+
+  const studioSubcategoryPrimaryName =
+    subcategory => {
+
+      if (!subcategory) return "";
+
+      return isHebrew
+        ? (
+            subcategory.name_he ||
+            subcategory.name_en ||
+            ""
+          )
+        : (
+            subcategory.name_en ||
+            subcategory.name_he ||
+            ""
+          );
+    };
+
+
+  const studioSubcategorySecondaryName =
+    subcategory => {
+
+      if (!subcategory) return "";
+
+      const primary =
+        studioSubcategoryPrimaryName(
+          subcategory
+        );
+
+      const secondary =
+        isHebrew
+          ? subcategory.name_en
+          : subcategory.name_he;
+
+      return (
+        secondary &&
+        secondary !== primary
+      )
+        ? secondary
+        : "";
+    };
+
+
+  const renderStudioSubcategoryHeading = (
+    subcategory,
+    itemCount = 0
+  ) => {
+
+    if (!subcategory) return null;
+
+    const primary =
+      studioSubcategoryPrimaryName(
+        subcategory
+      );
+
+    const secondary =
+      studioSubcategorySecondaryName(
+        subcategory
+      );
+
+    const index =
+      activeSubcategories.findIndex(
+        value =>
+          value.id ===
+          subcategory.id
+      );
+
+    return (
+      <>
+
+        <div
+          className={`bm-owner-subcategory-heading ${
+            subcategory.visible === false
+              ? "hidden"
+              : ""
+          }`}
+        >
+
+          <div className="bm-owner-subcategory-copy">
+
+            <strong>
+              {primary}
+            </strong>
+
+            {secondary ? (
+              <span
+                dir={
+                  isHebrew
+                    ? "ltr"
+                    : "rtl"
+                }
+              >
+                {secondary}
+              </span>
+            ) : null}
+
+          </div>
+
+
+          <div className="bm-owner-subcategory-heading-actions">
+
+            <em>
+              {itemCount}{" "}
+              {isHebrew
+                ? "פריטים"
+                : itemCount === 1
+                  ? "item"
+                  : "items"}
+            </em>
+
+
+            <button
+              type="button"
+              className="bm-owner-item-more"
+              aria-label={
+                isHebrew
+                  ? "אפשרויות תת־קטגוריה"
+                  : "Subcategory options"
+              }
+              aria-expanded={
+                openSubcategoryMenuId ===
+                subcategory.id
+              }
+              onClick={() =>
+                setOpenSubcategoryMenuId(
+                  current =>
+                    current ===
+                    subcategory.id
+                      ? ""
+                      : subcategory.id
+                )
+              }
+            >
+              •••
+            </button>
+
+          </div>
+
+        </div>
+
+
+        {openSubcategoryMenuId ===
+          subcategory.id &&
+        studioPortalTarget ? (
+          createPortal(
+            <>
+
+              <button
+                type="button"
+                className="bm-owner-item-sheet-backdrop"
+                aria-label={
+                  isHebrew
+                    ? "סגור"
+                    : "Close"
+                }
+                onClick={() =>
+                  setOpenSubcategoryMenuId("")
+                }
+              />
+
+
+              <div
+                className="bm-owner-item-sheet"
+                role="dialog"
+                aria-modal="true"
+              >
+
+                <div className="bm-owner-item-sheet-handle" />
+
+
+                <div className="bm-owner-item-sheet-head">
+
+                  <div>
+                    <strong>
+                      {primary}
+                    </strong>
+
+                    {secondary ? (
+                      <span>
+                        {secondary}
+                      </span>
+                    ) : null}
+                  </div>
+
+                  <b>
+                    {itemCount}{" "}
+                    {isHebrew
+                      ? "פריטים"
+                      : itemCount === 1
+                        ? "item"
+                        : "items"}
+                  </b>
+
+                </div>
+
+
+                <div className="bm-owner-item-sheet-actions">
+
+                  <button
+                    type="button"
+                    className="primary"
+                    onClick={() => {
+                      setOpenSubcategoryMenuId("");
+
+                      startSubcategoryEdit(
+                        subcategory
+                      );
+                    }}
+                  >
+                    <span>
+                      ✎
+                    </span>
+
+                    {isHebrew
+                      ? "עריכת תת־הקטגוריה"
+                      : "Edit subcategory"}
+                  </button>
+
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOpenSubcategoryMenuId("");
+
+                      toggleSubcategoryVisibility(
+                        subcategory
+                      );
+                    }}
+                  >
+                    <span>
+                      {subcategory.visible === false
+                        ? "◉"
+                        : "○"}
+                    </span>
+
+                    {subcategory.visible === false
+                      ? (
+                          isHebrew
+                            ? "הצג בתפריט"
+                            : "Show in menu"
+                        )
+                      : (
+                          isHebrew
+                            ? "הסתר מהתפריט"
+                            : "Hide from menu"
+                        )}
+                  </button>
+
+
+                  <div className="bm-owner-item-sheet-move">
+
+                    <button
+                      type="button"
+                      disabled={
+                        index <= 0
+                      }
+                      onClick={() => {
+                        setOpenSubcategoryMenuId("");
+
+                        moveSubcategory(
+                          subcategory,
+                          "up"
+                        );
+                      }}
+                    >
+                      ↑
+
+                      <span>
+                        {isHebrew
+                          ? "הזז למעלה"
+                          : "Move up"}
+                      </span>
+                    </button>
+
+
+                    <button
+                      type="button"
+                      disabled={
+                        index === -1 ||
+                        index ===
+                          activeSubcategories.length - 1
+                      }
+                      onClick={() => {
+                        setOpenSubcategoryMenuId("");
+
+                        moveSubcategory(
+                          subcategory,
+                          "down"
+                        );
+                      }}
+                    >
+                      ↓
+
+                      <span>
+                        {isHebrew
+                          ? "הזז למטה"
+                          : "Move down"}
+                      </span>
+                    </button>
+
+                  </div>
+
+
+                  <button
+                    type="button"
+                    className="danger"
+                    onClick={() => {
+                      setOpenSubcategoryMenuId("");
+
+                      deleteSubcategory(
+                        subcategory
+                      );
+                    }}
+                  >
+                    <span>
+                      ⌫
+                    </span>
+
+                    {isHebrew
+                      ? "מחיקת תת־הקטגוריה"
+                      : "Delete subcategory"}
+                  </button>
+
+                </div>
+
+              </div>
+
+            </>,
+            studioPortalTarget
+          )
+        ) : null}
+
+      </>
+    );
+  };
+
+
+  const activeItems = (() => {
+
+      const groupMap =
+        new Map(
+          groups.map(
+            group => [
+              group.id,
+              group
+            ]
+          )
+        );
+
+
+      const rootGroupId =
+        groupId => {
+
+          let current =
+            groupMap.get(
+              groupId
+            );
+
+
+          const visited =
+            new Set();
+
+
+          while (
+            current?.parent_id
+          ) {
+
+            if (
+              visited.has(
+                current.id
+              )
+            ) {
+              return "";
+            }
+
+
+            visited.add(
+              current.id
+            );
+
+
+            current =
+              groupMap.get(
+                current.parent_id
+              );
+
+          }
+
+
+          return (
+            current?.id ||
+            ""
+          );
+        };
+
+
+      const visibleItems =
+        items.filter(
+          item =>
+            rootGroupId(
+              item.group_id
+            ) ===
+            activeSectionId
+        );
+
+
+      return visibleItems.sort(
+        (a, b) => {
+
+          /*
+            An item whose group_id IS the active top-level
+            category has NO Subcategory.
+
+            These items MUST come before every nested group.
+          */
+          const aDirect =
+            a.group_id ===
+            activeSectionId;
+
+
+          const bDirect =
+            b.group_id ===
+            activeSectionId;
+
+
+          if (
+            aDirect &&
+            !bDirect
+          ) {
+            return -1;
+          }
+
+
+          if (
+            !aDirect &&
+            bDirect
+          ) {
+            return 1;
+          }
+
+
+          /*
+            Both are direct-category items.
+          */
+          if (
+            aDirect &&
+            bDirect
+          ) {
+
+            return (
+              Number(
+                a.sort_order || 0
+              ) -
+              Number(
+                b.sort_order || 0
+              )
+            );
+
+          }
+
+
+          /*
+            Both are nested.
+
+            Sort first by their actual menu_group order.
+          */
+          const aGroup =
+            groupMap.get(
+              a.group_id
+            );
+
+
+          const bGroup =
+            groupMap.get(
+              b.group_id
+            );
+
+
+          const aGroupOrder =
+            Number(
+              aGroup?.sort_order ||
+              0
+            );
+
+
+          const bGroupOrder =
+            Number(
+              bGroup?.sort_order ||
+              0
+            );
+
+
+          if (
+            aGroupOrder !==
+            bGroupOrder
+          ) {
+
+            return (
+              aGroupOrder -
+              bGroupOrder
+            );
+
+          }
+
+
+          /*
+            Stable ordering between different groups that
+            happen to share the same sort_order.
+          */
+          if (
+            a.group_id !==
+            b.group_id
+          ) {
+
+            return String(
+              a.group_id
+            ).localeCompare(
+              String(
+                b.group_id
+              )
+            );
+
+          }
+
+
+          /*
+            Same Subcategory:
+            use the item's own order.
+          */
+          return (
+            Number(
+              a.sort_order || 0
+            ) -
+            Number(
+              b.sort_order || 0
+            )
+          );
+
+        }
+      );
+
+    })();
+
 
   const itemSectionKey = sectionId =>
     String(
@@ -2993,11 +5753,16 @@ export function BeyondMenuStudio() {
               </div>
 
               <a
+                className="bm-owner-menu-url-button"
                 href={liveUrl(selected.slug)}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
+                dir="ltr"
+                aria-label={`Open /menu/${selected.slug}`}
               >
-                /menu/{selected.slug}
+                <strong>
+                  /menu/{selected.slug}
+                </strong>
               </a>
             </div>
 
@@ -3176,6 +5941,7 @@ export function BeyondMenuStudio() {
                   <BeyondPublicMenu
                     slug={selected.slug}
                     previewSite={selected}
+                    previewGroups={groups}
                     previewSections={sections}
                     previewItems={items}
                   />
@@ -3551,6 +6317,160 @@ export function BeyondMenuStudio() {
             </section>
           ) : null}
 
+          {/* BEYOND_PUBLISH_CONFIRM_DIALOG_START */}
+
+          {publishConfirmOpen && selected ? (
+            <div
+              className={`bm-publish-confirm-layer bm-theme-${studioTheme}`}
+              role="presentation"
+              onClick={() => {
+                if (!publishSaving) {
+                  setPublishConfirmOpen(false);
+                }
+              }}
+            >
+
+              <section
+                className="bm-publish-confirm"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="bm-publish-confirm-title"
+                aria-describedby="bm-publish-confirm-description"
+                onClick={e =>
+                  e.stopPropagation()
+                }
+              >
+
+                <div
+                  className={`bm-publish-confirm-status ${
+                    selected.published
+                      ? "is-unpublish"
+                      : "is-publish"
+                  }`}
+                >
+                  <span
+                    className="bm-publish-confirm-symbol"
+                    aria-hidden="true"
+                  >
+                    {selected.published
+                      ? "!"
+                      : "↑"}
+                  </span>
+
+                  <span>
+                    {selected.published
+                      ? (
+                          isHebrew
+                            ? "ביטול פרסום"
+                            : "UNPUBLISH"
+                        )
+                      : (
+                          isHebrew
+                            ? "פרסום התפריט"
+                            : "PUBLISH MENU"
+                        )}
+                  </span>
+                </div>
+
+
+                <h2 id="bm-publish-confirm-title">
+                  {selected.published
+                    ? (
+                        isHebrew
+                          ? "לבטל את פרסום התפריט?"
+                          : "Unpublish this menu?"
+                      )
+                    : (
+                        isHebrew
+                          ? "לפרסם את התפריט?"
+                          : "Publish this menu?"
+                      )}
+                </h2>
+
+
+                <p id="bm-publish-confirm-description">
+                  {selected.published
+                    ? (
+                        isHebrew
+                          ? "לקוחות לא יוכלו לגשת לתפריט עד שתפרסם אותו שוב."
+                          : "Customers will no longer be able to access this menu until you publish it again."
+                      )
+                    : (
+                        isHebrew
+                          ? "לקוחות יוכלו לגשת לתפריט מיד לאחר הפרסום."
+                          : "Customers will be able to access this menu immediately."
+                      )}
+                </p>
+
+
+                <div className="bm-publish-confirm-menu-name">
+                  <span>
+                    {isHebrew
+                      ? "תפריט"
+                      : "MENU"}
+                  </span>
+
+                  <strong>
+                    {selected.name}
+                  </strong>
+                </div>
+
+
+                <div className="bm-publish-confirm-actions">
+
+                  <button
+                    type="button"
+                    className="bm-publish-confirm-cancel"
+                    disabled={publishSaving}
+                    onClick={() =>
+                      setPublishConfirmOpen(false)
+                    }
+                  >
+                    {isHebrew
+                      ? "ביטול"
+                      : "Cancel"}
+                  </button>
+
+
+                  <button
+                    type="button"
+                    className={`bm-publish-confirm-submit ${
+                      selected.published
+                        ? "is-unpublish"
+                        : "is-publish"
+                    }`}
+                    disabled={publishSaving}
+                    onClick={applyPublishChange}
+                  >
+                    {publishSaving
+                      ? (
+                          isHebrew
+                            ? "שומר…"
+                            : "Saving…"
+                        )
+                      : selected.published
+                        ? (
+                            isHebrew
+                              ? "בטל פרסום"
+                              : "Unpublish"
+                          )
+                        : (
+                            isHebrew
+                              ? "פרסם"
+                              : "Publish"
+                          )}
+                  </button>
+
+                </div>
+
+              </section>
+
+            </div>
+          ) : null}
+
+          {/* BEYOND_PUBLISH_CONFIRM_DIALOG_END */}
+
+
           <div className="bm-owner-workspace">
 
             <aside className="bm-owner-categories">
@@ -3569,7 +6489,9 @@ export function BeyondMenuStudio() {
                     setShowAddCategory(v => !v)
                   }
                 >
-                  + ADD
+                  {isHebrew
+                    ? "+ הוסף קטגוריה"
+                    : "+ ADD CATEGORY"}
                 </button>
               </div>
 
@@ -4196,6 +7118,12 @@ export function BeyondMenuStudio() {
                         <div
                           className="bm-owner-item-edit bm-v10-item-form"
                           key={menuItem.id}
+                        
+                          data-editor-title={
+                            isHebrew
+                              ? "עריכת פריט"
+                              : "Edit menu item"
+                          }
                         >
 
                           {renderItemFields(
@@ -4258,8 +7186,63 @@ export function BeyondMenuStudio() {
                       itemIndex ===
                       activeItems.length - 1;
 
+                    const currentSubcategory =
+                      subcategories.find(
+                        subcategory =>
+                          subcategory.id ===
+                          menuItem.subcategory_id
+                      ) || null;
+
+                    const previousItem =
+                      itemIndex > 0
+                        ? activeItems[
+                            itemIndex - 1
+                          ]
+                        : null;
+
+                    const previousSubcategoryId =
+                      previousItem
+                        ?.subcategory_id ||
+                      "";
+
+                    const showSubcategoryHeading =
+                      Boolean(
+                        currentSubcategory &&
+                        currentSubcategory.id !==
+                          previousSubcategoryId
+                      );
+
+                    const subcategoryPrimaryName =
+                      studioSubcategoryPrimaryName(
+                        currentSubcategory
+                      );
+
+                    const subcategorySecondaryName =
+                      studioSubcategorySecondaryName(
+                        currentSubcategory
+                      );
+
+                    const subcategoryItemCount =
+                      currentSubcategory
+                        ? activeItems.filter(
+                            item =>
+                              item.subcategory_id ===
+                              currentSubcategory.id
+                          ).length
+                        : 0;
+
+
                     return (
-                      <article
+                      <>
+
+                        {showSubcategoryHeading
+                          ? renderStudioSubcategoryHeading(
+                              currentSubcategory,
+                              subcategoryItemCount
+                            )
+                          : null}
+
+                        <article
                         className={`bm-owner-item ${
                           menuItem.visible === false
                             ? "hidden"
@@ -4592,11 +7575,260 @@ export function BeyondMenuStudio() {
                         </div>
 
                       </article>
+
+                      </>
                     );
                   })}
 
                 </div>
               )}
+
+
+
+              {/* BEYOND_SUBCATEGORY_MANAGER_START */}
+
+              {activeSection ? (
+                <div className="bm-owner-subcategory-manager">
+
+
+                  {/* Empty subcategories still need to be manageable */}
+
+                  {activeSubcategories
+                    .filter(
+                      subcategory =>
+                        !activeItems.some(
+                          item =>
+                            item.subcategory_id ===
+                            subcategory.id
+                        )
+                    )
+                    .map(
+                      subcategory =>
+                        (
+                          <div key={subcategory.id}>
+                            {renderStudioSubcategoryHeading(
+                              subcategory,
+                              0
+                            )}
+                          </div>
+                        )
+                    )}
+
+
+                  {editingSubcategoryId ? (
+                    <form
+                      className="bm-owner-item-edit bm-v10-item-form"
+                      onSubmit={saveSubcategory}
+                    
+          data-editor-title={
+            isHebrew
+              ? "עריכת תת־קטגוריה"
+              : "Edit subcategory"
+          }
+        >
+
+                      <div className="bm-owner-subcategory-editor-head">
+
+                        <strong>
+                          {isHebrew
+                            ? "עריכת תת־קטגוריה"
+                            : "Edit subcategory"}
+                        </strong>
+
+                        <span>
+                          {isHebrew
+                            ? "שינוי השם יעדכן גם את הפריטים שבתוכה."
+                            : "Renaming it will update the items inside."}
+                        </span>
+
+                      </div>
+
+
+                      <label>
+                        {isHebrew
+                          ? "שם בעברית"
+                          : "Hebrew name"}
+
+                        <input
+                          dir="rtl"
+                          value={
+                            subcategoryDraft.name_he
+                          }
+                          onChange={e =>
+                            setSubcategoryDraft(
+                              current => ({
+                                ...current,
+                                name_he:
+                                  e.target.value
+                              })
+                            )
+                          }
+                        />
+                      </label>
+
+
+                      <label>
+                        {isHebrew
+                          ? "שם באנגלית"
+                          : "English name"}
+
+                        <input
+                          dir="ltr"
+                          value={
+                            subcategoryDraft.name_en
+                          }
+                          onChange={e =>
+                            setSubcategoryDraft(
+                              current => ({
+                                ...current,
+                                name_en:
+                                  e.target.value
+                              })
+                            )
+                          }
+                        />
+                      </label>
+
+
+                      <div className="bm-owner-subcategory-editor-actions">
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingSubcategoryId("");
+                            setSubcategoryDraft({
+                              name_en: "",
+                              name_he: ""
+                            });
+                          }}
+                        >
+                          {isHebrew
+                            ? "ביטול"
+                            : "Cancel"}
+                        </button>
+
+                        <button
+                          type="submit"
+                          className="primary"
+                        >
+                          {isHebrew
+                            ? "שמור שינויים"
+                            : "Save changes"}
+                        </button>
+
+                      </div>
+
+                    </form>
+                  ) : null}
+
+
+                  {showAddSubcategory ? (
+                    <form
+                      className="bm-owner-subcategory-editor"
+                      onSubmit={addSubcategory}
+                    >
+
+                      <div className="bm-owner-subcategory-editor-head">
+
+                        <strong>
+                          {isHebrew
+                            ? "תת־קטגוריה חדשה"
+                            : "New subcategory"}
+                        </strong>
+
+                        <span>
+                          {isHebrew
+                            ? "צור קבוצה חדשה בתוך הקטגוריה."
+                            : "Create a new group inside this category."}
+                        </span>
+
+                      </div>
+
+
+                      <label>
+                        {isHebrew
+                          ? "שם בעברית"
+                          : "Hebrew name"}
+
+                        <input
+                          dir="rtl"
+                          value={subcatHe}
+                          onChange={e =>
+                            setSubcatHe(
+                              e.target.value
+                            )
+                          }
+                          placeholder="לחלוקה"
+                        />
+                      </label>
+
+
+                      <label>
+                        {isHebrew
+                          ? "שם באנגלית"
+                          : "English name"}
+
+                        <input
+                          dir="ltr"
+                          value={subcatEn}
+                          onChange={e =>
+                            setSubcatEn(
+                              e.target.value
+                            )
+                          }
+                          placeholder="To Share"
+                        />
+                      </label>
+
+
+                      <div className="bm-owner-subcategory-editor-actions">
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowAddSubcategory(false);
+                            setSubcatEn("");
+                            setSubcatHe("");
+                          }}
+                        >
+                          {isHebrew
+                            ? "ביטול"
+                            : "Cancel"}
+                        </button>
+
+                        <button
+                          type="submit"
+                          className="primary"
+                        >
+                          {isHebrew
+                            ? "הוסף תת־קטגוריה"
+                            : "Add subcategory"}
+                        </button>
+
+                      </div>
+
+                    </form>
+                  ) : (
+                    <button
+                      type="button"
+                      className="bm-owner-add"
+                      onClick={() => {
+                        setEditingSubcategoryId("");
+                        setSubcatEn("");
+                        setSubcatHe("");
+                        setShowAddSubcategory(true);
+                      }}
+                    >
+                      {isHebrew
+                        ? "+ הוסף תת־קטגוריה"
+                        : "+ ADD SUBCATEGORY"}
+                    </button>
+                  )}
+
+                </div>
+              ) : null}
+
+              {/* BEYOND_SUBCATEGORY_MANAGER_END */}
 
             </main>
 

@@ -1,0 +1,419 @@
+import {
+  useEffect,
+  useRef,
+} from "react";
+
+import {
+  useBeyondLanguage,
+} from "./BeyondLanguage";
+
+import {
+  BEYOND_HE,
+} from "./beyondUiTranslations";
+
+
+const SKIP_SELECTOR = [
+  "script",
+  "style",
+  "code",
+  "pre",
+  "svg",
+  "canvas",
+
+  /* Public restaurant menus keep their own language system */
+  ".bm-public",
+
+  /* Explicit opt-out */
+  "[data-no-beyond-translate]",
+].join(",");
+
+
+const ATTRIBUTE_NAMES = [
+  "placeholder",
+  "title",
+  "aria-label",
+];
+
+
+function normalizeText(
+  value
+) {
+  return String(
+    value || ""
+  )
+    .replace(
+      /\s+/g,
+      " "
+    )
+    .trim();
+}
+
+
+function shouldSkip(
+  element
+) {
+  if (!element) {
+    return true;
+  }
+
+  return Boolean(
+    element.closest(
+      SKIP_SELECTOR
+    )
+  );
+}
+
+
+export default function BeyondAutoTranslate() {
+  const {
+    language,
+  } = useBeyondLanguage();
+
+  const textOriginals =
+    useRef(
+      new Map()
+    );
+
+  const attributeOriginals =
+    useRef(
+      new Map()
+    );
+
+  const observerRef =
+    useRef(null);
+
+  const rafRef =
+    useRef(null);
+
+
+  useEffect(() => {
+
+    function restoreEnglish() {
+
+      for (
+        const [
+          node,
+          original,
+        ]
+        of textOriginals.current
+      ) {
+        if (
+          node?.isConnected
+        ) {
+          node.nodeValue =
+            original;
+        }
+      }
+
+
+      for (
+        const [
+          element,
+          originals,
+        ]
+        of attributeOriginals.current
+      ) {
+        if (
+          !element?.isConnected
+        ) {
+          continue;
+        }
+
+        for (
+          const [
+            attribute,
+            original,
+          ]
+          of Object.entries(
+            originals
+          )
+        ) {
+          element.setAttribute(
+            attribute,
+            original
+          );
+        }
+      }
+
+
+      textOriginals.current.clear();
+      attributeOriginals.current.clear();
+    }
+
+
+    function translateTextNode(
+      node
+    ) {
+      const parent =
+        node.parentElement;
+
+      if (
+        shouldSkip(
+          parent
+        )
+      ) {
+        return;
+      }
+
+
+      const current =
+        node.nodeValue;
+
+      if (
+        !current ||
+        !current.trim()
+      ) {
+        return;
+      }
+
+
+      if (
+        !textOriginals.current
+          .has(node)
+      ) {
+        textOriginals.current.set(
+          node,
+          current
+        );
+      }
+
+
+      const original =
+        textOriginals.current.get(
+          node
+        );
+
+      const normalized =
+        normalizeText(
+          original
+        );
+
+      const translated =
+        BEYOND_HE[
+          normalized
+        ];
+
+      if (!translated) {
+        return;
+      }
+
+
+      const leading =
+        original.match(
+          /^\s*/
+        )?.[0] || "";
+
+      const trailing =
+        original.match(
+          /\s*$/
+        )?.[0] || "";
+
+
+      node.nodeValue =
+        `${leading}${translated}${trailing}`;
+    }
+
+
+    function translateAttributes(
+      element
+    ) {
+      if (
+        shouldSkip(
+          element
+        )
+      ) {
+        return;
+      }
+
+
+      for (
+        const attribute
+        of ATTRIBUTE_NAMES
+      ) {
+        if (
+          !element.hasAttribute(
+            attribute
+          )
+        ) {
+          continue;
+        }
+
+
+        const value =
+          element.getAttribute(
+            attribute
+          );
+
+        const normalized =
+          normalizeText(
+            value
+          );
+
+        const translated =
+          BEYOND_HE[
+            normalized
+          ];
+
+        if (!translated) {
+          continue;
+        }
+
+
+        if (
+          !attributeOriginals.current
+            .has(element)
+        ) {
+          attributeOriginals.current
+            .set(
+              element,
+              {}
+            );
+        }
+
+
+        const originals =
+          attributeOriginals.current
+            .get(element);
+
+
+        if (
+          originals[
+            attribute
+          ] === undefined
+        ) {
+          originals[
+            attribute
+          ] = value;
+        }
+
+
+        element.setAttribute(
+          attribute,
+          translated
+        );
+      }
+    }
+
+
+    function translateTree() {
+      const root =
+        document.getElementById(
+          "root"
+        );
+
+      if (!root) {
+        return;
+      }
+
+
+      observerRef.current
+        ?.disconnect();
+
+
+      if (
+        language === "en"
+      ) {
+        restoreEnglish();
+      } else {
+
+        const walker =
+          document.createTreeWalker(
+            root,
+            NodeFilter.SHOW_TEXT
+          );
+
+        let node =
+          walker.nextNode();
+
+        while (node) {
+          translateTextNode(
+            node
+          );
+
+          node =
+            walker.nextNode();
+        }
+
+
+        root
+          .querySelectorAll("*")
+          .forEach(
+            translateAttributes
+          );
+      }
+
+
+      observerRef.current
+        ?.observe(
+          root,
+          {
+            subtree: true,
+            childList: true,
+            characterData: true,
+          }
+        );
+    }
+
+
+    function scheduleTranslate() {
+      if (
+        rafRef.current
+      ) {
+        cancelAnimationFrame(
+          rafRef.current
+        );
+      }
+
+      rafRef.current =
+        requestAnimationFrame(
+          translateTree
+        );
+    }
+
+
+    const root =
+      document.getElementById(
+        "root"
+      );
+
+    if (!root) {
+      return undefined;
+    }
+
+
+    observerRef.current =
+      new MutationObserver(
+        () => {
+          scheduleTranslate();
+        }
+      );
+
+
+    translateTree();
+
+
+    return () => {
+
+      observerRef.current
+        ?.disconnect();
+
+      observerRef.current =
+        null;
+
+
+      if (
+        rafRef.current
+      ) {
+        cancelAnimationFrame(
+          rafRef.current
+        );
+      }
+    };
+
+  }, [
+    language,
+  ]);
+
+
+  return null;
+}

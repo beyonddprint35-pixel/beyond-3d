@@ -1,0 +1,167 @@
+/*
+=========================================================
+CUSTOMERS TEMPLATE MENU — ISOLATION CONTRACT
+
+This stylesheet exists specifically to keep restaurant
+customer menus independent from the main BEYOND website.
+
+The customer menu controls:
+- its own EN / HE state
+- its own direction
+- its own text alignment
+
+Do not use html[data-beyond-language] here.
+=========================================================
+*/
+
+
+/* =======================================================
+   ROOT LANGUAGE LOCK
+======================================================= */
+
+.customers-template-menu[lang="en"],
+.customers-template-menu[lang="en"]
+.ep-app {
+  direction: ltr !important;
+}
+
+
+.customers-template-menu[lang="he"],
+.customers-template-menu[lang="he"]
+.ep-app {
+  direction: rtl !important;
+}
+
+
+
+/* =======================================================
+   ENGLISH CUSTOMER MENU
+
+   English must ALWAYS be:
+   LTR + left aligned.
+
+   This remains true even when the main BEYOND website
+   happens to be using Hebrew.
+======================================================= */
+
+.customers-template-menu[lang="en"]
+:is(
+  .ep-brand-copy,
+  .ep-hero,
+  .ep-section-head,
+  .ep-item-category,
+  .ep-item-info,
+  .ep-wine-origin,
+  .ep-mixers-box
+) {
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+
+.customers-template-menu[lang="en"]
+:is(
+  .ep-brand-title,
+  .ep-brand-sub,
+  .ep-hero-kicker,
+  .ep-hero-title,
+  .ep-section-head h2,
+  .ep-item-category,
+  .ep-item-name,
+  .ep-item-description,
+  .ep-wine-origin,
+  .ep-mixers-title
+) {
+  direction: ltr !important;
+  text-align: left !important;
+
+  /*
+    Preserve correct character ordering if a restaurant
+    has accidentally left Hebrew fallback text in an
+    English field.
+  */
+  unicode-bidi: plaintext;
+}
+
+
+.customers-template-menu[lang="en"]
+.ep-tabs {
+  direction: ltr !important;
+}
+
+
+.customers-template-menu[lang="en"]
+.ep-lang-pill {
+  direction: ltr !important;
+}
+
+
+
+/* =======================================================
+   HEBREW CUSTOMER MENU
+======================================================= */
+
+.customers-template-menu[lang="he"]
+:is(
+  .ep-brand-copy,
+  .ep-hero,
+  .ep-section-head,
+  .ep-item-category,
+  .ep-item-info,
+  .ep-wine-origin,
+  .ep-mixers-box
+) {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+
+.customers-template-menu[lang="he"]
+:is(
+  .ep-brand-title,
+  .ep-brand-sub,
+  .ep-hero-kicker,
+  .ep-hero-title,
+  .ep-section-head h2,
+  .ep-item-category,
+  .ep-item-name,
+  .ep-item-description,
+  .ep-wine-origin,
+  .ep-mixers-title
+) {
+  direction: rtl !important;
+  text-align: right !important;
+  unicode-bidi: plaintext;
+}
+
+
+.customers-template-menu[lang="he"]
+.ep-tabs {
+  direction: rtl !important;
+}
+
+
+
+/* =======================================================
+   LANGUAGE SWITCHER
+
+   These two labels are owned ONLY by the
+   Customers Template Menu.
+
+   They must always stay:
+   English
+   עברית
+======================================================= */
+
+.customers-template-menu
+.ep-lang-pill
+button:first-child {
+  direction: ltr !important;
+}
+
+
+.customers-template-menu
+.ep-lang-pill
+button:last-child {
+  direction: rtl !important;
+}

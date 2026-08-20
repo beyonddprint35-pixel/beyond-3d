@@ -2258,3 +2258,185 @@ html:not(.restaurant-a11y-dark):not(.restaurant-a11y-contrast)
   color: #556b2f !important;
 }
 
+
+/* CUSTOMER TEMPLATE ACCESSIBILITY DARK STATEMENT START */
+
+/*
+  The Customers Template Menu controls its own
+  accessibility dark mode.
+
+  The general dark-mode rule makes menu text white.
+  These rules give the accessibility statement its
+  own proper dark surface so text never becomes
+  white-on-white.
+*/
+
+html.restaurant-a11y-dark
+.ep-page
+.restaurant-a11y-statement-backdrop {
+  background:
+    rgba(0, 0, 0, .78) !important;
+}
+
+
+html.restaurant-a11y-dark
+.ep-page
+.restaurant-a11y-statement {
+  color:
+    #f7f4ee !important;
+
+  border:
+    1px solid #393939 !important;
+
+  background:
+    #171717 !important;
+
+  box-shadow:
+    0 28px 90px
+    rgba(0, 0, 0, .55) !important;
+}
+
+
+html.restaurant-a11y-dark
+.ep-page
+.restaurant-a11y-statement
+header {
+  border-bottom:
+    1px solid #343434 !important;
+
+  background:
+    #171717 !important;
+}
+
+
+html.restaurant-a11y-dark
+.ep-page
+.restaurant-a11y-statement
+header span {
+  color:
+    #aaa39a !important;
+}
+
+
+html.restaurant-a11y-dark
+.ep-page
+.restaurant-a11y-statement
+:is(
+  h2,
+  h3,
+  p,
+  li,
+  strong
+) {
+  color:
+    #f7f4ee !important;
+}
+
+
+html.restaurant-a11y-dark
+.ep-page
+.restaurant-a11y-statement
+header button {
+  color:
+    #ffffff !important;
+
+  border:
+    1px solid #505050 !important;
+
+  background:
+    #262626 !important;
+}
+
+
+html.restaurant-a11y-dark
+.ep-page
+.restaurant-a11y-statement
+header button:hover {
+  background:
+    #303030 !important;
+}
+
+
+html.restaurant-a11y-dark
+.ep-page
+.restaurant-a11y-statement-note {
+  color:
+    #eee9e1 !important;
+
+  border:
+    1px solid #393939 !important;
+
+  background:
+    #242424 !important;
+}
+
+
+/*
+  Accessibility menu itself should also stay readable
+  while dark mode is active.
+*/
+
+html.restaurant-a11y-dark
+.ep-page
+.restaurant-a11y-panel {
+  color:
+    #f7f4ee !important;
+
+  border-color:
+    #414141 !important;
+
+  background:
+    #181818 !important;
+}
+
+
+html.restaurant-a11y-dark
+.ep-page
+.restaurant-a11y-panel-head {
+  color:
+    #ffffff !important;
+
+  background:
+    #0f0f0f !important;
+}
+
+
+html.restaurant-a11y-dark
+.ep-page
+.restaurant-a11y-actions
+button {
+  color:
+    #f7f4ee !important;
+
+  border-color:
+    #414141 !important;
+
+  background:
+    #242424 !important;
+}
+
+
+html.restaurant-a11y-dark
+.ep-page
+.restaurant-a11y-actions
+button[aria-pressed="true"] {
+  color:
+    #111111 !important;
+
+  border-color:
+    #ffffff !important;
+
+  background:
+    #ffffff !important;
+}
+
+
+html.restaurant-a11y-dark
+.ep-page
+.restaurant-a11y-note {
+  color:
+    #c8c1b7 !important;
+}
+
+/* CUSTOMER TEMPLATE ACCESSIBILITY DARK STATEMENT END */
+
