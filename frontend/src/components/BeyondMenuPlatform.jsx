@@ -1,8 +1,13 @@
 import BeyondLanguageToggle from "../i18n/BeyondLanguageToggle";
-import React, { useEffect, useMemo, useState } from "react";
+import {
+  useBeyondLanguage,
+} from "../i18n/BeyondLanguage";
+import React, { useEffect, useMemo, useState, useLayoutEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { Moon, Sun } from "lucide-react";
 import RestaurantAccessibility from "./RestaurantAccessibility";
 import "./BeyondMenuStudioTheme.css";
+import "./BeyondMenuStudioMobile.css";
 import { createClient } from "@supabase/supabase-js";
 
 const url = import.meta.env.VITE_SUPABASE_URL || import.meta.env.VITE_SUPABASE_PROJECT_URL || "";
@@ -36,7 +41,12 @@ function LoginRequired() {
   return <div className="bm-shell"><div className="bm-card bm-empty"><h2>Sign in to Beyond</h2><p>You need your Beyond account to manage menus.</p><button onClick={() => location.href = "/"}>GO TO BEYOND</button></div></div>;
 }
 
-export function BeyondPublicMenu({ slug }) {
+export function BeyondPublicMenu({
+  slug,
+  previewSite = null,
+  previewSections = null,
+  previewItems = null
+}) {
   const [site, setSite] = useState(null);
   const [sections, setSections] = useState([]);
   const [items, setItems] = useState([]);
@@ -45,6 +55,70 @@ export function BeyondPublicMenu({ slug }) {
   const [status, setStatus] = useState("Loading menu…");
 
   useEffect(() => {
+
+    /*
+      PRIVATE MENU STUDIO PREVIEW
+
+      Studio supplies the restaurant data directly.
+      This allows the owner to preview a Draft menu.
+
+      Normal customers still use the public query
+      below, which continues requiring published=true.
+    */
+    if (previewSite) {
+
+      const loadedSections =
+        (previewSections || [])
+          .filter(
+            section =>
+              section.visible !== false
+          );
+
+      const loadedItems =
+        (previewItems || [])
+          .filter(
+            item =>
+              item.visible !== false
+          );
+
+      setSite(previewSite);
+      setSections(loadedSections);
+      setItems(loadedItems);
+
+      setLang(
+        previewSite.default_language === "en"
+          ? "en"
+          : "he"
+      );
+
+      setActive(current => {
+        const stillExists =
+          loadedSections.some(
+            section =>
+              section.id === current
+          );
+
+        if (stillExists) {
+          return current;
+        }
+
+        return (
+          loadedSections[0]?.id ||
+          ""
+        );
+      });
+
+      setStatus("");
+
+      return;
+    }
+
+
+    /*
+      NORMAL PUBLIC MENU
+
+      Customers can only load published menus.
+    */
     if (!supabase) return;
 
     let alive = true;
@@ -61,7 +135,9 @@ export function BeyondPublicMenu({ slug }) {
       if (!alive) return;
 
       if (siteError || !siteRow) {
-        setStatus("This menu is not available.");
+        setStatus(
+          "This menu is not available."
+        );
         return;
       }
 
@@ -70,24 +146,41 @@ export function BeyondPublicMenu({ slug }) {
           supabase
             .from("menu_sections")
             .select("*")
-            .eq("site_id", siteRow.id)
-            .eq("visible", true)
+            .eq(
+              "site_id",
+              siteRow.id
+            )
+            .eq(
+              "visible",
+              true
+            )
             .order("sort_order")
             .order("created_at"),
 
           supabase
             .from("menu_items")
             .select("*")
-            .eq("site_id", siteRow.id)
-            .eq("visible", true)
+            .eq(
+              "site_id",
+              siteRow.id
+            )
+            .eq(
+              "visible",
+              true
+            )
             .order("sort_order")
             .order("created_at")
         ]);
 
       if (!alive) return;
 
-      if (sectionResult.error || itemResult.error) {
-        setStatus("Could not load this menu.");
+      if (
+        sectionResult.error ||
+        itemResult.error
+      ) {
+        setStatus(
+          "Could not load this menu."
+        );
         return;
       }
 
@@ -95,8 +188,13 @@ export function BeyondPublicMenu({ slug }) {
         sectionResult.data || [];
 
       setSite(siteRow);
-      setSections(loadedSections);
-      setItems(itemResult.data || []);
+      setSections(
+        loadedSections
+      );
+
+      setItems(
+        itemResult.data || []
+      );
 
       setLang(
         siteRow.default_language === "en"
@@ -105,14 +203,23 @@ export function BeyondPublicMenu({ slug }) {
       );
 
       setActive(
-        loadedSections[0]?.id || ""
+        loadedSections[0]?.id ||
+        ""
       );
+
+      setStatus("");
     })();
 
     return () => {
       alive = false;
     };
-  }, [slug]);
+
+  }, [
+    slug,
+    previewSite,
+    previewSections,
+    previewItems
+  ]);
 
   const activeSection = sections.find(
     section => section.id === active
@@ -801,8 +908,18 @@ export function BeyondPublicMenu({ slug }) {
 }
 
 export function BeyondMenuStudio() {
+  const {
+    isHebrew
+  } = useBeyondLanguage();
+
   const session = useSession();
   const user = session?.user;
+
+  const studioPortalTarget =
+    typeof document !== "undefined"
+      ? document.querySelector(".bm-owner-dashboard")
+      : null;
+
 
   // BEYOND_MENU_STUDIO_THEME_V1
   const [studioTheme, setStudioTheme] = useState(() => {
@@ -852,6 +969,7 @@ export function BeyondMenuStudio() {
   const [showAddCategory, setShowAddCategory] = useState(false);
   const [showAddItem, setShowAddItem] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
   const [logoUploading, setLogoUploading] = useState(false);
   const [siteDraft, setSiteDraft] = useState({
     name: "",
@@ -866,7 +984,7 @@ export function BeyondMenuStudio() {
 
   const [newItem, setNewItem] = useState({
     section_id: "",
-    type: "item",
+    type: "",
     name_en: "",
     name_he: "",
     category_en: "",
@@ -882,12 +1000,67 @@ export function BeyondMenuStudio() {
   });
 
   const [editingSectionId, setEditingSectionId] = useState("");
+  const [openCategoryMenuId, setOpenCategoryMenuId] = useState("");
+  const [openHeaderMenu, setOpenHeaderMenu] = useState(false);
+
+  const categoryScrollRef = useRef(null);
+
+  // BEYOND_CATEGORY_SCROLL_STABILITY
+  useLayoutEffect(() => {
+    const scroller =
+      categoryScrollRef.current;
+
+    if (!scroller) return;
+
+    /*
+      Safari handles RTL horizontal scroll offsets
+      differently from LTR.
+
+      Instead of calculating scrollLeft, always bring
+      the currently selected category into view after
+      the language direction changes.
+    */
+    let frame1 = 0;
+    let frame2 = 0;
+
+    frame1 = requestAnimationFrame(() => {
+      frame2 = requestAnimationFrame(() => {
+        const active =
+          scroller.querySelector(
+            ".bm-owner-category.active"
+          );
+
+        if (!active) return;
+
+        active.scrollIntoView({
+          behavior: "auto",
+          block: "nearest",
+          inline: "center"
+        });
+      });
+    });
+
+    return () => {
+      cancelAnimationFrame(frame1);
+      cancelAnimationFrame(frame2);
+    };
+
+  }, [isHebrew]);
+
+  // BEYOND_CLOSE_MOBILE_MENUS_ON_LANGUAGE_CHANGE
+  useEffect(() => {
+    setOpenCategoryMenuId("");
+    setOpenItemMenuId("");
+  }, [isHebrew]);
+
+
   const [sectionDraft, setSectionDraft] = useState({
     name_en: "",
     name_he: ""
   });
 
   const [editingItemId, setEditingItemId] = useState("");
+  const [openItemMenuId, setOpenItemMenuId] = useState("");
   const [itemDraft, setItemDraft] = useState({
     section_id: "",
     type: "item",
@@ -904,6 +1077,68 @@ export function BeyondMenuStudio() {
     wine_glass: "",
     wine_bottle: ""
   });
+
+
+  // BEYOND_EMPTY_NEW_FORM_VALUES_V2_START
+
+  useEffect(() => {
+    if (!showAddCategory) return;
+
+    setSecEn("");
+    setSecHe("");
+  }, [showAddCategory]);
+
+
+  useEffect(() => {
+    if (!showAddItem) return;
+
+    setNewItem(current => ({
+      ...current,
+      name_en: "",
+      name_he: ""
+    }));
+  }, [showAddItem]);
+
+  // BEYOND_EMPTY_NEW_FORM_VALUES_V2_END
+
+
+  // BEYOND_STUDIO_LANGUAGE_NAME_HELPERS_V1
+
+  const studioPrimaryName = value => {
+    if (!value) return "";
+
+    return isHebrew
+      ? (
+          value.name_he ||
+          value.name_en ||
+          ""
+        )
+      : (
+          value.name_en ||
+          value.name_he ||
+          ""
+        );
+  };
+
+
+  const studioSecondaryName = value => {
+    if (!value) return "";
+
+    const primary =
+      studioPrimaryName(value);
+
+    const secondary =
+      isHebrew
+        ? value.name_en || ""
+        : value.name_he || "";
+
+    return (
+      secondary &&
+      secondary !== primary
+    )
+      ? secondary
+      : "";
+  };
 
   const selected = sites.find(s => s.id === siteId);
 
@@ -1108,17 +1343,56 @@ export function BeyondMenuStudio() {
     await loadSites(selected.id);
   };
 
+
+  // BEYOND_SAFE_PUBLISH_CONFIRM
+  const confirmPublishChange = async () => {
+    if (!selected) return;
+
+    const willPublish =
+      !selected.published;
+
+    const message =
+      willPublish
+        ? (
+            isHebrew
+              ? "האם אתה בטוח שברצונך לפרסם את התפריט? השינויים יהיו זמינים ללקוחות מיד."
+              : "Are you sure you want to publish this menu? Your changes will become available to customers immediately."
+          )
+        : (
+            isHebrew
+              ? "האם אתה בטוח שברצונך לבטל את פרסום התפריט? הלקוחות לא יוכלו לצפות בו עד שתפרסם אותו שוב."
+              : "Are you sure you want to unpublish this menu? Customers will not be able to view it until you publish it again."
+          );
+
+    if (!window.confirm(message)) {
+      return;
+    }
+
+    await updateSite({
+      published: willPublish
+    });
+  };
+
+
   const addCategory = async e => {
     e.preventDefault();
 
-    if (!selected || !secEn.trim()) return;
+    if (!selected) return;
+
+    const cleanEn = secEn.trim();
+    const cleanHe = secHe.trim();
+
+    if (!cleanEn && !cleanHe) {
+      setMsg("Category name is required.");
+      return;
+    }
 
     const { data, error } = await supabase
       .from("menu_sections")
       .insert({
         site_id: selected.id,
-        name_en: secEn.trim(),
-        name_he: secHe.trim() || secEn.trim(),
+        name_en: cleanEn || cleanHe,
+        name_he: cleanHe || cleanEn,
         visible: true,
         sort_order: sections.length
       })
@@ -1149,15 +1423,27 @@ export function BeyondMenuStudio() {
   };
 
   const saveCategory = async () => {
-    if (!editingSectionId || !sectionDraft.name_en.trim()) return;
+    if (!editingSectionId) return;
+
+    const cleanEn =
+      sectionDraft.name_en.trim();
+
+    const cleanHe =
+      sectionDraft.name_he.trim();
+
+    if (!cleanEn && !cleanHe) {
+      setMsg("Category name is required.");
+      return;
+    }
 
     const { error } = await supabase
       .from("menu_sections")
       .update({
-        name_en: sectionDraft.name_en.trim(),
+        name_en:
+          cleanEn || cleanHe,
+
         name_he:
-          sectionDraft.name_he.trim() ||
-          sectionDraft.name_en.trim()
+          cleanHe || cleanEn
       })
       .eq("id", editingSectionId);
 
@@ -1193,8 +1479,8 @@ export function BeyondMenuStudio() {
     );
 
     const message = categoryItems.length
-      ? `Delete "${section.name_en}" and its ${categoryItems.length} item(s)?`
-      : `Delete "${section.name_en}"?`;
+      ? `Delete "${studioPrimaryName(section)}" and its ${categoryItems.length} item(s)?`
+      : `Delete "${studioPrimaryName(section)}"?`;
 
     if (!window.confirm(message)) return;
 
@@ -1213,18 +1499,9 @@ export function BeyondMenuStudio() {
   };
 
   const openAddItem = () => {
-    const sectionId =
-      activeSectionId ||
-      sections[0]?.id ||
-      "";
-
-    const sectionKey = String(
-      sections.find(section => section.id === sectionId)?.section_key || ""
-    ).toLowerCase();
-
     setNewItem({
-      section_id: sectionId,
-      type: sectionKey === "wine" ? "wine" : "item",
+      section_id: "",
+      type: "",
       name_en: "",
       name_he: "",
       category_en: "",
@@ -1248,6 +1525,7 @@ export function BeyondMenuStudio() {
     if (
       !selected ||
       !newItem.section_id ||
+      !newItem.type ||
       !newItem.name_en.trim()
     ) return;
 
@@ -1520,7 +1798,7 @@ export function BeyondMenuStudio() {
   };
 
   const deleteItem = async menuItem => {
-    if (!window.confirm(`Delete "${menuItem.name_en}"?`)) return;
+    if (!window.confirm(`Delete "${studioPrimaryName(menuItem)}"?`)) return;
 
     const { error } = await supabase
       .from("menu_items")
@@ -1907,40 +2185,44 @@ export function BeyondMenuStudio() {
 
     return (
       <>
-        <label>
-          Menu category
+        <label className="bm-field-category">
+          {isHebrew
+            ? "קטגוריית תפריט"
+            : "Menu category"}
 
           <select
             value={draft.section_id}
-            onChange={e => {
-              const sectionId = e.target.value;
-
+            required
+            onChange={e =>
               setDraft(current => ({
                 ...current,
-                section_id: sectionId,
-                type:
-                  itemSectionKey(sectionId) === "wine"
-                    ? "wine"
-                    : current.type
-              }));
-            }}
+                section_id: e.target.value
+              }))
+            }
           >
+            <option value="" disabled>
+              {isHebrew ? "בחר" : "Choose"}
+            </option>
+
             {sections.map(section => (
               <option
                 key={section.id}
                 value={section.id}
               >
-                {section.name_en}
+                {studioPrimaryName(section)}
               </option>
             ))}
           </select>
         </label>
 
-        <label>
-          Item type
+        <label className="bm-field-type">
+          {isHebrew
+            ? "סוג פריט"
+            : "Item type"}
 
           <select
             value={draft.type}
+            required
             onChange={e =>
               setDraft(current => ({
                 ...current,
@@ -1948,18 +2230,28 @@ export function BeyondMenuStudio() {
               }))
             }
           >
+            <option value="" disabled>
+              {isHebrew ? "בחר" : "Choose"}
+            </option>
+
             <option value="item">
-              Regular item
+              {isHebrew
+                ? "פריט רגיל"
+                : "Regular item"}
             </option>
 
             <option value="wine">
-              Wine
+              {isHebrew
+                ? "יין"
+                : "Wine"}
             </option>
           </select>
         </label>
 
-        <label>
-          English name
+        <label className="bm-field-name-en">
+          {isHebrew
+            ? "שם באנגלית"
+            : "English name"}
 
           <input
             value={draft.name_en}
@@ -1969,12 +2261,14 @@ export function BeyondMenuStudio() {
                 name_en: e.target.value
               }))
             }
-            placeholder="Margherita Pizza"
+            placeholder="New Item"
           />
         </label>
 
-        <label>
-          Hebrew name
+        <label className="bm-field-name-he">
+          {isHebrew
+            ? "שם בעברית"
+            : "Hebrew name"}
 
           <input
             dir="rtl"
@@ -1985,12 +2279,14 @@ export function BeyondMenuStudio() {
                 name_he: e.target.value
               }))
             }
-            placeholder="פיצה מרגריטה"
+            placeholder="פריט חדש"
           />
         </label>
 
-        <label>
-          Subcategory EN
+        <label className="bm-field-category-en">
+          {isHebrew
+            ? "תת־קטגוריה באנגלית"
+            : "Subcategory EN"}
 
           <input
             value={draft.category_en}
@@ -2004,8 +2300,10 @@ export function BeyondMenuStudio() {
           />
         </label>
 
-        <label>
-          Subcategory HE
+        <label className="bm-field-category-he">
+          {isHebrew
+            ? "תת־קטגוריה בעברית"
+            : "Subcategory HE"}
 
           <input
             dir="rtl"
@@ -2022,8 +2320,10 @@ export function BeyondMenuStudio() {
 
         {isWine ? (
           <>
-            <label>
-              Origin EN
+            <label className="bm-field-origin-en">
+              {isHebrew
+                ? "ארץ מקור באנגלית"
+                : "Origin EN"}
 
               <input
                 value={draft.origin_en}
@@ -2037,8 +2337,10 @@ export function BeyondMenuStudio() {
               />
             </label>
 
-            <label>
-              Origin HE
+            <label className="bm-field-origin-he">
+              {isHebrew
+                ? "ארץ מקור בעברית"
+                : "Origin HE"}
 
               <input
                 dir="rtl"
@@ -2053,14 +2355,16 @@ export function BeyondMenuStudio() {
               />
             </label>
 
-            <label>
-              Glass price
+            <label className="bm-field-price bm-field-glass-price">
+              {isHebrew
+                ? "מחיר לכוס"
+                : "Glass price"}
 
               <div className="bm-price-field">
 
                 <select
                   className="bm-price-currency"
-                  aria-label="Glass price currency"
+                  aria-label={isHebrew ? "מטבע למחיר כוס" : "Glass price currency"}
                   value={
                     getPriceCurrency(
                       draft.wine_glass
@@ -2113,14 +2417,16 @@ export function BeyondMenuStudio() {
               </div>
             </label>
 
-            <label>
-              Bottle price
+            <label className="bm-field-price bm-field-bottle-price">
+              {isHebrew
+                ? "מחיר לבקבוק"
+                : "Bottle price"}
 
               <div className="bm-price-field">
 
                 <select
                   className="bm-price-currency"
-                  aria-label="Bottle price currency"
+                  aria-label={isHebrew ? "מטבע למחיר בקבוק" : "Bottle price currency"}
                   value={
                     getPriceCurrency(
                       draft.wine_bottle
@@ -2174,14 +2480,16 @@ export function BeyondMenuStudio() {
             </label>
           </>
         ) : (
-          <label>
-            Price
+          <label className="bm-field-price bm-field-regular-price">
+            {isHebrew
+              ? "מחיר"
+              : "Price"}
 
             <div className="bm-price-field">
 
               <select
                 className="bm-price-currency"
-                aria-label="Price currency"
+                aria-label={isHebrew ? "מטבע" : "Price currency"}
                 value={
                   getPriceCurrency(
                     draft.price
@@ -2247,8 +2555,10 @@ export function BeyondMenuStudio() {
           </label>
         )}
 
-        <label className="bm-v10-wide">
-          Description EN
+        <label className="bm-v10-wide bm-field-description-en">
+          {isHebrew
+            ? "תיאור באנגלית"
+            : "Description EN"}
 
           <textarea
             rows="3"
@@ -2263,8 +2573,10 @@ export function BeyondMenuStudio() {
           />
         </label>
 
-        <label className="bm-v10-wide">
-          Description HE
+        <label className="bm-v10-wide bm-field-description-he">
+          {isHebrew
+            ? "תיאור בעברית"
+            : "Description HE"}
 
           <textarea
             dir="rtl"
@@ -2285,10 +2597,9 @@ export function BeyondMenuStudio() {
           draft.section_id
         ) ? (
           <div className="bm-v10-note">
-            Enter both prices separated by /
-            — for example ₪18 / ₪35.
-            The public menu will display
-            shot and glass pricing.
+            {isHebrew
+              ? "הזן את שני המחירים מופרדים ב־/ — לדוגמה ₪18 / ₪35. בתפריט יוצגו מחירי שוט וכוס."
+              : "Enter both prices separated by / — for example ₪18 / ₪35. The public menu will display shot and glass pricing."}
           </div>
         ) : null}
       </>
@@ -2297,19 +2608,42 @@ export function BeyondMenuStudio() {
 
   return (
     <div
-      className={`bm-shell bm-owner-dashboard bm-theme-${studioTheme}`}
+      className={`bm-shell bm-owner-dashboard bm-theme-${studioTheme}${
+        showSettings
+          ? " bm-settings-open"
+          : ""
+      }${
+        showPreview
+          ? " bm-preview-open"
+          : ""
+      }`}
     >
 
       <header className="bm-head bm-owner-header">
-        <div>
-          <span>BEYOND FOR BUSINESS</span>
-          <h1>Menu Studio</h1>
-          <p>Manage your digital menu.</p>
+
+        <div className="bm-owner-header-copy">
+
+          <span>
+            BEYOND FOR BUSINESS
+          </span>
+
+          <h1>
+            {isHebrew
+              ? "עריכת תפריט"
+              : "Menu Studio"}
+          </h1>
+
+          <p>
+            {isHebrew
+              ? "נהל את התפריט הדיגיטלי שלך."
+              : "Manage your digital menu."}
+          </p>
+
         </div>
+
 
         <div className="bm-owner-header-actions">
 
-          {/* BEYOND_MENU_LANGUAGE_TOGGLE_V2 */}
           <BeyondLanguageToggle
             className="bm-language-toggle"
           />
@@ -2332,9 +2666,15 @@ export function BeyondMenuStudio() {
             }
           >
             {studioTheme === "dark" ? (
-              <Sun size={17} strokeWidth={1.8} />
+              <Sun
+                size={17}
+                strokeWidth={1.8}
+              />
             ) : (
-              <Moon size={17} strokeWidth={1.8} />
+              <Moon
+                size={17}
+                strokeWidth={1.8}
+              />
             )}
 
             <span>
@@ -2343,9 +2683,12 @@ export function BeyondMenuStudio() {
                 : "DARK"}
             </span>
           </button>
+
+
           {isMenuAdmin ? (
             <>
               <button
+                className="bm-desktop-header-action"
                 onClick={() =>
                   setShowCreateSite(v => !v)
                 }
@@ -2354,6 +2697,7 @@ export function BeyondMenuStudio() {
               </button>
 
               <button
+                className="bm-desktop-header-action"
                 onClick={() =>
                   location.href = "/admin/menus"
                 }
@@ -2363,15 +2707,168 @@ export function BeyondMenuStudio() {
             </>
           ) : null}
 
+
           <button
+            className="bm-desktop-header-action"
             onClick={() =>
               location.href = "/"
             }
           >
             BEYOND
           </button>
+
+
+          <button
+            type="button"
+            className="bm-mobile-header-more"
+            aria-label={
+              isHebrew
+                ? "אפשרויות"
+                : "More options"
+            }
+            aria-expanded={openHeaderMenu}
+            onClick={() =>
+              setOpenHeaderMenu(
+                current => !current
+              )
+            }
+          >
+            •••
+          </button>
+
         </div>
+
       </header>
+
+
+      {openHeaderMenu ? (
+        <>
+
+          <button
+            type="button"
+            className="bm-mobile-header-menu-backdrop"
+            aria-label={
+              isHebrew
+                ? "סגור"
+                : "Close"
+            }
+            onClick={() =>
+              setOpenHeaderMenu(false)
+            }
+          />
+
+
+          <div
+            className="bm-mobile-header-menu"
+            role="dialog"
+            aria-modal="true"
+          >
+
+            <div className="bm-mobile-header-menu-handle" />
+
+
+            <div className="bm-mobile-header-menu-title">
+
+              <strong>
+                {isHebrew
+                  ? "עריכת תפריט"
+                  : "Menu Studio"}
+              </strong>
+
+              <span>
+                {selected?.name || "BEYOND"}
+              </span>
+
+            </div>
+
+
+            <div className="bm-mobile-header-menu-actions">
+
+              {isMenuAdmin ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOpenHeaderMenu(false);
+                    setShowCreateSite(true);
+                  }}
+                >
+                  <span>＋</span>
+
+                  <div>
+                    <strong>
+                      {isHebrew
+                        ? "תפריט חדש"
+                        : "New menu"}
+                    </strong>
+
+                    <small>
+                      {isHebrew
+                        ? "צור תפריט למסעדה חדשה"
+                        : "Create another restaurant menu"}
+                    </small>
+                  </div>
+                </button>
+              ) : null}
+
+
+              {isMenuAdmin ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOpenHeaderMenu(false);
+                    location.href =
+                      "/admin/menus";
+                  }}
+                >
+                  <span>⌘</span>
+
+                  <div>
+                    <strong>
+                      {isHebrew
+                        ? "ניהול"
+                        : "Admin"}
+                    </strong>
+
+                    <small>
+                      {isHebrew
+                        ? "ניהול התפריטים והעסקים"
+                        : "Manage menus and businesses"}
+                    </small>
+                  </div>
+                </button>
+              ) : null}
+
+
+              <button
+                type="button"
+                onClick={() => {
+                  setOpenHeaderMenu(false);
+                  location.href = "/";
+                }}
+              >
+                <span>←</span>
+
+                <div>
+                  <strong>
+                    {isHebrew
+                      ? "חזרה ל-BEYOND"
+                      : "Back to BEYOND"}
+                  </strong>
+
+                  <small>
+                    {isHebrew
+                      ? "חזור לאתר הראשי"
+                      : "Return to the main website"}
+                  </small>
+                </div>
+              </button>
+
+            </div>
+
+          </div>
+
+        </>
+      ) : null}
 
       {msg ? (
         <button
@@ -2505,38 +3002,99 @@ export function BeyondMenuStudio() {
             </div>
 
             <div className="bm-owner-site-actions">
+
               <button
+                className={
+                  showSettings
+                    ? "active"
+                    : ""
+                }
                 onClick={() =>
                   setShowSettings(v => !v)
                 }
               >
-                SETTINGS
+                <span
+                  className="bm-mobile-nav-icon"
+                  aria-hidden="true"
+                >
+                  ⚙
+                </span>
+
+                <span className="bm-mobile-nav-label">
+                  {isHebrew
+                    ? "הגדרות"
+                    : "Settings"}
+                </span>
+
+                <span className="bm-desktop-action-label">
+                  SETTINGS
+                </span>
               </button>
 
-              <button
-                onClick={() =>
-                  window.open(
-                    liveUrl(selected.slug),
-                    "_blank"
-                  )
-                }
-              >
-                VIEW MENU
-              </button>
 
               <button
-                className="primary"
-                onClick={() =>
-                  updateSite({
-                    published:
-                      !selected.published
-                  })
-                }
+                onClick={() => {
+                  setShowSettings(false);
+                  setShowPreview(true);
+                }}
               >
-                {selected.published
-                  ? "UNPUBLISH"
-                  : "PUBLISH"}
+                <span
+                  className="bm-mobile-nav-icon"
+                  aria-hidden="true"
+                >
+                  ◉
+                </span>
+
+                <span className="bm-mobile-nav-label">
+                  {isHebrew
+                    ? "תצוגה"
+                    : "Preview"}
+                </span>
+
+                <span className="bm-desktop-action-label">
+                  VIEW MENU
+                </span>
               </button>
+
+
+              <button
+                className={`primary bm-owner-desktop-publish ${
+                  selected.published
+                    ? "published"
+                    : ""
+                }`}
+                onClick={confirmPublishChange}
+              >
+                <span
+                  className="bm-mobile-nav-icon"
+                  aria-hidden="true"
+                >
+                  {selected.published
+                    ? "✓"
+                    : "↑"}
+                </span>
+
+                <span className="bm-mobile-nav-label">
+                  {selected.published
+                    ? (
+                        isHebrew
+                          ? "פורסם"
+                          : "Live"
+                      )
+                    : (
+                        isHebrew
+                          ? "פרסום"
+                          : "Publish"
+                      )}
+                </span>
+
+                <span className="bm-desktop-action-label">
+                  {selected.published
+                    ? "UNPUBLISH"
+                    : "PUBLISH"}
+                </span>
+              </button>
+
             </div>
 
           </section>
@@ -2561,19 +3119,95 @@ export function BeyondMenuStudio() {
             </div>
           ) : null}
 
+          {showPreview ? (
+            <section
+              className="bm-owner-mobile-preview"
+            >
+
+              <header className="bm-owner-preview-header">
+
+                <div>
+                  <span>
+                    {isHebrew
+                      ? "תצוגה מקדימה"
+                      : "PREVIEW"}
+                  </span>
+
+                  <h2>
+                    {selected.name}
+                  </h2>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    setShowPreview(false)
+                  }
+                >
+                  {isHebrew
+                    ? "סגור"
+                    : "CLOSE"}
+                </button>
+
+              </header>
+
+
+              <div className="bm-owner-preview-browser">
+
+                <div className="bm-owner-preview-address">
+
+                  <span className="bm-owner-preview-live-dot" />
+
+                  <span>
+                    /menu/{selected.slug}
+                  </span>
+
+                </div>
+
+
+                <div
+                  className="bm-owner-preview-frame"
+                  aria-label={
+                    isHebrew
+                      ? `תצוגה מקדימה של ${selected.name}`
+                      : `${selected.name} menu preview`
+                  }
+                >
+                  <BeyondPublicMenu
+                    slug={selected.slug}
+                    previewSite={selected}
+                    previewSections={sections}
+                    previewItems={items}
+                  />
+                </div>
+
+              </div>
+
+            </section>
+          ) : null}
+
+
           {showSettings ? (
             <section className="bm-card bm-owner-settings">
 
               <div className="bm-owner-section-title">
                 <div>
                   <span className="bm-label">
-                    RESTAURANT SETTINGS
+                    {isHebrew
+                      ? "הגדרות מסעדה"
+                      : "RESTAURANT SETTINGS"}
                   </span>
 
-                  <h2>Menu settings</h2>
+                  <h2>
+                    {isHebrew
+                      ? "הגדרות התפריט"
+                      : "Menu settings"}
+                  </h2>
 
                   <p className="bm-owner-settings-intro">
-                    Change your restaurant name, public menu URL and branding.
+                    {isHebrew
+                      ? "נהל את פרטי המסעדה, כתובת התפריט והמיתוג."
+                      : "Manage your restaurant details, public menu URL and branding."}
                   </p>
                 </div>
 
@@ -2583,14 +3217,32 @@ export function BeyondMenuStudio() {
                     setShowSettings(false)
                   }
                 >
-                  CLOSE
+                  {isHebrew
+                    ? "סגור"
+                    : "CLOSE"}
                 </button>
               </div>
 
               <div className="bm-owner-settings-grid bm-owner-settings-grid-v5">
 
+                <div className="bm-owner-settings-group-title">
+                  <strong>
+                    {isHebrew
+                      ? "פרטי המסעדה"
+                      : "Restaurant details"}
+                  </strong>
+
+                  <span>
+                    {isHebrew
+                      ? "שם המסעדה וכתובת התפריט"
+                      : "Restaurant name and menu address"}
+                  </span>
+                </div>
+
                 <label>
-                  Restaurant name
+                  {isHebrew
+                    ? "שם המסעדה"
+                    : "Restaurant name"}
 
                   <input
                     value={siteDraft.name}
@@ -2605,12 +3257,15 @@ export function BeyondMenuStudio() {
                 </label>
 
                 <label>
-                  Menu URL
+                  {isHebrew
+                    ? "כתובת התפריט"
+                    : "Menu URL"}
 
                   <div className="bm-owner-url-field">
                     <span>/menu/</span>
 
                     <input
+                      dir="ltr"
                       value={siteDraft.slug}
                       onChange={e =>
                         setSiteDraft(current => ({
@@ -2623,9 +3278,25 @@ export function BeyondMenuStudio() {
                   </div>
                 </label>
 
+                <div className="bm-owner-settings-group-title">
+                  <strong>
+                    {isHebrew
+                      ? "מיתוג"
+                      : "Branding"}
+                  </strong>
+
+                  <span>
+                    {isHebrew
+                      ? "לוגו וצבע המותג"
+                      : "Logo and brand color"}
+                  </span>
+                </div>
+
                 <div className="bm-owner-logo-setting bm-owner-logo-upload">
                   <span className="bm-owner-setting-label">
-                    Restaurant logo
+                    {isHebrew
+                      ? "לוגו המסעדה"
+                      : "Restaurant logo"}
                   </span>
 
                   <div className="bm-owner-logo-upload-inner">
@@ -2674,10 +3345,22 @@ export function BeyondMenuStudio() {
                         htmlFor={`bm-menu-logo-${selected.id}`}
                       >
                         {logoUploading
-                          ? "UPLOADING…"
+                          ? (
+                              isHebrew
+                                ? "מעלה…"
+                                : "UPLOADING…"
+                            )
                           : selected.logo_url
-                            ? "CHANGE LOGO"
-                            : "UPLOAD LOGO"}
+                            ? (
+                                isHebrew
+                                  ? "החלף לוגו"
+                                  : "CHANGE LOGO"
+                              )
+                            : (
+                                isHebrew
+                                  ? "העלה לוגו"
+                                  : "UPLOAD LOGO"
+                              )}
                       </label>
 
                       {selected.logo_url ? (
@@ -2689,12 +3372,16 @@ export function BeyondMenuStudio() {
                             removeRestaurantLogo
                           }
                         >
-                          REMOVE
+                          {isHebrew
+                            ? "הסר"
+                            : "REMOVE"}
                         </button>
                       ) : null}
 
                       <small>
-                        PNG, JPG, WEBP or SVG · max 5 MB
+                        {isHebrew
+                          ? "PNG, JPG, WEBP או SVG · עד 5MB"
+                          : "PNG, JPG, WEBP or SVG · max 5 MB"}
                       </small>
 
                     </div>
@@ -2703,7 +3390,9 @@ export function BeyondMenuStudio() {
                 </div>
 
                 <label className="bm-owner-color-setting">
-                  Brand color
+                  {isHebrew
+                    ? "צבע המותג"
+                    : "Brand color"}
 
                   <input
                     type="color"
@@ -2720,8 +3409,24 @@ export function BeyondMenuStudio() {
                   />
                 </label>
 
+                <div className="bm-owner-settings-group-title">
+                  <strong>
+                    {isHebrew
+                      ? "התנהגות התפריט"
+                      : "Menu behavior"}
+                  </strong>
+
+                  <span>
+                    {isHebrew
+                      ? "בחר כיצד התפריט יוצג ללקוחות"
+                      : "Choose how customers first see the menu"}
+                  </span>
+                </div>
+
                 <label className="bm-owner-language-setting">
-                  Default language
+                  {isHebrew
+                    ? "שפת ברירת מחדל"
+                    : "Default language"}
 
                   <select
                     value={
@@ -2736,11 +3441,15 @@ export function BeyondMenuStudio() {
                     }
                   >
                     <option value="he">
-                      Hebrew — עברית
+                      {isHebrew
+                        ? "עברית"
+                        : "Hebrew — עברית"}
                     </option>
 
                     <option value="en">
-                      English
+                      {isHebrew
+                        ? "אנגלית"
+                        : "English"}
                     </option>
                   </select>
                 </label>
@@ -2750,9 +3459,13 @@ export function BeyondMenuStudio() {
               <div className="bm-owner-settings-footer">
 
                 <div>
-                  <span>PUBLIC MENU</span>
+                  <span>
+                    {isHebrew
+                      ? "כתובת התפריט"
+                      : "PUBLIC MENU"}
+                  </span>
 
-                  <strong>
+                  <strong dir="ltr">
                     /menu/{slugify(siteDraft.slug || siteDraft.name) || "your-menu"}
                   </strong>
                 </div>
@@ -2762,7 +3475,75 @@ export function BeyondMenuStudio() {
                   className="bm-owner-save-settings"
                   onClick={saveRestaurantSettings}
                 >
-                  SAVE SETTINGS
+                  {isHebrew
+                    ? "שמור הגדרות"
+                    : "SAVE SETTINGS"}
+                </button>
+
+              </div>
+
+
+              <div className="bm-owner-mobile-publish-setting">
+
+                <div className="bm-owner-mobile-publish-copy">
+
+                  <span>
+                    {isHebrew
+                      ? "סטטוס התפריט"
+                      : "Menu status"}
+                  </span>
+
+                  <strong>
+                    {selected.published
+                      ? (
+                          isHebrew
+                            ? "התפריט מפורסם"
+                            : "Menu is live"
+                        )
+                      : (
+                          isHebrew
+                            ? "התפריט אינו מפורסם"
+                            : "Menu is not published"
+                        )}
+                  </strong>
+
+                  <p>
+                    {selected.published
+                      ? (
+                          isHebrew
+                            ? "לקוחות יכולים לצפות בתפריט כרגע."
+                            : "Customers can currently view this menu."
+                        )
+                      : (
+                          isHebrew
+                            ? "רק אתה יכול לראות את השינויים כרגע."
+                            : "Only you can see the changes right now."
+                        )}
+                  </p>
+
+                </div>
+
+
+                <button
+                  type="button"
+                  className={`bm-owner-mobile-publish-button ${
+                    selected.published
+                      ? "is-live"
+                      : "is-draft"
+                  }`}
+                  onClick={confirmPublishChange}
+                >
+                  {selected.published
+                    ? (
+                        isHebrew
+                          ? "ביטול פרסום"
+                          : "Unpublish menu"
+                      )
+                    : (
+                        isHebrew
+                          ? "פרסום התפריט"
+                          : "Publish menu"
+                      )}
                 </button>
 
               </div>
@@ -2805,7 +3586,7 @@ export function BeyondMenuStudio() {
                       onChange={e =>
                         setSecEn(e.target.value)
                       }
-                      placeholder="Cocktails"
+                      placeholder="New Category"
                       autoFocus
                     />
                   </label>
@@ -2819,7 +3600,7 @@ export function BeyondMenuStudio() {
                       onChange={e =>
                         setSecHe(e.target.value)
                       }
-                      placeholder="קוקטיילים"
+                      placeholder="קטגוריה חדשה"
                     />
                   </label>
 
@@ -2840,7 +3621,10 @@ export function BeyondMenuStudio() {
                 </form>
               ) : null}
 
-              <div className="bm-owner-category-list">
+              <div
+                ref={categoryScrollRef}
+                className="bm-owner-category-list"
+              >
 
                 {sections.map(section => {
                   const count = items.filter(
@@ -2906,6 +3690,37 @@ export function BeyondMenuStudio() {
                     );
                   }
 
+                  const sectionIndex =
+                    sections.findIndex(
+                      current =>
+                        current.id === section.id
+                    );
+
+                  const isFirstSection =
+                    sectionIndex === 0;
+
+                  const isLastSection =
+                    sectionIndex ===
+                    sections.length - 1;
+
+                  const primarySectionName =
+                    isHebrew
+                      ? (
+                          section.name_he ||
+                          section.name_en ||
+                          ""
+                        )
+                      : (
+                          section.name_en ||
+                          section.name_he ||
+                          ""
+                        );
+
+                  const secondarySectionName =
+                    isHebrew
+                      ? section.name_en || ""
+                      : section.name_he || "";
+
                   return (
                     <div
                       key={section.id}
@@ -2930,27 +3745,264 @@ export function BeyondMenuStudio() {
                         }
                       >
                         <span>
+
                           <strong>
-                            {section.name_en}
+                            {primarySectionName}
                           </strong>
 
-                          <small>
-                            {section.name_he}
-                          </small>
+                          {secondarySectionName &&
+                          secondarySectionName !==
+                          primarySectionName ? (
+                            <small
+                              dir={
+                                isHebrew
+                                  ? "ltr"
+                                  : "rtl"
+                              }
+                            >
+                              {secondarySectionName}
+                            </small>
+                          ) : null}
+
                         </span>
 
                         <em>
                           {count}
                         </em>
+
                       </button>
 
+
+                      {section.visible === false ? (
+                        <span className="bm-owner-category-hidden-pill">
+                          {isHebrew
+                            ? "מוסתרת"
+                            : "Hidden"}
+                        </span>
+                      ) : null}
+
+
+                      {/* Premium mobile category menu */}
+                      <button
+                        type="button"
+                        className="bm-owner-category-more"
+                        aria-label={
+                          isHebrew
+                            ? "אפשרויות קטגוריה"
+                            : "Category options"
+                        }
+                        aria-expanded={
+                          openCategoryMenuId ===
+                          section.id
+                        }
+                        onClick={() =>
+                          setOpenCategoryMenuId(
+                            current =>
+                              current === section.id
+                                ? ""
+                                : section.id
+                          )
+                        }
+                      >
+                        •••
+                      </button>
+
+
+                      {openCategoryMenuId ===
+                      section.id &&
+                      studioPortalTarget ? (
+                        createPortal(
+                          <>
+
+                          <button
+                            type="button"
+                            className="bm-owner-category-sheet-backdrop"
+                            aria-label={
+                              isHebrew
+                                ? "סגור"
+                                : "Close"
+                            }
+                            onClick={() =>
+                              setOpenCategoryMenuId("")
+                            }
+                          />
+
+                          <div
+                            className="bm-owner-category-sheet"
+                            role="dialog"
+                            aria-modal="true"
+                          >
+
+                            <div className="bm-owner-category-sheet-handle" />
+
+                            <div className="bm-owner-category-sheet-head">
+
+                              <div>
+                                <strong>
+                                  {primarySectionName}
+                                </strong>
+
+                                {secondarySectionName &&
+                                secondarySectionName !==
+                                primarySectionName ? (
+                                  <span>
+                                    {secondarySectionName}
+                                  </span>
+                                ) : null}
+                              </div>
+
+                              <b>
+                                {count}{" "}
+                                {isHebrew
+                                  ? "פריטים"
+                                  : count === 1
+                                    ? "item"
+                                    : "items"}
+                              </b>
+
+                            </div>
+
+
+                            <div className="bm-owner-category-sheet-actions">
+
+                              <button
+                                type="button"
+                                className="primary"
+                                onClick={() => {
+                                  setOpenCategoryMenuId("");
+                                  startCategoryEdit(
+                                    section
+                                  );
+                                }}
+                              >
+                                <span>✎</span>
+
+                                {isHebrew
+                                  ? "עריכת הקטגוריה"
+                                  : "Edit category"}
+                              </button>
+
+
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setOpenCategoryMenuId("");
+                                  toggleCategory(
+                                    section
+                                  );
+                                }}
+                              >
+                                <span>
+                                  {section.visible === false
+                                    ? "◉"
+                                    : "○"}
+                                </span>
+
+                                {section.visible === false
+                                  ? (
+                                      isHebrew
+                                        ? "הצג בתפריט"
+                                        : "Show in menu"
+                                    )
+                                  : (
+                                      isHebrew
+                                        ? "הסתר מהתפריט"
+                                        : "Hide from menu"
+                                    )}
+                              </button>
+
+
+                              <div className="bm-owner-category-sheet-move">
+
+                                <button
+                                  type="button"
+                                  disabled={
+                                    isFirstSection
+                                  }
+                                  onClick={() => {
+                                    setOpenCategoryMenuId("");
+                                    moveCategory(
+                                      section.id,
+                                      -1
+                                    );
+                                  }}
+                                >
+                                  ←
+
+                                  <span>
+                                    {isHebrew
+                                      ? "מוקדם יותר"
+                                      : "Earlier"}
+                                  </span>
+                                </button>
+
+
+                                <button
+                                  type="button"
+                                  disabled={
+                                    isLastSection
+                                  }
+                                  onClick={() => {
+                                    setOpenCategoryMenuId("");
+                                    moveCategory(
+                                      section.id,
+                                      1
+                                    );
+                                  }}
+                                >
+                                  →
+
+                                  <span>
+                                    {isHebrew
+                                      ? "מאוחר יותר"
+                                      : "Later"}
+                                  </span>
+                                </button>
+
+                              </div>
+
+
+                              <button
+                                type="button"
+                                className="danger"
+                                onClick={() => {
+                                  setOpenCategoryMenuId("");
+                                  deleteCategory(
+                                    section
+                                  );
+                                }}
+                              >
+                                <span>⌫</span>
+
+                                {isHebrew
+                                  ? "מחיקת הקטגוריה"
+                                  : "Delete category"}
+                              </button>
+
+                            </div>
+
+                          </div>
+
+                          </>,
+                          studioPortalTarget
+                        )
+                      ) : null}
+
+
+                      {/* Existing desktop controls */}
                       <div className="bm-owner-category-actions">
 
                         <button
                           className="bm-move-button"
-                          disabled={sections.findIndex(s => s.id === section.id) === 0}
-                          onClick={() => moveCategory(section.id, -1)}
-                          title="Move category up"
+                          disabled={
+                            isFirstSection
+                          }
+                          onClick={() =>
+                            moveCategory(
+                              section.id,
+                              -1
+                            )
+                          }
                         >
                           ↑
                         </button>
@@ -2958,11 +4010,14 @@ export function BeyondMenuStudio() {
                         <button
                           className="bm-move-button"
                           disabled={
-                            sections.findIndex(s => s.id === section.id) ===
-                            sections.length - 1
+                            isLastSection
                           }
-                          onClick={() => moveCategory(section.id, 1)}
-                          title="Move category down"
+                          onClick={() =>
+                            moveCategory(
+                              section.id,
+                              1
+                            )
+                          }
                         >
                           ↓
                         </button>
@@ -2979,7 +4034,9 @@ export function BeyondMenuStudio() {
 
                         <button
                           onClick={() =>
-                            toggleCategory(section)
+                            toggleCategory(
+                              section
+                            )
                           }
                         >
                           {section.visible === false
@@ -2990,7 +4047,9 @@ export function BeyondMenuStudio() {
                         <button
                           className="danger"
                           onClick={() =>
-                            deleteCategory(section)
+                            deleteCategory(
+                              section
+                            )
                           }
                         >
                           DELETE
@@ -3016,14 +4075,49 @@ export function BeyondMenuStudio() {
 
                   <h2>
                     {activeSection
-                      ? activeSection.name_en
-                      : "Select a category"}
+                      ? (
+                          isHebrew
+                            ? activeSection.name_he ||
+                              activeSection.name_en ||
+                              ""
+                            : activeSection.name_en ||
+                              activeSection.name_he ||
+                              ""
+                        )
+                      : (
+                          isHebrew
+                            ? "בחר קטגוריה"
+                            : "Select a category"
+                        )}
                   </h2>
 
-                  {activeSection?.name_he ? (
-                    <p dir="rtl">
-                      {activeSection.name_he}
-                    </p>
+                  {activeSection ? (
+                    (() => {
+                      const secondaryName =
+                        isHebrew
+                          ? activeSection.name_en
+                          : activeSection.name_he;
+
+                      const primaryName =
+                        isHebrew
+                          ? activeSection.name_he ||
+                            activeSection.name_en
+                          : activeSection.name_en ||
+                            activeSection.name_he;
+
+                      if (
+                        !secondaryName ||
+                        secondaryName === primaryName
+                      ) {
+                        return null;
+                      }
+
+                      return (
+                        <p dir={isHebrew ? "ltr" : "rtl"}>
+                          {secondaryName}
+                        </p>
+                      );
+                    })()
                   ) : null}
                 </div>
 
@@ -3078,7 +4172,11 @@ export function BeyondMenuStudio() {
                   <h3>No items yet</h3>
                   <p>
                     Add the first item to{" "}
-                    {activeSection.name_en}.
+                    {isHebrew
+                      ? activeSection.name_he ||
+                        activeSection.name_en
+                      : activeSection.name_en ||
+                        activeSection.name_he}.
                   </p>
 
                   <button onClick={openAddItem}>
@@ -3129,6 +4227,37 @@ export function BeyondMenuStudio() {
                       );
                     }
 
+                    const primaryDescription =
+                      isHebrew
+                        ? (
+                            menuItem.description_he ||
+                            menuItem.description ||
+                            menuItem.description_en ||
+                            ""
+                          )
+                        : (
+                            menuItem.description_en ||
+                            menuItem.description ||
+                            menuItem.description_he ||
+                            ""
+                          );
+
+                    const secondaryItemName =
+                      studioSecondaryName(menuItem);
+
+                    const itemIndex =
+                      activeItems.findIndex(
+                        item =>
+                          item.id === menuItem.id
+                      );
+
+                    const isFirstItem =
+                      itemIndex === 0;
+
+                    const isLastItem =
+                      itemIndex ===
+                      activeItems.length - 1;
+
                     return (
                       <article
                         className={`bm-owner-item ${
@@ -3147,21 +4276,44 @@ export function BeyondMenuStudio() {
                         >
 
                           <div className="bm-owner-item-copy">
-                            <strong>
-                              {menuItem.name_en}
-                            </strong>
 
-                            {menuItem.name_he ? (
-                              <span dir="rtl">
-                                {menuItem.name_he}
+                            <div className="bm-owner-item-title-row">
+
+                              <strong>
+                                {studioPrimaryName(
+                                  menuItem
+                                )}
+                              </strong>
+
+                              {menuItem.visible === false ? (
+                                <em className="bm-owner-item-hidden-pill">
+                                  {isHebrew
+                                    ? "מוסתר"
+                                    : "Hidden"}
+                                </em>
+                              ) : null}
+
+                            </div>
+
+                            {secondaryItemName ? (
+                              <span
+                                className="bm-owner-item-secondary-name"
+                                dir={
+                                  isHebrew
+                                    ? "ltr"
+                                    : "rtl"
+                                }
+                              >
+                                {secondaryItemName}
                               </span>
                             ) : null}
 
-                            {menuItem.description ? (
+                            {primaryDescription ? (
                               <p>
-                                {menuItem.description}
+                                {primaryDescription}
                               </p>
                             ) : null}
+
                           </div>
 
                           <b className="bm-owner-item-price">
@@ -3170,14 +4322,225 @@ export function BeyondMenuStudio() {
 
                         </button>
 
+
+                        {/* Mobile premium action menu */}
+                        <button
+                          type="button"
+                          className="bm-owner-item-more"
+                          aria-label={
+                            isHebrew
+                              ? "אפשרויות פריט"
+                              : "Item options"
+                          }
+                          aria-expanded={
+                            openItemMenuId ===
+                            menuItem.id
+                          }
+                          onClick={() =>
+                            setOpenItemMenuId(
+                              current =>
+                                current ===
+                                menuItem.id
+                                  ? ""
+                                  : menuItem.id
+                            )
+                          }
+                        >
+                          •••
+                        </button>
+
+
+                        {openItemMenuId ===
+                        menuItem.id &&
+                        studioPortalTarget ? (
+                          createPortal(
+                            <>
+
+                            <button
+                              type="button"
+                              className="bm-owner-item-sheet-backdrop"
+                              aria-label={
+                                isHebrew
+                                  ? "סגור"
+                                  : "Close"
+                              }
+                              onClick={() =>
+                                setOpenItemMenuId("")
+                              }
+                            />
+
+                            <div
+                              className="bm-owner-item-sheet"
+                              role="dialog"
+                              aria-modal="true"
+                            >
+
+                              <div className="bm-owner-item-sheet-handle" />
+
+                              <div className="bm-owner-item-sheet-head">
+
+                                <div>
+                                  <strong>
+                                    {studioPrimaryName(
+                                      menuItem
+                                    )}
+                                  </strong>
+
+                                  {secondaryItemName ? (
+                                    <span>
+                                      {secondaryItemName}
+                                    </span>
+                                  ) : null}
+                                </div>
+
+                                <b>
+                                  {studioPrice(
+                                    menuItem
+                                  )}
+                                </b>
+
+                              </div>
+
+
+                              <div className="bm-owner-item-sheet-actions">
+
+                                <button
+                                  type="button"
+                                  className="primary"
+                                  onClick={() => {
+                                    setOpenItemMenuId("");
+                                    startItemEdit(
+                                      menuItem
+                                    );
+                                  }}
+                                >
+                                  <span>
+                                    ✎
+                                  </span>
+
+                                  {isHebrew
+                                    ? "עריכת הפריט"
+                                    : "Edit item"}
+                                </button>
+
+
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setOpenItemMenuId("");
+                                    toggleItem(
+                                      menuItem
+                                    );
+                                  }}
+                                >
+                                  <span>
+                                    {menuItem.visible === false
+                                      ? "◉"
+                                      : "○"}
+                                  </span>
+
+                                  {menuItem.visible === false
+                                    ? (
+                                        isHebrew
+                                          ? "הצג בתפריט"
+                                          : "Show in menu"
+                                      )
+                                    : (
+                                        isHebrew
+                                          ? "הסתר מהתפריט"
+                                          : "Hide from menu"
+                                      )}
+                                </button>
+
+
+                                <div className="bm-owner-item-sheet-move">
+
+                                  <button
+                                    type="button"
+                                    disabled={
+                                      isFirstItem
+                                    }
+                                    onClick={() => {
+                                      setOpenItemMenuId("");
+                                      moveItem(
+                                        menuItem.id,
+                                        -1
+                                      );
+                                    }}
+                                  >
+                                    ↑
+                                    <span>
+                                      {isHebrew
+                                        ? "הזז למעלה"
+                                        : "Move up"}
+                                    </span>
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    disabled={
+                                      isLastItem
+                                    }
+                                    onClick={() => {
+                                      setOpenItemMenuId("");
+                                      moveItem(
+                                        menuItem.id,
+                                        1
+                                      );
+                                    }}
+                                  >
+                                    ↓
+                                    <span>
+                                      {isHebrew
+                                        ? "הזז למטה"
+                                        : "Move down"}
+                                    </span>
+                                  </button>
+
+                                </div>
+
+
+                                <button
+                                  type="button"
+                                  className="danger"
+                                  onClick={() => {
+                                    setOpenItemMenuId("");
+                                    deleteItem(
+                                      menuItem
+                                    );
+                                  }}
+                                >
+                                  <span>
+                                    ⌫
+                                  </span>
+
+                                  {isHebrew
+                                    ? "מחיקת הפריט"
+                                    : "Delete item"}
+                                </button>
+
+                              </div>
+
+                            </div>
+
+                            </>,
+                            studioPortalTarget
+                          )
+                        ) : null}
+
+
+                        {/* Existing desktop controls */}
                         <div className="bm-owner-item-actions">
 
                           <button
                             className="bm-move-button"
-                            disabled={
-                              activeItems.findIndex(i => i.id === menuItem.id) === 0
+                            disabled={isFirstItem}
+                            onClick={() =>
+                              moveItem(
+                                menuItem.id,
+                                -1
+                              )
                             }
-                            onClick={() => moveItem(menuItem.id, -1)}
                             title="Move item up"
                           >
                             ↑
@@ -3185,11 +4548,13 @@ export function BeyondMenuStudio() {
 
                           <button
                             className="bm-move-button"
-                            disabled={
-                              activeItems.findIndex(i => i.id === menuItem.id) ===
-                              activeItems.length - 1
+                            disabled={isLastItem}
+                            onClick={() =>
+                              moveItem(
+                                menuItem.id,
+                                1
+                              )
                             }
-                            onClick={() => moveItem(menuItem.id, 1)}
                             title="Move item down"
                           >
                             ↓
