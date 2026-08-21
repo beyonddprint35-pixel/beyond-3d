@@ -962,38 +962,181 @@ export function BeyondPublicMenu({
     );
   }
 
-  const normalPrice = item => (
-    <div className="ep-item-price">
-      {item.price || "—"}
-    </div>
-  );
+  const cleanPublicNisPrice = value =>
+    String(value || "")
+      .replace(/[₪$€£]/g, "")
+      .trim();
 
-  const dualPrice = item => {
-    const parts =
-      String(item.price || "")
-        .split("/")
-        .map(value => value.trim())
-        .filter(Boolean);
+
+
+
+
+  const publicPriceOptions = item => {
 
     if (
-      !isDualSection ||
-      parts.length !== 2
+      !Array.isArray(
+        item?.price_options
+      )
     ) {
-      return normalPrice(item);
+      return [];
     }
 
+    return item.price_options
+      .filter(
+        option =>
+          option &&
+          cleanPublicNisPrice(
+            option.price
+          )
+      )
+      .slice(0, 2);
+  };
+
+
+  const publicPriceOptionLabel =
+    option => {
+
+      if (!option) {
+        return "";
+      }
+
+      return lang === "he"
+        ? (
+            option.label_he ||
+            option.label_en ||
+            ""
+          )
+        : (
+            option.label_en ||
+            option.label_he ||
+            ""
+          );
+    };
+
+
+  const normalPrice = item => {
+
+    const options =
+      publicPriceOptions(
+        item
+      );
+
+
+    const amount =
+      options[0]?.price ||
+      String(
+        item.price || ""
+      )
+        .split("/")[0]
+        .trim();
+
+
+    const clean =
+      cleanPublicNisPrice(
+        amount
+      );
+
+
     return (
-      <div className="ep-dual-price">
-        <strong>{parts[0]}</strong>
-        <strong>{parts[1]}</strong>
+      <div className="ep-item-price">
+        {clean
+          ? `₪${clean}`
+          : "—"}
       </div>
     );
   };
 
+
+  const dualPrice = item => {
+
+    const options =
+      publicPriceOptions(
+        item
+      );
+
+
+    /*
+      NEW STRUCTURED PRICE OPTIONS
+    */
+    if (
+      options.length >= 2
+    ) {
+
+      return (
+        <div className="ep-dual-price">
+
+          <strong>
+            ₪
+            {cleanPublicNisPrice(
+              options[0].price
+            )}
+          </strong>
+
+
+          <strong>
+            ₪
+            {cleanPublicNisPrice(
+              options[1].price
+            )}
+          </strong>
+
+        </div>
+      );
+    }
+
+
+    /*
+      LEGACY PRICE DATA
+
+      IMPORTANT:
+      Do NOT require isDualSection.
+
+      If the database contains:
+          28 / 35
+
+      show BOTH prices regardless of menu category.
+    */
+    const parts =
+      String(
+        item.price || ""
+      )
+        .split("/")
+        .map(
+          cleanPublicNisPrice
+        )
+        .filter(Boolean);
+
+
+    if (
+      parts.length === 2
+    ) {
+
+      return (
+        <div className="ep-dual-price">
+
+          <strong>
+            ₪{parts[0]}
+          </strong>
+
+          <strong>
+            ₪{parts[1]}
+          </strong>
+
+        </div>
+      );
+    }
+
+
+    return normalPrice(
+      item
+    );
+  };
+
+
   const rendered = [];
 
   let previousCategory = "";
-  let dualHeaderShown = false;
+  let previousPriceHeaderSignature = "";
 
   activeItems.forEach(item => {
     const category =
@@ -1025,43 +1168,155 @@ export function BeyondPublicMenu({
     }
 
     const priceParts =
-      String(item.price || "")
+      String(
+        item.price || ""
+      )
         .split("/")
-        .map(value => value.trim())
+        .map(
+          cleanPublicNisPrice
+        )
         .filter(Boolean);
 
+
+    const structuredPriceOptions =
+      publicPriceOptions(
+        item
+      );
+
+
+    let currentPriceLabels = [];
+
+
+    /*
+      Structured labels:
+      Small / Large
+      Shot / Glass
+      Glass / Bottle
+      custom labels, etc.
+    */
     if (
-      isDualSection &&
-      priceParts.length === 2 &&
-      !dualHeaderShown
+      structuredPriceOptions.length >= 2
     ) {
+
+      currentPriceLabels = [
+        publicPriceOptionLabel(
+          structuredPriceOptions[0]
+        ),
+
+        publicPriceOptionLabel(
+          structuredPriceOptions[1]
+        )
+      ].filter(Boolean);
+
+    }
+
+
+    /*
+      Existing legacy alcohol behavior.
+    */
+    if (
+      currentPriceLabels.length !== 2 &&
+      isDualSection &&
+      priceParts.length === 2
+    ) {
+
+      currentPriceLabels =
+        lang === "he"
+          ? [
+              "שוט",
+              "כוס"
+            ]
+          : [
+              "SHOT",
+              "GLASS"
+            ];
+
+    }
+
+
+    const currentPriceHeaderSignature =
+      currentPriceLabels.length === 2
+        ? currentPriceLabels.join("|")
+        : "";
+
+
+    /*
+      Reuse the EXISTING approved ep-dual-header.
+
+      No new CSS.
+      No new customer-menu styling.
+    */
+    if (
+      currentPriceHeaderSignature &&
+      currentPriceHeaderSignature !==
+        previousPriceHeaderSignature
+    ) {
+
+      const firstKey =
+        structuredPriceOptions[0]
+          ?.label_key ||
+        "";
+
+      const secondKey =
+        structuredPriceOptions[1]
+          ?.label_key ||
+        "";
+
+
+      const shotGlass =
+        (
+          firstKey === "shot" &&
+          secondKey === "glass"
+        )
+        ||
+        (
+          !structuredPriceOptions.length &&
+          isDualSection
+        );
+
+
       rendered.push(
         <div
           className="ep-dual-header"
-          key={`dual-${active}`}
+          key={
+            `dual-${active}-${item.id}`
+          }
         >
-          <div>
-            <ShotIcon />
-            <span>
-              {lang === "he"
-                ? "שוט"
-                : "SHOT"}
-            </span>
-          </div>
 
           <div>
-            <GlassIcon />
+
+            {shotGlass ? (
+              <ShotIcon />
+            ) : null}
+
             <span>
-              {lang === "he"
-                ? "כוס"
-                : "GLASS"}
+              {currentPriceLabels[0]}
             </span>
+
           </div>
+
+
+          <div>
+
+            {shotGlass ? (
+              <GlassIcon />
+            ) : null}
+
+            <span>
+              {currentPriceLabels[1]}
+            </span>
+
+          </div>
+
         </div>
       );
 
-      dualHeaderShown = true;
+
+      previousPriceHeaderSignature =
+        currentPriceHeaderSignature;
+
     }
+
 
     if (item.type === "wine") {
       const wine =
@@ -1263,13 +1518,19 @@ export function BeyondPublicMenu({
         </header>
 
         <section className="ep-hero">
-          <div className="ep-hero-kicker">
+          <div
+            id="ep-customer-hero-kicker"
+            className="ep-hero-kicker"
+          >
             {lang === "he"
               ? "התפריט הדיגיטלי שלנו"
               : "OUR DIGITAL MENU"}
           </div>
 
-          <h1 className="ep-hero-title">
+          <h1
+            id="ep-customer-hero-title"
+            className="ep-hero-title"
+          >
             {lang === "he"
               ? "משקאות ואוכל"
               : "Drinks & Food"}
@@ -1484,6 +1745,7 @@ export function BeyondMenuStudio() {
     description_en: "",
     description_he: "",
     price: "",
+    price_options: [],
     origin_en: "",
     origin_he: "",
     wine_glass: "",
@@ -1588,6 +1850,7 @@ export function BeyondMenuStudio() {
     description_en: "",
     description_he: "",
     price: "",
+    price_options: [],
     origin_en: "",
     origin_he: "",
     wine_glass: "",
@@ -3230,6 +3493,7 @@ const loadData = async (id) => {
       description_en: "",
       description_he: "",
       price: "",
+      price_options: [],
       origin_en: "",
       origin_he: "",
       wine_glass: "",
@@ -3389,12 +3653,20 @@ const loadData = async (id) => {
             newItem.description_he.trim() ||
             newItem.description.trim() ||
             null,
-
           price:
             newItem.type === "wine"
               ? null
-              : newItem.price.trim() ||
+              : legacyPriceForDatabase(
+                  newItem
+                ) ||
                 null,
+
+          price_options:
+            newItem.type === "wine"
+              ? []
+              : priceOptionsForDatabase(
+                  newItem
+                ),
 
           origin_en:
             newItem.type === "wine"
@@ -3579,6 +3851,13 @@ const loadData = async (id) => {
         menuItem.price ||
         "",
 
+      price_options:
+        Array.isArray(
+          menuItem.price_options
+        )
+          ? menuItem.price_options
+          : [],
+
       origin_en:
         menuItem.origin_en ||
         "",
@@ -3734,12 +4013,20 @@ const loadData = async (id) => {
             itemDraft.description_he.trim() ||
             itemDraft.description.trim() ||
             null,
-
           price:
             itemDraft.type === "wine"
               ? null
-              : itemDraft.price.trim() ||
+              : legacyPriceForDatabase(
+                  itemDraft
+                ) ||
                 null,
+
+          price_options:
+            itemDraft.type === "wine"
+              ? []
+              : priceOptionsForDatabase(
+                  itemDraft
+                ),
 
           origin_en:
             itemDraft.type === "wine"
@@ -4752,7 +5039,6 @@ const loadData = async (id) => {
                     className="primary"
                     onClick={() => {
                       setOpenSubcategoryMenuId("");
-
                       startSubcategoryEdit(
                         subcategory
                       );
@@ -4763,7 +5049,7 @@ const loadData = async (id) => {
                     </span>
 
                     {isHebrew
-                      ? "עריכת תת־הקטגוריה"
+                      ? "עריכת תת־קטגוריה"
                       : "Edit subcategory"}
                   </button>
 
@@ -4772,7 +5058,6 @@ const loadData = async (id) => {
                     type="button"
                     onClick={() => {
                       setOpenSubcategoryMenuId("");
-
                       toggleSubcategoryVisibility(
                         subcategory
                       );
@@ -4802,9 +5087,7 @@ const loadData = async (id) => {
 
                     <button
                       type="button"
-                      disabled={
-                        index <= 0
-                      }
+                      disabled={index <= 0}
                       onClick={() => {
                         setOpenSubcategoryMenuId("");
 
@@ -4868,7 +5151,7 @@ const loadData = async (id) => {
                     </span>
 
                     {isHebrew
-                      ? "מחיקת תת־הקטגוריה"
+                      ? "מחיקת תת־קטגוריה"
                       : "Delete subcategory"}
                   </button>
 
@@ -5114,7 +5397,21 @@ const loadData = async (id) => {
 
   const studioPrice = menuItem => {
     if (menuItem.type !== "wine") {
-      return menuItem.price || "—";
+      const parts =
+        String(menuItem.price || "")
+          .split("/")
+          .map(value =>
+            String(value || "")
+              .replace(/[₪$€£]/g, "")
+              .trim()
+          )
+          .filter(Boolean);
+
+      return parts.length
+        ? parts
+            .map(value => `₪${value}`)
+            .join(" / ")
+        : "—";
     }
 
     const glass = String(
@@ -5139,53 +5436,316 @@ const loadData = async (id) => {
     return money(glass || bottle) || "—";
   };
 
-  // BEYOND_PRICE_CURRENCY_HELPERS_V1
+  // BEYOND_PRICE_OPTIONS_V2_START
 
-  const getPriceCurrency = value => {
-    const text = String(
-      value || ""
-    ).trim();
+  const PRICE_OPTION_PRESETS = [
+    {
+      key: "shot",
+      en: "Shot",
+      he: "שוט"
+    },
+    {
+      key: "glass",
+      en: "Glass",
+      he: "כוס"
+    },
+    {
+      key: "bottle",
+      en: "Bottle",
+      he: "בקבוק"
+    },
+    {
+      key: "small",
+      en: "Small",
+      he: "קטן"
+    },
+    {
+      key: "medium",
+      en: "Medium",
+      he: "בינוני"
+    },
+    {
+      key: "large",
+      en: "Large",
+      he: "גדול"
+    },
+    {
+      key: "regular",
+      en: "Regular",
+      he: "רגיל"
+    },
+    {
+      key: "double",
+      en: "Double",
+      he: "כפול"
+    },
+    {
+      key: "custom",
+      en: "Custom",
+      he: "מותאם אישית"
+    }
+  ];
 
-    return text.includes("$")
-      ? "$"
-      : "₪";
-  };
 
-  const getPriceAmount = value =>
+  const cleanNisPrice = value =>
     String(value || "")
-      .replace(/[₪$]/g, "")
-      .replace(/\s*\/\s*/g, " / ")
+      .replace(
+        /[₪$€£]/g,
+        ""
+      )
       .trim();
 
-  const buildPriceValue = (
-    amount,
-    currency = "₪"
-  ) => {
-    const clean = String(
-      amount || ""
-    ).trim();
 
-    if (!clean) {
-      return "";
+  const pricePreset = key =>
+    PRICE_OPTION_PRESETS.find(
+      option =>
+        option.key === key
+    ) || null;
+
+
+  const defaultPriceOptionKeys =
+    sectionId => {
+
+      if (
+        isDualPriceSection(
+          sectionId
+        )
+      ) {
+        return [
+          "shot",
+          "glass"
+        ];
+      }
+
+      return [
+        "small",
+        "large"
+      ];
+    };
+
+
+  const makePriceOption = (
+    key,
+    price = "",
+    existing = {}
+  ) => {
+
+    const preset =
+      pricePreset(key);
+
+    if (key === "custom") {
+      return {
+        label_key:
+          "custom",
+
+        label_en:
+          existing.label_en ||
+          "",
+
+        label_he:
+          existing.label_he ||
+          "",
+
+        price:
+          cleanNisPrice(
+            price
+          )
+      };
     }
 
-    /*
-      Supports both:
-      57
-      and dual prices such as:
-      18 / 35
+    return {
+      label_key:
+        preset?.key ||
+        "",
 
-      Result:
-      ₪57
-      ₪18 / ₪35
-    */
-    return clean
-      .split("/")
-      .map(part => part.trim())
-      .filter(Boolean)
-      .map(part => `${currency}${part}`)
-      .join(" / ");
+      label_en:
+        preset?.en ||
+        "",
+
+      label_he:
+        preset?.he ||
+        "",
+
+      price:
+        cleanNisPrice(
+          price
+        )
+    };
   };
+
+
+  const priceOptionsForDraft =
+    draft => {
+
+      const stored =
+        Array.isArray(
+          draft?.price_options
+        )
+          ? draft.price_options
+              .filter(Boolean)
+              .slice(0, 2)
+          : [];
+
+
+      if (stored.length) {
+        return stored.map(
+          option => ({
+            label_key:
+              option.label_key ||
+              "",
+
+            label_en:
+              option.label_en ||
+              "",
+
+            label_he:
+              option.label_he ||
+              "",
+
+            price:
+              cleanNisPrice(
+                option.price
+              )
+          })
+        );
+      }
+
+
+      const legacy =
+        String(
+          draft?.price || ""
+        )
+          .split("/")
+          .map(cleanNisPrice)
+          .filter(Boolean);
+
+
+      if (legacy.length >= 2) {
+
+        const [
+          firstKey,
+          secondKey
+        ] =
+          defaultPriceOptionKeys(
+            draft?.section_id
+          );
+
+
+        return [
+          makePriceOption(
+            firstKey,
+            legacy[0]
+          ),
+
+          makePriceOption(
+            secondKey,
+            legacy[1]
+          )
+        ];
+      }
+
+
+      return [
+        {
+          label_key: "",
+          label_en: "",
+          label_he: "",
+          price:
+            legacy[0] ||
+            ""
+        }
+      ];
+    };
+
+
+  const applyPriceOptions = (
+    setDraft,
+    options
+  ) => {
+
+    const cleaned =
+      options
+        .slice(0, 2)
+        .map(option => ({
+          ...option,
+
+          price:
+            cleanNisPrice(
+              option.price
+            )
+        }));
+
+
+    setDraft(
+      current => ({
+        ...current,
+
+        price_options:
+          cleaned,
+
+        /*
+          Keep the legacy price field populated too.
+
+          This keeps all existing menu rendering and old
+          menu data compatible while price_options becomes
+          the structured source.
+        */
+        price:
+          cleaned
+            .map(
+              option =>
+                option.price
+            )
+            .filter(Boolean)
+            .join(" / ")
+      })
+    );
+  };
+
+
+  const priceOptionsForDatabase =
+    draft =>
+      priceOptionsForDraft(
+        draft
+      )
+        .filter(
+          option =>
+            cleanNisPrice(
+              option.price
+            )
+        )
+        .map(option => ({
+          label_key:
+            option.label_key ||
+            "",
+
+          label_en:
+            option.label_en ||
+            "",
+
+          label_he:
+            option.label_he ||
+            "",
+
+          price:
+            cleanNisPrice(
+              option.price
+            )
+        }));
+
+
+  const legacyPriceForDatabase =
+    draft =>
+      priceOptionsForDatabase(
+        draft
+      )
+        .map(
+          option =>
+            option.price
+        )
+        .join(" / ");
+
+  // BEYOND_PRICE_OPTIONS_V2_END
 
 
   const renderItemFields = (
@@ -5371,56 +5931,30 @@ const loadData = async (id) => {
                 ? "מחיר לכוס"
                 : "Glass price"}
 
-              <div className="bm-price-field">
+              <div className="bm-owner-nis-input">
 
-                <select
-                  className="bm-price-currency"
-                  aria-label={isHebrew ? "מטבע למחיר כוס" : "Glass price currency"}
-                  value={
-                    getPriceCurrency(
-                      draft.wine_glass
-                    )
-                  }
-                  onChange={e =>
-                    setDraft(current => ({
-                      ...current,
-                      wine_glass:
-                        buildPriceValue(
-                          getPriceAmount(
-                            current.wine_glass
-                          ),
-                          e.target.value
-                        )
-                    }))
-                  }
-                >
-                  <option value="₪">
-                    ₪
-                  </option>
-
-                  <option value="$">
-                    $
-                  </option>
-                </select>
+                <b aria-hidden="true">
+                  ₪
+                </b>
 
                 <input
                   inputMode="decimal"
                   value={
-                    getPriceAmount(
+                    cleanNisPrice(
                       draft.wine_glass
                     )
                   }
                   onChange={e =>
-                    setDraft(current => ({
-                      ...current,
-                      wine_glass:
-                        buildPriceValue(
-                          e.target.value,
-                          getPriceCurrency(
-                            current.wine_glass
+                    setDraft(
+                      current => ({
+                        ...current,
+
+                        wine_glass:
+                          cleanNisPrice(
+                            e.target.value
                           )
-                        )
-                    }))
+                      })
+                    )
                   }
                   placeholder="35"
                 />
@@ -5433,56 +5967,30 @@ const loadData = async (id) => {
                 ? "מחיר לבקבוק"
                 : "Bottle price"}
 
-              <div className="bm-price-field">
+              <div className="bm-owner-nis-input">
 
-                <select
-                  className="bm-price-currency"
-                  aria-label={isHebrew ? "מטבע למחיר בקבוק" : "Bottle price currency"}
-                  value={
-                    getPriceCurrency(
-                      draft.wine_bottle
-                    )
-                  }
-                  onChange={e =>
-                    setDraft(current => ({
-                      ...current,
-                      wine_bottle:
-                        buildPriceValue(
-                          getPriceAmount(
-                            current.wine_bottle
-                          ),
-                          e.target.value
-                        )
-                    }))
-                  }
-                >
-                  <option value="₪">
-                    ₪
-                  </option>
-
-                  <option value="$">
-                    $
-                  </option>
-                </select>
+                <b aria-hidden="true">
+                  ₪
+                </b>
 
                 <input
                   inputMode="decimal"
                   value={
-                    getPriceAmount(
+                    cleanNisPrice(
                       draft.wine_bottle
                     )
                   }
                   onChange={e =>
-                    setDraft(current => ({
-                      ...current,
-                      wine_bottle:
-                        buildPriceValue(
-                          e.target.value,
-                          getPriceCurrency(
-                            current.wine_bottle
+                    setDraft(
+                      current => ({
+                        ...current,
+
+                        wine_bottle:
+                          cleanNisPrice(
+                            e.target.value
                           )
-                        )
-                    }))
+                      })
+                    )
                   }
                   placeholder="150"
                 />
@@ -5491,79 +5999,465 @@ const loadData = async (id) => {
             </label>
           </>
         ) : (
-          <label className="bm-field-price bm-field-regular-price">
-            {isHebrew
-              ? "מחיר"
-              : "Price"}
+          <div className="bm-owner-price-options">
 
-            <div className="bm-price-field">
+            {(() => {
 
-              <select
-                className="bm-price-currency"
-                aria-label={isHebrew ? "מטבע" : "Price currency"}
-                value={
-                  getPriceCurrency(
-                    draft.price
-                  )
-                }
-                onChange={e =>
-                  setDraft(current => ({
-                    ...current,
-                    price:
-                      buildPriceValue(
-                        getPriceAmount(
-                          current.price
-                        ),
-                        e.target.value
-                      )
-                  }))
-                }
-              >
-                <option value="₪">
-                  ₪
-                </option>
+              const options =
+                priceOptionsForDraft(
+                  draft
+                );
 
-                <option value="$">
-                  $
-                </option>
-              </select>
+              const hasSecond =
+                options.length > 1;
 
-              <input
-                inputMode={
-                  isDualPriceSection(
-                    draft.section_id
-                  )
-                    ? "text"
-                    : "decimal"
-                }
-                value={
-                  getPriceAmount(
-                    draft.price
-                  )
-                }
-                onChange={e =>
-                  setDraft(current => ({
-                    ...current,
-                    price:
-                      buildPriceValue(
-                        e.target.value,
-                        getPriceCurrency(
-                          current.price
+
+              const updatePrice = (
+                index,
+                value
+              ) => {
+
+                const next =
+                  options.map(
+                    (
+                      option,
+                      optionIndex
+                    ) =>
+                      optionIndex === index
+                        ? {
+                            ...option,
+
+                            price:
+                              cleanNisPrice(
+                                value
+                              )
+                          }
+                        : option
+                  );
+
+
+                applyPriceOptions(
+                  setDraft,
+                  next
+                );
+              };
+
+
+              const updateType = (
+                index,
+                key
+              ) => {
+
+                const next =
+                  options.map(
+                    (
+                      option,
+                      optionIndex
+                    ) => {
+
+                      if (
+                        optionIndex !==
+                        index
+                      ) {
+                        return option;
+                      }
+
+
+                      return (
+                        makePriceOption(
+                          key,
+                          option.price,
+                          option
                         )
-                      )
-                  }))
-                }
-                placeholder={
-                  isDualPriceSection(
-                    draft.section_id
-                  )
-                    ? "18 / 35"
-                    : "32"
-                }
-              />
+                      );
+                    }
+                  );
 
-            </div>
-          </label>
+
+                applyPriceOptions(
+                  setDraft,
+                  next
+                );
+              };
+
+
+              const updateCustom = (
+                index,
+                field,
+                value
+              ) => {
+
+                const next =
+                  options.map(
+                    (
+                      option,
+                      optionIndex
+                    ) =>
+                      optionIndex === index
+                        ? {
+                            ...option,
+
+                            label_key:
+                              "custom",
+
+                            [field]:
+                              value
+                          }
+                        : option
+                  );
+
+
+                applyPriceOptions(
+                  setDraft,
+                  next
+                );
+              };
+
+
+              const addOption = () => {
+
+                const [
+                  firstKey,
+                  secondKey
+                ] =
+                  defaultPriceOptionKeys(
+                    draft.section_id
+                  );
+
+
+                const existing =
+                  options[0] || {
+                    price: ""
+                  };
+
+
+                const first =
+                  existing.label_key
+                    ? existing
+                    : makePriceOption(
+                        firstKey,
+                        existing.price
+                      );
+
+
+                const second =
+                  makePriceOption(
+                    secondKey,
+                    ""
+                  );
+
+
+                applyPriceOptions(
+                  setDraft,
+                  [
+                    first,
+                    second
+                  ]
+                );
+              };
+
+
+              const removeOption = () => {
+
+                const first =
+                  options[0] || {
+                    price: ""
+                  };
+
+
+                applyPriceOptions(
+                  setDraft,
+                  [
+                    {
+                      ...first,
+
+                      label_key:
+                        "",
+
+                      label_en:
+                        "",
+
+                      label_he:
+                        ""
+                    }
+                  ]
+                );
+              };
+
+
+              return (
+                <>
+
+                  <div className="bm-owner-price-options-head">
+
+                    <div>
+
+                      <strong>
+                        {isHebrew
+                          ? "אפשרויות מחיר"
+                          : "Price options"}
+                      </strong>
+
+
+                      <span>
+                        {hasSecond
+                          ? (
+                              isHebrew
+                                ? "בחר שם לכל אפשרות מחיר כפי שהלקוח יראה בתפריט."
+                                : "Choose how each price option should appear to customers."
+                            )
+                          : (
+                              isHebrew
+                                ? "מחיר אחד, או הוסף אפשרות מחיר נוספת."
+                                : "Use one price, or add another price option."
+                            )}
+                      </span>
+
+                    </div>
+
+
+                    <b aria-label="NIS">
+                      ₪
+                    </b>
+
+                  </div>
+
+
+                  <div className="bm-owner-price-option-list">
+
+                    {options.map(
+                      (
+                        option,
+                        index
+                      ) => {
+
+                        const defaults =
+                          defaultPriceOptionKeys(
+                            draft.section_id
+                          );
+
+
+                        const selectedKey =
+                          option.label_key ||
+                          (
+                            hasSecond
+                              ? (
+                                  defaults[
+                                    index
+                                  ] ||
+                                  "custom"
+                                )
+                              : ""
+                          );
+
+
+                        return (
+                          <div
+                            className="bm-owner-price-option-card"
+                            key={`price-option-${index}`}
+                          >
+
+                            <div className="bm-owner-price-option-row">
+
+                              {hasSecond ? (
+
+                                <label className="bm-owner-price-option-type">
+
+                                  <span>
+                                    {isHebrew
+                                      ? "סוג אפשרות"
+                                      : "Option"}
+                                  </span>
+
+
+                                  <select
+                                    value={
+                                      selectedKey
+                                    }
+                                    onChange={e =>
+                                      updateType(
+                                        index,
+                                        e.target.value
+                                      )
+                                    }
+                                  >
+
+                                    {PRICE_OPTION_PRESETS.map(
+                                      preset => (
+                                        <option
+                                          key={preset.key}
+                                          value={preset.key}
+                                        >
+                                          {isHebrew
+                                            ? preset.he
+                                            : preset.en}
+                                        </option>
+                                      )
+                                    )}
+
+                                  </select>
+
+                                </label>
+
+                              ) : (
+
+                                <div className="bm-owner-single-price-title">
+
+                                  <span>
+                                    {isHebrew
+                                      ? "מחיר"
+                                      : "Price"}
+                                  </span>
+
+                                </div>
+
+                              )}
+
+
+                              <label className="bm-owner-price-option-value">
+
+                                <span>
+                                  {isHebrew
+                                    ? "מחיר"
+                                    : "Price"}
+                                </span>
+
+
+                                <div className="bm-owner-nis-input">
+
+                                  <b aria-hidden="true">
+                                    ₪
+                                  </b>
+
+
+                                  <input
+                                    inputMode="decimal"
+                                    value={
+                                      option.price
+                                    }
+                                    onChange={e =>
+                                      updatePrice(
+                                        index,
+                                        e.target.value
+                                      )
+                                    }
+                                    placeholder={
+                                      index === 0
+                                        ? "45"
+                                        : "59"
+                                    }
+                                  />
+
+                                </div>
+
+                              </label>
+
+                            </div>
+
+
+                            {hasSecond &&
+                            selectedKey ===
+                              "custom" ? (
+
+                              <div className="bm-owner-price-option-custom">
+
+                                <label>
+                                  {isHebrew
+                                    ? "שם בעברית"
+                                    : "Hebrew label"}
+
+                                  <input
+                                    dir="rtl"
+                                    value={
+                                      option.label_he ||
+                                      ""
+                                    }
+                                    onChange={e =>
+                                      updateCustom(
+                                        index,
+                                        "label_he",
+                                        e.target.value
+                                      )
+                                    }
+                                    placeholder="גדול"
+                                  />
+                                </label>
+
+
+                                <label>
+                                  {isHebrew
+                                    ? "שם באנגלית"
+                                    : "English label"}
+
+                                  <input
+                                    dir="ltr"
+                                    value={
+                                      option.label_en ||
+                                      ""
+                                    }
+                                    onChange={e =>
+                                      updateCustom(
+                                        index,
+                                        "label_en",
+                                        e.target.value
+                                      )
+                                    }
+                                    placeholder="Large"
+                                  />
+                                </label>
+
+                              </div>
+
+                            ) : null}
+
+                          </div>
+                        );
+                      }
+                    )}
+
+                  </div>
+
+
+                  {!hasSecond ? (
+
+                    <button
+                      type="button"
+                      className="bm-owner-price-option-add"
+                      onClick={
+                        addOption
+                      }
+                    >
+                      <span aria-hidden="true">
+                        +
+                      </span>
+
+                      {isHebrew
+                        ? "הוסף אפשרות מחיר"
+                        : "Add price option"}
+                    </button>
+
+                  ) : (
+
+                    <button
+                      type="button"
+                      className="bm-owner-price-option-remove"
+                      onClick={
+                        removeOption
+                      }
+                    >
+                      {isHebrew
+                        ? "הסר אפשרות מחיר שנייה"
+                        : "Remove second price option"}
+                    </button>
+
+                  )}
+
+                </>
+              );
+
+            })()}
+
+          </div>
         )}
 
         <label className="bm-v10-wide bm-field-description-en">
@@ -5603,16 +6497,7 @@ const loadData = async (id) => {
           />
         </label>
 
-        {!isWine &&
-        isDualPriceSection(
-          draft.section_id
-        ) ? (
-          <div className="bm-v10-note">
-            {isHebrew
-              ? "הזן את שני המחירים מופרדים ב־/ — לדוגמה ₪18 / ₪35. בתפריט יוצגו מחירי שוט וכוס."
-              : "Enter both prices separated by / — for example ₪18 / ₪35. The public menu will display shot and glass pricing."}
-          </div>
-        ) : null}
+        
       </>
     );
   };
@@ -6185,12 +7070,22 @@ const loadData = async (id) => {
                       : `${selected.name} menu preview`
                   }
                 >
-                  <BeyondPublicMenu
-                    slug={selected.slug}
-                    previewSite={selected}
-                    previewGroups={groups}
-                    previewSections={sections}
-                    previewItems={items}
+                  <iframe
+                    key={selected.slug}
+                    src={liveUrl(selected.slug)}
+                    title={
+                      isHebrew
+                        ? `תצוגה מקדימה של ${selected.name}`
+                        : `${selected.name} customer menu preview`
+                    }
+                    style={{
+                      width: "100%",
+                      minHeight: "820px",
+                      height: "100%",
+                      display: "block",
+                      border: 0,
+                      background: "#fff"
+                    }}
                   />
                 </div>
 
@@ -7373,20 +8268,116 @@ const loadData = async (id) => {
                         <div
                           className="bm-owner-item-edit bm-v10-item-form"
                           key={menuItem.id}
-
-                          data-editor-title={
-                            isHebrew
-                              ? "עריכת פריט"
-                              : "Edit menu item"
-                          }
                         >
+
+                          <header className="bm-owner-item-edit-head">
+
+                            <div className="bm-owner-item-edit-head-copy">
+
+                              <span className="bm-owner-item-edit-eyebrow">
+                                {isHebrew
+                                  ? "עריכת פריט"
+                                  : "EDIT ITEM"}
+                              </span>
+
+                              <h3>
+                                {studioPrimaryName(
+                                  itemDraft
+                                ) ||
+                                  (
+                                    isHebrew
+                                      ? "פריט ללא שם"
+                                      : "Untitled item"
+                                  )}
+                              </h3>
+
+                              <p>
+                                {isHebrew
+                                  ? "עדכן את פרטי הפריט כפי שיופיעו בתפריט."
+                                  : "Update the item details exactly as they should appear on the menu."}
+                              </p>
+
+                            </div>
+
+
+                            <button
+                              type="button"
+                              className="bm-owner-item-edit-close"
+                              aria-label={
+                                isHebrew
+                                  ? "סגור עריכה"
+                                  : "Close editor"
+                              }
+                              onClick={() =>
+                                setEditingItemId("")
+                              }
+                            >
+                              ×
+                            </button>
+
+                          </header>
+
+
+                          <div className="bm-owner-item-edit-preview">
+
+                            <div className="bm-owner-item-edit-preview-copy">
+
+                              <span>
+                                {isHebrew
+                                  ? "תצוגה מהירה"
+                                  : "QUICK PREVIEW"}
+                              </span>
+
+                              <strong>
+                                {studioPrimaryName(
+                                  itemDraft
+                                ) ||
+                                  (
+                                    isHebrew
+                                      ? "שם הפריט"
+                                      : "Item name"
+                                  )}
+                              </strong>
+
+                              {studioSecondaryName(
+                                itemDraft
+                              ) ? (
+                                <small>
+                                  {studioSecondaryName(
+                                    itemDraft
+                                  )}
+                                </small>
+                              ) : null}
+
+                            </div>
+
+
+                            <b className="bm-owner-item-edit-preview-price">
+                              {studioPrice(
+                                itemDraft
+                              ) ||
+                                (
+                                  isHebrew
+                                    ? "ללא מחיר"
+                                    : "No price"
+                                )}
+                            </b>
+
+                          </div>
+
 
                           {renderItemFields(
                             itemDraft,
                             setItemDraft
                           )}
 
-                          <div className="bm-owner-form-actions">
+
+                          <div
+                            className="
+                              bm-owner-form-actions
+                              bm-owner-item-edit-actions
+                            "
+                          >
 
                             <button
                               type="button"
@@ -7394,14 +8385,20 @@ const loadData = async (id) => {
                                 setEditingItemId("")
                               }
                             >
-                              Cancel
+                              {isHebrew
+                                ? "ביטול"
+                                : "Cancel"}
                             </button>
+
 
                             <button
                               type="button"
+                              className="primary"
                               onClick={saveItem}
                             >
-                              Save changes
+                              {isHebrew
+                                ? "שמור שינויים"
+                                : "Save changes"}
                             </button>
 
                           </div>

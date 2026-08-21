@@ -6812,6 +6812,697 @@ html[data-beyond-theme="dark"]
 
 /* APPLE HEBREW ACTION ORDER END */
 
+
+  /* ITEM EDIT INTUITIVE DESKTOP START */
+
+  .bm-owner-dashboard
+  .bm-owner-item-edit {
+    overflow:
+      hidden !important;
+
+    border:
+      1px solid
+      var(--studio-border-strong) !important;
+
+    border-radius:
+      20px !important;
+
+    background:
+      var(--studio-surface-solid) !important;
+
+    box-shadow:
+      var(--studio-shadow-soft) !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-item-edit-head {
+    grid-column:
+      1 / -1 !important;
+
+    padding:
+      20px 22px 18px !important;
+
+    display:
+      flex !important;
+
+    align-items:
+      flex-start !important;
+
+    justify-content:
+      space-between !important;
+
+    gap:
+      24px !important;
+
+    border-bottom:
+      1px solid
+      var(--studio-border) !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-item-edit-head-copy {
+    min-width:
+      0 !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-item-edit-eyebrow {
+    display:
+      block !important;
+
+    margin-bottom:
+      6px !important;
+
+    color:
+      var(--studio-blue) !important;
+
+    font-size:
+      10px !important;
+
+    font-weight:
+      750 !important;
+
+    letter-spacing:
+      .09em !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-item-edit-head h3 {
+    margin:
+      0 !important;
+
+    color:
+      var(--studio-text) !important;
+
+    font-size:
+      22px !important;
+
+    font-weight:
+      700 !important;
+
+    letter-spacing:
+      -.025em !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-item-edit-head p {
+    max-width:
+      580px !important;
+
+    margin:
+      6px 0 0 !important;
+
+    color:
+      var(--studio-text-secondary) !important;
+
+    font-size:
+      13px !important;
+
+    line-height:
+      1.5 !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-item-edit-close {
+    width:
+      38px !important;
+
+    min-width:
+      38px !important;
+
+    height:
+      38px !important;
+
+    min-height:
+      38px !important;
+
+    padding:
+      0 !important;
+
+    display:
+      grid !important;
+
+    place-items:
+      center !important;
+
+    border-radius:
+      50% !important;
+
+    font-size:
+      22px !important;
+
+    font-weight:
+      400 !important;
+
+    line-height:
+      1 !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-item-edit-preview {
+    grid-column:
+      1 / -1 !important;
+
+    min-height:
+      82px !important;
+
+    margin:
+      2px 0 6px !important;
+
+    padding:
+      15px 17px !important;
+
+    display:
+      flex !important;
+
+    align-items:
+      center !important;
+
+    justify-content:
+      space-between !important;
+
+    gap:
+      24px !important;
+
+    border:
+      1px solid
+      var(--studio-border) !important;
+
+    border-radius:
+      15px !important;
+
+    background:
+      var(--studio-surface-soft) !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-item-edit-preview-copy {
+    min-width:
+      0 !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-item-edit-preview-copy
+  > span {
+    display:
+      block !important;
+
+    margin-bottom:
+      5px !important;
+
+    color:
+      var(--studio-text-tertiary) !important;
+
+    font-size:
+      9px !important;
+
+    font-weight:
+      750 !important;
+
+    letter-spacing:
+      .07em !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-item-edit-preview-copy
+  strong {
+    display:
+      block !important;
+
+    overflow:
+      hidden !important;
+
+    color:
+      var(--studio-text) !important;
+
+    font-size:
+      15px !important;
+
+    font-weight:
+      700 !important;
+
+    text-overflow:
+      ellipsis !important;
+
+    white-space:
+      nowrap !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-item-edit-preview-copy
+  small {
+    display:
+      block !important;
+
+    margin-top:
+      3px !important;
+
+    overflow:
+      hidden !important;
+
+    color:
+      var(--studio-text-secondary) !important;
+
+    font-size:
+      11px !important;
+
+    text-overflow:
+      ellipsis !important;
+
+    white-space:
+      nowrap !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-item-edit-preview-price {
+    flex:
+      0 0 auto !important;
+
+    color:
+      var(--studio-blue) !important;
+
+    font-size:
+      16px !important;
+
+    font-weight:
+      750 !important;
+
+    white-space:
+      nowrap !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-item-edit-actions {
+    grid-column:
+      1 / -1 !important;
+
+    margin-top:
+      6px !important;
+
+    padding-top:
+      18px !important;
+
+    border-top:
+      1px solid
+      var(--studio-border) !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-item-edit-actions
+  .primary {
+    min-width:
+      170px !important;
+  }
+
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-item-edit-head,
+
+  html[data-beyond-language="he"]
+  .bm-owner-dashboard
+  .bm-owner-item-edit-preview {
+    direction:
+      rtl !important;
+
+    text-align:
+      right !important;
+  }
+
+  /* ITEM EDIT INTUITIVE DESKTOP END */
+
+
+
+  /* PRICE OPTIONS V2 DESKTOP START */
+
+  .bm-owner-dashboard
+  .bm-owner-price-options {
+    grid-column:
+      1 / -1 !important;
+
+    padding:
+      17px !important;
+
+    border:
+      1px solid
+      var(--studio-border) !important;
+
+    border-radius:
+      17px !important;
+
+    background:
+      var(--studio-surface-soft) !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-price-options-head {
+    margin-bottom:
+      14px !important;
+
+    display:
+      flex !important;
+
+    align-items:
+      flex-start !important;
+
+    justify-content:
+      space-between !important;
+
+    gap:
+      16px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-price-options-head
+  strong {
+    display:
+      block !important;
+
+    color:
+      var(--studio-text) !important;
+
+    font-size:
+      14px !important;
+
+    font-weight:
+      720 !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-price-options-head
+  span {
+    display:
+      block !important;
+
+    margin-top:
+      4px !important;
+
+    color:
+      var(--studio-text-secondary) !important;
+
+    font-size:
+      11px !important;
+
+    line-height:
+      1.45 !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-price-options-head
+  > b {
+    width:
+      34px !important;
+
+    height:
+      34px !important;
+
+    flex:
+      0 0 34px !important;
+
+    display:
+      grid !important;
+
+    place-items:
+      center !important;
+
+    border:
+      1px solid
+      var(--studio-border) !important;
+
+    border-radius:
+      10px !important;
+
+    background:
+      var(--studio-surface-solid) !important;
+
+    color:
+      var(--studio-blue) !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-price-option-list {
+    display:
+      grid !important;
+
+    gap:
+      10px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-price-option-card {
+    padding:
+      13px !important;
+
+    border:
+      1px solid
+      var(--studio-border) !important;
+
+    border-radius:
+      14px !important;
+
+    background:
+      var(--studio-surface-solid) !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-price-option-row {
+    display:
+      grid !important;
+
+    grid-template-columns:
+      minmax(0,1fr)
+      minmax(150px,.55fr) !important;
+
+    gap:
+      12px !important;
+
+    align-items:
+      end !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-price-option-type
+  > span,
+
+  .bm-owner-dashboard
+  .bm-owner-price-option-value
+  > span,
+
+  .bm-owner-dashboard
+  .bm-owner-single-price-title
+  > span {
+    display:
+      block !important;
+
+    margin-bottom:
+      6px !important;
+
+    color:
+      var(--studio-text-secondary) !important;
+
+    font-size:
+      10px !important;
+
+    font-weight:
+      650 !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-price-option-type
+  select {
+    width:
+      100% !important;
+
+    min-height:
+      46px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-nis-input {
+    min-height:
+      46px !important;
+
+    display:
+      flex !important;
+
+    align-items:
+      center !important;
+
+    overflow:
+      hidden !important;
+
+    border:
+      1px solid
+      var(--studio-border-strong) !important;
+
+    border-radius:
+      11px !important;
+
+    background:
+      var(--studio-surface-solid) !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-nis-input
+  > b {
+    width:
+      40px !important;
+
+    flex:
+      0 0 40px !important;
+
+    align-self:
+      stretch !important;
+
+    display:
+      grid !important;
+
+    place-items:
+      center !important;
+
+    border-inline-end:
+      1px solid
+      var(--studio-border) !important;
+
+    color:
+      var(--studio-blue) !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-nis-input
+  input {
+    width:
+      100% !important;
+
+    min-height:
+      44px !important;
+
+    margin:
+      0 !important;
+
+    padding:
+      0 12px !important;
+
+    border:
+      0 !important;
+
+    border-radius:
+      0 !important;
+
+    outline:
+      0 !important;
+
+    background:
+      transparent !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-price-option-custom {
+    margin-top:
+      10px !important;
+
+    display:
+      grid !important;
+
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0,1fr)
+      ) !important;
+
+    gap:
+      10px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-price-option-add {
+    width:
+      100% !important;
+
+    min-height:
+      44px !important;
+
+    margin-top:
+      11px !important;
+
+    border:
+      1px dashed
+      var(--studio-border-strong) !important;
+
+    border-radius:
+      12px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-price-option-add
+  > span {
+    margin-inline-end:
+      5px !important;
+
+    color:
+      var(--studio-blue) !important;
+
+    font-size:
+      18px !important;
+  }
+
+
+  .bm-owner-dashboard
+  .bm-owner-price-option-remove {
+    width:
+      100% !important;
+
+    min-height:
+      36px !important;
+
+    margin-top:
+      7px !important;
+
+    border:
+      0 !important;
+
+    background:
+      transparent !important;
+
+    color:
+      var(--studio-text-secondary) !important;
+
+    font-size:
+      10px !important;
+  }
+
+  /* PRICE OPTIONS V2 DESKTOP END */
+
+
 /* MENU STUDIO APPLE DESKTOP SYSTEM END */
 
 
