@@ -8,6 +8,7 @@ import Home from "./pages/Home";
 import Admin from "./pages/Admin";
 import OrderDetails from "./pages/OrderDetails";
 import TrackOrder from "./pages/TrackOrder";
+import MenuBuilder from "./pages/MenuBuilder";
 
 function App() {
   return (
@@ -17,6 +18,13 @@ function App() {
           path="/"
           element={
             <Home />
+          }
+        />
+
+        <Route
+          path="/menu-builder"
+          element={
+            <MenuBuilder />
           }
         />
 
