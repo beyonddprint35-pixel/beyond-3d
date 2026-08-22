@@ -159,7 +159,7 @@ exports.handler = async function (event) {
       );
 
     const acceptUrl =
-      `https://beyond3dshop.com/.netlify/functions/accept-quote?id=${encodeURIComponent(
+      `https://b3yondworld.com/.netlify/functions/accept-quote?id=${encodeURIComponent(
         orderId
       )}&token=${encodeURIComponent(
         token
@@ -256,7 +256,7 @@ exports.handler = async function (event) {
                           gap:12px;
                         ">
                           <img
-                            src="https://beyond3dshop.com/beyond-logo.png"
+                            src="https://b3yondworld.com/beyond-logo.png"
                             width="50"
                             height="50"
                             alt="Beyond"
@@ -492,7 +492,7 @@ exports.handler = async function (event) {
                           gap:9px;
                         ">
                           <img
-                            src="https://beyond3dshop.com/beyond-logo.png"
+                            src="https://b3yondworld.com/beyond-logo.png"
                             width="30"
                             height="30"
                             alt=""

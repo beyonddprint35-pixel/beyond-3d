@@ -89,7 +89,7 @@ function Navbar() {
 
       <a
         className="login-button"
-        href="https://beyond3dshop.com/admin.html"
+        href="https://b3yondworld.com/admin.html"
       >
         Admin
       </a>

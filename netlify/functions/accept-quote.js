@@ -203,7 +203,7 @@ exports.handler =
       }
 
       const trackUrl =
-        `https://beyond3dshop.com/track?id=${encodeURIComponent(
+        `https://b3yondworld.com/track?id=${encodeURIComponent(
           id
         )}&token=${encodeURIComponent(
           token
@@ -266,7 +266,7 @@ exports.handler =
                   gap:12px;
                 ">
                   <img
-                    src="https://beyond3dshop.com/beyond-logo.png"
+                    src="https://b3yondworld.com/beyond-logo.png"
                     width="54"
                     height="54"
                     alt="Beyond"

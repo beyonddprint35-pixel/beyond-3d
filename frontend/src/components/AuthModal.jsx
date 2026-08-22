@@ -223,7 +223,7 @@ function AuthModal({
                   userMetadata,
 
                 emailRedirectTo:
-                  "https://beyond3dshop.com",
+                  "https://b3yondworld.com",
               },
             });
 

@@ -233,7 +233,7 @@ exports.handler = async function (event) {
         );
 
       trackUrl =
-        `https://beyond3dshop.com/track?id=${encodeURIComponent(
+        `https://b3yondworld.com/track?id=${encodeURIComponent(
           order.id
         )}&token=${encodeURIComponent(
           token
