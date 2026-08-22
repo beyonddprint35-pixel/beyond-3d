@@ -94,7 +94,7 @@ function AuthModal({
     setError("");
     setMessage("");
     setBusinessCreated(false);
-  }, [open, mode]);
+  }, [open]);
 
   useEffect(() => {
     if (!open) {
@@ -306,7 +306,7 @@ function AuthModal({
           onClose();
         } else {
           setMessage(
-            "Account created. Check your email to confirm your account, then log in."
+            `Verification email sent to ${email.trim()}. Check your inbox and spam folder, then verify your email before logging in.`
           );
 
           setMode("login");
