@@ -1,0 +1,1985 @@
+@import url("https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&family=Bebas+Neue&family=Bodoni+Moda:opsz,wght@6..96,400;6..96,600;6..96,700&family=Cairo:wght@300;400;500;600;700;800&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Serif+Display&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Heebo:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Libre+Baskerville:wght@400;700&family=Lora:wght@400;500;600;700&family=Manrope:wght@300;400;500;600;700;800&family=Merriweather:wght@300;400;700&family=Montserrat:wght@300;400;500;600;700;800&family=Noto+Sans+Arabic:wght@300;400;500;600;700;800&family=Noto+Sans+Hebrew:wght@300;400;500;600;700;800&family=Oswald:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&family=Prata&family=Raleway:wght@300;400;500;600;700;800&family=Rubik:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700;800&display=swap");
+
+
+.digital-menu-template {
+  position: relative;
+
+  min-height: 100%;
+
+  overflow: hidden;
+
+  color:
+    var(--dmt-text);
+
+  background:
+    var(--dmt-bg);
+
+  font-family:
+    var(--dmt-body-font);
+
+  transition:
+    background .15s ease,
+    color .15s ease;
+}
+
+
+.digital-menu-template * {
+  box-sizing:
+    border-box;
+}
+
+
+.dmt-app {
+  width:
+    min(
+      760px,
+      100%
+    );
+
+  min-height: 100%;
+
+  margin:
+    0 auto;
+
+  color:
+    var(--dmt-text);
+
+  background:
+    var(--dmt-bg);
+
+  transition:
+    background .15s ease,
+    color .15s ease;
+}
+
+
+.dmt-header {
+  min-height: 82px;
+
+  padding:
+    18px
+    20px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content:
+    space-between;
+
+  gap: 14px;
+
+  color:
+    var(--dmt-text);
+
+  background:
+    var(--dmt-header-bg);
+
+  border-bottom:
+    1px solid
+    var(--dmt-line);
+
+  transition:
+    background .15s ease,
+    border-color .15s ease;
+}
+
+
+.dmt-brand {
+  min-width: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+}
+
+
+.dmt-logo {
+  width: 50px;
+  height: 50px;
+
+  flex:
+    0 0
+    50px;
+
+  object-fit: contain;
+
+  border-radius: 9px;
+
+  background:
+    var(--dmt-paper);
+}
+
+
+.dmt-logo-circle {
+  border-radius: 50%;
+}
+
+
+.dmt-logo-rectangle {
+  width: 86px;
+
+  flex-basis: 86px;
+}
+
+
+.dmt-logo-free {
+  width: auto;
+
+  max-width: 95px;
+
+  flex-basis: auto;
+}
+
+
+.dmt-logo-placeholder {
+  width: 50px;
+  height: 50px;
+
+  flex:
+    0 0
+    50px;
+
+  display: grid;
+
+  place-items: center;
+
+  border-radius: 50%;
+
+  color:
+    var(--dmt-category-text);
+
+  background:
+    var(--dmt-category-bg);
+
+  font-family:
+    var(--dmt-heading-font);
+
+  font-size: 21px;
+
+  font-weight: 800;
+}
+
+
+.dmt-brand-copy {
+  min-width: 0;
+
+  display: grid;
+
+  gap: 3px;
+}
+
+
+.dmt-brand-copy strong {
+  color:
+    var(--dmt-text);
+
+  font-family:
+    var(--dmt-heading-font);
+
+  font-size:
+    var(--dmt-brand-size);
+
+  line-height: 1;
+}
+
+
+.dmt-brand-copy > span {
+  color:
+    var(--dmt-muted);
+
+  font-size:
+    var(--dmt-secondary-size);
+
+  letter-spacing:
+    .13em;
+}
+
+
+.dmt-language {
+  padding: 3px;
+
+  display: flex;
+
+  gap: 2px;
+
+  border:
+    1px solid
+    var(--dmt-line);
+
+  border-radius: 999px;
+
+  background:
+    var(--dmt-paper);
+}
+
+
+.dmt-language button {
+  min-height: 31px;
+
+  padding:
+    0
+    11px;
+
+  border: 0;
+
+  border-radius: 999px;
+
+  color:
+    var(--dmt-muted);
+
+  background:
+    transparent;
+
+  font-family:
+    var(--dmt-body-font);
+
+  font-size:
+    var(--dmt-secondary-size);
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+
+.dmt-language button.active {
+  color:
+    var(--dmt-category-text);
+
+  background:
+    var(--dmt-category-bg);
+}
+
+
+.dmt-hero {
+  position: relative;
+
+  min-height: 165px;
+
+  margin:
+    16px
+    18px;
+
+  padding:
+    23px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content:
+    space-between;
+
+  gap: 18px;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    var(--dmt-line);
+
+  border-radius: 24px;
+
+  color:
+    var(--dmt-text);
+
+  background:
+    var(--dmt-hero-bg);
+
+  box-shadow:
+    0
+    16px
+    40px
+    rgba(0,0,0,.06);
+
+  transition:
+    background .15s ease,
+    border-color .15s ease;
+}
+
+
+.dmt-hero::after {
+  content: "";
+
+  position: absolute;
+
+  right: -50px;
+  bottom: -90px;
+
+  width: 170px;
+  height: 170px;
+
+  border-radius: 50%;
+
+  background:
+    var(--dmt-accent-secondary);
+
+  opacity: .2;
+}
+
+
+.dmt-hero-copy {
+  position: relative;
+
+  z-index: 2;
+}
+
+
+.dmt-kicker {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color:
+    var(--dmt-accent);
+
+  font-size:
+    var(--dmt-secondary-size);
+
+  font-weight: 800;
+
+  letter-spacing:
+    .2em;
+}
+
+
+.dmt-hero h1 {
+  margin: 0;
+
+  color:
+    var(--dmt-text);
+
+  font-family:
+    var(--dmt-heading-font);
+
+  font-size:
+    var(--dmt-hero-size);
+
+  font-weight: 800;
+
+  line-height: 1;
+
+  letter-spacing:
+    -.04em;
+}
+
+
+.dmt-hero p {
+  margin:
+    8px
+    0
+    0;
+
+  color:
+    var(--dmt-muted);
+
+  font-size:
+    var(--dmt-secondary-size);
+}
+
+
+.dmt-hero-logo {
+  position: relative;
+
+  z-index: 2;
+
+  width: 100px;
+  height: 100px;
+
+  flex:
+    0 0
+    100px;
+}
+
+
+.dmt-hero-logo img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+}
+
+
+.dmt-hero-logo-circle img {
+  border-radius: 50%;
+}
+
+
+.dmt-hero-logo-rectangle {
+  width: 135px;
+
+  flex-basis: 135px;
+}
+
+
+.dmt-tabs-wrap {
+  padding:
+    9px
+    0;
+
+  border-top:
+    1px solid
+    var(--dmt-line);
+
+  border-bottom:
+    1px solid
+    var(--dmt-line);
+
+  background:
+    var(--dmt-bg);
+
+  transition:
+    background .15s ease;
+}
+
+
+.dmt-tabs {
+  padding:
+    0
+    18px;
+
+  display: flex;
+
+  gap: 7px;
+
+  overflow-x: auto;
+
+  scrollbar-width:
+    none;
+}
+
+
+.dmt-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+
+.dmt-tab {
+  min-height: 37px;
+
+  padding:
+    0
+    14px;
+
+  flex:
+    0 0
+    auto;
+
+  border:
+    1px solid
+    var(--dmt-line);
+
+  border-radius: 999px;
+
+  color:
+    var(--dmt-muted);
+
+  background:
+    var(--dmt-paper);
+
+  font-family:
+    var(--dmt-body-font);
+
+  font-size:
+    var(--dmt-category-size);
+
+  font-weight: 700;
+
+  white-space: nowrap;
+
+  cursor: pointer;
+}
+
+
+.dmt-tab.active {
+  color:
+    var(--dmt-category-text);
+
+  border-color:
+    var(--dmt-category-bg);
+
+  background:
+    var(--dmt-category-bg);
+}
+
+
+.dmt-section-head {
+  padding:
+    25px
+    20px
+    11px;
+
+  display: flex;
+
+  align-items:
+    flex-end;
+
+  justify-content:
+    space-between;
+
+  gap: 15px;
+}
+
+
+.dmt-section-head h2 {
+  margin: 0;
+
+  color:
+    var(--dmt-text);
+
+  font-family:
+    var(--dmt-heading-font);
+
+  font-size:
+    var(--dmt-section-size);
+
+  line-height: 1;
+}
+
+
+.dmt-section-head > span {
+  color:
+    var(--dmt-muted);
+
+  font-size:
+    var(--dmt-secondary-size);
+}
+
+
+.dmt-menu-list {
+  padding:
+    0
+    14px
+    24px;
+
+  display: grid;
+
+  gap: 9px;
+}
+
+
+.dmt-item-row {
+  min-height: 84px;
+
+  padding:
+    14px
+    15px;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0,1fr)
+    auto;
+
+  align-items: center;
+
+  gap: 15px;
+
+  border:
+    1px solid
+    var(--dmt-line);
+
+  border-radius: 19px;
+
+  color:
+    var(--dmt-text);
+
+  background:
+    var(--dmt-card);
+
+  box-shadow:
+    0
+    9px
+    24px
+    rgba(0,0,0,.035);
+
+  transition:
+    background .15s ease,
+    border-color .15s ease;
+}
+
+
+.dmt-item-info {
+  min-width: 0;
+}
+
+
+.dmt-item-info > strong {
+  display: block;
+
+  color:
+    var(--dmt-text);
+
+  font-family:
+    var(--dmt-heading-font);
+
+  font-size:
+    var(--dmt-item-size);
+
+  line-height: 1.25;
+}
+
+
+.dmt-item-info > p {
+  margin:
+    5px
+    0
+    0;
+
+  color:
+    var(--dmt-muted);
+
+  font-size:
+    var(--dmt-description-size);
+
+  line-height: 1.45;
+}
+
+
+.dmt-item-info > small {
+  display: block;
+
+  margin-top: 4px;
+
+  color:
+    var(--dmt-accent);
+
+  font-size:
+    var(--dmt-secondary-size);
+}
+
+
+.dmt-price-area {
+  min-width: 62px;
+
+  display: grid;
+
+  justify-items: end;
+
+  gap: 5px;
+
+  direction: ltr;
+
+  color:
+    var(--dmt-text);
+}
+
+
+.dmt-price-area > b {
+  color:
+    var(--dmt-text);
+
+  font-family:
+    var(--dmt-heading-font);
+
+  font-size:
+    var(--dmt-price-size);
+}
+
+
+.dmt-price-option {
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  color:
+    var(--dmt-muted);
+
+  font-size:
+    var(--dmt-secondary-size);
+}
+
+
+.dmt-price-option strong {
+  color:
+    var(--dmt-text);
+
+  font-size:
+    var(--dmt-price-size);
+}
+
+
+.dmt-footer {
+  padding:
+    24px
+    20px
+    30px;
+
+  display: grid;
+
+  justify-items: center;
+
+  gap: 8px;
+
+  border-top:
+    1px solid
+    var(--dmt-line);
+
+  color:
+    var(--dmt-muted);
+
+  background:
+    var(--dmt-header-bg);
+
+  font-size:
+    var(--dmt-secondary-size);
+
+  text-align: center;
+}
+
+
+.dmt-footer button {
+  border: 0;
+
+  color:
+    var(--dmt-accent);
+
+  background:
+    transparent;
+
+  cursor: pointer;
+}
+
+
+.dmt-footer strong {
+  color:
+    var(--dmt-text);
+}
+
+
+/* ==========================================================
+   INLINE EDITING
+   ========================================================== */
+
+.dmt-inline-edit {
+  position: relative;
+
+  border-radius: 4px;
+
+  outline: none;
+
+  cursor: text;
+
+  transition:
+    box-shadow .14s ease,
+    background .14s ease;
+}
+
+
+.dmt-editable
+.dmt-inline-edit:hover {
+  background:
+    rgba(64,144,236,.07);
+
+  box-shadow:
+    0 0 0 1px
+    rgba(64,144,236,.22);
+}
+
+
+.dmt-editable
+.dmt-inline-edit:focus {
+  background:
+    rgba(64,144,236,.1);
+
+  box-shadow:
+    0 0 0 2px
+    rgba(52,141,240,.5);
+
+  outline: none !important;
+}
+
+
+.dmt-editable
+.dmt-inline-edit:focus::after {
+  content:
+    "editing";
+
+  position: absolute;
+
+  top: -17px;
+  left: 0;
+
+  padding:
+    2px
+    5px;
+
+  border-radius: 4px;
+
+  color: white;
+
+  background:
+    #267bd7;
+
+  font-family:
+    Inter,
+    sans-serif;
+
+  font-size: 7px;
+
+  font-weight: 700;
+
+  letter-spacing:
+    .08em;
+}
+
+
+/* ==========================================================
+   RTL
+   ========================================================== */
+
+.digital-menu-template[dir="rtl"]
+.dmt-item-row,
+.digital-menu-template[dir="rtl"]
+.dmt-item-info,
+.digital-menu-template[dir="rtl"]
+.dmt-section-head {
+  direction: rtl;
+
+  text-align: right;
+}
+
+
+.digital-menu-template[dir="rtl"]
+.dmt-tabs {
+  direction: rtl;
+}
+
+
+.digital-menu-template[dir="rtl"]
+.dmt-brand-copy {
+  text-align: right;
+}
+
+
+.digital-menu-template[dir="rtl"]
+.dmt-price-area {
+  direction: ltr;
+}
+
+
+.digital-menu-template[data-language="ar"]
+.dmt-hero h1,
+.digital-menu-template[data-language="ar"]
+.dmt-section-head h2 {
+  letter-spacing: 0;
+}
+
+
+/* ==========================================================
+   ACCESSIBILITY OVERRIDES
+   ========================================================== */
+
+.digital-menu-template.a11y-contrast {
+  --dmt-bg:
+    #fff !important;
+
+  --dmt-header-bg:
+    #fff !important;
+
+  --dmt-hero-bg:
+    #fff !important;
+
+  --dmt-paper:
+    #fff !important;
+
+  --dmt-card:
+    #fff !important;
+
+  --dmt-text:
+    #000 !important;
+
+  --dmt-muted:
+    #000 !important;
+
+  --dmt-line:
+    #000 !important;
+
+  --dmt-category-bg:
+    #000 !important;
+
+  --dmt-category-text:
+    #fff !important;
+}
+
+
+.digital-menu-template.a11y-dark {
+  --dmt-bg:
+    #111 !important;
+
+  --dmt-header-bg:
+    #111 !important;
+
+  --dmt-hero-bg:
+    #171717 !important;
+
+  --dmt-paper:
+    #171717 !important;
+
+  --dmt-card:
+    #171717 !important;
+
+  --dmt-text:
+    #fff !important;
+
+  --dmt-muted:
+    #ddd !important;
+
+  --dmt-line:
+    #555 !important;
+
+  --dmt-category-bg:
+    #fff !important;
+
+  --dmt-category-text:
+    #111 !important;
+}
+
+
+@media (max-width: 560px) {
+
+  /*
+  ============================================================
+  BEYOND CUSTOMER MENU — MOBILE PROPORTIONS
+
+  Based on the approved El Puerto customer-menu proportions.
+
+  IMPORTANT:
+  - This is NOT a scaled desktop layout.
+  - This is NOT a different design.
+  - Restaurant colors/fonts/branding remain unchanged.
+  - Only mobile proportions and spacing are standardized.
+  ============================================================
+  */
+
+
+  /* ========================================================
+     CUSTOMER APP
+     El Puerto itself uses max-width: 460px.
+     ======================================================== */
+
+  .dmt-app {
+    width: 100% !important;
+
+    max-width: 460px !important;
+
+    min-width: 0 !important;
+
+    margin:
+      0
+      auto !important;
+
+    overflow-x:
+      hidden !important;
+  }
+
+
+  /* ========================================================
+     HEADER
+     ======================================================== */
+
+  .dmt-header {
+    width: 100%;
+
+    padding:
+      22px
+      16px
+      12px !important;
+
+    box-sizing:
+      border-box;
+
+    display: flex;
+
+    flex-direction:
+      row !important;
+
+    align-items:
+      center !important;
+
+    justify-content:
+      space-between !important;
+
+    gap:
+      10px !important;
+  }
+
+
+  .dmt-brand {
+    flex:
+      1
+      1
+      auto;
+
+    min-width: 0;
+
+    display: flex;
+
+    align-items:
+      center;
+
+    gap:
+      10px !important;
+  }
+
+
+  /*
+    Same approximate physical proportion as El Puerto.
+  */
+  .dmt-logo,
+  .dmt-logo-placeholder {
+    width:
+      44px !important;
+
+    height:
+      44px !important;
+
+    min-width:
+      44px !important;
+
+    min-height:
+      44px !important;
+
+    flex:
+      0
+      0
+      44px !important;
+  }
+
+
+  .dmt-brand-copy {
+    flex:
+      1
+      1
+      auto;
+
+    min-width: 0;
+  }
+
+
+  /*
+    Brand font is still the CUSTOMER'S selected font.
+
+    Only mobile size is capped so a restaurant name doesn't
+    consume half the screen.
+  */
+  .dmt-brand-copy
+  .dmt-inline-edit:first-child {
+    max-width: 100%;
+
+    font-size:
+      min(
+        var(--dmt-brand-size),
+        25px
+      ) !important;
+
+    line-height:
+      1 !important;
+
+    overflow-wrap:
+      normal !important;
+
+    word-break:
+      normal !important;
+  }
+
+
+  .dmt-brand-copy
+  > :last-child {
+    font-size:
+      min(
+        var(--dmt-secondary-size),
+        10px
+      ) !important;
+
+    line-height:
+      1.2 !important;
+  }
+
+
+  /* ========================================================
+     LANGUAGE SWITCHER
+
+     Keep it in the header exactly like El Puerto.
+     Do not send it to a second line.
+     ======================================================== */
+
+  .dmt-language {
+    flex:
+      0
+      0
+      auto;
+
+    width:
+      auto !important;
+
+    max-width:
+      46%;
+
+    display:
+      inline-flex !important;
+
+    align-items:
+      center;
+
+    justify-content:
+      flex-end;
+
+    gap:
+      2px !important;
+
+    overflow:
+      hidden !important;
+  }
+
+
+  .dmt-language button {
+    flex:
+      0
+      0
+      auto;
+
+    min-width:
+      0 !important;
+
+    min-height:
+      34px;
+
+    padding:
+      0
+      10px !important;
+
+    font-size:
+      10px !important;
+
+    line-height:
+      1;
+
+    white-space:
+      nowrap;
+  }
+
+
+  /*
+    Arabic adds a third language.
+    Compress the language controls slightly when all three
+    are present instead of crushing the restaurant title.
+  */
+  .dmt-language:has(button:nth-child(3))
+  button {
+    padding-inline:
+      8px !important;
+
+    font-size:
+      9px !important;
+  }
+
+
+  /* ========================================================
+     HERO
+
+     El Puerto:
+     margin 8px 20px 18px
+     padding 20px
+     min-height 154px
+     hero title 34px
+     ======================================================== */
+
+  .dmt-hero {
+    width:
+      auto !important;
+
+    min-height:
+      154px !important;
+
+    margin:
+      6px
+      14px
+      16px !important;
+
+    padding:
+      20px !important;
+
+    box-sizing:
+      border-box;
+
+    display:
+      flex !important;
+
+    flex-direction:
+      row !important;
+
+    align-items:
+      center !important;
+
+    justify-content:
+      space-between !important;
+
+    gap:
+      16px !important;
+
+    overflow:
+      hidden;
+  }
+
+
+  .dmt-hero-copy {
+    flex:
+      1
+      1
+      auto;
+
+    min-width: 0;
+
+    max-width:
+      calc(
+        100% -
+        90px
+      );
+  }
+
+
+  .dmt-kicker {
+    margin:
+      0
+      0
+      12px !important;
+
+    font-size:
+      min(
+        var(--dmt-secondary-size),
+        11px
+      ) !important;
+
+    line-height:
+      1.1 !important;
+
+    letter-spacing:
+      .20em;
+
+    white-space:
+      nowrap;
+  }
+
+
+  /*
+    THIS is one of the key corrections.
+
+    El Puerto uses 34px.
+    Do not allow the desktop 46px/50px value to crush
+    a 390px phone.
+  */
+  .dmt-hero-copy
+  .dmt-inline-edit {
+    max-width:
+      100%;
+
+    overflow-wrap:
+      normal !important;
+
+    word-break:
+      normal !important;
+  }
+
+
+  .dmt-hero-copy
+  h1,
+  .dmt-hero-copy
+  h2 {
+    margin: 0;
+
+    max-width:
+      100%;
+
+    font-size:
+      min(
+        var(--dmt-hero-size),
+        34px
+      ) !important;
+
+    line-height:
+      1.02 !important;
+
+    overflow-wrap:
+      normal !important;
+
+    word-break:
+      normal !important;
+  }
+
+
+  .dmt-hero-copy
+  p {
+    margin:
+      8px
+      0
+      0;
+
+    font-size:
+      min(
+        var(--dmt-secondary-size),
+        10px
+      ) !important;
+
+    line-height:
+      1.35;
+  }
+
+
+  /*
+    Logo is decorative support — not half the hero.
+  */
+  .dmt-hero-logo {
+    width:
+      76px !important;
+
+    height:
+      76px !important;
+
+    min-width:
+      76px !important;
+
+    flex:
+      0
+      0
+      76px !important;
+
+    object-fit:
+      contain;
+  }
+
+
+  /* ========================================================
+     CATEGORY STRIP
+
+     El Puerto:
+     gap 9
+     tab font 12
+     padding 10 15
+     ======================================================== */
+
+  .dmt-tabs-wrap {
+    width:
+      100%;
+
+    max-width:
+      100%;
+
+    padding:
+      10px
+      0 !important;
+
+    overflow:
+      hidden;
+  }
+
+
+  .dmt-tabs {
+    width:
+      100%;
+
+    max-width:
+      100%;
+
+    display:
+      flex;
+
+    flex-wrap:
+      nowrap !important;
+
+    gap:
+      9px !important;
+
+    overflow-x:
+      auto !important;
+
+    overflow-y:
+      hidden !important;
+
+    padding:
+      0
+      14px !important;
+
+    box-sizing:
+      border-box;
+
+    scrollbar-width:
+      none;
+
+    -webkit-overflow-scrolling:
+      touch;
+  }
+
+
+  .dmt-tabs::-webkit-scrollbar {
+    display:
+      none;
+  }
+
+
+  .dmt-tabs button {
+    flex:
+      0
+      0
+      auto;
+
+    min-width:
+      0 !important;
+
+    min-height:
+      40px;
+
+    padding:
+      10px
+      15px !important;
+
+    font-size:
+      min(
+        var(--dmt-category-size),
+        12px
+      ) !important;
+
+    line-height:
+      1;
+
+    white-space:
+      nowrap;
+  }
+
+
+  /* ========================================================
+     SECTION HEADING
+
+     El Puerto section title = 42px.
+     ======================================================== */
+
+  .dmt-section-head {
+    width:
+      100%;
+
+    padding:
+      22px
+      18px
+      10px !important;
+
+    margin:
+      0 !important;
+
+    box-sizing:
+      border-box;
+
+    display:
+      flex !important;
+
+    align-items:
+      flex-end !important;
+
+    justify-content:
+      space-between !important;
+
+    gap:
+      12px;
+  }
+
+
+  .dmt-section-head
+  h2,
+  .dmt-section-head
+  h3 {
+    margin: 0;
+
+    font-size:
+      min(
+        var(--dmt-section-size),
+        42px
+      ) !important;
+
+    line-height:
+      1 !important;
+  }
+
+
+  .dmt-section-head
+  > :last-child {
+    flex:
+      0
+      0
+      auto;
+
+    font-size:
+      11px !important;
+
+    white-space:
+      nowrap;
+  }
+
+
+  /* ========================================================
+     MENU LIST
+     ======================================================== */
+
+  .dmt-menu-list {
+    width:
+      100%;
+
+    padding:
+      0
+      14px
+      36px !important;
+
+    box-sizing:
+      border-box;
+  }
+
+
+  /*
+     Item/card styling intentionally comes from the
+     original DigitalMenuTemplate base design.
+
+     Mobile changes only the application scrolling shell.
+  */
+
+
+  /* ========================================================
+     RTL
+
+     Content changes direction.
+     Physical proportions do not change.
+     Prices remain LTR.
+     ======================================================== */
+
+  .dmt-app[dir="rtl"]
+  .dmt-header,
+  .dmt-app[dir="rtl"]
+  .dmt-brand {
+    direction:
+      rtl;
+  }
+
+
+  .dmt-app[dir="rtl"]
+  .dmt-brand-copy,
+  .dmt-app[dir="rtl"]
+  .dmt-hero-copy,
+  .dmt-app[dir="rtl"]
+  .dmt-item-info {
+    text-align:
+      right;
+  }
+
+
+  .dmt-app[dir="rtl"]
+  .dmt-tabs {
+    direction:
+      rtl;
+  }
+
+
+  .dmt-app[dir="rtl"]
+  .dmt-price-area {
+    direction:
+      ltr;
+  }
+
+
+  /* ========================================================
+     VERY SMALL PHONES
+
+     El Puerto only tightens horizontal spacing.
+     It does NOT shrink the entire page.
+     ======================================================== */
+
+  @media (max-width: 390px) {
+
+    .dmt-header {
+      padding-left:
+        16px !important;
+
+      padding-right:
+        16px !important;
+    }
+
+
+    .dmt-hero {
+      margin-left:
+        16px !important;
+
+      margin-right:
+        16px !important;
+    }
+
+
+    .dmt-menu-list {
+      padding-left:
+        12px !important;
+
+      padding-right:
+        12px !important;
+    }
+
+
+    .dmt-language button {
+      padding-inline:
+        7px !important;
+    }
+  }
+}
+
+
+/* ==========================================================
+   BEYOND MOBILE MENU — FIXED APP SHELL V1
+
+   Mobile customer experience:
+
+   - Header stays visible
+   - Hero stays visible
+   - Categories stay visible
+   - Section heading stays visible
+   - ONLY menu items scroll
+   - Footer stays visible
+   - Background always fills the phone
+   ========================================================== */
+
+@media (max-width: 560px) {
+
+  /* ========================================================
+     APP = ENTIRE PHONE HEIGHT
+     ======================================================== */
+
+  .dmt-app {
+    width: 100% !important;
+
+    max-width: 460px !important;
+
+    height: 100dvh !important;
+
+    min-height: 100dvh !important;
+
+    margin:
+      0
+      auto !important;
+
+    display: grid !important;
+
+    /*
+      1 header
+      2 hero
+      3 categories
+      4 section title
+      5 scrolling items
+      6 footer
+    */
+    grid-template-rows:
+      auto
+      auto
+      auto
+      auto
+      minmax(0, 1fr)
+      auto !important;
+
+    overflow:
+      hidden !important;
+
+    background:
+      var(--dmt-bg) !important;
+  }
+
+
+  /* ========================================================
+     HEADER
+     ======================================================== */
+
+  .dmt-header {
+    position:
+      relative !important;
+
+    top:
+      auto !important;
+
+    z-index:
+      10;
+
+    flex-shrink:
+      0;
+
+    background:
+      var(--dmt-header-bg) !important;
+  }
+
+
+  /* ========================================================
+     HERO
+     ======================================================== */
+
+  .dmt-hero {
+    position:
+      relative !important;
+
+    top:
+      auto !important;
+
+    z-index:
+      8;
+
+    flex-shrink:
+      0;
+  }
+
+
+  /* ========================================================
+     CATEGORIES
+     ======================================================== */
+
+  .dmt-tabs-wrap {
+    position:
+      relative !important;
+
+    top:
+      auto !important;
+
+    z-index:
+      12;
+
+    flex-shrink:
+      0;
+
+    overflow:
+      hidden !important;
+
+    background:
+      var(--dmt-bg) !important;
+  }
+
+
+  /*
+    Categories themselves swipe left/right.
+
+    The page does NOT move vertically.
+  */
+  .dmt-tabs {
+    overflow-x:
+      auto !important;
+
+    overflow-y:
+      hidden !important;
+
+    overscroll-behavior-x:
+      contain;
+
+    -webkit-overflow-scrolling:
+      touch;
+
+    scrollbar-width:
+      none;
+  }
+
+
+  .dmt-tabs::-webkit-scrollbar {
+    display:
+      none;
+  }
+
+
+  /* ========================================================
+     SECTION TITLE
+     ======================================================== */
+
+  .dmt-section-head {
+    position:
+      relative !important;
+
+    z-index:
+      7;
+
+    flex-shrink:
+      0;
+
+    margin:
+      0 !important;
+
+    background:
+      var(--dmt-bg) !important;
+  }
+
+
+  /* ========================================================
+     ONLY THIS AREA SCROLLS
+     ======================================================== */
+
+  .dmt-menu-list {
+    width:
+      100% !important;
+
+    height:
+      100% !important;
+
+    min-height:
+      0 !important;
+
+    margin:
+      0 !important;
+
+    box-sizing:
+      border-box;
+
+    overflow-x:
+      hidden !important;
+
+    overflow-y:
+      auto !important;
+
+    overscroll-behavior:
+      contain;
+
+    -webkit-overflow-scrolling:
+      touch;
+
+    /*
+      Same restaurant background continues even
+      when category contains only one or two items.
+    */
+    background:
+      var(--dmt-bg) !important;
+
+    scrollbar-width:
+      thin;
+
+    scrollbar-color:
+      color-mix(
+        in srgb,
+        var(--dmt-muted) 45%,
+        transparent
+      )
+      transparent;
+  }
+
+
+  .dmt-menu-list::-webkit-scrollbar {
+    width:
+      4px;
+  }
+
+
+  .dmt-menu-list::-webkit-scrollbar-track {
+    background:
+      transparent;
+  }
+
+
+  .dmt-menu-list::-webkit-scrollbar-thumb {
+    border-radius:
+      999px;
+
+    background:
+      color-mix(
+        in srgb,
+        var(--dmt-muted) 45%,
+        transparent
+      );
+  }
+
+
+  /* ========================================================
+     FOOTER ALWAYS VISIBLE
+     ======================================================== */
+
+  .dmt-footer {
+    position:
+      relative !important;
+
+    bottom:
+      auto !important;
+
+    z-index:
+      20;
+
+    flex-shrink:
+      0;
+
+    margin:
+      0 !important;
+
+    /*
+      Compact because it is permanently visible.
+    */
+    padding:
+      10px
+      16px
+      calc(
+        10px +
+        env(
+          safe-area-inset-bottom
+        )
+      ) !important;
+
+    box-sizing:
+      border-box;
+
+    background:
+      var(--dmt-bg) !important;
+
+    border-top:
+      1px solid
+      var(--dmt-line);
+  }
+
+
+  .dmt-footer
+  .footer-responsible {
+    margin:
+      0
+      0
+      4px !important;
+
+    font-size:
+      8px !important;
+
+    line-height:
+      1.2;
+  }
+
+
+  .dmt-footer
+  .footer-actions {
+    margin:
+      0
+      0
+      3px !important;
+  }
+
+
+  .dmt-footer
+  .footer-link-button {
+    min-height:
+      24px !important;
+
+    padding:
+      2px
+      4px !important;
+
+    font-size:
+      8px !important;
+  }
+
+
+  .dmt-footer
+  .powered-by-beyond {
+    margin:
+      0 !important;
+
+    font-size:
+      8px !important;
+
+    line-height:
+      1.2;
+  }
+
+
+
+
+}

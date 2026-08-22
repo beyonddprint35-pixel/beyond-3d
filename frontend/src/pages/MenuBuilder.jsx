@@ -25,6 +25,17 @@ import {
 import beyondLogo from "../assets/beyond-logo-transparent.png";
 
 import RestaurantCheckout from "../components/RestaurantCheckout";
+import MobileMenuPreview from "../components/MobileMenuPreview";
+
+import DigitalMenuTemplate, {
+  DEFAULT_MENU_BRANDING,
+} from "../components/DigitalMenuTemplate";
+
+import MenuBrandEditor from "../components/MenuBrandEditor";
+
+import MenuLanguageSelector from "../components/MenuLanguageSelector";
+
+import MenuProjectSwitcher from "../components/MenuProjectSwitcher";
 
 import "./MenuBuilder.css";
 
@@ -70,122 +81,6 @@ function money(value) {
   }).format(amount);
 }
 
-function MenuPreview({ menu }) {
-  const sections =
-    menu?.sections || [];
-
-  return (
-    <div className="menu-builder-preview-shell">
-      <div className="menu-builder-preview-bar">
-        <span>DRAFT PREVIEW</span>
-        <strong>
-          {menu?.restaurant_name ||
-            "Your Restaurant"}
-        </strong>
-      </div>
-
-      <div className="menu-builder-preview-menu">
-        <header>
-          <span>BEYOND MENU</span>
-          <h2>
-            {menu?.restaurant_name ||
-              "Your Restaurant"}
-          </h2>
-          <p>
-            Your menu is still a private draft. Edit and preview it before activating your subscription.
-          </p>
-        </header>
-
-        <div className="menu-builder-preview-tabs">
-          {sections.slice(0, 6).map(
-            (section, index) => (
-              <span
-                key={`${section.name_en}-${index}`}
-                className={
-                  index === 0
-                    ? "active"
-                    : ""
-                }
-              >
-                {section.name_en ||
-                  section.name_he ||
-                  "Menu"}
-              </span>
-            )
-          )}
-        </div>
-
-        <div className="menu-builder-preview-content">
-          {sections.map(
-            (section, sectionIndex) => (
-              <section
-                key={`${section.name_en}-${sectionIndex}`}
-              >
-                <div className="menu-builder-preview-section-heading">
-                  <span>
-                    {String(
-                      sectionIndex + 1
-                    ).padStart(2, "0")}
-                  </span>
-                  <h3>
-                    {section.name_en ||
-                      section.name_he ||
-                      "Menu"}
-                  </h3>
-                </div>
-
-                <div className="menu-builder-preview-items">
-                  {(section.items || []).map(
-                    (item, itemIndex) => (
-                      <article
-                        key={`${item.name_en}-${itemIndex}`}
-                      >
-                        <div>
-                          <strong>
-                            {item.name_en ||
-                              item.name_he ||
-                              "Menu item"}
-                          </strong>
-
-                          {(item.description_en ||
-                            item.description_he) && (
-                            <p>
-                              {item.description_en ||
-                                item.description_he}
-                            </p>
-                          )}
-
-                          {Array.isArray(
-                            item.price_options
-                          ) &&
-                            item.price_options.length >
-                              0 && (
-                              <small>
-                                {item.price_options
-                                  .map(option =>
-                                    `${option.label_en || option.label_he}: ${option.price}`
-                                  )
-                                  .join(" · ")}
-                              </small>
-                            )}
-                        </div>
-
-                        <b>
-                          {item.price || ""}
-                        </b>
-                      </article>
-                    )
-                  )}
-                </div>
-              </section>
-            )
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function MenuBuilder() {
   const [session, setSession] =
     useState(null);
@@ -208,6 +103,19 @@ export default function MenuBuilder() {
   const [menu, setMenu] =
     useState(null);
 
+  /*
+    Customer chooses the languages
+    BEFORE AI generation.
+
+    Empty by default so the customer
+    must explicitly choose.
+  */
+  const [
+    selectedLanguages,
+    setSelectedLanguages,
+  ] = useState([]);
+
+
   const [loading, setLoading] =
     useState(false);
 
@@ -226,6 +134,49 @@ export default function MenuBuilder() {
   const [
     selectedPlanId,
     setSelectedPlanId,
+  ] = useState("");
+
+  const [
+    branding,
+    setBranding,
+  ] = useState({
+    ...DEFAULT_MENU_BRANDING,
+  });
+
+  const [
+    logoUrl,
+    setLogoUrl,
+  ] = useState("");
+
+  const [
+    savingDesign,
+    setSavingDesign,
+  ] = useState(false);
+
+  const [
+    draftLoading,
+    setDraftLoading,
+  ] = useState(false);
+
+  const [
+    draftRestored,
+    setDraftRestored,
+  ] = useState(false);
+
+  const [
+    draftSaveStatus,
+    setDraftSaveStatus,
+  ] = useState("");
+
+
+  const [
+    savedProjects,
+    setSavedProjects,
+  ] = useState([]);
+
+  const [
+    activeProjectId,
+    setActiveProjectId,
   ] = useState("");
 
   useEffect(() => {
@@ -275,6 +226,305 @@ export default function MenuBuilder() {
     authReady,
     session,
   ]);
+
+
+  /*
+    ========================================================
+    SAVED MENU MODELS
+    ========================================================
+
+    Every successful AI build is its own menu_project.
+
+    Customers can switch between Model 1 / 2 / 3
+    instead of losing the previous generation.
+  */
+
+  function applyProjectToEditor(
+    selectedProject
+  ) {
+    if (
+      !selectedProject?.id ||
+      !selectedProject
+        ?.structured_menu
+    ) {
+      return;
+    }
+
+    const restoredMenu =
+      selectedProject
+        .structured_menu;
+
+    const restoredBranding = {
+      ...DEFAULT_MENU_BRANDING,
+
+      ...(
+        restoredMenu
+          ?.branding ||
+        {}
+      ),
+
+      display_name:
+        restoredMenu
+          ?.branding
+          ?.display_name ||
+        restoredMenu
+          ?.restaurant_name ||
+        selectedProject.name ||
+        "",
+    };
+
+
+    setProject(
+      selectedProject
+    );
+
+    setActiveProjectId(
+      selectedProject.id
+    );
+
+    setMenu(
+      restoredMenu
+    );
+
+    setBranding(
+      restoredBranding
+    );
+
+    setLogoUrl(
+      restoredBranding
+        .logo_url ||
+      ""
+    );
+
+
+    if (
+      Array.isArray(
+        restoredMenu
+          ?.requested_languages
+      ) &&
+      restoredMenu
+        .requested_languages
+        .length
+    ) {
+      setSelectedLanguages(
+        restoredMenu
+          .requested_languages
+      );
+    }
+
+
+    setDraftRestored(
+      true
+    );
+
+    setDraftSaveStatus(
+      "Saved menu restored"
+    );
+
+    setShowPlans(
+      false
+    );
+
+    setSelectedPlanId(
+      ""
+    );
+
+
+    try {
+      localStorage.setItem(
+        `beyond-menu-project-${session?.user?.id || "user"}`,
+        selectedProject.id
+      );
+    } catch {
+      // Ignore storage errors.
+    }
+  }
+
+
+  async function loadSavedProjects(
+    userId,
+    preferredProjectId = ""
+  ) {
+    if (!userId) {
+      return;
+    }
+
+
+    const {
+      data,
+      error:
+        projectsError,
+    } =
+      await supabase
+        .from(
+          "menu_projects"
+        )
+        .select("*")
+        .eq(
+          "owner_user_id",
+          userId
+        )
+
+        /*
+          Only completed AI menu models belong
+          in the Model 1 / 2 / 3 switcher.
+
+          Older failed/test draft rows must
+          never appear as customer menu models.
+        */
+        .eq(
+          "status",
+          "ready"
+        )
+
+        .not(
+          "structured_menu",
+          "is",
+          null
+        )
+        .order(
+          "created_at",
+          {
+            ascending:
+              true,
+          }
+        );
+
+
+    if (
+      projectsError
+    ) {
+      console.error(
+        "Saved menu models load failed:",
+        projectsError
+      );
+
+      return;
+    }
+
+
+    const projects =
+      data || [];
+
+
+    setSavedProjects(
+      projects
+    );
+
+
+    if (
+      projects.length ===
+      0
+    ) {
+      return;
+    }
+
+
+    let storedId =
+      "";
+
+
+    try {
+      storedId =
+        localStorage.getItem(
+          `beyond-menu-project-${userId}`
+        ) ||
+        "";
+    } catch {
+      // Ignore.
+    }
+
+
+    const selected =
+      projects.find(
+        item =>
+          item.id ===
+          preferredProjectId
+      ) ||
+      projects.find(
+        item =>
+          item.id ===
+          storedId
+      ) ||
+      projects[
+        projects.length -
+        1
+      ];
+
+
+    applyProjectToEditor(
+      selected
+    );
+  }
+
+
+  function handleSelectSavedProject(
+    projectId
+  ) {
+    const selected =
+      savedProjects.find(
+        item =>
+          item.id ===
+          projectId
+      );
+
+
+    if (
+      selected
+    ) {
+      applyProjectToEditor(
+        selected
+      );
+    }
+  }
+
+
+  useEffect(() => {
+    if (
+      !session?.user?.id
+    ) {
+      setSavedProjects(
+        []
+      );
+
+      setActiveProjectId(
+        ""
+      );
+
+      return;
+    }
+
+
+    setDraftLoading(
+      true
+    );
+
+
+    /*
+      If My Websites opened a specific generated
+      website draft, prefer that exact project.
+    */
+    const requestedProjectId =
+      new URLSearchParams(
+        window.location.search
+      ).get(
+        "project"
+      ) ||
+      "";
+
+    loadSavedProjects(
+      session.user.id,
+      requestedProjectId
+    ).finally(
+      () =>
+        setDraftLoading(
+          false
+        )
+    );
+  }, [
+    session?.user?.id,
+  ]);
+
 
 
   useEffect(() => {
@@ -344,6 +594,144 @@ export default function MenuBuilder() {
     };
   }, []);
 
+  /*
+    ========================================================
+    AUTO SAVE MENU DESIGN
+    ========================================================
+
+    The AI result itself is already stored by the
+    Edge Function.
+
+    This effect also persists the customer's:
+      - restaurant name
+      - colors
+      - typography
+      - logo
+      - logo crop shape
+
+    So logout/browser close does not lose the design.
+  */
+  useEffect(() => {
+    if (
+      !session?.user?.id ||
+      !project?.id ||
+      !menu
+    ) {
+      return;
+    }
+
+    const timer =
+      window.setTimeout(
+        async () => {
+          const nextBranding = {
+            ...branding,
+
+            display_name:
+              branding
+                .display_name
+                ?.trim() ||
+              menu
+                .restaurant_name ||
+              project.name ||
+              "My Restaurant",
+
+            logo_url:
+              logoUrl ||
+              null,
+          };
+
+          const nextMenu = {
+            ...menu,
+
+            restaurant_name:
+              nextBranding
+                .display_name,
+
+            branding:
+              nextBranding,
+          };
+
+          setDraftSaveStatus(
+            "Saving..."
+          );
+
+          const {
+            error:
+              saveError,
+          } =
+            await supabase
+              .from(
+                "menu_projects"
+              )
+              .update({
+                name:
+                  nextBranding
+                    .display_name,
+
+                structured_menu:
+                  nextMenu,
+              })
+              .eq(
+                "id",
+                project.id
+              )
+              .eq(
+                "owner_user_id",
+                session.user.id
+              );
+
+          if (
+            saveError
+          ) {
+            console.error(
+              "Menu draft autosave failed:",
+              saveError
+            );
+
+            setDraftSaveStatus(
+              "Could not save changes"
+            );
+
+            return;
+          }
+
+          setDraftSaveStatus(
+            "Saved automatically"
+          );
+
+          setProject(
+            current => ({
+              ...(current || {}),
+
+              name:
+                nextBranding
+                  .display_name,
+
+              structured_menu:
+                nextMenu,
+            })
+          );
+        },
+        850
+      );
+
+    return () => {
+      window.clearTimeout(
+        timer
+      );
+    };
+  }, [
+    session?.user?.id,
+    project?.id,
+
+    menu,
+
+    branding,
+
+    logoUrl,
+  ]);
+
+
   const remainingText = useMemo(
     () => {
       if (!allowance) {
@@ -359,48 +747,79 @@ export default function MenuBuilder() {
     [allowance]
   );
 
-  async function ensureProject() {
-    if (project?.id) {
-      return project;
-    }
-
+  async function createGenerationProject() {
     const {
       data,
-      error: createError,
-    } = await supabase
-      .from("menu_projects")
-      .insert({
-        owner_user_id:
-          session.user.id,
-        created_by:
-          session.user.id,
-        name: "My Menu",
-        source_type:
-          menuText.trim() && files.length
-            ? "mixed"
-            : menuText.trim()
-              ? "text"
-              : files.some(
+      error:
+        createError,
+    } =
+      await supabase
+        .from(
+          "menu_projects"
+        )
+        .insert({
+          owner_user_id:
+            session.user.id,
+
+          created_by:
+            session.user.id,
+
+          name:
+            `Menu Model ${
+              savedProjects.length +
+              1
+            }`,
+
+          source_type:
+            menuText.trim() &&
+            files.length
+              ? "mixed"
+              : menuText.trim()
+                ? "text"
+                : files.some(
                     file =>
                       file.type ===
                       "application/pdf"
                   )
-                ? "pdf"
-                : "image",
-      })
-      .select()
-      .single();
+                  ? "pdf"
+                  : "image",
+        })
+        .select()
+        .single();
 
-    if (createError) {
+
+    if (
+      createError
+    ) {
       throw createError;
     }
 
-    setProject(data);
+
+    setProject(
+      data
+    );
+
+    setActiveProjectId(
+      data.id
+    );
+
+
     return data;
   }
 
+
   async function handleGenerate() {
     if (!session) {
+      return;
+    }
+
+    if (
+      selectedLanguages.length === 0
+    ) {
+      setError(
+        "Choose at least one menu language before building your menu."
+      );
+
       return;
     }
 
@@ -431,45 +850,118 @@ export default function MenuBuilder() {
     setError("");
 
     try {
+      /*
+        Every successful generation becomes
+        a separate model instead of overwriting
+        the previous one.
+      */
+      setMenu(null);
+
+      setBranding({
+        ...DEFAULT_MENU_BRANDING,
+      });
+
+      setLogoUrl("");
+
       const nextProject =
-        await ensureProject();
+        await createGenerationProject();
 
       const payloadFiles =
         await Promise.all(
           files.map(fileToPayload)
         );
 
-      const response = await fetch(
-        "/.netlify/functions/menu-ai-extract",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type":
-              "application/json",
-            Authorization:
-              `Bearer ${session.access_token}`,
+      /*
+        BEYOND MENU AI
 
-            /*
-              Use the exact same public Supabase key
-              that created this browser session.
-              This is a public anon key, NOT a secret.
-            */
-            "X-Beyond-Supabase-Key":
-              import.meta.env
-                .VITE_SUPABASE_ANON_KEY,
-          },
-          body: JSON.stringify({
+        The AI backend now runs directly on
+        Supabase Edge Functions.
+
+        Netlify is NOT involved in this request.
+      */
+      const {
+        data,
+        error: functionError,
+      } = await supabase.functions.invoke(
+        "menu-ai-extract",
+        {
+          body: {
             projectId:
               nextProject.id,
-            text: menuText.trim(),
-            files: payloadFiles,
-          }),
+
+            text:
+              menuText.trim(),
+
+            files:
+              payloadFiles,
+          
+                languages:
+                  selectedLanguages,
+},
+
+          /*
+            This request goes directly to Supabase,
+            so using the Supabase JWT in Authorization
+            is correct here.
+          */
+          headers: {
+            Authorization:
+              `Bearer ${session.access_token}`,
+          },
         }
       );
 
-      const data = await response.json();
+      /*
+        Supabase returns FunctionsHttpError for
+        non-2xx Edge Function responses.
 
-      if (!response.ok) {
+        Extract BEYOND's actual error message
+        when possible instead of showing a
+        generic SDK error.
+      */
+      if (functionError) {
+        let message =
+          functionError.message ||
+          "Could not build this menu.";
+
+        try {
+          const functionResponse =
+            functionError.context;
+
+          if (
+            functionResponse &&
+            typeof functionResponse.clone ===
+              "function"
+          ) {
+            const raw =
+              await functionResponse
+                .clone()
+                .text();
+
+            if (raw) {
+              try {
+                const details =
+                  JSON.parse(raw);
+
+                message =
+                  details?.error ||
+                  details?.message ||
+                  message;
+              } catch {
+                message =
+                  raw ||
+                  message;
+              }
+            }
+          }
+        } catch {
+          // Keep original function error message.
+        }
+
+        throw new Error(message);
+      }
+
+      if (!data?.ok) {
         throw new Error(
           data?.error ||
             "Could not build this menu."
@@ -477,6 +969,38 @@ export default function MenuBuilder() {
       }
 
       setMenu(data.menu);
+
+      if (
+        Array.isArray(
+          data.menu
+            ?.requested_languages
+        ) &&
+        data.menu
+          .requested_languages
+          .length > 0
+      ) {
+        setSelectedLanguages(
+          data.menu
+            .requested_languages
+        );
+      }
+
+      setDraftRestored(
+        true
+      );
+
+      setDraftSaveStatus(
+        "AI menu saved"
+      );
+
+      setBranding(current => ({
+        ...current,
+
+        display_name:
+          current.display_name ||
+          data.menu?.restaurant_name ||
+          "My Restaurant",
+      }));
 
       if (!data.unlimited) {
         setAllowance(current => ({
@@ -506,6 +1030,11 @@ export default function MenuBuilder() {
         structured_menu: data.menu,
         status: "ready",
       }));
+
+      await loadSavedProjects(
+        session.user.id,
+        nextProject.id
+      );
     } catch (generationError) {
       setError(
         generationError?.message ||
@@ -549,6 +1078,102 @@ export default function MenuBuilder() {
     setFiles(nextFiles);
     event.target.value = "";
   }
+
+  async function handleContinueToPlans() {
+    if (
+      !menu
+    ) {
+      return;
+    }
+
+    setSavingDesign(true);
+    setError("");
+
+    try {
+      const nextBranding = {
+        ...branding,
+
+        display_name:
+          branding.display_name?.trim() ||
+          menu.restaurant_name ||
+          "My Restaurant",
+
+        logo_url:
+          logoUrl ||
+          null,
+      };
+
+      const menuWithBranding = {
+        ...menu,
+
+        restaurant_name:
+          nextBranding.display_name,
+
+        branding:
+          nextBranding,
+      };
+
+      if (
+        project?.id
+      ) {
+        const {
+          error:
+            saveDesignError,
+        } =
+          await supabase
+            .from(
+              "menu_projects"
+            )
+            .update({
+              name:
+                nextBranding
+                  .display_name,
+
+              structured_menu:
+                menuWithBranding,
+            })
+            .eq(
+              "id",
+              project.id
+            );
+
+        if (
+          saveDesignError
+        ) {
+          throw saveDesignError;
+        }
+      }
+
+      setMenu(
+        menuWithBranding
+      );
+
+      setProject(
+        current => ({
+          ...(current || {}),
+
+          name:
+            nextBranding
+              .display_name,
+
+          structured_menu:
+            menuWithBranding,
+        })
+      );
+
+      setShowPlans(true);
+    } catch (
+      designError
+    ) {
+      setError(
+        designError?.message ||
+        "Could not save your menu design."
+      );
+    } finally {
+      setSavingDesign(false);
+    }
+  }
+
 
   if (!authReady) {
     return (
@@ -621,10 +1246,60 @@ export default function MenuBuilder() {
             </p>
           </section>
 
+          {(draftLoading ||
+            draftRestored) && (
+            <div className="menu-builder-saved-draft">
+              <div>
+                <strong>
+                  {draftLoading
+                    ? "Checking for your saved menu..."
+                    : "Your menu is saved to your BEYOND account."}
+                </strong>
+
+                {!draftLoading && (
+                  <span>
+                    You can log out and come back later. We will restore this menu automatically.
+                  </span>
+                )}
+              </div>
+
+              {!draftLoading &&
+                draftSaveStatus && (
+                  <small>
+                    {draftSaveStatus}
+                  </small>
+                )}
+            </div>
+          )}
+
+          <MenuProjectSwitcher
+            projects={
+              savedProjects
+            }
+            activeProjectId={
+              activeProjectId
+            }
+            onSelect={
+              handleSelectSavedProject
+            }
+          />
+
+          <MenuLanguageSelector
+            value={
+              selectedLanguages
+            }
+            onChange={
+              setSelectedLanguages
+            }
+            disabled={
+              loading
+            }
+          />
+
           <section className="menu-builder-source-panel">
             <div className="menu-builder-source-heading">
               <div>
-                <span>01 / SOURCE</span>
+                <span>02 / SOURCE</span>
                 <h2>
                   Give us your menu.
                 </h2>
@@ -742,7 +1417,10 @@ export default function MenuBuilder() {
                 type="button"
                 className="menu-builder-main-button"
                 onClick={handleGenerate}
-                disabled={loading}
+                disabled={
+                  loading ||
+                  selectedLanguages.length === 0
+                }
               >
                 {loading ? (
                   <>
@@ -766,27 +1444,99 @@ export default function MenuBuilder() {
             <section className="menu-builder-result">
               <div className="menu-builder-result-heading">
                 <div>
-                  <span>02 / PREVIEW</span>
+                  <span>02 / BRAND & PREVIEW</span>
+
                   <h2>
-                    This is your menu.
+                    Design your live menu.
                   </h2>
+
                   <p>
-                    This preview uses your extracted menu data. We will expand editing controls as the Menu Builder develops.
+                    This is the same BEYOND customer-menu system that your restaurant will use live. Add your logo, choose the brand colors and fonts, switch languages and preview the final customer experience before subscribing.
                   </p>
                 </div>
 
-                <button
-                  type="button"
-                  className="menu-builder-main-button"
-                  onClick={() =>
-                    setShowPlans(true)
-                  }
-                >
-                  Continue to Plans
-                </button>
+                <div className="menu-builder-design-actions">
+
+                  <MobileMenuPreview
+                    menu={
+                      menu
+                    }
+                    branding={
+                      branding
+                    }
+                    logoUrl={
+                      logoUrl
+                    }
+                  />
+
+                  <button
+                    type="button"
+                    className="menu-builder-main-button"
+                    onClick={
+                      handleContinueToPlans
+                    }
+                    disabled={
+                      savingDesign
+                    }
+                  >
+                    {savingDesign
+                      ? "Saving design..."
+                      : "Save Design & Continue"}
+                  </button>
+
+                </div>
               </div>
 
-              <MenuPreview menu={menu} />
+              <div className="menu-builder-branding-layout">
+                <MenuBrandEditor
+                  branding={
+                    branding
+                  }
+                  onChange={
+                    setBranding
+                  }
+                  logoUrl={
+                    logoUrl
+                  }
+                  onLogoChange={
+                    setLogoUrl
+                  }
+                  onReset={() =>
+                    setBranding({
+                      ...DEFAULT_MENU_BRANDING,
+
+                      display_name:
+                        menu?.restaurant_name ||
+                        "",
+                    })
+                  }
+                />
+
+                <div className="menu-builder-live-preview">
+                  <div className="menu-builder-live-preview-label">
+                    <span>
+                      LIVE CUSTOMER PREVIEW
+                    </span>
+
+                    <strong>
+                      Changes appear instantly
+                    </strong>
+                  </div>
+
+                  <DigitalMenuTemplate
+                    menu={
+                      menu
+                    }
+                    branding={
+                      branding
+                    }
+                    logoUrl={
+                      logoUrl
+                    }
+                    embedded
+                  />
+                </div>
+              </div>
             </section>
           )}
         </div>
@@ -826,7 +1576,7 @@ export default function MenuBuilder() {
               Back to preview
             </button>
 
-            <span>03 / ACTIVATE</span>
+            <span>04 / ACTIVATE</span>
             <h1>
               Choose your BEYOND plan.
             </h1>

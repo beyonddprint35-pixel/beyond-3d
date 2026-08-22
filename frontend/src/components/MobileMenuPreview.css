@@ -1,0 +1,545 @@
+/* ==========================================================
+   BUILDER BUTTONS
+   ========================================================== */
+
+.menu-builder-design-actions {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: flex-end;
+
+  gap: 12px;
+
+  flex-shrink: 0;
+}
+
+
+.menu-builder-mobile-view-button {
+  min-height: 52px;
+
+  padding:
+    0
+    21px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 8px;
+
+  border:
+    1px solid
+    rgba(
+      70,
+      142,
+      200,
+      .25
+    );
+
+  border-radius:
+    999px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #0c1c29,
+      #07131d
+    );
+
+  color:
+    #a9c8df;
+
+  font: inherit;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  white-space: nowrap;
+
+  cursor: pointer;
+
+  transition:
+    160ms ease;
+}
+
+
+.menu-builder-mobile-view-button:hover:not(:disabled) {
+  transform:
+    translateY(-1px);
+
+  border-color:
+    rgba(
+      72,
+      161,
+      231,
+      .5
+    );
+
+  color:
+    #ffffff;
+
+  background:
+    linear-gradient(
+      180deg,
+      #102a3d,
+      #091a27
+    );
+}
+
+
+.menu-builder-mobile-view-button:disabled {
+  opacity: .45;
+
+  cursor: not-allowed;
+}
+
+
+
+/* ==========================================================
+   BLURRED BUILDER
+   ========================================================== */
+
+.mobile-menu-preview-overlay {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 999999;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 18px;
+
+  box-sizing: border-box;
+
+  background:
+    rgba(
+      1,
+      7,
+      12,
+      .63
+    );
+
+  backdrop-filter:
+    blur(18px)
+    brightness(.58);
+
+  -webkit-backdrop-filter:
+    blur(18px)
+    brightness(.58);
+}
+
+
+
+/* ==========================================================
+   PREVIEW STAGE
+   ========================================================== */
+
+.mobile-menu-preview-stage {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 11px;
+}
+
+
+
+/* ==========================================================
+   TITLE
+   ========================================================== */
+
+.mobile-menu-preview-top {
+  width: 410px;
+
+  max-width:
+    calc(
+      100vw -
+      28px
+    );
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 18px;
+}
+
+
+.mobile-menu-preview-top
+> div {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 2px;
+}
+
+
+.mobile-menu-preview-top span {
+  color:
+    #5790b9;
+
+  font-size: 8px;
+
+  font-weight: 800;
+
+  letter-spacing:
+    .2em;
+}
+
+
+.mobile-menu-preview-top strong {
+  color:
+    #e9f1f7;
+
+  font-size: 14px;
+
+  font-weight: 650;
+}
+
+
+.mobile-menu-preview-close {
+  width: 40px;
+
+  height: 40px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  flex:
+    0
+    0
+    40px;
+
+  border:
+    1px solid
+    rgba(
+      100,
+      160,
+      204,
+      .22
+    );
+
+  border-radius: 50%;
+
+  background:
+    #081720;
+
+  color:
+    #95b5ca;
+
+  cursor: pointer;
+}
+
+
+
+/* ==========================================================
+   PHONE
+
+   Screen = 390 x 844 CSS pixels.
+
+   That means the iframe gets the same kind of viewport
+   that an iPhone browser gets.
+   ========================================================== */
+
+.mobile-menu-preview-phone {
+  position: relative;
+
+  width: 410px;
+
+  height: 864px;
+
+  padding: 9px;
+
+  box-sizing: border-box;
+
+  border:
+    1px solid
+    rgba(
+      164,
+      188,
+      204,
+      .4
+    );
+
+  border-radius:
+    54px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #394751,
+      #090e12 22%,
+      #020405 73%,
+      #34424c
+    );
+
+  box-shadow:
+    0
+    45px
+    110px
+    rgba(
+      0,
+      0,
+      0,
+      .72
+    ),
+
+    0
+    15px
+    42px
+    rgba(
+      0,
+      0,
+      0,
+      .48
+    ),
+
+    inset
+    0
+    0
+    0
+    2px
+    rgba(
+      255,
+      255,
+      255,
+      .055
+    );
+}
+
+
+.mobile-menu-preview-screen {
+  position: relative;
+
+  width: 390px;
+
+  height: 844px;
+
+  overflow: hidden;
+
+  border-radius:
+    45px;
+
+  background:
+    #ffffff;
+}
+
+
+
+/* ==========================================================
+   REAL MOBILE BROWSER
+   ========================================================== */
+
+.mobile-menu-preview-frame {
+  display: block;
+
+  width: 390px;
+
+  height: 844px;
+
+  margin: 0;
+
+  padding: 0;
+
+  border: 0;
+
+  background:
+    #ffffff;
+}
+
+
+
+/* ==========================================================
+   DYNAMIC ISLAND
+   ========================================================== */
+
+.mobile-menu-preview-island {
+  position: absolute;
+
+  z-index: 1000;
+
+  top: 10px;
+
+  left: 50%;
+
+  transform:
+    translateX(-50%);
+
+  width: 110px;
+
+  height: 30px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: flex-end;
+
+  padding-right: 9px;
+
+  box-sizing: border-box;
+
+  border-radius:
+    999px;
+
+  background:
+    #020202;
+
+  pointer-events: none;
+}
+
+
+.mobile-menu-preview-island span {
+  width: 6px;
+
+  height: 6px;
+
+  border-radius: 50%;
+
+  background:
+    #102b40;
+}
+
+
+
+/* ==========================================================
+   HARDWARE BUTTONS
+   ========================================================== */
+
+.mobile-menu-preview-buttons {
+  position: absolute;
+
+  z-index: -1;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 9px;
+}
+
+
+.mobile-menu-preview-buttons span {
+  display: block;
+
+  width: 3px;
+
+  border-radius: 3px;
+
+  background:
+    #34414a;
+}
+
+
+.mobile-menu-preview-buttons.left {
+  left: -3px;
+
+  top: 120px;
+}
+
+
+.mobile-menu-preview-buttons.left
+span:nth-child(1) {
+  height: 27px;
+}
+
+
+.mobile-menu-preview-buttons.left
+span:nth-child(2),
+.mobile-menu-preview-buttons.left
+span:nth-child(3) {
+  height: 50px;
+}
+
+
+.mobile-menu-preview-buttons.right {
+  right: -3px;
+
+  top: 155px;
+}
+
+
+.mobile-menu-preview-buttons.right span {
+  height: 79px;
+}
+
+
+
+/* ==========================================================
+   INFO
+   ========================================================== */
+
+.mobile-menu-preview-info {
+  color:
+    #66859b;
+
+  font-size: 9px;
+}
+
+
+
+/* ==========================================================
+   SMALL LAPTOP HEIGHT
+
+   Scale the PHONE mockup only.
+
+   Important:
+   iframe still internally remains 390 × 844,
+   so mobile CSS still activates correctly.
+   ========================================================== */
+
+@media (max-height: 980px) {
+
+  .mobile-menu-preview-stage {
+    transform:
+      scale(.88);
+
+    transform-origin:
+      center center;
+  }
+}
+
+
+@media (max-height: 850px) {
+
+  .mobile-menu-preview-stage {
+    transform:
+      scale(.75);
+  }
+}
+
+
+@media (max-width: 500px) {
+
+  .mobile-menu-preview-stage {
+    transform:
+      scale(.88);
+  }
+}
+
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+  .menu-builder-mobile-view-button {
+    transition: none;
+  }
+}
