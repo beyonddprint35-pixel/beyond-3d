@@ -4671,3 +4671,52 @@ span {
 
 }
 
+
+
+/* =========================================================
+   BEYOND_EMAIL_VERIFICATION_NOTICE_STYLE_V1
+========================================================= */
+
+.home-email-verification-notice {
+  position: fixed;
+  top: 22px;
+  left: 50%;
+  z-index: 10000;
+  transform: translateX(-50%);
+  width: calc(100% - 40px);
+  max-width: 520px;
+  box-sizing: border-box;
+  padding: 14px 20px;
+  border-radius: 14px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  backdrop-filter: blur(18px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.16);
+}
+
+.home-email-verification-notice.verifying {
+  color: #315f87;
+  background: rgba(240, 247, 253, 0.96);
+  border: 1px solid rgba(78, 139, 192, 0.22);
+}
+
+.home-email-verification-notice.success {
+  color: #246b43;
+  background: rgba(239, 249, 242, 0.97);
+  border: 1px solid rgba(68, 160, 100, 0.22);
+}
+
+.home-email-verification-notice.error {
+  color: #a24646;
+  background: rgba(255, 244, 244, 0.97);
+  border: 1px solid rgba(190, 75, 75, 0.20);
+}
+
+@media (max-width: 600px) {
+  .home-email-verification-notice {
+    top: 12px;
+    width: calc(100% - 24px);
+  }
+}

@@ -81,6 +81,12 @@ function Home() {
     setAuthReady,
   ] = useState(false);
 
+  // BEYOND_EMAIL_VERIFICATION_STATE_V1
+  const [
+    emailVerificationStatus,
+    setEmailVerificationStatus,
+  ] = useState("");
+
   const [
     profile,
     setProfile,
@@ -240,6 +246,116 @@ function Home() {
         ""
       );
 
+
+  // BEYOND_EMAIL_VERIFICATION_HANDLER_V1
+  useEffect(() => {
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+    const tokenHash =
+      params.get("token_hash");
+
+    const type =
+      params.get("type");
+
+    if (
+      !tokenHash ||
+      type !== "email"
+    ) {
+      return;
+    }
+
+    let alive = true;
+
+    async function verifyEmail() {
+      setEmailVerificationStatus(
+        "verifying"
+      );
+
+      try {
+        const {
+          data,
+          error:
+            verificationError,
+        } =
+          await supabase.auth
+            .verifyOtp({
+              token_hash:
+                tokenHash,
+              type: "email",
+            });
+
+        if (!alive) {
+          return;
+        }
+
+        // Remove the one-time token from the browser URL.
+        window.history.replaceState(
+          {},
+          document.title,
+          window.location.pathname
+        );
+
+        if (
+          verificationError
+        ) {
+          throw verificationError;
+        }
+
+        if (data?.session) {
+          setSession(
+            data.session
+          );
+        }
+
+        setAuthReady(true);
+
+        setEmailVerificationStatus(
+          "success"
+        );
+
+        setAuthOpen(false);
+
+        window.setTimeout(
+          () => {
+            if (alive) {
+              setEmailVerificationStatus(
+                ""
+              );
+            }
+          },
+          7000
+        );
+      } catch (err) {
+        if (!alive) {
+          return;
+        }
+
+        window.history.replaceState(
+          {},
+          document.title,
+          window.location.pathname
+        );
+
+        console.error(
+          "Email verification failed:",
+          err
+        );
+
+        setEmailVerificationStatus(
+          "error"
+        );
+      }
+    }
+
+    verifyEmail();
+
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -591,6 +707,22 @@ function Home() {
           scrollProgress,
       }}
     >
+      {/* BEYOND_EMAIL_VERIFICATION_NOTICE_V1 */}
+      {emailVerificationStatus && (
+        <div
+          className={`home-email-verification-notice ${emailVerificationStatus}`}
+          role="status"
+        >
+          {emailVerificationStatus ===
+          "verifying"
+            ? "Verifying your email..."
+            : emailVerificationStatus ===
+                "success"
+              ? "Email verified successfully. Welcome to BEYOND."
+              : "We couldn't verify this email link. Please request a new verification email."}
+        </div>
+      )}
+
       {/* =========================================
           BACKGROUND
       ========================================= */}
