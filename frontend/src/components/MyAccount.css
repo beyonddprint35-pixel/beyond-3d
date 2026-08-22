@@ -1534,7 +1534,38 @@ small {
   }
 
   .account-logout {
-    display: none;
+    width: 100%;
+    min-height: 48px;
+
+    margin-top: 12px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    border:
+      1px solid
+      rgba(205, 91, 91, 0.18);
+
+    border-radius: 12px;
+
+    color: #c98787;
+
+    background:
+      rgba(145, 56, 56, 0.07);
+
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+  }
+
+  .account-logout:active {
+    background:
+      rgba(145, 56, 56, 0.14);
   }
 
   .account-content {
@@ -3961,4 +3992,58 @@ button:disabled {
   .account-change-password {
     width: 100%;
   }
+}
+
+
+/* BEYOND_ACCOUNT_PASSWORD_LIGHT_MODE_V2 */
+
+html[data-beyond-theme="light"] .account-security-card {
+  background: #ffffff;
+  border: 1px solid rgba(35, 77, 115, 0.12);
+  box-shadow: 0 10px 35px rgba(25, 55, 85, 0.08);
+}
+
+html[data-beyond-theme="light"] .account-security-heading > svg {
+  color: #4f8fc8;
+}
+
+html[data-beyond-theme="light"] .account-security-heading span,
+html[data-beyond-theme="light"] .account-password-form label > span {
+  color: #5d86aa;
+}
+
+html[data-beyond-theme="light"] .account-security-heading h3 {
+  color: #14263a;
+}
+
+html[data-beyond-theme="light"] .account-security-heading p {
+  color: #687b8f;
+}
+
+html[data-beyond-theme="light"] .account-password-form input {
+  color: #14263a;
+  background: #f8fafc;
+  border: 1px solid rgba(35, 77, 115, 0.14);
+}
+
+html[data-beyond-theme="light"] .account-password-form input::placeholder {
+  color: #8795a3;
+}
+
+html[data-beyond-theme="light"] .account-password-form input:focus {
+  background: #ffffff;
+  border-color: rgba(46, 120, 190, 0.45);
+  box-shadow: 0 0 0 3px rgba(46, 120, 190, 0.08);
+}
+
+html[data-beyond-theme="light"] .account-password-success {
+  color: #287545;
+  background: #eef8f1;
+  border: 1px solid rgba(50, 145, 83, 0.12);
+}
+
+html[data-beyond-theme="light"] .account-password-error {
+  color: #a44747;
+  background: #fff3f3;
+  border: 1px solid rgba(180, 70, 70, 0.12);
 }
