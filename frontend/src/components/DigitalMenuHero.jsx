@@ -4,9 +4,7 @@ import {
 
 import "./DigitalMenuHero.css";
 
-export default function DigitalMenuHero({
-  onStartMenu,
-}) {
+export default function DigitalMenuHero() {
   const {
     isHebrew,
   } = useBeyondLanguage();
@@ -65,7 +63,11 @@ export default function DigitalMenuHero({
           <button
             type="button"
             className="digital-menu-primary"
-            onClick={onStartMenu}
+            onClick={() =>
+              window.location.assign(
+                "/menu-builder"
+              )
+            }
           >
             {isHebrew
               ? "צור תפריט"
@@ -121,15 +123,11 @@ export default function DigitalMenuHero({
       <div className="digital-menu-product">
         <div className="digital-menu-glow" />
 
-        {/* PHONE */}
         <div className="digital-menu-phone">
           <div className="digital-phone-island" />
 
           <div className="digital-phone-screen">
-
-            {/* BEYOND_NFC_PHONE_INTERACTION_V1 */}
             <div className="digital-phone-nfc-ready">
-
               <div className="digital-phone-nfc-symbol">
                 <span />
                 <span />
@@ -150,17 +148,15 @@ export default function DigitalMenuHero({
                 Hold your phone
                 near the stand
               </p>
-
             </div>
+
             <div className="digital-phone-live">
               <span>LIVE MENU</span>
               <i />
             </div>
 
             <div className="digital-phone-brand">
-
               <span className="digital-phone-brand-title">
-
                 <span className="digital-phone-brand-beyond">
                   BEYOND
                 </span>
@@ -170,13 +166,11 @@ export default function DigitalMenuHero({
                     ? "תפריט"
                     : "MENU"}
                 </span>
-
               </span>
 
               <small>
                 QR · NFC · MULTI LANGUAGE
               </small>
-
             </div>
 
             <div className="digital-phone-tabs">
@@ -225,7 +219,6 @@ export default function DigitalMenuHero({
           </div>
         </div>
 
-        {/* PHYSICAL QR / NFC STAND */}
         <div className="digital-stand">
           <div className="digital-stand-shadow" />
 
@@ -277,27 +270,22 @@ export default function DigitalMenuHero({
                   <rect x="54" y="7" width="7" height="8" />
                   <rect x="41" y="21" width="10" height="8" />
                   <rect x="55" y="24" width="7" height="8" />
-
                   <rect x="40" y="39" width="9" height="9" />
                   <rect x="53" y="39" width="11" height="8" />
                   <rect x="68" y="40" width="8" height="8" />
                   <rect x="83" y="40" width="10" height="8" />
-
                   <rect x="7" y="40" width="9" height="8" />
                   <rect x="21" y="41" width="10" height="8" />
-
                   <rect x="7" y="54" width="8" height="8" />
                   <rect x="21" y="53" width="9" height="9" />
                   <rect x="39" y="53" width="11" height="9" />
                   <rect x="55" y="52" width="8" height="8" />
                   <rect x="68" y="55" width="12" height="8" />
                   <rect x="85" y="53" width="8" height="9" />
-
                   <rect x="40" y="68" width="8" height="8" />
                   <rect x="53" y="68" width="9" height="9" />
                   <rect x="68" y="69" width="8" height="8" />
                   <rect x="83" y="68" width="10" height="8" />
-
                   <rect x="40" y="83" width="10" height="10" />
                   <rect x="55" y="84" width="8" height="9" />
                   <rect x="69" y="82" width="10" height="11" />
@@ -331,7 +319,6 @@ export default function DigitalMenuHero({
           </div>
         </div>
 
-        {/* FLOATING UI */}
         <div className="digital-floating-card digital-floating-top">
           <span>ACCESS</span>
           <strong>QR + NFC</strong>
