@@ -139,6 +139,57 @@ function AuthModal({
     return null;
   }
 
+  // BEYOND_FORGOT_PASSWORD_V1
+  async function handleForgotPassword() {
+    const cleanEmail =
+      email.trim();
+
+    setError("");
+    setMessage("");
+
+    if (
+      !cleanEmail ||
+      !cleanEmail.includes("@")
+    ) {
+      setError(
+        "Enter your email address first."
+      );
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const {
+        error:
+          resetError,
+      } =
+        await supabase.auth
+          .resetPasswordForEmail(
+            cleanEmail,
+            {
+              redirectTo:
+                "https://b3yondworld.com",
+            }
+          );
+
+      if (resetError) {
+        throw resetError;
+      }
+
+      setMessage(
+        "Password reset link sent. Check your email and follow the link to choose a new password."
+      );
+    } catch (err) {
+      setError(
+        err.message ||
+          "Could not send the password reset email."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function handleSubmit(
     event
   ) {
@@ -922,6 +973,19 @@ function AuthModal({
                       } Business Account`
                     : "Create Account"}
             </button>
+
+            {mode === "login" && (
+              <button
+                type="button"
+                className="auth-forgot-password"
+                disabled={loading}
+                onClick={
+                  handleForgotPassword
+                }
+              >
+                Forgot password?
+              </button>
+            )}
           </form>
         )}
 

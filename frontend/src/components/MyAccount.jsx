@@ -137,6 +137,8 @@ function MyAccount({
   session,
   profile,
   onProfileUpdated,
+  passwordRecovery = false,
+  onPasswordRecoveryComplete,
   onSignOut,
 }) {
   const [
@@ -308,10 +310,121 @@ function MyAccount({
     setProfileMessage,
   ] = useState("");
 
+  // BEYOND_ACCOUNT_PASSWORD_V1
+  const [
+    newPassword,
+    setNewPassword,
+  ] = useState("");
+
+  const [
+    confirmPassword,
+    setConfirmPassword,
+  ] = useState("");
+
+  const [
+    changingPassword,
+    setChangingPassword,
+  ] = useState(false);
+
+  const [
+    passwordMessage,
+    setPasswordMessage,
+  ] = useState("");
+
+  const [
+    passwordError,
+    setPasswordError,
+  ] = useState("");
+
   const [
     archivingId,
     setArchivingId,
   ] = useState(null);
+
+  // BEYOND_PASSWORD_RECOVERY_PROFILE_V1
+  useEffect(() => {
+    if (
+      open &&
+      passwordRecovery
+    ) {
+      setActiveTab(
+        "profile"
+      );
+    }
+  }, [
+    open,
+    passwordRecovery,
+  ]);
+
+  async function handleChangePassword(
+    event
+  ) {
+    event.preventDefault();
+
+    setPasswordError("");
+    setPasswordMessage("");
+
+    if (
+      newPassword.length < 8
+    ) {
+      setPasswordError(
+        "Password must contain at least 8 characters."
+      );
+      return;
+    }
+
+    if (
+      newPassword !==
+      confirmPassword
+    ) {
+      setPasswordError(
+        "The passwords do not match."
+      );
+      return;
+    }
+
+    setChangingPassword(
+      true
+    );
+
+    try {
+      const {
+        error:
+          updateError,
+      } =
+        await supabase.auth
+          .updateUser({
+            password:
+              newPassword,
+          });
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      setNewPassword("");
+      setConfirmPassword("");
+
+      setPasswordMessage(
+        "Your password has been updated successfully."
+      );
+
+      if (
+        onPasswordRecoveryComplete
+      ) {
+        onPasswordRecoveryComplete();
+      }
+    } catch (err) {
+      setPasswordError(
+        err.message ||
+          "Could not update your password."
+      );
+    } finally {
+      setChangingPassword(
+        false
+      );
+    }
+  }
 
   const loadAccountData =
     useCallback(
@@ -4164,6 +4277,104 @@ function MyAccount({
                   </div>
                 )}
               </form>
+
+              <section className="account-security-card">
+                <div className="account-security-heading">
+                  <ShieldCheck
+                    size={28}
+                    strokeWidth={1.2}
+                  />
+
+                  <div>
+                    <span>
+                      SECURITY
+                    </span>
+
+                    <h3>
+                      Change password
+                    </h3>
+
+                    <p>
+                      {passwordRecovery
+                        ? "Choose a new password to finish recovering your BEYOND account."
+                        : "Update the password used to access your BEYOND account."}
+                    </p>
+                  </div>
+                </div>
+
+                <form
+                  className="account-password-form"
+                  onSubmit={
+                    handleChangePassword
+                  }
+                >
+                  <label>
+                    <span>
+                      NEW PASSWORD
+                    </span>
+
+                    <input
+                      type="password"
+                      value={
+                        newPassword
+                      }
+                      onChange={event =>
+                        setNewPassword(
+                          event.target
+                            .value
+                        )
+                      }
+                      placeholder="At least 8 characters"
+                      autoComplete="new-password"
+                    />
+                  </label>
+
+                  <label>
+                    <span>
+                      CONFIRM NEW PASSWORD
+                    </span>
+
+                    <input
+                      type="password"
+                      value={
+                        confirmPassword
+                      }
+                      onChange={event =>
+                        setConfirmPassword(
+                          event.target
+                            .value
+                        )
+                      }
+                      placeholder="Repeat your new password"
+                      autoComplete="new-password"
+                    />
+                  </label>
+
+                  <button
+                    type="submit"
+                    className="account-primary-button account-change-password"
+                    disabled={
+                      changingPassword
+                    }
+                  >
+                    {changingPassword
+                      ? "Updating..."
+                      : "Change Password"}
+                  </button>
+
+                  {passwordError && (
+                    <div className="account-password-error">
+                      {passwordError}
+                    </div>
+                  )}
+
+                  {passwordMessage && (
+                    <div className="account-password-success">
+                      {passwordMessage}
+                    </div>
+                  )}
+                </form>
+              </section>
             </div>
           )}
         </div>

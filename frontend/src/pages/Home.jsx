@@ -65,6 +65,12 @@ function Home() {
     setAccountOpen,
   ] = useState(false);
 
+  // BEYOND_PASSWORD_RECOVERY_STATE_V1
+  const [
+    passwordRecovery,
+    setPasswordRecovery,
+  ] = useState(false);
+
   const [
     session,
     setSession,
@@ -260,7 +266,7 @@ function Home() {
       supabase.auth
         .onAuthStateChange(
           (
-            _event,
+            event,
             nextSession
           ) => {
             if (!mounted) {
@@ -274,6 +280,20 @@ function Home() {
             setAuthReady(
               true
             );
+
+            // BEYOND_PASSWORD_RECOVERY_EVENT_V1
+            if (
+              event ===
+              "PASSWORD_RECOVERY"
+            ) {
+              setPasswordRecovery(
+                true
+              );
+
+              setAccountOpen(
+                true
+              );
+            }
           }
         );
 
@@ -1327,6 +1347,14 @@ function Home() {
         ) =>
           setProfile(
             nextProfile
+          )
+        }
+        passwordRecovery={
+          passwordRecovery
+        }
+        onPasswordRecoveryComplete={() =>
+          setPasswordRecovery(
+            false
           )
         }
         onSignOut={
