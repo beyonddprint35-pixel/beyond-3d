@@ -62,7 +62,7 @@ exports.handler = async function (event) {
       );
 
     const logoUrl =
-      "https://beyond3dshop.com/beyond-logo.png";
+      "https://b3yondworld.com/beyond-logo.png";
 
     // =========================================
     // CUSTOMER CONFIRMATION EMAIL
@@ -87,7 +87,7 @@ exports.handler = async function (event) {
               from:
                 process.env
                   .EMAIL_FROM ||
-                "Beyond <orders@beyond3dshop.com>",
+                "Beyond <orders@b3yondworld.com>",
 
               to: [
                 customerEmail,
@@ -483,7 +483,7 @@ exports.handler = async function (event) {
                               line-height:1.7;
                             "
                           >
-                            beyond3dshop.com
+                            b3yondworld.com
 
                             <br />
 
@@ -552,7 +552,7 @@ exports.handler = async function (event) {
               from:
                 process.env
                   .EMAIL_FROM ||
-                "Beyond <orders@beyond3dshop.com>",
+                "Beyond <orders@b3yondworld.com>",
 
               to: [
                 process.env
