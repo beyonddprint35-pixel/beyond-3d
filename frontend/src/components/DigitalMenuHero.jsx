@@ -4,7 +4,9 @@ import {
 
 import "./DigitalMenuHero.css";
 
-export default function DigitalMenuHero() {
+export default function DigitalMenuHero({
+  onStartMenu,
+}) {
   const {
     isHebrew,
   } = useBeyondLanguage();
@@ -63,10 +65,8 @@ export default function DigitalMenuHero() {
           <button
             type="button"
             className="digital-menu-primary"
-            onClick={() =>
-              window.location.assign(
-                "/menu-builder"
-              )
+            onClick={
+              onStartMenu
             }
           >
             {isHebrew

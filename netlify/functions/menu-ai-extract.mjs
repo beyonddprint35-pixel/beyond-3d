@@ -19,6 +19,71 @@ function getEnv(name) {
   return process.env[name] || "";
 }
 
+function decodeJwtPayload(token) {
+  try {
+    const payload =
+      token.split(".")[1];
+
+    if (!payload) {
+      return null;
+    }
+
+    const normalized =
+      payload
+        .replace(/-/g, "+")
+        .replace(/_/g, "/");
+
+    const padded =
+      normalized.padEnd(
+        Math.ceil(
+          normalized.length / 4
+        ) * 4,
+        "="
+      );
+
+    return JSON.parse(
+      Buffer.from(
+        padded,
+        "base64"
+      ).toString("utf8")
+    );
+  } catch {
+    return null;
+  }
+}
+
+
+function getServerHeaders(
+  serviceKey
+) {
+  /*
+    New Supabase sb_secret_... keys are
+    NOT JWTs and must not be used as
+    Authorization Bearer tokens.
+
+    Legacy service_role JWT keys can
+    still be supplied as Bearer tokens.
+  */
+
+  const headers = {
+    apikey: serviceKey,
+    "Content-Type":
+      "application/json",
+  };
+
+  if (
+    serviceKey?.startsWith(
+      "eyJ"
+    )
+  ) {
+    headers.Authorization =
+      `Bearer ${serviceKey}`;
+  }
+
+  return headers;
+}
+
+
 function getBearerToken(request) {
   const header =
     request.headers.get("authorization") ||
@@ -35,58 +100,169 @@ function getBearerToken(request) {
 async function verifyUser({
   token,
   supabaseUrl,
-  serviceKey,
+  publicKey,
 }) {
-  if (!token) return null;
+  if (!token) {
+    throw new Error(
+      "AUTH_NO_TOKEN: Log in again before building your menu."
+    );
+  }
 
-  const response = await fetch(
-    `${supabaseUrl}/auth/v1/user`,
-    {
-      headers: {
-        apikey: serviceKey,
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  /*
+    Check the JWT issuer locally first.
+    This does NOT verify the signature;
+    Supabase still performs the actual
+    authentication below.
+  */
+  const payload =
+    decodeJwtPayload(
+      token
+    );
 
-  const data = await response.json();
+  const expectedIssuer =
+    `${supabaseUrl}/auth/v1`;
 
-  if (!response.ok || !data?.id) {
-    return null;
+  if (
+    payload?.iss &&
+    payload.iss !==
+      expectedIssuer
+  ) {
+    console.error(
+      "Menu AI JWT issuer mismatch:",
+      {
+        received:
+          payload.iss,
+        expected:
+          expectedIssuer,
+      }
+    );
+
+    throw new Error(
+      "AUTH_WRONG_ISSUER: Your local login session belongs to a different Supabase project. Log out and log in again."
+    );
+  }
+
+  const response =
+    await fetch(
+      `${supabaseUrl}/auth/v1/user`,
+      {
+        headers: {
+          apikey:
+            publicKey,
+
+          Authorization:
+            `Bearer ${token}`,
+        },
+      }
+    );
+
+  let data = null;
+
+  try {
+    data =
+      await response.json();
+  } catch {
+    data = null;
+  }
+
+  if (
+    !response.ok ||
+    !data?.id
+  ) {
+    console.error(
+      "Menu AI user verification failed:",
+      {
+        status:
+          response.status,
+
+        error:
+          data?.message ||
+          data?.error ||
+          null,
+
+        issuer:
+          payload?.iss ||
+          null,
+      }
+    );
+
+    throw new Error(
+      data?.message ||
+        data?.error ||
+        "AUTH_VERIFY_FAILED: Your BEYOND login session could not be verified."
+    );
   }
 
   return data;
 }
+
 
 async function callUserRpc({
   name,
   payload,
   token,
   supabaseUrl,
-  serviceKey,
+  publicKey,
 }) {
-  const response = await fetch(
-    `${supabaseUrl}/rest/v1/rpc/${name}`,
-    {
-      method: "POST",
-      headers: {
-        apikey: serviceKey,
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload || {}),
-    }
-  );
+  const response =
+    await fetch(
+      `${supabaseUrl}/rest/v1/rpc/${name}`,
+      {
+        method:
+          "POST",
+
+        headers: {
+          /*
+            User-context database calls:
+
+            PUBLIC KEY
+              +
+            USER JWT
+
+            This allows auth.uid() and
+            Supabase RLS/RPC security to
+            identify the actual customer.
+          */
+          apikey:
+            publicKey,
+
+          Authorization:
+            `Bearer ${token}`,
+
+          "Content-Type":
+            "application/json",
+        },
+
+        body:
+          JSON.stringify(
+            payload || {}
+          ),
+      }
+    );
 
   let data = null;
 
   try {
-    data = await response.json();
+    data =
+      await response.json();
   } catch {
     data = null;
   }
 
   if (!response.ok) {
+    console.error(
+      `Menu AI RPC ${name} failed:`,
+      {
+        status:
+          response.status,
+
+        error:
+          data?.message ||
+          data?.error ||
+          null,
+      }
+    );
+
     throw new Error(
       data?.message ||
         data?.error ||
@@ -97,34 +273,59 @@ async function callUserRpc({
   return data;
 }
 
+
 async function updateMenuProject({
   projectId,
   updates,
   supabaseUrl,
   serviceKey,
 }) {
-  const response = await fetch(
-    `${supabaseUrl}/rest/v1/menu_projects?id=eq.${encodeURIComponent(
-      projectId
-    )}`,
-    {
-      method: "PATCH",
-      headers: {
-        apikey: serviceKey,
-        Authorization: `Bearer ${serviceKey}`,
-        "Content-Type": "application/json",
-        Prefer: "return=minimal",
-      },
-      body: JSON.stringify(updates),
-    }
-  );
+  const headers =
+    getServerHeaders(
+      serviceKey
+    );
+
+  headers.Prefer =
+    "return=minimal";
+
+  const response =
+    await fetch(
+      `${supabaseUrl}/rest/v1/menu_projects?id=eq.${encodeURIComponent(
+        projectId
+      )}`,
+      {
+        method:
+          "PATCH",
+
+        headers,
+
+        body:
+          JSON.stringify(
+            updates
+          ),
+      }
+    );
 
   if (!response.ok) {
-    const detail = await response.text();
-    console.error("Menu project update failed:", detail);
-    throw new Error("Could not save the generated menu draft.");
+    const detail =
+      await response.text();
+
+    console.error(
+      "Menu project update failed:",
+      {
+        status:
+          response.status,
+
+        detail,
+      }
+    );
+
+    throw new Error(
+      "Could not save the generated menu draft."
+    );
   }
 }
+
 
 function extractOutputText(response) {
   const parts = [];
@@ -291,6 +492,7 @@ export default async request => {
   let attemptId = "";
   let token = "";
   let supabaseUrl = "";
+  let publicKey = "";
   let serviceKey = "";
 
   try {
@@ -301,9 +503,56 @@ export default async request => {
       getEnv("NEXT_PUBLIC_SUPABASE_URL") ||
       getEnv("VITE_SUPABASE_URL");
 
+    /*
+      Public key:
+      used together with the signed-in
+      user's JWT.
+
+      Prefer the new publishable key,
+      then fall back to the legacy anon
+      key already used by the frontend.
+    */
+    /*
+      USER AUTH KEY
+
+      The frontend sends the exact anon/public key
+      that its Supabase client is using.
+
+      This removes any possibility of Netlify choosing
+      a stale publishable key from another configuration.
+
+      VITE_SUPABASE_ANON_KEY is public and safe to send
+      from browser to Function.
+    */
+    publicKey =
+      request.headers.get(
+        "x-beyond-supabase-key"
+      ) ||
+      getEnv(
+        "VITE_SUPABASE_ANON_KEY"
+      ) ||
+      getEnv(
+        "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
+      ) ||
+      getEnv(
+        "VITE_SUPABASE_PUBLISHABLE_KEY"
+      ) ||
+      getEnv(
+        "NEXT_PUBLIC_SUPABASE_ANON_KEY"
+      );
+
+    /*
+      Server secret:
+      used ONLY for privileged server
+      writes after AI succeeds.
+    */
     serviceKey =
-      getEnv("SUPABASE_SECRET_KEY") ||
-      getEnv("SUPABASE_SERVICE_ROLE_KEY");
+      getEnv(
+        "SUPABASE_SECRET_KEY"
+      ) ||
+      getEnv(
+        "SUPABASE_SERVICE_ROLE_KEY"
+      );
 
     if (!openAiKey) {
       return jsonResponse(
@@ -314,7 +563,11 @@ export default async request => {
       );
     }
 
-    if (!supabaseUrl || !serviceKey) {
+    if (
+      !supabaseUrl ||
+      !publicKey ||
+      !serviceKey
+    ) {
       return jsonResponse(
         {
           error: "Supabase server configuration is missing in Netlify.",
@@ -328,17 +581,8 @@ export default async request => {
     const user = await verifyUser({
       token,
       supabaseUrl,
-      serviceKey,
+      publicKey,
     });
-
-    if (!user) {
-      return jsonResponse(
-        {
-          error: "Log in to build a menu.",
-        },
-        401
-      );
-    }
 
     if (!user.email_confirmed_at && !user.confirmed_at) {
       return jsonResponse(
@@ -487,7 +731,7 @@ export default async request => {
       },
       token,
       supabaseUrl,
-      serviceKey,
+      publicKey,
     });
 
     attemptId = reservation?.attempt_id || "";
@@ -632,7 +876,7 @@ export default async request => {
       },
       token,
       supabaseUrl,
-      serviceKey,
+      publicKey,
     });
 
     return jsonResponse({
@@ -671,7 +915,7 @@ export default async request => {
           },
           token,
           supabaseUrl,
-          serviceKey,
+          publicKey,
         });
       } catch (finishError) {
         console.error(

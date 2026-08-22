@@ -1,0 +1,823 @@
+.restaurant-checkout {
+  width: min(
+    1180px,
+    calc(100% - 40px)
+  );
+
+  margin:
+    0 auto;
+
+  padding:
+    48px 0 90px;
+}
+
+
+.restaurant-checkout-shell {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.35fr)
+    minmax(340px, 0.65fr);
+
+  gap: 28px;
+
+  align-items: start;
+}
+
+
+.restaurant-checkout-main,
+.restaurant-checkout-summary {
+  border:
+    1px solid
+    rgba(105, 164, 215, 0.16);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(7, 18, 29, 0.98),
+      rgba(5, 14, 23, 0.98)
+    );
+
+  border-radius: 24px;
+
+  box-shadow:
+    0 24px 80px
+    rgba(0, 0, 0, 0.22);
+}
+
+
+.restaurant-checkout-main {
+  padding:
+    34px;
+}
+
+
+.restaurant-checkout-back {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 0;
+
+  border: 0;
+
+  color:
+    rgba(174, 197, 218, 0.72);
+
+  background:
+    transparent;
+
+  font: inherit;
+
+  font-size: 12px;
+
+  cursor: pointer;
+}
+
+
+.restaurant-checkout-back:hover {
+  color: #ffffff;
+}
+
+
+.restaurant-checkout-heading {
+  margin-top: 34px;
+
+  margin-bottom: 34px;
+}
+
+
+.restaurant-checkout-heading > span,
+.restaurant-checkout-section-heading > span,
+.restaurant-checkout-summary-kicker {
+  display: block;
+
+  color: #5f96c3;
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.18em;
+}
+
+
+.restaurant-checkout-heading h1 {
+  margin:
+    9px 0 10px;
+
+  color: #f4f8fc;
+
+  font-size:
+    clamp(
+      34px,
+      5vw,
+      56px
+    );
+
+  line-height: 1;
+
+  letter-spacing: -0.045em;
+}
+
+
+.restaurant-checkout-heading p {
+  max-width: 620px;
+
+  margin: 0;
+
+  color:
+    rgba(166, 189, 209, 0.72);
+
+  font-size: 14px;
+
+  line-height: 1.7;
+}
+
+
+.restaurant-checkout-section {
+  padding:
+    26px 0;
+
+  border-top:
+    1px solid
+    rgba(120, 164, 201, 0.12);
+}
+
+
+.restaurant-checkout-section-heading {
+  display: flex;
+
+  align-items: flex-end;
+
+  justify-content:
+    space-between;
+
+  gap: 20px;
+
+  margin-bottom: 16px;
+}
+
+
+.restaurant-checkout-section-heading strong {
+  color:
+    rgba(224, 235, 245, 0.76);
+
+  font-size: 12px;
+
+  font-weight: 500;
+}
+
+
+.restaurant-checkout-field {
+  display: block;
+}
+
+
+.restaurant-checkout-field > span {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color:
+    rgba(112, 154, 191, 0.74);
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.12em;
+}
+
+
+.restaurant-checkout-field input,
+.restaurant-checkout-promo-input {
+  width: 100%;
+
+  box-sizing:
+    border-box;
+
+  border:
+    1px solid
+    rgba(107, 155, 196, 0.16);
+
+  border-radius: 14px;
+
+  background:
+    rgba(1, 8, 14, 0.6);
+
+  color: #f5f8fb;
+}
+
+
+.restaurant-checkout-field input {
+  height: 54px;
+
+  padding:
+    0 16px;
+
+  outline: none;
+
+  font: inherit;
+
+  font-size: 14px;
+}
+
+
+.restaurant-checkout-field input:focus,
+.restaurant-checkout-promo-input:focus-within {
+  border-color:
+    rgba(74, 150, 255, 0.62);
+
+  box-shadow:
+    0 0 0 3px
+    rgba(52, 132, 255, 0.08);
+}
+
+
+.restaurant-checkout-payer {
+  display: flex;
+
+  align-items: center;
+
+  justify-content:
+    space-between;
+
+  gap: 20px;
+
+  padding:
+    16px 18px;
+
+  border:
+    1px solid
+    rgba(107, 155, 196, 0.14);
+
+  border-radius: 14px;
+
+  background:
+    rgba(4, 14, 23, 0.66);
+
+  color: #6da9dc;
+}
+
+
+.restaurant-checkout-payer div {
+  min-width: 0;
+}
+
+
+.restaurant-checkout-payer small {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color:
+    rgba(102, 151, 193, 0.6);
+
+  font-size: 9px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.15em;
+}
+
+
+.restaurant-checkout-payer strong {
+  display: block;
+
+  overflow: hidden;
+
+  color: #e9f1f8;
+
+  font-size: 13px;
+
+  font-weight: 600;
+
+  text-overflow:
+    ellipsis;
+}
+
+
+.restaurant-checkout-helper {
+  margin:
+    10px 0 0;
+
+  color:
+    rgba(151, 177, 199, 0.58);
+
+  font-size: 11px;
+
+  line-height: 1.6;
+}
+
+
+.restaurant-checkout-promo {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+
+  gap: 10px;
+}
+
+
+.restaurant-checkout-promo-input {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  height: 52px;
+
+  padding:
+    0 15px;
+
+  color: #6ca4d2;
+}
+
+
+.restaurant-checkout-promo-input input {
+  min-width: 0;
+
+  flex: 1;
+
+  border: 0;
+
+  outline: 0;
+
+  color: #f5f8fb;
+
+  background:
+    transparent;
+
+  font: inherit;
+
+  font-size: 13px;
+
+  text-transform:
+    uppercase;
+}
+
+
+.restaurant-checkout-promo-apply,
+.restaurant-checkout-promo-remove {
+  min-width: 94px;
+
+  padding:
+    0 18px;
+
+  border-radius: 13px;
+
+  font: inherit;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+
+.restaurant-checkout-promo-apply {
+  border:
+    1px solid
+    rgba(61, 139, 255, 0.32);
+
+  color: #ffffff;
+
+  background:
+    rgba(42, 119, 235, 0.16);
+}
+
+
+.restaurant-checkout-promo-remove {
+  border:
+    1px solid
+    rgba(205, 95, 95, 0.18);
+
+  color: #d99090;
+
+  background:
+    rgba(148, 61, 61, 0.08);
+}
+
+
+.restaurant-checkout-promo-active {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  margin-top: 12px;
+
+  padding:
+    8px 11px;
+
+  border:
+    1px solid
+    rgba(73, 173, 111, 0.18);
+
+  border-radius: 999px;
+
+  color: #79c993;
+
+  background:
+    rgba(45, 128, 74, 0.08);
+
+  font-size: 11px;
+}
+
+
+.restaurant-checkout-promo-active strong {
+  margin-left: 4px;
+
+  color: #a2ddb5;
+
+  font-size: 10px;
+}
+
+
+.restaurant-checkout-message {
+  margin-top: 18px;
+
+  padding:
+    13px 15px;
+
+  border-radius: 12px;
+
+  font-size: 12px;
+
+  line-height: 1.55;
+}
+
+
+.restaurant-checkout-message.error {
+  border:
+    1px solid
+    rgba(201, 87, 87, 0.22);
+
+  color: #dc9898;
+
+  background:
+    rgba(128, 49, 49, 0.1);
+}
+
+
+.restaurant-checkout-message.success {
+  border:
+    1px solid
+    rgba(67, 167, 103, 0.2);
+
+  color: #8bd1a3;
+
+  background:
+    rgba(44, 122, 71, 0.1);
+}
+
+
+.restaurant-checkout-summary {
+  position: sticky;
+
+  top: 24px;
+
+  padding:
+    30px;
+}
+
+
+.restaurant-checkout-plan-name {
+  display: flex;
+
+  align-items:
+    flex-start;
+
+  justify-content:
+    space-between;
+
+  gap: 20px;
+
+  margin-top: 26px;
+
+  margin-bottom: 30px;
+}
+
+
+.restaurant-checkout-plan-name span {
+  display: block;
+
+  color:
+    rgba(112, 157, 195, 0.62);
+
+  font-size: 9px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.18em;
+}
+
+
+.restaurant-checkout-plan-name h2 {
+  margin:
+    5px 0 0;
+
+  color: #ffffff;
+
+  font-size: 31px;
+
+  letter-spacing: -0.04em;
+}
+
+
+.restaurant-checkout-plan-name > strong {
+  padding:
+    6px 9px;
+
+  border:
+    1px solid
+    rgba(72, 146, 255, 0.22);
+
+  border-radius: 999px;
+
+  color: #77b5ff;
+
+  background:
+    rgba(56, 130, 235, 0.08);
+
+  font-size: 8px;
+
+  letter-spacing: 0.12em;
+}
+
+
+.restaurant-checkout-summary-row {
+  display: flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  gap: 20px;
+
+  margin: 13px 0;
+
+  color:
+    rgba(172, 194, 213, 0.68);
+
+  font-size: 12px;
+}
+
+
+.restaurant-checkout-summary-row strong {
+  color: #eaf2f9;
+
+  font-size: 12px;
+}
+
+
+.restaurant-checkout-summary-row.discount {
+  color: #74c895;
+}
+
+
+.restaurant-checkout-summary-row.discount span {
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+}
+
+
+.restaurant-checkout-summary-row.discount small {
+  padding:
+    3px 6px;
+
+  border-radius:
+    999px;
+
+  color: #8bd4a5;
+
+  background:
+    rgba(45, 133, 77, 0.12);
+
+  font-size: 8px;
+
+  font-weight: 700;
+}
+
+
+.restaurant-checkout-summary-row.discount strong {
+  color: #78ca96;
+}
+
+
+.restaurant-checkout-annual-note {
+  margin-top: -4px;
+
+  color: #6fa9d8;
+
+  font-size: 10px;
+}
+
+
+.restaurant-checkout-divider {
+  height: 1px;
+
+  margin:
+    22px 0;
+
+  background:
+    rgba(118, 163, 200, 0.12);
+}
+
+
+.restaurant-checkout-total span {
+  display: block;
+
+  margin-bottom: 8px;
+
+  color: #6398c4;
+
+  font-size: 9px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.16em;
+}
+
+
+.restaurant-checkout-total strong {
+  display: block;
+
+  color: #ffffff;
+
+  font-size:
+    clamp(
+      36px,
+      5vw,
+      48px
+    );
+
+  line-height: 1;
+
+  letter-spacing: -0.045em;
+}
+
+
+.restaurant-checkout-total small {
+  display: block;
+
+  margin-top: 8px;
+
+  color:
+    rgba(153, 179, 200, 0.58);
+
+  font-size: 10px;
+}
+
+
+.restaurant-checkout-continue {
+  width: 100%;
+
+  min-height: 54px;
+
+  margin-top: 28px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 8px;
+
+  border: 0;
+
+  border-radius: 999px;
+
+  color: #ffffff;
+
+  background:
+    linear-gradient(
+      90deg,
+      #2475f3,
+      #438ff9
+    );
+
+  box-shadow:
+    0 13px 35px
+    rgba(35, 116, 243, 0.2);
+
+  font: inherit;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+
+.restaurant-checkout-continue:disabled {
+  opacity: 0.55;
+
+  cursor: wait;
+}
+
+
+.restaurant-checkout-secure {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 6px;
+
+  margin-top: 13px;
+
+  color:
+    rgba(129, 160, 185, 0.54);
+
+  font-size: 9px;
+}
+
+
+.restaurant-checkout-spin {
+  animation:
+    restaurant-checkout-spin
+    0.9s
+    linear
+    infinite;
+}
+
+
+@keyframes restaurant-checkout-spin {
+  to {
+    transform:
+      rotate(360deg);
+  }
+}
+
+
+@media (
+  max-width: 880px
+) {
+  .restaurant-checkout {
+    width:
+      min(
+        100% - 24px,
+        680px
+      );
+
+    padding-top: 22px;
+  }
+
+  .restaurant-checkout-shell {
+    grid-template-columns:
+      minmax(0, 1fr);
+  }
+
+  .restaurant-checkout-summary {
+    position: static;
+  }
+}
+
+
+@media (
+  max-width: 560px
+) {
+  .restaurant-checkout-main,
+  .restaurant-checkout-summary {
+    padding: 22px;
+
+    border-radius: 18px;
+  }
+
+  .restaurant-checkout-section-heading {
+    display: block;
+  }
+
+  .restaurant-checkout-section-heading strong {
+    display: block;
+
+    margin-top: 6px;
+  }
+
+  .restaurant-checkout-promo {
+    grid-template-columns:
+      minmax(0, 1fr);
+  }
+
+  .restaurant-checkout-promo-apply,
+  .restaurant-checkout-promo-remove {
+    min-height: 46px;
+  }
+}

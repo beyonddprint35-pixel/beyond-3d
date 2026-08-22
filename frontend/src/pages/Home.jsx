@@ -25,6 +25,12 @@ import AuthModal from "../components/AuthModal";
 
 import { supabase } from "../lib/supabaseClient";
 
+import {
+  clearMenuBuilderIntent,
+  hasMenuBuilderIntent,
+  setMenuBuilderIntent,
+} from "../lib/menuBuilderIntent";
+
 import beyondLogo from "../assets/beyond-logo-transparent.png";
 
 import "./Home.css";
@@ -59,6 +65,12 @@ function Home() {
     authOpen,
     setAuthOpen,
   ] = useState(false);
+
+  // BEYOND_SHARED_AUTH_FLOW_V1
+  const [
+    authInitialMode,
+    setAuthInitialMode,
+  ] = useState("login");
 
   const [
     accountOpen,
@@ -245,6 +257,83 @@ function Home() {
         /\D/g,
         ""
       );
+
+
+  // =========================================================
+  // BEYOND_SHARED_AUTH_FLOW_V1
+  // One BEYOND account for every service.
+  // =========================================================
+
+  function openAuth(
+    mode = "login"
+  ) {
+    setAuthInitialMode(
+      mode
+    );
+
+    setAuthOpen(
+      true
+    );
+  }
+
+  function handleStartMenu() {
+    /*
+      Existing authenticated customer:
+      Menu Builder opens immediately.
+    */
+    if (
+      authReady &&
+      session
+    ) {
+      clearMenuBuilderIntent();
+
+      window.open(
+        "/menu-builder",
+        "_blank",
+        "noopener,noreferrer"
+      );
+
+      return;
+    }
+
+    /*
+      New/logged-out customer:
+      remember why they are authenticating,
+      then use the NORMAL BEYOND popup.
+    */
+    setMenuBuilderIntent();
+
+    openAuth(
+      "signup"
+    );
+  }
+
+  /*
+    After successful login/signup confirmation,
+    continue the original Start Menu action.
+  */
+  useEffect(() => {
+    if (
+      !authReady ||
+      !session ||
+      !hasMenuBuilderIntent()
+    ) {
+      return;
+    }
+
+    clearMenuBuilderIntent();
+
+    setAuthOpen(
+      false
+    );
+
+    window.location.assign(
+      "/menu-builder"
+    );
+  }, [
+    authReady,
+    session?.user?.id,
+  ]);
 
 
   // BEYOND_EMAIL_VERIFICATION_HANDLER_V1
@@ -992,9 +1081,7 @@ function Home() {
               type="button"
               className="home-auth-button"
               onClick={() =>
-                setAuthOpen(
-                  true
-                )
+                openAuth("login")
               }
             >
               Log In / Sign Up
@@ -1063,8 +1150,8 @@ function Home() {
 
       {/* BEYOND_DIGITAL_MENU_ENTRY_V2 */}
       <DigitalMenuHero
-        onStartMenu={() =>
-          scrollToSection("contact")
+        onStartMenu={
+          handleStartMenu
         }
       />
 
@@ -1451,6 +1538,9 @@ function Home() {
       <AuthModal
         open={
           authOpen
+        }
+        initialMode={
+          authInitialMode
         }
         onClose={() =>
           setAuthOpen(

@@ -10,18 +10,21 @@ import {
   FileText,
   Image,
   LoaderCircle,
-  LockKeyhole,
-  Mail,
   Sparkles,
   Upload,
-  User,
 } from "lucide-react";
 
 import {
   supabase,
 } from "../lib/supabaseClient";
 
+import {
+  setMenuBuilderIntent,
+} from "../lib/menuBuilderIntent";
+
 import beyondLogo from "../assets/beyond-logo-transparent.png";
+
+import RestaurantCheckout from "../components/RestaurantCheckout";
 
 import "./MenuBuilder.css";
 
@@ -65,257 +68,6 @@ function money(value) {
     currency: "ILS",
     maximumFractionDigits: 2,
   }).format(amount);
-}
-
-function MenuAuthGate({
-  onAuthenticated,
-}) {
-  const [mode, setMode] =
-    useState("signup");
-
-  const [name, setName] =
-    useState("");
-
-  const [email, setEmail] =
-    useState("");
-
-  const [password, setPassword] =
-    useState("");
-
-  const [loading, setLoading] =
-    useState(false);
-
-  const [error, setError] =
-    useState("");
-
-  const [message, setMessage] =
-    useState("");
-
-  async function handleSubmit(event) {
-    event.preventDefault();
-
-    setLoading(true);
-    setError("");
-    setMessage("");
-
-    try {
-      if (mode === "signup") {
-        if (name.trim().length < 2) {
-          throw new Error(
-            "Please enter your name."
-          );
-        }
-
-        const {
-          data,
-          error: signupError,
-        } = await supabase.auth.signUp({
-          email: email.trim(),
-          password,
-          options: {
-            data: {
-              full_name: name.trim(),
-              account_type: "customer",
-            },
-            emailRedirectTo:
-              "https://b3yondworld.com/menu-builder",
-          },
-        });
-
-        if (signupError) {
-          throw signupError;
-        }
-
-        if (data?.session) {
-          onAuthenticated?.(
-            data.session
-          );
-          return;
-        }
-
-        setMessage(
-          `Verification email sent to ${email.trim()}. Verify it, then return here and log in.`
-        );
-
-        setMode("login");
-        setPassword("");
-        return;
-      }
-
-      const {
-        data,
-        error: loginError,
-      } = await supabase.auth
-        .signInWithPassword({
-          email: email.trim(),
-          password,
-        });
-
-      if (loginError) {
-        throw loginError;
-      }
-
-      onAuthenticated?.(
-        data.session
-      );
-    } catch (authError) {
-      setError(
-        authError?.message ||
-          "Authentication failed."
-      );
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  return (
-    <div className="menu-builder-auth-backdrop">
-      <section className="menu-builder-auth-card">
-        <div className="menu-builder-auth-kicker">
-          BEYOND MENU
-        </div>
-
-        <h1>
-          {mode === "signup"
-            ? "Create your menu account."
-            : "Welcome back."}
-        </h1>
-
-        <p>
-          {mode === "signup"
-            ? "Create a free BEYOND account and get 3 AI menu-building attempts before choosing a subscription."
-            : "Log in to continue building your digital menu."}
-        </p>
-
-        <div className="menu-builder-auth-switch">
-          <button
-            type="button"
-            className={
-              mode === "signup"
-                ? "active"
-                : ""
-            }
-            onClick={() => {
-              setMode("signup");
-              setError("");
-              setMessage("");
-            }}
-          >
-            Sign Up
-          </button>
-
-          <button
-            type="button"
-            className={
-              mode === "login"
-                ? "active"
-                : ""
-            }
-            onClick={() => {
-              setMode("login");
-              setError("");
-              setMessage("");
-            }}
-          >
-            Log In
-          </button>
-        </div>
-
-        <form
-          className="menu-builder-auth-form"
-          onSubmit={handleSubmit}
-        >
-          {mode === "signup" && (
-            <label>
-              <span>NAME</span>
-              <div>
-                <User size={17} />
-                <input
-                  type="text"
-                  value={name}
-                  onChange={event =>
-                    setName(
-                      event.target.value
-                    )
-                  }
-                  placeholder="Your name"
-                  autoComplete="name"
-                  required
-                />
-              </div>
-            </label>
-          )}
-
-          <label>
-            <span>EMAIL</span>
-            <div>
-              <Mail size={17} />
-              <input
-                type="email"
-                value={email}
-                onChange={event =>
-                  setEmail(
-                    event.target.value
-                  )
-                }
-                placeholder="you@example.com"
-                autoComplete="email"
-                required
-              />
-            </div>
-          </label>
-
-          <label>
-            <span>PASSWORD</span>
-            <div>
-              <LockKeyhole size={17} />
-              <input
-                type="password"
-                value={password}
-                onChange={event =>
-                  setPassword(
-                    event.target.value
-                  )
-                }
-                placeholder="At least 6 characters"
-                minLength={6}
-                autoComplete={
-                  mode === "signup"
-                    ? "new-password"
-                    : "current-password"
-                }
-                required
-              />
-            </div>
-          </label>
-
-          {error && (
-            <div className="menu-builder-auth-message error">
-              {error}
-            </div>
-          )}
-
-          {message && (
-            <div className="menu-builder-auth-message success">
-              {message}
-            </div>
-          )}
-
-          <button
-            type="submit"
-            className="menu-builder-main-button"
-            disabled={loading}
-          >
-            {loading
-              ? "Please wait..."
-              : mode === "signup"
-                ? "Create Account"
-                : "Log In"}
-          </button>
-        </form>
-      </section>
-    </div>
-  );
 }
 
 function MenuPreview({ menu }) {
@@ -471,6 +223,11 @@ export default function MenuBuilder() {
   const [billingInterval, setBillingInterval] =
     useState("monthly");
 
+  const [
+    selectedPlanId,
+    setSelectedPlanId,
+  ] = useState("");
+
   useEffect(() => {
     let alive = true;
 
@@ -499,6 +256,26 @@ export default function MenuBuilder() {
       subscription.unsubscribe();
     };
   }, []);
+
+  // BEYOND_MENU_BUILDER_AUTH_REDIRECT_V1
+  useEffect(() => {
+    if (
+      !authReady ||
+      session
+    ) {
+      return;
+    }
+
+    setMenuBuilderIntent();
+
+    window.location.replace(
+      "/#digital-menus"
+    );
+  }, [
+    authReady,
+    session,
+  ]);
+
 
   useEffect(() => {
     if (!session?.user?.id) {
@@ -671,6 +448,15 @@ export default function MenuBuilder() {
               "application/json",
             Authorization:
               `Bearer ${session.access_token}`,
+
+            /*
+              Use the exact same public Supabase key
+              that created this browser session.
+              This is a public anon key, NOT a secret.
+            */
+            "X-Beyond-Supabase-Key":
+              import.meta.env
+                .VITE_SUPABASE_ANON_KEY,
           },
           body: JSON.stringify({
             projectId:
@@ -775,14 +561,13 @@ export default function MenuBuilder() {
 
   if (!session) {
     return (
-      <main className="menu-builder-page">
-        <MenuAuthGate
-          onAuthenticated={
-            nextSession =>
-              setSession(nextSession)
-          }
+      <div className="menu-builder-loading-page">
+        <LoaderCircle
+          size={28}
         />
-      </main>
+
+        Returning to BEYOND...
+      </div>
     );
   }
 
@@ -1005,14 +790,37 @@ export default function MenuBuilder() {
             </section>
           )}
         </div>
+      ) : selectedPlanId ? (
+        <RestaurantCheckout
+          plan={
+            plans.find(
+              plan =>
+                plan.id ===
+                selectedPlanId
+            )
+          }
+          billingInterval={
+            billingInterval
+          }
+          menu={
+            menu
+          }
+          session={
+            session
+          }
+          onBack={() =>
+            setSelectedPlanId("")
+          }
+        />
       ) : (
         <section className="menu-builder-plans-page">
           <div className="menu-builder-plans-heading">
             <button
               type="button"
-              onClick={() =>
-                setShowPlans(false)
-              }
+              onClick={() => {
+                setSelectedPlanId("");
+                setShowPlans(false);
+              }}
             >
               <ArrowLeft size={16} />
               Back to preview
@@ -1164,11 +972,12 @@ export default function MenuBuilder() {
                   <button
                     type="button"
                     className="menu-builder-main-button"
-                    onClick={() =>
-                      setError(
-                        "Plan selected. Next we will connect this step to promo codes and recurring PayPlus checkout."
-                      )
-                    }
+                    onClick={() => {
+                      setError("");
+                      setSelectedPlanId(
+                        plan.id
+                      );
+                    }}
                   >
                     Choose {plan.name}
                   </button>

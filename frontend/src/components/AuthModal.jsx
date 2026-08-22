@@ -24,9 +24,10 @@ import "./AuthModal.css";
 function AuthModal({
   open,
   onClose,
+  initialMode = "login",
 }) {
   const [mode, setMode] =
-    useState("login");
+    useState(initialMode);
 
   const [
     fullName,
@@ -91,10 +92,17 @@ function AuthModal({
       return;
     }
 
+    setMode(
+      initialMode
+    );
+
     setError("");
     setMessage("");
     setBusinessCreated(false);
-  }, [open]);
+  }, [
+    open,
+    initialMode,
+  ]);
 
   useEffect(() => {
     if (!open) {
@@ -306,7 +314,7 @@ function AuthModal({
           onClose();
         } else {
           setMessage(
-            `Verification email sent to ${email.trim()}. Check your inbox and spam folder, then verify your email before logging in.`
+            `If ${email.trim()} is a new BEYOND account, we sent a verification email. If you already have an account, choose Log In instead.`
           );
 
           setMode("login");
