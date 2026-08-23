@@ -28,6 +28,7 @@ import "./pages/MenuHomeAccessRealism.css";
 import "./pages/MenuHomeAccessInteraction.css";
 import "./pages/MenuHomeNavCleanup.css";
 import "./pages/MenuHomeNavStructure.js";
+import "./pages/MenuBuilderCheckoutI18n.js";
 import "./pages/AdminTheme.js";
 import "./pages/AdminTheme.css";
 
