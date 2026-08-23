@@ -16,6 +16,8 @@ import CustomerShowcasePortal from "./components/CustomerShowcasePortal";
 import "./components/MyAccountAdminShortcut.js";
 import "./components/MyAccountAdminShortcut.css";
 import "./components/MyAccountLightMode.css";
+import "./components/MyAccountMenuDraftDelete.js";
+import "./components/MyAccountMenuDraftDelete.css";
 import "./pages/MenuHomeAccessInteraction.js";
 import "./pages/MenuHomeOverrides.css";
 import "./pages/MenuHomeFinalPatch.css";
