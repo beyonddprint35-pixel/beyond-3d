@@ -1,113 +1,52 @@
 /* =========================================================
    BEYOND WORDMARK
 
-   The word is B + three equal stripes + Y O N D.
-   The striped E uses the same visual cap-height and spacing rhythm
-   as the surrounding letters, with no icon-style corrections.
+   The entire wordmark is one SVG asset. B, Y, O, N and D are
+   vector outlines from Inter ExtraBold. The E occupies the real E
+   glyph slot but is replaced by three equal horizontal stripes.
+   This keeps the bars equal while preserving natural cap-height,
+   side bearings and spacing across the full word.
    ========================================================= */
 
-.menu-home-brand > .menu-home-brand-wordmark {
-  --beyond-word-size: 18px;
-  --beyond-letter-gap: 5.8px;
-  --beyond-e-width: 10.6px;
-  --beyond-e-height: 13px;
-  --beyond-e-bar: 2.6px;
-
-  display: inline-flex !important;
-  align-items: center;
-  justify-content: flex-start;
-  gap: var(--beyond-letter-gap);
-  width: auto;
-  height: 24px;
+.menu-home-brand > span {
+  display: block !important;
   flex: 0 0 auto;
+  width: 105px;
+  height: 20px;
+  margin: 0;
+  padding: 0;
   overflow: visible;
-  direction: ltr;
-  color: var(--menu-text);
   font-size: 0 !important;
-  line-height: 1;
+  line-height: 0;
   letter-spacing: 0 !important;
-  background: none !important;
+  color: transparent !important;
+  background: url("../assets/beyond-wordmark.svg") center / contain no-repeat !important;
 }
 
-.menu-home-brand > .menu-home-brand-wordmark::before,
-.menu-home-brand > .menu-home-brand-wordmark::after {
+.menu-home-brand > span::before,
+.menu-home-brand > span::after {
   content: none !important;
   display: none !important;
 }
 
-.menu-home-brand-letter {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 auto;
-  margin: 0;
-  padding: 0;
-  color: currentColor;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: var(--beyond-word-size);
-  font-weight: 820;
-  line-height: 1;
-  letter-spacing: 0;
-  font-kerning: none;
-  font-feature-settings: "kern" 0;
+.menu-home.theme-light .menu-home-brand > span {
+  filter: none;
 }
 
-/*
-   E = exactly three equal horizontal stripes.
-   All three have the same width and thickness and share one normal
-   letter-sized box, so they read as part of BEYOND rather than an icon.
-*/
-.menu-home-brand-e {
-  display: inline-flex;
-  flex: 0 0 var(--beyond-e-width);
-  width: var(--beyond-e-width);
-  height: var(--beyond-e-height);
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: space-between;
-  margin: 0;
-  padding: 0;
-  transform: none;
-}
-
-.menu-home-brand-e > i {
-  display: block;
-  width: 100%;
-  height: var(--beyond-e-bar);
-  flex: 0 0 var(--beyond-e-bar);
-  margin: 0;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: currentColor;
-}
-
-.menu-home.theme-light .menu-home-brand-wordmark {
-  color: #0d1b3a;
-}
-
-.menu-home.theme-dark .menu-home-brand-wordmark {
-  color: #f4f7ff;
+.menu-home.theme-dark .menu-home-brand > span {
+  filter: brightness(0) invert(1);
 }
 
 @media (max-width: 500px) {
-  .menu-home-brand > .menu-home-brand-wordmark {
-    --beyond-word-size: 15px;
-    --beyond-letter-gap: 4.8px;
-    --beyond-e-width: 8.8px;
-    --beyond-e-height: 10.8px;
-    --beyond-e-bar: 2.15px;
-    height: 21px;
+  .menu-home-brand > span {
+    width: 89px;
+    height: 17px;
   }
 }
 
 @media (max-width: 380px) {
-  .menu-home-brand > .menu-home-brand-wordmark {
-    --beyond-word-size: 13px;
-    --beyond-letter-gap: 4.1px;
-    --beyond-e-width: 7.7px;
-    --beyond-e-height: 9.4px;
-    --beyond-e-bar: 1.85px;
-    height: 19px;
+  .menu-home-brand > span {
+    width: 78.5px;
+    height: 15px;
   }
 }
