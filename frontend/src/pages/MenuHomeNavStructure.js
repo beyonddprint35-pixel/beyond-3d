@@ -2,9 +2,9 @@ const NAV_SELECTOR = ".menu-home-nav";
 
 const NAV_ITEMS = [
   { label: "BEYOND Menu", type: "section", target: "#product" },
-  { label: "How it works", type: "section", target: "#how-it-works" },
+  { label: "BEYOND How it works", type: "section", target: "#how-it-works" },
   { label: "BEYOND QR &NFC Stands", type: "section", target: "#qr-nfc" },
-  { label: "Live demo", type: "demo" },
+  { label: "BEYOND Live Demo", type: "demo" },
   { label: "BEYOND Menu studio", type: "section", target: "#menu-studio" },
   { label: "BEYOND Pricing", type: "section", target: "#pricing" },
   { label: "BEYOND 3D Printing", type: "link", target: "/3DPRINTING" },
@@ -59,8 +59,6 @@ function scrollToTarget(selector, attempt = 0) {
 function navigateToSection(selector) {
   const didClose = closeNav();
 
-  // Closing the React-controlled drawer causes a rerender. Wait until that
-  // finishes before calculating the section position and starting the scroll.
   window.setTimeout(() => {
     window.requestAnimationFrame(() => scrollToTarget(selector));
   }, didClose ? 90 : 0);
@@ -75,7 +73,8 @@ function currentStructureIsCorrect(nav) {
 
   return NAV_ITEMS.every((item, index) => {
     const node = actionable[index];
-    if (node.textContent?.trim() !== item.label) return false;
+    if (node.getAttribute("aria-label") !== item.label) return false;
+    if (!node.querySelector(".menu-home-nav-brand-word")) return false;
     if (item.type === "link") {
       return node instanceof HTMLAnchorElement && node.getAttribute("href") === item.target;
     }
@@ -85,12 +84,18 @@ function currentStructureIsCorrect(nav) {
 
 function renderLabel(node, label) {
   node.replaceChildren();
+  node.setAttribute("aria-label", label);
 
   if (label.startsWith("BEYOND ")) {
     const brand = document.createElement("span");
     brand.className = "menu-home-nav-brand-word";
     brand.textContent = "BEYOND";
-    node.append(brand, document.createTextNode(label.slice("BEYOND".length)));
+
+    const rest = document.createElement("span");
+    rest.className = "menu-home-nav-label-rest";
+    rest.textContent = label.slice("BEYOND ".length);
+
+    node.append(brand, rest);
     return;
   }
 
