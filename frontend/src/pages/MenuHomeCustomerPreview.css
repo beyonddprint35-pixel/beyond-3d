@@ -1,4 +1,6 @@
-/* Real BEYOND customer menu rendered inside the homepage phone. */
+/* Exact BEYOND customer menu preview inside the homepage phone.
+   The iframe is a real 390px viewport, so DigitalMenuTemplate uses the
+   same mobile media rules as an actual customer's phone. */
 
 .menu-home-real-template-host {
   position: relative;
@@ -10,6 +12,11 @@
   display: none !important;
 }
 
+.menu-home-real-template-host::after {
+  content: none !important;
+  display: none !important;
+}
+
 .menu-home-real-template-portal {
   position: absolute;
   inset: 47px 7px 7px;
@@ -18,52 +25,17 @@
   background: #f3f0e9;
 }
 
-.menu-home-real-template-scale {
+.menu-home-real-template-frame {
   position: absolute;
   top: 0;
   left: 50%;
   width: 390px;
+  height: 760px;
+  border: 0;
+  background: #f3f0e9;
   transform: translateX(-50%) scale(.735);
   transform-origin: top center;
-}
-
-.menu-home-real-template-portal .digital-menu-template {
-  width: 390px;
-  min-height: 760px;
-  overflow: visible;
-}
-
-/* The homepage phone is a product preview, so the accessibility launcher
-   is intentionally hidden here. The real live customer menu still keeps it. */
-.menu-home-real-template-portal .a11y-host-anchor,
-.menu-home-real-template-portal .skip-link,
-.menu-home-real-template-portal .accessibility-toggle,
-.menu-home-real-template-portal .accessibility-panel,
-.menu-home-real-template-portal .accessibility-dialog,
-.menu-home-real-template-portal dialog {
-  display: none !important;
-}
-
-/* Keep the customer menu interactive inside the product mockup. */
-.menu-home-real-template-portal .dmt-tab,
-.menu-home-real-template-portal .dmt-language button {
-  cursor: pointer;
-}
-
-/* Slightly reduce the vertical footprint so the first menu items are visible
-   in the phone without changing the actual template's design language. */
-.menu-home-real-template-portal .dmt-header {
-  min-height: 72px;
-}
-
-.menu-home-real-template-portal .dmt-hero {
-  min-height: 142px;
-  margin-top: 12px;
-  margin-bottom: 12px;
-}
-
-.menu-home-real-template-portal .dmt-footer {
-  display: none;
+  pointer-events: none;
 }
 
 @media (max-width: 680px) {
@@ -75,13 +47,13 @@
     inset-inline: 6px;
   }
 
-  .menu-home-real-template-scale {
+  .menu-home-real-template-frame {
     transform: translateX(-50%) scale(.69);
   }
 }
 
 @media (max-width: 500px) {
-  .menu-home-real-template-scale {
+  .menu-home-real-template-frame {
     transform: translateX(-50%) scale(.655);
   }
 }
