@@ -1,0 +1,5 @@
+@media (max-width: 390px) {
+  .menu-home-login-refined {
+    display: inline-flex !important;
+  }
+}
