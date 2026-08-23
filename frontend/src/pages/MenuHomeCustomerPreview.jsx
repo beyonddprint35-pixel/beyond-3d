@@ -7,13 +7,13 @@ import {
   createPortal,
 } from "react-dom";
 
-import DigitalMenuTemplate, {
-  DEFAULT_MENU_BRANDING,
-} from "../components/DigitalMenuTemplate";
-
 import MenuHomeRefined from "./MenuHomeRefined";
 
 import "./MenuHomeCustomerPreview.css";
+
+
+const PREVIEW_STORAGE_KEY =
+  "beyond-mobile-menu-preview-v2";
 
 
 const HOMEPAGE_DEMO_MENU = {
@@ -176,7 +176,8 @@ const HOMEPAGE_DEMO_MENU = {
 
 
 const HOMEPAGE_DEMO_BRANDING = {
-  ...DEFAULT_MENU_BRANDING,
+  design_preset:
+    "home",
 
   display_name:
     "LUNA BISTRO",
@@ -255,6 +256,12 @@ const HOMEPAGE_DEMO_BRANDING = {
 
   secondary_font_size:
     10,
+
+  logo_url:
+    null,
+
+  logo_shape:
+    "free",
 };
 
 
@@ -274,6 +281,27 @@ export default function MenuHomeCustomerPreview() {
 
     if (!target) {
       return undefined;
+    }
+
+    try {
+      sessionStorage.setItem(
+        PREVIEW_STORAGE_KEY,
+        JSON.stringify({
+          menu:
+            HOMEPAGE_DEMO_MENU,
+
+          branding:
+            HOMEPAGE_DEMO_BRANDING,
+
+          logoUrl:
+            null,
+        })
+      );
+    } catch (error) {
+      console.error(
+        "Unable to prepare homepage menu preview:",
+        error
+      );
     }
 
     target.classList.add(
@@ -299,17 +327,12 @@ export default function MenuHomeCustomerPreview() {
       {phoneTarget &&
         createPortal(
           <div className="menu-home-real-template-portal">
-            <div className="menu-home-real-template-scale">
-              <DigitalMenuTemplate
-                menu={
-                  HOMEPAGE_DEMO_MENU
-                }
-                branding={
-                  HOMEPAGE_DEMO_BRANDING
-                }
-                embedded
-              />
-            </div>
+            <iframe
+              className="menu-home-real-template-frame"
+              src="/menu-mobile-preview"
+              title="Example Beyond customer menu"
+              loading="eager"
+            />
           </div>,
 
           phoneTarget
