@@ -39,7 +39,25 @@ import MenuProjectSwitcher from "../components/MenuProjectSwitcher";
 
 import "./MenuBuilder.css";
 
-const MAX_FILES = 6;
+const MAX_FILES = 12;
+const MAX_TOTAL_FILE_MB = 25;
+const MAX_TOTAL_FILE_BYTES =
+  MAX_TOTAL_FILE_MB *
+  1024 *
+  1024;
+
+function getTotalFileBytes(
+  fileList = []
+) {
+  return fileList.reduce(
+    (total, file) =>
+      total +
+      Number(
+        file?.size || 0
+      ),
+    0
+  );
+}
 
 function fileToPayload(file) {
   return new Promise((resolve, reject) => {
@@ -1425,6 +1443,28 @@ export default function MenuBuilder() {
     }
 
     if (
+      files.length >
+      MAX_FILES
+    ) {
+      setError(
+        `You can upload up to ${MAX_FILES} files.`
+      );
+      return;
+    }
+
+    if (
+      getTotalFileBytes(
+        files
+      ) >
+      MAX_TOTAL_FILE_BYTES
+    ) {
+      setError(
+        `The combined upload can be up to ${MAX_TOTAL_FILE_MB} MB.`
+      );
+      return;
+    }
+
+    if (
       allowance &&
       !allowance.unlimited &&
       Number(
@@ -1544,35 +1584,9 @@ export default function MenuBuilder() {
             languages:
               selectedLanguages,
 
-            /*
-              The first failed reading already tells us roughly
-              how many item codes were visible.
-
-              Example:
-                detected 34
-                extracted 1
-
-              Smart Retry uses 34 as a coverage target.
-            */
-            /*
-              Do not use the first-pass visual estimate as
-              a hard Smart Retry target.
-
-              Example:
-                source actually has 34 coded dishes
-                model estimated 39
-
-              Smart Retry must recover visible evidence,
-              not chase an inaccurate estimated number.
-            */
             expectedItemCount:
               0,
 
-            /*
-              Smart Retry continues from the previous
-              verified partial extraction instead of
-              rereading the entire menu from zero.
-            */
             recoveryProjectId:
               smartSplit
                 ? generationHelp
@@ -1585,11 +1599,6 @@ export default function MenuBuilder() {
               smartSplit,
           },
 
-          /*
-            This request goes directly to Supabase,
-            so using the Supabase JWT in Authorization
-            is correct here.
-          */
           headers: {
             Authorization:
               `Bearer ${session.access_token}`,
@@ -1597,14 +1606,6 @@ export default function MenuBuilder() {
         }
       );
 
-      /*
-        Supabase returns FunctionsHttpError for
-        non-2xx Edge Function responses.
-
-        Extract BEYOND's actual error message
-        when possible instead of showing a
-        generic SDK error.
-      */
       if (functionError) {
         let message =
           functionError.message ||
@@ -1635,13 +1636,6 @@ export default function MenuBuilder() {
                 responseDetails =
                   details;
 
-                /*
-                  Even failed BEYOND builds can still
-                  cost OpenAI money.
-
-                  The backend returns aiCost even when
-                  extraction is rejected.
-                */
                 if (
                   details?.aiCost
                 ) {
@@ -1766,10 +1760,6 @@ export default function MenuBuilder() {
         nextProject.id
       );
     } catch (generationError) {
-      /*
-        The Edge Function error parser attaches
-        the complete backend response to .details.
-      */
       if (
         generationError
           ?.details
@@ -1817,26 +1807,98 @@ export default function MenuBuilder() {
       event.target.files || []
     );
 
-    const allowed = selected.filter(
-      file =>
-        [
-          "application/pdf",
-          "image/jpeg",
-          "image/png",
-          "image/webp",
-        ].includes(file.type)
-    );
+    const supportedTypes =
+      new Set([
+        "application/pdf",
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+      ]);
 
-    const nextFiles = [
-      ...files,
-      ...allowed,
-    ].slice(0, MAX_FILES);
+    const allowed =
+      selected.filter(
+        file =>
+          supportedTypes.has(
+            file.type
+          )
+      );
 
-    setFiles(nextFiles);
+    const availableSlots =
+      Math.max(
+        MAX_FILES -
+          files.length,
+        0
+      );
 
-    setError(
-      ""
-    );
+    const candidates =
+      allowed.slice(
+        0,
+        availableSlots
+      );
+
+    let totalBytes =
+      getTotalFileBytes(
+        files
+      );
+
+    const accepted = [];
+    let rejectedForSize =
+      false;
+
+    candidates.forEach(file => {
+      const nextTotal =
+        totalBytes +
+        Number(
+          file.size || 0
+        );
+
+      if (
+        nextTotal >
+        MAX_TOTAL_FILE_BYTES
+      ) {
+        rejectedForSize =
+          true;
+        return;
+      }
+
+      accepted.push(file);
+      totalBytes = nextTotal;
+    });
+
+    if (
+      accepted.length > 0
+    ) {
+      setFiles(current => [
+        ...current,
+        ...accepted,
+      ]);
+    }
+
+    if (
+      files.length >=
+        MAX_FILES ||
+      allowed.length >
+        availableSlots
+    ) {
+      setError(
+        `You can upload up to ${MAX_FILES} files.`
+      );
+    } else if (
+      rejectedForSize
+    ) {
+      setError(
+        `The combined upload can be up to ${MAX_TOTAL_FILE_MB} MB. Remove a file or choose smaller files.`
+      );
+    } else if (
+      allowed.length <
+      selected.length
+    ) {
+      setError(
+        "Only PDF, JPG, PNG or WEBP files are supported."
+      );
+    } else {
+      setError("");
+    }
 
     setGenerationHelp(
       null
@@ -2072,7 +2134,7 @@ export default function MenuBuilder() {
               </div>
 
               <strong>
-                Up to 6 files
+                Up to 12 files · 25 MB total
               </strong>
             </div>
 
@@ -2182,7 +2244,6 @@ export default function MenuBuilder() {
               </div>
             )}
 
-
             {allowance?.unlimited &&
               lastAiCost && (
               <section
@@ -2210,7 +2271,6 @@ export default function MenuBuilder() {
                   </div>
                 </div>
 
-
                 <div className="menu-builder-ai-cost-grid">
                   <div>
                     <span>
@@ -2225,7 +2285,6 @@ export default function MenuBuilder() {
                       }
                     </strong>
                   </div>
-
 
                   <div>
                     <span>
@@ -2243,7 +2302,6 @@ export default function MenuBuilder() {
                     </strong>
                   </div>
 
-
                   <div>
                     <span>
                       Input tokens
@@ -2259,7 +2317,6 @@ export default function MenuBuilder() {
                       }
                     </strong>
                   </div>
-
 
                   <div>
                     <span>
@@ -2277,7 +2334,6 @@ export default function MenuBuilder() {
                     </strong>
                   </div>
 
-
                   <div>
                     <span>
                       Output tokens
@@ -2293,7 +2349,6 @@ export default function MenuBuilder() {
                       }
                     </strong>
                   </div>
-
 
                   <div>
                     <span>
@@ -2311,7 +2366,6 @@ export default function MenuBuilder() {
                     </strong>
                   </div>
                 </div>
-
 
                 <div className="menu-builder-ai-cost-foot">
                   {lastAiCost
@@ -2336,7 +2390,6 @@ export default function MenuBuilder() {
               </section>
             )}
 
-
             {generationHelp && (
               <div
                 className="menu-builder-extraction-help"
@@ -2360,7 +2413,6 @@ export default function MenuBuilder() {
                     }
                   </p>
                 </div>
-
 
                 {generationHelp.detectedCount >
                   0 && (
@@ -2391,7 +2443,6 @@ export default function MenuBuilder() {
                   </div>
                 )}
 
-
                 <div className="menu-builder-recovery-options">
                   <article>
                     <b>
@@ -2409,7 +2460,6 @@ export default function MenuBuilder() {
                     </div>
                   </article>
 
-
                   <article>
                     <b>
                       2
@@ -2421,11 +2471,10 @@ export default function MenuBuilder() {
                       </strong>
 
                       <span>
-                        Upload 2–6 close-ups so each section and item is large enough to read accurately.
+                        Upload 2–12 close-ups so each section and item is large enough to read accurately.
                       </span>
                     </div>
                   </article>
-
 
                   <article>
                     <b>
@@ -2443,7 +2492,6 @@ export default function MenuBuilder() {
                     </div>
                   </article>
                 </div>
-
 
                 {!generationHelp
                   ?.recovery
@@ -2487,7 +2535,6 @@ export default function MenuBuilder() {
                   </button>
                 )}
 
-
                 {generationHelp
                   ?.recovery
                   ?.smartRetryUsed && (
@@ -2497,7 +2544,6 @@ export default function MenuBuilder() {
                     or clearer close-up images instead of retrying again.
                   </div>
                 )}
-
 
                 <div className="menu-builder-recovery-footer">
                   <Check
