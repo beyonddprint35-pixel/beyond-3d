@@ -1,0 +1,7 @@
+.three-d-printing-page .digital-menu-hero {
+  display: none;
+}
+
+.three-d-printing-page .home-nav-links > button:first-child {
+  display: none;
+}
