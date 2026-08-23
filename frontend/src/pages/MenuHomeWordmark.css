@@ -1,130 +1,122 @@
 /* =========================================================
    BEYOND WORDMARK
-   Three horizontal bars replace the E, but they occupy the same
-   optical letter box as the surrounding characters.
+
+   B + custom striped E + Y + O + N + D are now six separate
+   letter slots. One flex gap controls every space in the word,
+   so B↔E, E↔Y, Y↔O, O↔N and N↔D all use the same rhythm.
    ========================================================= */
 
-.menu-home-brand > span {
+.menu-home-brand > .menu-home-brand-wordmark {
   --beyond-word-size: 18px;
-  --beyond-letter-gap: 6.2px;
+  --beyond-letter-gap: 5.8px;
+  --beyond-e-width: 10.8px;
+  --beyond-e-height: 12.4px;
+  --beyond-e-bar: 2.55px;
 
-  /*
-    The striped E is tuned against the rendered Inter capitals.
-
-    Important: its OUTER top/bottom now matches B/Y/O/N/D instead of
-    using the full mathematical box. This prevents the three bars from
-    looking taller than the word even though their stroke is rectangular.
-  */
-  --beyond-e-width: 11px;
-  --beyond-e-height: 12.6px;
-  --beyond-e-bar: 2.8px;
-  --beyond-e-y: 1.45px;
-  --beyond-b-width: 12.2px;
-
-  position: relative;
-  display: block !important;
-  flex: 0 0 auto;
-  width: 124px;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--beyond-letter-gap);
+  width: auto;
   height: 24px;
+  flex: 0 0 auto;
   overflow: visible;
+  direction: ltr;
+  color: var(--menu-text);
   font-size: 0 !important;
   line-height: 1;
   letter-spacing: 0 !important;
-  direction: ltr;
-  color: var(--menu-text);
-
-  /* Equal-width bars forming the custom E. */
-  background-image:
-    linear-gradient(currentColor 0 0),
-    linear-gradient(currentColor 0 0),
-    linear-gradient(currentColor 0 0);
-
-  background-position:
-    calc(var(--beyond-b-width) + var(--beyond-letter-gap))
-      calc(50% - (var(--beyond-e-height) / 2) + var(--beyond-e-y)),
-    calc(var(--beyond-b-width) + var(--beyond-letter-gap))
-      calc(50% - (var(--beyond-e-bar) / 2) + var(--beyond-e-y)),
-    calc(var(--beyond-b-width) + var(--beyond-letter-gap))
-      calc(50% + (var(--beyond-e-height) / 2) - var(--beyond-e-bar) + var(--beyond-e-y));
-
-  background-size:
-    var(--beyond-e-width) var(--beyond-e-bar),
-    var(--beyond-e-width) var(--beyond-e-bar),
-    var(--beyond-e-width) var(--beyond-e-bar);
-
-  background-repeat: no-repeat;
+  background: none !important;
 }
 
-.menu-home-brand > span::before,
-.menu-home-brand > span::after {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+/* Disable the old pseudo-element word construction completely. */
+.menu-home-brand > .menu-home-brand-wordmark::before,
+.menu-home-brand > .menu-home-brand-wordmark::after {
+  content: none !important;
+  display: none !important;
+}
+
+.menu-home-brand-letter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0;
   color: currentColor;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: var(--beyond-word-size);
   font-weight: 820;
   line-height: 1;
-  white-space: nowrap;
+  letter-spacing: 0;
   font-kerning: none;
   font-feature-settings: "kern" 0;
 }
 
-.menu-home-brand > span::before {
-  content: "B";
-  left: 0;
-  letter-spacing: 0;
-}
-
 /*
-  B → E and E → Y use exactly the same gap.
-  The same value continues between Y / O / N / D.
+   The E has the visual size of one capital letter. Its three equal bars
+   share one fixed letter box, so the flex gap on both sides is identical
+   to the gap between every other pair of letters.
 */
-.menu-home-brand > span::after {
-  content: "YOND";
-  left: calc(
-    var(--beyond-b-width) +
-    var(--beyond-letter-gap) +
-    var(--beyond-e-width) +
-    var(--beyond-letter-gap)
-  );
-  letter-spacing: var(--beyond-letter-gap);
+.menu-home-brand-e {
+  display: inline-flex;
+  flex: 0 0 var(--beyond-e-width);
+  width: var(--beyond-e-width);
+  height: var(--beyond-e-height);
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: space-between;
+  margin: 0;
+  padding: 0;
+  transform: translateY(0.35px);
 }
 
-.menu-home.theme-light .menu-home-brand > span {
+.menu-home-brand-e > i {
+  display: block;
+  width: 100%;
+  height: var(--beyond-e-bar);
+  flex: 0 0 var(--beyond-e-bar);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0.4px;
+  background: currentColor;
+}
+
+.menu-home.theme-light .menu-home-brand-wordmark {
   color: #0d1b3a;
 }
 
-.menu-home.theme-dark .menu-home-brand > span {
+.menu-home.theme-dark .menu-home-brand-wordmark {
   color: #f4f7ff;
 }
 
 @media (max-width: 500px) {
-  .menu-home-brand > span {
+  .menu-home-brand > .menu-home-brand-wordmark {
     --beyond-word-size: 15px;
-    --beyond-letter-gap: 5px;
-    --beyond-e-width: 9.2px;
-    --beyond-e-height: 10.6px;
-    --beyond-e-bar: 2.35px;
-    --beyond-e-y: 1.15px;
-    --beyond-b-width: 10.2px;
-
-    width: 104px;
+    --beyond-letter-gap: 4.8px;
+    --beyond-e-width: 9px;
+    --beyond-e-height: 10.3px;
+    --beyond-e-bar: 2.15px;
     height: 21px;
+  }
+
+  .menu-home-brand-e {
+    transform: translateY(0.25px);
   }
 }
 
 @media (max-width: 380px) {
-  .menu-home-brand > span {
+  .menu-home-brand > .menu-home-brand-wordmark {
     --beyond-word-size: 13px;
-    --beyond-letter-gap: 4.3px;
-    --beyond-e-width: 8px;
-    --beyond-e-height: 9.1px;
-    --beyond-e-bar: 2.05px;
-    --beyond-e-y: 1.05px;
-    --beyond-b-width: 8.9px;
-
-    width: 92px;
+    --beyond-letter-gap: 4.1px;
+    --beyond-e-width: 7.8px;
+    --beyond-e-height: 9px;
+    --beyond-e-bar: 1.9px;
     height: 19px;
+  }
+
+  .menu-home-brand-e {
+    transform: translateY(0.2px);
   }
 }
