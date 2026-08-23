@@ -8,7 +8,8 @@
 
 .menu-home-nav [data-beyond-nav-managed] .menu-home-nav-brand-word {
   display: inline-block;
-  color: #0d1b3a !important;
+  color: #173f7a !important;
+  -webkit-text-fill-color: #173f7a !important;
   font-weight: 850 !important;
 }
 
