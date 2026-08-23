@@ -1,12 +1,41 @@
 import { useEffect, useState } from "react";
 import { Plus, Save, Trash2 } from "lucide-react";
 
-import { DEFAULT_MENU_PRICING, normalizeMenuPricing } from "../lib/menuPricing";
+import { supabase } from "../lib/supabaseClient";
+import {
+  DEFAULT_MENU_PRICING,
+  normalizeMenuPricing,
+  parseMenuPricing,
+} from "../lib/menuPricing";
 
 import "./AdminPricingSettings.css";
 
+const SETTINGS_KEY = "menu_pricing_plans";
+
 function clonePricing(value) {
   return JSON.parse(JSON.stringify(value));
+}
+
+function isLocalPreview() {
+  if (typeof window === "undefined") return false;
+
+  const hostname = window.location.hostname;
+  return (
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname.endsWith(".app.github.dev") ||
+    hostname.endsWith(".github.dev")
+  );
+}
+
+async function readFunctionJson(response) {
+  const contentType = response.headers.get("content-type") || "";
+
+  if (!contentType.toLowerCase().includes("application/json")) {
+    throw new Error("NETLIFY_FUNCTION_NOT_AVAILABLE");
+  }
+
+  return response.json();
 }
 
 export default function AdminPricingSettings({ password }) {
@@ -15,6 +44,62 @@ export default function AdminPricingSettings({ password }) {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [localMode, setLocalMode] = useState(() => isLocalPreview());
+
+  async function loadDirectFromSupabase() {
+    const { data, error: supabaseError } = await supabase
+      .from("app_settings")
+      .select("value")
+      .eq("key", SETTINGS_KEY)
+      .maybeSingle();
+
+    if (supabaseError) throw supabaseError;
+
+    return parseMenuPricing(data?.value);
+  }
+
+  async function saveDirectToSupabase(nextPricing) {
+    const { data: authData } = await supabase.auth.getUser();
+    const user = authData?.user || null;
+
+    if (!user) {
+      throw new Error(
+        "Local preview cannot save pricing until your Beyond admin account is signed in. Open the homepage, sign in, then return to /admin."
+      );
+    }
+
+    const normalized = normalizeMenuPricing(nextPricing);
+
+    const { error: supabaseError } = await supabase
+      .from("app_settings")
+      .upsert(
+        {
+          key: SETTINGS_KEY,
+          value: JSON.stringify(normalized),
+          updated_at: new Date().toISOString(),
+          updated_by: user.id,
+        },
+        { onConflict: "key" }
+      );
+
+    if (supabaseError) {
+      const message = String(supabaseError.message || "");
+
+      if (
+        message.toLowerCase().includes("row-level security") ||
+        message.toLowerCase().includes("permission") ||
+        message.toLowerCase().includes("policy")
+      ) {
+        throw new Error(
+          "Your signed-in Beyond account does not have Menu Admin permission to save website pricing."
+        );
+      }
+
+      throw supabaseError;
+    }
+
+    return normalized;
+  }
 
   useEffect(() => {
     let alive = true;
@@ -24,15 +109,36 @@ export default function AdminPricingSettings({ password }) {
       setError("");
 
       try {
-        const response = await fetch("/.netlify/functions/admin-pricing-settings", {
-          headers: { "x-admin-password": password },
-        });
-        const data = await response.json();
+        let nextPricing;
 
-        if (!response.ok) throw new Error(data.error || "Could not load pricing settings.");
+        if (isLocalPreview()) {
+          setLocalMode(true);
+          nextPricing = await loadDirectFromSupabase();
+        } else {
+          try {
+            const response = await fetch("/.netlify/functions/admin-pricing-settings", {
+              headers: { "x-admin-password": password },
+            });
+            const data = await readFunctionJson(response);
+
+            if (!response.ok) {
+              throw new Error(data.error || "Could not load pricing settings.");
+            }
+
+            nextPricing = normalizeMenuPricing(data.pricing);
+            setLocalMode(false);
+          } catch (functionError) {
+            if (functionError?.message !== "NETLIFY_FUNCTION_NOT_AVAILABLE") {
+              throw functionError;
+            }
+
+            setLocalMode(true);
+            nextPricing = await loadDirectFromSupabase();
+          }
+        }
+
         if (!alive) return;
-
-        setPricing(clonePricing(normalizeMenuPricing(data.pricing)));
+        setPricing(clonePricing(nextPricing));
       } catch (err) {
         if (!alive) return;
         console.error(err);
@@ -105,22 +211,48 @@ export default function AdminPricingSettings({ password }) {
     setError("");
 
     try {
-      const response = await fetch("/.netlify/functions/admin-pricing-settings", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-admin-password": password,
-        },
-        body: JSON.stringify({ pricing }),
-      });
-      const data = await response.json();
+      let normalized;
 
-      if (!response.ok) throw new Error(data.error || "Could not save pricing settings.");
+      if (isLocalPreview() || localMode) {
+        normalized = await saveDirectToSupabase(pricing);
+      } else {
+        try {
+          const response = await fetch("/.netlify/functions/admin-pricing-settings", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-admin-password": password,
+            },
+            body: JSON.stringify({ pricing }),
+          });
+          const data = await readFunctionJson(response);
 
-      const normalized = normalizeMenuPricing(data.pricing);
+          if (!response.ok) {
+            throw new Error(data.error || "Could not save pricing settings.");
+          }
+
+          normalized = normalizeMenuPricing(data.pricing);
+        } catch (functionError) {
+          if (functionError?.message !== "NETLIFY_FUNCTION_NOT_AVAILABLE") {
+            throw functionError;
+          }
+
+          setLocalMode(true);
+          normalized = await saveDirectToSupabase(pricing);
+        }
+      }
+
       setPricing(clonePricing(normalized));
-      setMessage("Pricing updated successfully.");
-      window.dispatchEvent(new CustomEvent("beyond-menu-pricing-updated", { detail: { pricing: normalized } }));
+      setMessage(
+        localMode || isLocalPreview()
+          ? "Pricing updated successfully in Supabase."
+          : "Pricing updated successfully."
+      );
+      window.dispatchEvent(
+        new CustomEvent("beyond-menu-pricing-updated", {
+          detail: { pricing: normalized },
+        })
+      );
       window.setTimeout(() => setMessage(""), 3500);
     } catch (err) {
       console.error(err);
@@ -137,6 +269,11 @@ export default function AdminPricingSettings({ password }) {
           <span className="admin-label">WEBSITE</span>
           <h2>Menu Pricing</h2>
           <p>Change prices, plan text and features shown on the Beyond homepage.</p>
+          {localMode ? (
+            <small style={{ display: "block", marginTop: "8px", color: "#7f91ad" }}>
+              Local preview mode · pricing is read directly from Supabase.
+            </small>
+          ) : null}
         </div>
         <button type="button" className="primary-button" onClick={savePricing} disabled={saving || loading}>
           <Save size={16} /> {saving ? "Saving..." : "Save Pricing"}
