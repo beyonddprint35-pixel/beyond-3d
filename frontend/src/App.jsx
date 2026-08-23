@@ -16,6 +16,7 @@ import "./pages/MenuHomeOverrides.css";
 import "./pages/MenuHomeFinalPatch.css";
 import "./pages/MenuHomeWordmark.css";
 import "./pages/MenuHomeDarkGlow.css";
+import "./pages/MenuHomeAccessRealism.css";
 
 function App() {
   return (
