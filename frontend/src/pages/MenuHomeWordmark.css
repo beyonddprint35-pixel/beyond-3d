@@ -1,24 +1,17 @@
 /* =========================================================
    BEYOND WORDMARK
 
-   The custom E keeps the three-stripe identity, but is tuned to the
-   real rendered Inter capitals so it reads as a letter inside BEYOND.
+   The word is B + three equal stripes + Y O N D.
+   The striped E uses the same visual cap-height and spacing rhythm
+   as the surrounding letters, with no icon-style corrections.
    ========================================================= */
 
 .menu-home-brand > .menu-home-brand-wordmark {
   --beyond-word-size: 18px;
   --beyond-letter-gap: 5.8px;
-
-  /*
-    Tuned from the rendered navbar screenshot:
-    surrounding capitals are ~22 device px tall and B is ~18 px wide.
-    These CSS values bring the striped E to the same optical box.
-  */
-  --beyond-e-width: 13.8px;
-  --beyond-e-height: 16.8px;
-  --beyond-e-bar: 2.55px;
-  --beyond-e-optical-x: -1.5px;
-  --beyond-e-optical-y: 0.1px;
+  --beyond-e-width: 10.6px;
+  --beyond-e-height: 13px;
+  --beyond-e-bar: 2.6px;
 
   display: inline-flex !important;
   align-items: center;
@@ -36,7 +29,6 @@
   background: none !important;
 }
 
-/* Disable the old pseudo-element construction completely. */
 .menu-home-brand > .menu-home-brand-wordmark::before,
 .menu-home-brand > .menu-home-brand-wordmark::after {
   content: none !important;
@@ -61,10 +53,9 @@
 }
 
 /*
-   The E occupies a true capital-letter-sized box.
-
-   A tiny optical x correction compensates for the side bearings of B/Y,
-   so the visible white space on both sides of the striped E is balanced.
+   E = exactly three equal horizontal stripes.
+   All three have the same width and thickness and share one normal
+   letter-sized box, so they read as part of BEYOND rather than an icon.
 */
 .menu-home-brand-e {
   display: inline-flex;
@@ -72,36 +63,23 @@
   width: var(--beyond-e-width);
   height: var(--beyond-e-height);
   flex-direction: column;
-  align-items: flex-start;
+  align-items: stretch;
   justify-content: space-between;
   margin: 0;
   padding: 0;
-  transform: translate(
-    var(--beyond-e-optical-x),
-    var(--beyond-e-optical-y)
-  );
+  transform: none;
 }
 
 .menu-home-brand-e > i {
   display: block;
+  width: 100%;
   height: var(--beyond-e-bar);
   flex: 0 0 var(--beyond-e-bar);
   margin: 0;
   padding: 0;
   border: 0;
-  border-radius: 0.35px;
+  border-radius: 0;
   background: currentColor;
-}
-
-/* Top and bottom strokes define the full E width. */
-.menu-home-brand-e > i:first-child,
-.menu-home-brand-e > i:last-child {
-  width: 100%;
-}
-
-/* A slightly shorter middle stroke makes the mark read as E, not ≡. */
-.menu-home-brand-e > i:nth-child(2) {
-  width: 76%;
 }
 
 .menu-home.theme-light .menu-home-brand-wordmark {
@@ -116,11 +94,9 @@
   .menu-home-brand > .menu-home-brand-wordmark {
     --beyond-word-size: 15px;
     --beyond-letter-gap: 4.8px;
-    --beyond-e-width: 11.5px;
-    --beyond-e-height: 14px;
+    --beyond-e-width: 8.8px;
+    --beyond-e-height: 10.8px;
     --beyond-e-bar: 2.15px;
-    --beyond-e-optical-x: -1.2px;
-    --beyond-e-optical-y: 0.1px;
     height: 21px;
   }
 }
@@ -129,11 +105,9 @@
   .menu-home-brand > .menu-home-brand-wordmark {
     --beyond-word-size: 13px;
     --beyond-letter-gap: 4.1px;
-    --beyond-e-width: 10px;
-    --beyond-e-height: 12.1px;
-    --beyond-e-bar: 1.9px;
-    --beyond-e-optical-x: -1px;
-    --beyond-e-optical-y: 0.05px;
+    --beyond-e-width: 7.7px;
+    --beyond-e-height: 9.4px;
+    --beyond-e-bar: 1.85px;
     height: 19px;
   }
 }
