@@ -1,0 +1,309 @@
+/* ==========================================================
+   BEYOND MENU — FIT TO VIEW
+
+   Fit to View is a global Menu Studio setting.
+
+   ON  = existing responsive/mobile-safe behavior.
+   OFF = keep the chosen layout's natural canvas proportions.
+         On a phone, the customer can pan horizontally instead
+         of the layout being squeezed into the viewport.
+   ========================================================== */
+
+/* ----------------------------------------------------------
+   MENU STUDIO GLOBAL TOGGLE
+   ---------------------------------------------------------- */
+.menu-brand-fit-row {
+  min-height: 58px;
+  padding: 9px 11px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid rgba(76, 111, 166, .13);
+  background: rgba(248, 251, 255, .88);
+}
+
+.menu-brand-fit-copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+  text-align: left;
+}
+
+.menu-brand-fit-copy strong {
+  color: #102240;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.menu-brand-fit-copy small {
+  color: #7083a1;
+  font-size: 8px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.menu-brand-fit-toggle {
+  position: relative;
+  width: 42px;
+  height: 24px;
+  min-width: 42px;
+  padding: 0;
+  border: 1px solid #c9d5e8;
+  border-radius: 999px;
+  background: #e9eef7;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+
+.menu-brand-fit-toggle > span {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(20, 42, 78, .18);
+  transition: transform 160ms ease;
+}
+
+.menu-brand-fit-toggle.active {
+  border-color: #2f61da;
+  background: #2f61da;
+}
+
+.menu-brand-fit-toggle.active > span {
+  transform: translateX(18px);
+}
+
+.menu-brand-fit-toggle:focus-visible {
+  outline: 2px solid rgba(47, 97, 218, .42);
+  outline-offset: 2px;
+}
+
+.fit-copy-he {
+  display: none;
+}
+
+.menu-builder-unified[data-builder-language="he"] .menu-brand-fit-copy {
+  text-align: right;
+}
+
+.menu-builder-unified[data-builder-language="he"] .fit-copy-en {
+  display: none;
+}
+
+.menu-builder-unified[data-builder-language="he"] .fit-copy-he {
+  display: inline;
+}
+
+.menu-builder-unified[data-builder-language="he"] .menu-brand-fit-toggle > span {
+  left: auto;
+  right: 3px;
+}
+
+.menu-builder-unified[data-builder-language="he"] .menu-brand-fit-toggle.active > span {
+  transform: translateX(-18px);
+}
+
+.menu-builder-unified.theme-dark .menu-brand-fit-row {
+  border-bottom-color: rgba(103, 155, 198, .10);
+  background: #07111a;
+}
+
+.menu-builder-unified.theme-dark .menu-brand-fit-copy strong {
+  color: #dce8f1;
+}
+
+.menu-builder-unified.theme-dark .menu-brand-fit-copy small {
+  color: #718ca1;
+}
+
+.menu-builder-unified.theme-dark .menu-brand-fit-toggle {
+  border-color: rgba(103, 155, 198, .24);
+  background: #102131;
+}
+
+.menu-builder-unified.theme-dark .menu-brand-fit-toggle.active {
+  border-color: #4d7cf0;
+  background: #4d7cf0;
+}
+
+/* ----------------------------------------------------------
+   NATURAL-WIDTH MODE
+   ---------------------------------------------------------- */
+.digital-menu-template.dmt-natural-view {
+  overflow-x: visible !important;
+}
+
+@media (max-width: 560px) {
+  html:has(.digital-menu-template.dmt-natural-view),
+  body:has(.digital-menu-template.dmt-natural-view),
+  #root:has(.digital-menu-template.dmt-natural-view),
+  .menu-mobile-preview-page:has(.digital-menu-template.dmt-natural-view) {
+    overflow-x: auto !important;
+    overscroll-behavior-x: contain;
+  }
+
+  .menu-mobile-preview-page:has(.digital-menu-template.dmt-natural-view) {
+    width: max-content !important;
+    min-width: 100% !important;
+  }
+
+  .digital-menu-template.dmt-natural-view {
+    width: 680px !important;
+    min-width: 680px !important;
+    max-width: none !important;
+    overflow: visible !important;
+  }
+
+  .digital-menu-template.dmt-natural-view .dmt-app,
+  .menu-mobile-preview-page .digital-menu-template.dmt-natural-view .dmt-app {
+    width: 680px !important;
+    min-width: 680px !important;
+    max-width: none !important;
+    margin: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* Restore desktop-like breathing room instead of squeezing. */
+  .digital-menu-template.dmt-natural-view .dmt-header {
+    min-height: 82px !important;
+    padding: 18px 20px !important;
+    gap: 14px !important;
+  }
+
+  .digital-menu-template.dmt-natural-view .dmt-logo,
+  .digital-menu-template.dmt-natural-view .dmt-logo-placeholder {
+    width: 50px !important;
+    height: 50px !important;
+    min-width: 50px !important;
+    min-height: 50px !important;
+    flex: 0 0 50px !important;
+  }
+
+  .digital-menu-template.dmt-natural-view .dmt-language {
+    max-width: none !important;
+    overflow: visible !important;
+  }
+
+  .digital-menu-template.dmt-natural-view .dmt-language button {
+    min-height: 31px !important;
+    padding-inline: 11px !important;
+    font-size: var(--dmt-secondary-size) !important;
+  }
+
+  .digital-menu-template.dmt-natural-view .dmt-hero {
+    min-height: 165px !important;
+    margin: 16px 18px !important;
+    padding: 23px !important;
+    gap: 18px !important;
+  }
+
+  .digital-menu-template.dmt-natural-view .dmt-hero-copy {
+    max-width: none !important;
+  }
+
+  .digital-menu-template.dmt-natural-view .dmt-hero-logo {
+    width: 100px !important;
+    height: 100px !important;
+    flex-basis: 100px !important;
+  }
+
+  .digital-menu-template.dmt-natural-view .dmt-tabs {
+    padding-inline: 18px !important;
+  }
+
+  .digital-menu-template.dmt-natural-view .dmt-section-head {
+    padding: 25px 20px 11px !important;
+  }
+
+  .digital-menu-template.dmt-natural-view .dmt-menu-list {
+    padding: 0 14px 24px !important;
+  }
+
+  /* Cards keeps its real two-column proportions without squeeze. */
+  .digital-menu-template.dmt-natural-view.dmt-layout-cards .dmt-menu-list {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 11px !important;
+  }
+
+  .digital-menu-template.dmt-natural-view.dmt-layout-cards .dmt-item-row {
+    min-height: 118px !important;
+    padding: 17px !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: 1fr auto !important;
+    gap: 15px !important;
+    border-radius: 22px !important;
+  }
+
+  .digital-menu-template.dmt-natural-view.dmt-layout-cards .dmt-price-area {
+    width: 100% !important;
+    min-width: 0 !important;
+    padding-top: 10px !important;
+    display: grid !important;
+    grid-auto-flow: column !important;
+    justify-content: space-between !important;
+    justify-items: start !important;
+    border-top: 1px solid var(--dmt-line) !important;
+  }
+
+  /* Compact remains compact, just not compressed to 390px. */
+  .digital-menu-template.dmt-natural-view.dmt-layout-compact .dmt-header {
+    min-height: 68px !important;
+    padding: 13px 16px !important;
+  }
+
+  .digital-menu-template.dmt-natural-view.dmt-layout-compact .dmt-hero {
+    min-height: 122px !important;
+    margin: 10px 14px !important;
+    padding: 17px 18px !important;
+  }
+
+  .digital-menu-template.dmt-natural-view.dmt-layout-compact .dmt-menu-list {
+    padding: 0 12px 20px !important;
+    gap: 6px !important;
+  }
+
+  .digital-menu-template.dmt-natural-view.dmt-layout-compact .dmt-item-row {
+    min-height: 64px !important;
+    padding: 10px 12px !important;
+  }
+
+  /* Editorial preserves its full-width editorial canvas. */
+  .digital-menu-template.dmt-natural-view.dmt-layout-editorial .dmt-hero {
+    min-height: 165px !important;
+    margin: 0 !important;
+    padding: 30px 28px !important;
+    border-radius: 0 !important;
+  }
+
+  .digital-menu-template.dmt-natural-view.dmt-layout-editorial .dmt-menu-list {
+    padding-inline: 20px !important;
+  }
+
+  /* Minimal remains intentionally light, without phone squeeze. */
+  .digital-menu-template.dmt-natural-view.dmt-layout-minimal .dmt-hero {
+    min-height: 140px !important;
+    margin: 10px 20px !important;
+    padding: 20px 0 !important;
+  }
+
+  /* Bold keeps the larger hero proportions. */
+  .digital-menu-template.dmt-natural-view.dmt-layout-bold .dmt-hero {
+    min-height: 178px !important;
+    margin: 16px 18px !important;
+    padding: 23px !important;
+    border-radius: 20px !important;
+  }
+
+  .digital-menu-template.dmt-natural-view.dmt-layout-bold .dmt-hero-logo {
+    width: 100px !important;
+    height: 100px !important;
+    flex-basis: 100px !important;
+  }
+}
