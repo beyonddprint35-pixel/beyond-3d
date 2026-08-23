@@ -12,11 +12,13 @@ import TrackOrder from "./pages/TrackOrder";
 import MenuBuilder from "./pages/MenuBuilder";
 import MenuMobilePreviewPage from "./pages/MenuMobilePreviewPage";
 
+import "./pages/MenuHomeAccessInteraction.js";
 import "./pages/MenuHomeOverrides.css";
 import "./pages/MenuHomeFinalPatch.css";
 import "./pages/MenuHomeWordmark.css";
 import "./pages/MenuHomeDarkGlow.css";
 import "./pages/MenuHomeAccessRealism.css";
+import "./pages/MenuHomeAccessInteraction.css";
 
 function App() {
   return (
