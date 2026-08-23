@@ -1,0 +1,429 @@
+/* ==========================================================
+   MOBILE MENU STUDIO WORKSPACE
+
+   Keeps the original blurred modal treatment, but turns
+   Mobile View into a side-by-side editing workspace:
+   Menu Studio on the left, real phone viewport on the right.
+   ========================================================== */
+
+.mobile-menu-preview-overlay {
+  background:
+    rgba(
+      1,
+      7,
+      12,
+      .58
+    );
+
+  backdrop-filter:
+    blur(20px)
+    brightness(.56)
+    saturate(.82);
+
+  -webkit-backdrop-filter:
+    blur(20px)
+    brightness(.56)
+    saturate(.82);
+}
+
+
+.mobile-menu-preview-stage-workspace {
+  width:
+    min(
+      100%,
+      940px
+    );
+
+  max-width:
+    calc(
+      100vw -
+      36px
+    );
+
+  align-items:
+    stretch;
+}
+
+
+.mobile-menu-preview-top-workspace {
+  width: 100%;
+
+  max-width: none;
+
+  padding:
+    0
+    2px;
+
+  box-sizing:
+    border-box;
+}
+
+
+.mobile-menu-preview-workspace {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(
+      0,
+      1fr
+    )
+    410px;
+
+  align-items: start;
+
+  gap: 28px;
+}
+
+
+/* ==========================================================
+   MENU STUDIO PANEL
+   ========================================================== */
+
+.mobile-menu-preview-editor-shell {
+  width: 100%;
+
+  height: 864px;
+
+  min-width: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(
+      107,
+      165,
+      206,
+      .24
+    );
+
+  border-radius: 30px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(
+        8,
+        24,
+        35,
+        .96
+      ),
+      rgba(
+        4,
+        15,
+        23,
+        .97
+      )
+    );
+
+  box-shadow:
+    0
+    34px
+    90px
+    rgba(
+      0,
+      0,
+      0,
+      .48
+    ),
+    inset
+    0
+    1px
+    0
+    rgba(
+      255,
+      255,
+      255,
+      .035
+    );
+}
+
+
+.mobile-menu-preview-editor-meta {
+  min-height: 68px;
+
+  padding:
+    14px
+    18px;
+
+  box-sizing: border-box;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 18px;
+
+  flex-shrink: 0;
+
+  border-bottom:
+    1px solid
+    rgba(
+      102,
+      151,
+      187,
+      .14
+    );
+
+  background:
+    rgba(
+      8,
+      22,
+      32,
+      .82
+    );
+}
+
+
+.mobile-menu-preview-editor-meta
+> div {
+  min-width: 0;
+
+  display: grid;
+
+  gap: 3px;
+}
+
+
+.mobile-menu-preview-editor-meta span {
+  color: #5790b9;
+
+  font-size: 8px;
+
+  font-weight: 850;
+
+  letter-spacing: .18em;
+}
+
+
+.mobile-menu-preview-editor-meta strong {
+  color: #edf5fa;
+
+  font-size: 14px;
+
+  font-weight: 700;
+}
+
+
+.mobile-menu-preview-editor-meta small {
+  flex-shrink: 0;
+
+  color: #7897aa;
+
+  font-size: 10px;
+
+  font-weight: 650;
+}
+
+
+.mobile-menu-preview-editor-meta small.error {
+  color: #f29a9a;
+}
+
+
+.mobile-menu-preview-editor-scroll {
+  min-height: 0;
+
+  flex: 1;
+
+  overflow-y: auto;
+
+  overflow-x: hidden;
+
+  padding: 12px;
+
+  box-sizing: border-box;
+
+  scrollbar-width: thin;
+
+  scrollbar-color:
+    rgba(
+      91,
+      147,
+      187,
+      .4
+    )
+    transparent;
+}
+
+
+.mobile-menu-preview-editor-scroll
+.menu-brand-editor {
+  width: 100%;
+
+  max-width: none;
+
+  margin: 0;
+
+  box-sizing: border-box;
+}
+
+
+/* The modal owns the panel shell, so remove any outer spacing
+   that was meant for the normal Builder two-column layout. */
+.mobile-menu-preview-editor-scroll
+.menu-brand-editor-head {
+  position: relative;
+}
+
+
+/* ==========================================================
+   PHONE COLUMN
+   ========================================================== */
+
+.mobile-menu-preview-phone-column {
+  width: 410px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 10px;
+}
+
+
+.mobile-menu-preview-phone-column
+.mobile-menu-preview-info {
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 5px;
+}
+
+
+/* ==========================================================
+   LAPTOP HEIGHT
+
+   Scale the complete workspace together so the editor and
+   phone remain aligned. The iframe itself stays 390x844 CSS
+   pixels, therefore the actual mobile breakpoints still run.
+   ========================================================== */
+
+@media (max-height: 980px) {
+  .mobile-menu-preview-stage-workspace {
+    transform:
+      scale(.88);
+
+    transform-origin:
+      center center;
+  }
+}
+
+
+@media (max-height: 850px) {
+  .mobile-menu-preview-stage-workspace {
+    transform:
+      scale(.75);
+  }
+}
+
+
+/* Override the old phone-only breakpoint so the new workspace
+   controls its own responsive behavior. */
+@media (max-width: 500px) {
+  .mobile-menu-preview-stage-workspace {
+    transform: none;
+  }
+}
+
+
+/* ==========================================================
+   NARROW WINDOWS
+
+   Desktop/laptop keeps Studio beside the phone. On genuinely
+   narrow browser windows, stack them rather than clipping the
+   editor or shrinking the real phone viewport itself.
+   ========================================================== */
+
+@media (max-width: 980px) {
+  .mobile-menu-preview-overlay {
+    align-items: flex-start;
+
+    overflow-y: auto;
+  }
+
+  .mobile-menu-preview-stage-workspace {
+    width: 430px;
+
+    max-width:
+      calc(
+        100vw -
+        28px
+      );
+
+    transform: none;
+
+    padding-bottom: 22px;
+  }
+
+  .mobile-menu-preview-workspace {
+    grid-template-columns: 1fr;
+
+    justify-items: center;
+  }
+
+  .mobile-menu-preview-editor-shell {
+    width: 100%;
+
+    height: min(720px, 72dvh);
+  }
+
+  .mobile-menu-preview-phone-column {
+    width: 410px;
+
+    max-width: 100%;
+  }
+}
+
+
+@media (max-width: 450px) {
+  .mobile-menu-preview-stage-workspace {
+    width: 100%;
+  }
+
+  .mobile-menu-preview-top-workspace {
+    align-items: flex-start;
+  }
+
+  .mobile-menu-preview-top-workspace strong {
+    max-width: 250px;
+  }
+
+  .mobile-menu-preview-editor-shell {
+    border-radius: 24px;
+  }
+
+  .mobile-menu-preview-phone-column {
+    transform:
+      scale(.86);
+
+    transform-origin:
+      top center;
+
+    margin-bottom: -118px;
+  }
+}
+
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+  .mobile-menu-preview-stage-workspace,
+  .mobile-menu-preview-phone-column {
+    transition: none;
+  }
+}
