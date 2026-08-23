@@ -1,0 +1,191 @@
+/* ==========================================================
+   BEYOND MENU BUILDER — RTL / BRAND / PREVIEW ISOLATION
+   ========================================================== */
+
+/* Match the homepage cube treatment in light mode. */
+.menu-builder-unified.theme-light .menu-builder-brand > img {
+  filter: brightness(0) saturate(100%) invert(11%) sepia(31%) saturate(1457%) hue-rotate(184deg) brightness(88%) contrast(97%) !important;
+  opacity: 1 !important;
+}
+
+.menu-builder-unified.theme-dark .menu-builder-brand > img {
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+/* Hebrew is a real RTL layout, not only translated text. */
+.menu-builder-unified[data-builder-language="he"] {
+  direction: rtl;
+  text-align: right;
+}
+
+.menu-builder-unified[data-builder-language="he"] .menu-builder-page,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-loading-page,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-topbar,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-topbar-right,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-workspace,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-plans-page,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-source-panel,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-result,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-source-heading,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-result-heading,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-source-grid,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-upload-card,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-text-card,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-files,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-files > div,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-generate-row,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-saved-draft,
+.menu-builder-unified[data-builder-language="he"] .menu-project-switcher,
+.menu-builder-unified[data-builder-language="he"] .menu-project-switcher-title,
+.menu-builder-unified[data-builder-language="he"] .menu-project-switcher-buttons,
+.menu-builder-unified[data-builder-language="he"] .menu-language-selector,
+.menu-builder-unified[data-builder-language="he"] .menu-language-selector-heading,
+.menu-builder-unified[data-builder-language="he"] .menu-language-options,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-branding-layout,
+.menu-builder-unified[data-builder-language="he"] .menu-brand-editor,
+.menu-builder-unified[data-builder-language="he"] .menu-brand-editor-head,
+.menu-builder-unified[data-builder-language="he"] .menu-brand-tabs,
+.menu-builder-unified[data-builder-language="he"] .menu-brand-editor-body,
+.menu-builder-unified[data-builder-language="he"] .menu-brand-field,
+.menu-builder-unified[data-builder-language="he"] .menu-brand-color,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-live-preview,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-live-preview-label,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-ai-cost,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-extraction-help,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-recovery-options,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-plan-grid,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-plan-card,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-billing-toggle,
+.menu-builder-unified[data-builder-language="he"] .restaurant-checkout,
+.menu-builder-unified[data-builder-language="he"] .restaurant-checkout-shell,
+.menu-builder-unified[data-builder-language="he"] .restaurant-checkout-main,
+.menu-builder-unified[data-builder-language="he"] .restaurant-checkout-summary,
+.menu-builder-unified[data-builder-language="he"] .restaurant-checkout-section,
+.menu-builder-unified[data-builder-language="he"] .restaurant-checkout-section-heading,
+.menu-builder-unified[data-builder-language="he"] .restaurant-checkout-payer,
+.menu-builder-unified[data-builder-language="he"] .restaurant-checkout-summary-row {
+  direction: rtl;
+  text-align: right !important;
+}
+
+/* The hero block itself must sit on the RIGHT side of the workspace. */
+.menu-builder-unified[data-builder-language="he"] .menu-builder-intro {
+  margin-right: 0 !important;
+  margin-left: auto !important;
+  text-align: right !important;
+}
+
+.menu-builder-unified[data-builder-language="he"] .menu-builder-intro > span,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-intro h1,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-intro p,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-plans-heading,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-plans-heading h1,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-plans-heading p,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-source-heading h2,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-result-heading h2 {
+  text-align: right !important;
+}
+
+.menu-builder-unified[data-builder-language="he"] .menu-builder-intro p,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-plans-heading p {
+  margin-right: 0 !important;
+  margin-left: auto !important;
+}
+
+/* Header: BEYOND goes to the right, controls to the left in Hebrew. */
+.menu-builder-unified[data-builder-language="he"] .menu-builder-topbar {
+  direction: rtl;
+}
+
+.menu-builder-unified[data-builder-language="he"] .menu-builder-brand {
+  direction: ltr;
+}
+
+.menu-builder-unified[data-builder-language="he"] .menu-builder-topbar-right,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-unified-controls {
+  direction: rtl;
+}
+
+.menu-builder-unified[data-builder-language="he"] .menu-builder-back svg,
+.menu-builder-unified[data-builder-language="he"] .restaurant-checkout-back svg,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-plans-heading button svg {
+  transform: rotate(180deg);
+}
+
+/* Saved models start at the right edge and the summary moves to the left. */
+.menu-builder-unified[data-builder-language="he"] .menu-project-switcher {
+  direction: rtl;
+}
+
+.menu-builder-unified[data-builder-language="he"] .menu-project-switcher-help {
+  margin-right: auto !important;
+  margin-left: 0 !important;
+}
+
+/* Source/editor content follows RTL visually. */
+.menu-builder-unified[data-builder-language="he"] .menu-builder-upload-card {
+  align-items: flex-start !important;
+  text-align: right !important;
+}
+
+.menu-builder-unified[data-builder-language="he"] .menu-builder-text-card > div,
+.menu-builder-unified[data-builder-language="he"] .menu-brand-type-title,
+.menu-builder-unified[data-builder-language="he"] .menu-brand-logo-preview,
+.menu-builder-unified[data-builder-language="he"] .menu-brand-logo-button,
+.menu-builder-unified[data-builder-language="he"] .menu-brand-remove-logo,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-recovery-footer,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-ai-cost-foot {
+  direction: rtl;
+  text-align: right;
+}
+
+.menu-builder-unified[data-builder-language="he"] .menu-builder-text-card textarea,
+.menu-builder-unified[data-builder-language="he"] .menu-brand-field input,
+.menu-builder-unified[data-builder-language="he"] .menu-brand-field select,
+.menu-builder-unified[data-builder-language="he"] .restaurant-checkout-field input {
+  direction: rtl;
+  text-align: right;
+}
+
+/* Promo codes remain naturally Latin/numeric even inside Hebrew checkout. */
+.menu-builder-unified[data-builder-language="he"] .restaurant-checkout-promo-input,
+.menu-builder-unified[data-builder-language="he"] .restaurant-checkout-promo-input input {
+  direction: ltr;
+  text-align: left;
+}
+
+.menu-builder-unified[data-builder-language="he"] .menu-language-options button {
+  direction: rtl;
+  text-align: right;
+}
+
+.menu-builder-unified[data-builder-language="he"] .menu-brand-tabs {
+  direction: rtl;
+}
+
+.menu-builder-unified[data-builder-language="he"] .menu-brand-design-grid button {
+  text-align: right !important;
+}
+
+/* Keep the restaurant's generated menu entirely independent of Builder RTL. */
+.menu-builder-unified .digital-menu-template[dir="ltr"] {
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+.menu-builder-unified .digital-menu-template[dir="rtl"] {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+@media (max-width: 760px) {
+  .menu-builder-unified[data-builder-language="he"] .menu-builder-topbar {
+    direction: rtl;
+  }
+
+  .menu-builder-unified[data-builder-language="he"] .menu-builder-workspace,
+  .menu-builder-unified[data-builder-language="he"] .menu-builder-plans-page {
+    text-align: right !important;
+  }
+}
