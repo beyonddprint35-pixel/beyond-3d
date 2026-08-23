@@ -179,6 +179,156 @@
   text-align: right !important;
 }
 
+/* ==========================================================
+   UNIFIED BUILDER SECTION HEADERS
+
+   01 / Languages already establishes the visual language.
+   Source and Brand & Preview now use the same icon tile,
+   step label, title rhythm and alignment.
+   ========================================================== */
+
+.menu-builder-unified .menu-builder-source-heading > div:first-child,
+.menu-builder-unified .menu-builder-result-heading > div:first-child {
+  display: grid !important;
+  grid-template-columns: 40px minmax(0, 1fr);
+  grid-template-rows: auto auto auto;
+  column-gap: 12px;
+  align-items: start;
+  min-width: 0;
+}
+
+.menu-builder-unified .menu-builder-source-heading > div:first-child::before,
+.menu-builder-unified .menu-builder-result-heading > div:first-child::before {
+  content: "";
+  grid-column: 1;
+  grid-row: 1 / 4;
+  width: 40px;
+  height: 40px;
+  box-sizing: border-box;
+  border: 1px solid color-mix(in srgb, var(--mb-blue) 22%, transparent);
+  border-radius: 11px;
+  background-color: var(--mb-blue-soft);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 20px 20px;
+}
+
+/* Upload/source icon. */
+.menu-builder-unified .menu-builder-source-heading > div:first-child::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%232f61da' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'/%3E%3Cpolyline points='17 8 12 3 7 8'/%3E%3Cline x1='12' y1='3' x2='12' y2='15'/%3E%3C/svg%3E");
+}
+
+/* Brand/design icon. */
+.menu-builder-unified .menu-builder-result-heading > div:first-child::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%232f61da' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='13.5' cy='6.5' r='.5' fill='%232f61da'/%3E%3Ccircle cx='17.5' cy='10.5' r='.5' fill='%232f61da'/%3E%3Ccircle cx='8.5' cy='7.5' r='.5' fill='%232f61da'/%3E%3Ccircle cx='6.5' cy='12.5' r='.5' fill='%232f61da'/%3E%3Cpath d='M12 2a10 10 0 0 0 0 20h1.65a2.35 2.35 0 0 0 1.67-4l-.38-.38a1.35 1.35 0 0 1 .95-2.3H18a4 4 0 0 0 4-4C22 6.15 17.52 2 12 2Z'/%3E%3C/svg%3E");
+}
+
+.menu-builder-unified .menu-builder-source-heading > div:first-child > span,
+.menu-builder-unified .menu-builder-source-heading > div:first-child > h2,
+.menu-builder-unified .menu-builder-result-heading > div:first-child > span,
+.menu-builder-unified .menu-builder-result-heading > div:first-child > h2,
+.menu-builder-unified .menu-builder-result-heading > div:first-child > p {
+  grid-column: 2;
+  min-width: 0;
+}
+
+.menu-builder-unified .menu-builder-source-heading > div:first-child > span,
+.menu-builder-unified .menu-builder-result-heading > div:first-child > span {
+  grid-row: 1;
+  align-self: start;
+  line-height: 1.2;
+}
+
+.menu-builder-unified .menu-builder-source-heading > div:first-child > h2,
+.menu-builder-unified .menu-builder-result-heading > div:first-child > h2 {
+  grid-row: 2;
+  margin-top: 5px !important;
+  margin-bottom: 4px !important;
+}
+
+.menu-builder-unified .menu-builder-result-heading > div:first-child > p {
+  grid-row: 3;
+  margin-top: 0 !important;
+}
+
+/* Replace the old duplicated step number visually and keep EN/HE consistent. */
+.menu-builder-unified .menu-builder-result-heading > div:first-child > span {
+  font-size: 0 !important;
+}
+
+.menu-builder-unified .menu-builder-result-heading > div:first-child > span::after {
+  content: "03 / BRAND & PREVIEW";
+  color: var(--mb-blue);
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .14em;
+  line-height: 1.2;
+}
+
+.menu-builder-unified[data-builder-language="he"] .menu-builder-result-heading > div:first-child > span::after {
+  content: "03 / מותג ותצוגה";
+}
+
+/* Source is explicitly step 02 in both languages. */
+.menu-builder-unified .menu-builder-source-heading > div:first-child > span {
+  font-size: 0 !important;
+}
+
+.menu-builder-unified .menu-builder-source-heading > div:first-child > span::after {
+  content: "02 / SOURCE";
+  color: var(--mb-blue);
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .14em;
+  line-height: 1.2;
+}
+
+.menu-builder-unified[data-builder-language="he"] .menu-builder-source-heading > div:first-child > span::after {
+  content: "02 / מקור";
+}
+
+/* Make the existing Languages icon tile use the same theme tokens. */
+.menu-builder-unified .menu-language-icon {
+  width: 40px !important;
+  height: 40px !important;
+  flex: 0 0 40px !important;
+  border: 1px solid color-mix(in srgb, var(--mb-blue) 22%, transparent) !important;
+  border-radius: 11px !important;
+  color: var(--mb-blue) !important;
+  background: var(--mb-blue-soft) !important;
+}
+
+/* Keep the three section step labels visually identical. */
+.menu-builder-unified .menu-language-selector-heading > div:last-child > span,
+.menu-builder-unified .menu-builder-source-heading > div:first-child > span::after,
+.menu-builder-unified .menu-builder-result-heading > div:first-child > span::after {
+  color: var(--mb-blue) !important;
+  font-size: 9px !important;
+  font-weight: 850 !important;
+  letter-spacing: .14em !important;
+  text-transform: uppercase;
+}
+
+/* Hebrew: icon remains beside the copy on the right, with natural RTL order. */
+.menu-builder-unified[data-builder-language="he"] .menu-builder-source-heading > div:first-child,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-result-heading > div:first-child {
+  grid-template-columns: minmax(0, 1fr) 40px;
+}
+
+.menu-builder-unified[data-builder-language="he"] .menu-builder-source-heading > div:first-child::before,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-result-heading > div:first-child::before {
+  grid-column: 2;
+}
+
+.menu-builder-unified[data-builder-language="he"] .menu-builder-source-heading > div:first-child > span,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-source-heading > div:first-child > h2,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-result-heading > div:first-child > span,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-result-heading > div:first-child > h2,
+.menu-builder-unified[data-builder-language="he"] .menu-builder-result-heading > div:first-child > p {
+  grid-column: 1;
+  text-align: right !important;
+}
+
 @media (max-width: 760px) {
   .menu-builder-unified[data-builder-language="he"] .menu-builder-topbar {
     direction: rtl;
@@ -187,5 +337,15 @@
   .menu-builder-unified[data-builder-language="he"] .menu-builder-workspace,
   .menu-builder-unified[data-builder-language="he"] .menu-builder-plans-page {
     text-align: right !important;
+  }
+
+  .menu-builder-unified .menu-builder-source-heading > div:first-child,
+  .menu-builder-unified .menu-builder-result-heading > div:first-child {
+    grid-template-columns: 40px minmax(0, 1fr);
+  }
+
+  .menu-builder-unified[data-builder-language="he"] .menu-builder-source-heading > div:first-child,
+  .menu-builder-unified[data-builder-language="he"] .menu-builder-result-heading > div:first-child {
+    grid-template-columns: minmax(0, 1fr) 40px;
   }
 }
