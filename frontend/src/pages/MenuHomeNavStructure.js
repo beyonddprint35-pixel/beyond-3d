@@ -10,17 +10,60 @@ const NAV_ITEMS = [
   { label: "BEYOND 3D Printing", type: "link", target: "/3DPRINTING" },
 ];
 
-function scrollToTarget(selector) {
-  const target = document.querySelector(selector);
-  if (!(target instanceof HTMLElement)) return;
-  target.scrollIntoView({ behavior: "smooth", block: "start" });
+function ensureSectionIds() {
+  const studioSection = document.querySelector(".menu-home-studio-section");
+  if (studioSection instanceof HTMLElement && studioSection.id !== "menu-studio") {
+    studioSection.id = "menu-studio";
+  }
+
+  const pricingPortal = document.querySelector(".menu-home-pricing-portal");
+  if (pricingPortal instanceof HTMLElement && pricingPortal.id !== "pricing") {
+    pricingPortal.id = "pricing";
+  }
 }
 
 function closeNav() {
   const toggle = document.querySelector(".menu-home-hamburger-always");
   if (toggle instanceof HTMLElement && toggle.getAttribute("aria-expanded") === "true") {
     toggle.click();
+    return true;
   }
+  return false;
+}
+
+function scrollToTarget(selector, attempt = 0) {
+  ensureSectionIds();
+
+  const target = document.querySelector(selector);
+  if (!(target instanceof HTMLElement)) {
+    if (attempt < 8) {
+      window.setTimeout(() => scrollToTarget(selector, attempt + 1), 80);
+    }
+    return;
+  }
+
+  const navbar = document.querySelector(".menu-home-navbar");
+  const navbarHeight = navbar instanceof HTMLElement ? navbar.getBoundingClientRect().height : 0;
+  const top = window.scrollY + target.getBoundingClientRect().top - navbarHeight - 18;
+
+  window.scrollTo({
+    top: Math.max(0, top),
+    behavior: "smooth",
+  });
+
+  try {
+    window.history.replaceState(null, "", selector);
+  } catch {}
+}
+
+function navigateToSection(selector) {
+  const didClose = closeNav();
+
+  // Closing the React-controlled drawer causes a rerender. Wait until that
+  // finishes before calculating the section position and starting the scroll.
+  window.setTimeout(() => {
+    window.requestAnimationFrame(() => scrollToTarget(selector));
+  }, didClose ? 90 : 0);
 }
 
 function currentStructureIsCorrect(nav) {
@@ -48,11 +91,14 @@ function makeButton(item) {
 
   button.addEventListener("click", () => {
     if (item.type === "demo") {
-      window.open("/menu/el-puerto", "_blank", "noopener,noreferrer");
-    } else {
-      scrollToTarget(item.target);
+      closeNav();
+      window.setTimeout(() => {
+        window.open("/menu/el-puerto", "_blank", "noopener,noreferrer");
+      }, 60);
+      return;
     }
-    closeNav();
+
+    navigateToSection(item.target);
   });
 
   return button;
@@ -63,22 +109,13 @@ function makeLink(item) {
   link.href = item.target;
   link.textContent = item.label;
   link.dataset.beyondNavManaged = "true";
-  link.addEventListener("click", closeNav);
   return link;
 }
 
 function buildHomepageNavigation() {
   if (window.location.pathname !== "/") return;
 
-  const studioSection = document.querySelector(".menu-home-studio-section");
-  if (studioSection instanceof HTMLElement && studioSection.id !== "menu-studio") {
-    studioSection.id = "menu-studio";
-  }
-
-  const pricingPortal = document.querySelector(".menu-home-pricing-portal");
-  if (pricingPortal instanceof HTMLElement && pricingPortal.id !== "pricing") {
-    pricingPortal.id = "pricing";
-  }
+  ensureSectionIds();
 
   const nav = document.querySelector(NAV_SELECTOR);
   if (!(nav instanceof HTMLElement) || currentStructureIsCorrect(nav)) return;
