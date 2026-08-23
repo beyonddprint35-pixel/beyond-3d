@@ -1,0 +1,28 @@
+/* Dark-mode depth for the Menu Studio showcase.
+   Keeps light mode untouched and mirrors the soft blue halo used in the hero. */
+
+.menu-home.theme-dark .menu-home-studio-window {
+  box-shadow:
+    0 0 0 1px rgba(114, 146, 207, 0.08),
+    0 26px 70px rgba(0, 0, 0, 0.28),
+    0 0 82px rgba(65, 111, 238, 0.16),
+    0 0 150px rgba(43, 83, 185, 0.08);
+}
+
+.menu-home.theme-dark .menu-home-studio-body {
+  background:
+    radial-gradient(
+      circle at 86% 48%,
+      rgba(70, 116, 241, 0.11) 0%,
+      rgba(48, 89, 195, 0.055) 24%,
+      rgba(12, 26, 45, 0) 52%
+    );
+}
+
+.menu-home.theme-dark .menu-home-phone-preview {
+  box-shadow:
+    0 22px 46px rgba(0, 0, 0, 0.30),
+    0 0 36px rgba(72, 120, 244, 0.18),
+    0 0 78px rgba(55, 99, 218, 0.12),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
