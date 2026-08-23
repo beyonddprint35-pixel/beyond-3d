@@ -192,76 +192,76 @@ const HOMEPAGE_DEMO_BRANDING = {
     "התפריט שלנו",
 
   background:
-    "#f3f0e9",
+    "#f5f7fb",
 
   header_background:
-    "#f3f0e9",
+    "#f5f7fb",
 
   hero_background:
-    "#fffdf8",
+    "#ffffff",
 
   paper:
-    "#fffdf8",
+    "#ffffff",
 
   card:
     "#ffffff",
 
   text:
-    "#161815",
+    "#0d1b3a",
 
   muted:
-    "#746f67",
+    "#6f7f9b",
 
   accent:
-    "#62724b",
+    "#4777ee",
 
   accent_secondary:
-    "#d8c9a7",
+    "#dbe7ff",
 
   line:
-    "#e1dbcf",
+    "#dce4ef",
 
   category_background:
-    "#1f281b",
+    "#3972ef",
 
   category_text:
     "#ffffff",
 
   heading_font:
-    "Playfair Display",
+    "Inter",
 
   body_font:
     "Inter",
 
   brand_font_size:
-    19,
+    18,
 
   hero_font_size:
-    46,
-
-  section_font_size:
     38,
 
+  section_font_size:
+    30,
+
   category_font_size:
-    11,
+    10,
 
   item_name_font_size:
-    16,
+    14,
 
   description_font_size:
-    11,
+    10,
 
   price_font_size:
-    16,
+    14,
 
   secondary_font_size:
-    10,
+    9,
 
   logo_url:
     null,
 
   logo_shape:
-    "free",
+    "circle",
 };
 
 
