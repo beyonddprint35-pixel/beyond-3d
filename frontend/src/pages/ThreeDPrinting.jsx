@@ -2,6 +2,7 @@ import { useEffect } from "react";
 
 import Home from "./Home";
 import "./ThreeDPrinting.css";
+import "./ThreeDPrintingNavCleanup.css";
 
 function ensureSharedThemeDefault() {
   if (typeof window === "undefined") return;
