@@ -9,15 +9,16 @@
   --beyond-letter-gap: 6.2px;
 
   /*
-    The striped E is tuned against the real rendered Inter capitals:
-    - same optical width as B
-    - same top/bottom cap-height
-    - slightly heavier strokes so it reads as a letter, not an icon
+    The striped E is tuned against the rendered Inter capitals.
+
+    Important: its OUTER top/bottom now matches B/Y/O/N/D instead of
+    using the full mathematical box. This prevents the three bars from
+    looking taller than the word even though their stroke is rectangular.
   */
   --beyond-e-width: 11px;
-  --beyond-e-height: 14.2px;
+  --beyond-e-height: 12.6px;
   --beyond-e-bar: 2.8px;
-  --beyond-e-y: 0.65px;
+  --beyond-e-y: 1.45px;
   --beyond-b-width: 12.2px;
 
   position: relative;
@@ -103,9 +104,9 @@
     --beyond-word-size: 15px;
     --beyond-letter-gap: 5px;
     --beyond-e-width: 9.2px;
-    --beyond-e-height: 11.9px;
+    --beyond-e-height: 10.6px;
     --beyond-e-bar: 2.35px;
-    --beyond-e-y: 0.5px;
+    --beyond-e-y: 1.15px;
     --beyond-b-width: 10.2px;
 
     width: 104px;
@@ -118,9 +119,9 @@
     --beyond-word-size: 13px;
     --beyond-letter-gap: 4.3px;
     --beyond-e-width: 8px;
-    --beyond-e-height: 10.3px;
+    --beyond-e-height: 9.1px;
     --beyond-e-bar: 2.05px;
-    --beyond-e-y: 0.45px;
+    --beyond-e-y: 1.05px;
     --beyond-b-width: 8.9px;
 
     width: 92px;
