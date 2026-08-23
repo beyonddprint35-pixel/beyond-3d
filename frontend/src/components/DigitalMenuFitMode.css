@@ -3,10 +3,18 @@
 
    Fit to View is a global Menu Studio setting.
 
-   ON  = existing responsive/mobile-safe behavior.
-   OFF = keep the chosen layout's natural canvas proportions.
-         On a phone, the customer can pan horizontally instead
-         of the layout being squeezed into the viewport.
+   IMPORTANT:
+   - It NEVER changes menu width.
+   - It NEVER introduces horizontal scrolling.
+   - It NEVER changes the selected layout or column count.
+
+   ON  = grow the visible category's item cards vertically when
+         there is unused space in the menu viewport.
+   OFF = keep the template's normal item-card heights.
+
+   The existing `dmt-natural-view` marker is kept only for
+   backwards compatibility with the toggle state created in the
+   previous iteration. It now means "normal heights / fit off".
    ========================================================== */
 
 /* ----------------------------------------------------------
@@ -42,6 +50,26 @@
   font-size: 8px;
   font-weight: 600;
   line-height: 1.35;
+}
+
+/* Replace the old width/compression explanation without
+   requiring a second translation observer or changing tabs. */
+.menu-brand-fit-copy small .fit-copy-en {
+  font-size: 0;
+}
+
+.menu-brand-fit-copy small .fit-copy-en::after {
+  content: "Expand cards to fill unused menu height.";
+  font-size: 8px;
+}
+
+.menu-brand-fit-copy small .fit-copy-he {
+  font-size: 0;
+}
+
+.menu-brand-fit-copy small .fit-copy-he::after {
+  content: "הרחבת הכרטיסים כדי למלא את הגובה הפנוי.";
+  font-size: 8px;
 }
 
 .menu-brand-fit-toggle {
@@ -131,179 +159,88 @@
   background: #4d7cf0;
 }
 
-/* ----------------------------------------------------------
-   NATURAL-WIDTH MODE
-   ---------------------------------------------------------- */
-.digital-menu-template.dmt-natural-view {
-  overflow-x: visible !important;
+/* ==========================================================
+   FIT TO VIEW — VERTICAL CARD FILL
+
+   ON is represented by the absence of `.dmt-natural-view`.
+   OFF keeps the normal layout rules untouched.
+   ========================================================== */
+
+/* The menu becomes a vertical flex canvas. All normal menu
+   regions keep their natural height; only the item list grows. */
+.digital-menu-template:not(.dmt-natural-view) .dmt-app {
+  display: flex;
+  flex-direction: column;
 }
 
-@media (max-width: 560px) {
-  html:has(.digital-menu-template.dmt-natural-view),
-  body:has(.digital-menu-template.dmt-natural-view),
-  #root:has(.digital-menu-template.dmt-natural-view),
-  .menu-mobile-preview-page:has(.digital-menu-template.dmt-natural-view) {
-    overflow-x: auto !important;
-    overscroll-behavior-x: contain;
-  }
+.digital-menu-template:not(.dmt-natural-view) .dmt-header,
+.digital-menu-template:not(.dmt-natural-view) .dmt-hero,
+.digital-menu-template:not(.dmt-natural-view) .dmt-tabs-wrap,
+.digital-menu-template:not(.dmt-natural-view) .dmt-section-head,
+.digital-menu-template:not(.dmt-natural-view) .dmt-footer {
+  flex: 0 0 auto;
+}
 
-  .menu-mobile-preview-page:has(.digital-menu-template.dmt-natural-view) {
-    width: max-content !important;
-    min-width: 100% !important;
-  }
+/* Grow the current category area only when spare vertical
+   space exists. flex-shrink: 0 prevents crowded categories
+   from being compressed; they simply continue scrolling. */
+.digital-menu-template:not(.dmt-natural-view) .dmt-menu-list {
+  flex: 1 0 auto;
+  align-content: stretch;
+  grid-auto-rows: minmax(min-content, 1fr);
+}
 
-  .digital-menu-template.dmt-natural-view {
-    width: 680px !important;
-    min-width: 680px !important;
-    max-width: none !important;
-    overflow: visible !important;
-  }
+.digital-menu-template:not(.dmt-natural-view) .dmt-item-row {
+  height: 100%;
+}
 
-  .digital-menu-template.dmt-natural-view .dmt-app,
-  .menu-mobile-preview-page .digital-menu-template.dmt-natural-view .dmt-app {
-    width: 680px !important;
-    min-width: 680px !important;
-    max-width: none !important;
-    margin: 0 !important;
-    overflow: visible !important;
-  }
+/* Real phone/mobile preview has an exact viewport. This gives
+   the list a real amount of leftover height to distribute. */
+.menu-mobile-preview-page .digital-menu-template:not(.dmt-natural-view),
+.menu-mobile-preview-page .digital-menu-template:not(.dmt-natural-view) .dmt-app {
+  min-height: 100dvh !important;
+}
 
-  /* Restore desktop-like breathing room instead of squeezing. */
-  .digital-menu-template.dmt-natural-view .dmt-header {
-    min-height: 82px !important;
-    padding: 18px 20px !important;
-    gap: 14px !important;
-  }
+/* The live non-embedded customer menu uses the same behavior. */
+.digital-menu-template.dmt-live:not(.dmt-natural-view),
+.digital-menu-template.dmt-live:not(.dmt-natural-view) .dmt-app {
+  min-height: 100dvh;
+}
 
-  .digital-menu-template.dmt-natural-view .dmt-logo,
-  .digital-menu-template.dmt-natural-view .dmt-logo-placeholder {
-    width: 50px !important;
-    height: 50px !important;
-    min-width: 50px !important;
-    min-height: 50px !important;
-    flex: 0 0 50px !important;
-  }
+/* Builder preview: use the preview panel's available height,
+   not the browser's full viewport. */
+.digital-menu-template.dmt-embedded:not(.dmt-natural-view),
+.digital-menu-template.dmt-embedded:not(.dmt-natural-view) .dmt-app {
+  min-height: 100%;
+}
 
-  .digital-menu-template.dmt-natural-view .dmt-language {
-    max-width: none !important;
-    overflow: visible !important;
-  }
+/* Cards keeps the exact chosen column system. Fit only changes
+   row HEIGHT; it does not alter the two-column mobile design. */
+.digital-menu-template:not(.dmt-natural-view).dmt-layout-cards .dmt-menu-list {
+  align-items: stretch !important;
+}
 
-  .digital-menu-template.dmt-natural-view .dmt-language button {
-    min-height: 31px !important;
-    padding-inline: 11px !important;
-    font-size: var(--dmt-secondary-size) !important;
-  }
+.digital-menu-template:not(.dmt-natural-view).dmt-layout-cards .dmt-item-row {
+  align-self: stretch;
+}
 
-  .digital-menu-template.dmt-natural-view .dmt-hero {
-    min-height: 165px !important;
-    margin: 16px 18px !important;
-    padding: 23px !important;
-    gap: 18px !important;
-  }
+/* Compact / Editorial / Minimal / Bold / Classic all inherit
+   the same vertical distribution while preserving their own
+   spacing, widths, borders and mobile breakpoints. */
 
-  .digital-menu-template.dmt-natural-view .dmt-hero-copy {
-    max-width: none !important;
-  }
+/* OFF: explicitly restore normal sizing only. No width changes,
+   no special overflow and no horizontal scrolling. */
+.digital-menu-template.dmt-natural-view,
+.digital-menu-template.dmt-natural-view .dmt-app {
+  width: 100%;
+  min-width: 0;
+  max-width: inherit;
+  overflow-x: hidden;
+}
 
-  .digital-menu-template.dmt-natural-view .dmt-hero-logo {
-    width: 100px !important;
-    height: 100px !important;
-    flex-basis: 100px !important;
-  }
-
-  .digital-menu-template.dmt-natural-view .dmt-tabs {
-    padding-inline: 18px !important;
-  }
-
-  .digital-menu-template.dmt-natural-view .dmt-section-head {
-    padding: 25px 20px 11px !important;
-  }
-
-  .digital-menu-template.dmt-natural-view .dmt-menu-list {
-    padding: 0 14px 24px !important;
-  }
-
-  /* Cards keeps its real two-column proportions without squeeze. */
-  .digital-menu-template.dmt-natural-view.dmt-layout-cards .dmt-menu-list {
-    display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 11px !important;
-  }
-
-  .digital-menu-template.dmt-natural-view.dmt-layout-cards .dmt-item-row {
-    min-height: 118px !important;
-    padding: 17px !important;
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-    grid-template-rows: 1fr auto !important;
-    gap: 15px !important;
-    border-radius: 22px !important;
-  }
-
-  .digital-menu-template.dmt-natural-view.dmt-layout-cards .dmt-price-area {
-    width: 100% !important;
-    min-width: 0 !important;
-    padding-top: 10px !important;
-    display: grid !important;
-    grid-auto-flow: column !important;
-    justify-content: space-between !important;
-    justify-items: start !important;
-    border-top: 1px solid var(--dmt-line) !important;
-  }
-
-  /* Compact remains compact, just not compressed to 390px. */
-  .digital-menu-template.dmt-natural-view.dmt-layout-compact .dmt-header {
-    min-height: 68px !important;
-    padding: 13px 16px !important;
-  }
-
-  .digital-menu-template.dmt-natural-view.dmt-layout-compact .dmt-hero {
-    min-height: 122px !important;
-    margin: 10px 14px !important;
-    padding: 17px 18px !important;
-  }
-
-  .digital-menu-template.dmt-natural-view.dmt-layout-compact .dmt-menu-list {
-    padding: 0 12px 20px !important;
-    gap: 6px !important;
-  }
-
-  .digital-menu-template.dmt-natural-view.dmt-layout-compact .dmt-item-row {
-    min-height: 64px !important;
-    padding: 10px 12px !important;
-  }
-
-  /* Editorial preserves its full-width editorial canvas. */
-  .digital-menu-template.dmt-natural-view.dmt-layout-editorial .dmt-hero {
-    min-height: 165px !important;
-    margin: 0 !important;
-    padding: 30px 28px !important;
-    border-radius: 0 !important;
-  }
-
-  .digital-menu-template.dmt-natural-view.dmt-layout-editorial .dmt-menu-list {
-    padding-inline: 20px !important;
-  }
-
-  /* Minimal remains intentionally light, without phone squeeze. */
-  .digital-menu-template.dmt-natural-view.dmt-layout-minimal .dmt-hero {
-    min-height: 140px !important;
-    margin: 10px 20px !important;
-    padding: 20px 0 !important;
-  }
-
-  /* Bold keeps the larger hero proportions. */
-  .digital-menu-template.dmt-natural-view.dmt-layout-bold .dmt-hero {
-    min-height: 178px !important;
-    margin: 16px 18px !important;
-    padding: 23px !important;
-    border-radius: 20px !important;
-  }
-
-  .digital-menu-template.dmt-natural-view.dmt-layout-bold .dmt-hero-logo {
-    width: 100px !important;
-    height: 100px !important;
-    flex-basis: 100px !important;
-  }
+.menu-mobile-preview-page .digital-menu-template.dmt-natural-view .dmt-app {
+  width: 100%;
+  min-width: 0;
+  max-width: 460px;
+  margin: 0 auto;
 }
