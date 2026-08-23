@@ -349,7 +349,7 @@ export default function MenuHomeCustomerPreview() {
 
                 <iframe
                   className="mobile-menu-preview-frame"
-                  src="/menu-mobile-preview"
+                  src="/menu-mobile-preview?source=home"
                   title="Example Beyond customer menu"
                   loading="eager"
                 />
