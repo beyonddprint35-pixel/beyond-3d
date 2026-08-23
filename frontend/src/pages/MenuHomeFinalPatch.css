@@ -1,5 +1,254 @@
-@media (max-width: 390px) {
+/* BEYOND MENU — final refinement patches */
+
+/* =========================================================
+   HERO PHONE = REAL CUSTOMER-FACING MENU TEMPLATE
+   Keep the Figma-style phone shell, but make the content
+   look like the menu a restaurant guest actually opens.
+   ========================================================= */
+
+.menu-home-figma-phone-head span {
+  font-size: 0;
+}
+
+.menu-home-figma-phone-head span::after {
+  content: "RESTAURANT · BAR";
+  color: #647392;
+  font-size: 8px;
+  font-weight: 830;
+  letter-spacing: 0.08em;
+}
+
+.menu-home[dir="rtl"] .menu-home-figma-phone-head span::after {
+  content: "מסעדה · בר";
+}
+
+/* Turn the old AI status strip into customer menu categories. */
+.menu-home-ai-success {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+  min-height: 0;
+  padding: 0;
+  background: transparent;
+  color: #667792;
+}
+
+.menu-home-ai-success svg {
+  display: none;
+}
+
+.menu-home-ai-success > span {
+  display: contents;
+  font-size: 0;
+}
+
+.menu-home-ai-success::before,
+.menu-home-ai-success > span::before,
+.menu-home-ai-success::after {
+  display: grid;
+  place-items: center;
+  min-height: 31px;
+  padding: 0 7px;
+  border: 1px solid #dfe5ee;
+  border-radius: 999px;
+  background: #fff;
+  color: #71809a;
+  font-size: 8px;
+  font-weight: 780;
+  white-space: nowrap;
+}
+
+.menu-home-ai-success::before {
+  content: "FOOD";
+  border-color: #cad8ff;
+  background: #edf2ff;
+  color: #416ee2;
+}
+
+.menu-home-ai-success > span::before {
+  content: "DRINKS";
+}
+
+.menu-home-ai-success::after {
+  content: "DESSERTS";
+}
+
+.menu-home[dir="rtl"] .menu-home-ai-success::before {
+  content: "אוכל";
+}
+
+.menu-home[dir="rtl"] .menu-home-ai-success > span::before {
+  content: "משקאות";
+}
+
+.menu-home[dir="rtl"] .menu-home-ai-success::after {
+  content: "קינוחים";
+}
+
+.menu-home-phone-category {
+  margin-top: 20px;
+}
+
+/* A guest has already opened the menu, so a QR card inside the
+   menu screen is misleading. Replace it with subtle product credit. */
+.menu-home-phone-qr-card {
+  display: none;
+}
+
+.menu-home-figma-phone::after {
+  content: "POWERED BY BEYOND";
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  color: #9aa5b8;
+  font-size: 6.5px;
+  font-weight: 820;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+}
+
+.menu-home-figma-phone {
+  padding-bottom: 48px;
+}
+
+/* =========================================================
+   MOBILE NAVBAR
+   Keep BEYOND wordmark + Menu Studio visible on phones.
+   ========================================================= */
+
+@media (max-width: 500px) {
+  .menu-home-navbar-refined {
+    padding-inline: 10px;
+    gap: 8px;
+  }
+
+  .menu-home-brand {
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .menu-home-brand img {
+    width: 30px;
+    height: 30px;
+  }
+
+  .menu-home-brand span {
+    display: inline !important;
+    font-size: 14px;
+    letter-spacing: 0.09em;
+    white-space: nowrap;
+  }
+
+  .menu-home-nav-actions {
+    gap: 4px;
+  }
+
+  .menu-home-studio-button {
+    display: inline-flex !important;
+    min-height: 36px;
+    padding: 0 9px;
+    font-size: 10px;
+  }
+
+  .menu-home-studio-full {
+    display: none !important;
+  }
+
+  .menu-home-studio-short {
+    display: inline !important;
+  }
+
+  .menu-home-language-figma {
+    min-width: 43px;
+    min-height: 36px;
+    padding-inline: 7px;
+  }
+
+  .menu-home-theme-toggle,
+  .menu-home-hamburger-always {
+    width: 36px;
+    height: 36px;
+  }
+
+  .menu-home-account-figma {
+    width: 36px;
+    height: 36px;
+    min-height: 36px;
+  }
+
+  .menu-home-account-avatar {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
   .menu-home-login-refined {
     display: inline-flex !important;
+  }
+}
+
+/* Very small phones: keep every requested navbar control without
+   letting the header overflow. */
+@media (max-width: 380px) {
+  .menu-home-navbar-refined {
+    padding-inline: 8px;
+  }
+
+  .menu-home-brand {
+    gap: 4px;
+  }
+
+  .menu-home-brand img {
+    width: 27px;
+    height: 27px;
+  }
+
+  .menu-home-brand span {
+    font-size: 12px;
+    letter-spacing: 0.07em;
+  }
+
+  .menu-home-nav-actions {
+    gap: 3px;
+  }
+
+  .menu-home-language-figma {
+    min-width: 38px;
+    width: 38px;
+    min-height: 33px;
+    padding: 0 5px;
+  }
+
+  .menu-home-language-figma svg {
+    display: none;
+  }
+
+  .menu-home-theme-toggle,
+  .menu-home-hamburger-always {
+    width: 33px;
+    height: 33px;
+  }
+
+  .menu-home-studio-button {
+    min-height: 33px;
+    padding: 0 7px;
+    font-size: 9px;
+  }
+
+  .menu-home-account-figma {
+    width: 33px;
+    height: 33px;
+    min-height: 33px;
+  }
+
+  .menu-home-account-avatar {
+    width: 31px !important;
+    height: 31px !important;
+  }
+
+  .menu-home-login-refined {
+    width: 33px;
+    height: 33px;
+    min-height: 33px;
   }
 }
