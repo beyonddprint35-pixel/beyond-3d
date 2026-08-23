@@ -1,0 +1,521 @@
+/* =========================================================
+   BEYOND ADMIN THEME
+   Shared visual system with the Beyond Menu homepage.
+   ========================================================= */
+
+body.beyond-admin-active {
+  --admin-bg: #f4f7fb;
+  --admin-surface: #ffffff;
+  --admin-surface-soft: #eef3fb;
+  --admin-surface-hover: #f8faff;
+  --admin-text: #0d1b3a;
+  --admin-muted: #5d6f94;
+  --admin-muted-soft: #8492aa;
+  --admin-border: #dfe6f1;
+  --admin-blue: #3f72e8;
+  --admin-blue-strong: #2f61da;
+  --admin-blue-soft: #e9efff;
+  --admin-success: #169e6c;
+  --admin-danger: #d84c5a;
+  --admin-shadow: 0 20px 55px rgba(28, 48, 84, 0.08);
+  margin: 0;
+  color: var(--admin-text) !important;
+  background:
+    radial-gradient(circle at 76% 8%, rgba(76, 120, 238, 0.08), transparent 27rem),
+    linear-gradient(180deg, #f7f9fc 0%, var(--admin-bg) 100%) !important;
+}
+
+html[data-beyond-theme="dark"] body.beyond-admin-active {
+  --admin-bg: #08111f;
+  --admin-surface: #101b2c;
+  --admin-surface-soft: #142238;
+  --admin-surface-hover: #17253a;
+  --admin-text: #f2f6ff;
+  --admin-muted: #9eabc1;
+  --admin-muted-soft: #74839a;
+  --admin-border: #26354c;
+  --admin-blue: #6690ff;
+  --admin-blue-strong: #7fa2ff;
+  --admin-blue-soft: #17294d;
+  --admin-success: #55d59b;
+  --admin-danger: #ff8d9b;
+  --admin-shadow: 0 24px 60px rgba(0, 0, 0, 0.24);
+  background:
+    radial-gradient(circle at 76% 8%, rgba(76, 120, 238, 0.15), transparent 28rem),
+    linear-gradient(180deg, #0a1423 0%, #07101d 100%) !important;
+}
+
+body.beyond-admin-active :is(.admin-page, .admin-login-page, .order-details-page) {
+  color: var(--admin-text);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* ---------- Main layout / navbar ---------- */
+body.beyond-admin-active .admin-page {
+  width: min(1240px, calc(100% - 40px));
+  padding-top: 0;
+}
+
+body.beyond-admin-active .admin-topbar,
+body.beyond-admin-active .order-details-topbar {
+  position: sticky;
+  z-index: 60;
+  top: 0;
+  min-height: 74px;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  margin-bottom: 48px;
+  padding-inline: max(5vw, calc((100vw - 1240px) / 2));
+  justify-content: flex-start;
+  border-bottom: 1px solid color-mix(in srgb, var(--admin-border) 85%, transparent);
+  background: color-mix(in srgb, var(--admin-bg) 90%, transparent);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+body.beyond-admin-active .order-details-topbar {
+  padding-inline: max(5vw, calc((100vw - 1180px) / 2));
+}
+
+body.beyond-admin-active .admin-topbar > div:first-child,
+body.beyond-admin-active .order-details-topbar > div:first-child {
+  min-width: 0;
+}
+
+body.beyond-admin-active .admin-topbar > div:first-child strong,
+body.beyond-admin-active .admin-login-card strong,
+body.beyond-admin-active .order-details-topbar strong {
+  color: var(--admin-text) !important;
+}
+
+body.beyond-admin-active .admin-topbar > div:first-child span,
+body.beyond-admin-active .admin-login-card > div span,
+body.beyond-admin-active .order-details-topbar span {
+  color: var(--admin-muted) !important;
+}
+
+html[data-beyond-theme="light"] body.beyond-admin-active :is(.admin-topbar, .admin-login-card, .order-details-topbar) img {
+  filter: brightness(0) saturate(100%) invert(11%) sepia(31%) saturate(1457%) hue-rotate(184deg) brightness(88%) contrast(97%);
+}
+
+html[data-beyond-theme="dark"] body.beyond-admin-active :is(.admin-topbar, .admin-login-card, .order-details-topbar) img {
+  filter: none;
+}
+
+/* ---------- Theme toggle ---------- */
+body.beyond-admin-active .admin-theme-toggle {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  margin-left: auto;
+  padding: 0;
+  border: 1px solid var(--admin-border);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--admin-surface) 86%, transparent);
+  color: var(--admin-text);
+  box-shadow: none;
+  cursor: pointer;
+  transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+
+body.beyond-admin-active .admin-theme-toggle:hover {
+  transform: translateY(-1px);
+  background: var(--admin-surface);
+  border-color: color-mix(in srgb, var(--admin-blue) 35%, var(--admin-border));
+}
+
+body.beyond-admin-active .admin-theme-toggle svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+body.beyond-admin-active .admin-logout-button,
+body.beyond-admin-active .order-back-button,
+body.beyond-admin-active .admin-view-button {
+  border: 1px solid var(--admin-border) !important;
+  background: color-mix(in srgb, var(--admin-surface) 82%, transparent) !important;
+  color: var(--admin-text) !important;
+}
+
+body.beyond-admin-active .admin-logout-button {
+  margin-left: 8px;
+}
+
+body.beyond-admin-active :is(.admin-logout-button, .order-back-button, .admin-view-button):hover {
+  background: var(--admin-surface) !important;
+  border-color: color-mix(in srgb, var(--admin-blue) 30%, var(--admin-border)) !important;
+}
+
+/* ---------- Login ---------- */
+body.beyond-admin-active .admin-login-page {
+  background: transparent;
+}
+
+body.beyond-admin-active .admin-login-page::before {
+  background: rgba(63, 114, 232, 0.12);
+}
+
+body.beyond-admin-active .admin-login-card {
+  position: relative;
+  border: 1px solid var(--admin-border) !important;
+  background: color-mix(in srgb, var(--admin-surface) 94%, transparent) !important;
+  box-shadow: var(--admin-shadow) !important;
+  color: var(--admin-text);
+}
+
+body.beyond-admin-active .admin-login-card h1 {
+  color: var(--admin-text);
+}
+
+body.beyond-admin-active .admin-login-card p {
+  color: var(--admin-muted);
+}
+
+body.beyond-admin-active .admin-login-theme-toggle {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  margin-left: 0;
+}
+
+/* ---------- Typography ---------- */
+body.beyond-admin-active :is(.admin-heading, .order-details-heading) h1 {
+  color: var(--admin-text);
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-weight: 760;
+  letter-spacing: -0.055em;
+}
+
+body.beyond-admin-active :is(.admin-heading, .order-details-heading) p,
+body.beyond-admin-active :is(.admin-pricing-settings, .admin-promo-settings, .admin-promo-email-settings, .admin-customer-showcase-settings) :is(p, small) {
+  color: var(--admin-muted) !important;
+}
+
+body.beyond-admin-active .section-kicker,
+body.beyond-admin-active .admin-label {
+  color: var(--admin-blue) !important;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+}
+
+/* ---------- Shared buttons ---------- */
+body.beyond-admin-active .primary-button {
+  border: 0 !important;
+  background: linear-gradient(135deg, var(--admin-blue), var(--admin-blue-strong)) !important;
+  color: #fff !important;
+  box-shadow: 0 10px 28px color-mix(in srgb, var(--admin-blue) 25%, transparent) !important;
+}
+
+body.beyond-admin-active .secondary-button {
+  border: 1px solid var(--admin-border) !important;
+  background: var(--admin-surface) !important;
+  color: var(--admin-text) !important;
+  box-shadow: none !important;
+}
+
+body.beyond-admin-active .secondary-button:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--admin-blue) 28%, var(--admin-border)) !important;
+  background: var(--admin-surface-soft) !important;
+}
+
+/* ---------- Main dashboard cards ---------- */
+body.beyond-admin-active .admin-stats article,
+body.beyond-admin-active .order-detail-card,
+body.beyond-admin-active .admin-order-card {
+  border: 1px solid var(--admin-border) !important;
+  background: var(--admin-surface) !important;
+  color: var(--admin-text);
+  box-shadow: 0 12px 36px color-mix(in srgb, var(--admin-text) 6%, transparent);
+  backdrop-filter: none;
+}
+
+body.beyond-admin-active .admin-stats article {
+  border-radius: 18px;
+}
+
+body.beyond-admin-active .admin-stats span,
+body.beyond-admin-active .admin-order-card p,
+body.beyond-admin-active .order-description,
+body.beyond-admin-active .order-info-grid span,
+body.beyond-admin-active .order-file-box span {
+  color: var(--admin-muted) !important;
+}
+
+body.beyond-admin-active .admin-stats strong,
+body.beyond-admin-active .admin-order-card h3,
+body.beyond-admin-active .admin-order-card strong,
+body.beyond-admin-active .order-detail-card strong,
+body.beyond-admin-active .order-detail-card h2,
+body.beyond-admin-active .order-info-grid strong {
+  color: var(--admin-text) !important;
+}
+
+body.beyond-admin-active .admin-order-card:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--admin-blue) 30%, var(--admin-border)) !important;
+  background: var(--admin-surface-hover) !important;
+}
+
+body.beyond-admin-active .admin-order-number,
+body.beyond-admin-active .admin-status {
+  color: var(--admin-blue) !important;
+}
+
+body.beyond-admin-active .admin-status {
+  background: var(--admin-blue-soft) !important;
+}
+
+body.beyond-admin-active .order-file-box {
+  border: 1px solid var(--admin-border) !important;
+  background: var(--admin-surface-soft) !important;
+}
+
+/* ---------- Inputs / selects ---------- */
+body.beyond-admin-active :is(
+  .admin-login-card input,
+  .admin-page input,
+  .admin-page textarea,
+  .admin-page select,
+  .order-details-page input,
+  .order-details-page textarea,
+  .order-details-page select
+) {
+  border-color: var(--admin-border) !important;
+  background: var(--admin-surface) !important;
+  color: var(--admin-text) !important;
+  box-shadow: none;
+}
+
+body.beyond-admin-active :is(.admin-page, .admin-login-card, .order-details-page) :is(input, textarea)::placeholder {
+  color: var(--admin-muted-soft) !important;
+  opacity: 1;
+}
+
+body.beyond-admin-active :is(.admin-page, .admin-login-card, .order-details-page) :is(input, textarea, select):focus {
+  border-color: color-mix(in srgb, var(--admin-blue) 58%, var(--admin-border)) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--admin-blue) 10%, transparent) !important;
+}
+
+body.beyond-admin-active select option {
+  background: var(--admin-surface) !important;
+  color: var(--admin-text) !important;
+}
+
+/* ---------- Admin website management panels ---------- */
+body.beyond-admin-active :is(
+  .admin-pricing-settings,
+  .admin-promo-settings,
+  .admin-promo-email-settings,
+  .admin-customer-showcase-settings
+) {
+  border: 1px solid var(--admin-border) !important;
+  background: color-mix(in srgb, var(--admin-surface) 96%, transparent) !important;
+  color: var(--admin-text);
+  box-shadow: var(--admin-shadow);
+}
+
+body.beyond-admin-active :is(
+  .admin-pricing-settings,
+  .admin-promo-settings,
+  .admin-promo-email-settings,
+  .admin-customer-showcase-settings
+) :is(h2, h3, strong) {
+  color: var(--admin-text) !important;
+}
+
+body.beyond-admin-active :is(
+  .admin-pricing-plan,
+  .admin-promo-form,
+  .admin-promo-card,
+  .admin-promo-email-config,
+  .admin-promo-email-users,
+  .admin-customer-showcase-toggle,
+  .admin-customer-site
+) {
+  border-color: var(--admin-border) !important;
+  background: var(--admin-surface-soft) !important;
+  color: var(--admin-text);
+}
+
+body.beyond-admin-active :is(.admin-pricing-plan, .admin-promo-card, .admin-customer-site) {
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--admin-text) 4%, transparent);
+}
+
+body.beyond-admin-active :is(
+  .admin-pricing-settings label > span,
+  .admin-pricing-check,
+  .admin-promo-fields label > span,
+  .admin-promo-meta,
+  .admin-promo-list-head span,
+  .admin-promo-email-config label > span,
+  .admin-promo-email-preview span,
+  .admin-promo-email-user-copy small,
+  .admin-customer-showcase-toggle-copy span,
+  .admin-customer-showcase-summary,
+  .admin-customer-site-copy span
+) {
+  color: var(--admin-muted) !important;
+}
+
+body.beyond-admin-active :is(
+  .admin-promo-code-line code,
+  .admin-pricing-plan-title > div > span,
+  .admin-promo-email-count strong,
+  .admin-promo-email-preview,
+  .admin-customer-showcase-toggle-copy > svg,
+  .admin-customer-site > a
+) {
+  color: var(--admin-blue) !important;
+}
+
+body.beyond-admin-active .admin-promo-code-line code,
+body.beyond-admin-active .admin-promo-email-preview,
+body.beyond-admin-active .admin-customer-showcase-toggle.is-on,
+body.beyond-admin-active .admin-customer-site.is-selected,
+body.beyond-admin-active .admin-promo-email-user.is-selected {
+  border-color: color-mix(in srgb, var(--admin-blue) 28%, var(--admin-border)) !important;
+  background: var(--admin-blue-soft) !important;
+}
+
+body.beyond-admin-active .admin-promo-code-line span {
+  color: var(--admin-success) !important;
+}
+
+body.beyond-admin-active .admin-promo-actions button,
+body.beyond-admin-active .admin-promo-close,
+body.beyond-admin-active .admin-promo-email-users-head button {
+  border-color: var(--admin-border) !important;
+  background: var(--admin-surface) !important;
+  color: var(--admin-text) !important;
+}
+
+body.beyond-admin-active .admin-promo-actions .danger:hover {
+  color: var(--admin-danger) !important;
+  border-color: color-mix(in srgb, var(--admin-danger) 30%, var(--admin-border)) !important;
+}
+
+body.beyond-admin-active .admin-promo-email-avatar {
+  border-color: var(--admin-border) !important;
+  background: var(--admin-surface) !important;
+  color: var(--admin-blue) !important;
+}
+
+body.beyond-admin-active .admin-promo-email-user {
+  border-color: var(--admin-border) !important;
+  background: var(--admin-surface) !important;
+}
+
+body.beyond-admin-active .admin-promo-email-user-copy strong,
+body.beyond-admin-active .admin-customer-site-copy strong,
+body.beyond-admin-active .admin-customer-showcase-summary strong {
+  color: var(--admin-text) !important;
+}
+
+body.beyond-admin-active .admin-customer-showcase-switch {
+  border-color: var(--admin-border) !important;
+  background: color-mix(in srgb, var(--admin-muted) 16%, transparent) !important;
+}
+
+body.beyond-admin-active .admin-customer-showcase-toggle.is-on .admin-customer-showcase-switch {
+  border-color: var(--admin-blue) !important;
+  background: var(--admin-blue) !important;
+}
+
+/* ---------- Messages ---------- */
+body.beyond-admin-active .admin-message {
+  color: var(--admin-muted) !important;
+}
+
+body.beyond-admin-active .admin-error {
+  color: var(--admin-danger) !important;
+}
+
+body.beyond-admin-active :is(.admin-pricing-success, .admin-promo-success, .admin-promo-email-success, .admin-customer-showcase-success) {
+  border-color: color-mix(in srgb, var(--admin-success) 28%, var(--admin-border)) !important;
+  background: color-mix(in srgb, var(--admin-success) 9%, var(--admin-surface)) !important;
+  color: var(--admin-success) !important;
+}
+
+body.beyond-admin-active .admin-promo-email-server-note {
+  color: #a7771d !important;
+  background: #fff8e9 !important;
+  border-color: #efdfbb !important;
+}
+
+html[data-beyond-theme="dark"] body.beyond-admin-active .admin-promo-email-server-note {
+  color: #d9c291 !important;
+  background: rgba(232, 177, 76, 0.07) !important;
+  border-color: rgba(232, 177, 76, 0.2) !important;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  body.beyond-admin-active .admin-topbar,
+  body.beyond-admin-active .order-details-topbar {
+    margin-bottom: 32px;
+    padding-inline: 20px;
+  }
+
+  body.beyond-admin-active .admin-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  body.beyond-admin-active .admin-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  body.beyond-admin-active .admin-page,
+  body.beyond-admin-active .order-details-page {
+    width: min(100% - 24px, 1240px);
+  }
+
+  body.beyond-admin-active .admin-topbar,
+  body.beyond-admin-active .order-details-topbar {
+    min-height: 66px;
+    padding-inline: 12px;
+  }
+
+  body.beyond-admin-active .admin-topbar > div:first-child > span {
+    display: none;
+  }
+
+  body.beyond-admin-active .admin-theme-toggle {
+    width: 38px;
+    height: 38px;
+  }
+
+  body.beyond-admin-active .admin-logout-button,
+  body.beyond-admin-active .order-back-button {
+    padding-inline: 12px;
+  }
+
+  body.beyond-admin-active .admin-heading h1,
+  body.beyond-admin-active .order-details-heading h1 {
+    font-size: 44px;
+    letter-spacing: -0.045em;
+  }
+
+  body.beyond-admin-active .admin-stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  body.beyond-admin-active .admin-stats article {
+    padding: 17px;
+  }
+
+  body.beyond-admin-active .admin-login-card {
+    padding: 30px 22px 24px;
+  }
+}
