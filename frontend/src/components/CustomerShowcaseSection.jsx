@@ -11,7 +11,7 @@ import {
 
 import "./CustomerShowcaseSection.css";
 
-function CustomerLogo({ site, duplicate = false }) {
+function CustomerLogo({ site, duplicate = false, instanceKey = "" }) {
   return (
     <a
       className="menu-customer-logo-item"
@@ -21,6 +21,7 @@ function CustomerLogo({ site, duplicate = false }) {
       aria-label={`${site.name} menu`}
       aria-hidden={duplicate ? "true" : undefined}
       tabIndex={duplicate ? -1 : undefined}
+      data-customer-instance={instanceKey}
     >
       <div className="menu-customer-logo-circle">
         {site.logo_url ? (
@@ -106,7 +107,18 @@ export default function CustomerShowcaseSection() {
   );
 
   const shouldAnimate = visibleSites.length > 1;
-  const duration = Math.max(22, visibleSites.length * 6);
+
+  const marqueeSites = useMemo(() => {
+    if (visibleSites.length <= 1) return visibleSites;
+
+    const targetCount = Math.max(6, visibleSites.length);
+    return Array.from(
+      { length: targetCount },
+      (_, index) => visibleSites[index % visibleSites.length]
+    );
+  }, [visibleSites]);
+
+  const duration = Math.max(24, marqueeSites.length * 4.8);
 
   if (!ready || !config.enabled || visibleSites.length === 0) return null;
 
@@ -131,15 +143,24 @@ export default function CustomerShowcaseSection() {
       >
         <div className="menu-customer-marquee-track">
           <div className="menu-customer-marquee-set">
-            {visibleSites.map((site) => (
-              <CustomerLogo key={site.id} site={site} />
+            {marqueeSites.map((site, index) => (
+              <CustomerLogo
+                key={`${site.id}-primary-${index}`}
+                site={site}
+                instanceKey={`primary-${index}`}
+              />
             ))}
           </div>
 
           {shouldAnimate ? (
             <div className="menu-customer-marquee-set" aria-hidden="true">
-              {visibleSites.map((site) => (
-                <CustomerLogo key={`duplicate-${site.id}`} site={site} duplicate />
+              {marqueeSites.map((site, index) => (
+                <CustomerLogo
+                  key={`${site.id}-duplicate-${index}`}
+                  site={site}
+                  duplicate
+                  instanceKey={`duplicate-${index}`}
+                />
               ))}
             </div>
           ) : null}
