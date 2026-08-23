@@ -1,3 +1,8 @@
 .menu-home-nav-panel-head {
   display: none !important;
 }
+
+.menu-home-nav [data-beyond-nav-managed] .menu-home-nav-brand-word {
+  color: var(--menu-text, #0d1b3a);
+  font-weight: 800;
+}
