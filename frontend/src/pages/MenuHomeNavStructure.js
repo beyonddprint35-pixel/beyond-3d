@@ -1,84 +1,93 @@
 const NAV_SELECTOR = ".menu-home-nav";
 
+const NAV_ITEMS = [
+  { label: "BEYOND Menu", type: "section", target: "#product" },
+  { label: "How it works", type: "section", target: "#how-it-works" },
+  { label: "BEYOND QR &NFC Stands", type: "section", target: "#qr-nfc" },
+  { label: "Live demo", type: "demo" },
+  { label: "BEYOND Menu studio", type: "section", target: "#menu-studio" },
+  { label: "BEYOND Pricing", type: "section", target: "#pricing" },
+  { label: "BEYOND 3D Printing", type: "link", target: "/3DPRINTING" },
+];
+
 function scrollToTarget(selector) {
   const target = document.querySelector(selector);
   if (!(target instanceof HTMLElement)) return;
   target.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-function closeNav(nav) {
-  nav.classList.remove("open");
+function closeNav() {
   const toggle = document.querySelector(".menu-home-hamburger-always");
-  if (toggle instanceof HTMLElement) {
-    toggle.setAttribute("aria-expanded", "false");
+  if (toggle instanceof HTMLElement && toggle.getAttribute("aria-expanded") === "true") {
     toggle.click();
   }
 }
 
-function makeButton(label, onClick) {
+function currentStructureIsCorrect(nav) {
+  const actionable = Array.from(nav.children).filter(
+    (node) => node instanceof HTMLButtonElement || node instanceof HTMLAnchorElement
+  );
+
+  if (actionable.length !== NAV_ITEMS.length) return false;
+
+  return NAV_ITEMS.every((item, index) => {
+    const node = actionable[index];
+    if (node.textContent?.trim() !== item.label) return false;
+    if (item.type === "link") {
+      return node instanceof HTMLAnchorElement && node.getAttribute("href") === item.target;
+    }
+    return node instanceof HTMLButtonElement;
+  });
+}
+
+function makeButton(item) {
   const button = document.createElement("button");
   button.type = "button";
-  button.textContent = label;
+  button.textContent = item.label;
   button.dataset.beyondNavManaged = "true";
-  button.addEventListener("click", onClick);
+
+  button.addEventListener("click", () => {
+    if (item.type === "demo") {
+      window.open("/menu/el-puerto", "_blank", "noopener,noreferrer");
+    } else {
+      scrollToTarget(item.target);
+    }
+    closeNav();
+  });
+
   return button;
 }
 
-function makeLink(label, href) {
+function makeLink(item) {
   const link = document.createElement("a");
-  link.href = href;
-  link.textContent = label;
+  link.href = item.target;
+  link.textContent = item.label;
   link.dataset.beyondNavManaged = "true";
+  link.addEventListener("click", closeNav);
   return link;
 }
 
 function buildHomepageNavigation() {
   if (window.location.pathname !== "/") return;
 
-  const nav = document.querySelector(NAV_SELECTOR);
-  if (!(nav instanceof HTMLElement)) return;
-
   const studioSection = document.querySelector(".menu-home-studio-section");
-  if (studioSection instanceof HTMLElement && !studioSection.id) {
+  if (studioSection instanceof HTMLElement && studioSection.id !== "menu-studio") {
     studioSection.id = "menu-studio";
   }
 
   const pricingPortal = document.querySelector(".menu-home-pricing-portal");
-  if (pricingPortal instanceof HTMLElement) {
+  if (pricingPortal instanceof HTMLElement && pricingPortal.id !== "pricing") {
     pricingPortal.id = "pricing";
   }
 
+  const nav = document.querySelector(NAV_SELECTOR);
+  if (!(nav instanceof HTMLElement) || currentStructureIsCorrect(nav)) return;
+
   nav.querySelectorAll(":scope > button, :scope > a").forEach((node) => node.remove());
 
-  const items = [
-    makeButton("BEYOND Menu", () => {
-      scrollToTarget("#product");
-      closeNav(nav);
-    }),
-    makeButton("How it works", () => {
-      scrollToTarget("#how-it-works");
-      closeNav(nav);
-    }),
-    makeButton("BEYOND QR &NFC Stands", () => {
-      scrollToTarget("#qr-nfc");
-      closeNav(nav);
-    }),
-    makeButton("Live demo", () => {
-      window.open("/menu/el-puerto", "_blank", "noopener,noreferrer");
-      closeNav(nav);
-    }),
-    makeButton("BEYOND Menu studio", () => {
-      scrollToTarget("#menu-studio");
-      closeNav(nav);
-    }),
-    makeButton("BEYOND Pricing", () => {
-      scrollToTarget("#pricing");
-      closeNav(nav);
-    }),
-    makeLink("BEYOND 3D Printing", "/3DPRINTING"),
-  ];
-
-  items.forEach((item) => nav.appendChild(item));
+  NAV_ITEMS.forEach((item) => {
+    nav.appendChild(item.type === "link" ? makeLink(item) : makeButton(item));
+  });
 }
 
 let queued = false;
@@ -99,3 +108,4 @@ if (document.readyState === "loading") {
 
 const observer = new MutationObserver(queueBuild);
 observer.observe(document.documentElement, { childList: true, subtree: true });
+window.addEventListener("popstate", queueBuild);
