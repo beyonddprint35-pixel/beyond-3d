@@ -1,0 +1,235 @@
+/* Premium physical-product treatment for the QR + NFC section.
+   This only refines the existing homepage showcase. */
+
+.menu-home-access-preview {
+  perspective: 1200px;
+}
+
+/* =========================================================
+   QR / NFC STAND
+   ========================================================= */
+
+.menu-home-table-stand {
+  position: relative;
+  transform: translateY(-2px);
+}
+
+.menu-home-table-stand::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  width: 82%;
+  height: 24px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: rgba(16, 31, 58, 0.14);
+  filter: blur(14px);
+  z-index: -1;
+}
+
+.menu-home-stand-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.10), transparent 34%),
+    linear-gradient(160deg, #142746 0%, #1a3768 42%, #294f8e 100%);
+  box-shadow:
+    0 30px 50px rgba(22, 40, 71, 0.18),
+    inset 1px 0 0 rgba(255, 255, 255, 0.12),
+    inset -1px 0 0 rgba(0, 0, 0, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  transform: rotateY(2deg);
+}
+
+.menu-home-stand-card::before {
+  content: "";
+  position: absolute;
+  top: -22%;
+  left: -36%;
+  width: 92%;
+  height: 150%;
+  transform: rotate(13deg);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.10), transparent);
+  pointer-events: none;
+}
+
+.menu-home-stand-card::after {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border-radius: 13px 13px 8px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.045);
+  pointer-events: none;
+}
+
+.menu-home-fake-qr {
+  position: relative;
+  overflow: hidden;
+  padding: 12px;
+  border: 1px solid rgba(15, 34, 67, 0.10);
+  border-radius: 13px;
+  background: #fff;
+  box-shadow:
+    0 10px 22px rgba(5, 14, 29, 0.20),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.84);
+}
+
+/* Give the simple demo QR more believable finder geometry. */
+.menu-home-fake-qr::before,
+.menu-home-fake-qr::after {
+  content: "";
+  position: absolute;
+  width: 19px;
+  height: 19px;
+  border: 5px solid #12203c;
+  background: #fff;
+  box-shadow: inset 0 0 0 4px #fff, inset 0 0 0 9px #12203c;
+}
+
+.menu-home-fake-qr::before {
+  top: 9px;
+  left: 9px;
+}
+
+.menu-home-fake-qr::after {
+  top: 9px;
+  right: 9px;
+}
+
+.menu-home-stand-base {
+  position: relative;
+  margin-top: -1px;
+  height: 24px;
+  border: 1px solid rgba(11, 27, 52, 0.24);
+  border-radius: 4px 4px 20px 20px;
+  background:
+    linear-gradient(180deg, #3b5278 0%, #1b2d4b 28%, #0f1d34 100%);
+  box-shadow:
+    0 18px 27px rgba(20, 37, 65, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.menu-home-stand-base::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 9%;
+  right: 9%;
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.17);
+}
+
+/* =========================================================
+   ACCESS PHONE
+   ========================================================= */
+
+.menu-home-access-phone {
+  isolation: isolate;
+  overflow: hidden;
+  border: 5px solid transparent;
+  border-radius: 38px;
+  background:
+    linear-gradient(180deg, #ffffff 0%, #f8fafe 100%) padding-box,
+    linear-gradient(145deg, #a7b2c3 0%, #354157 13%, #0a101a 42%, #050912 74%, #7f8ca1 100%) border-box;
+  box-shadow:
+    0 32px 58px rgba(20, 38, 71, 0.18),
+    0 9px 20px rgba(20, 39, 73, 0.10),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.70);
+}
+
+.menu-home-access-phone::before {
+  content: "";
+  position: absolute;
+  top: -28%;
+  left: -48%;
+  width: 118%;
+  height: 110%;
+  transform: rotate(14deg);
+  background: linear-gradient(100deg, transparent 25%, rgba(255,255,255,0.20) 50%, transparent 67%);
+  pointer-events: none;
+}
+
+.menu-home-access-phone::after {
+  content: "";
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 7px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(15, 27, 48, 0.12);
+  pointer-events: none;
+}
+
+.menu-home-access-phone-top {
+  top: 10px;
+  width: 66px;
+  height: 19px;
+  border-radius: 999px;
+  background: #060b12;
+  box-shadow:
+    inset 0 -1px 1px rgba(255, 255, 255, 0.06),
+    0 1px 2px rgba(0, 0, 0, 0.10);
+}
+
+.menu-home-access-phone-top::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  width: 4px;
+  height: 4px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: #17314f;
+  box-shadow: inset 0 0 0 1px rgba(83, 132, 190, 0.18);
+}
+
+.menu-home-access-check {
+  box-shadow:
+    0 8px 20px rgba(25, 182, 122, 0.12),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.80);
+}
+
+/* A soft showroom light that ties the objects together. */
+.menu-home-access-preview::before {
+  content: "";
+  position: absolute;
+  left: 10%;
+  right: 9%;
+  bottom: 9%;
+  height: 36%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(68, 111, 233, 0.09), rgba(68, 111, 233, 0.025) 48%, transparent 72%);
+  filter: blur(20px);
+  pointer-events: none;
+}
+
+.menu-home.theme-dark .menu-home-access-preview::before {
+  background: radial-gradient(ellipse at center, rgba(72, 120, 244, 0.12), rgba(51, 92, 194, 0.04) 48%, transparent 72%);
+}
+
+.menu-home.theme-dark .menu-home-access-phone {
+  background:
+    linear-gradient(180deg, #f8faff 0%, #eef3fb 100%) padding-box,
+    linear-gradient(145deg, #8998ad 0%, #2c374a 16%, #080d16 48%, #04070d 75%, #69778d 100%) border-box;
+}
+
+@media (max-width: 900px) {
+  .menu-home-access-phone {
+    border-radius: 29px;
+  }
+
+  .menu-home-access-phone-top {
+    width: 48px;
+    height: 15px;
+    top: 8px;
+  }
+
+  .menu-home-stand-base {
+    height: 19px;
+  }
+}
