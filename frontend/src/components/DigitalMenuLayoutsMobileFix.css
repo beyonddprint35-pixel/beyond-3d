@@ -1,0 +1,77 @@
+/* ==========================================================
+   BEYOND MENU LAYOUTS — MOBILE DISTINCTNESS FIX
+
+   Mobile-safe does not mean every design should collapse back
+   to Classic. These overrides keep Cards visually distinct at
+   the real 390px customer viewport without risking overflow.
+   ========================================================== */
+
+@media (max-width: 560px) {
+  .dmt-layout-cards .dmt-menu-list {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    padding: 0 13px 26px !important;
+  }
+
+  .dmt-layout-cards .dmt-item-row {
+    min-height: 116px !important;
+    padding: 17px 16px 13px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: space-between !important;
+    gap: 14px !important;
+    border-radius: 22px !important;
+    box-shadow: 0 12px 28px rgba(0,0,0,.055) !important;
+  }
+
+  .dmt-layout-cards .dmt-item-info {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .dmt-layout-cards .dmt-item-info > strong {
+    line-height: 1.18 !important;
+  }
+
+  .dmt-layout-cards .dmt-item-info > p {
+    margin-top: 6px !important;
+    line-height: 1.42 !important;
+  }
+
+  .dmt-layout-cards .dmt-price-area {
+    width: 100% !important;
+    min-width: 0 !important;
+    padding-top: 10px !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 8px 12px !important;
+    border-top: 1px solid var(--dmt-line) !important;
+  }
+
+  .digital-menu-template[dir="rtl"].dmt-layout-cards .dmt-price-area {
+    justify-content: flex-start !important;
+  }
+
+  .dmt-layout-cards .dmt-price-option {
+    min-width: 0 !important;
+  }
+
+  .dmt-layout-cards .dmt-section-head {
+    padding-bottom: 13px !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .dmt-layout-cards .dmt-item-row {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .dmt-layout-cards .dmt-price-area,
+  .dmt-layout-cards .dmt-price-option {
+    max-width: 100% !important;
+  }
+}
