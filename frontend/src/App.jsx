@@ -21,6 +21,7 @@ import "./components/MyAccountMenuDraftDelete.css";
 import "./pages/MenuHomeAccessInteraction.js";
 import "./pages/MenuHomeOverrides.css";
 import "./pages/MenuHomeFinalPatch.css";
+import "./pages/MenuHomeWordmark.js";
 import "./pages/MenuHomeWordmark.css";
 import "./pages/MenuHomeDarkGlow.css";
 import "./pages/MenuHomeAccessRealism.css";
