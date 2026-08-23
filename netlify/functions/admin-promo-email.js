@@ -191,13 +191,13 @@ exports.handler = async function (event) {
     }
 
     const resendKey = process.env.RESEND_API_KEY;
-    const from = cleanText(process.env.RESEND_FROM_EMAIL, 200);
+    const from = cleanText(process.env.EMAIL_FROM, 200);
 
     if (!resendKey) {
       return json(500, { error: "RESEND_API_KEY is not configured in Netlify." });
     }
     if (!from) {
-      return json(500, { error: "RESEND_FROM_EMAIL is not configured in Netlify." });
+      return json(500, { error: "EMAIL_FROM is not configured in Netlify." });
     }
 
     const body = JSON.parse(event.body || "{}");
