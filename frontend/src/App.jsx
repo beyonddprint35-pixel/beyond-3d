@@ -4,7 +4,7 @@ import {
   Routes,
 } from "react-router-dom";
 
-import MenuHome from "./pages/MenuHomeRefined";
+import MenuHome from "./pages/MenuHomeCustomerPreview";
 import ThreeDPrinting from "./pages/ThreeDPrinting";
 import Admin from "./pages/Admin";
 import OrderDetails from "./pages/OrderDetails";
