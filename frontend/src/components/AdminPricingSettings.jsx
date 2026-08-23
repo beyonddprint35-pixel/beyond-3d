@@ -268,7 +268,7 @@ export default function AdminPricingSettings({ password }) {
         <div>
           <span className="admin-label">WEBSITE</span>
           <h2>Menu Pricing</h2>
-          <p>Change prices, plan text and features shown on the Beyond homepage.</p>
+          <p>Change prices, setup fees, plan text and features shown on the Beyond homepage.</p>
           {localMode ? (
             <small style={{ display: "block", marginTop: "8px", color: "#7f91ad" }}>
               Local preview mode · pricing is read directly from Supabase.
@@ -331,6 +331,9 @@ export default function AdminPricingSettings({ password }) {
                   <label><span>Price</span><input value={plan.price} onChange={(event) => updatePlan(planIndex, "price", event.target.value)} placeholder="₪49" /></label>
                   <label><span>Period — English</span><input value={plan.period_en} onChange={(event) => updatePlan(planIndex, "period_en", event.target.value)} /></label>
                   <label><span>Period — Hebrew</span><input dir="rtl" value={plan.period_he} onChange={(event) => updatePlan(planIndex, "period_he", event.target.value)} /></label>
+                  <label><span>One-time setup fee</span><input value={plan.setup_fee} onChange={(event) => updatePlan(planIndex, "setup_fee", event.target.value)} placeholder="₪200" /></label>
+                  <label className="wide"><span>Setup note — English</span><input value={plan.setup_note_en} onChange={(event) => updatePlan(planIndex, "setup_note_en", event.target.value)} placeholder="NFC stands not included" /></label>
+                  <label className="wide"><span>Setup note — Hebrew</span><input dir="rtl" value={plan.setup_note_he} onChange={(event) => updatePlan(planIndex, "setup_note_he", event.target.value)} /></label>
                   <label><span>Button — English</span><input value={plan.cta_en} onChange={(event) => updatePlan(planIndex, "cta_en", event.target.value)} /></label>
                   <label><span>Button — Hebrew</span><input dir="rtl" value={plan.cta_he} onChange={(event) => updatePlan(planIndex, "cta_he", event.target.value)} /></label>
                 </div>
