@@ -56,6 +56,11 @@ export default function MobileMenuPreview({
   ] = useState(0);
 
   const [
+    showEditor,
+    setShowEditor,
+  ] = useState(true);
+
+  const [
     draftBranding,
     setDraftBranding,
   ] = useState(() =>
@@ -440,6 +445,8 @@ export default function MobileMenuPreview({
       "Changes save automatically"
     );
 
+    setShowEditor(true);
+
     editVersionRef.current =
       0;
 
@@ -626,63 +633,99 @@ export default function MobileMenuPreview({
                 </strong>
               </div>
 
+              <div className="mobile-menu-preview-top-actions">
+                <button
+                  type="button"
+                  className={`mobile-menu-editor-visibility-toggle ${
+                    showEditor
+                      ? "active"
+                      : ""
+                  }`}
+                  role="switch"
+                  aria-checked={
+                    showEditor
+                  }
+                  onClick={() =>
+                    setShowEditor(
+                      current =>
+                        !current
+                    )
+                  }
+                >
+                  <span className="mobile-menu-editor-toggle-label">
+                    Editor
+                  </span>
 
-              <button
-                type="button"
-                className="mobile-menu-preview-close"
-                onClick={() =>
-                  void handleClose()
-                }
-                aria-label="Close mobile preview"
-              >
-                <X
-                  size={18}
-                  strokeWidth={1.7}
-                />
-              </button>
+                  <span className="mobile-menu-editor-toggle-track">
+                    <i />
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  className="mobile-menu-preview-close"
+                  onClick={() =>
+                    void handleClose()
+                  }
+                  aria-label="Close mobile preview"
+                >
+                  <X
+                    size={18}
+                    strokeWidth={1.7}
+                  />
+                </button>
+              </div>
             </div>
 
 
-            <div className="mobile-menu-preview-workspace">
-              <section className="mobile-menu-preview-editor-shell">
-                <div className="mobile-menu-preview-editor-meta">
-                  <div>
-                    <span>MENU STUDIO</span>
-                    <strong>Live editing</strong>
+            <div
+              className={`mobile-menu-preview-workspace ${
+                showEditor
+                  ? "editor-visible"
+                  : "editor-hidden"
+              }`}
+            >
+              {showEditor && (
+                <section className="mobile-menu-preview-editor-shell">
+                  <div className="mobile-menu-preview-editor-meta">
+                    <div>
+                      <span>MENU STUDIO</span>
+                      <strong>Live editing</strong>
+                    </div>
+
+                    <small
+                      className={
+                        saveStatus ===
+                        "Could not save changes"
+                          ? "error"
+                          : ""
+                      }
+                    >
+                      {saveStatus}
+                    </small>
                   </div>
 
-                  <small
-                    className={
-                      saveStatus ===
-                      "Could not save changes"
-                        ? "error"
-                        : ""
-                    }
-                  >
-                    {saveStatus}
-                  </small>
-                </div>
-
-                <div className="mobile-menu-preview-editor-scroll">
-                  <MenuBrandEditor
-                    branding={
-                      draftBranding
-                    }
-                    onChange={
-                      handleBrandingChange
-                    }
-                    logoUrl={
-                      draftLogoUrl
-                    }
-                    onLogoChange={
-                      handleLogoChange
-                    }
-                    onReset={
-                      handleReset
-                    }
-                  />
-                </div>
-              </section>
+                  <div className="mobile-menu-preview-editor-scroll">
+                    <MenuBrandEditor
+                      branding={
+                        draftBranding
+                      }
+                      onChange={
+                        handleBrandingChange
+                      }
+                      logoUrl={
+                        draftLogoUrl
+                      }
+                      onLogoChange={
+                        handleLogoChange
+                      }
+                      onReset={
+                        handleReset
+                      }
+                    />
+                  </div>
+                </section>
+              )}
 
 
               <section className="mobile-menu-preview-phone-column">
