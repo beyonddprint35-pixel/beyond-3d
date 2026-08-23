@@ -65,7 +65,42 @@ const BUILDER_HE = Object.freeze({
   "LIVE MOBILE PREVIEW": "תצוגת מובייל חיה",
   "Your real customer menu on mobile": "התפריט האמיתי של הלקוח במובייל",
   "Close mobile preview": "סגירת תצוגת המובייל",
-  "Back to preview": "חזרה לתצוגה",
+
+  /* Menu Studio */
+  "03 / STYLE": "03 / עיצוב",
+  "Menu Studio": "סטודיו התפריט",
+  Design: "עיצוב",
+  "Color Templates": "תבניות צבע",
+  Brand: "מותג",
+  Colors: "צבעים",
+  Type: "טיפוגרפיה",
+  "Choose a menu layout": "בחרו עיצוב לתפריט",
+  "Every design is mobile-first and supports RTL.": "כל עיצוב מותאם קודם למובייל ותומך ב-RTL.",
+  Classic: "קלאסי",
+  "Balanced hero, category pills and clean menu cards.": "כותרת מאוזנת, קטגוריות ברורות וכרטיסי תפריט נקיים.",
+  Compact: "קומפקטי",
+  "Tighter spacing for restaurants with long menus.": "מרווחים צפופים יותר למסעדות עם תפריטים ארוכים.",
+  Cards: "כרטיסים",
+  "More visual separation with a card-focused menu grid.": "הפרדה חזותית חזקה יותר באמצעות כרטיסי תפריט.",
+  Editorial: "אלגנטי",
+  "Elegant typography with a refined restaurant feel.": "טיפוגרפיה אלגנטית ומראה מסעדה מעודן.",
+  Minimal: "מינימלי",
+  "Quiet, lightweight layout with fewer visual borders.": "עיצוב נקי וקליל עם פחות מסגרות חזותיות.",
+  Bold: "מודגש",
+  "Strong hero and high-impact category navigation.": "כותרת חזקה וניווט קטגוריות בולט.",
+  "Apply a ready-made palette without changing the selected layout.": "החילו פלטת צבעים מוכנה בלי לשנות את העיצוב שנבחר.",
+  "RESTAURANT NAME": "שם המסעדה",
+  SUBTITLE: "כותרת משנה",
+  "Current logo": "לוגו נוכחי",
+  "Upload & Crop Again": "העלאה וחיתוך מחדש",
+  "Upload & Crop Logo": "העלאה וחיתוך לוגו",
+  "Remove logo": "הסרת לוגו",
+  "Font family": "משפחת גופנים",
+  HEADINGS: "כותרות",
+  BODY: "טקסט",
+  "Font sizes": "גדלי גופן",
+  "Reset font sizes": "איפוס גדלי גופן",
+
   "04 / ACTIVATE": "04 / הפעלה",
   "Choose your BEYOND plan.": "בחרו את חבילת BEYOND שלכם.",
   "Your menu draft is ready. Choose how you want to run it live.": "טיוטת התפריט מוכנה. בחרו כיצד להפעיל אותה אונליין.",
@@ -115,7 +150,6 @@ const BUILDER_HE = Object.freeze({
   "Your menu is ready. Confirm the restaurant and subscription before continuing to secure payment.": "התפריט שלכם מוכן. אשרו את המסעדה ואת החבילה לפני המעבר לתשלום מאובטח.",
   RESTAURANT: "מסעדה",
   "Who is this subscription for?": "עבור איזו מסעדה החבילה?",
-  "RESTAURANT NAME": "שם המסעדה",
   "Restaurant name": "שם המסעדה",
   PAYER: "משלם",
   "Subscription payer": "משלם החבילה",
@@ -303,7 +337,6 @@ function StableBuilderTranslator({ language, rootRef }) {
           translateTextNode(mutation.target);
           continue;
         }
-
         mutation.addedNodes.forEach(translateSubtree);
       }
     });
