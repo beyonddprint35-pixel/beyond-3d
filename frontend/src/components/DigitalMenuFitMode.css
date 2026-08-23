@@ -17,7 +17,8 @@
 
    OFF:
    - cards use their normal template minimum height
-   - unused space in the fixed item viewport stays empty
+   - rows pack at the top of the fixed item viewport
+   - unused space stays empty below the cards
    ========================================================== */
 
 /* ----------------------------------------------------------
@@ -161,27 +162,57 @@
 }
 
 /* ==========================================================
-   MEASURED MOBILE ITEM-AREA FILL
+   MOBILE ITEM-AREA HEIGHT BEHAVIOR
 
-   DigitalMenuTemplate calculates --dmt-fit-row-height from the
-   already-fixed .dmt-menu-list viewport. No parent layout is
-   modified here.
+   The fixed mobile shell lives in DigitalMenuTemplate.css.
+   Nothing here changes the app/page/header/footer dimensions.
    ========================================================== */
 
 @media (max-width: 560px) {
+  /* --------------------------------------------------------
+     FIT OFF / NORMAL HEIGHT
+
+     A fixed-height CSS Grid normally stretches auto tracks to
+     consume spare block space. That made OFF look like ON.
+
+     When the measured Fit class is absent, explicitly pack rows
+     at the start and use content-sized tracks. Each template's
+     own min-height (Classic, Cards, Compact, etc.) remains the
+     source of truth for the normal card height.
+     -------------------------------------------------------- */
   .menu-mobile-preview-page
+  .dmt-menu-list:not(.dmt-fit-rows),
+  .digital-menu-template.dmt-live
+  .dmt-menu-list:not(.dmt-fit-rows) {
+    align-content: start !important;
+    grid-auto-rows: max-content !important;
+  }
+
+  .menu-mobile-preview-page
+  .dmt-menu-list:not(.dmt-fit-rows)
+  > .dmt-item-row,
+  .digital-menu-template.dmt-live
+  .dmt-menu-list:not(.dmt-fit-rows)
+  > .dmt-item-row {
+    height: auto !important;
+  }
+
+  /* --------------------------------------------------------
+     FIT ON / STRETCHED HEIGHT
+
+     DigitalMenuTemplate measures the already-fixed item viewport
+     and writes --dmt-fit-row-height. Only card height changes.
+     -------------------------------------------------------- */
+  .menu-mobile-preview-page
+  .dmt-menu-list.dmt-fit-rows,
+  .digital-menu-template.dmt-live
   .dmt-menu-list.dmt-fit-rows {
     align-content: start !important;
   }
 
   .menu-mobile-preview-page
   .dmt-menu-list.dmt-fit-rows
-  > .dmt-item-row {
-    min-height: var(--dmt-fit-row-height) !important;
-  }
-
-  /* Ready for the same behavior on a real mobile customer route
-     when that route opts into fitViewport. */
+  > .dmt-item-row,
   .digital-menu-template.dmt-live
   .dmt-menu-list.dmt-fit-rows
   > .dmt-item-row {
