@@ -1,11 +1,13 @@
 /* Exact BEYOND customer menu preview inside the homepage phone.
-   The iframe is a real 390px viewport, so DigitalMenuTemplate uses the
-   same mobile media rules as an actual customer's phone. */
+   The iframe is a real 390px viewport, so DigitalMenuTemplate keeps the
+   same customer-facing mobile structure while the outer phone controls
+   how that viewport is presented on the landing page. */
 
 .menu-home-real-template-host {
   position: relative;
   overflow: hidden;
-  padding: 48px 7px 7px !important;
+  padding: 47px 4px 5px !important;
+  background: #ffffff !important;
 }
 
 .menu-home-real-template-host > :not(.menu-home-figma-island):not(.menu-home-real-template-portal) {
@@ -19,10 +21,10 @@
 
 .menu-home-real-template-portal {
   position: absolute;
-  inset: 47px 7px 7px;
+  inset: 46px 3px 4px;
   overflow: hidden;
-  border-radius: 0 0 30px 30px;
-  background: #f3f0e9;
+  border-radius: 0 0 29px 29px;
+  background: #f5f7fb;
 }
 
 .menu-home-real-template-frame {
@@ -32,19 +34,49 @@
   width: 390px;
   height: 760px;
   border: 0;
-  background: #f3f0e9;
-  transform: translateX(-50%) scale(.735);
+  background: #f5f7fb;
+  transform: translateX(-50%) scale(.755);
   transform-origin: top center;
   pointer-events: none;
 }
 
+/* Match the preview screen to the landing-page palette in dark mode too.
+   The customer template itself is still the same component; only the
+   fictional restaurant's selected branding is being demonstrated. */
+.menu-home.theme-dark .menu-home-real-template-host,
+.menu-home.theme-dark .menu-home-real-template-portal,
+.menu-home.theme-dark .menu-home-real-template-frame {
+  background: #f5f7fb !important;
+}
+
+@media (max-width: 900px) {
+  .menu-home-real-template-frame {
+    transform: translateX(-50%) scale(.75);
+  }
+}
+
 @media (max-width: 680px) {
   .menu-home-real-template-host {
-    padding-inline: 6px !important;
+    padding: 46px 3px 4px !important;
   }
 
   .menu-home-real-template-portal {
-    inset-inline: 6px;
+    inset: 45px 3px 3px;
+    border-radius: 0 0 27px 27px;
+  }
+
+  .menu-home-real-template-frame {
+    transform: translateX(-50%) scale(.735);
+  }
+}
+
+@media (max-width: 500px) {
+  .menu-home-real-template-host {
+    padding-inline: 3px !important;
+  }
+
+  .menu-home-real-template-portal {
+    inset-inline: 2px;
   }
 
   .menu-home-real-template-frame {
@@ -52,8 +84,8 @@
   }
 }
 
-@media (max-width: 500px) {
+@media (max-width: 380px) {
   .menu-home-real-template-frame {
-    transform: translateX(-50%) scale(.655);
+    transform: translateX(-50%) scale(.64);
   }
 }
