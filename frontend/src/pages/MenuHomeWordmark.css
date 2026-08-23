@@ -1,0 +1,96 @@
+/* BEYOND brand wordmark — wide letter spacing with the E represented by three bars. */
+
+.menu-home-brand > span {
+  position: relative;
+  display: block !important;
+  flex: 0 0 auto;
+  width: 126px;
+  height: 24px;
+  overflow: visible;
+  font-size: 0 !important;
+  line-height: 1;
+  letter-spacing: 0 !important;
+  direction: ltr;
+  color: var(--menu-text);
+  background:
+    linear-gradient(currentColor 0 0) 21px 5px / 14px 2px no-repeat,
+    linear-gradient(currentColor 0 0) 21px 11px / 14px 2px no-repeat,
+    linear-gradient(currentColor 0 0) 21px 17px / 14px 2px no-repeat;
+}
+
+.menu-home-brand > span::before,
+.menu-home-brand > span::after {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: currentColor;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 18px;
+  font-weight: 820;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.menu-home-brand > span::before {
+  content: "B";
+  left: 0;
+  letter-spacing: 0;
+}
+
+.menu-home-brand > span::after {
+  content: "YOND";
+  left: 42px;
+  letter-spacing: 0.24em;
+}
+
+.menu-home.theme-light .menu-home-brand > span {
+  color: #0d1b3a;
+}
+
+.menu-home.theme-dark .menu-home-brand > span {
+  color: #f4f7ff;
+}
+
+/* Keep the complete BEYOND wordmark visible on mobile. */
+@media (max-width: 500px) {
+  .menu-home-brand > span {
+    display: block !important;
+    width: 105px;
+    height: 21px;
+    background:
+      linear-gradient(currentColor 0 0) 18px 4px / 12px 2px no-repeat,
+      linear-gradient(currentColor 0 0) 18px 9.5px / 12px 2px no-repeat,
+      linear-gradient(currentColor 0 0) 18px 15px / 12px 2px no-repeat;
+  }
+
+  .menu-home-brand > span::before,
+  .menu-home-brand > span::after {
+    font-size: 15px;
+  }
+
+  .menu-home-brand > span::after {
+    left: 35px;
+    letter-spacing: 0.18em;
+  }
+}
+
+@media (max-width: 380px) {
+  .menu-home-brand > span {
+    width: 92px;
+    height: 19px;
+    background:
+      linear-gradient(currentColor 0 0) 16px 3.5px / 10px 1.8px no-repeat,
+      linear-gradient(currentColor 0 0) 16px 8.5px / 10px 1.8px no-repeat,
+      linear-gradient(currentColor 0 0) 16px 13.5px / 10px 1.8px no-repeat;
+  }
+
+  .menu-home-brand > span::before,
+  .menu-home-brand > span::after {
+    font-size: 13px;
+  }
+
+  .menu-home-brand > span::after {
+    left: 31px;
+    letter-spacing: 0.15em;
+  }
+}
