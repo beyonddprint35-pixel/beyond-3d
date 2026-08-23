@@ -11,6 +11,7 @@ import OrderDetails from "./pages/OrderDetails";
 import TrackOrder from "./pages/TrackOrder";
 import MenuBuilder from "./pages/MenuBuilder";
 import MenuMobilePreviewPage from "./pages/MenuMobilePreviewPage";
+import CustomerShowcasePortal from "./components/CustomerShowcasePortal";
 
 import "./pages/MenuHomeAccessInteraction.js";
 import "./pages/MenuHomeOverrides.css";
@@ -32,6 +33,7 @@ function App() {
         <Route path="/admin/order/:id" element={<OrderDetails />} />
         <Route path="/track" element={<TrackOrder />} />
       </Routes>
+      <CustomerShowcasePortal />
     </BrowserRouter>
   );
 }
