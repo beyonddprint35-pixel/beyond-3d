@@ -30,6 +30,7 @@ import "./pages/MenuHomeNavCleanup.css";
 import "./pages/MenuHomeNavStructure.js";
 import "./pages/AdminTheme.js";
 import "./pages/AdminTheme.css";
+import "./components/DigitalMenuLayoutsMobileFix.css";
 
 function App() {
   return (
