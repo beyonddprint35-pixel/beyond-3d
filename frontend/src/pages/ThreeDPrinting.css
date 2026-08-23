@@ -1,7 +1,1315 @@
-.three-d-printing-page .digital-menu-hero {
+/* =========================================================
+   BEYOND 3D PRINTING — UNIFIED PRODUCT THEME
+   Uses the same visual language as the main Beyond homepage.
+   This file intentionally loads after the legacy 3D styles.
+   ========================================================= */
+
+.three-d-printing-page .beyond-home {
+  --tp-bg: #f4f7fb;
+  --tp-surface: #ffffff;
+  --tp-surface-soft: #eef3fb;
+  --tp-surface-hover: #f8faff;
+  --tp-text: #0d1b3a;
+  --tp-muted: #5d6f94;
+  --tp-muted-soft: #8794aa;
+  --tp-border: #dfe6f1;
+  --tp-blue: #3f72e8;
+  --tp-blue-strong: #2f61da;
+  --tp-blue-soft: #e9efff;
+  --tp-success: #19b67a;
+  --tp-shadow: 0 24px 70px rgba(28, 48, 84, 0.08);
+  --tp-workspace: #edf3fb;
+
+  --home-bg: var(--tp-bg);
+  --home-text: var(--tp-text);
+  --home-muted: var(--tp-muted);
+  --home-border: var(--tp-border);
+  --home-blue: var(--tp-blue);
+  --home-blue-light: #7fa2ff;
+
+  min-height: 100vh;
+  color: var(--tp-text);
+  background:
+    radial-gradient(circle at 76% 8%, rgba(76, 120, 238, 0.08), transparent 27rem),
+    linear-gradient(180deg, #f7f9fc 0%, var(--tp-bg) 100%);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.three-d-printing-page .beyond-home.beyond-theme-dark {
+  --tp-bg: #08111f;
+  --tp-surface: #101b2c;
+  --tp-surface-soft: #142238;
+  --tp-surface-hover: #17253a;
+  --tp-text: #f2f6ff;
+  --tp-muted: #9eabc1;
+  --tp-muted-soft: #74839a;
+  --tp-border: #26354c;
+  --tp-blue: #6690ff;
+  --tp-blue-strong: #7fa2ff;
+  --tp-blue-soft: #17294d;
+  --tp-success: #55d59b;
+  --tp-shadow: 0 26px 70px rgba(0, 0, 0, 0.24);
+  --tp-workspace: #0b1524;
+
+  background:
+    radial-gradient(circle at 76% 8%, rgba(76, 120, 238, 0.15), transparent 28rem),
+    linear-gradient(180deg, #0a1423 0%, #07101d 100%);
+}
+
+.three-d-printing-page .beyond-home *,
+.three-d-printing-page .beyond-home *::before,
+.three-d-printing-page .beyond-home *::after {
+  box-sizing: border-box;
+}
+
+/* ---------- Remove the old sci-fi page atmosphere ---------- */
+.three-d-printing-page :is(.home-noise, .home-grid-background, .home-scanline) {
   display: none;
 }
 
-.three-d-printing-page .home-nav-links > button:first-child {
+.three-d-printing-page .home-orb {
+  opacity: 0.55;
+  filter: blur(150px);
+}
+
+.three-d-printing-page .home-orb-one,
+.three-d-printing-page .home-orb-two,
+.three-d-printing-page .home-orb-three {
+  background: rgba(76, 120, 238, 0.08);
+}
+
+.three-d-printing-page .beyond-theme-dark :is(.home-orb-one, .home-orb-two, .home-orb-three) {
+  background: rgba(76, 120, 238, 0.12);
+}
+
+/* =========================================================
+   NAVIGATION — same behavior/style family as homepage
+   ========================================================= */
+
+.three-d-printing-page .home-navbar {
+  position: sticky;
+  z-index: 80;
+  top: 0;
+  width: 100%;
+  height: 74px;
+  min-height: 74px;
+  margin: 0;
+  padding: 0 5vw;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 18px;
+  border-bottom: 1px solid color-mix(in srgb, var(--tp-border) 86%, transparent);
+  background: color-mix(in srgb, var(--tp-bg) 90%, transparent);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.three-d-printing-page .home-brand {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 10px !important;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--tp-text);
+  cursor: pointer;
+}
+
+.three-d-printing-page .home-brand img {
+  width: 38px !important;
+  height: 38px !important;
+  object-fit: contain;
+  filter: brightness(0) saturate(100%) invert(11%) sepia(31%) saturate(1457%) hue-rotate(184deg) brightness(88%) contrast(97%);
+}
+
+.three-d-printing-page .beyond-theme-dark .home-brand img {
+  filter: none;
+}
+
+.three-d-printing-page .home-brand > span {
+  display: block;
+  width: 126px;
+  height: 24px;
+  flex: 0 0 126px;
+  overflow: hidden;
+  color: var(--tp-text);
+  background: currentColor;
+  font-size: 0 !important;
+  line-height: 0;
+  letter-spacing: 0 !important;
+  -webkit-mask: url("../assets/beyond-wordmark.svg") center / contain no-repeat;
+  mask: url("../assets/beyond-wordmark.svg") center / contain no-repeat;
+}
+
+/* Desktop also uses the compact hamburger navigation. */
+.three-d-printing-page .home-nav-links {
+  position: fixed !important;
+  z-index: 95;
+  top: 86px;
+  inset-inline-end: 5vw;
+  inset-inline-start: auto;
+  display: none !important;
+  width: min(330px, calc(100vw - 28px));
+  padding: 12px;
+  border: 1px solid var(--tp-border);
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--tp-surface) 97%, transparent);
+  box-shadow: 0 24px 60px rgba(27, 45, 78, 0.16);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  flex-direction: column;
+  align-items: stretch;
+  gap: 3px;
+}
+
+.three-d-printing-page .beyond-theme-dark .home-nav-links {
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.34);
+}
+
+.three-d-printing-page .home-nav-links.open {
+  display: flex !important;
+}
+
+.three-d-printing-page .home-nav-links > button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 46px;
+  padding: 0 13px;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: var(--tp-muted);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 680;
+  text-align: start;
+  cursor: pointer;
+}
+
+.three-d-printing-page .home-nav-links > button:hover {
+  background: var(--tp-surface-soft);
+  color: var(--tp-text);
+}
+
+.three-d-printing-page .home-nav-links > button:nth-child(2) {
+  background: var(--tp-blue-soft);
+  color: var(--tp-blue-strong);
+}
+
+.three-d-printing-page .home-nav-actions {
+  grid-column: 3;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.three-d-printing-page :is(
+  .home-language-toggle,
+  .home-theme-toggle,
+  .home-auth-button,
+  .home-start-small,
+  .home-menu-studio-button,
+  .home-mobile-menu
+) {
+  min-height: 40px;
+  border: 1px solid var(--tp-border) !important;
+  background: color-mix(in srgb, var(--tp-surface) 82%, transparent) !important;
+  color: var(--tp-text) !important;
+  box-shadow: none !important;
+}
+
+.three-d-printing-page :is(
+  .home-language-toggle,
+  .home-auth-button,
+  .home-start-small,
+  .home-menu-studio-button
+) {
+  border-radius: 999px !important;
+}
+
+.three-d-printing-page .home-language-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0 10px;
+}
+
+.three-d-printing-page .home-language-toggle > span {
+  color: var(--tp-muted-soft);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.three-d-printing-page .home-language-toggle > span.active {
+  color: var(--tp-blue-strong);
+}
+
+.three-d-printing-page .home-language-toggle > i {
+  width: 1px;
+  height: 14px;
+  background: var(--tp-border);
+}
+
+.three-d-printing-page .home-theme-toggle,
+.three-d-printing-page .home-mobile-menu {
+  width: 40px;
+  height: 40px;
+  min-height: 40px;
+  flex: 0 0 40px;
+  padding: 0;
+  border-radius: 999px !important;
+}
+
+.three-d-printing-page .home-theme-toggle span {
   display: none;
+}
+
+.three-d-printing-page .home-mobile-menu {
+  display: grid !important;
+  place-items: center;
+  align-content: center;
+  gap: 4px;
+}
+
+.three-d-printing-page .home-mobile-menu > span {
+  display: block;
+  width: 16px;
+  height: 1.7px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.three-d-printing-page :is(
+  .home-language-toggle,
+  .home-theme-toggle,
+  .home-auth-button,
+  .home-start-small,
+  .home-menu-studio-button,
+  .home-mobile-menu
+):hover {
+  border-color: color-mix(in srgb, var(--tp-blue) 32%, var(--tp-border)) !important;
+  background: var(--tp-surface) !important;
+}
+
+.three-d-printing-page .home-auth-button,
+.three-d-printing-page .home-start-small,
+.three-d-printing-page .home-menu-studio-button {
+  padding: 0 15px;
+  font-size: 12px;
+  font-weight: 720;
+}
+
+.three-d-printing-page .home-account-button {
+  min-height: 40px;
+  padding: 0 3px 0 10px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--tp-text);
+}
+
+.three-d-printing-page .home-account-copy span {
+  color: var(--tp-muted-soft);
+}
+
+.three-d-printing-page .home-account-copy strong {
+  color: var(--tp-text);
+}
+
+.three-d-printing-page .home-account-avatar {
+  border-color: var(--tp-border);
+  background: var(--tp-blue-soft);
+  color: var(--tp-blue-strong);
+}
+
+/* =========================================================
+   3D HERO
+   ========================================================= */
+
+.three-d-printing-page .home-hero {
+  width: min(1380px, 90vw);
+  min-height: auto;
+  margin: 0 auto;
+  padding: 110px 0 120px;
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(480px, 1.08fr);
+  align-items: center;
+  gap: clamp(48px, 7vw, 96px);
+}
+
+.three-d-printing-page .hero-copy {
+  padding-left: 0;
+}
+
+.three-d-printing-page .hero-eyebrow {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 36px;
+  margin-bottom: 28px;
+  padding: 0 13px;
+  border: 1px solid color-mix(in srgb, var(--tp-blue) 22%, var(--tp-border));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--tp-blue-soft) 72%, transparent);
+  color: var(--tp-blue-strong);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.three-d-printing-page .eyebrow-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--tp-blue);
+  box-shadow: none;
+}
+
+.three-d-printing-page .hero-copy h1 {
+  max-width: 720px;
+  margin: 0;
+  color: var(--tp-text);
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(56px, 6.2vw, 90px);
+  font-weight: 780;
+  line-height: 0.95;
+  letter-spacing: -0.06em;
+}
+
+.three-d-printing-page .hero-outline-word {
+  color: var(--tp-blue);
+  -webkit-text-stroke: 0;
+}
+
+.three-d-printing-page .hero-copy > p {
+  max-width: 600px;
+  margin-top: 28px;
+  color: var(--tp-muted);
+  font-size: 18px;
+  line-height: 1.72;
+}
+
+.three-d-printing-page .hero-buttons {
+  margin-top: 32px;
+  gap: 12px;
+}
+
+.three-d-printing-page .home-primary-button,
+.three-d-printing-page .submit-project-button {
+  min-height: 52px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--tp-blue), #5577ef);
+  color: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 750;
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--tp-blue) 24%, transparent);
+}
+
+.three-d-printing-page .home-primary-button:hover,
+.three-d-printing-page .submit-project-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 42px color-mix(in srgb, var(--tp-blue) 30%, transparent);
+}
+
+.three-d-printing-page .home-ghost-button {
+  min-height: 52px;
+  padding: 0 20px;
+  border: 1px solid var(--tp-border);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--tp-surface) 78%, transparent);
+  color: var(--tp-text);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.three-d-printing-page .home-ghost-button:hover {
+  background: var(--tp-surface);
+  border-color: color-mix(in srgb, var(--tp-blue) 30%, var(--tp-border));
+}
+
+.three-d-printing-page .hero-micro-stats {
+  gap: 12px;
+  margin-top: 42px;
+  flex-wrap: wrap;
+}
+
+.three-d-printing-page .hero-micro-stats > div {
+  min-width: 88px;
+  padding: 10px 13px;
+  border: 1px solid var(--tp-border);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--tp-surface) 72%, transparent);
+}
+
+.three-d-printing-page .hero-micro-stats > div strong {
+  color: var(--tp-blue-strong);
+}
+
+.three-d-printing-page .hero-micro-stats > div span {
+  color: var(--tp-muted);
+}
+
+.three-d-printing-page .hero-machine {
+  min-width: 0;
+  min-height: 590px;
+  padding: 24px;
+  border: 1px solid var(--tp-border);
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 50% 34%, color-mix(in srgb, var(--tp-blue) 12%, transparent), transparent 20rem),
+    color-mix(in srgb, var(--tp-surface) 82%, transparent);
+  box-shadow: var(--tp-shadow);
+  overflow: hidden;
+}
+
+/* =========================================================
+   DIGITAL → PHYSICAL TRANSITION
+   ========================================================= */
+
+.three-d-printing-page .material-transition {
+  width: min(1240px, 90vw);
+  margin: 0 auto 18px;
+  padding: 24px 28px;
+  border: 1px solid var(--tp-border);
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--tp-surface) 88%, transparent);
+  box-shadow: var(--tp-shadow);
+}
+
+.three-d-printing-page .transition-top,
+.three-d-printing-page .transition-main {
+  color: var(--tp-muted);
+}
+
+.three-d-printing-page .transition-top > span:first-child {
+  color: var(--tp-blue-strong);
+}
+
+.three-d-printing-page .transition-live {
+  color: var(--tp-success);
+}
+
+.three-d-printing-page .transition-main {
+  color: var(--tp-text);
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  font-weight: 720;
+}
+
+.three-d-printing-page .transition-main strong {
+  color: var(--tp-blue);
+}
+
+.three-d-printing-page .transition-line {
+  background: var(--tp-border);
+}
+
+.three-d-printing-page .transition-line span {
+  background: linear-gradient(90deg, var(--tp-blue), #85a2f8);
+}
+
+/* =========================================================
+   SHARED SECTION TYPOGRAPHY
+   ========================================================= */
+
+.three-d-printing-page :is(
+  .process-story-heading h2,
+  .creator-heading h2,
+  .community-heading h2,
+  .reviews-heading h2,
+  .upload-heading h2,
+  .home-final-cta h2
+) {
+  color: var(--tp-text) !important;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif !important;
+  font-size: clamp(44px, 5.1vw, 72px) !important;
+  font-weight: 760 !important;
+  line-height: 1 !important;
+  letter-spacing: -0.055em !important;
+}
+
+.three-d-printing-page :is(
+  .process-story-heading h2 span,
+  .creator-heading h2 span,
+  .community-heading h2 span,
+  .reviews-heading h2 span,
+  .upload-heading h2 span,
+  .home-final-cta h2 span
+) {
+  color: var(--tp-blue) !important;
+}
+
+.three-d-printing-page :is(
+  .process-story-heading p,
+  .creator-heading > p,
+  .community-heading > p,
+  .reviews-heading p,
+  .upload-heading p,
+  .home-final-cta > p
+) {
+  color: var(--tp-muted) !important;
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+.three-d-printing-page :is(
+  .process-story-kicker,
+  .creator-index,
+  .community-kicker,
+  .section-kicker,
+  .section-index
+) {
+  color: var(--tp-blue-strong) !important;
+  font-family: inherit;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.three-d-printing-page :is(.creator-side-label, .section-side-label) {
+  display: none;
+}
+
+/* =========================================================
+   PROCESS
+   ========================================================= */
+
+.three-d-printing-page .process-story-section {
+  padding: 110px 0 120px;
+  background: transparent;
+}
+
+.three-d-printing-page .process-story-section::before {
+  display: none;
+}
+
+.three-d-printing-page .process-story-shell {
+  width: min(1240px, 90vw);
+}
+
+.three-d-printing-page .process-story-heading {
+  gap: 64px;
+  margin-bottom: 42px;
+}
+
+.three-d-printing-page .process-flow-line {
+  background: var(--tp-border);
+}
+
+.three-d-printing-page .process-flow-line span {
+  background: linear-gradient(90deg, transparent, var(--tp-blue), transparent);
+  opacity: 0.45;
+}
+
+.three-d-printing-page .process-compact-card {
+  min-height: 280px;
+  padding: 24px;
+  border: 1px solid var(--tp-border);
+  border-radius: 20px;
+  background: var(--tp-surface);
+  box-shadow: 0 18px 45px color-mix(in srgb, var(--tp-text) 6%, transparent);
+}
+
+.three-d-printing-page .process-compact-card:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--tp-blue) 35%, var(--tp-border));
+  box-shadow: var(--tp-shadow);
+}
+
+.three-d-printing-page .process-card-number,
+.three-d-printing-page .process-card-label,
+.three-d-printing-page .process-compact-card p,
+.three-d-printing-page .process-card-arrow {
+  color: var(--tp-muted);
+}
+
+.three-d-printing-page .process-card-label,
+.three-d-printing-page .process-card-number {
+  font-size: 10px;
+}
+
+.three-d-printing-page .process-card-icon {
+  width: 60px;
+  height: 60px;
+  margin: 26px 0 22px;
+  border: 1px solid color-mix(in srgb, var(--tp-blue) 22%, var(--tp-border));
+  border-radius: 16px;
+  background: var(--tp-blue-soft);
+  color: var(--tp-blue-strong);
+  box-shadow: none;
+  font-family: Inter, sans-serif;
+}
+
+.three-d-printing-page .process-compact-card h3 {
+  color: var(--tp-text);
+  font-family: Inter, sans-serif;
+  font-size: 22px;
+  font-weight: 730;
+}
+
+/* =========================================================
+   BEYOND CREATOR
+   ========================================================= */
+
+.three-d-printing-page .beyond-creator {
+  padding: 110px 5vw 120px;
+  border-top: 1px solid var(--tp-border);
+  border-bottom: 1px solid var(--tp-border);
+  background: color-mix(in srgb, var(--tp-surface-soft) 52%, transparent);
+  color: var(--tp-text);
+}
+
+.three-d-printing-page .beyond-creator::before {
+  display: none;
+}
+
+.three-d-printing-page .creator-heading,
+.three-d-printing-page .creator-shell {
+  width: min(1380px, 100%);
+  max-width: 1380px;
+}
+
+.three-d-printing-page .creator-heading {
+  margin-bottom: 40px;
+}
+
+.three-d-printing-page .creator-shell {
+  border: 1px solid var(--tp-border);
+  border-radius: 24px;
+  background: var(--tp-surface);
+  box-shadow: var(--tp-shadow);
+}
+
+.three-d-printing-page :is(.creator-library, .creator-inspector) {
+  background: var(--tp-surface);
+}
+
+.three-d-printing-page .creator-library {
+  border-right-color: var(--tp-border);
+}
+
+.three-d-printing-page .creator-inspector {
+  border-left-color: var(--tp-border);
+}
+
+.three-d-printing-page .creator-viewport {
+  background:
+    radial-gradient(circle at 50% 48%, color-mix(in srgb, var(--tp-blue) 10%, transparent), transparent 34%),
+    var(--tp-workspace);
+}
+
+.three-d-printing-page :is(
+  .creator-viewport-top,
+  .creator-stats,
+  .creator-inspector-block,
+  .creator-divider
+) {
+  border-color: var(--tp-border) !important;
+}
+
+.three-d-printing-page .creator-divider {
+  background: var(--tp-border);
+}
+
+.three-d-printing-page :is(
+  .creator-panel-heading,
+  .creator-object-limit,
+  .creator-object-index,
+  .creator-object-name small,
+  .creator-viewport-top,
+  .creator-viewport-controls > span,
+  .creator-view-hint,
+  .creator-stats span,
+  .creator-no-selection,
+  .creator-inspector-title,
+  .creator-inspector-title span,
+  .creator-text-field > span,
+  .creator-field-note,
+  .creator-vector-fields label > span
+) {
+  color: var(--tp-muted) !important;
+}
+
+.three-d-printing-page :is(
+  .creator-selected-name,
+  .creator-stats strong,
+  .creator-object-name strong,
+  .creator-text-field input,
+  .creator-vector-fields input
+) {
+  color: var(--tp-text) !important;
+}
+
+.three-d-printing-page :is(
+  .creator-add-grid button,
+  .creator-object-list button,
+  .creator-object-actions button,
+  .creator-icon-button,
+  .creator-vector-fields label,
+  .creator-nudge-row button,
+  .creator-material,
+  .creator-text-field input
+) {
+  border-color: var(--tp-border) !important;
+  background: color-mix(in srgb, var(--tp-surface-soft) 58%, transparent) !important;
+  color: var(--tp-muted) !important;
+}
+
+.three-d-printing-page :is(
+  .creator-add-grid button:hover,
+  .creator-object-list button.active,
+  .creator-icon-button.active,
+  .creator-material.active
+) {
+  border-color: color-mix(in srgb, var(--tp-blue) 38%, var(--tp-border)) !important;
+  background: var(--tp-blue-soft) !important;
+  color: var(--tp-blue-strong) !important;
+}
+
+.three-d-printing-page .creator-view-hint {
+  border-color: var(--tp-border);
+  background: color-mix(in srgb, var(--tp-surface) 86%, transparent);
+}
+
+/* =========================================================
+   COMMUNITY
+   ========================================================= */
+
+.three-d-printing-page .beyond-community {
+  padding: 110px 0 120px;
+  border-top: 0;
+  background: transparent;
+}
+
+.three-d-printing-page .beyond-community::before {
+  display: none;
+}
+
+.three-d-printing-page .community-shell,
+.three-d-printing-page .reviews-section {
+  width: min(1240px, 90vw);
+}
+
+.three-d-printing-page .community-heading {
+  gap: 64px;
+  margin-bottom: 42px;
+}
+
+.three-d-printing-page .community-filters button,
+.three-d-printing-page .community-refresh {
+  border-color: var(--tp-border);
+  background: var(--tp-surface);
+  color: var(--tp-muted);
+}
+
+.three-d-printing-page .community-filters button.active {
+  border-color: color-mix(in srgb, var(--tp-blue) 38%, var(--tp-border));
+  background: var(--tp-blue-soft);
+  color: var(--tp-blue-strong);
+}
+
+.three-d-printing-page .community-card {
+  border-color: var(--tp-border);
+  background: var(--tp-surface);
+  box-shadow: 0 16px 44px color-mix(in srgb, var(--tp-text) 6%, transparent);
+}
+
+.three-d-printing-page .community-card-preview {
+  background: var(--tp-surface-soft);
+}
+
+.three-d-printing-page .community-card-placeholder {
+  color: var(--tp-muted-soft);
+  background:
+    radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--tp-blue) 13%, transparent), transparent 34%),
+    var(--tp-surface-soft);
+}
+
+.three-d-printing-page :is(.community-card h3, .community-card-body strong) {
+  color: var(--tp-text);
+}
+
+.three-d-printing-page :is(
+  .community-card p,
+  .community-card-kicker,
+  .community-tags span
+) {
+  color: var(--tp-muted);
+}
+
+.three-d-printing-page :is(.community-type, .community-view-3d-badge) {
+  border-color: color-mix(in srgb, var(--tp-blue) 22%, var(--tp-border));
+  background: color-mix(in srgb, var(--tp-surface) 88%, transparent);
+  color: var(--tp-blue-strong);
+}
+
+/* =========================================================
+   REVIEWS
+   ========================================================= */
+
+.three-d-printing-page .reviews-section {
+  padding: 110px 0 120px;
+}
+
+.three-d-printing-page .reviews-heading {
+  gap: 64px;
+  margin-bottom: 42px;
+}
+
+.three-d-printing-page .reviews-glow {
+  opacity: 0.45;
+}
+
+.three-d-printing-page .reviews-summary {
+  min-height: 100px;
+  padding: 0 22px;
+  border: 1px solid var(--tp-border);
+  border-radius: 18px;
+  background: var(--tp-surface);
+}
+
+.three-d-printing-page .reviews-summary-line {
+  background: var(--tp-border);
+}
+
+.three-d-printing-page .reviews-score > strong,
+.three-d-printing-page .reviews-summary-copy strong {
+  color: var(--tp-text);
+}
+
+.three-d-printing-page :is(
+  .reviews-score > span,
+  .reviews-summary-copy span,
+  .review-card-top > span,
+  .review-card-footer > div:first-child span,
+  .review-project span,
+  .review-project strong,
+  .review-verified
+) {
+  color: var(--tp-muted);
+}
+
+.three-d-printing-page .reviews-stars span.active {
+  color: #f3b84b;
+}
+
+.three-d-printing-page .review-card,
+.three-d-printing-page .review-card-featured {
+  border-color: var(--tp-border);
+  background: var(--tp-surface);
+  box-shadow: 0 16px 44px color-mix(in srgb, var(--tp-text) 6%, transparent);
+}
+
+.three-d-printing-page .review-card:hover {
+  border-color: color-mix(in srgb, var(--tp-blue) 32%, var(--tp-border));
+  background: var(--tp-surface-hover);
+  box-shadow: var(--tp-shadow);
+}
+
+.three-d-printing-page .review-card blockquote {
+  color: var(--tp-text);
+  font-family: Inter, sans-serif;
+  font-weight: 560;
+}
+
+.three-d-printing-page .review-card-footer > div:first-child strong {
+  color: var(--tp-text);
+}
+
+.three-d-printing-page .review-verified {
+  border-top-color: var(--tp-border);
+}
+
+/* =========================================================
+   START PROJECT / UPLOAD
+   ========================================================= */
+
+.three-d-printing-page .home-start-project {
+  padding: 110px 0 120px;
+  background: color-mix(in srgb, var(--tp-surface-soft) 45%, transparent);
+  border-top: 1px solid var(--tp-border);
+  border-bottom: 1px solid var(--tp-border);
+}
+
+.three-d-printing-page .start-project-light {
+  opacity: 0.35;
+  background: rgba(76, 120, 238, 0.12);
+}
+
+.three-d-printing-page .home-upload-wrapper,
+.three-d-printing-page .upload-section {
+  width: min(1240px, 90vw);
+  max-width: 1240px;
+  margin-inline: auto;
+}
+
+.three-d-printing-page .upload-section {
+  padding: 0;
+}
+
+.three-d-printing-page .upload-heading {
+  max-width: 820px;
+  margin-bottom: 42px;
+}
+
+.three-d-printing-page .upload-layout {
+  gap: 18px;
+}
+
+.three-d-printing-page .upload-visual,
+.three-d-printing-page .project-form {
+  border: 1px solid var(--tp-border) !important;
+  border-radius: 22px !important;
+  background: var(--tp-surface) !important;
+  box-shadow: 0 18px 48px color-mix(in srgb, var(--tp-text) 6%, transparent) !important;
+}
+
+.three-d-printing-page .upload-visual {
+  color: var(--tp-text);
+}
+
+.three-d-printing-page .upload-icon {
+  border-color: color-mix(in srgb, var(--tp-blue) 25%, var(--tp-border)) !important;
+  background: var(--tp-blue-soft) !important;
+  color: var(--tp-blue-strong) !important;
+}
+
+.three-d-printing-page .upload-visual h3 {
+  color: var(--tp-text) !important;
+  font-family: Inter, sans-serif !important;
+}
+
+.three-d-printing-page :is(.upload-visual p, .upload-benefits span) {
+  color: var(--tp-muted) !important;
+}
+
+.three-d-printing-page .project-form :is(input, select, textarea) {
+  border: 1px solid var(--tp-border) !important;
+  border-radius: 12px !important;
+  background: var(--tp-surface-soft) !important;
+  color: var(--tp-text) !important;
+  outline: none;
+}
+
+.three-d-printing-page .project-form :is(input, select, textarea):focus {
+  border-color: color-mix(in srgb, var(--tp-blue) 55%, var(--tp-border)) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--tp-blue) 10%, transparent) !important;
+}
+
+.three-d-printing-page .project-form :is(input, textarea)::placeholder {
+  color: var(--tp-muted-soft) !important;
+}
+
+.three-d-printing-page .project-form label > span {
+  color: var(--tp-muted) !important;
+  font-weight: 700;
+}
+
+.three-d-printing-page .drop-zone {
+  border-color: color-mix(in srgb, var(--tp-blue) 28%, var(--tp-border)) !important;
+  border-radius: 18px !important;
+  background: color-mix(in srgb, var(--tp-blue-soft) 44%, transparent) !important;
+}
+
+.three-d-printing-page .drop-zone:hover,
+.three-d-printing-page .drop-zone.has-file,
+.three-d-printing-page .drop-zone.has-ai-model,
+.three-d-printing-page .drop-zone.has-creator-model {
+  border-color: color-mix(in srgb, var(--tp-blue) 54%, var(--tp-border)) !important;
+  background: var(--tp-blue-soft) !important;
+}
+
+.three-d-printing-page .drop-zone-content strong {
+  color: var(--tp-text) !important;
+}
+
+.three-d-printing-page :is(.drop-zone-content span, .drop-zone-content small) {
+  color: var(--tp-muted) !important;
+}
+
+.three-d-printing-page .drop-icon {
+  background: color-mix(in srgb, var(--tp-blue) 12%, transparent) !important;
+  color: var(--tp-blue-strong) !important;
+}
+
+.three-d-printing-page :is(.selected-ai-model-card, .selected-creator-model-card) {
+  border-color: color-mix(in srgb, var(--tp-blue) 26%, var(--tp-border)) !important;
+  background: var(--tp-blue-soft) !important;
+}
+
+.three-d-printing-page .selected-ai-model-copy strong {
+  color: var(--tp-text) !important;
+}
+
+.three-d-printing-page :is(.selected-ai-model-copy span, .selected-creator-model-meta) {
+  color: var(--tp-muted) !important;
+}
+
+.three-d-printing-page .selected-ai-model-remove {
+  border-color: var(--tp-border) !important;
+  background: var(--tp-surface) !important;
+  color: var(--tp-muted) !important;
+}
+
+.three-d-printing-page .form-status {
+  border: 1px solid color-mix(in srgb, var(--tp-blue) 22%, var(--tp-border));
+  background: var(--tp-blue-soft);
+  color: var(--tp-blue-strong);
+}
+
+/* =========================================================
+   FINAL CTA + FOOTER
+   ========================================================= */
+
+.three-d-printing-page .home-final-cta {
+  width: min(1240px, 90vw);
+  margin: 90px auto 70px;
+  padding: clamp(44px, 6vw, 72px);
+  border: 1px solid var(--tp-border);
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 88% 0%, color-mix(in srgb, var(--tp-blue) 13%, transparent), transparent 24rem),
+    var(--tp-surface);
+  box-shadow: var(--tp-shadow);
+}
+
+.three-d-printing-page :is(.final-cta-ring, .final-cta-glow) {
+  opacity: 0.22;
+}
+
+.three-d-printing-page .home-contact-action-panel {
+  border-color: var(--tp-border) !important;
+  background: var(--tp-surface) !important;
+  box-shadow: var(--tp-shadow) !important;
+}
+
+.three-d-printing-page .home-contact-action-choice {
+  color: var(--tp-text) !important;
+}
+
+.three-d-printing-page .home-contact-action-choice:hover {
+  background: var(--tp-surface-soft) !important;
+}
+
+.three-d-printing-page .home-footer {
+  min-height: 120px;
+  padding: 28px 5vw;
+  border-top: 1px solid var(--tp-border);
+  background: color-mix(in srgb, var(--tp-surface) 62%, transparent);
+  color: var(--tp-muted);
+}
+
+.three-d-printing-page :is(.footer-brand, .footer-center) {
+  color: var(--tp-text);
+}
+
+.three-d-printing-page .footer-center span {
+  color: var(--tp-blue);
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1180px) {
+  .three-d-printing-page .home-navbar {
+    padding-inline: 3vw;
+  }
+
+  .three-d-printing-page .home-hero {
+    grid-template-columns: minmax(0, 0.9fr) minmax(430px, 1.1fr);
+    gap: 40px;
+  }
+
+  .three-d-printing-page .home-account-copy {
+    display: none;
+  }
+
+  .three-d-printing-page .home-account-button {
+    padding: 0;
+  }
+}
+
+@media (max-width: 920px) {
+  .three-d-printing-page .home-navbar {
+    min-height: 68px;
+    height: 68px;
+    padding-inline: 14px;
+  }
+
+  .three-d-printing-page .home-nav-links {
+    top: 78px;
+    inset-inline: 14px;
+    width: auto;
+  }
+
+  .three-d-printing-page .home-hero {
+    width: min(760px, calc(100% - 28px));
+    grid-template-columns: 1fr;
+    padding: 82px 0 92px;
+  }
+
+  .three-d-printing-page .hero-machine {
+    min-height: 520px;
+  }
+
+  .three-d-printing-page .process-story-heading,
+  .three-d-printing-page .community-heading,
+  .three-d-printing-page .reviews-heading,
+  .three-d-printing-page .creator-heading {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .three-d-printing-page :is(
+    .process-story-heading p,
+    .community-heading > p,
+    .reviews-heading p,
+    .creator-heading > p
+  ) {
+    margin-inline: 0;
+    justify-self: start;
+  }
+
+  .three-d-printing-page .creator-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 700px) {
+  .three-d-printing-page .home-brand img {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  .three-d-printing-page .home-brand > span {
+    width: 104px;
+    height: 20px;
+    flex-basis: 104px;
+  }
+
+  .three-d-printing-page .home-nav-actions {
+    gap: 6px;
+  }
+
+  .three-d-printing-page .home-start-small,
+  .three-d-printing-page .home-menu-studio-button {
+    display: none !important;
+  }
+
+  .three-d-printing-page .home-language-toggle,
+  .three-d-printing-page .home-theme-toggle,
+  .three-d-printing-page .home-mobile-menu {
+    min-height: 38px;
+    height: 38px;
+  }
+
+  .three-d-printing-page .home-theme-toggle,
+  .three-d-printing-page .home-mobile-menu {
+    width: 38px;
+    flex-basis: 38px;
+  }
+
+  .three-d-printing-page .home-auth-button {
+    min-height: 38px;
+    padding-inline: 11px;
+    font-size: 11px;
+  }
+
+  .three-d-printing-page .home-hero,
+  .three-d-printing-page .process-story-shell,
+  .three-d-printing-page .community-shell,
+  .three-d-printing-page .reviews-section,
+  .three-d-printing-page .home-upload-wrapper,
+  .three-d-printing-page .upload-section,
+  .three-d-printing-page .home-final-cta,
+  .three-d-printing-page .material-transition {
+    width: calc(100% - 28px);
+  }
+
+  .three-d-printing-page .hero-copy h1 {
+    font-size: clamp(50px, 15vw, 68px);
+  }
+
+  .three-d-printing-page .hero-copy > p {
+    font-size: 16px;
+  }
+
+  .three-d-printing-page .hero-buttons {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .three-d-printing-page :is(.home-primary-button, .home-ghost-button) {
+    width: 100%;
+  }
+
+  .three-d-printing-page .hero-micro-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .three-d-printing-page .hero-machine {
+    min-height: 440px;
+    padding: 12px;
+    border-radius: 24px;
+  }
+
+  .three-d-printing-page .material-transition {
+    padding: 20px;
+  }
+
+  .three-d-printing-page .transition-main {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 8px 12px;
+  }
+
+  .three-d-printing-page :is(
+    .process-story-section,
+    .beyond-community,
+    .reviews-section,
+    .home-start-project
+  ) {
+    padding-top: 82px;
+    padding-bottom: 88px;
+  }
+
+  .three-d-printing-page .beyond-creator {
+    padding: 82px 14px 88px;
+  }
+
+  .three-d-printing-page .home-final-cta {
+    margin-top: 70px;
+    padding: 34px 24px;
+  }
+
+  .three-d-printing-page .home-footer {
+    gap: 16px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 500px) {
+  .three-d-printing-page .home-brand > span {
+    display: none;
+  }
+
+  .three-d-printing-page .home-language-toggle {
+    padding-inline: 8px;
+  }
+
+  .three-d-printing-page .home-auth-button {
+    max-width: 92px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
 }
