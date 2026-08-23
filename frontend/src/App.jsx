@@ -31,6 +31,7 @@ import "./pages/MenuHomeNavStructure.js";
 import "./pages/AdminTheme.js";
 import "./pages/AdminTheme.css";
 import "./components/DigitalMenuLayoutsMobileFix.css";
+import "./components/DigitalMenuFitMode.css";
 
 function App() {
   return (
