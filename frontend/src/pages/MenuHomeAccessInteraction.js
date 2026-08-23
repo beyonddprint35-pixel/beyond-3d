@@ -65,6 +65,7 @@ function setupPreview(preview) {
 
   let timers = [];
   let autoTimer = null;
+  let initialAutoTimer = null;
   let userInteracted = false;
 
   function clearTimers() {
@@ -107,7 +108,7 @@ function setupPreview(preview) {
 
     setState("connecting");
     timers.push(window.setTimeout(() => setState("open"), 900));
-    timers.push(window.setTimeout(() => setState("idle"), 4700));
+    timers.push(window.setTimeout(() => setState("idle"), 4900));
   }
 
   function activate(event) {
@@ -121,13 +122,18 @@ function setupPreview(preview) {
 
   setState("idle");
 
+  initialAutoTimer = window.setTimeout(() => {
+    if (!document.hidden && !userInteracted) runDemo(false);
+  }, 1900);
+
   autoTimer = window.setInterval(() => {
     if (document.hidden || userInteracted) return;
     runDemo(false);
-  }, 8500);
+  }, 9000);
 
   preview._beyondAccessCleanup = () => {
     clearTimers();
+    window.clearTimeout(initialAutoTimer);
     window.clearInterval(autoTimer);
     stand.removeEventListener("click", activate);
     stand.removeEventListener("keydown", activate);
