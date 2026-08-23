@@ -69,6 +69,7 @@ export default function MenuPricingSection({ onSelectPlan }) {
           const name = isHebrew ? plan.name_he : plan.name_en;
           const description = isHebrew ? plan.description_he : plan.description_en;
           const period = isHebrew ? plan.period_he : plan.period_en;
+          const setupNote = isHebrew ? plan.setup_note_he : plan.setup_note_en;
           const cta = isHebrew ? plan.cta_he : plan.cta_en;
 
           return (
@@ -91,6 +92,13 @@ export default function MenuPricingSection({ onSelectPlan }) {
               <div className="menu-pricing-price-row">
                 <strong>{plan.price}</strong>
                 <span>{period}</span>
+              </div>
+
+              <div className="menu-pricing-setup">
+                <strong>
+                  {isHebrew ? "הקמה חד-פעמית:" : "One-time setup:"} {plan.setup_fee}
+                </strong>
+                {setupNote ? <span>{setupNote}</span> : null}
               </div>
 
               <div className="menu-pricing-divider" />
