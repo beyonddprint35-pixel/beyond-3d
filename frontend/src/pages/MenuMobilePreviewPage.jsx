@@ -83,7 +83,6 @@ export default function MenuMobilePreviewPage() {
       {/*
         EXACT SAME CUSTOMER TEMPLATE.
 
-        No embedded mode.
         No scaling.
         No alternative menu component.
 
@@ -102,6 +101,7 @@ export default function MenuMobilePreviewPage() {
           preview.logoUrl ||
           null
         }
+        fitViewport
       />
 
     </main>
