@@ -44,6 +44,15 @@ export default function MenuMobilePreviewPage() {
       []
     );
 
+  const isHomepagePreview =
+    useMemo(
+      () =>
+        new URLSearchParams(
+          window.location.search
+        ).get("source") === "home",
+      []
+    );
+
 
   if (
     !preview?.menu
@@ -63,7 +72,13 @@ export default function MenuMobilePreviewPage() {
 
 
   return (
-    <main className="menu-mobile-preview-page">
+    <main
+      className={
+        isHomepagePreview
+          ? "menu-mobile-preview-page menu-mobile-preview-home"
+          : "menu-mobile-preview-page"
+      }
+    >
 
       {/*
         EXACT SAME CUSTOMER TEMPLATE.
