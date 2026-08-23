@@ -1,13 +1,7 @@
 /* =========================================================
    BEYOND WORDMARK
-   The E is represented by three horizontal bars, but it must
-   occupy the same optical letter box as the surrounding glyphs.
-
-   Important:
-   - one consistent gap rhythm across B / E / Y / O / N / D
-   - E matches the cap-height of the word, not the full line box
-   - E width is intentionally close to a normal capital E
-   - bars read as typography, not as a hamburger/navigation icon
+   Three horizontal bars replace the E, but they occupy the same
+   optical letter box as the surrounding characters.
    ========================================================= */
 
 .menu-home-brand > span {
@@ -30,31 +24,7 @@
   direction: ltr;
   color: var(--menu-text);
 
-  /*
-    Custom E.
-    The OUTER edges of the top/bottom strokes define the exact
-    cap-height box, so the E never becomes taller than B/Y/O/N/D.
-  */
-  background:
-    linear-gradient(currentColor 0 0)
-      calc(var(--beyond-b-width) + var(--beyond-letter-gap))
-      calc(50% - (var(--beyond-e-height) / 2)) /
-      var(--beyond-e-width) var(--beyond-e-bar) no-repeat,
-
-    linear-gradient(currentColor 0 0)
-      calc(var(--beyond-b-width) + var(--beyond-letter-gap))
-      calc(50% - (var(--beyond-e-bar) / 2)) /
-      var(--beyond-e-width) var(--beyond-e-bar) no-repeat,
-
-    linear-gradient(currentColor 0 0)
-      calc(
-        50% +
-        (var(--beyond-e-height) / 2) -
-        var(--beyond-e-bar)
-      ) /
-      0 0 no-repeat;
-
-  /* Override the third layer with the correct x/y/size explicitly. */
+  /* Exact E geometry: same width, same total cap-height, equal strokes. */
   background-image:
     linear-gradient(currentColor 0 0),
     linear-gradient(currentColor 0 0),
@@ -97,7 +67,10 @@
   letter-spacing: 0;
 }
 
-/* Y starts exactly one standard gap after the custom E. */
+/*
+  B → E and E → Y use exactly the same gap.
+  The same value continues between Y / O / N / D.
+*/
 .menu-home-brand > span::after {
   content: "YOND";
   left: calc(
@@ -117,7 +90,6 @@
   color: #f4f7ff;
 }
 
-/* Complete wordmark remains visible and proportionally identical on mobile. */
 @media (max-width: 500px) {
   .menu-home-brand > span {
     --beyond-word-size: 15px;
