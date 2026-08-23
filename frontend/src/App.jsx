@@ -12,6 +12,8 @@ import TrackOrder from "./pages/TrackOrder";
 import MenuBuilder from "./pages/MenuBuilder";
 import MenuMobilePreviewPage from "./pages/MenuMobilePreviewPage";
 
+import "./pages/MenuHomeOverrides.css";
+
 
 function App() {
   return (
