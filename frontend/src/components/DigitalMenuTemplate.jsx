@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import MenuAccessibility from "./MenuAccessibility";
 
@@ -8,6 +8,7 @@ import "./DigitalMenuLayouts.css";
 export const DEFAULT_MENU_BRANDING = {
   design_preset: "home",
   layout_style: "classic",
+  fit_to_view: true,
   display_name: "",
   subtitle: "restaurant · bar · café",
   hero_title_en: "Our Menu",
@@ -131,6 +132,7 @@ export default function DigitalMenuTemplate({
   branding: incomingBranding,
   logoUrl = "",
   embedded = true,
+  fitViewport = false,
   onMenuChange,
   onBrandingChange,
 }) {
@@ -154,6 +156,7 @@ export default function DigitalMenuTemplate({
 
   const [language, setLanguage] = useState(getInitialLanguage);
   const [activeIndex, setActiveIndex] = useState(0);
+  const menuListRef = useRef(null);
 
   useEffect(() => {
     setLanguage(getInitialLanguage());
@@ -169,7 +172,12 @@ export default function DigitalMenuTemplate({
   const displayName = branding.display_name?.trim() || menu?.restaurant_name || "Your Restaurant";
   const displayLogo = logoUrl || branding.logo_url || "";
   const logoShape = branding.logo_shape || "free";
-  const layoutStyle = branding.layout_style || "classic";
+  const rawLayoutStyle = String(branding.layout_style || "classic").trim();
+  const layoutStyle = rawLayoutStyle.split(/\s+/)[0] || "classic";
+  const fitToView =
+    typeof branding.fit_to_view === "boolean"
+      ? branding.fit_to_view
+      : !rawLayoutStyle.includes("dmt-natural-view");
 
   const style = {
     "--dmt-bg": branding.background,
@@ -197,6 +205,87 @@ export default function DigitalMenuTemplate({
   };
 
   const languageField = (suffix) => `${suffix}_${language}`;
+  const itemCount = activeSection?.items?.length || 0;
+
+  useLayoutEffect(() => {
+    const list = menuListRef.current;
+    if (!list) return undefined;
+
+    let frame = 0;
+
+    const clearFit = () => {
+      list.classList.remove("dmt-fit-rows");
+      list.style.removeProperty("--dmt-fit-row-height");
+    };
+
+    const shouldFit =
+      fitViewport &&
+      fitToView &&
+      typeof window !== "undefined" &&
+      window.matchMedia("(max-width: 560px)").matches;
+
+    if (!shouldFit) {
+      clearFit();
+      return undefined;
+    }
+
+    const updateFit = () => {
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(() => {
+        const items = Array.from(list.children).filter((node) =>
+          node.classList?.contains("dmt-item-row")
+        );
+
+        if (!items.length || list.clientHeight <= 0) {
+          clearFit();
+          return;
+        }
+
+        const computed = window.getComputedStyle(list);
+        const paddingTop = Number.parseFloat(computed.paddingTop) || 0;
+        const paddingBottom = Number.parseFloat(computed.paddingBottom) || 0;
+        const rowGap = Number.parseFloat(computed.rowGap || computed.gap) || 0;
+        const usableHeight = Math.max(
+          0,
+          list.clientHeight - paddingTop - paddingBottom
+        );
+
+        const rowTops = [];
+        items.forEach((item) => {
+          const top = Math.round(item.offsetTop);
+          if (!rowTops.some((value) => Math.abs(value - top) <= 2)) {
+            rowTops.push(top);
+          }
+        });
+
+        const rowCount = Math.max(1, rowTops.length);
+        const targetHeight = Math.floor(
+          (usableHeight - rowGap * Math.max(0, rowCount - 1)) / rowCount
+        );
+
+        if (!Number.isFinite(targetHeight) || targetHeight <= 0) {
+          clearFit();
+          return;
+        }
+
+        list.style.setProperty("--dmt-fit-row-height", `${targetHeight}px`);
+        list.classList.add("dmt-fit-rows");
+      });
+    };
+
+    updateFit();
+
+    const resizeObserver = new ResizeObserver(updateFit);
+    resizeObserver.observe(list);
+    window.addEventListener("resize", updateFit);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", updateFit);
+      clearFit();
+    };
+  }, [fitViewport, fitToView, activeIndex, itemCount, layoutStyle, language]);
 
   function patchBranding(updates) {
     onBrandingChange?.({ ...branding, ...updates });
@@ -243,8 +332,6 @@ export default function DigitalMenuTemplate({
     return "OUR DIGITAL MENU";
   }
 
-  const itemCount = activeSection?.items?.length || 0;
-
   return (
     <div
       className={[
@@ -252,12 +339,14 @@ export default function DigitalMenuTemplate({
         `dmt-layout-${layoutStyle}`,
         embedded ? "dmt-embedded" : "dmt-live",
         editable ? "dmt-editable" : "",
+        fitViewport && fitToView ? "dmt-fit-to-view" : "",
       ].join(" ")}
       style={style}
       dir={rtl ? "rtl" : "ltr"}
       lang={language}
       data-language={language}
       data-layout={layoutStyle}
+      data-fit-to-view={fitToView ? "true" : "false"}
     >
       <MenuAccessibility
         displayName={displayName}
@@ -384,7 +473,12 @@ export default function DigitalMenuTemplate({
               </span>
             </section>
 
-            <section id="menuList" className="dmt-menu-list" aria-live="polite">
+            <section
+              id="menuList"
+              ref={menuListRef}
+              className="dmt-menu-list"
+              aria-live="polite"
+            >
               {(activeSection.items || []).map((item, itemIndex) => {
                 const name = chooseText(language, {
                   en: item.name_en,
