@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { Check, Sparkles } from "lucide-react";
 
+import { useBeyondLanguage } from "../i18n/BeyondLanguage";
 import { supabase } from "../lib/supabaseClient";
 import { DEFAULT_MENU_PRICING, parseMenuPricing } from "../lib/menuPricing";
 
 import "./MenuPricingSection.css";
 
-export default function MenuPricingSection({ isHebrew, onSelectPlan }) {
+export default function MenuPricingSection({ onSelectPlan }) {
+  const { isHebrew } = useBeyondLanguage();
   const [pricing, setPricing] = useState(DEFAULT_MENU_PRICING);
 
   useEffect(() => {
