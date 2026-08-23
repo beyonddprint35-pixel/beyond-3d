@@ -3,61 +3,88 @@ import { createPortal } from "react-dom";
 import { Moon, Sun } from "lucide-react";
 
 import MenuBuilder from "./MenuBuilder";
-import { useBeyondLanguage } from "../i18n/BeyondLanguage";
+import { BEYOND_HE } from "../i18n/beyondUiTranslations";
 
 import "./MenuBuilderUnified.css";
+import "./MenuBuilderUnifiedFixes.css";
 
 const THEME_STORAGE_KEY = "beyond-theme";
+const BUILDER_LANGUAGE_STORAGE_KEY = "beyond-menu-builder-ui-language";
 
 const BUILDER_HE = Object.freeze({
+  ...BEYOND_HE,
+
   "Loading BEYOND Menu...": "טוען את BEYOND Menu...",
   "Returning to BEYOND...": "חוזר ל-BEYOND...",
   "Back to BEYOND": "חזרה ל-BEYOND",
   "Loading attempts...": "טוען ניסיונות...",
   "Admin access · Unlimited builds": "גישת מנהל · בניות ללא הגבלה",
+
   "BEYOND MENU AI": "BEYOND MENU AI",
+  "Turn your existing menu": "הפכו את התפריט הקיים שלכם",
+  "into a digital experience.": "לחוויה דיגיטלית.",
   "Turn your existing menu into a digital experience.": "הפכו את התפריט הקיים שלכם לחוויה דיגיטלית.",
-  "Upload a PDF, add menu photos, paste your text — or combine them. BEYOND AI will structure the menu and show you a private preview before you choose a subscription.": "העלו PDF, הוסיפו תמונות של התפריט, הדביקו טקסט — או שלבו ביניהם. BEYOND AI יסדר את התפריט ויציג לכם תצוגה פרטית לפני בחירת החבילה.",
+  "Upload a PDF, add menu photos, paste your text — or combine them. BEYOND AI will structure the menu and show you a private preview before you choose a subscription.":
+    "העלו PDF, הוסיפו תמונות של התפריט, הדביקו טקסט — או שלבו ביניהם. BEYOND AI יסדר את התפריט ויציג לכם תצוגה פרטית לפני בחירת החבילה.",
+
   "Checking for your saved menu...": "בודק אם יש לכם תפריט שמור...",
   "Your menu is saved to your BEYOND account.": "התפריט שלכם שמור בחשבון BEYOND.",
-  "You can log out and come back later. We will restore this menu automatically.": "אפשר להתנתק ולחזור מאוחר יותר. התפריט ישוחזר אוטומטית.",
+  "You can log out and come back later. We will restore this menu automatically.":
+    "אפשר להתנתק ולחזור מאוחר יותר. התפריט ישוחזר אוטומטית.",
   "Saved menu restored": "התפריט השמור שוחזר",
   "Saving...": "שומר...",
   "Could not save changes": "לא ניתן לשמור את השינויים",
   "Saved automatically": "נשמר אוטומטית",
   "AI menu saved": "תפריט ה-AI נשמר",
   "MENU MODELS": "מודלים של תפריט",
+
   "01 / LANGUAGES": "01 / שפות",
   "Which languages do you want?": "באילו שפות תרצו את התפריט?",
-  "Choose one or more languages for the live customer menu.": "בחרו שפה אחת או יותר לתפריט החי של הלקוחות.",
+  "Choose one or more languages for the live customer menu.":
+    "בחרו שפה אחת או יותר לתפריט החי של הלקוחות.",
   "Choose at least one language.": "בחרו לפחות שפה אחת.",
+  English: "אנגלית",
+
   "02 / SOURCE": "02 / מקור",
   "Give us your menu.": "תנו לנו את התפריט שלכם.",
   "Up to 6 files": "עד 6 קבצים",
   "Upload PDF or photos": "העלאת PDF או תמונות",
-  "PDF, JPG, PNG or WEBP. You can combine several menu pages.": "PDF, JPG, PNG או WEBP. אפשר לשלב כמה עמודי תפריט.",
+  "PDF, JPG, PNG or WEBP. You can combine several menu pages.":
+    "PDF, JPG, PNG או WEBP. אפשר לשלב כמה עמודי תפריט.",
   "Choose files": "בחירת קבצים",
   "Write or paste": "כתיבה או הדבקה",
-  "Remove": "הסר",
+  Remove: "הסר",
+
   "Your AI preview is private.": "תצוגת ה-AI שלכם פרטית.",
-  "A successful build uses 1 of your 3 attempts. System failures are refunded automatically.": "בנייה מוצלחת משתמשת בניסיון אחד מתוך שלושה. תקלות מערכת מוחזרות אוטומטית.",
+  "A successful build uses 1 of your 3 attempts. System failures are refunded automatically.":
+    "בנייה מוצלחת משתמשת בניסיון אחד מתוך שלושה. תקלות מערכת מוחזרות אוטומטית.",
   "Building your menu...": "בונה את התפריט שלכם...",
   "Build My Menu": "בניית התפריט שלי",
+
   "02 / BRAND & PREVIEW": "02 / מותג ותצוגה",
   "Design your live menu.": "עצבו את התפריט החי שלכם.",
-  "This is the same BEYOND customer-menu system that your restaurant will use live. Add your logo, choose the brand colors and fonts, switch languages and preview the final customer experience before subscribing.": "זוהי אותה מערכת תפריט הלקוחות של BEYOND שבה המסעדה שלכם תשתמש בפועל. הוסיפו לוגו, בחרו צבעי מותג ופונטים, החליפו שפות וצפו בחוויית הלקוח הסופית לפני ההצטרפות.",
+  "This is the same BEYOND customer-menu system that your restaurant will use live. Add your logo, choose the brand colors and fonts, switch languages and preview the final customer experience before subscribing.":
+    "זוהי אותה מערכת תפריט הלקוחות של BEYOND שבה המסעדה שלכם תשתמש בפועל. הוסיפו לוגו, בחרו צבעי מותג ופונטים, החליפו שפות וצפו בחוויית הלקוח הסופית לפני ההצטרפות.",
   "Saving design...": "שומר את העיצוב...",
   "Save Design & Continue": "שמירת העיצוב והמשך",
   "LIVE CUSTOMER PREVIEW": "תצוגת לקוח חיה",
   "Changes appear instantly": "השינויים מופיעים מיד",
+  "Mobile View": "תצוגת מובייל",
+  "LIVE MOBILE PREVIEW": "תצוגת מובייל חיה",
+  "Your real customer menu on mobile": "התפריט האמיתי של הלקוח במובייל",
+  "Close mobile preview": "סגירת תצוגת המובייל",
+
   "Back to preview": "חזרה לתצוגה",
   "04 / ACTIVATE": "04 / הפעלה",
   "Choose your BEYOND plan.": "בחרו את חבילת BEYOND שלכם.",
-  "Your menu draft is ready. Choose how you want to run it live.": "טיוטת התפריט מוכנה. בחרו כיצד להפעיל אותה אונליין.",
-  "Monthly": "חודשי",
-  "Annual": "שנתי",
+  "Your menu draft is ready. Choose how you want to run it live.":
+    "טיוטת התפריט מוכנה. בחרו כיצד להפעיל אותה אונליין.",
+  Monthly: "חודשי",
+  Annual: "שנתי",
   "PAY FOR 11": "משלמים על 11",
   "PREMIUM EXPERIENCE": "חוויית PREMIUM",
+  Basic: "בסיסי",
+  Premium: "פרימיום",
   "per year · 12 months of service": "לשנה · 12 חודשי שירות",
   "per month": "לחודש",
   "1 month included free": "חודש אחד כלול ללא עלות",
@@ -67,46 +94,105 @@ const BUILDER_HE = Object.freeze({
   "AI menu import": "ייבוא תפריט באמצעות AI",
   "Pictures inside the menu": "תמונות בתוך התפריט",
   "+ More plan features coming": "+ תכונות נוספות יתווספו בהמשך",
+
   "ADMIN · AI COST": "מנהל · עלות AI",
   "Cost of this try": "עלות הניסיון הזה",
-  "Model": "מודל",
+  Model: "מודל",
   "OpenAI requests": "בקשות OpenAI",
   "Input tokens": "טוקנים בקלט",
   "Cached input": "קלט מהמטמון",
   "Output tokens": "טוקנים בפלט",
   "Total tokens": "סה״כ טוקנים",
   "Cache hit · No OpenAI request · $0 cost": "נמצא במטמון · ללא בקשת OpenAI · עלות $0",
-  "Estimated from the actual token usage returned by OpenAI": "הערכה לפי שימוש הטוקנים בפועל שחזר מ-OpenAI",
+  "Estimated from the actual token usage returned by OpenAI":
+    "הערכה לפי שימוש הטוקנים בפועל שחזר מ-OpenAI",
+
   "SMART RECOVERY": "שחזור חכם",
   "visible items detected": "פריטים גלויים זוהו",
   "confidently read": "נקראו בביטחון",
   "Best option: original PDF": "האפשרות הטובה ביותר: PDF מקורי",
-  "Upload the restaurant's original PDF whenever possible. Text is usually much clearer than in a screenshot.": "ככל שניתן, העלו את קובץ ה-PDF המקורי של המסעדה. הטקסט בדרך כלל ברור יותר מאשר בצילום מסך.",
+  "Upload the restaurant's original PDF whenever possible. Text is usually much clearer than in a screenshot.":
+    "ככל שניתן, העלו את קובץ ה-PDF המקורי של המסעדה. הטקסט בדרך כלל ברור יותר מאשר בצילום מסך.",
   "Use close-up menu images": "השתמשו בתמונות תקריב של התפריט",
-  "Upload 2–6 close-ups so each section and item is large enough to read accurately.": "העלו 2–6 תמונות תקריב כדי שכל קטגוריה ופריט יהיו גדולים מספיק לקריאה מדויקת.",
+  "Upload 2–6 close-ups so each section and item is large enough to read accurately.":
+    "העלו 2–6 תמונות תקריב כדי שכל קטגוריה ופריט יהיו גדולים מספיק לקריאה מדויקת.",
   "Add menu text": "הוסיפו טקסט של התפריט",
-  "Paste any available text into the box above. BEYOND can combine text with your uploaded images.": "הדביקו כל טקסט זמין בתיבה למעלה. BEYOND יכול לשלב את הטקסט עם התמונות שהעליתם.",
+  "Paste any available text into the box above. BEYOND can combine text with your uploaded images.":
+    "הדביקו כל טקסט זמין בתיבה למעלה. BEYOND יכול לשלב את הטקסט עם התמונות שהעליתם.",
   "Preparing close-ups...": "מכין תמונות תקריב...",
   "Smart Retry with automatic close-ups": "ניסיון חכם עם תמונות תקריב אוטומטיות",
-  "Automatic recovery has already been used for this menu. To avoid unnecessary AI cost, upload the original PDF or clearer close-up images instead of retrying again.": "השחזור האוטומטי כבר הופעל עבור התפריט הזה. כדי להימנע מעלות AI מיותרת, העלו PDF מקורי או תמונות תקריב ברורות יותר במקום לנסות שוב.",
-  "This failed build was not counted against your AI builds.": "הבנייה שנכשלה לא נספרה במכסת בניות ה-AI שלכם.",
-  "BEYOND only counts successful AI menu builds.": "BEYOND סופר רק בניות AI שהושלמו בהצלחה.",
-  "Example: Burgers Classic Burger - 58₪ Beef patty, lettuce, tomato...": "דוגמה: המבורגרים המבורגר קלאסי - 58₪ קציצת בקר, חסה, עגבנייה..."
-});
+  "Automatic recovery has already been used for this menu. To avoid unnecessary AI cost, upload the original PDF or clearer close-up images instead of retrying again.":
+    "השחזור האוטומטי כבר הופעל עבור התפריט הזה. כדי להימנע מעלות AI מיותרת, העלו PDF מקורי או תמונות תקריב ברורות יותר במקום לנסות שוב.",
+  "This failed build was not counted against your AI builds.":
+    "הבנייה שנכשלה לא נספרה במכסת בניות ה-AI שלכם.",
+  "BEYOND only counts successful AI menu builds.":
+    "BEYOND סופר רק בניות AI שהושלמו בהצלחה.",
 
-const BUILDER_EN = new Map(
-  Object.entries(BUILDER_HE).map(([english, hebrew]) => [normalizeText(hebrew), english])
-);
+  "Back to plans": "חזרה לחבילות",
+  "04 / CHECKOUT": "04 / תשלום",
+  "Activate your menu.": "הפעילו את התפריט שלכם.",
+  "Your menu is ready. Confirm the restaurant and subscription before continuing to secure payment.":
+    "התפריט שלכם מוכן. אשרו את המסעדה ואת החבילה לפני המעבר לתשלום מאובטח.",
+  RESTAURANT: "מסעדה",
+  "Who is this subscription for?": "עבור איזו מסעדה החבילה?",
+  "RESTAURANT NAME": "שם המסעדה",
+  "Restaurant name": "שם המסעדה",
+  PAYER: "משלם",
+  "Subscription payer": "משלם החבילה",
+  "BEYOND ACCOUNT": "חשבון BEYOND",
+  "Signed-in user": "משתמש מחובר",
+  "This user pays for the restaurant subscription. Other users can be assigned to the restaurant later without purchasing another subscription.":
+    "משתמש זה משלם עבור חבילת המסעדה. בהמשך ניתן לשייך משתמשים נוספים למסעדה ללא רכישת חבילה נוספת.",
+  "PROMO CODE": "קוד הטבה",
+  "Have a BEYOND code?": "יש לכם קוד BEYOND?",
+  "Enter promo code": "הזינו קוד הטבה",
+  "Checking...": "בודק...",
+  Apply: "החל",
+  "ORDER SUMMARY": "סיכום הזמנה",
+  Billing: "חיוב",
+  Subscription: "חבילה",
+  "Promo discount": "הנחת קוד",
+  TOTAL: "סה״כ",
+  "No payment required": "אין צורך בתשלום",
+  "per year": "לשנה",
+  "Calculating...": "מחשב...",
+  "Activate Subscription": "הפעלת החבילה",
+  "Continue to Secure Payment": "המשך לתשלום מאובטח",
+  "Recurring payment secured through BEYOND": "תשלום מתחדש מאובטח דרך BEYOND",
+  "12 months of service · pay for 11": "12 חודשי שירות · משלמים על 11",
+  "Enter a promo code first.": "יש להזין קודם קוד הטבה.",
+  "Enter your restaurant name.": "יש להזין את שם המסעדה.",
+  "Could not calculate this subscription.": "לא ניתן לחשב את החבילה הזו.",
+  "100% promo verified. In the final flow this will activate the restaurant immediately without payment.":
+    "קוד של 100% אומת. בתהליך הסופי הוא יפעיל את המסעדה מיד ללא תשלום.",
+  "Checkout looks correct. The next step is connecting this button to secure recurring PayPlus payment.":
+    "מסך התשלום נראה תקין. השלב הבא הוא לחבר את הכפתור לתשלום מתחדש ומאובטח דרך PayPlus."
+});
 
 function normalizeText(value) {
   return String(value || "").replace(/\s+/g, " ").trim();
 }
+
+const BUILDER_EN = new Map(
+  Object.entries(BUILDER_HE).map(([english, hebrew]) => [normalizeText(hebrew), english])
+);
 
 function readTheme() {
   try {
     return window.localStorage.getItem(THEME_STORAGE_KEY) === "dark" ? "dark" : "light";
   } catch {
     return "light";
+  }
+}
+
+function readBuilderLanguage() {
+  try {
+    const saved = window.localStorage.getItem(BUILDER_LANGUAGE_STORAGE_KEY);
+    if (saved === "he" || saved === "en") return saved;
+
+    return window.localStorage.getItem("beyond-language") === "he" ? "he" : "en";
+  } catch {
+    return "en";
   }
 }
 
@@ -118,17 +204,27 @@ function translateDynamic(value, language) {
     if (remaining) return `נשארו ${remaining[1]} מתוך ${remaining[2]} בניות AI`;
 
     const savedModels = normalized.match(/^(\d+) saved models?$/i);
-    if (savedModels) return `${savedModels[1]} מודלים שמורים`;
+    if (savedModels) {
+      const count = Number(savedModels[1]);
+      return count === 1 ? "מודל שמור אחד" : `${count} מודלים שמורים`;
+    }
 
     const choosePlan = normalized.match(/^Choose (.+)$/i);
     if (choosePlan) return `בחירת ${choosePlan[1]}`;
 
-    const exact = BUILDER_HE[normalized];
-    return exact || null;
+    const applied = normalized.match(/^(.+) applied · (\d+)% discount$/i);
+    if (applied) return `${applied[1]} הופעל · ${applied[2]}% הנחה`;
+
+    const off = normalized.match(/^(\d+)% OFF$/i);
+    if (off) return `${off[1]}% הנחה`;
+
+    return BUILDER_HE[normalized] || null;
   }
 
   const remainingHe = normalized.match(/^נשארו (\d+) מתוך (\d+) בניות AI$/);
   if (remainingHe) return `${remainingHe[1]} of ${remainingHe[2]} AI builds remaining`;
+
+  if (normalized === "מודל שמור אחד") return "1 saved model";
 
   const savedModelsHe = normalized.match(/^(\d+) מודלים שמורים$/);
   if (savedModelsHe) {
@@ -138,6 +234,12 @@ function translateDynamic(value, language) {
 
   const choosePlanHe = normalized.match(/^בחירת (.+)$/);
   if (choosePlanHe) return `Choose ${choosePlanHe[1]}`;
+
+  const appliedHe = normalized.match(/^(.+) הופעל · (\d+)% הנחה$/);
+  if (appliedHe) return `${appliedHe[1]} applied · ${appliedHe[2]}% discount`;
+
+  const offHe = normalized.match(/^(\d+)% הנחה$/);
+  if (offHe) return `${offHe[1]}% OFF`;
 
   return BUILDER_EN.get(normalized) || null;
 }
@@ -154,6 +256,7 @@ function shouldSkipTranslation(element) {
         "pre",
         "svg",
         "canvas",
+        ".digital-menu-template",
         ".bm-public",
         ".ep-page",
         ".customers-template-menu",
@@ -250,7 +353,7 @@ function BuilderRouteTranslator({ language, rootRef }) {
 function BuilderToolbarControls({ language, setLanguage, theme, setTheme }) {
   return (
     <div className="menu-builder-unified-controls" data-no-builder-translate>
-      <div className="menu-builder-ui-language" aria-label="Website language">
+      <div className="menu-builder-ui-language" aria-label="Menu Builder language">
         <button
           type="button"
           className={language === "en" ? "active" : ""}
@@ -259,6 +362,7 @@ function BuilderToolbarControls({ language, setLanguage, theme, setTheme }) {
         >
           EN
         </button>
+
         <button
           type="button"
           className={language === "he" ? "active" : ""}
@@ -283,10 +387,18 @@ function BuilderToolbarControls({ language, setLanguage, theme, setTheme }) {
 }
 
 export default function MenuBuilderUnified() {
-  const { language, setLanguage } = useBeyondLanguage();
+  const [language, setLanguage] = useState(readBuilderLanguage);
   const [theme, setTheme] = useState(readTheme);
   const [toolbarTarget, setToolbarTarget] = useState(null);
   const rootRef = useRef(null);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(BUILDER_LANGUAGE_STORAGE_KEY, language);
+    } catch {
+      // Storage may be unavailable.
+    }
+  }, [language]);
 
   useEffect(() => {
     try {
@@ -330,6 +442,9 @@ export default function MenuBuilderUnified() {
       ref={rootRef}
       className={`menu-builder-unified theme-${theme}`}
       data-builder-language={language}
+      data-no-beyond-translate="true"
+      dir={language === "he" ? "rtl" : "ltr"}
+      lang={language === "he" ? "he" : "en"}
     >
       <BuilderRouteTranslator language={language} rootRef={rootRef} />
       <MenuBuilder />
