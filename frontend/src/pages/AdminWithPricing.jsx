@@ -4,6 +4,7 @@ import { createPortal } from "react-dom";
 import AdminPricingSettings from "../components/AdminPricingSettings";
 import AdminCustomerShowcaseSettings from "../components/AdminCustomerShowcaseSettings";
 import AdminPromoCodes from "../components/AdminPromoCodes";
+import AdminPromoEmailSender from "../components/AdminPromoEmailSender";
 import Admin from "./Admin";
 
 export default function AdminWithPricing() {
@@ -57,6 +58,7 @@ export default function AdminWithPricing() {
             <>
               <AdminPricingSettings password={password} />
               <AdminPromoCodes password={password} />
+              <AdminPromoEmailSender password={password} />
               <AdminCustomerShowcaseSettings password={password} />
             </>,
             target
