@@ -1,24 +1,701 @@
-@media (max-width: 1180px) {
-  .menu-home-submit-project {
-    display: inline-flex;
+/* BEYOND MENU HOMEPAGE — refinement layer */
+
+/* ---------- Brand visibility ---------- */
+.menu-home.theme-light .menu-home-brand img,
+.menu-home.theme-light .menu-home-footer-brand img,
+.menu-home.theme-light .menu-home-studio-brand img {
+  filter: brightness(0) saturate(100%) invert(11%) sepia(31%) saturate(1457%) hue-rotate(184deg) brightness(88%) contrast(97%);
+  opacity: 1;
+}
+
+.menu-home.theme-dark .menu-home-brand img,
+.menu-home.theme-dark .menu-home-footer-brand img,
+.menu-home.theme-dark .menu-home-studio-brand img {
+  filter: none;
+  opacity: 1;
+}
+
+/* ---------- Refined header ---------- */
+.menu-home-navbar-refined {
+  grid-template-columns: auto 1fr;
+  gap: 18px;
+  min-height: 74px;
+}
+
+.menu-home-navbar-refined .menu-home-nav-actions {
+  grid-column: 2;
+  justify-self: end;
+}
+
+.menu-home-hamburger-always {
+  display: grid !important;
+  flex: 0 0 auto;
+}
+
+.menu-home-navbar-refined .menu-home-nav {
+  position: fixed;
+  z-index: 80;
+  top: 86px;
+  inset-inline-end: 5vw;
+  inset-inline-start: auto;
+  display: none !important;
+  width: min(330px, calc(100vw - 28px));
+  padding: 12px;
+  border: 1px solid var(--menu-border);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 24px 60px rgba(27, 45, 78, 0.18);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  flex-direction: column;
+  align-items: stretch;
+  gap: 3px;
+}
+
+.menu-home-navbar-refined .menu-home-nav.open {
+  display: flex !important;
+}
+
+.menu-home-nav-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 8px 12px;
+  margin-bottom: 3px;
+  border-bottom: 1px solid var(--menu-border);
+}
+
+.menu-home-nav-panel-head > span {
+  color: #8a98ae;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 0.13em;
+}
+
+.menu-home-nav-panel-head button {
+  display: grid !important;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  min-height: 34px !important;
+  padding: 0 !important;
+  border-radius: 10px !important;
+}
+
+.menu-home-navbar-refined .menu-home-nav > button,
+.menu-home-navbar-refined .menu-home-nav > a {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 46px;
+  padding: 0 13px;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: #405172;
+  font-size: 14px;
+  font-weight: 690;
+  text-align: start;
+  cursor: pointer;
+}
+
+.menu-home-navbar-refined .menu-home-nav > button:hover,
+.menu-home-navbar-refined .menu-home-nav > a:hover {
+  background: var(--menu-surface-soft);
+  color: var(--menu-text);
+}
+
+/* ---------- Figma-like language control ---------- */
+.menu-home-language-wrap {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.menu-home-language-figma {
+  display: inline-flex !important;
+  justify-content: center;
+  min-width: 58px;
+  min-height: 40px;
+  gap: 5px;
+  padding: 0 10px;
+  border-radius: 999px;
+}
+
+.menu-home-language-figma span {
+  color: var(--menu-text) !important;
+  font-size: 11px;
+  font-weight: 780;
+}
+
+.menu-home-language-menu {
+  position: absolute;
+  z-index: 95;
+  top: calc(100% + 8px);
+  inset-inline-end: 0;
+  display: grid;
+  width: 150px;
+  padding: 7px;
+  border: 1px solid var(--menu-border);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 18px 45px rgba(27, 45, 78, 0.16);
+}
+
+.menu-home-language-menu button {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  align-items: center;
+  min-height: 42px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  text-align: start;
+  cursor: pointer;
+}
+
+.menu-home-language-menu button:hover,
+.menu-home-language-menu button.active {
+  background: var(--menu-blue-soft);
+}
+
+.menu-home-language-menu button > span {
+  color: var(--menu-blue-strong);
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.menu-home-language-menu button > small {
+  color: var(--menu-text);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+/* ---------- Theme toggle ---------- */
+.menu-home-theme-toggle {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--menu-border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--menu-text);
+  cursor: pointer;
+}
+
+/* ---------- Menu Studio ---------- */
+.menu-home-studio-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid var(--menu-border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--menu-text);
+  font-size: 12px;
+  font-weight: 760;
+  cursor: pointer;
+}
+
+.menu-home-studio-button:hover {
+  background: #fff;
+}
+
+.menu-home-studio-short {
+  display: none;
+}
+
+/* ---------- Figma-like account avatar ---------- */
+.menu-home-account-figma {
+  max-width: none;
+  min-height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  box-shadow: none;
+  gap: 8px;
+}
+
+.menu-home-account-figma:hover .menu-home-account-avatar {
+  box-shadow: 0 0 0 4px var(--menu-blue-soft);
+}
+
+.menu-home-account-figma .menu-home-account-name {
+  display: inline !important;
+  max-width: 90px;
+  overflow: hidden;
+  color: #60718f;
+  font-size: 12px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menu-home-account-avatar {
+  display: grid;
+  place-items: center;
+  width: 38px !important;
+  height: 38px !important;
+  border: 1px solid #d8e0ec;
+  border-radius: 50% !important;
+  background: var(--menu-blue-soft) !important;
+  overflow: hidden;
+  color: var(--menu-blue-strong) !important;
+  transition: box-shadow 160ms ease;
+}
+
+.menu-home-account-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.menu-home-login-refined {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  border-radius: 999px;
+}
+
+/* ---------- Figma phone hero ---------- */
+.menu-home-phone-hero-visual {
+  display: grid;
+  place-items: center;
+  min-height: 560px;
+}
+
+.menu-home-figma-phone {
+  position: relative;
+  width: min(318px, 86vw);
+  min-height: 560px;
+  padding: 50px 17px 22px;
+  border: 9px solid #0d2346;
+  border-radius: 43px;
+  background: #fffdfa;
+  color: #0d1b3a;
+  box-shadow: 0 34px 70px rgba(26, 45, 79, 0.18);
+}
+
+.menu-home-figma-island {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  width: 86px;
+  height: 20px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: #071b3c;
+}
+
+.menu-home-figma-phone-head {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  margin: 9px 0 17px;
+}
+
+.menu-home-figma-phone-head strong {
+  font-size: 21px;
+  font-weight: 860;
+  letter-spacing: -0.035em;
+}
+
+.menu-home-figma-phone-head span {
+  color: #647392;
+  font-size: 8px;
+  font-weight: 830;
+  letter-spacing: 0.06em;
+}
+
+.menu-home-ai-success {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 30px;
+  padding: 0 11px;
+  border-radius: 8px;
+  background: #f0edfb;
+  color: #5967e8;
+  font-size: 8px;
+  font-weight: 760;
+}
+
+.menu-home-phone-category {
+  margin: 17px 0 3px;
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: 0.03em;
+}
+
+.menu-home-phone-menu-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid #e6e9ef;
+}
+
+.menu-home-phone-menu-row > div {
+  display: grid;
+  gap: 4px;
+}
+
+.menu-home-phone-menu-row strong {
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.menu-home-phone-menu-row span {
+  color: #62718e;
+  font-size: 8px;
+  line-height: 1.35;
+}
+
+.menu-home-phone-menu-row b {
+  font-size: 12px;
+}
+
+.menu-home-phone-qr-card {
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  margin-top: 17px;
+  padding: 10px;
+  border: 1px solid #dce3ee;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.menu-home-phone-qr-card > strong {
+  font-size: 7px;
+  font-weight: 760;
+}
+
+.menu-home-mini-qr {
+  display: grid;
+  grid-template-columns: repeat(4, 3px);
+  gap: 2px;
+}
+
+.menu-home-mini-qr i {
+  width: 3px;
+  height: 3px;
+  background: #0d2346;
+}
+
+.menu-home-mini-qr i:nth-child(3n),
+.menu-home-mini-qr i:nth-child(7),
+.menu-home-mini-qr i:nth-child(10) {
+  opacity: 0;
+}
+
+/* ---------- Contact CTA ---------- */
+.menu-home-contact-action-wrap {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.menu-home-contact-trigger {
+  min-width: 142px;
+}
+
+.menu-home-contact-panel {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 10px);
+  inset-inline-end: 0;
+  display: grid;
+  gap: 7px;
+  width: 230px;
+  padding: 9px;
+  border: 1px solid var(--menu-border);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 20px 50px rgba(26, 44, 77, 0.18);
+}
+
+.menu-home-contact-panel a {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  align-items: center;
+  gap: 10px;
+  min-height: 58px;
+  padding: 8px 10px;
+  border-radius: 11px;
+}
+
+.menu-home-contact-panel a:hover {
+  background: var(--menu-surface-soft);
+}
+
+.menu-home-contact-panel a > svg {
+  color: var(--menu-blue);
+}
+
+.menu-home-contact-panel a > span {
+  display: grid;
+  gap: 2px;
+}
+
+.menu-home-contact-panel small {
+  color: #8997ac;
+  font-size: 8px;
+  font-weight: 850;
+  letter-spacing: 0.11em;
+}
+
+.menu-home-contact-panel strong {
+  color: var(--menu-text);
+  font-size: 12px;
+}
+
+/* ---------- Dark theme ---------- */
+.menu-home.theme-dark {
+  --menu-bg: #08111f;
+  --menu-surface: #101b2c;
+  --menu-surface-soft: #142238;
+  --menu-text: #f2f6ff;
+  --menu-muted: #9eabc1;
+  --menu-border: #26354c;
+  --menu-blue-soft: #17294d;
+  --menu-blue: #6690ff;
+  --menu-blue-strong: #7fa2ff;
+  background:
+    radial-gradient(circle at 76% 8%, rgba(76, 120, 238, 0.15), transparent 28rem),
+    linear-gradient(180deg, #0a1423 0%, #07101d 100%);
+}
+
+.menu-home.theme-dark .menu-home-navbar {
+  border-bottom-color: rgba(45, 61, 87, 0.78);
+  background: rgba(8, 17, 31, 0.9);
+}
+
+.menu-home.theme-dark .menu-home-navbar-refined .menu-home-nav,
+.menu-home.theme-dark .menu-home-language-menu,
+.menu-home.theme-dark .menu-home-contact-panel {
+  background: rgba(15, 26, 44, 0.99);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+}
+
+.menu-home.theme-dark .menu-home-navbar-refined .menu-home-nav > button,
+.menu-home.theme-dark .menu-home-navbar-refined .menu-home-nav > a,
+.menu-home.theme-dark .menu-home-account-figma .menu-home-account-name {
+  color: #aab7cc;
+}
+
+.menu-home.theme-dark .menu-home-theme-toggle,
+.menu-home.theme-dark .menu-home-language-figma,
+.menu-home.theme-dark .menu-home-studio-button,
+.menu-home.theme-dark .menu-home-mobile-toggle,
+.menu-home.theme-dark .menu-home-login-refined {
+  border-color: var(--menu-border);
+  background: rgba(16, 27, 44, 0.9);
+  color: var(--menu-text);
+}
+
+.menu-home.theme-dark .menu-home-kicker,
+.menu-home.theme-dark .menu-home-secondary,
+.menu-home.theme-dark .menu-home-section-heading > span,
+.menu-home.theme-dark .menu-home-step-grid article,
+.menu-home.theme-dark .menu-home-studio-window,
+.menu-home.theme-dark .menu-home-access-preview,
+.menu-home.theme-dark .menu-home-final,
+.menu-home.theme-dark .menu-home-footer {
+  border-color: var(--menu-border);
+  background-color: rgba(16, 27, 44, 0.82);
+  color: var(--menu-text);
+}
+
+.menu-home.theme-dark .menu-home-secondary:hover,
+.menu-home.theme-dark .menu-home-studio-button:hover {
+  background: #17243a;
+}
+
+.menu-home.theme-dark .menu-home-step-grid p,
+.menu-home.theme-dark .menu-home-studio-copy > p,
+.menu-home.theme-dark .menu-home-access-copy > p,
+.menu-home.theme-dark .menu-home-final p,
+.menu-home.theme-dark .menu-home-footer p,
+.menu-home.theme-dark .menu-home-hero-notes span,
+.menu-home.theme-dark .menu-home-feature-list span,
+.menu-home.theme-dark .menu-home-access-points span {
+  color: var(--menu-muted);
+}
+
+.menu-home.theme-dark .menu-home-studio-body aside,
+.menu-home.theme-dark .menu-home-window-top,
+.menu-home.theme-dark .menu-home-phone-preview,
+.menu-home.theme-dark .menu-home-editor,
+.menu-home.theme-dark .menu-home-access-phone {
+  background: #101b2c;
+  color: var(--menu-text);
+}
+
+.menu-home.theme-dark .menu-home-editor-item,
+.menu-home.theme-dark .menu-home-phone-row,
+.menu-home.theme-dark .menu-home-window-top,
+.menu-home.theme-dark .menu-home-studio-body aside {
+  border-color: #27364c;
+}
+
+.menu-home.theme-dark .menu-home-item-thumb {
+  background: #17253a;
+  color: #9eb0cd;
+}
+
+.menu-home.theme-dark .menu-home-footer-links button,
+.menu-home.theme-dark .menu-home-footer-links a,
+.menu-home.theme-dark .menu-home-contact-panel strong,
+.menu-home.theme-dark .menu-home-language-menu button > small {
+  color: var(--menu-text);
+}
+
+/* The phone itself intentionally stays warm-white in both modes, like the Figma reference. */
+.menu-home.theme-dark .menu-home-figma-phone {
+  color: #0d1b3a;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1050px) {
+  .menu-home-studio-button {
+    padding-inline: 12px;
+  }
+
+  .menu-home-account-figma .menu-home-account-name {
+    display: none !important;
   }
 }
 
 @media (max-width: 900px) {
-  .menu-home-submit-project {
-    width: 40px;
-    min-width: 40px;
-    height: 40px;
-    min-height: 40px;
-    justify-content: center;
-    padding: 0;
-    font-size: 0;
+  .menu-home-navbar-refined {
+    grid-template-columns: auto 1fr;
+    min-height: 68px;
   }
 
-  .menu-home-submit-project::after {
-    content: "3D";
+  .menu-home-navbar-refined .menu-home-nav {
+    top: 78px;
+    inset-inline: 14px;
+    width: auto;
+  }
+
+  .menu-home-phone-hero-visual {
+    min-height: 520px;
+  }
+
+  .menu-home-figma-phone {
+    width: min(315px, 84vw);
+  }
+}
+
+@media (max-width: 680px) {
+  .menu-home-language-figma {
+    display: inline-flex !important;
+    min-width: 50px;
+    min-height: 38px;
+  }
+
+  .menu-home-theme-toggle,
+  .menu-home-hamburger-always {
+    width: 38px;
+    height: 38px;
+  }
+
+  .menu-home-account-figma {
+    width: 38px;
+    height: 38px;
+    min-height: 38px;
+    padding: 0;
+  }
+
+  .menu-home-account-avatar {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  .menu-home-studio-full {
+    display: none;
+  }
+
+  .menu-home-studio-short {
+    display: inline;
+  }
+
+  .menu-home-studio-button {
+    min-height: 38px;
+    padding: 0 11px;
     font-size: 11px;
-    font-weight: 850;
-    letter-spacing: 0.04em;
+  }
+
+  .menu-home-login-refined span {
+    display: none;
+  }
+
+  .menu-home-login-refined {
+    width: 38px;
+    height: 38px;
+    min-height: 38px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .menu-home-phone-hero-visual {
+    min-height: 500px;
+  }
+
+  .menu-home-figma-phone {
+    min-height: 520px;
+    border-width: 8px;
+    border-radius: 39px;
+  }
+
+  .menu-home-contact-action-wrap,
+  .menu-home-contact-trigger {
+    width: 100%;
+  }
+
+  .menu-home-contact-panel {
+    inset-inline: 0;
+    width: 100%;
+  }
+}
+
+@media (max-width: 500px) {
+  .menu-home-navbar-refined {
+    padding-inline: 12px;
+  }
+
+  .menu-home-brand span {
+    display: none;
+  }
+
+  .menu-home-brand img {
+    width: 34px;
+    height: 34px;
+  }
+
+  .menu-home-nav-actions {
+    gap: 6px;
+  }
+
+  .menu-home-studio-button {
+    display: none;
+  }
+
+  .menu-home-language-figma {
+    min-width: 46px;
+    padding-inline: 8px;
+  }
+
+  .menu-home-figma-phone {
+    width: min(292px, 88vw);
+    min-height: 505px;
   }
 }
