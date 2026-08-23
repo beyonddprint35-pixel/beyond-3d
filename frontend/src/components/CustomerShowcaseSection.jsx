@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ExternalLink, Store } from "lucide-react";
+import { Store } from "lucide-react";
 
 import { useBeyondLanguage } from "../i18n/BeyondLanguage";
 import { supabase } from "../lib/supabaseClient";
@@ -10,6 +10,29 @@ import {
 } from "../lib/customerShowcase";
 
 import "./CustomerShowcaseSection.css";
+
+function CustomerLogo({ site, duplicate = false }) {
+  return (
+    <a
+      className="menu-customer-logo-item"
+      href={`/menu/${encodeURIComponent(site.slug)}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`${site.name} menu`}
+      aria-hidden={duplicate ? "true" : undefined}
+      tabIndex={duplicate ? -1 : undefined}
+    >
+      <div className="menu-customer-logo-circle">
+        {site.logo_url ? (
+          <img src={site.logo_url} alt={duplicate ? "" : `${site.name} logo`} loading="lazy" />
+        ) : (
+          <span>{String(site.name).charAt(0).toUpperCase()}</span>
+        )}
+      </div>
+      <strong>{site.name}</strong>
+    </a>
+  );
+}
 
 export default function CustomerShowcaseSection() {
   const { isHebrew } = useBeyondLanguage();
@@ -82,6 +105,9 @@ export default function CustomerShowcaseSection() {
     [sites]
   );
 
+  const shouldAnimate = visibleSites.length > 1;
+  const duration = Math.max(22, visibleSites.length * 6);
+
   if (!ready || !config.enabled || visibleSites.length === 0) return null;
 
   return (
@@ -94,34 +120,30 @@ export default function CustomerShowcaseSection() {
         <h2>{isHebrew ? "תפריטים שכבר חיים ב-Beyond." : "Menus already live with Beyond."}</h2>
         <p>
           {isHebrew
-            ? "לחצו על מסעדה כדי לראות את התפריט החי שלה בדיוק כפי שהלקוחות רואים אותו."
-            : "Open a restaurant to see its live customer menu exactly as guests experience it."}
+            ? "לחצו על לוגו כדי לפתוח את התפריט החי."
+            : "Tap a logo to open the restaurant’s live menu."}
         </p>
       </div>
 
-      <div className="menu-customer-showcase-grid">
-        {visibleSites.map((site) => (
-          <a
-            key={site.id}
-            className="menu-customer-showcase-card"
-            href={`/menu/${encodeURIComponent(site.slug)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`${site.name} menu`}
-          >
-            <div className="menu-customer-showcase-logo">
-              {site.logo_url ? (
-                <img src={site.logo_url} alt={`${site.name} logo`} loading="lazy" />
-              ) : (
-                <span>{String(site.name).charAt(0).toUpperCase()}</span>
-              )}
+      <div
+        className={`menu-customer-marquee${shouldAnimate ? " is-moving" : " is-static"}`}
+        style={{ "--customer-marquee-duration": `${duration}s` }}
+      >
+        <div className="menu-customer-marquee-track">
+          <div className="menu-customer-marquee-set">
+            {visibleSites.map((site) => (
+              <CustomerLogo key={site.id} site={site} />
+            ))}
+          </div>
+
+          {shouldAnimate ? (
+            <div className="menu-customer-marquee-set" aria-hidden="true">
+              {visibleSites.map((site) => (
+                <CustomerLogo key={`duplicate-${site.id}`} site={site} duplicate />
+              ))}
             </div>
-            <div className="menu-customer-showcase-name">
-              <strong>{site.name}</strong>
-              <span>{isHebrew ? "צפייה בתפריט" : "View live menu"} <ExternalLink size={12} /></span>
-            </div>
-          </a>
-        ))}
+          ) : null}
+        </div>
       </div>
     </section>
   );
