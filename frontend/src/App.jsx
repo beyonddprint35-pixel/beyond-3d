@@ -13,6 +13,7 @@ import MenuBuilder from "./pages/MenuBuilder";
 import MenuMobilePreviewPage from "./pages/MenuMobilePreviewPage";
 
 import "./pages/MenuHomeOverrides.css";
+import "./pages/MenuHomeFinalPatch.css";
 
 function App() {
   return (
