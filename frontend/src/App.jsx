@@ -4,7 +4,8 @@ import {
   Routes,
 } from "react-router-dom";
 
-import Home from "./pages/Home";
+import MenuHome from "./pages/MenuHome";
+import ThreeDPrinting from "./pages/ThreeDPrinting";
 import Admin from "./pages/Admin";
 import OrderDetails from "./pages/OrderDetails";
 import TrackOrder from "./pages/TrackOrder";
@@ -20,7 +21,15 @@ function App() {
         <Route
           path="/"
           element={
-            <Home />
+            <MenuHome />
+          }
+        />
+
+
+        <Route
+          path="/3DPRINTING"
+          element={
+            <ThreeDPrinting />
           }
         />
 
