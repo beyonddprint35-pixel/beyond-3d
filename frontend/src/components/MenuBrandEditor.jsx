@@ -358,6 +358,24 @@ function validHex(value) {
   return /^#[0-9A-Fa-f]{6}$/.test(value);
 }
 
+function getLayoutState(branding) {
+  const raw = String(branding?.layout_style || "classic").trim();
+  const requestedLayout = raw.split(/\s+/)[0] || "classic";
+  const baseLayout = LAYOUT_PRESETS.some((layout) => layout.id === requestedLayout)
+    ? requestedLayout
+    : "classic";
+  const fitToView =
+    typeof branding?.fit_to_view === "boolean"
+      ? branding.fit_to_view
+      : !raw.includes("dmt-natural-view");
+
+  return { baseLayout, fitToView };
+}
+
+function encodeLayoutStyle(baseLayout, fitToView) {
+  return fitToView ? baseLayout : `${baseLayout} dmt-natural-view`;
+}
+
 function ColorControl({ label, value, onChange }) {
   const [draft, setDraft] = useState(value || "#ffffff");
 
@@ -415,6 +433,8 @@ export default function MenuBrandEditor({
   const [pendingLogo, setPendingLogo] = useState("");
   const [logoError, setLogoError] = useState("");
 
+  const { baseLayout, fitToView } = getLayoutState(branding);
+
   function patch(updates) {
     onChange?.({ ...branding, ...updates });
   }
@@ -431,7 +451,17 @@ export default function MenuBrandEditor({
   }
 
   function applyLayout(layout) {
-    patch({ layout_style: layout.id });
+    patch({
+      layout_style: encodeLayoutStyle(layout.id, fitToView),
+      fit_to_view: fitToView,
+    });
+  }
+
+  function setFitToView(enabled) {
+    patch({
+      fit_to_view: enabled,
+      layout_style: encodeLayoutStyle(baseLayout, enabled),
+    });
   }
 
   function handleLogoFile(event) {
@@ -521,6 +551,34 @@ export default function MenuBrandEditor({
           </button>
         </nav>
 
+        <div className="menu-brand-fit-row" data-no-builder-translate>
+          <div className="menu-brand-fit-copy">
+            <strong>
+              <span className="fit-copy-en">Fit to View</span>
+              <span className="fit-copy-he">התאמה למסך</span>
+            </strong>
+            <small>
+              <span className="fit-copy-en">
+                Compress the layout to the phone width.
+              </span>
+              <span className="fit-copy-he">
+                התאמת העיצוב לרוחב מסך הטלפון.
+              </span>
+            </small>
+          </div>
+
+          <button
+            type="button"
+            className={`menu-brand-fit-toggle ${fitToView ? "active" : ""}`}
+            role="switch"
+            aria-checked={fitToView}
+            aria-label="Fit menu layout to view"
+            onClick={() => setFitToView(!fitToView)}
+          >
+            <span />
+          </button>
+        </div>
+
         <div className="menu-brand-editor-body">
           {activeTab === "design" && (
             <section className="menu-brand-layout-section">
@@ -528,7 +586,7 @@ export default function MenuBrandEditor({
                 <LayoutTemplate size={15} />
                 <div>
                   <strong>Choose a menu layout</strong>
-                  <span>Every design is mobile-first and supports RTL.</span>
+                  <span>Every design supports mobile and RTL.</span>
                 </div>
               </div>
 
@@ -537,7 +595,7 @@ export default function MenuBrandEditor({
                   <button
                     key={layout.id}
                     type="button"
-                    className={(branding.layout_style || "classic") === layout.id ? "active" : ""}
+                    className={baseLayout === layout.id ? "active" : ""}
                     onClick={() => applyLayout(layout)}
                   >
                     <LayoutPreview layout={layout.id} />
@@ -633,16 +691,56 @@ export default function MenuBrandEditor({
 
           {activeTab === "colors" && (
             <section className="menu-brand-color-grid">
-              <ColorControl label="PAGE" value={branding.background} onChange={(value) => patch({ background: value })} />
-              <ColorControl label="HEADER" value={branding.header_background} onChange={(value) => patch({ header_background: value })} />
-              <ColorControl label="HERO" value={branding.hero_background} onChange={(value) => patch({ hero_background: value })} />
-              <ColorControl label="CARDS" value={branding.card} onChange={(value) => patch({ card: value, paper: value })} />
-              <ColorControl label="TEXT" value={branding.text} onChange={(value) => patch({ text: value })} />
-              <ColorControl label="SECONDARY" value={branding.muted} onChange={(value) => patch({ muted: value })} />
-              <ColorControl label="ACCENT" value={branding.accent} onChange={(value) => patch({ accent: value })} />
-              <ColorControl label="BORDERS" value={branding.line} onChange={(value) => patch({ line: value })} />
-              <ColorControl label="CATEGORY" value={branding.category_background} onChange={(value) => patch({ category_background: value })} />
-              <ColorControl label="CATEGORY TEXT" value={branding.category_text} onChange={(value) => patch({ category_text: value })} />
+              <ColorControl
+                label="PAGE"
+                value={branding.background}
+                onChange={(value) => patch({ background: value })}
+              />
+              <ColorControl
+                label="HEADER"
+                value={branding.header_background}
+                onChange={(value) => patch({ header_background: value })}
+              />
+              <ColorControl
+                label="HERO"
+                value={branding.hero_background}
+                onChange={(value) => patch({ hero_background: value })}
+              />
+              <ColorControl
+                label="CARDS"
+                value={branding.card}
+                onChange={(value) => patch({ card: value, paper: value })}
+              />
+              <ColorControl
+                label="TEXT"
+                value={branding.text}
+                onChange={(value) => patch({ text: value })}
+              />
+              <ColorControl
+                label="SECONDARY"
+                value={branding.muted}
+                onChange={(value) => patch({ muted: value })}
+              />
+              <ColorControl
+                label="ACCENT"
+                value={branding.accent}
+                onChange={(value) => patch({ accent: value })}
+              />
+              <ColorControl
+                label="BORDERS"
+                value={branding.line}
+                onChange={(value) => patch({ line: value })}
+              />
+              <ColorControl
+                label="CATEGORY"
+                value={branding.category_background}
+                onChange={(value) => patch({ category_background: value })}
+              />
+              <ColorControl
+                label="CATEGORY TEXT"
+                value={branding.category_text}
+                onChange={(value) => patch({ category_text: value })}
+              />
             </section>
           )}
 
@@ -660,7 +758,9 @@ export default function MenuBrandEditor({
                   onChange={(event) => patch({ heading_font: event.target.value })}
                 >
                   {FONT_OPTIONS.map((font) => (
-                    <option key={font} value={font}>{font}</option>
+                    <option key={font} value={font}>
+                      {font}
+                    </option>
                   ))}
                 </select>
               </label>
@@ -672,7 +772,9 @@ export default function MenuBrandEditor({
                   onChange={(event) => patch({ body_font: event.target.value })}
                 >
                   {FONT_OPTIONS.map((font) => (
-                    <option key={font} value={font}>{font}</option>
+                    <option key={font} value={font}>
+                      {font}
+                    </option>
                   ))}
                 </select>
               </label>
@@ -693,7 +795,9 @@ export default function MenuBrandEditor({
                       max={control.max}
                       step="1"
                       value={branding[control.key]}
-                      onChange={(event) => patch({ [control.key]: Number(event.target.value) })}
+                      onChange={(event) =>
+                        patch({ [control.key]: Number(event.target.value) })
+                      }
                     />
                   </label>
                 ))}
