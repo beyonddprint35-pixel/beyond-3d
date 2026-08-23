@@ -1,19 +1,29 @@
 /* ==========================================================
    BEYOND MENU — FIT TO VIEW
 
-   Fit to View affects MOBILE HEIGHT only.
+   The mobile menu already has a fixed application shell:
+   - header / hero / categories / section title stay fixed
+   - footer stays fixed
+   - ONLY .dmt-menu-list is the fixed-height scroll viewport
+
+   Fit to View must NEVER change that shell.
 
    ON:
-   - only on the real mobile menu / Mobile View
-   - keep the selected template width and column count unchanged
-   - grow the current category's item cards vertically when the
-     phone has unused space between the section heading and footer
+   - mobile only
+   - keep width, columns and template styling unchanged
+   - if the current category has only a few cards, distribute the
+     EXISTING item-viewport height between those card rows
+   - cards grow vertically to fill otherwise unused item space
 
    OFF:
-   - use each template's normal/minimum card heights
-   - normal vertical scrolling when content is longer than the phone
+   - mobile only
+   - cards keep their normal/minimum template height
+   - unused item-viewport space remains empty
+   - if there are many items, .dmt-menu-list scrolls normally
 
-   It never changes width and never adds horizontal scrolling.
+   Legacy state mapping kept for backwards compatibility:
+   Fit ON  = no .dmt-natural-view marker
+   Fit OFF = .dmt-natural-view marker
    ========================================================== */
 
 /* ----------------------------------------------------------
@@ -51,12 +61,13 @@
   line-height: 1.35;
 }
 
+/* Replace the old text that described width fitting. */
 .menu-brand-fit-copy small .fit-copy-en {
   font-size: 0;
 }
 
 .menu-brand-fit-copy small .fit-copy-en::after {
-  content: "Mobile only · expand cards to fill unused height.";
+  content: "Mobile only · stretch cards to fill the item area.";
   font-size: 8px;
 }
 
@@ -65,7 +76,7 @@
 }
 
 .menu-brand-fit-copy small .fit-copy-he::after {
-  content: "במובייל בלבד · הרחבת הכרטיסים למילוי הגובה הפנוי.";
+  content: "במובייל בלבד · הרחבת הכרטיסים למילוי אזור הפריטים.";
   font-size: 8px;
 }
 
@@ -157,103 +168,63 @@
 }
 
 /* ==========================================================
-   MOBILE-ONLY VERTICAL FILL
+   MOBILE ITEM-VIEWPORT FILL ONLY
 
-   Current saved toggle representation:
-   - Fit ON  => no .dmt-natural-view marker
-   - Fit OFF => .dmt-natural-view marker
+   DO NOT modify .dmt-app, footer, header, hero, categories,
+   section heading, width, viewport height or overflow shell.
 
-   That marker is used only for the toggle state. It has no width
-   or overflow behavior anymore.
+   DigitalMenuTemplate.css owns the fixed mobile shell.
+   We only alter how item ROWS consume the already-fixed
+   .dmt-menu-list height.
    ========================================================== */
 
 @media (max-width: 560px) {
-  /* Mobile View iframe: use the real phone viewport height. */
-  .menu-mobile-preview-page
-  .digital-menu-template:not(.dmt-natural-view),
-  .menu-mobile-preview-page
-  .digital-menu-template:not(.dmt-natural-view)
-  .dmt-app {
-    min-height: 100dvh !important;
-  }
-
-  .menu-mobile-preview-page
-  .digital-menu-template:not(.dmt-natural-view)
-  .dmt-app {
-    display: flex !important;
-    flex-direction: column !important;
-  }
-
-  .menu-mobile-preview-page
-  .digital-menu-template:not(.dmt-natural-view)
-  .dmt-header,
-  .menu-mobile-preview-page
-  .digital-menu-template:not(.dmt-natural-view)
-  .dmt-hero,
-  .menu-mobile-preview-page
-  .digital-menu-template:not(.dmt-natural-view)
-  .dmt-tabs-wrap,
-  .menu-mobile-preview-page
-  .digital-menu-template:not(.dmt-natural-view)
-  .dmt-section-head,
-  .menu-mobile-preview-page
-  .digital-menu-template:not(.dmt-natural-view)
-  .dmt-footer {
-    flex: 0 0 auto !important;
-  }
-
-  /* Only the item area receives leftover vertical height. */
+  /* --------------------------------------------------------
+     MOBILE VIEW FROM MENU BUILDER
+     -------------------------------------------------------- */
   .menu-mobile-preview-page
   .digital-menu-template:not(.dmt-natural-view)
   .dmt-menu-list {
-    flex: 1 0 auto !important;
-    min-height: 0 !important;
+    /*
+      The list already has height:100% and overflow-y:auto.
+
+      max-content preserves each template's minimum/content
+      requirement. 1fr lets rows share any EXTRA height.
+
+      Few rows => they grow to fill the item viewport.
+      Many rows => their minimum heights win and the existing
+                   item viewport scrolls.
+    */
+    grid-auto-rows: minmax(max-content, 1fr) !important;
     align-content: stretch !important;
-    grid-auto-rows: minmax(min-content, 1fr) !important;
   }
 
   .menu-mobile-preview-page
   .digital-menu-template:not(.dmt-natural-view)
   .dmt-item-row {
-    height: 100% !important;
+    align-self: stretch !important;
   }
 
-  /* Same saved option on the real live customer menu on phones. */
-  .digital-menu-template.dmt-live:not(.dmt-natural-view),
-  .digital-menu-template.dmt-live:not(.dmt-natural-view)
-  .dmt-app {
-    min-height: 100dvh;
-  }
-
-  .digital-menu-template.dmt-live:not(.dmt-natural-view)
-  .dmt-app {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .digital-menu-template.dmt-live:not(.dmt-natural-view)
-  .dmt-header,
-  .digital-menu-template.dmt-live:not(.dmt-natural-view)
-  .dmt-hero,
-  .digital-menu-template.dmt-live:not(.dmt-natural-view)
-  .dmt-tabs-wrap,
-  .digital-menu-template.dmt-live:not(.dmt-natural-view)
-  .dmt-section-head,
-  .digital-menu-template.dmt-live:not(.dmt-natural-view)
-  .dmt-footer {
-    flex: 0 0 auto;
-  }
-
+  /* --------------------------------------------------------
+     REAL LIVE CUSTOMER MENU ON A PHONE
+     -------------------------------------------------------- */
   .digital-menu-template.dmt-live:not(.dmt-natural-view)
   .dmt-menu-list {
-    flex: 1 0 auto;
-    min-height: 0;
-    align-content: stretch;
-    grid-auto-rows: minmax(min-content, 1fr);
+    grid-auto-rows: minmax(max-content, 1fr) !important;
+    align-content: stretch !important;
   }
 
   .digital-menu-template.dmt-live:not(.dmt-natural-view)
   .dmt-item-row {
-    height: 100%;
+    align-self: stretch !important;
   }
+
+  /* --------------------------------------------------------
+     FIT OFF
+
+     Intentionally no sizing override.
+     The normal template/card minimum heights remain exactly as
+     defined by Classic / Compact / Cards / Editorial / Minimal /
+     Bold and empty item-area space stays empty.
+     -------------------------------------------------------- */
 }
