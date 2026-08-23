@@ -6,7 +6,7 @@ import {
 
 import MenuHome from "./pages/MenuHomeCustomerPreview";
 import ThreeDPrinting from "./pages/ThreeDPrinting";
-import Admin from "./pages/Admin";
+import Admin from "./pages/AdminWithPricing";
 import OrderDetails from "./pages/OrderDetails";
 import TrackOrder from "./pages/TrackOrder";
 import MenuBuilder from "./pages/MenuBuilder";
