@@ -7,6 +7,7 @@ import {
   createPortal,
 } from "react-dom";
 
+import MenuPricingSection from "../components/MenuPricingSection";
 import MenuHomeRefined from "./MenuHomeRefined";
 
 import "../components/MobileMenuPreview.css";
@@ -273,6 +274,12 @@ export default function MenuHomeCustomerPreview() {
   ] =
     useState(null);
 
+  const [
+    pricingTarget,
+    setPricingTarget,
+  ] =
+    useState(null);
+
 
   useEffect(() => {
     const target =
@@ -323,6 +330,46 @@ export default function MenuHomeCustomerPreview() {
     };
   }, []);
 
+  useEffect(() => {
+    const accessSection = document.querySelector(
+      ".menu-home-access-section"
+    );
+
+    if (!accessSection || !accessSection.parentElement) {
+      return undefined;
+    }
+
+    const mount = document.createElement("div");
+    mount.className = "menu-home-pricing-portal";
+    accessSection.insertAdjacentElement("afterend", mount);
+    setPricingTarget(mount);
+
+    return () => {
+      setPricingTarget(null);
+      mount.remove();
+    };
+  }, []);
+
+  function handleSelectPlan(plan) {
+    try {
+      sessionStorage.setItem(
+        "beyond-menu-selected-plan",
+        plan?.id || "basic"
+      );
+    } catch {}
+
+    const createButton = document.querySelector(
+      ".menu-home-hero .menu-home-primary"
+    );
+
+    if (createButton instanceof HTMLElement) {
+      createButton.click();
+      return;
+    }
+
+    window.location.assign("/menu-builder");
+  }
+
 
   return (
     <>
@@ -358,6 +405,12 @@ export default function MenuHomeCustomerPreview() {
           </div>,
 
           heroTarget
+        )}
+
+      {pricingTarget &&
+        createPortal(
+          <MenuPricingSection onSelectPlan={handleSelectPlan} />,
+          pricingTarget
         )}
     </>
   );
