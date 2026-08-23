@@ -39,17 +39,22 @@ const BUILDER_HE = Object.freeze({
   English: "אנגלית",
   "02 / SOURCE": "02 / מקור",
   "Give us your menu.": "תנו לנו את התפריט שלכם.",
-  "Up to 6 files": "עד 6 קבצים",
+  "Up to 12 files · 25 MB total": "עד 12 קבצים · 25 MB בסך הכול",
   "Upload PDF or photos": "העלאת PDF או תמונות",
   "PDF, JPG, PNG or WEBP. You can combine several menu pages.": "PDF, JPG, PNG או WEBP. אפשר לשלב כמה עמודי תפריט.",
   "Choose files": "בחירת קבצים",
   "Write or paste": "כתיבה או הדבקה",
   Remove: "הסר",
+  "You can upload up to 12 files.": "ניתן להעלות עד 12 קבצים.",
+  "The combined upload can be up to 25 MB.": "המשקל הכולל של הקבצים יכול להיות עד 25 MB.",
+  "The combined upload can be up to 25 MB. Remove a file or choose smaller files.": "המשקל הכולל של הקבצים יכול להיות עד 25 MB. הסירו קובץ או בחרו קבצים קטנים יותר.",
+  "Only PDF, JPG, PNG or WEBP files are supported.": "ניתן להעלות רק קובצי PDF, JPG, PNG או WEBP.",
   "Your AI preview is private.": "תצוגת ה-AI שלכם פרטית.",
   "A successful build uses 1 of your 3 attempts. System failures are refunded automatically.": "בנייה מוצלחת משתמשת בניסיון אחד מתוך שלושה. תקלות מערכת מוחזרות אוטומטית.",
   "Building your menu...": "בונה את התפריט שלכם...",
   "Build My Menu": "בניית התפריט שלי",
-  "02 / BRAND & PREVIEW": "02 / מותג ותצוגה",
+  "03 / BRAND & PREVIEW": "03 / מותג ותצוגה",
+  "02 / BRAND & PREVIEW": "03 / מותג ותצוגה",
   "Design your live menu.": "עצבו את התפריט החי שלכם.",
   "This is the same BEYOND customer-menu system that your restaurant will use live. Add your logo, choose the brand colors and fonts, switch languages and preview the final customer experience before subscribing.": "זוהי אותה מערכת תפריט הלקוחות של BEYOND שבה המסעדה שלכם תשתמש בפועל. הוסיפו לוגו, בחרו צבעי מותג ופונטים, החליפו שפות וצפו בחוויית הלקוח הסופית לפני ההצטרפות.",
   "Saving design...": "שומר את העיצוב...",
@@ -95,7 +100,8 @@ const BUILDER_HE = Object.freeze({
   "Best option: original PDF": "האפשרות הטובה ביותר: PDF מקורי",
   "Upload the restaurant's original PDF whenever possible. Text is usually much clearer than in a screenshot.": "ככל שניתן, העלו את קובץ ה-PDF המקורי של המסעדה. הטקסט בדרך כלל ברור יותר מאשר בצילום מסך.",
   "Use close-up menu images": "השתמשו בתמונות תקריב של התפריט",
-  "Upload 2–6 close-ups so each section and item is large enough to read accurately.": "העלו 2–6 תמונות תקריב כדי שכל קטגוריה ופריט יהיו גדולים מספיק לקריאה מדויקת.",
+  "Upload 2–12 close-ups so each section and item is large enough to read accurately.": "העלו 2–12 תמונות תקריב כדי שכל קטגוריה ופריט יהיו גדולים מספיק לקריאה מדויקת.",
+  "Upload 2–6 close-ups so each section and item is large enough to read accurately.": "העלו 2–12 תמונות תקריב כדי שכל קטגוריה ופריט יהיו גדולים מספיק לקריאה מדויקת.",
   "Add menu text": "הוסיפו טקסט של התפריט",
   "Paste any available text into the box above. BEYOND can combine text with your uploaded images.": "הדביקו כל טקסט זמין בתיבה למעלה. BEYOND יכול לשלב את הטקסט עם התמונות שהעליתם.",
   "Preparing close-ups...": "מכין תמונות תקריב...",
@@ -289,10 +295,8 @@ function StableBuilderTranslator({ language, rootRef }) {
       node.querySelectorAll("*").forEach(translateAttributes);
     }
 
-    // One deterministic pass after the React render / language change.
     translateSubtree(root);
 
-    // Only react to real React content changes. We never rescan the whole page.
     const observer = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
         if (mutation.type === "characterData") {
