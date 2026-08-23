@@ -1,0 +1,343 @@
+.admin-promo-settings {
+  margin: 0 0 32px;
+  padding: 24px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 22px;
+  background: rgba(255,255,255,.025);
+}
+
+.admin-promo-head,
+.admin-promo-form-title,
+.admin-promo-list-head,
+.admin-promo-card,
+.admin-promo-form-actions,
+.admin-promo-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.admin-promo-head {
+  align-items: flex-start;
+  margin-bottom: 22px;
+}
+
+.admin-promo-head h2 {
+  margin: 4px 0 7px;
+  font-size: 28px;
+}
+
+.admin-promo-head p,
+.admin-promo-head small {
+  margin: 0;
+  color: rgba(255,255,255,.62);
+  line-height: 1.55;
+}
+
+.admin-promo-head small {
+  display: block;
+  margin-top: 8px;
+  font-size: 11px;
+}
+
+.admin-promo-count {
+  min-width: 82px;
+  padding: 12px 14px;
+  border: 1px solid rgba(91,128,242,.2);
+  border-radius: 16px;
+  background: rgba(75,110,229,.08);
+  text-align: center;
+}
+
+.admin-promo-count strong,
+.admin-promo-count span {
+  display: block;
+}
+
+.admin-promo-count strong {
+  color: #8aa6ff;
+  font-size: 24px;
+}
+
+.admin-promo-count span {
+  color: rgba(255,255,255,.55);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+
+.admin-promo-success {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border: 1px solid rgba(35,190,126,.24);
+  border-radius: 12px;
+  background: rgba(35,190,126,.08);
+  color: #8ff1c2;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.admin-promo-alert {
+  margin-bottom: 16px;
+}
+
+.admin-promo-form {
+  margin-bottom: 26px;
+  padding: 18px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 18px;
+  background: rgba(0,0,0,.12);
+}
+
+.admin-promo-form-title {
+  margin-bottom: 16px;
+}
+
+.admin-promo-form-title > div {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: #fff;
+}
+
+.admin-promo-close,
+.admin-promo-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 10px;
+  background: rgba(255,255,255,.03);
+  color: #b8c4d7;
+  cursor: pointer;
+}
+
+.admin-promo-close {
+  min-height: 36px;
+  padding: 0 11px;
+}
+
+.admin-promo-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 14px;
+}
+
+.admin-promo-fields label {
+  display: grid;
+  gap: 7px;
+}
+
+.admin-promo-fields label > span {
+  color: rgba(255,255,255,.62);
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.admin-promo-fields input,
+.admin-promo-fields select {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 11px;
+  background: rgba(255,255,255,.035);
+  color: #fff;
+  outline: none;
+}
+
+.admin-promo-fields select option {
+  background: #0b1424;
+  color: #fff;
+}
+
+.admin-promo-fields input:focus,
+.admin-promo-fields select:focus {
+  border-color: rgba(85,126,242,.58);
+  box-shadow: 0 0 0 3px rgba(70,111,235,.08);
+}
+
+.admin-promo-percent {
+  position: relative;
+}
+
+.admin-promo-percent input {
+  padding-right: 40px;
+}
+
+.admin-promo-percent b {
+  position: absolute;
+  right: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #8aa6ff;
+  pointer-events: none;
+}
+
+.admin-promo-active {
+  display: flex !important;
+  align-items: center;
+  gap: 10px !important;
+  align-self: end;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 11px;
+  background: rgba(255,255,255,.025);
+}
+
+.admin-promo-active input {
+  width: 16px;
+  min-height: auto;
+  height: 16px;
+  accent-color: #5378ef;
+}
+
+.admin-promo-form-actions {
+  justify-content: flex-start;
+  margin-top: 16px;
+}
+
+.admin-promo-form-actions .primary-button,
+.admin-promo-form-actions .secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.admin-promo-list-head {
+  margin-bottom: 10px;
+}
+
+.admin-promo-list-head strong {
+  font-size: 14px;
+}
+
+.admin-promo-list-head span {
+  color: rgba(255,255,255,.48);
+  font-size: 11px;
+}
+
+.admin-promo-list {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-promo-card {
+  padding: 16px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 16px;
+  background: rgba(255,255,255,.025);
+}
+
+.admin-promo-card.is-inactive {
+  opacity: .58;
+}
+
+.admin-promo-main {
+  min-width: 0;
+}
+
+.admin-promo-code-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-promo-code-line code {
+  padding: 5px 8px;
+  border-radius: 8px;
+  background: rgba(81,117,238,.12);
+  color: #90aaff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .04em;
+}
+
+.admin-promo-code-line span {
+  color: #69dca5;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .1em;
+}
+
+.admin-promo-card.is-inactive .admin-promo-code-line span {
+  color: #9aa6b8;
+}
+
+.admin-promo-card h3 {
+  margin: 8px 0 7px;
+  font-size: 18px;
+}
+
+.admin-promo-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  color: rgba(255,255,255,.56);
+  font-size: 11px;
+}
+
+.admin-promo-meta strong {
+  color: #fff;
+}
+
+.admin-promo-actions {
+  justify-content: flex-end;
+  flex: 0 0 auto;
+}
+
+.admin-promo-actions button {
+  min-height: 36px;
+  padding: 0 11px;
+}
+
+.admin-promo-actions button:hover {
+  border-color: rgba(89,126,242,.32);
+  color: #fff;
+}
+
+.admin-promo-actions .danger:hover {
+  border-color: rgba(239,98,98,.32);
+  color: #ff9b9b;
+}
+
+@media (max-width: 820px) {
+  .admin-promo-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-promo-card {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-promo-actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-promo-settings {
+    padding: 16px;
+  }
+
+  .admin-promo-head,
+  .admin-promo-form-title {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-promo-form-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-promo-form-actions button {
+    width: 100%;
+  }
+}
