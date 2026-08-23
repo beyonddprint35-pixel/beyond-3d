@@ -1,0 +1,420 @@
+/* ==========================================================
+   BEYOND CUSTOMER MENU — MOBILE-SAFE LAYOUT DESIGNS
+
+   Layouts never change restaurant content, languages or
+   accessibility behavior. They only change spacing/structure.
+   ========================================================== */
+
+/* CLASSIC keeps the approved existing BEYOND menu layout. */
+.dmt-layout-classic {
+  --dmt-layout-marker: classic;
+}
+
+/* ==========================================================
+   COMPACT
+   Dense, efficient layout for long menus.
+   ========================================================== */
+.dmt-layout-compact .dmt-header {
+  min-height: 68px;
+  padding: 13px 16px;
+}
+
+.dmt-layout-compact .dmt-logo,
+.dmt-layout-compact .dmt-logo-placeholder {
+  width: 42px;
+  height: 42px;
+  flex-basis: 42px;
+}
+
+.dmt-layout-compact .dmt-hero {
+  min-height: 122px;
+  margin: 10px 14px;
+  padding: 17px 18px;
+  border-radius: 17px;
+  box-shadow: 0 8px 22px rgba(0,0,0,.04);
+}
+
+.dmt-layout-compact .dmt-hero-logo {
+  width: 78px;
+  height: 78px;
+  flex-basis: 78px;
+}
+
+.dmt-layout-compact .dmt-tabs-wrap {
+  padding: 6px 0;
+}
+
+.dmt-layout-compact .dmt-tab {
+  min-height: 33px;
+  padding-inline: 11px;
+}
+
+.dmt-layout-compact .dmt-section-head {
+  padding: 18px 16px 8px;
+}
+
+.dmt-layout-compact .dmt-menu-list {
+  padding: 0 12px 20px;
+  gap: 6px;
+}
+
+.dmt-layout-compact .dmt-item-row {
+  min-height: 64px;
+  padding: 10px 12px;
+  gap: 11px;
+  border-radius: 13px;
+  box-shadow: 0 4px 14px rgba(0,0,0,.025);
+}
+
+.dmt-layout-compact .dmt-item-info > p {
+  margin-top: 3px;
+  line-height: 1.35;
+}
+
+/* ==========================================================
+   CARDS
+   Stronger visual cards. Two columns only when space allows;
+   phones always fall back to one safe column.
+   ========================================================== */
+.dmt-layout-cards .dmt-hero {
+  border-radius: 18px;
+}
+
+.dmt-layout-cards .dmt-menu-list {
+  gap: 11px;
+}
+
+.dmt-layout-cards .dmt-item-row {
+  align-content: start;
+  min-height: 118px;
+  padding: 17px;
+  border-radius: 22px;
+  box-shadow: 0 12px 30px rgba(0,0,0,.05);
+}
+
+@media (min-width: 641px) {
+  .dmt-layout-cards .dmt-menu-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dmt-layout-cards .dmt-item-row {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr auto;
+  }
+
+  .dmt-layout-cards .dmt-price-area {
+    width: 100%;
+    min-width: 0;
+    padding-top: 10px;
+    grid-auto-flow: column;
+    justify-content: space-between;
+    justify-items: start;
+    border-top: 1px solid var(--dmt-line);
+  }
+}
+
+/* ==========================================================
+   EDITORIAL
+   Premium restaurant layout: flatter hero, line-based items.
+   ========================================================== */
+.dmt-layout-editorial .dmt-header {
+  border-bottom: 0;
+}
+
+.dmt-layout-editorial .dmt-hero {
+  min-height: 188px;
+  margin: 0;
+  padding: 34px 22px;
+  border: 0;
+  border-block: 1px solid var(--dmt-line);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.dmt-layout-editorial .dmt-hero::after {
+  width: 230px;
+  height: 230px;
+  opacity: .12;
+}
+
+.dmt-layout-editorial .dmt-tabs-wrap {
+  padding: 12px 0;
+  border-top: 0;
+}
+
+.dmt-layout-editorial .dmt-tab {
+  min-height: 32px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.dmt-layout-editorial .dmt-tab.active {
+  color: var(--dmt-text);
+  background: transparent;
+  box-shadow: inset 0 -2px 0 var(--dmt-accent);
+}
+
+.dmt-layout-editorial .dmt-section-head {
+  padding: 30px 20px 13px;
+}
+
+.dmt-layout-editorial .dmt-menu-list {
+  padding-inline: 20px;
+  gap: 0;
+}
+
+.dmt-layout-editorial .dmt-item-row {
+  min-height: 88px;
+  padding: 17px 0;
+  border: 0;
+  border-bottom: 1px solid var(--dmt-line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* ==========================================================
+   MINIMAL
+   Light visual footprint with subtle separators.
+   ========================================================== */
+.dmt-layout-minimal .dmt-header {
+  min-height: 70px;
+  border-bottom: 0;
+}
+
+.dmt-layout-minimal .dmt-hero {
+  min-height: 126px;
+  margin: 8px 18px 4px;
+  padding: 18px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.dmt-layout-minimal .dmt-hero::after {
+  display: none;
+}
+
+.dmt-layout-minimal .dmt-hero-logo {
+  width: 78px;
+  height: 78px;
+  flex-basis: 78px;
+}
+
+.dmt-layout-minimal .dmt-tabs-wrap {
+  border-top: 0;
+  background: transparent;
+}
+
+.dmt-layout-minimal .dmt-tab {
+  min-height: 32px;
+  border-color: transparent;
+  background: transparent;
+}
+
+.dmt-layout-minimal .dmt-tab.active {
+  color: var(--dmt-text);
+  border-color: var(--dmt-line);
+  background: var(--dmt-paper);
+}
+
+.dmt-layout-minimal .dmt-section-head {
+  padding-top: 22px;
+}
+
+.dmt-layout-minimal .dmt-menu-list {
+  gap: 0;
+}
+
+.dmt-layout-minimal .dmt-item-row {
+  min-height: 78px;
+  padding: 15px 5px;
+  border: 0;
+  border-bottom: 1px solid var(--dmt-line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* ==========================================================
+   BOLD
+   High-impact hero and navigation while preserving contrast.
+   ========================================================== */
+.dmt-layout-bold .dmt-header {
+  border-bottom-width: 2px;
+}
+
+.dmt-layout-bold .dmt-hero {
+  min-height: 178px;
+  border: 0;
+  border-radius: 20px;
+  color: var(--dmt-category-text);
+  background: var(--dmt-category-bg);
+  box-shadow: 0 16px 38px rgba(0,0,0,.12);
+}
+
+.dmt-layout-bold .dmt-hero h1,
+.dmt-layout-bold .dmt-hero p {
+  color: var(--dmt-category-text);
+}
+
+.dmt-layout-bold .dmt-kicker {
+  color: var(--dmt-accent-secondary);
+}
+
+.dmt-layout-bold .dmt-hero::after {
+  background: var(--dmt-accent);
+  opacity: .22;
+}
+
+.dmt-layout-bold .dmt-hero-logo {
+  padding: 8px;
+  border-radius: 20px;
+  background: var(--dmt-paper);
+}
+
+.dmt-layout-bold .dmt-tabs-wrap {
+  border-top: 0;
+}
+
+.dmt-layout-bold .dmt-tab {
+  min-height: 40px;
+  font-weight: 800;
+}
+
+.dmt-layout-bold .dmt-item-row {
+  border-width: 2px;
+  box-shadow: 0 10px 24px rgba(0,0,0,.045);
+}
+
+/* ==========================================================
+   MOBILE SAFETY
+   These rules intentionally win over desktop layout variants.
+   ========================================================== */
+@media (max-width: 560px) {
+  .dmt-layout-compact .dmt-header {
+    padding: 17px 14px 10px !important;
+  }
+
+  .dmt-layout-compact .dmt-hero {
+    min-height: 126px !important;
+    margin: 5px 12px 12px !important;
+    padding: 16px !important;
+  }
+
+  .dmt-layout-compact .dmt-hero-copy {
+    max-width: calc(100% - 76px) !important;
+  }
+
+  .dmt-layout-compact .dmt-hero-logo {
+    width: 68px !important;
+    height: 68px !important;
+    flex-basis: 68px !important;
+  }
+
+  .dmt-layout-compact .dmt-section-head {
+    padding: 17px 15px 7px !important;
+  }
+
+  .dmt-layout-compact .dmt-menu-list {
+    padding-inline: 11px !important;
+    gap: 5px !important;
+  }
+
+  .dmt-layout-compact .dmt-item-row {
+    min-height: 62px !important;
+    padding: 10px 11px !important;
+    border-radius: 12px !important;
+  }
+
+  .dmt-layout-cards .dmt-menu-list {
+    grid-template-columns: 1fr !important;
+  }
+
+  .dmt-layout-cards .dmt-item-row {
+    min-height: 88px !important;
+    grid-template-columns: minmax(0,1fr) auto !important;
+    grid-template-rows: auto !important;
+    padding: 14px 15px !important;
+    border-radius: 18px !important;
+  }
+
+  .dmt-layout-cards .dmt-price-area {
+    width: auto !important;
+    padding-top: 0 !important;
+    border-top: 0 !important;
+  }
+
+  .dmt-layout-editorial .dmt-hero {
+    min-height: 160px !important;
+    margin: 0 !important;
+    padding: 27px 17px !important;
+    border-radius: 0 !important;
+  }
+
+  .dmt-layout-editorial .dmt-section-head {
+    padding: 25px 16px 10px !important;
+  }
+
+  .dmt-layout-editorial .dmt-menu-list {
+    padding-inline: 16px !important;
+  }
+
+  .dmt-layout-editorial .dmt-item-row {
+    padding: 15px 0 !important;
+  }
+
+  .dmt-layout-minimal .dmt-hero {
+    min-height: 124px !important;
+    margin: 3px 15px 8px !important;
+    padding: 16px 0 !important;
+  }
+
+  .dmt-layout-minimal .dmt-section-head {
+    padding-top: 20px !important;
+  }
+
+  .dmt-layout-minimal .dmt-item-row {
+    padding-inline: 3px !important;
+  }
+
+  .dmt-layout-bold .dmt-hero {
+    min-height: 160px !important;
+    margin-inline: 12px !important;
+    padding: 18px !important;
+    border-radius: 18px !important;
+  }
+
+  .dmt-layout-bold .dmt-hero-logo {
+    width: 82px !important;
+    height: 82px !important;
+    flex-basis: 82px !important;
+    padding: 6px !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .dmt-layout-editorial .dmt-hero,
+  .dmt-layout-bold .dmt-hero,
+  .dmt-layout-cards .dmt-hero,
+  .dmt-layout-compact .dmt-hero,
+  .dmt-layout-minimal .dmt-hero {
+    max-width: 100%;
+  }
+
+  .digital-menu-template[class*="dmt-layout-"] .dmt-item-row,
+  .digital-menu-template[class*="dmt-layout-"] .dmt-section-head,
+  .digital-menu-template[class*="dmt-layout-"] .dmt-brand,
+  .digital-menu-template[class*="dmt-layout-"] .dmt-brand-copy {
+    min-width: 0;
+  }
+
+  .digital-menu-template[class*="dmt-layout-"] .dmt-item-info > strong,
+  .digital-menu-template[class*="dmt-layout-"] .dmt-item-info > p,
+  .digital-menu-template[class*="dmt-layout-"] .dmt-section-head h2 {
+    overflow-wrap: anywhere;
+  }
+}
