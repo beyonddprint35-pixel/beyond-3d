@@ -20,7 +20,7 @@ const BUILDER_HE = Object.freeze({
   "Admin access · Unlimited builds": "גישת מנהל · בניות ללא הגבלה",
   "BEYOND MENU AI": "BEYOND MENU AI",
   "Turn your existing menu": "הפכו את התפריט הקיים שלכם",
-  "into a digital experience.": "לחוויה דיגיטלית.",
+  "into a digital experience.": "\u00A0לחוויה דיגיטלית.",
   "Turn your existing menu into a digital experience.": "הפכו את התפריט הקיים שלכם לחוויה דיגיטלית.",
   "Upload a PDF, add menu photos, paste your text — or combine them. BEYOND AI will structure the menu and show you a private preview before you choose a subscription.": "העלו PDF, הוסיפו תמונות של התפריט, הדביקו טקסט — או שלבו ביניהם. BEYOND AI יסדר את התפריט ויציג לכם תצוגה פרטית לפני בחירת החבילה.",
   "Checking for your saved menu...": "בודק אם יש לכם תפריט שמור...",
