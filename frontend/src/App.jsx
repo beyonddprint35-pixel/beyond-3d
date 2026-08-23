@@ -27,6 +27,7 @@ import "./pages/MenuHomeDarkGlow.css";
 import "./pages/MenuHomeAccessRealism.css";
 import "./pages/MenuHomeAccessInteraction.css";
 import "./pages/MenuHomeNavCleanup.css";
+import "./pages/MenuHomeNav3DLink.js";
 import "./pages/AdminTheme.js";
 import "./pages/AdminTheme.css";
 
