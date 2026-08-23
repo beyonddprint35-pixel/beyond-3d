@@ -1,33 +1,27 @@
 /* ==========================================================
    BEYOND MENU — FIT TO VIEW
 
-   The mobile menu already has a fixed application shell:
-   - header / hero / categories / section title stay fixed
-   - footer stays fixed
+   The mobile menu already has the approved fixed shell:
+   - header / hero / categories / section title are fixed
+   - footer is fixed
    - ONLY .dmt-menu-list is the fixed-height scroll viewport
 
-   Fit to View must NEVER change that shell.
+   Fit to View NEVER changes that shell, width or column count.
 
    ON:
-   - mobile only
-   - keep width, columns and template styling unchanged
-   - if the current category has only a few cards, distribute the
-     EXISTING item-viewport height between those card rows
-   - cards grow vertically to fill otherwise unused item space
+   - Mobile View only
+   - measure the existing item viewport
+   - divide its usable height by the number of visible card rows
+   - increase each card's MINIMUM HEIGHT to that measured value
+   - content can still make a card taller; the item area then scrolls
 
    OFF:
-   - mobile only
-   - cards keep their normal/minimum template height
-   - unused item-viewport space remains empty
-   - if there are many items, .dmt-menu-list scrolls normally
-
-   Legacy state mapping kept for backwards compatibility:
-   Fit ON  = no .dmt-natural-view marker
-   Fit OFF = .dmt-natural-view marker
+   - cards use their normal template minimum height
+   - unused space in the fixed item viewport stays empty
    ========================================================== */
 
 /* ----------------------------------------------------------
-   MENU STUDIO GLOBAL TOGGLE
+   MENU STUDIO TOGGLE
    ---------------------------------------------------------- */
 .menu-brand-fit-row {
   min-height: 58px;
@@ -61,7 +55,6 @@
   line-height: 1.35;
 }
 
-/* Replace the old text that described width fitting. */
 .menu-brand-fit-copy small .fit-copy-en {
   font-size: 0;
 }
@@ -168,63 +161,30 @@
 }
 
 /* ==========================================================
-   MOBILE ITEM-VIEWPORT FILL ONLY
+   MEASURED MOBILE ITEM-AREA FILL
 
-   DO NOT modify .dmt-app, footer, header, hero, categories,
-   section heading, width, viewport height or overflow shell.
-
-   DigitalMenuTemplate.css owns the fixed mobile shell.
-   We only alter how item ROWS consume the already-fixed
-   .dmt-menu-list height.
+   DigitalMenuTemplate calculates --dmt-fit-row-height from the
+   already-fixed .dmt-menu-list viewport. No parent layout is
+   modified here.
    ========================================================== */
 
 @media (max-width: 560px) {
-  /* --------------------------------------------------------
-     MOBILE VIEW FROM MENU BUILDER
-     -------------------------------------------------------- */
   .menu-mobile-preview-page
-  .digital-menu-template:not(.dmt-natural-view)
-  .dmt-menu-list {
-    /*
-      The list already has height:100% and overflow-y:auto.
-
-      max-content preserves each template's minimum/content
-      requirement. 1fr lets rows share any EXTRA height.
-
-      Few rows => they grow to fill the item viewport.
-      Many rows => their minimum heights win and the existing
-                   item viewport scrolls.
-    */
-    grid-auto-rows: minmax(max-content, 1fr) !important;
-    align-content: stretch !important;
+  .dmt-menu-list.dmt-fit-rows {
+    align-content: start !important;
   }
 
   .menu-mobile-preview-page
-  .digital-menu-template:not(.dmt-natural-view)
-  .dmt-item-row {
-    align-self: stretch !important;
+  .dmt-menu-list.dmt-fit-rows
+  > .dmt-item-row {
+    min-height: var(--dmt-fit-row-height) !important;
   }
 
-  /* --------------------------------------------------------
-     REAL LIVE CUSTOMER MENU ON A PHONE
-     -------------------------------------------------------- */
-  .digital-menu-template.dmt-live:not(.dmt-natural-view)
-  .dmt-menu-list {
-    grid-auto-rows: minmax(max-content, 1fr) !important;
-    align-content: stretch !important;
+  /* Ready for the same behavior on a real mobile customer route
+     when that route opts into fitViewport. */
+  .digital-menu-template.dmt-live
+  .dmt-menu-list.dmt-fit-rows
+  > .dmt-item-row {
+    min-height: var(--dmt-fit-row-height) !important;
   }
-
-  .digital-menu-template.dmt-live:not(.dmt-natural-view)
-  .dmt-item-row {
-    align-self: stretch !important;
-  }
-
-  /* --------------------------------------------------------
-     FIT OFF
-
-     Intentionally no sizing override.
-     The normal template/card minimum heights remain exactly as
-     defined by Classic / Compact / Cards / Editorial / Minimal /
-     Bold and empty item-area space stays empty.
-     -------------------------------------------------------- */
 }
