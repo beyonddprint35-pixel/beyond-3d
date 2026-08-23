@@ -1,3 +1,41 @@
 .three-d-printing-page .home-menu-studio-button {
   display: none !important;
 }
+
+/* Keep the 3D hamburger menu minimal: no duplicate panel title or close mark. */
+.three-d-printing-page .home-nav-links::before,
+.three-d-printing-page .home-nav-links::after {
+  content: none !important;
+  display: none !important;
+}
+
+.three-d-printing-page .home-nav-links > :is(
+  .home-nav-panel-head,
+  .home-nav-title,
+  .home-nav-label,
+  .home-nav-close,
+  [data-nav-heading],
+  [data-nav-close]
+) {
+  display: none !important;
+}
+
+/* The top-right hamburger is the only menu control, even while the panel is open. */
+.three-d-printing-page:has(.home-nav-links.open) .home-mobile-menu::before,
+.three-d-printing-page:has(.home-nav-links.open) .home-mobile-menu::after {
+  content: none !important;
+  display: none !important;
+}
+
+.three-d-printing-page:has(.home-nav-links.open) .home-mobile-menu > span {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+.three-d-printing-page:has(.home-nav-links.open) .home-mobile-menu > span:nth-child(1),
+.three-d-printing-page:has(.home-nav-links.open) .home-mobile-menu > span:nth-child(2),
+.three-d-printing-page:has(.home-nav-links.open) .home-mobile-menu > span:nth-child(3) {
+  width: 16px !important;
+  height: 1.7px !important;
+  margin: 0 !important;
+}
