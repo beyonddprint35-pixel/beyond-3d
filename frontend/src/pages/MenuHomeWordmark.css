@@ -4,7 +4,7 @@
   position: relative;
   display: block !important;
   flex: 0 0 auto;
-  width: 126px;
+  width: 128px;
   height: 24px;
   overflow: visible;
   font-size: 0 !important;
@@ -13,9 +13,9 @@
   direction: ltr;
   color: var(--menu-text);
   background:
-    linear-gradient(currentColor 0 0) 21px 5px / 14px 2px no-repeat,
-    linear-gradient(currentColor 0 0) 21px 11px / 14px 2px no-repeat,
-    linear-gradient(currentColor 0 0) 21px 17px / 14px 2px no-repeat;
+    linear-gradient(currentColor 0 0) 21px 3px / 15px 3px no-repeat,
+    linear-gradient(currentColor 0 0) 21px 10.5px / 15px 3px no-repeat,
+    linear-gradient(currentColor 0 0) 21px 18px / 15px 3px no-repeat;
 }
 
 .menu-home-brand > span::before,
@@ -39,7 +39,7 @@
 
 .menu-home-brand > span::after {
   content: "YOND";
-  left: 42px;
+  left: 43px;
   letter-spacing: 0.24em;
 }
 
@@ -55,12 +55,12 @@
 @media (max-width: 500px) {
   .menu-home-brand > span {
     display: block !important;
-    width: 105px;
+    width: 106px;
     height: 21px;
     background:
-      linear-gradient(currentColor 0 0) 18px 4px / 12px 2px no-repeat,
-      linear-gradient(currentColor 0 0) 18px 9.5px / 12px 2px no-repeat,
-      linear-gradient(currentColor 0 0) 18px 15px / 12px 2px no-repeat;
+      linear-gradient(currentColor 0 0) 18px 3px / 13px 2.6px no-repeat,
+      linear-gradient(currentColor 0 0) 18px 9.2px / 13px 2.6px no-repeat,
+      linear-gradient(currentColor 0 0) 18px 15.4px / 13px 2.6px no-repeat;
   }
 
   .menu-home-brand > span::before,
@@ -69,19 +69,19 @@
   }
 
   .menu-home-brand > span::after {
-    left: 35px;
+    left: 36px;
     letter-spacing: 0.18em;
   }
 }
 
 @media (max-width: 380px) {
   .menu-home-brand > span {
-    width: 92px;
+    width: 94px;
     height: 19px;
     background:
-      linear-gradient(currentColor 0 0) 16px 3.5px / 10px 1.8px no-repeat,
-      linear-gradient(currentColor 0 0) 16px 8.5px / 10px 1.8px no-repeat,
-      linear-gradient(currentColor 0 0) 16px 13.5px / 10px 1.8px no-repeat;
+      linear-gradient(currentColor 0 0) 16px 3px / 11px 2.4px no-repeat,
+      linear-gradient(currentColor 0 0) 16px 8.3px / 11px 2.4px no-repeat,
+      linear-gradient(currentColor 0 0) 16px 13.6px / 11px 2.4px no-repeat;
   }
 
   .menu-home-brand > span::before,
@@ -90,7 +90,7 @@
   }
 
   .menu-home-brand > span::after {
-    left: 31px;
+    left: 32px;
     letter-spacing: 0.15em;
   }
 }
