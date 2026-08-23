@@ -14,6 +14,7 @@ import MenuMobilePreviewPage from "./pages/MenuMobilePreviewPage";
 
 import "./pages/MenuHomeOverrides.css";
 import "./pages/MenuHomeFinalPatch.css";
+import "./pages/MenuHomeWordmark.css";
 
 function App() {
   return (
