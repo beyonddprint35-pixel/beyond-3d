@@ -60,6 +60,150 @@ body {
 }
 
 
+/* ==========================================================
+   HOMEPAGE DEMO PHONE
+
+   The physical phone has a Dynamic Island overlaying the
+   iframe. Reserve a genuine safe area so the restaurant
+   logo/name/language controls never sit underneath it.
+   This mode is only used by the landing-page demo.
+   ========================================================== */
+
+.menu-mobile-preview-home
+.dmt-header {
+  min-height: 108px !important;
+
+  padding:
+    49px
+    16px
+    12px !important;
+
+  align-items:
+    flex-end !important;
+}
+
+
+.menu-mobile-preview-home
+.dmt-brand-copy strong {
+  max-width: 132px;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+
+/* ==========================================================
+   HOMEPAGE DEMO ACCESSIBILITY THEME
+
+   Use the same restaurant/menu theme variables instead of
+   the old hard-coded black/cream El Puerto presentation.
+   ========================================================== */
+
+.menu-mobile-preview-home
+.accessibility-toggle {
+  border-color:
+    var(--dmt-paper) !important;
+
+  color:
+    var(--dmt-category-text) !important;
+
+  background:
+    var(--dmt-category-bg) !important;
+
+  box-shadow:
+    0
+    10px
+    28px
+    rgba(48, 91, 190, .28) !important;
+}
+
+
+.menu-mobile-preview-home
+.accessibility-panel {
+  border-color:
+    var(--dmt-line) !important;
+
+  color:
+    var(--dmt-text) !important;
+
+  background:
+    var(--dmt-paper) !important;
+
+  box-shadow:
+    0
+    22px
+    60px
+    rgba(13, 27, 58, .20) !important;
+}
+
+
+.menu-mobile-preview-home
+.accessibility-panel-head {
+  color:
+    var(--dmt-category-text) !important;
+
+  background:
+    var(--dmt-category-bg) !important;
+}
+
+
+.menu-mobile-preview-home
+#accessibilityClose {
+  border:
+    1px solid
+    var(--dmt-line) !important;
+
+  color:
+    var(--dmt-category-bg) !important;
+
+  background:
+    var(--dmt-paper) !important;
+}
+
+
+.menu-mobile-preview-home
+.accessibility-panel-body button {
+  border-color:
+    var(--dmt-line) !important;
+
+  color:
+    var(--dmt-text) !important;
+
+  background:
+    var(--dmt-paper) !important;
+}
+
+
+.menu-mobile-preview-home
+.accessibility-panel-body button[aria-pressed="true"] {
+  border-color:
+    var(--dmt-category-bg) !important;
+
+  color:
+    var(--dmt-category-text) !important;
+
+  background:
+    var(--dmt-category-bg) !important;
+}
+
+
+.menu-mobile-preview-home
+.accessibility-note {
+  color:
+    var(--dmt-muted) !important;
+}
+
+
+.menu-mobile-preview-home
+:focus-visible {
+  outline-color:
+    var(--dmt-accent) !important;
+}
+
+
 .menu-mobile-preview-empty {
   width: 100%;
 
