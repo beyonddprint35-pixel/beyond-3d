@@ -1,0 +1,373 @@
+.logo-cropper-overlay {
+  position: fixed;
+  inset: 0;
+
+  z-index: 10000;
+
+  padding: 28px;
+
+  display: grid;
+  place-items: center;
+
+  background:
+    rgba(
+      0,
+      4,
+      8,
+      0.86
+    );
+
+  backdrop-filter:
+    blur(18px);
+}
+
+
+.logo-cropper-modal {
+  width:
+    min(
+      880px,
+      100%
+    );
+
+  max-height:
+    calc(
+      100vh - 56px
+    );
+
+  overflow-y: auto;
+
+  border:
+    1px solid
+    rgba(
+      124,
+      173,
+      217,
+      0.16
+    );
+
+  border-radius: 25px;
+
+  color: #e8f0f7;
+
+  background:
+    #071019;
+
+  box-shadow:
+    0 40px 120px
+    rgba(
+      0,
+      0,
+      0,
+      0.55
+    );
+}
+
+
+.logo-cropper-header {
+  padding: 24px;
+
+  display: flex;
+  align-items:
+    flex-start;
+  justify-content:
+    space-between;
+
+  gap: 20px;
+
+  border-bottom:
+    1px solid
+    rgba(
+      124,
+      173,
+      217,
+      0.1
+    );
+}
+
+
+.logo-cropper-header span {
+  color: #5e8eb8;
+
+  font-size: 10px;
+  font-weight: 800;
+
+  letter-spacing:
+    0.2em;
+}
+
+
+.logo-cropper-header h3 {
+  margin:
+    7px
+    0
+    5px;
+
+  font-family:
+    "Space Grotesk",
+    sans-serif;
+
+  font-size: 30px;
+
+  font-weight: 550;
+}
+
+
+.logo-cropper-header p {
+  margin: 0;
+
+  color: #7891a6;
+
+  font-size: 12px;
+}
+
+
+.logo-cropper-close {
+  width: 40px;
+  height: 40px;
+
+  display: grid;
+  place-items: center;
+
+  flex: 0 0 auto;
+
+  border:
+    1px solid
+    rgba(
+      124,
+      173,
+      217,
+      0.12
+    );
+
+  border-radius: 50%;
+
+  color: #8ca5ba;
+
+  background:
+    transparent;
+
+  cursor: pointer;
+}
+
+
+.logo-cropper-shapes {
+  padding:
+    16px
+    24px;
+
+  display: flex;
+  flex-wrap: wrap;
+
+  gap: 7px;
+
+  border-bottom:
+    1px solid
+    rgba(
+      124,
+      173,
+      217,
+      0.08
+    );
+}
+
+
+.logo-cropper-shapes button {
+  min-height: 39px;
+
+  padding:
+    0 13px;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 7px;
+
+  border:
+    1px solid
+    rgba(
+      124,
+      173,
+      217,
+      0.12
+    );
+
+  border-radius: 999px;
+
+  color: #7895ad;
+
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.018
+    );
+
+  font-size: 11px;
+
+  cursor: pointer;
+}
+
+
+.logo-cropper-shapes button.active {
+  color: #ffffff;
+
+  border-color:
+    #358bf4;
+
+  background:
+    #176ef2;
+}
+
+
+.logo-cropper-stage {
+  min-height: 440px;
+
+  padding: 28px;
+
+  display: grid;
+  place-items: center;
+
+  background:
+    repeating-conic-gradient(
+        #202b34
+        0% 25%,
+        #17212a
+        0% 50%
+      )
+      50% /
+      22px 22px;
+}
+
+
+.logo-cropper-stage
+.ReactCrop {
+  max-width: 100%;
+}
+
+
+.logo-cropper-stage
+img {
+  display: block;
+
+  max-width: 100%;
+  max-height: 560px;
+}
+
+
+.logo-cropper-error {
+  margin:
+    16px
+    24px
+    0;
+
+  padding:
+    12px
+    14px;
+
+  border:
+    1px solid
+    rgba(
+      190,
+      76,
+      76,
+      0.22
+    );
+
+  border-radius: 12px;
+
+  color: #dc9398;
+
+  background:
+    rgba(
+      120,
+      34,
+      40,
+      0.1
+    );
+
+  font-size: 11px;
+}
+
+
+.logo-cropper-footer {
+  padding: 20px 24px;
+
+  display: flex;
+  justify-content:
+    flex-end;
+
+  gap: 9px;
+}
+
+
+.logo-cropper-footer button {
+  min-height: 43px;
+
+  padding:
+    0 17px;
+
+  border-radius: 999px;
+
+  cursor: pointer;
+}
+
+
+.logo-cropper-cancel {
+  border:
+    1px solid
+    rgba(
+      124,
+      173,
+      217,
+      0.13
+    );
+
+  color: #819bb0;
+
+  background:
+    transparent;
+}
+
+
+.logo-cropper-apply {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 7px;
+
+  border: 0;
+
+  color: #ffffff;
+
+  background:
+    linear-gradient(
+      135deg,
+      #176ef2,
+      #4290f5
+    );
+
+  font-weight: 750;
+}
+
+
+@media (
+  max-width: 620px
+) {
+  .logo-cropper-overlay {
+    padding: 10px;
+  }
+
+  .logo-cropper-stage {
+    min-height: 330px;
+
+    padding: 15px;
+  }
+
+  .logo-cropper-footer {
+    display: grid;
+
+    grid-template-columns:
+      1fr 1fr;
+  }
+}

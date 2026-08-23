@@ -1983,3 +1983,285 @@
 
 
 }
+
+
+
+/* ==========================================================
+   BEYOND MENU CORE
+   Version: 1.1
+   Update: Complete accessibility text scaling
+
+   A+ now scales:
+   - descriptions
+   - origin / secondary text
+   - normal prices
+   - multi-price labels
+   - multi-price amounts
+
+   Works whether accessibility classes are applied:
+   - directly to .dmt-app
+   - or to any ancestor host
+
+   Approved mobile layout and item-card design stay unchanged.
+   ========================================================== */
+
+
+/* ==========================================================
+   ACCESSIBILITY SCALE
+   ========================================================== */
+
+.dmt-app {
+  --dmt-a11y-scale:
+    1;
+}
+
+
+/* LEVEL 1 */
+
+.dmt-app.a11y-text-large,
+.a11y-text-large
+.dmt-app {
+  --dmt-a11y-scale:
+    1.12;
+}
+
+
+/* LEVEL 2 */
+
+.dmt-app.a11y-text-larger,
+.a11y-text-larger
+.dmt-app {
+  --dmt-a11y-scale:
+    1.25;
+}
+
+
+/* LEVEL 3 */
+
+.dmt-app.a11y-text-xl,
+.a11y-text-xl
+.dmt-app {
+  --dmt-a11y-scale:
+    1.4;
+}
+
+
+/* LEVEL 4 */
+
+.dmt-app.a11y-text-xxl,
+.a11y-text-xxl
+.dmt-app {
+  --dmt-a11y-scale:
+    1.55;
+}
+
+
+
+/* ==========================================================
+   DESCRIPTION
+
+   JSX:
+   <p>{description}</p>
+
+   Builder:
+   <EditableText tag="p" ... />
+   ========================================================== */
+
+.dmt-item-info
+> p,
+.dmt-item-info
+> p.dmt-inline-edit {
+  font-size:
+    calc(
+      var(--dmt-description-size)
+      *
+      var(--dmt-a11y-scale)
+    ) !important;
+
+  line-height:
+    1.4 !important;
+}
+
+
+
+/* ==========================================================
+   ORIGIN / SECONDARY TEXT
+
+   JSX:
+   <small>{origin}</small>
+   ========================================================== */
+
+.dmt-item-info
+> small,
+.dmt-item-info
+> small.dmt-inline-edit {
+  font-size:
+    calc(
+      var(--dmt-secondary-size)
+      *
+      var(--dmt-a11y-scale)
+    ) !important;
+
+  line-height:
+    1.35 !important;
+}
+
+
+
+/* ==========================================================
+   NORMAL SINGLE PRICE
+
+   JSX:
+   <div class="dmt-price-area">
+     <b>₪50</b>
+   </div>
+   ========================================================== */
+
+.dmt-price-area
+> b,
+.dmt-price-area
+> b.dmt-inline-edit {
+  font-size:
+    calc(
+      var(--dmt-price-size)
+      *
+      var(--dmt-a11y-scale)
+    ) !important;
+
+  line-height:
+    1.15 !important;
+}
+
+
+
+/* ==========================================================
+   MULTI PRICE OPTION
+
+   Actual JSX:
+
+   <div class="dmt-price-option">
+     <span>8 pcs</span>
+     <strong>₪35</strong>
+   </div>
+
+   OR IN BUILDER:
+
+   <div class="dmt-price-option">
+     <EditableText />
+     <EditableText tag="strong" />
+   </div>
+   ========================================================== */
+
+.dmt-price-option {
+  line-height:
+    1.2 !important;
+}
+
+
+/* LABEL — 8 pcs / 15 pcs / Glass / Bottle */
+
+.dmt-price-option
+> span:first-child,
+.dmt-price-option
+> .dmt-inline-edit:first-child {
+  font-size:
+    calc(
+      var(--dmt-secondary-size)
+      *
+      var(--dmt-a11y-scale)
+    ) !important;
+
+  line-height:
+    1.25 !important;
+
+  white-space:
+    nowrap;
+}
+
+
+/* PRICE — ₪35 / ₪55 */
+
+.dmt-price-option
+> strong:last-child,
+.dmt-price-option
+> .dmt-inline-edit:last-child {
+  font-size:
+    calc(
+      var(--dmt-price-size)
+      *
+      var(--dmt-a11y-scale)
+    ) !important;
+
+  line-height:
+    1.15 !important;
+
+  white-space:
+    nowrap;
+}
+
+
+
+/* ==========================================================
+   PRICE CONTAINER
+
+   Allow increased text to take the space it actually needs.
+   Do not scale or redesign the card.
+   ========================================================== */
+
+.dmt-price-area {
+  width:
+    auto !important;
+
+  min-width:
+    max-content;
+
+  flex-shrink:
+    0;
+}
+
+
+/* Prices always stay readable LTR */
+
+.dmt-app[dir="rtl"]
+.dmt-price-area,
+.dmt-app[dir="rtl"]
+.dmt-price-option {
+  direction:
+    ltr;
+}
+
+
+
+/* ==========================================================
+   MOBILE
+
+   Important:
+   DO NOT change card height, padding, border radius,
+   item typography, or scrolling structure here.
+
+   Only allow enlarged accessibility text to fit naturally.
+   ========================================================== */
+
+@media (max-width: 560px) {
+
+  .dmt-item-info {
+    min-width:
+      0;
+  }
+
+
+  .dmt-item-info
+  > p,
+  .dmt-item-info
+  > small {
+    max-width:
+      100%;
+  }
+
+
+  .dmt-price-option {
+    white-space:
+      nowrap;
+  }
+
+}

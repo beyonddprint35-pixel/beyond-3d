@@ -7351,7 +7351,7 @@ const loadData = async (id) => {
                     <option value="he">
                       {isHebrew
                         ? "עברית"
-                        : "Hebrew — עברית"}
+                        : "עברית"}
                     </option>
 
                     <option value="en">

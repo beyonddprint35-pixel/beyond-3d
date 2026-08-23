@@ -20,6 +20,7 @@
     "opencascade.js": "^2.0.0-beta.b5ff984",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
+    "react-image-crop": "^11.1.2",
     "react-router-dom": "^7.18.2",
     "three": "^0.185.1",
     "three-csg-ts": "^3.2.0"

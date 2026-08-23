@@ -1,0 +1,201 @@
+.menu-language-selector {
+  margin-bottom: 18px;
+
+  padding: 20px;
+
+  border:
+    1px solid
+    rgba(124,173,217,.12);
+
+  border-radius: 18px;
+
+  background:
+    rgba(1,8,15,.62);
+}
+
+
+.menu-language-selector-heading {
+  display: flex;
+
+  align-items:
+    flex-start;
+
+  gap: 12px;
+}
+
+
+.menu-language-icon {
+  width: 40px;
+  height: 40px;
+
+  flex: 0 0 40px;
+
+  display: grid;
+
+  place-items: center;
+
+  border:
+    1px solid
+    rgba(67,144,245,.2);
+
+  border-radius: 11px;
+
+  color: #6fa9d7;
+
+  background:
+    rgba(66,144,245,.07);
+}
+
+
+.menu-language-selector-heading span {
+  color: #5e8eb8;
+
+  font-size: 9px;
+  font-weight: 800;
+
+  letter-spacing: .2em;
+}
+
+
+.menu-language-selector-heading h2 {
+  margin:
+    5px
+    0
+    4px;
+
+  color: #e6eef5;
+
+  font-size: 21px;
+
+  font-weight: 550;
+
+  letter-spacing:
+    -.03em;
+}
+
+
+.menu-language-selector-heading p {
+  margin: 0;
+
+  color: #718ca2;
+
+  font-size: 11px;
+}
+
+
+.menu-language-options {
+  margin-top: 15px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      3,
+      1fr
+    );
+
+  gap: 8px;
+}
+
+
+.menu-language-options button {
+  min-height: 60px;
+
+  padding:
+    9px
+    11px;
+
+  display: grid;
+
+  grid-template-columns:
+    auto
+    1fr
+    auto;
+
+  align-items: center;
+
+  gap: 8px;
+
+  border:
+    1px solid
+    rgba(124,173,217,.12);
+
+  border-radius: 12px;
+
+  color: #a3b8c9;
+
+  background:
+    rgba(255,255,255,.018);
+
+  cursor: pointer;
+}
+
+
+.menu-language-options button.selected {
+  border-color:
+    rgba(51,142,244,.72);
+
+  background:
+    rgba(37,121,223,.11);
+}
+
+
+.menu-language-checkbox {
+  width: 23px;
+  height: 23px;
+
+  display: grid;
+
+  place-items: center;
+
+  border:
+    1px solid
+    rgba(124,173,217,.28);
+
+  border-radius: 6px;
+}
+
+
+.menu-language-options button.selected
+.menu-language-checkbox {
+  color: white;
+
+  border-color:
+    #338ef4;
+
+  background:
+    #176ef2;
+}
+
+
+.menu-language-options strong {
+  color: #dae5ed;
+
+  font-size: 14px;
+}
+
+
+.menu-language-options small {
+  color: #657f95;
+
+  font-size: 8px;
+
+  font-weight: 800;
+}
+
+
+.menu-language-warning {
+  margin-top: 9px;
+
+  color: #d38c91;
+
+  font-size: 10px;
+}
+
+
+@media(max-width:680px) {
+  .menu-language-options {
+    grid-template-columns:
+      1fr;
+  }
+}

@@ -1097,7 +1097,7 @@ export const BEYOND_HE = Object.freeze({
   "Brand color": "צבע מותג",
   "Default language": "שפת ברירת מחדל",
 
-  "Hebrew — עברית": "עברית",
+  "עברית": "עברית",
 
   "PUBLIC MENU": "תפריט ציבורי",
   "SAVE SETTINGS": "שמור הגדרות",

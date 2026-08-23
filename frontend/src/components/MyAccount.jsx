@@ -168,6 +168,27 @@ function MyAccount({
     setMenuSites,
   ] = useState([]);
 
+  /*
+    AI-generated restaurant websites that are
+    still private Menu Builder projects.
+
+    These appear in My Websites as DRAFT until
+    activation creates/connects a real menu_site.
+  */
+  const [
+    menuDraftProjects,
+    setMenuDraftProjects,
+  ] = useState([]);
+
+
+  /*
+    Total websites visible in the customer account:
+    generated drafts + activated menu sites.
+  */
+  const websiteCount =
+    menuSites.length +
+    menuDraftProjects.length;
+
   const [
     isMenuAdmin,
     setIsMenuAdmin,
@@ -642,90 +663,208 @@ function MyAccount({
     models.length,
   ]);
 
-  // BEYOND_MY_WEBSITES_ACCOUNT_V1
+  // BEYOND_MY_WEBSITES_ACCOUNT_V2
   const loadMenuSites =
     useCallback(
       async () => {
-        if (!session?.user?.id) {
+        if (
+          !session?.user?.id
+        ) {
           setMenuSites([]);
+          setMenuDraftProjects([]);
           setIsMenuAdmin(false);
           setWebsitesLoading(false);
+
           return;
         }
 
-        setWebsitesLoading(true);
+
+        setWebsitesLoading(
+          true
+        );
+
 
         const {
-          data: adminRow,
-          error: adminError,
-        } = await supabase
-          .from("menu_admins")
-          .select("user_id")
-          .eq(
-            "user_id",
-            session.user.id
-          )
-          .maybeSingle();
+          data:
+            adminRow,
 
-        if (adminError) {
+          error:
+            adminError,
+        } =
+          await supabase
+            .from(
+              "menu_admins"
+            )
+            .select(
+              "user_id"
+            )
+            .eq(
+              "user_id",
+              session.user.id
+            )
+            .maybeSingle();
+
+
+        if (
+          adminError
+        ) {
           console.error(
             "Menu admin check failed:",
             adminError
           );
 
           setMenuSites([]);
+          setMenuDraftProjects([]);
           setIsMenuAdmin(false);
           setWebsitesLoading(false);
+
           return;
         }
 
+
         const adminMode =
-          Boolean(adminRow);
+          Boolean(
+            adminRow
+          );
+
 
         setIsMenuAdmin(
           adminMode
         );
 
-        let query =
+
+        let siteQuery =
           supabase
-            .from("menu_sites")
+            .from(
+              "menu_sites"
+            )
             .select(
               "id,owner_id,name,slug,published,created_at"
             )
             .order(
               "created_at",
               {
-                ascending: false,
+                ascending:
+                  false,
               }
             );
 
-        if (!adminMode) {
-          query =
-            query.eq(
+
+        if (
+          !adminMode
+        ) {
+          siteQuery =
+            siteQuery.eq(
               "owner_id",
               session.user.id
             );
         }
 
-        const {
-          data,
-          error: sitesError,
-        } = await query;
 
-        if (sitesError) {
+        const draftQuery =
+          supabase
+            .from(
+              "menu_projects"
+            )
+            .select(
+              `
+                id,
+                owner_user_id,
+                restaurant_id,
+                name,
+                status,
+                structured_menu,
+                activated_site_id,
+                created_at,
+                updated_at
+              `
+            )
+            .eq(
+              "owner_user_id",
+              session.user.id
+            )
+            .eq(
+              "status",
+              "ready"
+            )
+            .is(
+              "activated_site_id",
+              null
+            )
+            .not(
+              "structured_menu",
+              "is",
+              null
+            )
+            .order(
+              "updated_at",
+              {
+                ascending:
+                  false,
+              }
+            );
+
+
+        const [
+          sitesResult,
+          draftsResult,
+        ] =
+          await Promise.all([
+            siteQuery,
+            draftQuery,
+          ]);
+
+
+        if (
+          sitesResult.error
+        ) {
           console.error(
             "Website load failed:",
-            sitesError
+            sitesResult.error
           );
 
           setMenuSites([]);
-          setWebsitesLoading(false);
-          return;
+        } else {
+          setMenuSites(
+            sitesResult.data ||
+            []
+          );
         }
 
-        setMenuSites(
-          data || []
-        );
+
+        if (
+          draftsResult.error
+        ) {
+          console.error(
+            "Website drafts load failed:",
+            draftsResult.error
+          );
+
+          setMenuDraftProjects([]);
+        } else {
+          const drafts =
+            (
+              draftsResult.data ||
+              []
+            ).filter(
+              project =>
+                Array.isArray(
+                  project
+                    ?.structured_menu
+                    ?.sections
+                ) &&
+                project
+                  .structured_menu
+                  .sections
+                  .length >
+                  0
+            );
+
+          setMenuDraftProjects(
+            drafts
+          );
+        }
+
 
         setWebsitesLoading(
           false
@@ -735,6 +874,7 @@ function MyAccount({
         session?.user?.id,
       ]
     );
+
 
   useEffect(() => {
     if (!open) {
@@ -752,7 +892,7 @@ function MyAccount({
       activeTab === "websites" &&
       !websitesLoading &&
       !isMenuAdmin &&
-      menuSites.length === 0
+      websiteCount === 0
     ) {
       setActiveTab("overview");
     }
@@ -761,6 +901,8 @@ function MyAccount({
     websitesLoading,
     isMenuAdmin,
     menuSites.length,
+    menuDraftProjects.length,
+    websiteCount,
   ]);
 
   // BEYOND_ADMIN_CONTACT_LOGIC_V1
@@ -1843,6 +1985,14 @@ function MyAccount({
       [models]
     );
 
+  /*
+    My Websites includes both:
+
+      menu_projects -> private generated DRAFT websites
+      menu_sites    -> activated website records
+  */
+
+
   const activeOrders =
     useMemo(
       () =>
@@ -2252,7 +2402,7 @@ function MyAccount({
             )}
 
             {(isMenuAdmin ||
-              menuSites.length > 0) && (
+              websiteCount > 0) && (
               <button
                 type="button"
                 className={
@@ -2275,13 +2425,13 @@ function MyAccount({
                 />
 
                 {isMenuAdmin ||
-                menuSites.length > 1
+                websiteCount > 1
                   ? "My Websites"
                   : "My Website"}
 
                 <span>
                   {
-                    menuSites.length
+                    websiteCount
                   }
                 </span>
               </button>
@@ -2559,7 +2709,7 @@ function MyAccount({
 
                   <strong>
                     {
-                      menuSites.length
+                      websiteCount
                     }
                   </strong>
 
@@ -2568,11 +2718,11 @@ function MyAccount({
                       ? `${menuSites.filter(
                           site =>
                             site.published
-                        ).length} live · admin`
+                        ).length} live · ${menuDraftProjects.length} draft · admin`
                       : `${menuSites.filter(
                           site =>
                             site.published
-                        ).length} live`}
+                        ).length} live · ${menuDraftProjects.length} draft`}
                   </small>
                 </article>
 
@@ -2855,7 +3005,7 @@ function MyAccount({
                       </article>
                     )
                   )}
-                </div>
+                      </div>
               )}
             </div>
           ) : activeTab ===
@@ -3555,7 +3705,7 @@ function MyAccount({
 
                   Loading websites...
                 </div>
-              ) : !menuSites.length ? (
+              ) : websiteCount === 0 ? (
                 <div className="account-empty account-websites-empty">
                   <Globe2
                     size={38}
@@ -3563,139 +3713,347 @@ function MyAccount({
                   />
 
                   <strong>
-                    {isMenuAdmin
-                      ? "No websites yet."
-                      : "No website assigned yet."}
+                    No websites yet.
                   </strong>
 
                   <span>
-                    {isMenuAdmin
-                      ? "Restaurant websites created in BEYOND will appear here."
-                      : "Your BEYOND administrator can assign a restaurant website to this account."}
+                    Generate a restaurant menu and it will appear here automatically as a draft website.
                   </span>
                 </div>
               ) : (
-                <div className="account-website-grid">
-                  {menuSites.map(
-                    site => (
-                      <article
-                        className="account-website-card"
-                        key={site.id}
-                      >
-                        <div className="account-website-card-top">
+                <>
+                  {menuDraftProjects.length > 0 && (
+                    <section className="account-generated-websites">
+                      <div className="account-generated-websites-head">
+                        <div>
+                          <span>
+                            GENERATED WITH BEYOND AI
+                          </span>
 
+                          <h3>
+                            Website drafts
+                          </h3>
+
+                          <p>
+                            Your private generated websites. Continue editing anytime before publishing.
+                          </p>
+                        </div>
+
+                        <strong>
+                          {menuDraftProjects.length}
+                        </strong>
+                      </div>
+
+
+                      <div className="account-website-grid">
+                        {menuDraftProjects.map(
+                          draft => {
+                            const draftMenu =
+                              draft.structured_menu ||
+                              {};
+
+                            const draftBranding =
+                              draftMenu.branding ||
+                              {};
+
+                            const draftName =
+                              draftBranding.display_name ||
+                              draftMenu.restaurant_name ||
+                              draft.name ||
+                              "Untitled website";
+
+                            const sections =
+                              Array.isArray(
+                                draftMenu.sections
+                              )
+                                ? draftMenu.sections.length
+                                : 0;
+
+                            const languages =
+                              Array.isArray(
+                                draftMenu.requested_languages
+                              )
+                                ? draftMenu
+                                    .requested_languages
+                                    .length
+                                : 0;
+
+
+                            return (
+                              <article
+                                className="account-website-card account-generated-website-card"
+                                key={draft.id}
+                              >
+                                <div className="account-website-card-top">
+                                  <div>
+                                    <span className="account-website-status draft">
+                                      ● DRAFT
+                                    </span>
+
+                                    <h3>
+                                      {draftName}
+                                    </h3>
+                                  </div>
+
+                                  <span className="account-generated-ai-badge">
+                                    <Sparkles
+                                      size={11}
+                                      strokeWidth={1.5}
+                                    />
+
+                                    AI GENERATED
+                                  </span>
+                                </div>
+
+
+                                <div className="account-website-url account-generated-draft-url">
+                                  Private draft · Not published
+                                </div>
+
+
+                                <div className="account-website-meta">
+                                  <div>
+                                    <span>
+                                      STATUS
+                                    </span>
+
+                                    <strong>
+                                      Draft
+                                    </strong>
+                                  </div>
+
+                                  <div>
+                                    <span>
+                                      TYPE
+                                    </span>
+
+                                    <strong>
+                                      Digital Menu
+                                    </strong>
+                                  </div>
+
+                                  <div>
+                                    <span>
+                                      SECTIONS
+                                    </span>
+
+                                    <strong>
+                                      {sections}
+                                    </strong>
+                                  </div>
+
+                                  <div>
+                                    <span>
+                                      LANGUAGES
+                                    </span>
+
+                                    <strong>
+                                      {languages || "—"}
+                                    </strong>
+                                  </div>
+                                </div>
+
+
+                                <div className="account-website-actions">
+                                  <button
+                                    type="button"
+                                    className="account-primary-button"
+                                    onClick={() =>
+                                      window.open(
+                                        `/menu-builder?project=${encodeURIComponent(
+                                          draft.id
+                                        )}`,
+                                        "_blank",
+                                        "noopener,noreferrer"
+                                      )
+                                    }
+                                  >
+                                    <Settings2
+                                      size={13}
+                                      strokeWidth={1.5}
+                                    />
+
+                                    Continue Editing
+                                  </button>
+
+
+                                  <button
+                                    type="button"
+                                    className="account-secondary-button"
+                                    disabled
+                                  >
+                                    <ExternalLink
+                                      size={13}
+                                      strokeWidth={1.5}
+                                    />
+
+                                    Not Live Yet
+                                  </button>
+                                </div>
+
+
+                                <div className="account-generated-draft-date">
+                                  Last edited{" "}
+                                  {formatDate(
+                                    draft.updated_at ||
+                                    draft.created_at
+                                  )}
+                                </div>
+                              </article>
+                            );
+                          }
+                        )}
+                      </div>
+                    </section>
+                  )}
+
+
+                  {menuSites.length > 0 && (
+                    <section className="account-activated-websites">
+                      {menuDraftProjects.length > 0 && (
+                        <div className="account-generated-websites-head account-live-websites-head">
                           <div>
-                            <span
-                              className={`account-website-status ${
-                                site.published
-                                  ? "live"
-                                  : "draft"
-                              }`}
-                            >
-                              {site.published
-                                ? "● LIVE"
-                                : "● DRAFT"}
+                            <span>
+                              ACTIVATED
                             </span>
 
                             <h3>
-                              {site.name ||
-                                "Untitled website"}
+                              Restaurant websites
                             </h3>
                           </div>
 
-                          {isMenuAdmin && (
-                            <span className="account-website-admin-badge">
-                              <ShieldCheck
-                                size={11}
-                                strokeWidth={1.5}
-                              />
-                              ADMIN
-                            </span>
-                          )}
+                          <strong>
+                            {menuSites.length}
+                          </strong>
                         </div>
+                      )}
 
-                        <div className="account-website-url">
-                          /menu/{site.slug}
-                        </div>
 
-                        <div className="account-website-meta">
-                          <div>
-                            <span>
-                              STATUS
-                            </span>
+                      <div className="account-website-grid">
+                        {menuSites.map(
+                          site => (
+                            <article
+                              className="account-website-card"
+                              key={site.id}
+                            >
+                              <div className="account-website-card-top">
+                                <div>
+                                  <span
+                                    className={`account-website-status ${
+                                      site.published
+                                        ? "live"
+                                        : "draft"
+                                    }`}
+                                  >
+                                    {site.published
+                                      ? "● LIVE"
+                                      : "● DRAFT"}
+                                  </span>
 
-                            <strong>
-                              {site.published
-                                ? "Published"
-                                : "Draft"}
-                            </strong>
-                          </div>
+                                  <h3>
+                                    {site.name ||
+                                      "Untitled website"}
+                                  </h3>
+                                </div>
 
-                          <div>
-                            <span>
-                              ACCESS
-                            </span>
 
-                            <strong>
-                              {isMenuAdmin
-                                ? "Administrator"
-                                : "Customer"}
-                            </strong>
-                          </div>
-                        </div>
+                                {isMenuAdmin && (
+                                  <span className="account-website-admin-badge">
+                                    <ShieldCheck
+                                      size={11}
+                                      strokeWidth={1.5}
+                                    />
 
-                        <div className="account-website-actions">
+                                    ADMIN
+                                  </span>
+                                )}
+                              </div>
 
-                          <button
-                            type="button"
-                            className="account-primary-button"
-                            disabled={
-                              !site.published
-                            }
-                            onClick={() =>
-                              window.open(
-                                `/menu/${encodeURIComponent(
-                                  site.slug || ""
-                                )}`,
-                                "_blank",
-                                "noopener,noreferrer"
-                              )
-                            }
-                          >
-                            <ExternalLink
-                              size={13}
-                              strokeWidth={1.5}
-                            />
 
-                            {site.published
-                              ? "Open Website"
-                              : "Not Live Yet"}
-                          </button>
+                              <div className="account-website-url">
+                                /menu/{site.slug}
+                              </div>
 
-                          <button
-                            type="button"
-                            className="account-secondary-button"
-                            onClick={() => {
-                              window.location.href =
-                                `/menu-studio?site=${encodeURIComponent(
-                                  site.id
-                                )}`;
-                            }}
-                          >
-                            <Settings2
-                              size={13}
-                              strokeWidth={1.5}
-                            />
 
-                            Manage Website
-                          </button>
+                              <div className="account-website-meta">
+                                <div>
+                                  <span>
+                                    STATUS
+                                  </span>
 
-                        </div>
+                                  <strong>
+                                    {site.published
+                                      ? "Published"
+                                      : "Draft"}
+                                  </strong>
+                                </div>
 
-                      </article>
-                    )
+                                <div>
+                                  <span>
+                                    ACCESS
+                                  </span>
+
+                                  <strong>
+                                    {isMenuAdmin
+                                      ? "Administrator"
+                                      : "Customer"}
+                                  </strong>
+                                </div>
+                              </div>
+
+
+                              <div className="account-website-actions">
+                                <button
+                                  type="button"
+                                  className="account-primary-button"
+                                  disabled={!site.published}
+                                  onClick={() =>
+                                    window.open(
+                                      `/menu/${encodeURIComponent(
+                                        site.slug ||
+                                        ""
+                                      )}`,
+                                      "_blank",
+                                      "noopener,noreferrer"
+                                    )
+                                  }
+                                >
+                                  <ExternalLink
+                                    size={13}
+                                    strokeWidth={1.5}
+                                  />
+
+                                  {site.published
+                                    ? "Open Website"
+                                    : "Not Live Yet"}
+                                </button>
+
+
+                                <button
+                                  type="button"
+                                  className="account-secondary-button"
+                                  onClick={() => {
+                                    window.location.href =
+                                      `/menu-studio?site=${encodeURIComponent(
+                                        site.id
+                                      )}`;
+                                  }}
+                                >
+                                  <Settings2
+                                    size={13}
+                                    strokeWidth={1.5}
+                                  />
+
+                                  Manage Website
+                                </button>
+                              </div>
+                            </article>
+                          )
+                        )}
+                      </div>
+                    </section>
                   )}
-                </div>
+                </>
               )}
             </div>
           ) : activeTab ===

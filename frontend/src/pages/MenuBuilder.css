@@ -855,3 +855,412 @@
     font-size: 32px;
   }
 }
+
+
+/* ==========================================================
+   BEYOND MENU BRAND STUDIO V1
+   ========================================================== */
+
+.menu-builder-branding-layout {
+  margin-top: 27px;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(
+      290px,
+      350px
+    )
+    minmax(
+      0,
+      1fr
+    );
+
+  gap: 20px;
+
+  align-items: start;
+}
+
+
+.menu-builder-live-preview {
+  min-width: 0;
+
+  max-height: 900px;
+
+  overflow: auto;
+
+  border:
+    1px solid
+    rgba(
+      124,
+      173,
+      217,
+      0.12
+    );
+
+  border-radius: 22px;
+
+  background: #02070d;
+
+  box-shadow:
+    0 25px 70px
+    rgba(
+      0,
+      0,
+      0,
+      0.28
+    );
+}
+
+
+.menu-builder-live-preview-label {
+  position: sticky;
+  top: 0;
+
+  z-index: 80;
+
+  min-height: 49px;
+
+  padding:
+    0 15px;
+
+  display: flex;
+  align-items: center;
+  justify-content:
+    space-between;
+
+  gap: 15px;
+
+  border-bottom:
+    1px solid
+    rgba(
+      124,
+      173,
+      217,
+      0.11
+    );
+
+  color: #6e8aa2;
+
+  background:
+    rgba(
+      3,
+      9,
+      15,
+      0.95
+    );
+
+  backdrop-filter:
+    blur(15px);
+
+  font-size: 9px;
+
+  letter-spacing:
+    0.16em;
+}
+
+
+.menu-builder-live-preview-label strong {
+  color: #a2b6c7;
+
+  font-size: 9px;
+  font-weight: 600;
+
+  letter-spacing:
+    normal;
+}
+
+
+@media (
+  max-width: 980px
+) {
+  .menu-builder-branding-layout {
+    grid-template-columns:
+      1fr;
+  }
+
+  .menu-builder-live-preview {
+    max-height: none;
+  }
+}
+
+
+@media (
+  max-width: 620px
+) {
+  .menu-builder-result {
+    padding: 18px;
+  }
+
+  .menu-builder-result-heading {
+    display: grid;
+
+    gap: 18px;
+  }
+
+  .menu-builder-result-heading
+  .menu-builder-main-button {
+    width: 100%;
+  }
+}
+
+
+/* ==========================================================
+   SAVED MENU / PROJECT STATUS
+   ========================================================== */
+
+.menu-builder-saved-draft {
+  margin:
+    -20px
+    0
+    30px;
+
+  padding:
+    14px
+    17px;
+
+  display: flex;
+  align-items: center;
+  justify-content:
+    space-between;
+
+  gap: 20px;
+
+  border:
+    1px solid
+    rgba(
+      58,
+      150,
+      109,
+      0.18
+    );
+
+  border-radius: 14px;
+
+  background:
+    rgba(
+      36,
+      124,
+      84,
+      0.075
+    );
+}
+
+
+.menu-builder-saved-draft > div {
+  display: grid;
+
+  gap: 4px;
+}
+
+
+.menu-builder-saved-draft strong {
+  color: #a9c9ba;
+
+  font-size: 12px;
+}
+
+
+.menu-builder-saved-draft span {
+  color: #648779;
+
+  font-size: 10px;
+}
+
+
+.menu-builder-saved-draft small {
+  color: #72a68f;
+
+  font-size: 10px;
+
+  white-space: nowrap;
+}
+
+
+@media (
+  max-width: 620px
+) {
+  .menu-builder-saved-draft {
+    align-items:
+      flex-start;
+
+    flex-direction:
+      column;
+
+    gap: 8px;
+  }
+}
+
+
+/* ==========================================================
+   MENU STUDIO V2 — COMPACT DESKTOP EDITING
+   ========================================================== */
+
+@media (min-width:981px) {
+
+  .menu-builder-result {
+    padding:
+      18px;
+  }
+
+
+  .menu-builder-result-heading {
+    margin-bottom: 13px;
+
+    align-items: center;
+  }
+
+
+  .menu-builder-result-heading h2 {
+    margin-bottom: 3px;
+
+    font-size: 24px;
+  }
+
+
+  .menu-builder-result-heading p {
+    max-width: 650px;
+
+    margin-top: 3px;
+
+    font-size: 10px;
+  }
+
+
+  .menu-builder-branding-layout {
+    height:
+      calc(
+        100vh - 175px
+      );
+
+    min-height: 580px;
+
+    margin-top: 12px;
+
+    display: grid;
+
+    grid-template-columns:
+      310px
+      minmax(0,1fr);
+
+    gap: 13px;
+
+    align-items: stretch;
+  }
+
+
+  .menu-brand-editor {
+    position: relative;
+
+    top: auto;
+
+    height: 100%;
+
+    max-height: none;
+  }
+
+
+  .menu-builder-live-preview {
+    height: 100%;
+
+    max-height: none;
+
+    min-height: 0;
+
+    overflow-y: auto;
+  }
+
+
+  .menu-builder-live-preview-label {
+    min-height: 42px;
+  }
+}
+
+
+@media(max-width:980px) {
+  .menu-builder-branding-layout {
+    grid-template-columns:
+      1fr;
+  }
+
+  .menu-brand-editor {
+    height: auto;
+
+    max-height: 620px;
+  }
+}
+
+
+/* ==========================================================
+   BEYOND MENU STUDIO SCROLLBARS
+   ========================================================== */
+
+.menu-builder-live-preview,
+.menu-brand-editor-body,
+.menu-project-switcher-buttons {
+  scrollbar-width:
+    thin;
+
+  scrollbar-color:
+    #24465f
+    #061019;
+}
+
+
+.menu-builder-live-preview::-webkit-scrollbar,
+.menu-brand-editor-body::-webkit-scrollbar,
+.menu-project-switcher-buttons::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+
+.menu-builder-live-preview::-webkit-scrollbar-track,
+.menu-brand-editor-body::-webkit-scrollbar-track,
+.menu-project-switcher-buttons::-webkit-scrollbar-track {
+  background:
+    #061019;
+
+  border-radius:
+    999px;
+}
+
+
+.menu-builder-live-preview::-webkit-scrollbar-thumb,
+.menu-brand-editor-body::-webkit-scrollbar-thumb,
+.menu-project-switcher-buttons::-webkit-scrollbar-thumb {
+  border:
+    2px solid
+    #061019;
+
+  border-radius:
+    999px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #315b78,
+      #1a384d
+    );
+}
+
+
+.menu-builder-live-preview::-webkit-scrollbar-thumb:hover,
+.menu-brand-editor-body::-webkit-scrollbar-thumb:hover,
+.menu-project-switcher-buttons::-webkit-scrollbar-thumb:hover {
+  background:
+    #3d6f90;
+}
+
+
+/*
+  Give the preview scrollbar breathing room
+  instead of having a bright browser edge.
+*/
+.menu-builder-live-preview {
+  scrollbar-gutter:
+    stable;
+
+  background:
+    #061019;
+}
