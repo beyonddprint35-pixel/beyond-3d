@@ -1,0 +1,268 @@
+/* ==========================================================
+   BEYOND MENU STUDIO — LAYOUT DESIGN SELECTOR
+   ========================================================== */
+
+.menu-brand-tabs {
+  display: flex !important;
+  grid-template-columns: none !important;
+  gap: 4px !important;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.menu-brand-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.menu-brand-tabs button {
+  flex: 0 0 auto;
+  min-width: 62px;
+  padding: 0 10px;
+  white-space: nowrap;
+}
+
+.menu-brand-tabs button:nth-child(2) {
+  min-width: 108px;
+}
+
+.menu-brand-layout-section,
+.menu-brand-template-section {
+  display: grid;
+  gap: 10px;
+}
+
+.menu-brand-section-intro {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 2px 2px 4px;
+  color: #7895ab;
+}
+
+.menu-brand-section-intro > svg {
+  flex: 0 0 auto;
+  margin-top: 2px;
+  color: #348df0;
+}
+
+.menu-brand-section-intro > div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.menu-brand-section-intro strong {
+  color: #b9cddd;
+  font-size: 10px;
+}
+
+.menu-brand-section-intro span {
+  color: #6f899d;
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+.menu-brand-layout-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.menu-brand-layout-grid > button {
+  min-width: 0;
+  padding: 8px;
+  display: grid;
+  gap: 7px;
+  border: 1px solid rgba(103,155,198,.1);
+  border-radius: 12px;
+  color: #829caf;
+  background: #091620;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color .15s ease, transform .15s ease, background .15s ease;
+}
+
+.menu-brand-layout-grid > button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(74,145,207,.34);
+}
+
+.menu-brand-layout-grid > button.active {
+  border-color: #318ae3;
+  background: #0c2030;
+  box-shadow: 0 0 0 1px rgba(49,138,227,.12);
+}
+
+.menu-layout-copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.menu-layout-copy strong {
+  color: #dbe9f4;
+  font-size: 10px;
+}
+
+.menu-layout-copy small {
+  color: #6f899d;
+  font-size: 7px;
+  line-height: 1.35;
+}
+
+.menu-layout-preview {
+  height: 61px;
+  padding: 5px;
+  display: grid;
+  grid-template-rows: 8px 22px 7px 1fr;
+  gap: 3px;
+  overflow: hidden;
+  border: 1px solid rgba(109,156,196,.13);
+  border-radius: 9px;
+  background: #eef3f7;
+}
+
+.menu-layout-preview > i,
+.menu-layout-preview .lp-items > i {
+  display: block;
+}
+
+.menu-layout-preview .lp-header {
+  width: 72%;
+  border-radius: 3px;
+  background: #d8e1e8;
+}
+
+.menu-layout-preview .lp-hero {
+  border-radius: 5px;
+  background: #cad8e1;
+}
+
+.menu-layout-preview .lp-tabs {
+  width: 80%;
+  border-radius: 999px;
+  background: #8aa8bd;
+}
+
+.menu-layout-preview .lp-items {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2px;
+}
+
+.menu-layout-preview .lp-items > i {
+  min-height: 4px;
+  border-radius: 3px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px #d7e0e6;
+}
+
+.menu-layout-preview[data-layout="compact"] {
+  grid-template-rows: 6px 15px 5px 1fr;
+  gap: 2px;
+}
+
+.menu-layout-preview[data-layout="compact"] .lp-items {
+  gap: 1px;
+}
+
+.menu-layout-preview[data-layout="cards"] .lp-items {
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+}
+
+.menu-layout-preview[data-layout="cards"] .lp-items > i:last-child {
+  grid-column: 1 / -1;
+}
+
+.menu-layout-preview[data-layout="editorial"] {
+  grid-template-rows: 7px 24px 5px 1fr;
+}
+
+.menu-layout-preview[data-layout="editorial"] .lp-hero {
+  border-radius: 0;
+  background: transparent;
+  border-block: 2px solid #9bb0bf;
+}
+
+.menu-layout-preview[data-layout="editorial"] .lp-tabs {
+  width: 55%;
+  border-radius: 0;
+  background: #b2c1cb;
+}
+
+.menu-layout-preview[data-layout="editorial"] .lp-items > i {
+  border-radius: 0;
+  border-bottom: 1px solid #cbd6dd;
+  box-shadow: none;
+  background: transparent;
+}
+
+.menu-layout-preview[data-layout="minimal"] {
+  background: #f8fafb;
+}
+
+.menu-layout-preview[data-layout="minimal"] .lp-hero {
+  height: 17px;
+  align-self: center;
+  border-radius: 2px;
+  background: #edf1f4;
+}
+
+.menu-layout-preview[data-layout="minimal"] .lp-tabs {
+  background: #c1ccd3;
+}
+
+.menu-layout-preview[data-layout="minimal"] .lp-items > i {
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  border-bottom: 1px solid #d4dde3;
+}
+
+.menu-layout-preview[data-layout="bold"] .lp-hero {
+  background: #335f7d;
+}
+
+.menu-layout-preview[data-layout="bold"] .lp-tabs {
+  height: 7px;
+  background: #335f7d;
+}
+
+.menu-layout-preview[data-layout="bold"] .lp-items > i {
+  border-color: #aabcc8;
+}
+
+/* Unified homepage light theme overrides the original dark Menu Studio. */
+.menu-builder-unified.theme-light .menu-brand-section-intro strong,
+.menu-builder-unified.theme-light .menu-layout-copy strong {
+  color: var(--mb-text);
+}
+
+.menu-builder-unified.theme-light .menu-brand-section-intro span,
+.menu-builder-unified.theme-light .menu-layout-copy small {
+  color: var(--mb-muted);
+}
+
+.menu-builder-unified.theme-light .menu-brand-layout-grid > button {
+  border-color: var(--mb-border);
+  background: var(--mb-surface-soft);
+}
+
+.menu-builder-unified.theme-light .menu-brand-layout-grid > button.active {
+  border-color: var(--mb-blue);
+  background: var(--mb-blue-soft);
+}
+
+.menu-builder-unified[data-builder-language="he"] .menu-brand-layout-grid > button,
+.menu-builder-unified[data-builder-language="he"] .menu-brand-section-intro,
+.menu-builder-unified[data-builder-language="he"] .menu-layout-copy {
+  direction: rtl;
+  text-align: right;
+}
+
+@media (max-width: 760px) {
+  .menu-brand-layout-grid {
+    grid-template-columns: 1fr;
+  }
+}
