@@ -83,10 +83,24 @@ function currentStructureIsCorrect(nav) {
   });
 }
 
+function renderLabel(node, label) {
+  node.replaceChildren();
+
+  if (label.startsWith("BEYOND ")) {
+    const brand = document.createElement("span");
+    brand.className = "menu-home-nav-brand-word";
+    brand.textContent = "BEYOND";
+    node.append(brand, document.createTextNode(label.slice("BEYOND".length)));
+    return;
+  }
+
+  node.textContent = label;
+}
+
 function makeButton(item) {
   const button = document.createElement("button");
   button.type = "button";
-  button.textContent = item.label;
+  renderLabel(button, item.label);
   button.dataset.beyondNavManaged = "true";
 
   button.addEventListener("click", () => {
@@ -107,7 +121,7 @@ function makeButton(item) {
 function makeLink(item) {
   const link = document.createElement("a");
   link.href = item.target;
-  link.textContent = item.label;
+  renderLabel(link, item.label);
   link.dataset.beyondNavManaged = "true";
   return link;
 }
