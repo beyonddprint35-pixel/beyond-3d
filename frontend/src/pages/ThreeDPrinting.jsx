@@ -48,6 +48,11 @@ export default function ThreeDPrinting() {
 
   return (
     <div className="three-d-printing-page">
+      <style>{`
+        .three-d-printing-page .digital-menu-hero {
+          display: none !important;
+        }
+      `}</style>
       <Home />
     </div>
   );
