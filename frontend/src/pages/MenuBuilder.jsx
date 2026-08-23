@@ -71,6 +71,576 @@ function fileToPayload(file) {
   });
 }
 
+
+function blobToPayload(
+  blob,
+  fileName,
+  mimeType
+) {
+  return new Promise(
+    (resolve, reject) => {
+      const reader =
+        new FileReader();
+
+      reader.onload = () => {
+        const value =
+          String(
+            reader.result || ""
+          );
+
+        const comma =
+          value.indexOf(",");
+
+        resolve({
+          fileName,
+          mimeType,
+          fileSize:
+            blob.size,
+          base64:
+            comma >= 0
+              ? value.slice(
+                  comma + 1
+                )
+              : value,
+        });
+      };
+
+      reader.onerror =
+        () =>
+          reject(
+            new Error(
+              `Could not prepare ${fileName}.`
+            )
+          );
+
+      reader.readAsDataURL(
+        blob
+      );
+    }
+  );
+}
+
+
+function loadImageForSmartSplit(
+  file
+) {
+  return new Promise(
+    (resolve, reject) => {
+      const objectUrl =
+        URL.createObjectURL(
+          file
+        );
+
+      const image =
+        new window.Image();
+
+      image.onload =
+        () => {
+          URL.revokeObjectURL(
+            objectUrl
+          );
+
+          resolve(
+            image
+          );
+        };
+
+      image.onerror =
+        () => {
+          URL.revokeObjectURL(
+            objectUrl
+          );
+
+          reject(
+            new Error(
+              `Could not prepare ${file.name} for Smart Retry.`
+            )
+          );
+        };
+
+      image.src =
+        objectUrl;
+    }
+  );
+}
+
+
+/*
+  ============================================================
+  BEYOND MENU AI — SMART RETRY
+
+  Dense full-page menus can be difficult for vision models
+  because each individual item is physically very small.
+
+  Smart Retry sends:
+    1. the original image
+    2. four overlapping close-up crops
+
+  The customer does not need to crop the menu manually.
+  ============================================================
+*/
+async function createSmartSplitPayloads(
+  file
+) {
+  const original =
+    await fileToPayload(
+      file
+    );
+
+  if (
+    !file.type
+      ?.startsWith(
+        "image/"
+      )
+  ) {
+    return [
+      original,
+    ];
+  }
+
+  const image =
+    await loadImageForSmartSplit(
+      file
+    );
+
+  const width =
+    image.naturalWidth ||
+    image.width;
+
+  const height =
+    image.naturalHeight ||
+    image.height;
+
+  if (
+    !width ||
+    !height
+  ) {
+    return [
+      original,
+    ];
+  }
+
+
+  /*
+    Tall / portrait restaurant menus benefit
+    from four vertical close-ups.
+
+    Less-tall menus use three.
+  */
+  /*
+    COST-SAFE SMART RETRY
+
+    Three overlapping close-ups are enough for a
+    portrait restaurant menu while keeping image
+    input substantially smaller.
+
+    We intentionally do NOT upscale the source.
+  */
+  const cropCount =
+    3;
+
+
+  /*
+    More overlap prevents an item row from being
+    cut between two crops.
+
+    8% works much better for dense menus where
+    descriptions run across long horizontal rows.
+  */
+  const overlap =
+    Math.max(
+      28,
+      Math.round(
+        height * 0.08
+      )
+    );
+
+
+  const basicSliceHeight =
+    height /
+    cropCount;
+
+
+  /*
+    Smart Retry always creates high-quality JPEG
+    close-ups.
+
+    The original menu screenshot may only be
+    ~700px wide. Enlarging each crop gives the
+    vision model a much stronger text-reading
+    target.
+  */
+  const mimeType =
+    "image/jpeg";
+
+  const extension =
+    "jpg";
+
+
+  /*
+    Do not enlarge a screenshot.
+
+    Upscaling 729px → 1500px does not create new
+    menu information and makes the AI request larger.
+  */
+  const scaleFactor =
+    1;
+
+
+  const cleanName =
+    file.name
+      .replace(
+        /\.[^.]+$/,
+        ""
+      )
+      .replace(
+        /[^a-zA-Z0-9_-]+/g,
+        "-"
+      );
+
+
+  const crops =
+    [];
+
+
+  for (
+    let index = 0;
+    index < cropCount;
+    index += 1
+  ) {
+    const nominalTop =
+      index *
+      basicSliceHeight;
+
+    const nominalBottom =
+      (index + 1) *
+      basicSliceHeight;
+
+
+    const sourceY =
+      Math.max(
+        0,
+        Math.floor(
+          nominalTop -
+          (
+            index === 0
+              ? 0
+              : overlap
+          )
+        )
+      );
+
+
+    const sourceBottom =
+      Math.min(
+        height,
+        Math.ceil(
+          nominalBottom +
+          (
+            index ===
+            cropCount - 1
+              ? 0
+              : overlap
+          )
+        )
+      );
+
+
+    const sourceHeight =
+      Math.max(
+        1,
+        sourceBottom -
+        sourceY
+      );
+
+
+    const canvas =
+      document.createElement(
+        "canvas"
+      );
+
+
+    canvas.width =
+      width;
+
+    canvas.height =
+      sourceHeight;
+
+
+    const context =
+      canvas.getContext(
+        "2d",
+        {
+          alpha:
+            mimeType ===
+            "image/png",
+        }
+      );
+
+
+    if (
+      !context
+    ) {
+      continue;
+    }
+
+
+    /*
+      Crop from the ORIGINAL pixels but render the
+      crop larger on the output canvas.
+
+      Example:
+        original width: 729px
+        Smart Retry:   ~1500px
+
+      This gives dense Hebrew/Arabic/English menu
+      lines much more visual space during AI reading.
+    */
+    context.imageSmoothingEnabled =
+      true;
+
+    context.imageSmoothingQuality =
+      "high";
+
+
+    context.drawImage(
+      image,
+      0,
+      sourceY,
+      width,
+      sourceHeight,
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+
+
+    const blob =
+      await new Promise(
+        resolve => {
+          canvas.toBlob(
+            resolve,
+            mimeType,
+            0.95
+          );
+        }
+      );
+
+
+    if (
+      !blob
+    ) {
+      continue;
+    }
+
+
+    crops.push(
+      await blobToPayload(
+        blob,
+        `${cleanName}-closeup-${
+          index + 1
+        }.${extension}`,
+        mimeType
+      )
+    );
+  }
+
+
+  /*
+    SMART RETRY V2
+
+    Do NOT resend the original full-page screenshot.
+
+    The original was useful for discovering that
+    ~30+ items exist, but it also gives the vision
+    model a competing low-resolution version of the
+    same text.
+
+    On Smart Retry we want maximum attention on the
+    enlarged close-ups.
+
+    Normal Build My Menu still sends the original
+    image exactly as before.
+  */
+  if (
+    crops.length >
+    0
+  ) {
+    return crops.slice(
+      0,
+      MAX_FILES
+    );
+  }
+
+
+  /*
+    Safe fallback only if crop generation failed.
+  */
+  return [
+    original,
+  ];
+}
+
+
+async function buildGenerationPayloadFiles(
+  files,
+  {
+    smartSplit =
+      false,
+  } = {}
+) {
+  if (
+    smartSplit &&
+    files.length === 1 &&
+    files[0]?.type
+      ?.startsWith(
+        "image/"
+      )
+  ) {
+    return await createSmartSplitPayloads(
+      files[0]
+    );
+  }
+
+
+  return await Promise.all(
+    files.map(
+      fileToPayload
+    )
+  );
+}
+
+
+/*
+  Turn backend extraction failures into a useful
+  customer-facing recovery flow.
+*/
+function getGenerationHelp(
+  message,
+  details = null
+) {
+  const text =
+    String(
+      message || ""
+    );
+
+
+  const oldCounts =
+    text.match(
+      /detected about\s+(\d+)\s+visible item codes.*?only\s+(\d+)/i
+    );
+
+
+  const strictCounts =
+    text.match(
+      /verify only\s+(\d+)\s+of about\s+(\d+)\s+visible items/i
+    );
+
+
+  const counts =
+    strictCounts
+      ? [
+          strictCounts[0],
+          strictCounts[2],
+          strictCounts[1],
+        ]
+      : oldCounts;
+
+
+  const detectedCount =
+    Number(
+      details
+        ?.recovery
+        ?.visibleItemCount ||
+      details
+        ?.diagnostics
+        ?.visibleItemCodeCount ||
+      counts?.[1] ||
+      0
+    );
+
+
+  const extractedCount =
+    Number(
+      details
+        ?.recovery
+        ?.verifiedItemCount ||
+      details
+        ?.diagnostics
+        ?.namedRawItemCount ||
+      counts?.[2] ||
+      0
+    );
+
+
+  const incomplete =
+    /incomplete build/i
+      .test(text) ||
+    /visible item codes/i
+      .test(text) ||
+    /could not reliably read individual menu items/i
+      .test(text) ||
+    /could verify only/i
+      .test(text) ||
+    /stopped to avoid inventing dishes/i
+      .test(text) ||
+    /smart retry expected about/i
+      .test(text) ||
+    /recovered/i
+      .test(text);
+
+
+  const timeout =
+    /too long/i
+      .test(text) ||
+    /timeout/i
+      .test(text) ||
+    /finish reading.*in time/i
+      .test(text) ||
+    /could not read enough close-ups/i
+      .test(text);
+
+
+  if (
+    !incomplete &&
+    !timeout
+  ) {
+    return null;
+  }
+
+
+  return {
+    recovery:
+      details?.recovery ||
+      null,
+
+    type:
+      timeout
+        ? "timeout"
+        : "incomplete",
+
+    detectedCount,
+
+    extractedCount,
+
+    notCounted:
+      /not counted/i
+        .test(text),
+
+    title:
+      timeout
+        ? "This menu needs a stronger source."
+        : "We found the menu — but the text is too dense.",
+
+    description:
+      detectedCount > 0
+        ? `BEYOND detected about ${detectedCount} visible menu items, but only ${extractedCount} could be read confidently. We stopped instead of creating an incomplete menu.`
+        : "BEYOND could see the menu structure, but the individual item text could not be read accurately enough.",
+  };
+}
+
+
 function money(value) {
   const amount = Number(value || 0);
 
@@ -121,6 +691,25 @@ export default function MenuBuilder() {
 
   const [error, setError] =
     useState("");
+
+
+  /*
+    BEYOND AI COST TRACKING
+
+    Admin-only diagnostic showing the real
+    OpenAI usage returned by the backend
+    for the most recent generation attempt.
+  */
+  const [
+    lastAiCost,
+    setLastAiCost,
+  ] = useState(null);
+
+
+  const [
+    generationHelp,
+    setGenerationHelp,
+  ] = useState(null);
 
   const [plans, setPlans] =
     useState([]);
@@ -808,7 +1397,9 @@ export default function MenuBuilder() {
   }
 
 
-  async function handleGenerate() {
+  async function handleGenerate(
+    smartSplit = false
+  ) {
     if (!session) {
       return;
     }
@@ -849,6 +1440,14 @@ export default function MenuBuilder() {
     setLoading(true);
     setError("");
 
+    setLastAiCost(
+      null
+    );
+
+    setGenerationHelp(
+      null
+    );
+
     try {
       /*
         Every successful generation becomes
@@ -867,8 +1466,11 @@ export default function MenuBuilder() {
         await createGenerationProject();
 
       const payloadFiles =
-        await Promise.all(
-          files.map(fileToPayload)
+        await buildGenerationPayloadFiles(
+          files,
+          {
+            smartSplit,
+          }
         );
 
       /*
@@ -879,11 +1481,55 @@ export default function MenuBuilder() {
 
         Netlify is NOT involved in this request.
       */
+      /*
+        ======================================================
+        BEYOND MENU AI PIPELINE SELECTION
+        ======================================================
+
+        Normal generation:
+          production menu-ai-extract
+
+        Smart Retry:
+          experimental crop-by-crop test pipeline
+
+        The Smart Retry test backend reads every close-up
+        independently in parallel and merges the results.
+      */
+      /*
+        LOCAL BEYOND MENU AI COST-SAFE TEST
+
+        Image-only generation:
+          one-call test backend
+
+        PDF / pasted-text generation:
+          existing production backend
+
+        This prevents one image test click from
+        creating several OpenAI API requests.
+      */
+      const imageOnlyGeneration =
+        files.length > 0 &&
+        files.every(
+          file =>
+            file.type
+              ?.startsWith(
+                "image/"
+              )
+        ) &&
+        !menuText.trim();
+
+
+      const generationFunction =
+        imageOnlyGeneration
+          ? "menu-ai-extract-smart-test"
+          : "menu-ai-extract";
+
+
       const {
         data,
         error: functionError,
       } = await supabase.functions.invoke(
-        "menu-ai-extract",
+        generationFunction,
         {
           body: {
             projectId:
@@ -894,10 +1540,50 @@ export default function MenuBuilder() {
 
             files:
               payloadFiles,
-          
-                languages:
-                  selectedLanguages,
-},
+
+            languages:
+              selectedLanguages,
+
+            /*
+              The first failed reading already tells us roughly
+              how many item codes were visible.
+
+              Example:
+                detected 34
+                extracted 1
+
+              Smart Retry uses 34 as a coverage target.
+            */
+            /*
+              Do not use the first-pass visual estimate as
+              a hard Smart Retry target.
+
+              Example:
+                source actually has 34 coded dishes
+                model estimated 39
+
+              Smart Retry must recover visible evidence,
+              not chase an inaccurate estimated number.
+            */
+            expectedItemCount:
+              0,
+
+            /*
+              Smart Retry continues from the previous
+              verified partial extraction instead of
+              rereading the entire menu from zero.
+            */
+            recoveryProjectId:
+              smartSplit
+                ? generationHelp
+                    ?.recovery
+                    ?.projectId ||
+                  null
+                : null,
+
+            smartRetry:
+              smartSplit,
+          },
 
           /*
             This request goes directly to Supabase,
@@ -924,6 +1610,9 @@ export default function MenuBuilder() {
           functionError.message ||
           "Could not build this menu.";
 
+        let responseDetails =
+          null;
+
         try {
           const functionResponse =
             functionError.context;
@@ -943,6 +1632,24 @@ export default function MenuBuilder() {
                 const details =
                   JSON.parse(raw);
 
+                responseDetails =
+                  details;
+
+                /*
+                  Even failed BEYOND builds can still
+                  cost OpenAI money.
+
+                  The backend returns aiCost even when
+                  extraction is rejected.
+                */
+                if (
+                  details?.aiCost
+                ) {
+                  setLastAiCost(
+                    details.aiCost
+                  );
+                }
+
                 message =
                   details?.error ||
                   details?.message ||
@@ -958,15 +1665,38 @@ export default function MenuBuilder() {
           // Keep original function error message.
         }
 
-        throw new Error(message);
+        const nextError =
+          new Error(
+            message
+          );
+
+        nextError.details =
+          responseDetails;
+
+        throw nextError;
       }
 
       if (!data?.ok) {
+        if (
+          data?.aiCost
+        ) {
+          setLastAiCost(
+            data.aiCost
+          );
+        }
+
         throw new Error(
           data?.error ||
             "Could not build this menu."
         );
       }
+
+
+      setLastAiCost(
+        data?.aiCost ||
+        null
+      );
+
 
       setMenu(data.menu);
 
@@ -1036,9 +1766,36 @@ export default function MenuBuilder() {
         nextProject.id
       );
     } catch (generationError) {
-      setError(
+      /*
+        The Edge Function error parser attaches
+        the complete backend response to .details.
+      */
+      if (
+        generationError
+          ?.details
+          ?.aiCost
+      ) {
+        setLastAiCost(
+          generationError
+            .details
+            .aiCost
+        );
+      }
+
+
+      const generationMessage =
         generationError?.message ||
-          "Could not build this menu."
+        "Could not build this menu.";
+
+      setError(
+        generationMessage
+      );
+
+      setGenerationHelp(
+        getGenerationHelp(
+          generationMessage,
+          generationError?.details
+        )
       );
 
       const {
@@ -1076,6 +1833,15 @@ export default function MenuBuilder() {
     ].slice(0, MAX_FILES);
 
     setFiles(nextFiles);
+
+    setError(
+      ""
+    );
+
+    setGenerationHelp(
+      null
+    );
+
     event.target.value = "";
   }
 
@@ -1343,11 +2109,24 @@ export default function MenuBuilder() {
 
                 <textarea
                   value={menuText}
-                  onChange={event =>
+                  onChange={event => {
                     setMenuText(
                       event.target.value
-                    )
-                  }
+                    );
+
+                    if (
+                      generationHelp ||
+                      error
+                    ) {
+                      setError(
+                        ""
+                      );
+
+                      setGenerationHelp(
+                        null
+                      );
+                    }
+                  }}
                   placeholder={
                     "Example:\nBurgers\nClassic Burger - 58₪\nBeef patty, lettuce, tomato..."
                   }
@@ -1403,6 +2182,339 @@ export default function MenuBuilder() {
               </div>
             )}
 
+
+            {allowance?.unlimited &&
+              lastAiCost && (
+              <section
+                className="menu-builder-ai-cost"
+                aria-label="AI generation cost"
+              >
+                <div className="menu-builder-ai-cost-head">
+                  <div>
+                    <span>
+                      ADMIN · AI COST
+                    </span>
+
+                    <strong>
+                      Cost of this try
+                    </strong>
+                  </div>
+
+                  <div className="menu-builder-ai-cost-amount">
+                    $
+                    {Number(
+                      lastAiCost
+                        ?.estimated_cost_usd ||
+                      0
+                    ).toFixed(6)}
+                  </div>
+                </div>
+
+
+                <div className="menu-builder-ai-cost-grid">
+                  <div>
+                    <span>
+                      Model
+                    </span>
+
+                    <strong>
+                      {
+                        lastAiCost
+                          ?.model ||
+                        "—"
+                      }
+                    </strong>
+                  </div>
+
+
+                  <div>
+                    <span>
+                      OpenAI requests
+                    </span>
+
+                    <strong>
+                      {
+                        Number(
+                          lastAiCost
+                            ?.openai_request_count ||
+                          0
+                        )
+                      }
+                    </strong>
+                  </div>
+
+
+                  <div>
+                    <span>
+                      Input tokens
+                    </span>
+
+                    <strong>
+                      {
+                        Number(
+                          lastAiCost
+                            ?.input_tokens ||
+                          0
+                        ).toLocaleString()
+                      }
+                    </strong>
+                  </div>
+
+
+                  <div>
+                    <span>
+                      Cached input
+                    </span>
+
+                    <strong>
+                      {
+                        Number(
+                          lastAiCost
+                            ?.cached_input_tokens ||
+                          0
+                        ).toLocaleString()
+                      }
+                    </strong>
+                  </div>
+
+
+                  <div>
+                    <span>
+                      Output tokens
+                    </span>
+
+                    <strong>
+                      {
+                        Number(
+                          lastAiCost
+                            ?.output_tokens ||
+                          0
+                        ).toLocaleString()
+                      }
+                    </strong>
+                  </div>
+
+
+                  <div>
+                    <span>
+                      Total tokens
+                    </span>
+
+                    <strong>
+                      {
+                        Number(
+                          lastAiCost
+                            ?.total_tokens ||
+                          0
+                        ).toLocaleString()
+                      }
+                    </strong>
+                  </div>
+                </div>
+
+
+                <div className="menu-builder-ai-cost-foot">
+                  {lastAiCost
+                    ?.cache_hit ? (
+                    <>
+                      <Check
+                        size={14}
+                      />
+
+                      Cache hit · No OpenAI request · $0 cost
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles
+                        size={14}
+                      />
+
+                      Estimated from the actual token usage returned by OpenAI
+                    </>
+                  )}
+                </div>
+              </section>
+            )}
+
+
+            {generationHelp && (
+              <div
+                className="menu-builder-extraction-help"
+                role="status"
+                aria-live="polite"
+              >
+                <div className="menu-builder-extraction-help-heading">
+                  <span>
+                    SMART RECOVERY
+                  </span>
+
+                  <strong>
+                    {
+                      generationHelp.title
+                    }
+                  </strong>
+
+                  <p>
+                    {
+                      generationHelp.description
+                    }
+                  </p>
+                </div>
+
+
+                {generationHelp.detectedCount >
+                  0 && (
+                  <div className="menu-builder-extraction-stats">
+                    <div>
+                      <strong>
+                        {
+                          generationHelp.detectedCount
+                        }
+                      </strong>
+
+                      <span>
+                        visible items detected
+                      </span>
+                    </div>
+
+                    <div>
+                      <strong>
+                        {
+                          generationHelp.extractedCount
+                        }
+                      </strong>
+
+                      <span>
+                        confidently read
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+
+                <div className="menu-builder-recovery-options">
+                  <article>
+                    <b>
+                      1
+                    </b>
+
+                    <div>
+                      <strong>
+                        Best option: original PDF
+                      </strong>
+
+                      <span>
+                        Upload the restaurant's original PDF whenever possible. Text is usually much clearer than in a screenshot.
+                      </span>
+                    </div>
+                  </article>
+
+
+                  <article>
+                    <b>
+                      2
+                    </b>
+
+                    <div>
+                      <strong>
+                        Use close-up menu images
+                      </strong>
+
+                      <span>
+                        Upload 2–6 close-ups so each section and item is large enough to read accurately.
+                      </span>
+                    </div>
+                  </article>
+
+
+                  <article>
+                    <b>
+                      3
+                    </b>
+
+                    <div>
+                      <strong>
+                        Add menu text
+                      </strong>
+
+                      <span>
+                        Paste any available text into the box above. BEYOND can combine text with your uploaded images.
+                      </span>
+                    </div>
+                  </article>
+                </div>
+
+
+                {!generationHelp
+                  ?.recovery
+                  ?.smartRetryUsed &&
+                  files.length ===
+                    1 &&
+                  files[0]?.type
+                    ?.startsWith(
+                      "image/"
+                    ) && (
+                  <button
+                    type="button"
+                    className="menu-builder-smart-retry"
+                    onClick={() =>
+                      handleGenerate(
+                        true
+                      )
+                    }
+                    disabled={
+                      loading
+                    }
+                  >
+                    {loading ? (
+                      <>
+                        <LoaderCircle
+                          className="menu-builder-spin"
+                          size={16}
+                        />
+
+                        Preparing close-ups...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles
+                          size={16}
+                        />
+
+                        Smart Retry with automatic close-ups
+                      </>
+                    )}
+                  </button>
+                )}
+
+
+                {generationHelp
+                  ?.recovery
+                  ?.smartRetryUsed && (
+                  <div className="menu-builder-recovery-used">
+                    Automatic recovery has already been used for this menu.
+                    To avoid unnecessary AI cost, upload the original PDF
+                    or clearer close-up images instead of retrying again.
+                  </div>
+                )}
+
+
+                <div className="menu-builder-recovery-footer">
+                  <Check
+                    size={14}
+                  />
+
+                  <span>
+                    {
+                      generationHelp.notCounted
+                        ? "This failed build was not counted against your AI builds."
+                        : "BEYOND only counts successful AI menu builds."
+                    }
+                  </span>
+                </div>
+              </div>
+            )}
+
             <div className="menu-builder-generate-row">
               <div>
                 <strong>
@@ -1416,7 +2528,11 @@ export default function MenuBuilder() {
               <button
                 type="button"
                 className="menu-builder-main-button"
-                onClick={handleGenerate}
+                onClick={() =>
+                  handleGenerate(
+                    false
+                  )
+                }
                 disabled={
                   loading ||
                   selectedLanguages.length === 0
