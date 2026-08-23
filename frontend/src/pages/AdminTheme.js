@@ -18,7 +18,10 @@ function themeIcon(theme) {
 
 function updateButtons(theme) {
   document.querySelectorAll(`.${THEME_BUTTON_CLASS}`).forEach((button) => {
-    button.innerHTML = themeIcon(theme);
+    if (button.dataset.theme !== theme) {
+      button.innerHTML = themeIcon(theme);
+      button.dataset.theme = theme;
+    }
     button.setAttribute(
       "aria-label",
       theme === "light" ? "Switch to dark mode" : "Switch to light mode"
