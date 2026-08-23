@@ -7,8 +7,7 @@
    - one consistent gap rhythm across B / E / Y / O / N / D
    - E matches the cap-height of the word, not the full line box
    - E width is intentionally close to a normal capital E
-   - bars are squared/softened just enough to read as typography,
-     not as a hamburger/navigation icon
+   - bars read as typography, not as a hamburger/navigation icon
    ========================================================= */
 
 .menu-home-brand > span {
@@ -33,8 +32,8 @@
 
   /*
     Custom E.
-    Its overall top/bottom aligns to the capital-letter body.
-    The three strokes share the same width and thickness.
+    The OUTER edges of the top/bottom strokes define the exact
+    cap-height box, so the E never becomes taller than B/Y/O/N/D.
   */
   background:
     linear-gradient(currentColor 0 0)
@@ -44,13 +43,37 @@
 
     linear-gradient(currentColor 0 0)
       calc(var(--beyond-b-width) + var(--beyond-letter-gap))
-      50% /
+      calc(50% - (var(--beyond-e-bar) / 2)) /
       var(--beyond-e-width) var(--beyond-e-bar) no-repeat,
 
     linear-gradient(currentColor 0 0)
-      calc(var(--beyond-b-width) + var(--beyond-letter-gap))
-      calc(50% + (var(--beyond-e-height) / 2)) /
-      var(--beyond-e-width) var(--beyond-e-bar) no-repeat;
+      calc(
+        50% +
+        (var(--beyond-e-height) / 2) -
+        var(--beyond-e-bar)
+      ) /
+      0 0 no-repeat;
+
+  /* Override the third layer with the correct x/y/size explicitly. */
+  background-image:
+    linear-gradient(currentColor 0 0),
+    linear-gradient(currentColor 0 0),
+    linear-gradient(currentColor 0 0);
+
+  background-position:
+    calc(var(--beyond-b-width) + var(--beyond-letter-gap))
+      calc(50% - (var(--beyond-e-height) / 2)),
+    calc(var(--beyond-b-width) + var(--beyond-letter-gap))
+      calc(50% - (var(--beyond-e-bar) / 2)),
+    calc(var(--beyond-b-width) + var(--beyond-letter-gap))
+      calc(50% + (var(--beyond-e-height) / 2) - var(--beyond-e-bar));
+
+  background-size:
+    var(--beyond-e-width) var(--beyond-e-bar),
+    var(--beyond-e-width) var(--beyond-e-bar),
+    var(--beyond-e-width) var(--beyond-e-bar);
+
+  background-repeat: no-repeat;
 }
 
 .menu-home-brand > span::before,
@@ -68,17 +91,13 @@
   font-feature-settings: "kern" 0;
 }
 
-/* B starts the word naturally. */
 .menu-home-brand > span::before {
   content: "B";
   left: 0;
   letter-spacing: 0;
 }
 
-/*
-  Y begins exactly one standard letter gap after the E.
-  The same gap value is then used between Y/O/N/D.
-*/
+/* Y starts exactly one standard gap after the custom E. */
 .menu-home-brand > span::after {
   content: "YOND";
   left: calc(
