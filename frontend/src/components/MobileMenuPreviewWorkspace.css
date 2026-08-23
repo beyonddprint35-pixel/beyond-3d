@@ -72,6 +72,20 @@
 }
 
 
+/*
+  MobileMenuPreview.css has an older rule that makes every
+  direct div inside the preview heading a vertical stack.
+  The action group is also a direct div, so explicitly keep
+  it horizontal and align it with the second heading line.
+*/
+.mobile-menu-preview-top-workspace
+> .mobile-menu-preview-top-actions {
+  flex-direction: row;
+
+  align-self: flex-end;
+}
+
+
 .mobile-menu-editor-visibility-toggle {
   min-height: 40px;
 
@@ -116,7 +130,7 @@
 
 
 .mobile-menu-editor-toggle-label {
-  font-size: 11px;
+  font-size: 12px;
 
   font-weight: 750;
 
@@ -322,7 +336,7 @@
 
 
 .mobile-menu-preview-editor-meta {
-  min-height: 68px;
+  min-height: 72px;
 
   padding:
     14px
@@ -372,7 +386,7 @@
 .mobile-menu-preview-editor-meta span {
   color: #5790b9;
 
-  font-size: 9.5px;
+  font-size: 10.5px;
 
   font-weight: 850;
 
@@ -384,7 +398,7 @@
 .mobile-menu-preview-editor-meta strong {
   color: #edf5fa;
 
-  font-size: 15.5px;
+  font-size: 17px;
 
   font-weight: 700;
 }
@@ -395,7 +409,7 @@
 
   color: #7897aa;
 
-  font-size: 11px;
+  font-size: 12px;
 
   font-weight: 650;
 }
@@ -457,27 +471,29 @@
 
    The normal Builder editor is intentionally compact. Inside
    this modal it sits beside a full phone mockup and the whole
-   workspace may be scaled on laptop-height screens, so give
-   the editor slightly larger type and controls here only.
+   workspace may be scaled on laptop-height screens, so the
+   editor gets larger typography here only.
    ========================================================== */
 
 .mobile-menu-preview-editor-scroll
 .menu-brand-editor-head span {
-  font-size: 9.5px;
+  font-size: 11px;
 }
 
 
 .mobile-menu-preview-editor-scroll
 .menu-brand-editor-head h3 {
-  font-size: 21px;
+  font-size: 23px;
 }
 
 
 .mobile-menu-preview-editor-scroll
 .menu-brand-tabs button {
-  min-height: 37px;
+  min-height: 40px;
 
-  font-size: 10.5px;
+  padding-inline: 12px;
+
+  font-size: 12px;
 }
 
 
@@ -489,7 +505,7 @@
 .menu-layout-copy strong,
 .mobile-menu-preview-editor-scroll
 .menu-brand-design-grid strong {
-  font-size: 11.5px;
+  font-size: 13px;
 }
 
 
@@ -497,17 +513,17 @@
 .menu-brand-fit-copy small,
 .mobile-menu-preview-editor-scroll
 .menu-brand-section-intro span {
-  font-size: 9.5px;
+  font-size: 11px;
 
-  line-height: 1.45;
+  line-height: 1.5;
 }
 
 
 .mobile-menu-preview-editor-scroll
 .menu-layout-copy small {
-  font-size: 9px;
+  font-size: 10.5px;
 
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
 
@@ -515,7 +531,7 @@
 .menu-brand-field > span,
 .mobile-menu-preview-editor-scroll
 .menu-brand-color > span {
-  font-size: 9.5px;
+  font-size: 11px;
 }
 
 
@@ -523,9 +539,9 @@
 .menu-brand-field input,
 .mobile-menu-preview-editor-scroll
 .menu-brand-field select {
-  min-height: 41px;
+  min-height: 43px;
 
-  font-size: 12.5px;
+  font-size: 13.5px;
 }
 
 
@@ -537,19 +553,19 @@
 .menu-brand-remove-logo,
 .mobile-menu-preview-editor-scroll
 .menu-brand-error {
-  font-size: 10.5px;
+  font-size: 12px;
 }
 
 
 .mobile-menu-preview-editor-scroll
 .menu-brand-color input[type="text"] {
-  font-size: 10px;
+  font-size: 11.5px;
 }
 
 
 .mobile-menu-preview-editor-scroll
 .menu-brand-type-title {
-  font-size: 11.5px;
+  font-size: 13px;
 }
 
 
@@ -557,13 +573,13 @@
 .menu-brand-size-row span,
 .mobile-menu-preview-editor-scroll
 .menu-brand-size-row strong {
-  font-size: 10.5px;
+  font-size: 12px;
 }
 
 
 .mobile-menu-preview-editor-scroll
 .menu-brand-reset-font-sizes {
-  font-size: 12px;
+  font-size: 13px;
 }
 
 
@@ -687,7 +703,10 @@
     align-items: flex-start;
   }
 
-  .mobile-menu-preview-top-actions {
+  .mobile-menu-preview-top-workspace
+  > .mobile-menu-preview-top-actions {
+    align-self: flex-end;
+
     gap: 7px;
   }
 
