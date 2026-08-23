@@ -118,6 +118,26 @@
   font-weight: 650;
 }
 
+.menu-pricing-setup {
+  display: grid;
+  gap: 4px;
+  margin-top: 22px;
+}
+
+.menu-pricing-setup strong {
+  color: var(--menu-text);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.menu-pricing-setup span {
+  color: #9aa6b9;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
 .menu-pricing-divider {
   height: 1px;
   margin: 24px 0 20px;
@@ -190,8 +210,13 @@
 }
 
 .menu-home.theme-dark .menu-pricing-card-top p,
-.menu-home.theme-dark .menu-pricing-price-row span {
+.menu-home.theme-dark .menu-pricing-price-row span,
+.menu-home.theme-dark .menu-pricing-setup span {
   color: #8fa0ba;
+}
+
+.menu-home.theme-dark .menu-pricing-setup strong {
+  color: #edf3fb;
 }
 
 .menu-home.theme-dark .menu-pricing-divider {
