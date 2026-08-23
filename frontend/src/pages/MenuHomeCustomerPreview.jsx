@@ -9,6 +9,7 @@ import {
 
 import MenuHomeRefined from "./MenuHomeRefined";
 
+import "../components/MobileMenuPreview.css";
 import "./MenuHomeCustomerPreview.css";
 
 
@@ -267,8 +268,8 @@ const HOMEPAGE_DEMO_BRANDING = {
 
 export default function MenuHomeCustomerPreview() {
   const [
-    phoneTarget,
-    setPhoneTarget,
+    heroTarget,
+    setHeroTarget,
   ] =
     useState(null);
 
@@ -276,7 +277,7 @@ export default function MenuHomeCustomerPreview() {
   useEffect(() => {
     const target =
       document.querySelector(
-        ".menu-home-figma-phone"
+        ".menu-home-phone-hero-visual"
       );
 
     if (!target) {
@@ -295,6 +296,9 @@ export default function MenuHomeCustomerPreview() {
 
           logoUrl:
             null,
+
+          generatedAt:
+            Date.now(),
         })
       );
     } catch (error) {
@@ -305,16 +309,16 @@ export default function MenuHomeCustomerPreview() {
     }
 
     target.classList.add(
-      "menu-home-real-template-host"
+      "menu-home-exact-mobile-preview-host"
     );
 
-    setPhoneTarget(
+    setHeroTarget(
       target
     );
 
     return () => {
       target.classList.remove(
-        "menu-home-real-template-host"
+        "menu-home-exact-mobile-preview-host"
       );
     };
   }, []);
@@ -324,18 +328,36 @@ export default function MenuHomeCustomerPreview() {
     <>
       <MenuHomeRefined />
 
-      {phoneTarget &&
+      {heroTarget &&
         createPortal(
-          <div className="menu-home-real-template-portal">
-            <iframe
-              className="menu-home-real-template-frame"
-              src="/menu-mobile-preview"
-              title="Example Beyond customer menu"
-              loading="eager"
-            />
+          <div className="menu-home-mobile-demo-stage">
+            <div className="mobile-menu-preview-phone menu-home-mobile-demo-phone">
+              <div className="mobile-menu-preview-buttons left">
+                <span />
+                <span />
+                <span />
+              </div>
+
+              <div className="mobile-menu-preview-buttons right">
+                <span />
+              </div>
+
+              <div className="mobile-menu-preview-screen">
+                <div className="mobile-menu-preview-island">
+                  <span />
+                </div>
+
+                <iframe
+                  className="mobile-menu-preview-frame"
+                  src="/menu-mobile-preview"
+                  title="Example Beyond customer menu"
+                  loading="eager"
+                />
+              </div>
+            </div>
           </div>,
 
-          phoneTarget
+          heroTarget
         )}
     </>
   );
