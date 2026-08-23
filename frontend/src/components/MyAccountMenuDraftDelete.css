@@ -1,0 +1,234 @@
+/* =========================================================
+   MY ACCOUNT — GENERATED MENU DRAFT DELETE
+   Only attached to non-activated Menu Builder drafts.
+   ========================================================= */
+
+.account-generated-draft-date {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.account-menu-draft-delete {
+  min-height: 31px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(199, 92, 101, 0.19);
+  border-radius: 999px;
+  color: #b7747a;
+  background: rgba(129, 43, 51, 0.075);
+  font: inherit;
+  font-size: 9px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.account-menu-draft-delete:hover,
+.account-menu-draft-delete:focus-visible {
+  color: #e0a0a5;
+  border-color: rgba(224, 111, 120, 0.36);
+  background: rgba(156, 48, 58, 0.13);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.account-menu-draft-delete:disabled {
+  opacity: 0.52;
+  cursor: wait;
+  transform: none;
+}
+
+.account-generated-website-card.is-deleting-menu-draft {
+  opacity: 0.58;
+  pointer-events: none;
+  transition: opacity 160ms ease;
+}
+
+.account-menu-draft-delete-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 1800;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  background: rgba(1, 6, 12, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.account-menu-draft-delete-dialog-card {
+  width: min(430px, 100%);
+  box-sizing: border-box;
+  padding: 25px;
+  border: 1px solid rgba(190, 104, 111, 0.17);
+  border-radius: 22px;
+  color: #dce6ef;
+  background:
+    radial-gradient(circle at 88% 7%, rgba(163, 56, 66, 0.11), transparent 32%),
+    #09111a;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.46);
+}
+
+.account-menu-draft-delete-icon {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 18px;
+  border: 1px solid rgba(206, 91, 101, 0.18);
+  border-radius: 15px;
+  color: #cf7d84;
+  background: rgba(139, 42, 51, 0.095);
+}
+
+.account-menu-draft-delete-copy > span {
+  color: #b96e75;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.account-menu-draft-delete-copy h3 {
+  margin: 8px 0 8px;
+  color: #f2f6fa;
+  font-size: 22px;
+  line-height: 1.15;
+}
+
+.account-menu-draft-delete-copy p {
+  margin: 0;
+  color: #8496a9;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.account-menu-draft-delete-error {
+  min-height: 0;
+  margin-top: 0;
+  color: #e4a0a5;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.account-menu-draft-delete-error:not(:empty) {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border: 1px solid rgba(197, 86, 95, 0.16);
+  border-radius: 10px;
+  background: rgba(132, 37, 46, 0.08);
+}
+
+.account-menu-draft-delete-actions {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+}
+
+.account-menu-draft-delete-actions button {
+  min-height: 43px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.account-menu-draft-delete-cancel {
+  color: #91a5b8;
+  border: 1px solid rgba(125, 151, 174, 0.14);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.account-menu-draft-delete-confirm {
+  color: #ffffff;
+  border: 1px solid rgba(207, 76, 88, 0.30);
+  background: linear-gradient(135deg, #b63f4b, #d04d58);
+  box-shadow: 0 10px 24px rgba(151, 47, 57, 0.21);
+}
+
+.account-menu-draft-delete-actions button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+html[data-beyond-theme="light"] .account-menu-draft-delete {
+  color: #a9434c;
+  border-color: rgba(181, 65, 75, 0.18);
+  background: #fff5f5;
+}
+
+html[data-beyond-theme="light"] .account-menu-draft-delete:hover,
+html[data-beyond-theme="light"] .account-menu-draft-delete:focus-visible {
+  color: #922f38;
+  border-color: rgba(177, 61, 71, 0.32);
+  background: #ffeded;
+}
+
+html[data-beyond-theme="light"] .account-menu-draft-delete-dialog {
+  background: rgba(30, 43, 61, 0.34);
+}
+
+html[data-beyond-theme="light"] .account-menu-draft-delete-dialog-card {
+  color: #18304f;
+  border-color: #e8ced1;
+  background:
+    radial-gradient(circle at 88% 7%, rgba(191, 66, 78, 0.07), transparent 32%),
+    #ffffff;
+  box-shadow: 0 28px 80px rgba(30, 48, 75, 0.22);
+}
+
+html[data-beyond-theme="light"] .account-menu-draft-delete-icon {
+  color: #b84751;
+  border-color: #f0d4d6;
+  background: #fff2f3;
+}
+
+html[data-beyond-theme="light"] .account-menu-draft-delete-copy > span {
+  color: #ae4851;
+}
+
+html[data-beyond-theme="light"] .account-menu-draft-delete-copy h3 {
+  color: #142b49;
+}
+
+html[data-beyond-theme="light"] .account-menu-draft-delete-copy p {
+  color: #667b94;
+}
+
+html[data-beyond-theme="light"] .account-menu-draft-delete-cancel {
+  color: #405b79;
+  border-color: #d8e1eb;
+  background: #f8fafd;
+}
+
+@media (max-width: 600px) {
+  .account-generated-draft-date {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .account-menu-draft-delete {
+    min-height: 36px;
+    padding-inline: 12px;
+  }
+
+  .account-menu-draft-delete-dialog-card {
+    padding: 21px;
+    border-radius: 19px;
+  }
+
+  .account-menu-draft-delete-actions {
+    grid-template-columns: 1fr;
+  }
+}
