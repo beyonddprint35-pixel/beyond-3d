@@ -252,3 +252,163 @@
     min-height: 33px;
   }
 }
+
+/* =========================================================
+   MENU MANAGEMENT MOCKUP — MAC + REALISTIC PHONE
+   ========================================================= */
+
+/* Make the product mockup read like a native Menu Studio window. */
+.menu-home-window-top {
+  position: relative;
+  background: linear-gradient(180deg, #fbfcfe 0%, #f5f7fb 100%);
+  border-bottom: 1px solid #e3e9f2;
+}
+
+/* Replace the old menu.beyond label without changing the component. */
+.menu-home-window-top > span:nth-child(2) {
+  font-size: 0;
+  color: var(--menu-text);
+}
+
+.menu-home-window-top > span:nth-child(2)::after {
+  content: "Menu Studio";
+  font-size: 11px;
+  font-weight: 760;
+  letter-spacing: -0.01em;
+  color: #70809d;
+}
+
+/* Real macOS traffic-light controls. */
+.menu-home-window-dots {
+  gap: 7px;
+}
+
+.menu-home-window-dots i {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.12);
+}
+
+.menu-home-window-dots i:nth-child(1) {
+  background: #ff5f57;
+}
+
+.menu-home-window-dots i:nth-child(2) {
+  background: #febc2e;
+}
+
+.menu-home-window-dots i:nth-child(3) {
+  background: #28c840;
+}
+
+/* Give the live preview phone a proper metal frame and screen depth. */
+.menu-home-phone-preview {
+  isolation: isolate;
+  width: 164px;
+  min-height: 334px;
+  margin: 20px auto;
+  padding: 39px 14px 18px;
+  border: 5px solid transparent;
+  border-radius: 35px;
+  background:
+    linear-gradient(180deg, #fbfcff 0%, #f1f5fb 100%) padding-box,
+    linear-gradient(145deg, #8795aa 0%, #263248 15%, #0a1220 46%, #050a12 75%, #8796ad 100%) border-box;
+  box-shadow:
+    0 24px 48px rgba(28, 44, 76, 0.18),
+    0 7px 18px rgba(21, 35, 62, 0.12),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.74);
+}
+
+/* Physical volume buttons. */
+.menu-home-phone-preview::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: -8px;
+  top: 68px;
+  width: 3px;
+  height: 42px;
+  border-radius: 3px 0 0 3px;
+  background: linear-gradient(180deg, #647187, #1b2638);
+  box-shadow: 0 52px 0 #2b374a;
+}
+
+/* Physical power button. */
+.menu-home-phone-preview::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  right: -8px;
+  top: 91px;
+  width: 3px;
+  height: 58px;
+  border-radius: 0 3px 3px 0;
+  background: linear-gradient(180deg, #647187, #1b2638);
+}
+
+/* Turn the simple speaker into a Dynamic-Island-style cutout. */
+.menu-home-phone-speaker {
+  top: 9px !important;
+  width: 62px !important;
+  height: 18px !important;
+  border-radius: 999px !important;
+  background: #070c14 !important;
+  box-shadow:
+    inset 0 -1px 1px rgba(255, 255, 255, 0.08),
+    0 1px 2px rgba(4, 8, 15, 0.12);
+}
+
+.menu-home-phone-speaker::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 7px;
+  width: 4px;
+  height: 4px;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: #172f4b;
+  box-shadow: inset 0 0 0 1px rgba(79, 127, 181, 0.24);
+}
+
+.menu-home-phone-preview > small {
+  margin-top: 2px;
+}
+
+/* The screen content should feel inset behind the glass rather than pasted on. */
+.menu-home-phone-tabs,
+.menu-home-phone-row {
+  position: relative;
+  z-index: 1;
+}
+
+.menu-home-phone-preview {
+  overflow: visible;
+}
+
+/* Dark mode keeps the Mac controls recognizable while matching the page. */
+.menu-home.theme-dark .menu-home-window-top {
+  background: linear-gradient(180deg, #101b2d 0%, #0d1727 100%);
+  border-bottom-color: rgba(139, 162, 199, 0.18);
+}
+
+.menu-home.theme-dark .menu-home-window-top > span:nth-child(2)::after {
+  color: #9baac2;
+}
+
+@media (max-width: 900px) {
+  .menu-home-phone-preview {
+    width: 126px;
+    min-height: 266px;
+    margin: 26px 7px;
+    padding: 33px 10px 13px;
+    border-width: 4px;
+    border-radius: 29px;
+  }
+
+  .menu-home-phone-speaker {
+    width: 50px !important;
+    height: 15px !important;
+  }
+}
