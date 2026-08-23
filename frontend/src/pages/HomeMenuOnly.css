@@ -1,0 +1,15 @@
+.home-menu-only .home-nav-links button:not(:first-child) {
+  display: none !important;
+}
+
+.home-menu-only .home-hero,
+.home-menu-only .material-transition,
+.home-menu-only .process-story-section,
+.home-menu-only .home-creator-anchor,
+.home-menu-only .beyond-community,
+.home-menu-only .reviews-section,
+.home-menu-only .home-start-project,
+.home-menu-only .home-final-cta,
+.home-menu-only .home-footer {
+  display: none !important;
+}
