@@ -1,0 +1,406 @@
+/* =========================================================
+   BEYOND — MY ACCOUNT LIGHT MODE
+   Stronger contrast and clearer surface hierarchy.
+   Dark mode remains controlled by MyAccount.css.
+   ========================================================= */
+
+html[data-beyond-theme="light"] .account-panel {
+  color: #172b49;
+  border-left-color: rgba(25, 55, 91, 0.10);
+  background:
+    radial-gradient(circle at 88% 8%, rgba(61, 116, 218, 0.08), transparent 31%),
+    #f6f8fc;
+  box-shadow: -28px 0 80px rgba(19, 37, 65, 0.18);
+}
+
+html[data-beyond-theme="light"] .account-sidebar {
+  border-right-color: #dfe6f0;
+  background: #ffffff;
+}
+
+html[data-beyond-theme="light"] .account-brand {
+  color: #173158;
+}
+
+html[data-beyond-theme="light"] .account-person {
+  border-top-color: #e5ebf3;
+  border-bottom-color: #e5ebf3;
+}
+
+html[data-beyond-theme="light"] .account-avatar {
+  color: #3569b7;
+  border-color: rgba(48, 101, 184, 0.18);
+  background: #edf4ff;
+}
+
+html[data-beyond-theme="light"] .account-person strong {
+  color: #152a49;
+}
+
+html[data-beyond-theme="light"] .account-person span {
+  color: #657b98;
+}
+
+html[data-beyond-theme="light"] .account-nav button {
+  color: #334d6d;
+}
+
+html[data-beyond-theme="light"] .account-nav button > span {
+  color: #71839a;
+}
+
+html[data-beyond-theme="light"] .account-nav button:hover {
+  color: #102a50;
+  background: #f2f6fc;
+}
+
+html[data-beyond-theme="light"] .account-nav button.active {
+  color: #174c9b;
+  background: #e7effc;
+  box-shadow: inset 0 0 0 1px rgba(35, 89, 170, 0.06);
+}
+
+html[data-beyond-theme="light"] .account-logout {
+  color: #405b79;
+  border-color: #dfe6ef;
+  background: #ffffff;
+}
+
+html[data-beyond-theme="light"] .account-logout:hover {
+  color: #163761;
+  border-color: #ccd7e5;
+  background: #f7f9fc;
+}
+
+html[data-beyond-theme="light"] .account-content {
+  background:
+    radial-gradient(circle at 92% 3%, rgba(72, 121, 218, 0.06), transparent 30%),
+    #f7f9fc;
+}
+
+html[data-beyond-theme="light"] .account-content-header > div > span {
+  color: #56769f;
+}
+
+html[data-beyond-theme="light"] .account-content-header h2 {
+  color: #102649;
+}
+
+html[data-beyond-theme="light"] .account-refresh,
+html[data-beyond-theme="light"] .account-close,
+html[data-beyond-theme="light"] .account-close-mobile {
+  color: #42607f;
+  border-color: #d9e2ee;
+  background: #ffffff;
+}
+
+html[data-beyond-theme="light"] .account-refresh:hover,
+html[data-beyond-theme="light"] .account-close:hover,
+html[data-beyond-theme="light"] .account-close-mobile:hover {
+  color: #174c9b;
+  border-color: #c8d5e5;
+  background: #f5f8fc;
+}
+
+html[data-beyond-theme="light"] .account-loading,
+html[data-beyond-theme="light"] .account-empty,
+html[data-beyond-theme="light"] .account-empty-small {
+  color: #647993;
+}
+
+html[data-beyond-theme="light"] .account-empty strong {
+  color: #233b5b;
+}
+
+html[data-beyond-theme="light"] .account-empty span {
+  color: #687e98;
+}
+
+html[data-beyond-theme="light"] .account-welcome,
+html[data-beyond-theme="light"] .account-stats article,
+html[data-beyond-theme="light"] .account-recent-grid > section,
+html[data-beyond-theme="light"] .account-order-card,
+html[data-beyond-theme="light"] .account-model-card,
+html[data-beyond-theme="light"] .account-project-card,
+html[data-beyond-theme="light"] .account-profile-intro {
+  border-color: #dfe6ef;
+  background: #ffffff;
+  box-shadow: 0 12px 34px rgba(27, 50, 80, 0.06);
+}
+
+html[data-beyond-theme="light"] .account-welcome {
+  background:
+    radial-gradient(circle at 82% 18%, rgba(55, 113, 214, 0.08), transparent 38%),
+    #ffffff;
+}
+
+html[data-beyond-theme="light"] .account-welcome > span,
+html[data-beyond-theme="light"] .account-stats span,
+html[data-beyond-theme="light"] .account-subheading span,
+html[data-beyond-theme="light"] .account-order-number span,
+html[data-beyond-theme="light"] .account-order-details span,
+html[data-beyond-theme="light"] .account-model-type,
+html[data-beyond-theme="light"] .account-profile-intro span,
+html[data-beyond-theme="light"] .account-profile-form label > span {
+  color: #5c7899;
+}
+
+html[data-beyond-theme="light"] .account-welcome h3,
+html[data-beyond-theme="light"] .account-stats strong,
+html[data-beyond-theme="light"] .account-subheading h3,
+html[data-beyond-theme="light"] .account-mini-row strong,
+html[data-beyond-theme="light"] .account-order-number strong,
+html[data-beyond-theme="light"] .account-order-details strong,
+html[data-beyond-theme="light"] .account-model-body h3,
+html[data-beyond-theme="light"] .account-project-body h3,
+html[data-beyond-theme="light"] .account-profile-intro h3 {
+  color: #1a3151;
+}
+
+html[data-beyond-theme="light"] .account-welcome p,
+html[data-beyond-theme="light"] .account-stats small,
+html[data-beyond-theme="light"] .account-mini-row span:not(.account-status),
+html[data-beyond-theme="light"] .account-model-info,
+html[data-beyond-theme="light"] .account-project-meta,
+html[data-beyond-theme="light"] .account-profile-intro p,
+html[data-beyond-theme="light"] .account-profile-form small {
+  color: #637992;
+}
+
+html[data-beyond-theme="light"] .account-mini-row,
+html[data-beyond-theme="light"] .account-order-details,
+html[data-beyond-theme="light"] .account-generated-draft-date {
+  border-color: #e5eaf1;
+}
+
+html[data-beyond-theme="light"] .account-model-preview,
+html[data-beyond-theme="light"] .account-project-preview {
+  color: #6683a4;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(66, 118, 211, 0.10), transparent 58%),
+    linear-gradient(145deg, #f5f8fc, #eaf0f8);
+}
+
+html[data-beyond-theme="light"] .account-project-action-text,
+html[data-beyond-theme="light"] .account-community-button {
+  color: #466482;
+  border-color: #d8e2ee;
+  background: #f8fafd;
+}
+
+html[data-beyond-theme="light"] .account-project-action-text:hover,
+html[data-beyond-theme="light"] .account-community-button:hover {
+  color: #164b94;
+  border-color: #b9cce3;
+  background: #f1f6fd;
+}
+
+html[data-beyond-theme="light"] .account-primary-button {
+  color: #ffffff;
+  background: linear-gradient(135deg, #2f79ed, #3d87f4);
+  box-shadow: 0 8px 20px rgba(45, 112, 224, 0.18);
+}
+
+html[data-beyond-theme="light"] .account-secondary-button {
+  color: #35516f;
+  border-color: #d6e0eb;
+  background: #ffffff;
+}
+
+html[data-beyond-theme="light"] .account-secondary-button:not(:disabled):hover {
+  color: #174d99;
+  border-color: #bccde0;
+  background: #f6f9fd;
+}
+
+html[data-beyond-theme="light"] .account-primary-button:disabled,
+html[data-beyond-theme="light"] .account-secondary-button:disabled {
+  opacity: 0.52;
+}
+
+html[data-beyond-theme="light"] .account-profile-form input,
+html[data-beyond-theme="light"] .account-service-promo-form input,
+html[data-beyond-theme="light"] .account-admin-link-site select,
+html[data-beyond-theme="light"] .account-admin-contact-form input {
+  color: #172d4b;
+  border-color: #d5dfeb;
+  background: #ffffff;
+}
+
+html[data-beyond-theme="light"] .account-profile-form input:disabled {
+  color: #75879b;
+  background: #f5f7fa;
+}
+
+/* Websites */
+html[data-beyond-theme="light"] .account-websites-intro,
+html[data-beyond-theme="light"] .account-admin-requests-head,
+html[data-beyond-theme="light"] .account-service-hero,
+html[data-beyond-theme="light"] .account-service-action,
+html[data-beyond-theme="light"] .account-service-promo,
+html[data-beyond-theme="light"] .account-admin-settings-hero,
+html[data-beyond-theme="light"] .account-admin-contact-form,
+html[data-beyond-theme="light"] .account-security-card {
+  border-color: #dce5ef;
+  background:
+    radial-gradient(circle at 86% 16%, rgba(55, 111, 210, 0.07), transparent 38%),
+    #ffffff;
+  box-shadow: 0 12px 34px rgba(24, 47, 78, 0.06);
+}
+
+html[data-beyond-theme="light"] .account-websites-icon,
+html[data-beyond-theme="light"] .account-service-icon,
+html[data-beyond-theme="light"] .account-admin-settings-icon {
+  color: #3e79c8;
+  border-color: rgba(54, 112, 194, 0.16);
+  background: #edf4ff;
+}
+
+html[data-beyond-theme="light"] .account-websites-intro span,
+html[data-beyond-theme="light"] .account-generated-websites-head span,
+html[data-beyond-theme="light"] .account-admin-requests-head span,
+html[data-beyond-theme="light"] .account-service-hero span,
+html[data-beyond-theme="light"] .account-service-grid article > span,
+html[data-beyond-theme="light"] .account-service-action span,
+html[data-beyond-theme="light"] .account-service-promo-copy > span,
+html[data-beyond-theme="light"] .account-admin-settings-hero span,
+html[data-beyond-theme="light"] .account-admin-contact-form label > span,
+html[data-beyond-theme="light"] .account-admin-contact-preview span {
+  color: #53739a;
+}
+
+html[data-beyond-theme="light"] .account-websites-intro h3,
+html[data-beyond-theme="light"] .account-generated-websites-head h3,
+html[data-beyond-theme="light"] .account-admin-requests-head h3,
+html[data-beyond-theme="light"] .account-service-hero h3,
+html[data-beyond-theme="light"] .account-service-grid strong,
+html[data-beyond-theme="light"] .account-service-action strong,
+html[data-beyond-theme="light"] .account-service-promo-copy strong,
+html[data-beyond-theme="light"] .account-admin-settings-hero h3,
+html[data-beyond-theme="light"] .account-admin-contact-preview strong {
+  color: #182f50;
+}
+
+html[data-beyond-theme="light"] .account-websites-intro p,
+html[data-beyond-theme="light"] .account-generated-websites-head p,
+html[data-beyond-theme="light"] .account-admin-requests-head p,
+html[data-beyond-theme="light"] .account-service-hero p,
+html[data-beyond-theme="light"] .account-service-grid p,
+html[data-beyond-theme="light"] .account-service-action p,
+html[data-beyond-theme="light"] .account-service-promo-copy p,
+html[data-beyond-theme="light"] .account-admin-settings-hero p {
+  color: #607791;
+}
+
+html[data-beyond-theme="light"] .account-generated-websites-head > strong,
+html[data-beyond-theme="light"] .account-admin-requests-head > strong {
+  color: #264364;
+}
+
+html[data-beyond-theme="light"] .account-website-card,
+html[data-beyond-theme="light"] .account-admin-request-card,
+html[data-beyond-theme="light"] .account-service-grid article,
+html[data-beyond-theme="light"] .account-admin-contact-preview > div {
+  border-color: #dce4ee;
+  background: #ffffff;
+  box-shadow: 0 10px 30px rgba(26, 49, 80, 0.07);
+}
+
+html[data-beyond-theme="light"] .account-generated-website-card {
+  border-color: #d6e1ee !important;
+  background:
+    linear-gradient(145deg, #ffffff, #f7f9fc) !important;
+  box-shadow: 0 12px 32px rgba(26, 49, 80, 0.08);
+}
+
+html[data-beyond-theme="light"] .account-generated-website-card::before {
+  background: linear-gradient(90deg, transparent, rgba(55, 118, 218, 0.42), transparent);
+}
+
+html[data-beyond-theme="light"] .account-website-card h3,
+html[data-beyond-theme="light"] .account-admin-request-card h3 {
+  color: #18314f;
+}
+
+html[data-beyond-theme="light"] .account-website-url,
+html[data-beyond-theme="light"] .account-generated-draft-url,
+html[data-beyond-theme="light"] .account-admin-request-email,
+html[data-beyond-theme="light"] .account-admin-request-phone,
+html[data-beyond-theme="light"] .account-generated-draft-date {
+  color: #627d9b !important;
+}
+
+html[data-beyond-theme="light"] .account-website-meta {
+  border-top-color: #e4eaf1;
+  border-bottom-color: #e4eaf1;
+}
+
+html[data-beyond-theme="light"] .account-website-meta span,
+html[data-beyond-theme="light"] .account-admin-request-meta span {
+  color: #647e9d;
+}
+
+html[data-beyond-theme="light"] .account-website-meta strong,
+html[data-beyond-theme="light"] .account-admin-request-meta strong {
+  color: #263f5d;
+}
+
+html[data-beyond-theme="light"] .account-admin-request-meta {
+  border-top-color: #e4eaf1;
+  border-bottom-color: #e4eaf1;
+}
+
+html[data-beyond-theme="light"] .account-admin-requests-empty {
+  color: #647b94;
+  border-color: #dce5ef;
+  background: #ffffff;
+}
+
+html[data-beyond-theme="light"] .account-websites-admin-button,
+html[data-beyond-theme="light"] .account-website-admin-badge,
+html[data-beyond-theme="light"] .account-generated-ai-badge,
+html[data-beyond-theme="light"] .account-service-plan {
+  color: #3568a7;
+  border-color: rgba(55, 112, 190, 0.18);
+  background: #edf4ff;
+}
+
+html[data-beyond-theme="light"] .account-website-status.live {
+  color: #32734a;
+  border-color: rgba(62, 139, 87, 0.20);
+  background: #eef8f1;
+}
+
+html[data-beyond-theme="light"] .account-website-status.draft,
+html[data-beyond-theme="light"] .account-admin-request-payment {
+  color: #8a6c2f;
+  border-color: rgba(157, 124, 55, 0.20);
+  background: #fff8e8;
+}
+
+html[data-beyond-theme="light"] .account-admin-request-badge {
+  color: #3568a7;
+  border-color: rgba(55, 112, 190, 0.18);
+  background: #edf4ff;
+}
+
+html[data-beyond-theme="light"] .account-admin-contact-preview > div {
+  border-color: #e1e7ef;
+  background: #f8fafd;
+}
+
+html[data-beyond-theme="light"] .account-service-security,
+html[data-beyond-theme="light"] .account-service-message,
+html[data-beyond-theme="light"] .account-service-promo-message,
+html[data-beyond-theme="light"] .account-admin-request-message,
+html[data-beyond-theme="light"] .account-admin-contact-message {
+  color: #466989;
+  border-color: #d7e2ee;
+  background: #eff5fb;
+}
+
+@media (max-width: 700px) {
+  html[data-beyond-theme="light"] .account-sidebar {
+    border-bottom-color: #dfe6ef;
+  }
+}
