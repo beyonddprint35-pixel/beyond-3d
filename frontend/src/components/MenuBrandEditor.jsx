@@ -1,29 +1,57 @@
-import {
-  useState,
-} from "react";
-
+import { useState } from "react";
 import {
   Crop,
+  LayoutTemplate,
+  Palette,
   RotateCcw,
   Trash2,
   Type,
 } from "lucide-react";
 
-import {
-  DEFAULT_MENU_BRANDING,
-} from "./DigitalMenuTemplate";
-
+import { DEFAULT_MENU_BRANDING } from "./DigitalMenuTemplate";
 import LogoCropper from "./LogoCropper";
 
 import "./MenuBrandEditor.css";
+import "./MenuBrandEditorLayouts.css";
 
+const LAYOUT_PRESETS = [
+  {
+    id: "classic",
+    name: "Classic",
+    description: "Balanced hero, category pills and clean menu cards.",
+  },
+  {
+    id: "compact",
+    name: "Compact",
+    description: "Tighter spacing for restaurants with long menus.",
+  },
+  {
+    id: "cards",
+    name: "Cards",
+    description: "More visual separation with a card-focused menu grid.",
+  },
+  {
+    id: "editorial",
+    name: "Editorial",
+    description: "Elegant typography with a refined restaurant feel.",
+  },
+  {
+    id: "minimal",
+    name: "Minimal",
+    description: "Quiet, lightweight layout with fewer visual borders.",
+  },
+  {
+    id: "bold",
+    name: "Bold",
+    description: "Strong hero and high-impact category navigation.",
+  },
+];
 
-const DESIGN_PRESETS = [
+const COLOR_PRESETS = [
   {
     id: "home",
     name: "Home",
     accent: "#556b2f",
-
     values: {
       background: "#f6f4ef",
       header_background: "#f6f4ef",
@@ -41,12 +69,10 @@ const DESIGN_PRESETS = [
       body_font: "Inter",
     },
   },
-
   {
     id: "midnight",
     name: "Midnight",
     accent: "#4ba5e5",
-
     values: {
       background: "#07121c",
       header_background: "#07121c",
@@ -64,12 +90,10 @@ const DESIGN_PRESETS = [
       body_font: "Inter",
     },
   },
-
   {
     id: "mediterranean",
     name: "Mediterranean",
     accent: "#1e6b5c",
-
     values: {
       background: "#f2eadf",
       header_background: "#f2eadf",
@@ -87,12 +111,10 @@ const DESIGN_PRESETS = [
       body_font: "Inter",
     },
   },
-
   {
     id: "minimal",
     name: "Minimal",
     accent: "#333333",
-
     values: {
       background: "#f4f4f4",
       header_background: "#ffffff",
@@ -110,12 +132,10 @@ const DESIGN_PRESETS = [
       body_font: "Inter",
     },
   },
-
   {
     id: "terracotta",
     name: "Terracotta",
     accent: "#b75d3e",
-
     values: {
       background: "#f5ece4",
       header_background: "#f5ece4",
@@ -133,12 +153,10 @@ const DESIGN_PRESETS = [
       body_font: "Lora",
     },
   },
-
   {
     id: "forest",
     name: "Forest",
     accent: "#31583a",
-
     values: {
       background: "#eaf0e8",
       header_background: "#eaf0e8",
@@ -156,12 +174,10 @@ const DESIGN_PRESETS = [
       body_font: "Inter",
     },
   },
-
   {
     id: "ocean",
     name: "Ocean",
     accent: "#147b93",
-
     values: {
       background: "#edf5f7",
       header_background: "#edf5f7",
@@ -179,12 +195,10 @@ const DESIGN_PRESETS = [
       body_font: "Manrope",
     },
   },
-
   {
     id: "burgundy",
     name: "Burgundy",
     accent: "#7e1f3b",
-
     values: {
       background: "#f4ecee",
       header_background: "#f4ecee",
@@ -202,12 +216,10 @@ const DESIGN_PRESETS = [
       body_font: "Inter",
     },
   },
-
   {
     id: "espresso",
     name: "Espresso",
     accent: "#6b4029",
-
     values: {
       background: "#ece4db",
       header_background: "#ece4db",
@@ -225,12 +237,10 @@ const DESIGN_PRESETS = [
       body_font: "Inter",
     },
   },
-
   {
     id: "gold",
     name: "Gold & Black",
     accent: "#d5b15d",
-
     values: {
       background: "#090909",
       header_background: "#090909",
@@ -248,12 +258,10 @@ const DESIGN_PRESETS = [
       body_font: "Manrope",
     },
   },
-
   {
     id: "nordic",
     name: "Nordic",
     accent: "#667b72",
-
     values: {
       background: "#f2f3f1",
       header_background: "#f2f3f1",
@@ -271,12 +279,10 @@ const DESIGN_PRESETS = [
       body_font: "Manrope",
     },
   },
-
   {
     id: "rose",
     name: "Rose",
     accent: "#ae5d78",
-
     values: {
       background: "#f8eef1",
       header_background: "#f8eef1",
@@ -295,7 +301,6 @@ const DESIGN_PRESETS = [
     },
   },
 ];
-
 
 const FONT_OPTIONS = [
   "Inter",
@@ -327,92 +332,17 @@ const FONT_OPTIONS = [
   "Georgia",
 ];
 
-
 const SIZE_CONTROLS = [
-  {
-    key:
-      "brand_font_size",
-    label:
-      "Restaurant name",
-    min: 14,
-    max: 34,
-  },
-
-  {
-    key:
-      "hero_font_size",
-    label:
-      "Main headline",
-    min: 26,
-    max: 72,
-  },
-
-  {
-    key:
-      "section_font_size",
-    label:
-      "Section headline",
-    min: 22,
-    max: 54,
-  },
-
-  {
-    key:
-      "category_font_size",
-    label:
-      "Categories",
-    min: 9,
-    max: 22,
-  },
-
-  {
-    key:
-      "item_name_font_size",
-    label:
-      "Item names",
-    min: 12,
-    max: 30,
-  },
-
-  {
-    key:
-      "description_font_size",
-    label:
-      "Descriptions",
-    min: 9,
-    max: 22,
-  },
-
-  {
-    key:
-      "price_font_size",
-    label:
-      "Prices",
-    min: 11,
-    max: 30,
-  },
-
-  {
-    key:
-      "secondary_font_size",
-    label:
-      "Secondary text",
-    min: 8,
-    max: 20,
-  },
+  { key: "brand_font_size", label: "Restaurant name", min: 14, max: 34 },
+  { key: "hero_font_size", label: "Main headline", min: 26, max: 72 },
+  { key: "section_font_size", label: "Section headline", min: 22, max: 54 },
+  { key: "category_font_size", label: "Categories", min: 9, max: 22 },
+  { key: "item_name_font_size", label: "Item names", min: 12, max: 30 },
+  { key: "description_font_size", label: "Descriptions", min: 9, max: 22 },
+  { key: "price_font_size", label: "Prices", min: 11, max: 30 },
+  { key: "secondary_font_size", label: "Secondary text", min: 8, max: 20 },
 ];
 
-
-/*
-  ============================================================
-  BEYOND MENU CORE v1.2
-
-  Approved original typography proportions.
-
-  "Reset font sizes" restores ONLY these values.
-  Fonts, colors, logo, preset and menu content are untouched.
-  ============================================================
-*/
 const BEYOND_MENU_CORE_FONT_SIZES = {
   brand_font_size: 19,
   hero_font_size: 46,
@@ -424,100 +354,34 @@ const BEYOND_MENU_CORE_FONT_SIZES = {
   secondary_font_size: 10,
 };
 
-
-function validHex(
-  value
-) {
-  return /^#[0-9A-Fa-f]{6}$/.test(
-    value
-  );
+function validHex(value) {
+  return /^#[0-9A-Fa-f]{6}$/.test(value);
 }
 
+function ColorControl({ label, value, onChange }) {
+  const [draft, setDraft] = useState(value || "#ffffff");
 
-function ColorControl({
-  label,
-  value,
-  onChange,
-}) {
-  const [
-    draft,
-    setDraft,
-  ] =
-    useState(
-      value ||
-      "#ffffff"
-    );
-
-
-  function sync(
-    nextValue
-  ) {
-    setDraft(
-      nextValue
-    );
-
-    if (
-      validHex(
-        nextValue
-      )
-    ) {
-      onChange(
-        nextValue
-      );
-    }
+  function sync(nextValue) {
+    setDraft(nextValue);
+    if (validHex(nextValue)) onChange(nextValue);
   }
-
 
   return (
     <label className="menu-brand-color">
-      <span>
-        {label}
-      </span>
-
+      <span>{label}</span>
       <div>
         <input
           type="color"
-          value={
-            validHex(
-              value
-            )
-              ? value
-              : "#ffffff"
-          }
-          onChange={
-            event =>
-              sync(
-                event
-                  .target
-                  .value
-              )
-          }
+          value={validHex(value) ? value : "#ffffff"}
+          onChange={(event) => sync(event.target.value)}
         />
-
         <input
           type="text"
-          value={
-            draft
-          }
+          value={draft}
           maxLength={7}
-          onChange={
-            event =>
-              sync(
-                event
-                  .target
-                  .value
-              )
-          }
+          onChange={(event) => sync(event.target.value)}
           onBlur={() => {
-            if (
-              !validHex(
-                draft
-              )
-            ) {
-              setDraft(
-                value
-              );
-            }
+            if (!validHex(draft)) setDraft(value);
           }}
         />
       </div>
@@ -525,6 +389,20 @@ function ColorControl({
   );
 }
 
+function LayoutPreview({ layout }) {
+  return (
+    <span className="menu-layout-preview" data-layout={layout} aria-hidden="true">
+      <i className="lp-header" />
+      <i className="lp-hero" />
+      <i className="lp-tabs" />
+      <span className="lp-items">
+        <i />
+        <i />
+        <i />
+      </span>
+    </span>
+  );
+}
 
 export default function MenuBrandEditor({
   branding,
@@ -533,164 +411,63 @@ export default function MenuBrandEditor({
   onLogoChange,
   onReset,
 }) {
-  const [
-    activeTab,
-    setActiveTab,
-  ] =
-    useState(
-      "design"
-    );
+  const [activeTab, setActiveTab] = useState("design");
+  const [pendingLogo, setPendingLogo] = useState("");
+  const [logoError, setLogoError] = useState("");
 
-  const [
-    pendingLogo,
-    setPendingLogo,
-  ] =
-    useState("");
-
-  const [
-    logoError,
-    setLogoError,
-  ] =
-    useState("");
-
-
-  function patch(
-    updates
-  ) {
-    onChange?.({
-      ...branding,
-      ...updates,
-    });
+  function patch(updates) {
+    onChange?.({ ...branding, ...updates });
   }
 
-
-  /*
-    Restore ONLY the approved BEYOND Menu Core
-    typography sizes.
-
-    This intentionally does not reset:
-    - font families
-    - design preset
-    - colors
-    - logo
-    - restaurant/menu text
-    - languages
-  */
   function resetFontSizes() {
-    patch({
-      ...BEYOND_MENU_CORE_FONT_SIZES,
-    });
+    patch({ ...BEYOND_MENU_CORE_FONT_SIZES });
   }
 
-
-  function applyPreset(
-    preset
-  ) {
+  function applyColorPreset(preset) {
     patch({
       ...preset.values,
-
-      design_preset:
-        preset.id,
+      design_preset: preset.id,
     });
   }
 
+  function applyLayout(layout) {
+    patch({ layout_style: layout.id });
+  }
 
-  function handleLogoFile(
-    event
-  ) {
-    const file =
-      event.target
-        .files?.[0];
-
-    event.target.value =
-      "";
-
+  function handleLogoFile(event) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
     setLogoError("");
+    if (!file) return;
 
-    if (!file) {
+    if (!["image/png", "image/jpeg", "image/webp", "image/svg+xml"].includes(file.type)) {
+      setLogoError("Use PNG, JPG, WEBP or SVG.");
       return;
     }
 
-
-    if (
-      ![
-        "image/png",
-        "image/jpeg",
-        "image/webp",
-        "image/svg+xml",
-      ].includes(
-        file.type
-      )
-    ) {
-      setLogoError(
-        "Use PNG, JPG, WEBP or SVG."
-      );
-
+    if (file.size > 3 * 1024 * 1024) {
+      setLogoError("Logo must be under 3 MB.");
       return;
     }
 
-
-    if (
-      file.size >
-      3 * 1024 * 1024
-    ) {
-      setLogoError(
-        "Logo must be under 3 MB."
-      );
-
-      return;
-    }
-
-
-    const reader =
-      new FileReader();
-
-    reader.onload =
-      () =>
-        setPendingLogo(
-          String(
-            reader.result ||
-              ""
-          )
-        );
-
-    reader.readAsDataURL(
-      file
-    );
+    const reader = new FileReader();
+    reader.onload = () => setPendingLogo(String(reader.result || ""));
+    reader.readAsDataURL(file);
   }
 
-
-  function handleCropApply(
-    dataUrl,
-    shape
-  ) {
-    onLogoChange?.(
-      dataUrl
-    );
-
-    patch({
-      logo_shape:
-        shape,
-    });
-
-    setPendingLogo(
-      ""
-    );
+  function handleCropApply(dataUrl, shape) {
+    onLogoChange?.(dataUrl);
+    patch({ logo_shape: shape });
+    setPendingLogo("");
   }
-
 
   return (
     <>
       <aside className="menu-brand-editor">
         <header className="menu-brand-editor-head">
           <div>
-            <span>
-              03 / STYLE
-            </span>
-
-            <h3>
-              Menu Studio
-            </h3>
+            <span>03 / STYLE</span>
+            <h3>Menu Studio</h3>
           </div>
 
           <button
@@ -698,591 +475,236 @@ export default function MenuBrandEditor({
             className="menu-brand-reset-mini"
             title="Reset design"
             onClick={() => {
-              onReset?.(
-                DEFAULT_MENU_BRANDING
-              );
-
-              onLogoChange?.(
-                ""
-              );
+              onReset?.(DEFAULT_MENU_BRANDING);
+              onLogoChange?.("");
             }}
           >
-            <RotateCcw
-              size={14}
-            />
+            <RotateCcw size={14} />
           </button>
         </header>
-
 
         <nav className="menu-brand-tabs">
           <button
             type="button"
-            className={
-              activeTab ===
-              "design"
-                ? "active"
-                : ""
-            }
-            onClick={() =>
-              setActiveTab(
-                "design"
-              )
-            }
+            className={activeTab === "design" ? "active" : ""}
+            onClick={() => setActiveTab("design")}
           >
             Design
           </button>
-
           <button
             type="button"
-            className={
-              activeTab ===
-              "brand"
-                ? "active"
-                : ""
-            }
-            onClick={() =>
-              setActiveTab(
-                "brand"
-              )
-            }
+            className={activeTab === "templates" ? "active" : ""}
+            onClick={() => setActiveTab("templates")}
+          >
+            Color Templates
+          </button>
+          <button
+            type="button"
+            className={activeTab === "brand" ? "active" : ""}
+            onClick={() => setActiveTab("brand")}
           >
             Brand
           </button>
-
           <button
             type="button"
-            className={
-              activeTab ===
-              "colors"
-                ? "active"
-                : ""
-            }
-            onClick={() =>
-              setActiveTab(
-                "colors"
-              )
-            }
+            className={activeTab === "colors" ? "active" : ""}
+            onClick={() => setActiveTab("colors")}
           >
             Colors
           </button>
-
           <button
             type="button"
-            className={
-              activeTab ===
-              "type"
-                ? "active"
-                : ""
-            }
-            onClick={() =>
-              setActiveTab(
-                "type"
-              )
-            }
+            className={activeTab === "type" ? "active" : ""}
+            onClick={() => setActiveTab("type")}
           >
             Type
           </button>
         </nav>
 
-
         <div className="menu-brand-editor-body">
-          {activeTab ===
-            "design" && (
-            <section className="menu-brand-design-grid">
-              {DESIGN_PRESETS.map(
-                preset => (
+          {activeTab === "design" && (
+            <section className="menu-brand-layout-section">
+              <div className="menu-brand-section-intro">
+                <LayoutTemplate size={15} />
+                <div>
+                  <strong>Choose a menu layout</strong>
+                  <span>Every design is mobile-first and supports RTL.</span>
+                </div>
+              </div>
+
+              <div className="menu-brand-layout-grid">
+                {LAYOUT_PRESETS.map((layout) => (
                   <button
-                    key={
-                      preset.id
-                    }
+                    key={layout.id}
                     type="button"
-                    className={
-                      branding
-                        .design_preset ===
-                      preset.id
-                        ? "active"
-                        : ""
-                    }
-                    onClick={() =>
-                      applyPreset(
-                        preset
-                      )
-                    }
+                    className={(branding.layout_style || "classic") === layout.id ? "active" : ""}
+                    onClick={() => applyLayout(layout)}
                   >
-                    <span className="design-preview">
-                      <i
-                        style={{
-                          background:
-                            preset
-                              .values
-                              .background,
-                        }}
-                      />
-
-                      <i
-                        style={{
-                          background:
-                            preset
-                              .values
-                              .card,
-                        }}
-                      />
-
-                      <i
-                        style={{
-                          background:
-                            preset
-                              .accent,
-                        }}
-                      />
+                    <LayoutPreview layout={layout.id} />
+                    <span className="menu-layout-copy">
+                      <strong>{layout.name}</strong>
+                      <small>{layout.description}</small>
                     </span>
-
-                    <strong>
-                      {
-                        preset.name
-                      }
-                    </strong>
                   </button>
-                )
-              )}
+                ))}
+              </div>
             </section>
           )}
 
+          {activeTab === "templates" && (
+            <section className="menu-brand-template-section">
+              <div className="menu-brand-section-intro">
+                <Palette size={15} />
+                <div>
+                  <strong>Color Templates</strong>
+                  <span>Apply a ready-made palette without changing the selected layout.</span>
+                </div>
+              </div>
 
-          {activeTab ===
-            "brand" && (
+              <div className="menu-brand-design-grid">
+                {COLOR_PRESETS.map((preset) => (
+                  <button
+                    key={preset.id}
+                    type="button"
+                    className={branding.design_preset === preset.id ? "active" : ""}
+                    onClick={() => applyColorPreset(preset)}
+                  >
+                    <span className="design-preview">
+                      <i style={{ background: preset.values.background }} />
+                      <i style={{ background: preset.values.card }} />
+                      <i style={{ background: preset.accent }} />
+                    </span>
+                    <strong>{preset.name}</strong>
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {activeTab === "brand" && (
             <section className="menu-brand-compact-section">
               <label className="menu-brand-field">
-                <span>
-                  RESTAURANT NAME
-                </span>
-
+                <span>RESTAURANT NAME</span>
                 <input
-                  value={
-                    branding
-                      .display_name ||
-                    ""
-                  }
-                  onChange={
-                    event =>
-                      patch({
-                        display_name:
-                          event
-                            .target
-                            .value,
-                      })
-                  }
+                  value={branding.display_name || ""}
+                  onChange={(event) => patch({ display_name: event.target.value })}
                 />
               </label>
-
 
               <label className="menu-brand-field">
-                <span>
-                  SUBTITLE
-                </span>
-
+                <span>SUBTITLE</span>
                 <input
-                  value={
-                    branding.subtitle ||
-                    ""
-                  }
-                  onChange={
-                    event =>
-                      patch({
-                        subtitle:
-                          event
-                            .target
-                            .value,
-                      })
-                  }
+                  value={branding.subtitle || ""}
+                  onChange={(event) => patch({ subtitle: event.target.value })}
                 />
               </label>
-
 
               {logoUrl && (
                 <div className="menu-brand-logo-preview">
-                  <img
-                    src={
-                      logoUrl
-                    }
-                    alt=""
-                  />
-
-                  <span>
-                    Current logo
-                  </span>
+                  <img src={logoUrl} alt="" />
+                  <span>Current logo</span>
                 </div>
               )}
 
-
               <label className="menu-brand-logo-button">
-                <Crop
-                  size={15}
-                />
-
-                {logoUrl
-                  ? "Upload & Crop Again"
-                  : "Upload & Crop Logo"}
-
+                <Crop size={15} />
+                {logoUrl ? "Upload & Crop Again" : "Upload & Crop Logo"}
                 <input
                   type="file"
                   accept="image/png,image/jpeg,image/webp,image/svg+xml"
-                  onChange={
-                    handleLogoFile
-                  }
+                  onChange={handleLogoFile}
                 />
               </label>
-
 
               {logoUrl && (
                 <button
                   type="button"
                   className="menu-brand-remove-logo"
-                  onClick={() =>
-                    onLogoChange?.(
-                      ""
-                    )
-                  }
+                  onClick={() => onLogoChange?.("")}
                 >
-                  <Trash2
-                    size={14}
-                  />
-
+                  <Trash2 size={14} />
                   Remove logo
                 </button>
               )}
 
-
-              {logoError && (
-                <small className="menu-brand-error">
-                  {
-                    logoError
-                  }
-                </small>
-              )}
+              {logoError && <small className="menu-brand-error">{logoError}</small>}
             </section>
           )}
 
-
-          {activeTab ===
-            "colors" && (
+          {activeTab === "colors" && (
             <section className="menu-brand-color-grid">
-              <ColorControl
-                label="PAGE"
-                value={
-                  branding.background
-                }
-                onChange={
-                  value =>
-                    patch({
-                      background:
-                        value,
-                    })
-                }
-              />
-
-              <ColorControl
-                label="HEADER"
-                value={
-                  branding
-                    .header_background
-                }
-                onChange={
-                  value =>
-                    patch({
-                      header_background:
-                        value,
-                    })
-                }
-              />
-
-              <ColorControl
-                label="HERO"
-                value={
-                  branding
-                    .hero_background
-                }
-                onChange={
-                  value =>
-                    patch({
-                      hero_background:
-                        value,
-                    })
-                }
-              />
-
-              <ColorControl
-                label="CARDS"
-                value={
-                  branding.card
-                }
-                onChange={
-                  value =>
-                    patch({
-                      card:
-                        value,
-
-                      paper:
-                        value,
-                    })
-                }
-              />
-
-              <ColorControl
-                label="TEXT"
-                value={
-                  branding.text
-                }
-                onChange={
-                  value =>
-                    patch({
-                      text:
-                        value,
-                    })
-                }
-              />
-
-              <ColorControl
-                label="SECONDARY"
-                value={
-                  branding.muted
-                }
-                onChange={
-                  value =>
-                    patch({
-                      muted:
-                        value,
-                    })
-                }
-              />
-
-              <ColorControl
-                label="ACCENT"
-                value={
-                  branding.accent
-                }
-                onChange={
-                  value =>
-                    patch({
-                      accent:
-                        value,
-                    })
-                }
-              />
-
-              <ColorControl
-                label="BORDERS"
-                value={
-                  branding.line
-                }
-                onChange={
-                  value =>
-                    patch({
-                      line:
-                        value,
-                    })
-                }
-              />
-
-              <ColorControl
-                label="CATEGORY"
-                value={
-                  branding
-                    .category_background
-                }
-                onChange={
-                  value =>
-                    patch({
-                      category_background:
-                        value,
-                    })
-                }
-              />
-
-              <ColorControl
-                label="CATEGORY TEXT"
-                value={
-                  branding
-                    .category_text
-                }
-                onChange={
-                  value =>
-                    patch({
-                      category_text:
-                        value,
-                    })
-                }
-              />
+              <ColorControl label="PAGE" value={branding.background} onChange={(value) => patch({ background: value })} />
+              <ColorControl label="HEADER" value={branding.header_background} onChange={(value) => patch({ header_background: value })} />
+              <ColorControl label="HERO" value={branding.hero_background} onChange={(value) => patch({ hero_background: value })} />
+              <ColorControl label="CARDS" value={branding.card} onChange={(value) => patch({ card: value, paper: value })} />
+              <ColorControl label="TEXT" value={branding.text} onChange={(value) => patch({ text: value })} />
+              <ColorControl label="SECONDARY" value={branding.muted} onChange={(value) => patch({ muted: value })} />
+              <ColorControl label="ACCENT" value={branding.accent} onChange={(value) => patch({ accent: value })} />
+              <ColorControl label="BORDERS" value={branding.line} onChange={(value) => patch({ line: value })} />
+              <ColorControl label="CATEGORY" value={branding.category_background} onChange={(value) => patch({ category_background: value })} />
+              <ColorControl label="CATEGORY TEXT" value={branding.category_text} onChange={(value) => patch({ category_text: value })} />
             </section>
           )}
 
-
-          {activeTab ===
-            "type" && (
+          {activeTab === "type" && (
             <section className="menu-brand-compact-section">
               <div className="menu-brand-type-title">
-                <Type
-                  size={16}
-                />
-
+                <Type size={16} />
                 Font family
               </div>
 
-
               <label className="menu-brand-field">
-                <span>
-                  HEADINGS
-                </span>
-
+                <span>HEADINGS</span>
                 <select
-                  value={
-                    branding
-                      .heading_font
-                  }
-                  onChange={
-                    event =>
-                      patch({
-                        heading_font:
-                          event
-                            .target
-                            .value,
-                      })
-                  }
+                  value={branding.heading_font}
+                  onChange={(event) => patch({ heading_font: event.target.value })}
                 >
-                  {FONT_OPTIONS.map(
-                    font => (
-                      <option
-                        key={
-                          font
-                        }
-                        value={
-                          font
-                        }
-                      >
-                        {font}
-                      </option>
-                    )
-                  )}
+                  {FONT_OPTIONS.map((font) => (
+                    <option key={font} value={font}>{font}</option>
+                  ))}
                 </select>
               </label>
 
-
               <label className="menu-brand-field">
-                <span>
-                  BODY
-                </span>
-
+                <span>BODY</span>
                 <select
-                  value={
-                    branding
-                      .body_font
-                  }
-                  onChange={
-                    event =>
-                      patch({
-                        body_font:
-                          event
-                            .target
-                            .value,
-                      })
-                  }
+                  value={branding.body_font}
+                  onChange={(event) => patch({ body_font: event.target.value })}
                 >
-                  {FONT_OPTIONS.map(
-                    font => (
-                      <option
-                        key={
-                          font
-                        }
-                        value={
-                          font
-                        }
-                      >
-                        {font}
-                      </option>
-                    )
-                  )}
+                  {FONT_OPTIONS.map((font) => (
+                    <option key={font} value={font}>{font}</option>
+                  ))}
                 </select>
               </label>
-
 
               <div className="menu-brand-type-divider" />
-
-              <div className="menu-brand-type-title">
-                Font sizes
-              </div>
-
+              <div className="menu-brand-type-title">Font sizes</div>
 
               <div className="menu-brand-size-controls">
-                {SIZE_CONTROLS.map(
-                  control => (
-                    <label
-                      key={
-                        control.key
-                      }
-                      className="menu-brand-size-row"
-                    >
-                      <div>
-                        <span>
-                          {
-                            control.label
-                          }
-                        </span>
-
-                        <strong>
-                          {
-                            branding[
-                              control.key
-                            ]
-                          }
-                          px
-                        </strong>
-                      </div>
-
-                      <input
-                        type="range"
-                        min={
-                          control.min
-                        }
-                        max={
-                          control.max
-                        }
-                        step="1"
-                        value={
-                          branding[
-                            control.key
-                          ]
-                        }
-                        onChange={
-                          event =>
-                            patch({
-                              [
-                                control.key
-                              ]:
-                                Number(
-                                  event
-                                    .target
-                                    .value
-                                ),
-                            })
-                        }
-                      />
-                    </label>
-                  )
-                )}
+                {SIZE_CONTROLS.map((control) => (
+                  <label key={control.key} className="menu-brand-size-row">
+                    <div>
+                      <span>{control.label}</span>
+                      <strong>{branding[control.key]}px</strong>
+                    </div>
+                    <input
+                      type="range"
+                      min={control.min}
+                      max={control.max}
+                      step="1"
+                      value={branding[control.key]}
+                      onChange={(event) => patch({ [control.key]: Number(event.target.value) })}
+                    />
+                  </label>
+                ))}
               </div>
-
 
               <button
                 type="button"
                 className="menu-brand-reset-font-sizes"
-                onClick={
-                  resetFontSizes
-                }
+                onClick={resetFontSizes}
               >
-                <span aria-hidden="true">
-                  ↺
-                </span>
-
+                <span aria-hidden="true">↺</span>
                 Reset font sizes
               </button>
             </section>
@@ -1290,20 +712,11 @@ export default function MenuBrandEditor({
         </div>
       </aside>
 
-
       {pendingLogo && (
         <LogoCropper
-          imageSource={
-            pendingLogo
-          }
-          onCancel={() =>
-            setPendingLogo(
-              ""
-            )
-          }
-          onApply={
-            handleCropApply
-          }
+          imageSource={pendingLogo}
+          onCancel={() => setPendingLogo("")}
+          onApply={handleCropApply}
         />
       )}
     </>
