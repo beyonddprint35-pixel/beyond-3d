@@ -7,9 +7,17 @@
 .menu-home-brand > span {
   --beyond-word-size: 18px;
   --beyond-letter-gap: 6.2px;
-  --beyond-e-width: 11.5px;
-  --beyond-e-height: 13px;
-  --beyond-e-bar: 2.5px;
+
+  /*
+    The striped E is tuned against the real rendered Inter capitals:
+    - same optical width as B
+    - same top/bottom cap-height
+    - slightly heavier strokes so it reads as a letter, not an icon
+  */
+  --beyond-e-width: 11px;
+  --beyond-e-height: 14.2px;
+  --beyond-e-bar: 2.8px;
+  --beyond-e-y: 0.65px;
   --beyond-b-width: 12.2px;
 
   position: relative;
@@ -24,7 +32,7 @@
   direction: ltr;
   color: var(--menu-text);
 
-  /* Exact E geometry: same width, same total cap-height, equal strokes. */
+  /* Equal-width bars forming the custom E. */
   background-image:
     linear-gradient(currentColor 0 0),
     linear-gradient(currentColor 0 0),
@@ -32,11 +40,11 @@
 
   background-position:
     calc(var(--beyond-b-width) + var(--beyond-letter-gap))
-      calc(50% - (var(--beyond-e-height) / 2)),
+      calc(50% - (var(--beyond-e-height) / 2) + var(--beyond-e-y)),
     calc(var(--beyond-b-width) + var(--beyond-letter-gap))
-      calc(50% - (var(--beyond-e-bar) / 2)),
+      calc(50% - (var(--beyond-e-bar) / 2) + var(--beyond-e-y)),
     calc(var(--beyond-b-width) + var(--beyond-letter-gap))
-      calc(50% + (var(--beyond-e-height) / 2) - var(--beyond-e-bar));
+      calc(50% + (var(--beyond-e-height) / 2) - var(--beyond-e-bar) + var(--beyond-e-y));
 
   background-size:
     var(--beyond-e-width) var(--beyond-e-bar),
@@ -94,9 +102,10 @@
   .menu-home-brand > span {
     --beyond-word-size: 15px;
     --beyond-letter-gap: 5px;
-    --beyond-e-width: 9.6px;
-    --beyond-e-height: 10.8px;
-    --beyond-e-bar: 2.1px;
+    --beyond-e-width: 9.2px;
+    --beyond-e-height: 11.9px;
+    --beyond-e-bar: 2.35px;
+    --beyond-e-y: 0.5px;
     --beyond-b-width: 10.2px;
 
     width: 104px;
@@ -108,9 +117,10 @@
   .menu-home-brand > span {
     --beyond-word-size: 13px;
     --beyond-letter-gap: 4.3px;
-    --beyond-e-width: 8.3px;
-    --beyond-e-height: 9.4px;
-    --beyond-e-bar: 1.85px;
+    --beyond-e-width: 8px;
+    --beyond-e-height: 10.3px;
+    --beyond-e-bar: 2.05px;
+    --beyond-e-y: 0.45px;
     --beyond-b-width: 8.9px;
 
     width: 92px;
