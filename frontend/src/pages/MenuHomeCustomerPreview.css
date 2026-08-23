@@ -1,91 +1,126 @@
-/* Exact BEYOND customer menu preview inside the homepage phone.
-   The iframe is a real 390px viewport, so DigitalMenuTemplate keeps the
-   same customer-facing mobile structure while the outer phone controls
-   how that viewport is presented on the landing page. */
+/* ==========================================================
+   HOMEPAGE CUSTOMER MENU PREVIEW
 
-.menu-home-real-template-host {
+   IMPORTANT:
+   This now uses the EXACT same phone + 390 × 844 screen
+   structure as Menu Builder's Mobile View.
+
+   We never scale the iframe/menu internally.
+   We scale the entire physical phone as one object.
+   ========================================================== */
+
+.menu-home-exact-mobile-preview-host {
   position: relative;
-  overflow: hidden;
-  padding: 47px 4px 5px !important;
-  background: #ffffff !important;
+  display: grid !important;
+  place-items: center !important;
+  min-height: 620px !important;
+  overflow: visible !important;
 }
 
-.menu-home-real-template-host > :not(.menu-home-figma-island):not(.menu-home-real-template-portal) {
+/* Remove the older Figma phone. The exact Menu Builder phone
+   rendered by MenuHomeCustomerPreview replaces it completely. */
+.menu-home-exact-mobile-preview-host > .menu-home-figma-phone {
   display: none !important;
 }
 
-.menu-home-real-template-host::after {
-  content: none !important;
-  display: none !important;
+.menu-home-mobile-demo-stage {
+  position: relative;
+  width: 287px;
+  height: 605px;
+  flex: 0 0 auto;
 }
 
-.menu-home-real-template-portal {
-  position: absolute;
-  inset: 46px 3px 4px;
-  overflow: hidden;
-  border-radius: 0 0 29px 29px;
-  background: #f5f7fb;
-}
-
-.menu-home-real-template-frame {
-  position: absolute;
+/* MobileMenuPreview.css keeps this phone at exactly 410 × 864,
+   with a 390 × 844 screen and iframe. Only the complete device
+   is reduced to fit the landing-page composition. */
+.menu-home-mobile-demo-phone {
+  position: absolute !important;
   top: 0;
-  left: 50%;
-  width: 390px;
-  height: 760px;
-  border: 0;
-  background: #f5f7fb;
-  transform: translateX(-50%) scale(.755);
-  transform-origin: top center;
-  pointer-events: none;
+  left: 0;
+  margin: 0 !important;
+  transform: scale(.7);
+  transform-origin: top left;
 }
 
-/* Match the preview screen to the landing-page palette in dark mode too.
-   The customer template itself is still the same component; only the
-   fictional restaurant's selected branding is being demonstrated. */
-.menu-home.theme-dark .menu-home-real-template-host,
-.menu-home.theme-dark .menu-home-real-template-portal,
-.menu-home.theme-dark .menu-home-real-template-frame {
-  background: #f5f7fb !important;
+/* Keep the exact Menu Builder screen geometry untouched. */
+.menu-home-mobile-demo-phone .mobile-menu-preview-screen,
+.menu-home-mobile-demo-phone .mobile-menu-preview-frame {
+  width: 390px !important;
+  height: 844px !important;
+}
+
+.menu-home-mobile-demo-phone .mobile-menu-preview-frame {
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  transform: none !important;
+  transform-origin: initial !important;
+  background: #f5f7fb;
+}
+
+/* This is a real embedded demo, so language/category controls can
+   still be tapped if the visitor wants to inspect the menu. */
+.menu-home-mobile-demo-phone iframe {
+  pointer-events: auto;
 }
 
 @media (max-width: 900px) {
-  .menu-home-real-template-frame {
-    transform: translateX(-50%) scale(.75);
+  .menu-home-exact-mobile-preview-host {
+    min-height: 590px !important;
+  }
+
+  .menu-home-mobile-demo-stage {
+    width: 271px;
+    height: 570px;
+  }
+
+  .menu-home-mobile-demo-phone {
+    transform: scale(.66);
   }
 }
 
 @media (max-width: 680px) {
-  .menu-home-real-template-host {
-    padding: 46px 3px 4px !important;
+  .menu-home-exact-mobile-preview-host {
+    min-height: 560px !important;
   }
 
-  .menu-home-real-template-portal {
-    inset: 45px 3px 3px;
-    border-radius: 0 0 27px 27px;
+  .menu-home-mobile-demo-stage {
+    width: 262px;
+    height: 553px;
   }
 
-  .menu-home-real-template-frame {
-    transform: translateX(-50%) scale(.735);
+  .menu-home-mobile-demo-phone {
+    transform: scale(.64);
   }
 }
 
 @media (max-width: 500px) {
-  .menu-home-real-template-host {
-    padding-inline: 3px !important;
+  .menu-home-exact-mobile-preview-host {
+    min-height: 535px !important;
   }
 
-  .menu-home-real-template-portal {
-    inset-inline: 2px;
+  .menu-home-mobile-demo-stage {
+    width: 254px;
+    height: 536px;
   }
 
-  .menu-home-real-template-frame {
-    transform: translateX(-50%) scale(.69);
+  .menu-home-mobile-demo-phone {
+    transform: scale(.62);
   }
 }
 
 @media (max-width: 380px) {
-  .menu-home-real-template-frame {
-    transform: translateX(-50%) scale(.64);
+  .menu-home-exact-mobile-preview-host {
+    min-height: 510px !important;
+  }
+
+  .menu-home-mobile-demo-stage {
+    width: 246px;
+    height: 519px;
+  }
+
+  .menu-home-mobile-demo-phone {
+    transform: scale(.6);
   }
 }
