@@ -1,5 +1,7 @@
 import {
+  useEffect,
   useMemo,
+  useState,
 } from "react";
 
 import DigitalMenuTemplate from "../components/DigitalMenuTemplate";
@@ -9,6 +11,9 @@ import "./MenuMobilePreviewPage.css";
 
 const STORAGE_KEY =
   "beyond-mobile-menu-preview-v2";
+
+const MESSAGE_TYPE =
+  "beyond-mobile-preview-update";
 
 
 function getPreviewData() {
@@ -37,12 +42,12 @@ function getPreviewData() {
 
 
 export default function MenuMobilePreviewPage() {
-  const preview =
-    useMemo(
-      () =>
-        getPreviewData(),
-      []
-    );
+  const [
+    preview,
+    setPreview,
+  ] = useState(() =>
+    getPreviewData()
+  );
 
   const isHomepagePreview =
     useMemo(
@@ -52,6 +57,46 @@ export default function MenuMobilePreviewPage() {
         ).get("source") === "home",
       []
     );
+
+
+  useEffect(() => {
+    function handleMessage(
+      event
+    ) {
+      if (
+        event.origin !==
+        window.location.origin
+      ) {
+        return;
+      }
+
+      if (
+        event.data?.type !==
+        MESSAGE_TYPE ||
+        !event.data
+          ?.payload
+          ?.menu
+      ) {
+        return;
+      }
+
+      setPreview(
+        event.data.payload
+      );
+    }
+
+    window.addEventListener(
+      "message",
+      handleMessage
+    );
+
+    return () => {
+      window.removeEventListener(
+        "message",
+        handleMessage
+      );
+    };
+  }, []);
 
 
   if (
@@ -86,8 +131,9 @@ export default function MenuMobilePreviewPage() {
         No scaling.
         No alternative menu component.
 
-        It simply lives inside a genuine
-        390px-wide browser viewport.
+        The Mobile Menu Studio now streams branding
+        edits into this genuine 390px-wide viewport
+        without rebuilding or refreshing the iframe.
       */}
       <DigitalMenuTemplate
         menu={
