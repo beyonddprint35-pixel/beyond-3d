@@ -9,7 +9,7 @@ import ThreeDPrinting from "./pages/ThreeDPrinting";
 import Admin from "./pages/AdminWithPricing";
 import OrderDetails from "./pages/OrderDetails";
 import TrackOrder from "./pages/TrackOrder";
-import MenuBuilder from "./pages/MenuBuilderUnified";
+import MenuBuilder from "./pages/MenuBuilderStable";
 import MenuMobilePreviewPage from "./pages/MenuMobilePreviewPage";
 import CustomerShowcasePortal from "./components/CustomerShowcasePortal";
 
