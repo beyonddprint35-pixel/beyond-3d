@@ -13,9 +13,9 @@
   direction: ltr;
   color: var(--menu-text);
   background:
-    linear-gradient(currentColor 0 0) 21px 3px / 15px 3px no-repeat,
-    linear-gradient(currentColor 0 0) 21px 10.5px / 15px 3px no-repeat,
-    linear-gradient(currentColor 0 0) 21px 18px / 15px 3px no-repeat;
+    linear-gradient(currentColor 0 0) 21px 5px / 15px 2.8px no-repeat,
+    linear-gradient(currentColor 0 0) 21px 10.6px / 15px 2.8px no-repeat,
+    linear-gradient(currentColor 0 0) 21px 16.2px / 15px 2.8px no-repeat;
 }
 
 .menu-home-brand > span::before,
@@ -58,9 +58,9 @@
     width: 106px;
     height: 21px;
     background:
-      linear-gradient(currentColor 0 0) 18px 3px / 13px 2.6px no-repeat,
-      linear-gradient(currentColor 0 0) 18px 9.2px / 13px 2.6px no-repeat,
-      linear-gradient(currentColor 0 0) 18px 15.4px / 13px 2.6px no-repeat;
+      linear-gradient(currentColor 0 0) 18px 4px / 13px 2.4px no-repeat,
+      linear-gradient(currentColor 0 0) 18px 9px / 13px 2.4px no-repeat,
+      linear-gradient(currentColor 0 0) 18px 14px / 13px 2.4px no-repeat;
   }
 
   .menu-home-brand > span::before,
@@ -79,9 +79,9 @@
     width: 94px;
     height: 19px;
     background:
-      linear-gradient(currentColor 0 0) 16px 3px / 11px 2.4px no-repeat,
-      linear-gradient(currentColor 0 0) 16px 8.3px / 11px 2.4px no-repeat,
-      linear-gradient(currentColor 0 0) 16px 13.6px / 11px 2.4px no-repeat;
+      linear-gradient(currentColor 0 0) 16px 4px / 11px 2.2px no-repeat,
+      linear-gradient(currentColor 0 0) 16px 8px / 11px 2.2px no-repeat,
+      linear-gradient(currentColor 0 0) 16px 12px / 11px 2.2px no-repeat;
   }
 
   .menu-home-brand > span::before,
