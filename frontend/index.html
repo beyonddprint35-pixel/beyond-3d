@@ -9,26 +9,28 @@
       href="/beyond-logo.png?v=2"
     />
 
-    <link
-      id="beyond-apple-touch-icon"
-      rel="apple-touch-icon"
-      sizes="180x180"
-      href="/beyond-apple-light.png?v=6"
-    />
-
     <script>
       (() => {
         const media = window.matchMedia("(prefers-color-scheme: dark)");
-        const updateAppleIcon = () => {
-          const icon = document.getElementById("beyond-apple-touch-icon");
-          if (!icon) return;
+        const icon = document.createElement("link");
+        icon.id = "beyond-apple-touch-icon";
+        icon.rel = "apple-touch-icon";
+        icon.sizes = "180x180";
+
+        const updateAppleIconForInstall = () => {
           icon.href = media.matches
-            ? "/beyond-apple-dark.png?v=6"
-            : "/beyond-apple-light.png?v=6";
+            ? "/beyond-apple-dark-v2.png"
+            : "/beyond-apple-light-v2.png";
+          icon.dataset.appearance = media.matches ? "dark" : "light";
         };
-        updateAppleIcon();
+
+        updateAppleIconForInstall();
+        document.head.appendChild(icon);
+
+        // This updates the icon Safari will use for a FUTURE Add to Home Screen.
+        // iOS caches an already-installed Web Clip icon and does not live-swap it.
         if (typeof media.addEventListener === "function") {
-          media.addEventListener("change", updateAppleIcon);
+          media.addEventListener("change", updateAppleIconForInstall);
         }
       })();
     </script>
