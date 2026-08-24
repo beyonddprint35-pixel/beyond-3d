@@ -6,8 +6,8 @@ import { fileURLToPath } from "node:url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const publicDir = path.resolve(__dirname, "../public");
 const sourcePath = path.join(publicDir, "beyond-logo.png");
-const darkPath = path.join(publicDir, "beyond-apple-dark.png");
-const lightPath = path.join(publicDir, "beyond-apple-light.png");
+const darkPath = path.join(publicDir, "beyond-apple-dark-v2.png");
+const lightPath = path.join(publicDir, "beyond-apple-light-v2.png");
 
 const PNG_SIGNATURE = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
 const LIGHT_MODE_BACKGROUND = [6, 19, 31];
@@ -163,7 +163,11 @@ const original = fs.readFileSync(sourcePath);
 const parsed = parsePng(original);
 const lightPixels = compositeOnDarkBackground(parsed);
 
+// Dark install: byte-for-byte original logo asset. No scaling, crop or rewrite.
 fs.writeFileSync(darkPath, original);
+
+// Light install: same source pixels/canvas; only transparent pixels are composited
+// onto the Beyond navy background. Geometry and logo proportions are untouched.
 fs.writeFileSync(lightPath, encodeRgbaPng(parsed.width, parsed.height, lightPixels));
 
 console.log(`Generated Apple icons from ${parsed.width}x${parsed.height} source without resizing or changing proportions.`);
