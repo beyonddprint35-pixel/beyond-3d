@@ -37,7 +37,7 @@ const menuAccentTextStyle = {
 };
 
 const menuHowCardStyle = {
-  background: "#fff7f7",
+  background: "light-dark(#fff7f7, rgba(16, 27, 44, 0.82))",
 };
 
 function BeyondPhonePreview({ isHebrew }) {
