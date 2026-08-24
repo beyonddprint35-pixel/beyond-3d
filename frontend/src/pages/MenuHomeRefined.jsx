@@ -36,6 +36,10 @@ const menuAccentTextStyle = {
   color: "transparent",
 };
 
+const menuHowCardStyle = {
+  background: "#fff7f7",
+};
+
 function BeyondPhonePreview({ isHebrew }) {
   return (
     <div className="menu-home-figma-phone" aria-label={isHebrew ? "תצוגת תפריט BEYOND" : "BEYOND menu preview"}>
@@ -362,9 +366,9 @@ export default function MenuHomeRefined() {
       <section className="menu-home-how" id="how-it-works">
         <div className="menu-home-section-heading"><div style={{ gridColumn: "1 / -1" }}><div className="menu-home-kicker"><Sparkles size={15} />{isHebrew ? "איך זה עובד" : "HOW IT WORKS"}</div><h2>{isHebrew ? <>מהרעיון לשולחן ב-<span style={{ color: "#6073f2" }}>3</span> צעדים.</> : <>From idea to table in <span style={{ color: "#6073f2" }}>3</span> steps.</>}</h2></div></div>
         <div className="menu-home-step-grid">
-          <article><div className="menu-home-step-number" style={{ ...menuAccentTextStyle, marginBottom: "36px", fontSize: "38px", fontWeight: 850, letterSpacing: "-0.04em", lineHeight: 1 }}>01</div><h3>{isHebrew ? "יוצרים את התפריט" : "Create your menu"}</h3><p>{isHebrew ? "מוסיפים קטגוריות, מנות, מחירים, תיאורים ותמונות." : "Add categories, items, prices, descriptions and images."}</p></article>
-          <article><div className="menu-home-step-number" style={{ ...menuAccentTextStyle, marginBottom: "36px", fontSize: "38px", fontWeight: 850, letterSpacing: "-0.04em", lineHeight: 1 }}>02</div><h3>{isHebrew ? "מתאימים למותג" : "Make it yours"}</h3><p>{isHebrew ? "מתאימים את השפה, התוכן והנראות למסעדה שלכם." : "Adjust the language, content and look to fit your restaurant."}</p></article>
-          <article><div className="menu-home-step-number" style={{ ...menuAccentTextStyle, marginBottom: "36px", fontSize: "38px", fontWeight: 850, letterSpacing: "-0.04em", lineHeight: 1 }}>03</div><h3>{isHebrew ? "משתפים" : "Share it"}</h3><p>{isHebrew ? "הלקוחות סורקים QR או מצמידים את הטלפון ל-NFC והתפריט נפתח." : "Customers scan the QR or tap NFC and your menu opens instantly."}</p></article>
+          <article style={menuHowCardStyle}><div className="menu-home-step-number" style={{ ...menuAccentTextStyle, marginBottom: "36px", fontSize: "38px", fontWeight: 850, letterSpacing: "-0.04em", lineHeight: 1 }}>01</div><h3>{isHebrew ? "יוצרים את התפריט" : "Create your menu"}</h3><p>{isHebrew ? "מוסיפים קטגוריות, מנות, מחירים, תיאורים ותמונות." : "Add categories, items, prices, descriptions and images."}</p></article>
+          <article style={menuHowCardStyle}><div className="menu-home-step-number" style={{ ...menuAccentTextStyle, marginBottom: "36px", fontSize: "38px", fontWeight: 850, letterSpacing: "-0.04em", lineHeight: 1 }}>02</div><h3>{isHebrew ? "מתאימים למותג" : "Make it yours"}</h3><p>{isHebrew ? "מתאימים את השפה, התוכן והנראות למסעדה שלכם." : "Adjust the language, content and look to fit your restaurant."}</p></article>
+          <article style={menuHowCardStyle}><div className="menu-home-step-number" style={{ ...menuAccentTextStyle, marginBottom: "36px", fontSize: "38px", fontWeight: 850, letterSpacing: "-0.04em", lineHeight: 1 }}>03</div><h3>{isHebrew ? "משתפים" : "Share it"}</h3><p>{isHebrew ? "הלקוחות סורקים QR או מצמידים את הטלפון ל-NFC והתפריט נפתח." : "Customers scan the QR or tap NFC and your menu opens instantly."}</p></article>
         </div>
       </section>
 
@@ -377,7 +381,6 @@ export default function MenuHomeRefined() {
         </div>
         <StudioPreview isHebrew={isHebrew} />
       </section>
-
       <section className="menu-home-access-section" id="qr-nfc">
         <AccessPreview isHebrew={isHebrew} />
         <div className="menu-home-access-copy"><div className="menu-home-kicker"><Radio size={15} />QR + NFC</div><h2>{isHebrew ? "תפריט אחד. שתי דרכים לפתוח אותו." : "One menu. Two ways to open it."}</h2><p>{isHebrew ? "מניחים את המעמד על השולחן. הלקוח סורק או מצמיד את הטלפון — והתפריט נפתח ישירות בדפדפן." : "Place the stand on the table. Customers scan or tap and the menu opens directly in their browser."}</p><div className="menu-home-access-points"><span><Check size={16} />{isHebrew ? "לא צריך להוריד אפליקציה" : "No app download"}</span><span><Check size={16} />{isHebrew ? "עובד ברוב הטלפונים" : "Works with modern phones"}</span><span><Check size={16} />{isHebrew ? "אותו קישור תמיד" : "One permanent menu link"}</span></div></div>
