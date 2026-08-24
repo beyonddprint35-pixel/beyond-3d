@@ -195,7 +195,7 @@
   padding: 0 16px;
   border: 1px solid var(--menu-border);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.78);
+  background: #FFF7F7;
   color: var(--menu-text);
   font-size: 12px;
   font-weight: 760;
