@@ -255,3 +255,15 @@ button:last-child {
 
 /* CUSTOMER HERO EXACT LEFT END */
 
+
+/* =======================================================
+   DUAL PRICE HEADER SPACING
+
+   Keep size labels such as 1/3 and 1/2 clearly separated
+   from the first menu card. This applies to every customer
+   using the shared restaurant template.
+======================================================= */
+
+.customers-template-menu .ep-dual-header {
+  margin-block: 14px 4px !important;
+}
