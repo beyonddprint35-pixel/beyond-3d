@@ -124,10 +124,19 @@ function evaluateFitList(list) {
 function scanFitLists() {
   window.cancelAnimationFrame(scanFrame);
   scanFrame = window.requestAnimationFrame(() => {
-    document
-      .querySelectorAll(".dmt-menu-list.dmt-fit-rows")
-      .forEach(evaluateFitList);
+    const fitLists = document.querySelectorAll(
+      ".dmt-menu-list.dmt-fit-rows"
+    );
 
+    /*
+      Reset the dedupe key whenever Fit is currently absent. This lets
+      the same category report its status again after OFF -> ON.
+    */
+    if (!fitLists.length) {
+      lastSentKey = "";
+    }
+
+    fitLists.forEach(evaluateFitList);
     renderEditorAdvice();
   });
 }
@@ -145,43 +154,78 @@ function clearEditorAdvice() {
     .forEach((node) => node.remove());
 }
 
-function renderEditorAdvice() {
-  clearEditorAdvice();
-
-  if (latestEditorStatus?.state !== "skipped") return;
-
-  const fitRow = document.querySelector(
-    ".mobile-menu-preview-editor-shell .menu-brand-fit-row"
-  );
-
-  if (!fitRow) return;
-
-  const fitToggle = fitRow.querySelector(".menu-brand-fit-toggle");
-  if (fitToggle?.getAttribute("aria-checked") !== "true") return;
+function getAdviceCopy() {
+  if (latestEditorStatus?.state !== "skipped") return null;
 
   const language = getBuilderLanguage();
   const section = latestEditorStatus.section || "";
   const itemCount = latestEditorStatus.itemCount || 0;
 
-  const advice = document.createElement("div");
-  advice.className = "menu-fit-smart-advice";
-  advice.setAttribute("data-no-builder-translate", "true");
-
-  const title = document.createElement("strong");
-  const copy = document.createElement("span");
-
   if (language === "he") {
-    title.textContent = "Fit to View לא מומלץ בקטגוריה הזו";
-    copy.textContent = `${section ? `ב־${section} ` : ""}יש ${itemCount} פריטים שממלאים את אזור הפריטים. כדי למנוע כרטיסים צפופים, הקטגוריה הזו משתמשת אוטומטית בגובה הכרטיס הרגיל.`;
-    advice.dir = "rtl";
-  } else {
-    title.textContent = "Fit to View isn’t recommended for this category";
-    copy.textContent = `${section ? `${section} has ` : "This category has "}${itemCount} items filling the item area. To avoid cramped cards, this category automatically uses the normal card height.`;
-    advice.dir = "ltr";
+    return {
+      dir: "rtl",
+      title: "Fit to View לא מומלץ בקטגוריה הזו",
+      copy: `${section ? `ב־${section} ` : ""}יש ${itemCount} פריטים שממלאים את אזור הפריטים. כדי למנוע כרטיסים צפופים, הקטגוריה הזו משתמשת אוטומטית בגובה הכרטיס הרגיל.`,
+    };
   }
 
-  advice.append(title, copy);
-  fitRow.insertAdjacentElement("afterend", advice);
+  return {
+    dir: "ltr",
+    title: "Fit to View isn’t recommended for this category",
+    copy: `${section ? `${section} has ` : "This category has "}${itemCount} items filling the item area. To avoid cramped cards, this category automatically uses the normal card height.`,
+  };
+}
+
+function renderEditorAdvice() {
+  const existing = document.querySelector(".menu-fit-smart-advice");
+  const copy = getAdviceCopy();
+
+  if (!copy) {
+    existing?.remove();
+    return;
+  }
+
+  const fitRow = document.querySelector(
+    ".mobile-menu-preview-editor-shell .menu-brand-fit-row"
+  );
+
+  if (!fitRow) {
+    existing?.remove();
+    return;
+  }
+
+  const fitToggle = fitRow.querySelector(".menu-brand-fit-toggle");
+  if (fitToggle?.getAttribute("aria-checked") !== "true") {
+    existing?.remove();
+    return;
+  }
+
+  let advice = existing;
+  if (!advice) {
+    advice = document.createElement("div");
+    advice.className = "menu-fit-smart-advice";
+    advice.setAttribute("data-no-builder-translate", "true");
+    advice.append(
+      document.createElement("strong"),
+      document.createElement("span")
+    );
+    fitRow.insertAdjacentElement("afterend", advice);
+  } else if (advice.previousElementSibling !== fitRow) {
+    fitRow.insertAdjacentElement("afterend", advice);
+  }
+
+  advice.dir = copy.dir;
+
+  const title = advice.querySelector("strong");
+  const body = advice.querySelector("span");
+
+  if (title && title.textContent !== copy.title) {
+    title.textContent = copy.title;
+  }
+
+  if (body && body.textContent !== copy.copy) {
+    body.textContent = copy.copy;
+  }
 }
 
 function handleFitStatusMessage(event) {
@@ -199,6 +243,7 @@ function handleDocumentClick(event) {
   window.setTimeout(() => {
     if (toggle.getAttribute("aria-checked") !== "true") {
       latestEditorStatus = null;
+      lastSentKey = "";
       clearEditorAdvice();
     }
   }, 0);
