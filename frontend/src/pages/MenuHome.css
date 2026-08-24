@@ -351,13 +351,54 @@
 }
 
 .menu-home-secondary {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   border: 1px solid var(--menu-border);
   background: rgba(255, 255, 255, 0.72);
   color: var(--menu-text);
+  transition:
+    transform 420ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 420ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 420ms ease,
+    color 260ms ease;
+}
+
+.menu-home-secondary::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 135%;
+  width: 145%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: linear-gradient(105deg, #3576e9, #5a61ef);
+  transform: translate(-50%, 0) scale(0.28);
+  transition:
+    top 560ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 560ms cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
 }
 
 .menu-home-secondary:hover {
-  background: #fff;
+  transform: translateY(-2px);
+  border-color: transparent;
+  background: rgba(255, 255, 255, 0.72);
+  color: #fff !important;
+  box-shadow: 0 14px 30px rgba(69, 92, 232, 0.22);
+}
+
+.menu-home-secondary:hover::before {
+  top: 50%;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-home-secondary,
+  .menu-home-secondary::before {
+    transition: none;
+  }
 }
 
 .menu-home-hero-notes {
