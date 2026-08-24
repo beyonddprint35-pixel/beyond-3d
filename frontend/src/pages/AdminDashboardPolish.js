@@ -6,7 +6,7 @@ const DELETE_BUTTON_CLASS = "admin-delete-order-button";
 function makeHomeButton() {
   const link = document.createElement("a");
   link.className = HOME_BUTTON_CLASS;
-  link.href = `${window.location.origin}/`;
+  link.href = "/";
   link.setAttribute("aria-label", "Back to BEYOND home page");
   link.setAttribute("title", "Home");
   link.innerHTML = `
@@ -17,6 +17,12 @@ function makeHomeButton() {
     </svg>
     <span>Home</span>
   `;
+
+  link.addEventListener("click", (event) => {
+    event.preventDefault();
+    window.location.href = `${window.location.origin}/`;
+  });
+
   return link;
 }
 
