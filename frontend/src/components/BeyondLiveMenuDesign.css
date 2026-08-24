@@ -1,0 +1,674 @@
+/* ==========================================================
+   BEYOND — LIVE MENU DESIGN
+
+   Activated customers can reopen Menu Studio and design the
+   published customer menu. These rules intentionally sit on top
+   of the legacy public-menu renderer so categories, subcategories,
+   special prices and owner editing stay compatible.
+   ========================================================== */
+
+.bm-owner-site-actions .bm-owner-live-design-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+
+.bm-owner-site-actions .bm-owner-live-design-trigger.active {
+  border-color: rgba(76, 126, 238, .55) !important;
+  color: #fff !important;
+  background: linear-gradient(110deg, #326fdf, #5b61ef) !important;
+}
+
+/* ==========================================================
+   DESIGN WORKSPACE
+   ========================================================== */
+
+.beyond-live-design-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: rgba(1, 7, 12, .64);
+  backdrop-filter: blur(20px) brightness(.58) saturate(.82);
+  -webkit-backdrop-filter: blur(20px) brightness(.58) saturate(.82);
+}
+
+.beyond-live-design-workspace {
+  width: min(1180px, calc(100vw - 40px));
+  height: min(900px, calc(100dvh - 40px));
+  min-height: 620px;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid rgba(116, 164, 206, .2);
+  border-radius: 28px;
+  color: var(--mb-text, #eef5fb);
+  background: var(--mb-bg, #07111d);
+  box-shadow: 0 36px 100px rgba(0, 0, 0, .52);
+}
+
+.beyond-live-design-head {
+  min-height: 88px;
+  padding: 16px 20px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid var(--mb-border, rgba(120, 164, 202, .17));
+  background: var(--mb-surface, #0b1926);
+}
+
+.beyond-live-design-head > div:first-child {
+  min-width: 0;
+}
+
+.beyond-live-design-head span {
+  display: block;
+  color: var(--mb-blue, #4b82ed);
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .16em;
+}
+
+.beyond-live-design-head h2 {
+  margin: 4px 0 2px;
+  color: var(--mb-text, #eff6fb);
+  font-size: 24px;
+  line-height: 1.08;
+  letter-spacing: -.03em;
+}
+
+.beyond-live-design-head p {
+  margin: 0;
+  color: var(--mb-muted, #7f98aa);
+  font-size: 11.5px;
+  line-height: 1.45;
+}
+
+.beyond-live-design-head-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 9px;
+  flex-shrink: 0;
+}
+
+.beyond-live-design-head-actions small {
+  max-width: 150px;
+  overflow: hidden;
+  color: var(--mb-muted, #7894a8);
+  font-size: 10px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.beyond-live-design-head-actions small.error {
+  color: #e48d96;
+}
+
+.beyond-live-design-head-actions a {
+  min-height: 38px;
+  padding: 0 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--mb-border, rgba(110, 157, 196, .2));
+  border-radius: 999px;
+  color: var(--mb-text, #edf5fa);
+  background: var(--mb-surface-soft, #0b1b29);
+  font-size: 10.5px;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.beyond-live-design-close {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--mb-border, rgba(110, 157, 196, .2));
+  border-radius: 50%;
+  color: var(--mb-text, #edf5fa);
+  background: var(--mb-surface-soft, #0b1b29);
+  cursor: pointer;
+}
+
+.beyond-live-design-body {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(350px, 430px) minmax(0, 1fr);
+  gap: 18px;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.beyond-live-design-editor {
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border: 1px solid var(--mb-border, rgba(110, 157, 196, .16));
+  border-radius: 20px;
+  background: var(--mb-surface, #0b1825);
+  scrollbar-width: thin;
+}
+
+.beyond-live-design-editor .menu-brand-editor {
+  width: 100%;
+  max-width: none;
+  min-height: 100%;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.beyond-live-design-editor .menu-brand-editor-body {
+  overflow: visible;
+}
+
+.beyond-live-design-editor .menu-brand-tabs button {
+  font-size: 11px;
+}
+
+.beyond-live-design-editor .menu-layout-copy strong,
+.beyond-live-design-editor .menu-brand-section-intro strong,
+.beyond-live-design-editor .menu-brand-fit-copy strong {
+  font-size: 12px;
+}
+
+.beyond-live-design-editor .menu-layout-copy small,
+.beyond-live-design-editor .menu-brand-section-intro span,
+.beyond-live-design-editor .menu-brand-fit-copy small {
+  font-size: 9.5px;
+}
+
+.beyond-live-design-preview-column {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  overflow: hidden;
+  border: 1px solid var(--mb-border, rgba(110, 157, 196, .16));
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 50% 30%, rgba(65, 111, 210, .11), transparent 40%),
+    #02070c;
+}
+
+.beyond-live-design-preview-label {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 14px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid rgba(110, 157, 196, .12);
+  color: #718ca0;
+  background: rgba(6, 18, 27, .9);
+  font-size: 9px;
+}
+
+.beyond-live-design-preview-label span {
+  color: #4e89c9;
+  font-weight: 850;
+  letter-spacing: .14em;
+}
+
+.beyond-live-design-preview-label strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.beyond-live-design-phone {
+  width: 390px;
+  max-width: calc(100% - 18px);
+  height: min(844px, calc(100% - 58px));
+  min-height: 520px;
+  overflow: hidden;
+  border: 7px solid #18232b;
+  border-radius: 36px;
+  background: #fff;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .46);
+}
+
+.beyond-live-design-preview {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.beyond-live-design-preview > .ep-page {
+  min-height: 100% !important;
+}
+
+/* ==========================================================
+   LIVE CUSTOMER MENU — SHARED DESIGN TOKENS
+   ========================================================== */
+
+.ep-page.ep-live-designed,
+.beyond-live-design-preview .ep-page {
+  background: var(--bld-bg) !important;
+  color: var(--bld-text) !important;
+  font-family: var(--bld-body-font) !important;
+}
+
+.ep-live-designed .ep-app,
+.beyond-live-design-preview .ep-app {
+  background: var(--bld-bg) !important;
+  color: var(--bld-text) !important;
+  font-family: var(--bld-body-font) !important;
+}
+
+.ep-live-designed .ep-header,
+.beyond-live-design-preview .ep-header {
+  border-color: var(--bld-line) !important;
+  background: var(--bld-header-bg) !important;
+  color: var(--bld-text) !important;
+}
+
+.ep-live-designed .ep-brand-title,
+.beyond-live-design-preview .ep-brand-title {
+  color: var(--bld-text) !important;
+  font-family: var(--bld-heading-font) !important;
+  font-size: var(--bld-brand-size) !important;
+}
+
+.ep-live-designed .ep-brand-sub,
+.beyond-live-design-preview .ep-brand-sub,
+.ep-live-designed .ep-section-count,
+.beyond-live-design-preview .ep-section-count,
+.ep-live-designed .ep-item-description,
+.beyond-live-design-preview .ep-item-description,
+.ep-live-designed .ep-wine-origin,
+.beyond-live-design-preview .ep-wine-origin,
+.ep-live-designed .ep-footer,
+.beyond-live-design-preview .ep-footer {
+  color: var(--bld-muted) !important;
+  font-family: var(--bld-body-font) !important;
+  font-size: var(--bld-secondary-size) !important;
+}
+
+.ep-live-designed .ep-hero,
+.beyond-live-design-preview .ep-hero {
+  border-color: var(--bld-line) !important;
+  background: var(--bld-hero-bg) !important;
+}
+
+.ep-live-designed .ep-hero-kicker,
+.beyond-live-design-preview .ep-hero-kicker {
+  color: var(--bld-accent) !important;
+  font-family: var(--bld-body-font) !important;
+}
+
+.ep-live-designed .ep-hero-title,
+.beyond-live-design-preview .ep-hero-title {
+  color: var(--bld-text) !important;
+  font-family: var(--bld-heading-font) !important;
+  font-size: var(--bld-hero-size) !important;
+}
+
+.ep-live-designed .ep-tabs-wrap,
+.beyond-live-design-preview .ep-tabs-wrap,
+.ep-live-designed .ep-section-head,
+.beyond-live-design-preview .ep-section-head,
+.ep-live-designed .ep-footer,
+.beyond-live-design-preview .ep-footer {
+  border-color: var(--bld-line) !important;
+  background: var(--bld-bg) !important;
+}
+
+.ep-live-designed .ep-tabs button,
+.beyond-live-design-preview .ep-tabs button {
+  border-color: var(--bld-line) !important;
+  color: var(--bld-muted) !important;
+  background: var(--bld-paper) !important;
+  font-family: var(--bld-body-font) !important;
+  font-size: var(--bld-category-size) !important;
+}
+
+.ep-live-designed .ep-tabs button.active,
+.beyond-live-design-preview .ep-tabs button.active {
+  border-color: var(--bld-category-bg) !important;
+  color: var(--bld-category-text) !important;
+  background: var(--bld-category-bg) !important;
+}
+
+.ep-live-designed .ep-section-head h2,
+.beyond-live-design-preview .ep-section-head h2 {
+  color: var(--bld-text) !important;
+  font-family: var(--bld-heading-font) !important;
+  font-size: var(--bld-section-size) !important;
+}
+
+.ep-live-designed .ep-menu-list,
+.beyond-live-design-preview .ep-menu-list {
+  background: var(--bld-bg) !important;
+}
+
+.ep-live-designed :is(.ep-item-row, .ep-wine-row),
+.beyond-live-design-preview :is(.ep-item-row, .ep-wine-row) {
+  border-color: var(--bld-line) !important;
+  color: var(--bld-text) !important;
+  background: var(--bld-card) !important;
+}
+
+.ep-live-designed .ep-item-name,
+.beyond-live-design-preview .ep-item-name {
+  color: var(--bld-text) !important;
+  font-family: var(--bld-heading-font) !important;
+  font-size: var(--bld-item-size) !important;
+}
+
+.ep-live-designed .ep-item-description,
+.beyond-live-design-preview .ep-item-description {
+  font-size: var(--bld-description-size) !important;
+}
+
+.ep-live-designed :is(.ep-item-price, .ep-item-prices, .ep-wine-prices strong),
+.beyond-live-design-preview :is(.ep-item-price, .ep-item-prices, .ep-wine-prices strong) {
+  color: var(--bld-text) !important;
+  font-family: var(--bld-body-font) !important;
+  font-size: var(--bld-price-size) !important;
+}
+
+.ep-live-designed :is(.ep-item-category, .ep-mixers-box, .ep-dual-header),
+.beyond-live-design-preview :is(.ep-item-category, .ep-mixers-box, .ep-dual-header) {
+  border-color: var(--bld-line) !important;
+  color: var(--bld-muted) !important;
+  background: color-mix(in srgb, var(--bld-paper) 82%, var(--bld-bg)) !important;
+}
+
+.ep-live-designed .ep-accessibility-statement-link,
+.beyond-live-design-preview .ep-accessibility-statement-link {
+  color: var(--bld-accent) !important;
+}
+
+/* ==========================================================
+   LAYOUT — CLASSIC
+   ========================================================== */
+
+.ep-live-layout-classic :is(.ep-item-row, .ep-wine-row),
+.beyond-live-design-preview.ep-live-layout-classic :is(.ep-item-row, .ep-wine-row) {
+  border: 1px solid var(--bld-line) !important;
+  border-radius: 16px !important;
+  margin: 0 10px 9px !important;
+  padding-inline: 14px !important;
+}
+
+/* ==========================================================
+   LAYOUT — COMPACT
+   ========================================================== */
+
+.ep-live-layout-compact .ep-hero,
+.beyond-live-design-preview.ep-live-layout-compact .ep-hero {
+  padding-block: 16px !important;
+}
+
+.ep-live-layout-compact .ep-tabs-wrap,
+.beyond-live-design-preview.ep-live-layout-compact .ep-tabs-wrap {
+  padding-block: 6px !important;
+}
+
+.ep-live-layout-compact :is(.ep-item-row, .ep-wine-row),
+.beyond-live-design-preview.ep-live-layout-compact :is(.ep-item-row, .ep-wine-row) {
+  min-height: 52px !important;
+  margin: 0 8px 5px !important;
+  padding: 7px 11px !important;
+  border: 1px solid var(--bld-line) !important;
+  border-radius: 11px !important;
+}
+
+/* ==========================================================
+   LAYOUT — CARDS
+   ========================================================== */
+
+.ep-live-layout-cards .ep-menu-list,
+.beyond-live-design-preview.ep-live-layout-cards .ep-menu-list {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  align-content: start !important;
+  gap: 9px !important;
+  padding: 9px !important;
+  box-sizing: border-box !important;
+}
+
+.ep-live-layout-cards :is(.ep-item-row, .ep-wine-row),
+.beyond-live-design-preview.ep-live-layout-cards :is(.ep-item-row, .ep-wine-row) {
+  min-width: 0 !important;
+  min-height: 116px !important;
+  margin: 0 !important;
+  padding: 12px !important;
+  box-sizing: border-box !important;
+  align-items: stretch !important;
+  flex-direction: column !important;
+  border: 1px solid var(--bld-line) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--bld-text) 7%, transparent) !important;
+}
+
+.ep-live-layout-cards :is(.ep-item-category, .ep-dual-header, .ep-mixers-box),
+.beyond-live-design-preview.ep-live-layout-cards :is(.ep-item-category, .ep-dual-header, .ep-mixers-box) {
+  grid-column: 1 / -1 !important;
+}
+
+/* ==========================================================
+   LAYOUT — EDITORIAL
+   ========================================================== */
+
+.ep-live-layout-editorial .ep-hero,
+.beyond-live-design-preview.ep-live-layout-editorial .ep-hero {
+  border-radius: 0 !important;
+  border-inline: 0 !important;
+  border-top: 1px solid var(--bld-line) !important;
+  border-bottom: 1px solid var(--bld-line) !important;
+  background: transparent !important;
+}
+
+.ep-live-layout-editorial :is(.ep-item-row, .ep-wine-row),
+.beyond-live-design-preview.ep-live-layout-editorial :is(.ep-item-row, .ep-wine-row) {
+  margin-inline: 13px !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--bld-line) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* ==========================================================
+   LAYOUT — MINIMAL
+   ========================================================== */
+
+.ep-live-layout-minimal .ep-hero,
+.beyond-live-design-preview.ep-live-layout-minimal .ep-hero,
+.ep-live-layout-minimal :is(.ep-item-row, .ep-wine-row),
+.beyond-live-design-preview.ep-live-layout-minimal :is(.ep-item-row, .ep-wine-row) {
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.ep-live-layout-minimal :is(.ep-item-row, .ep-wine-row),
+.beyond-live-design-preview.ep-live-layout-minimal :is(.ep-item-row, .ep-wine-row) {
+  margin-inline: 12px !important;
+  border: 0 !important;
+  border-bottom: 1px solid color-mix(in srgb, var(--bld-line) 66%, transparent) !important;
+}
+
+/* ==========================================================
+   LAYOUT — BOLD
+   ========================================================== */
+
+.ep-live-layout-bold .ep-hero,
+.beyond-live-design-preview.ep-live-layout-bold .ep-hero {
+  color: var(--bld-category-text) !important;
+  background: var(--bld-category-bg) !important;
+}
+
+.ep-live-layout-bold .ep-hero :is(.ep-hero-kicker, .ep-hero-title),
+.beyond-live-design-preview.ep-live-layout-bold .ep-hero :is(.ep-hero-kicker, .ep-hero-title) {
+  color: var(--bld-category-text) !important;
+}
+
+.ep-live-layout-bold :is(.ep-item-row, .ep-wine-row),
+.beyond-live-design-preview.ep-live-layout-bold :is(.ep-item-row, .ep-wine-row) {
+  margin: 0 9px 8px !important;
+  border: 2px solid var(--bld-line) !important;
+  border-radius: 13px !important;
+}
+
+/* ==========================================================
+   SAFE LIVE FIT-TO-VIEW
+
+   Only the portal helper adds ep-live-fit-active, and only for a
+   simple category with <=3 visible rows and no special headings.
+   Width and column count are never modified by Fit to View.
+   ========================================================== */
+
+@media (max-width: 560px) {
+  .ep-live-designed.ep-live-fit-active:not(.ep-live-layout-cards) .ep-menu-list,
+  .beyond-live-design-preview .ep-live-designed.ep-live-fit-active:not(.ep-live-layout-cards) .ep-menu-list {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    grid-template-rows: repeat(var(--bld-fit-count), minmax(72px, 1fr)) !important;
+    align-content: stretch !important;
+  }
+
+  .ep-live-designed.ep-live-fit-active:not(.ep-live-layout-cards) .ep-menu-list > :is(.ep-item-row, .ep-wine-row) {
+    min-height: 0 !important;
+    height: auto !important;
+  }
+
+  .ep-live-designed.ep-live-layout-cards.ep-live-fit-active .ep-menu-list,
+  .beyond-live-design-preview .ep-live-designed.ep-live-layout-cards.ep-live-fit-active .ep-menu-list {
+    grid-auto-rows: minmax(72px, 1fr) !important;
+    align-content: stretch !important;
+  }
+}
+
+/* ==========================================================
+   MOBILE LIVE DESIGN WORKSPACE
+   ========================================================== */
+
+@media (max-width: 760px) {
+  .bm-owner-site-actions .bm-owner-live-design-trigger {
+    width: 100%;
+  }
+
+  .beyond-live-design-overlay {
+    padding: 0;
+    align-items: stretch;
+  }
+
+  .beyond-live-design-workspace {
+    width: 100%;
+    height: 100dvh;
+    min-height: 0;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .beyond-live-design-head {
+    min-height: 70px;
+    padding: max(10px, env(safe-area-inset-top)) 11px 9px;
+    gap: 8px;
+  }
+
+  .beyond-live-design-head h2 {
+    font-size: 18px;
+  }
+
+  .beyond-live-design-head p,
+  .beyond-live-design-head > div:first-child > span {
+    display: none;
+  }
+
+  .beyond-live-design-head-actions {
+    gap: 5px;
+  }
+
+  .beyond-live-design-head-actions small {
+    display: none;
+  }
+
+  .beyond-live-design-head-actions a {
+    min-height: 36px;
+    padding-inline: 10px;
+    font-size: 9.5px;
+  }
+
+  .beyond-live-design-body {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(250px, 42dvh) minmax(0, 1fr);
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .beyond-live-design-preview-column {
+    grid-row: 1;
+    border-radius: 16px;
+  }
+
+  .beyond-live-design-preview-label {
+    min-height: 34px;
+  }
+
+  .beyond-live-design-phone {
+    width: 100%;
+    max-width: none;
+    height: calc(100% - 42px);
+    min-height: 0;
+    border: 0;
+    border-radius: 0 0 14px 14px;
+    box-shadow: none;
+  }
+
+  .beyond-live-design-editor {
+    grid-row: 2;
+    border-radius: 16px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .beyond-live-design-editor .menu-brand-tabs {
+    flex-wrap: wrap !important;
+    overflow: visible !important;
+  }
+
+  .beyond-live-design-editor .menu-brand-tabs button {
+    flex: 1 1 calc(33.333% - 4px) !important;
+    min-width: 0 !important;
+    min-height: 42px !important;
+    font-size: 11px !important;
+  }
+
+  .beyond-live-design-editor .menu-brand-layout-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .beyond-live-design-editor :is(input, select, textarea) {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .beyond-live-design-editor input,
+  .beyond-live-design-editor select {
+    font-size: 16px !important;
+  }
+}
