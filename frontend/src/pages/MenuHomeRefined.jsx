@@ -360,7 +360,7 @@ export default function MenuHomeRefined() {
       </section>
 
       <section className="menu-home-how" id="how-it-works">
-        <div className="menu-home-section-heading"><span>01</span><div><small>{isHebrew ? "איך זה עובד" : "HOW IT WORKS"}</small><h2>{isHebrew ? "מהרעיון לשולחן בשלושה צעדים." : <>From idea to table in <span style={{ color: "#6073f2" }}>3</span> steps.</>}</h2></div></div>
+        <div className="menu-home-section-heading"><span>01</span><div><small>{isHebrew ? "איך זה עובד" : "HOW IT WORKS"}</small><h2>{isHebrew ? <>מהרעיון לשולחן ב-<span style={{ color: "#6073f2" }}>3</span> צעדים.</> : <>From idea to table in <span style={{ color: "#6073f2" }}>3</span> steps.</>}</h2></div></div>
         <div className="menu-home-step-grid">
           <article><div className="menu-home-step-number" style={{ ...menuAccentTextStyle, marginBottom: "36px", fontSize: "38px", fontWeight: 850, letterSpacing: "-0.04em", lineHeight: 1 }}>01</div><h3>{isHebrew ? "יוצרים את התפריט" : "Create your menu"}</h3><p>{isHebrew ? "מוסיפים קטגוריות, מנות, מחירים, תיאורים ותמונות." : "Add categories, items, prices, descriptions and images."}</p></article>
           <article><div className="menu-home-step-number" style={{ ...menuAccentTextStyle, marginBottom: "36px", fontSize: "38px", fontWeight: 850, letterSpacing: "-0.04em", lineHeight: 1 }}>02</div><h3>{isHebrew ? "מתאימים למותג" : "Make it yours"}</h3><p>{isHebrew ? "מתאימים את השפה, התוכן והנראות למסעדה שלכם." : "Adjust the language, content and look to fit your restaurant."}</p></article>
