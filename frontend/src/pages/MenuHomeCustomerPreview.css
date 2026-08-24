@@ -2,7 +2,7 @@
    HOMEPAGE CUSTOMER MENU PREVIEW
 
    IMPORTANT:
-   This now uses the EXACT same phone + 390 × 844 screen
+   This uses the EXACT same phone + 390 × 844 screen
    structure as Menu Builder's Mobile View.
 
    We never scale the iframe/menu internally.
@@ -13,6 +13,8 @@
   position: relative;
   display: grid !important;
   place-items: center !important;
+  width: 100% !important;
+  max-width: 100% !important;
   min-height: 620px !important;
   overflow: visible !important;
 }
@@ -27,6 +29,7 @@
   position: relative;
   width: 287px;
   height: 605px;
+  max-width: 100%;
   flex: 0 0 auto;
 }
 
@@ -80,47 +83,67 @@
   }
 }
 
+/* On phones the preview should be a prominent part of the hero,
+   not a miniature desktop decoration. Keep the real 390 × 844
+   menu viewport and enlarge the complete physical phone. */
 @media (max-width: 680px) {
   .menu-home-exact-mobile-preview-host {
-    min-height: 560px !important;
+    min-height: 675px !important;
+    margin-top: 8px;
   }
 
   .menu-home-mobile-demo-stage {
-    width: 262px;
-    height: 553px;
+    width: 312px;
+    height: 657px;
   }
 
   .menu-home-mobile-demo-phone {
-    transform: scale(.64);
+    transform: scale(.76);
   }
 }
 
 @media (max-width: 500px) {
   .menu-home-exact-mobile-preview-host {
-    min-height: 535px !important;
+    min-height: 725px !important;
+    margin-top: 10px;
   }
 
   .menu-home-mobile-demo-stage {
-    width: 254px;
-    height: 536px;
+    width: 336px;
+    height: 709px;
   }
 
   .menu-home-mobile-demo-phone {
-    transform: scale(.62);
+    transform: scale(.82);
   }
 }
 
 @media (max-width: 380px) {
   .menu-home-exact-mobile-preview-host {
-    min-height: 510px !important;
+    min-height: 675px !important;
   }
 
   .menu-home-mobile-demo-stage {
-    width: 246px;
-    height: 519px;
+    width: 312px;
+    height: 657px;
   }
 
   .menu-home-mobile-demo-phone {
-    transform: scale(.6);
+    transform: scale(.76);
+  }
+}
+
+@media (max-width: 340px) {
+  .menu-home-exact-mobile-preview-host {
+    min-height: 620px !important;
+  }
+
+  .menu-home-mobile-demo-stage {
+    width: 287px;
+    height: 605px;
+  }
+
+  .menu-home-mobile-demo-phone {
+    transform: scale(.7);
   }
 }
