@@ -11,6 +11,7 @@ import { BeyondMenuRoute } from "./components/BeyondMenuPlatform";
 import BeyondLiveMenuDesignPortal from "./components/BeyondLiveMenuDesignPortal";
 import "./components/BeyondMenuPlatform.css";
 import "./components/BeyondLiveMenuDesign.css";
+import "./components/BeyondLiveMenuDesignMobilePatch.css";
 
 
 createRoot(document.getElementById('root')).render(
