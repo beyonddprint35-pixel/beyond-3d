@@ -68,6 +68,17 @@
   pointer-events: auto;
 }
 
+/* Keep the AIR-style expanding hover motion, but use BEYOND's
+   soft blush accent instead of the blue gradient. */
+.menu-home-secondary::before {
+  background: #FFF7F7;
+}
+
+.menu-home-secondary:hover {
+  color: #0d1b3a !important;
+  box-shadow: 0 14px 30px rgba(70, 57, 76, 0.12);
+}
+
 @media (max-width: 900px) {
   .menu-home-exact-mobile-preview-host {
     min-height: 590px !important;
