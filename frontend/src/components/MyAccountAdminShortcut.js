@@ -6,21 +6,13 @@ function hasAdminSettings(nav) {
   );
 }
 
-function syncAdminShortcut() {
-  const nav = document.querySelector(".account-nav");
+function findAdminSettingsButton(nav) {
+  return Array.from(nav.querySelectorAll("button")).find((button) =>
+    String(button.textContent || "").trim().includes("Admin Settings")
+  );
+}
 
-  if (!nav) return;
-
-  const existing = nav.querySelector(`.${SHORTCUT_CLASS}`);
-  const allowed = hasAdminSettings(nav);
-
-  if (!allowed) {
-    existing?.remove();
-    return;
-  }
-
-  if (existing) return;
-
+function makeShortcut() {
   const button = document.createElement("button");
   button.type = "button";
   button.className = SHORTCUT_CLASS;
@@ -32,18 +24,39 @@ function syncAdminShortcut() {
       <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
       <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
     </svg>
-    <span>Admin Dashboard</span>
-    <svg class="account-admin-dashboard-arrow" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M5 12h14"></path>
-      <path d="m13 6 6 6-6 6"></path>
-    </svg>
+    Admin Dashboard
   `;
 
   button.addEventListener("click", () => {
-    window.location.assign("/admin");
+    window.location.href = `${window.location.origin}/admin`;
   });
 
-  nav.appendChild(button);
+  return button;
+}
+
+function syncAdminShortcut() {
+  const nav = document.querySelector(".account-nav");
+  if (!nav) return;
+
+  let existing = nav.querySelector(`.${SHORTCUT_CLASS}`);
+  const allowed = hasAdminSettings(nav);
+
+  if (!allowed) {
+    existing?.remove();
+    return;
+  }
+
+  if (!existing) {
+    existing = makeShortcut();
+  }
+
+  // Keep it with the normal navigation items, directly before Admin Settings.
+  const adminSettings = findAdminSettingsButton(nav);
+  if (adminSettings && existing.nextElementSibling !== adminSettings) {
+    nav.insertBefore(existing, adminSettings);
+  } else if (!existing.isConnected) {
+    nav.appendChild(existing);
+  }
 }
 
 function startAdminShortcutObserver() {
