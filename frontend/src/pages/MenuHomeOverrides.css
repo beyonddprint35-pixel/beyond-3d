@@ -270,6 +270,8 @@
   gap: 6px;
   min-height: 40px;
   border-radius: 999px;
+  background: #6073f2;
+  color: #fff !important;
 }
 
 /* ---------- Figma phone hero ---------- */
@@ -501,8 +503,7 @@
 .menu-home.theme-dark .menu-home-theme-toggle,
 .menu-home.theme-dark .menu-home-language-toggle,
 .menu-home.theme-dark .menu-home-studio-button,
-.menu-home.theme-dark .menu-home-mobile-toggle,
-.menu-home.theme-dark .menu-home-login-refined {
+.menu-home.theme-dark .menu-home-mobile-toggle {
   border-color: var(--menu-border);
   background: rgba(16, 27, 44, 0.9);
   color: var(--menu-text);
