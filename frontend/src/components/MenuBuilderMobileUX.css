@@ -1,0 +1,638 @@
+/* ==========================================================
+   BEYOND MENU BUILDER — REAL MOBILE UX
+
+   This file intentionally affects only narrow browser widths.
+   Desktop/laptop Menu Studio and the 390x844 preview behavior
+   stay unchanged.
+   ========================================================== */
+
+@media (max-width: 700px) {
+  /* --------------------------------------------------------
+     BUILDER SHELL
+     -------------------------------------------------------- */
+  .menu-builder-unified .menu-builder-topbar {
+    min-height: 60px !important;
+    padding: 0 12px !important;
+    gap: 8px !important;
+  }
+
+  .menu-builder-unified .menu-builder-brand {
+    gap: 7px !important;
+  }
+
+  .menu-builder-unified .menu-builder-brand > img {
+    width: 29px !important;
+    height: 29px !important;
+  }
+
+  .menu-builder-unified .menu-builder-topbar-right,
+  .menu-builder-unified .menu-builder-unified-controls {
+    gap: 5px !important;
+  }
+
+  .menu-builder-unified .menu-builder-ui-language {
+    min-height: 34px !important;
+    padding: 2px !important;
+  }
+
+  .menu-builder-unified .menu-builder-ui-language button {
+    min-width: 31px !important;
+    height: 28px !important;
+    padding: 0 6px !important;
+    font-size: 10px !important;
+  }
+
+  .menu-builder-unified .menu-builder-theme-toggle {
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  .menu-builder-unified .menu-builder-workspace,
+  .menu-builder-unified .menu-builder-plans-page {
+    width: calc(100% - 20px) !important;
+    padding: 24px 0 64px !important;
+  }
+
+  /* --------------------------------------------------------
+     HERO — no more oversized/cropped headline on iPhone
+     -------------------------------------------------------- */
+  .menu-builder-unified .menu-builder-intro {
+    max-width: none !important;
+    margin-bottom: 20px !important;
+  }
+
+  .menu-builder-unified .menu-builder-intro > span {
+    font-size: 9px !important;
+    letter-spacing: .13em !important;
+  }
+
+  .menu-builder-unified .menu-builder-intro h1 {
+    margin: 9px 0 11px !important;
+    font-size: clamp(30px, 9.2vw, 38px) !important;
+    line-height: 1.04 !important;
+    letter-spacing: -.042em !important;
+    overflow-wrap: anywhere;
+  }
+
+  .menu-builder-unified[data-builder-language="he"] .menu-builder-intro h1 {
+    font-size: clamp(29px, 8.8vw, 37px) !important;
+    line-height: 1.08 !important;
+  }
+
+  .menu-builder-unified .menu-builder-intro p,
+  .menu-builder-unified .menu-builder-result-heading p,
+  .menu-builder-unified .menu-builder-plans-heading p {
+    font-size: 13px !important;
+    line-height: 1.55 !important;
+  }
+
+  /* --------------------------------------------------------
+     SAVED MODELS + LANGUAGES
+     -------------------------------------------------------- */
+  .menu-builder-unified .menu-builder-saved-draft {
+    margin: 0 0 14px !important;
+    padding: 12px 13px !important;
+    gap: 5px !important;
+    border-radius: 14px !important;
+  }
+
+  .menu-builder-unified .menu-project-switcher,
+  .menu-builder-unified .menu-language-selector {
+    border-radius: 16px !important;
+  }
+
+  .menu-builder-unified .menu-language-selector {
+    padding: 15px !important;
+  }
+
+  .menu-builder-unified .menu-language-selector-heading {
+    align-items: flex-start !important;
+    gap: 10px !important;
+  }
+
+  .menu-builder-unified .menu-language-icon {
+    width: 36px !important;
+    height: 36px !important;
+    flex: 0 0 36px !important;
+  }
+
+  .menu-builder-unified .menu-language-selector-heading h2 {
+    margin-top: 4px !important;
+    font-size: 21px !important;
+    line-height: 1.12 !important;
+  }
+
+  .menu-builder-unified .menu-language-selector-heading p {
+    margin-top: 5px !important;
+    font-size: 11.5px !important;
+    line-height: 1.45 !important;
+  }
+
+  .menu-builder-unified .menu-language-options {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+    margin-top: 14px !important;
+  }
+
+  .menu-builder-unified .menu-language-options button {
+    min-height: 54px !important;
+    padding: 0 13px !important;
+    border-radius: 12px !important;
+  }
+
+  .menu-builder-unified .menu-language-options strong {
+    font-size: 14px !important;
+  }
+
+  .menu-builder-unified .menu-language-options small {
+    font-size: 9px !important;
+  }
+
+  /* --------------------------------------------------------
+     SOURCE
+     -------------------------------------------------------- */
+  .menu-builder-unified .menu-builder-source-panel,
+  .menu-builder-unified .menu-builder-result {
+    padding: 14px !important;
+    border-radius: 17px !important;
+  }
+
+  .menu-builder-unified .menu-builder-source-heading,
+  .menu-builder-unified .menu-builder-result-heading {
+    gap: 12px !important;
+  }
+
+  .menu-builder-unified .menu-builder-source-heading > div:first-child,
+  .menu-builder-unified .menu-builder-result-heading > div:first-child {
+    column-gap: 9px !important;
+  }
+
+  .menu-builder-unified .menu-builder-source-heading > div:first-child::before,
+  .menu-builder-unified .menu-builder-result-heading > div:first-child::before {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 10px !important;
+    background-size: 18px 18px !important;
+  }
+
+  .menu-builder-unified .menu-builder-source-heading > div:first-child {
+    grid-template-columns: 36px minmax(0, 1fr) !important;
+  }
+
+  .menu-builder-unified[data-builder-language="he"] .menu-builder-source-heading > div:first-child {
+    grid-template-columns: minmax(0, 1fr) 36px !important;
+  }
+
+  .menu-builder-unified .menu-builder-result-heading > div:first-child {
+    grid-template-columns: 36px minmax(0, 1fr) !important;
+  }
+
+  .menu-builder-unified[data-builder-language="he"] .menu-builder-result-heading > div:first-child {
+    grid-template-columns: minmax(0, 1fr) 36px !important;
+  }
+
+  .menu-builder-unified .menu-builder-source-heading h2,
+  .menu-builder-unified .menu-builder-result-heading h2 {
+    font-size: 24px !important;
+    line-height: 1.08 !important;
+  }
+
+  .menu-builder-unified .menu-builder-source-heading > strong {
+    align-self: flex-start !important;
+    font-size: 10.5px !important;
+  }
+
+  .menu-builder-unified .menu-builder-source-grid {
+    margin-top: 17px !important;
+    gap: 10px !important;
+  }
+
+  .menu-builder-unified .menu-builder-upload-card,
+  .menu-builder-unified .menu-builder-text-card {
+    min-height: 0 !important;
+    border-radius: 14px !important;
+  }
+
+  .menu-builder-unified .menu-builder-upload-card {
+    padding: 20px 17px !important;
+  }
+
+  .menu-builder-unified .menu-builder-upload-card svg {
+    margin-bottom: 11px !important;
+  }
+
+  .menu-builder-unified .menu-builder-upload-card strong,
+  .menu-builder-unified .menu-builder-text-card strong {
+    font-size: 14px !important;
+  }
+
+  .menu-builder-unified .menu-builder-upload-card p {
+    margin: 7px 0 12px !important;
+    font-size: 11.5px !important;
+  }
+
+  .menu-builder-unified .menu-builder-text-card {
+    padding: 13px !important;
+    gap: 10px !important;
+  }
+
+  .menu-builder-unified .menu-builder-text-card textarea {
+    min-height: 128px !important;
+    padding: 13px !important;
+    border-radius: 11px !important;
+    font-size: 16px !important; /* prevents iOS focus zoom */
+    line-height: 1.5 !important;
+  }
+
+  .menu-builder-unified .menu-builder-generate-row {
+    margin-top: 17px !important;
+    padding-top: 16px !important;
+    gap: 13px !important;
+  }
+
+  .menu-builder-unified .menu-builder-generate-row strong {
+    font-size: 12px !important;
+  }
+
+  .menu-builder-unified .menu-builder-generate-row span {
+    font-size: 10.5px !important;
+    line-height: 1.45 !important;
+  }
+
+  .menu-builder-unified .menu-builder-main-button,
+  .menu-builder-unified .menu-builder-mobile-view-button {
+    min-height: 49px !important;
+    width: 100% !important;
+    font-size: 13px !important;
+  }
+
+  /* --------------------------------------------------------
+     MENU STUDIO ON THE BUILDER PAGE
+     -------------------------------------------------------- */
+  .menu-builder-unified .menu-builder-result {
+    margin-top: 20px !important;
+  }
+
+  .menu-builder-unified .menu-builder-result-heading {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .menu-builder-unified .menu-builder-result-heading p {
+    margin-top: 5px !important;
+  }
+
+  .menu-builder-unified .menu-builder-design-actions {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  .menu-builder-unified .menu-builder-branding-layout {
+    margin-top: 13px !important;
+    gap: 0 !important;
+  }
+
+  .menu-builder-unified .menu-brand-editor {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    border-radius: 15px !important;
+  }
+
+  .menu-builder-unified .menu-brand-editor-head {
+    min-height: 58px !important;
+    padding: 10px 12px !important;
+  }
+
+  .menu-builder-unified .menu-brand-editor-head h3 {
+    font-size: 20px !important;
+  }
+
+  .menu-builder-unified .menu-brand-tabs {
+    padding: 5px !important;
+    gap: 3px !important;
+  }
+
+  .menu-builder-unified .menu-brand-tabs button {
+    min-height: 38px !important;
+    min-width: 70px !important;
+    padding: 0 10px !important;
+    font-size: 11px !important;
+  }
+
+  .menu-builder-unified .menu-brand-tabs button:nth-child(2) {
+    min-width: 116px !important;
+  }
+
+  .menu-builder-unified .menu-brand-fit-row {
+    padding: 11px 12px !important;
+  }
+
+  .menu-builder-unified .menu-brand-fit-copy strong {
+    font-size: 12px !important;
+  }
+
+  .menu-builder-unified .menu-brand-fit-copy small {
+    font-size: 10px !important;
+    line-height: 1.4 !important;
+  }
+
+  .menu-builder-unified .menu-brand-editor-body {
+    padding: 10px !important;
+    overflow: visible !important;
+  }
+
+  .menu-builder-unified .menu-brand-layout-grid {
+    grid-template-columns: 1fr !important;
+    gap: 9px !important;
+  }
+
+  .menu-builder-unified .menu-brand-layout-grid > button {
+    grid-template-columns: 116px minmax(0, 1fr) !important;
+    align-items: center !important;
+    padding: 9px !important;
+    gap: 10px !important;
+  }
+
+  .menu-builder-unified .menu-layout-preview {
+    width: 116px !important;
+    height: 62px !important;
+    box-sizing: border-box !important;
+  }
+
+  .menu-builder-unified .menu-layout-copy strong {
+    font-size: 12px !important;
+  }
+
+  .menu-builder-unified .menu-layout-copy small {
+    font-size: 10px !important;
+    line-height: 1.35 !important;
+  }
+
+  .menu-builder-unified .menu-brand-field input,
+  .menu-builder-unified .menu-brand-field select,
+  .menu-builder-unified .menu-brand-color input[type="text"] {
+    font-size: 16px !important; /* prevent Safari auto zoom */
+  }
+
+  /* On an actual phone the inline desktop preview adds a very
+     long, cramped duplicate menu. The dedicated Mobile View is
+     the correct preview surface, so do not render the duplicate. */
+  .menu-builder-unified .menu-builder-live-preview {
+    display: none !important;
+  }
+
+  /* --------------------------------------------------------
+     PLANS / CHECKOUT
+     -------------------------------------------------------- */
+  .menu-builder-unified .menu-builder-plans-heading h1 {
+    font-size: 32px !important;
+    line-height: 1.05 !important;
+  }
+
+  .menu-builder-unified .menu-builder-billing-toggle {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .menu-builder-unified .menu-builder-billing-toggle button {
+    min-width: 0 !important;
+    flex: 1 !important;
+  }
+
+  .menu-builder-unified .menu-builder-plan-card {
+    min-height: 0 !important;
+    padding: 23px 18px !important;
+  }
+}
+
+
+/* ==========================================================
+   MOBILE VIEW OPENED ON A REAL PHONE
+
+   Do not put a fake phone inside a real phone. Use the actual
+   browser viewport for the customer preview. When Editor is
+   ON, Menu Studio becomes a bottom sheet over the live menu.
+   Editor OFF gives a clean full-screen customer preview.
+   ========================================================== */
+
+@media (max-width: 700px) {
+  body .mobile-menu-preview-overlay {
+    align-items: stretch !important;
+    justify-content: stretch !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    background: rgba(1, 7, 12, .72) !important;
+  }
+
+  body .mobile-menu-preview-stage-workspace {
+    position: relative !important;
+    width: 100% !important;
+    max-width: none !important;
+    height: 100dvh !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    gap: 0 !important;
+    transform: none !important;
+  }
+
+  body .mobile-menu-preview-top-workspace {
+    position: fixed !important;
+    z-index: 100 !important;
+    top: max(8px, env(safe-area-inset-top)) !important;
+    left: 8px !important;
+    right: 8px !important;
+    width: auto !important;
+    max-width: none !important;
+    min-height: 48px !important;
+    padding: 6px 7px 6px 11px !important;
+    box-sizing: border-box !important;
+    align-items: center !important;
+    gap: 8px !important;
+    border: 1px solid rgba(110, 166, 207, .24) !important;
+    border-radius: 16px !important;
+    background: rgba(4, 16, 24, .86) !important;
+    box-shadow: 0 12px 34px rgba(0, 0, 0, .24) !important;
+    backdrop-filter: blur(18px) !important;
+    -webkit-backdrop-filter: blur(18px) !important;
+  }
+
+  body .mobile-menu-preview-top-workspace > div:first-child {
+    min-width: 0 !important;
+    flex: 1 !important;
+  }
+
+  body .mobile-menu-preview-top-workspace > div:first-child > span {
+    display: none !important;
+  }
+
+  body .mobile-menu-preview-top-workspace > div:first-child > strong {
+    display: block !important;
+    max-width: 190px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    font-size: 11px !important;
+  }
+
+  body .mobile-menu-preview-top-workspace > .mobile-menu-preview-top-actions {
+    align-self: center !important;
+    flex-direction: row !important;
+    gap: 6px !important;
+  }
+
+  body .mobile-menu-editor-visibility-toggle {
+    width: 44px !important;
+    min-height: 36px !important;
+    padding: 0 !important;
+  }
+
+  body .mobile-menu-editor-toggle-label {
+    display: none !important;
+  }
+
+  body .mobile-menu-preview-close {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+    flex-basis: 36px !important;
+  }
+
+  body .mobile-menu-preview-workspace,
+  body .mobile-menu-preview-workspace.editor-hidden {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  body .mobile-menu-preview-phone-column {
+    width: 100% !important;
+    max-width: none !important;
+    height: 100% !important;
+    display: block !important;
+    transform: none !important;
+    margin: 0 !important;
+  }
+
+  body .mobile-menu-preview-phone {
+    width: 100% !important;
+    height: 100dvh !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  body .mobile-menu-preview-screen {
+    width: 100% !important;
+    height: 100dvh !important;
+    border-radius: 0 !important;
+  }
+
+  body .mobile-menu-preview-frame {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  body .mobile-menu-preview-buttons,
+  body .mobile-menu-preview-island,
+  body .mobile-menu-preview-info {
+    display: none !important;
+  }
+
+  body .mobile-menu-preview-editor-shell {
+    position: fixed !important;
+    z-index: 80 !important;
+    left: 8px !important;
+    right: 8px !important;
+    bottom: max(8px, env(safe-area-inset-bottom)) !important;
+    width: auto !important;
+    height: min(58dvh, 620px) !important;
+    max-height: calc(100dvh - 78px) !important;
+    min-height: 280px !important;
+    border-radius: 22px !important;
+    box-shadow: 0 22px 70px rgba(0, 0, 0, .58) !important;
+  }
+
+  body .mobile-menu-preview-editor-meta {
+    min-height: 56px !important;
+    padding: 10px 13px !important;
+  }
+
+  body .mobile-menu-preview-editor-meta span {
+    font-size: 9px !important;
+  }
+
+  body .mobile-menu-preview-editor-meta strong {
+    font-size: 15px !important;
+  }
+
+  body .mobile-menu-preview-editor-meta small {
+    max-width: 135px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    font-size: 10px !important;
+  }
+
+  body .mobile-menu-preview-editor-scroll {
+    padding: 7px !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body .mobile-menu-preview-editor-scroll .menu-brand-editor {
+    border-radius: 16px !important;
+  }
+
+  body .mobile-menu-preview-editor-scroll .menu-brand-tabs button,
+  body .mobile-menu-preview-editor-scroll .menu-brand-field input,
+  body .mobile-menu-preview-editor-scroll .menu-brand-field select {
+    font-size: 16px !important;
+  }
+
+  body .mobile-menu-preview-editor-scroll .menu-brand-tabs button {
+    min-width: 78px !important;
+    min-height: 42px !important;
+  }
+
+  body .mobile-menu-preview-editor-scroll .menu-brand-layout-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  body .mobile-menu-preview-editor-scroll .menu-brand-layout-grid > button {
+    grid-template-columns: 112px minmax(0, 1fr) !important;
+    align-items: center !important;
+  }
+
+  body .mobile-menu-preview-editor-scroll .menu-layout-preview {
+    width: 112px !important;
+    height: 58px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .menu-builder-unified .menu-builder-workspace,
+  .menu-builder-unified .menu-builder-plans-page {
+    width: calc(100% - 14px) !important;
+  }
+
+  .menu-builder-unified .menu-builder-source-panel,
+  .menu-builder-unified .menu-builder-result {
+    padding: 11px !important;
+  }
+
+  body .mobile-menu-preview-top-workspace > div:first-child > strong {
+    max-width: 150px !important;
+  }
+
+  body .mobile-menu-preview-editor-shell {
+    left: 5px !important;
+    right: 5px !important;
+    bottom: max(5px, env(safe-area-inset-bottom)) !important;
+  }
+}
