@@ -23,13 +23,22 @@
   box-shadow: 0 8px 22px rgba(55, 87, 180, 0.10);
 }
 
+/* The generic account nav gives every direct span a 6px counter style.
+   This span is a label, not a counter, so restore normal readable text. */
 .account-nav .account-admin-dashboard-shortcut > span {
   min-width: 0;
   flex: 1;
+  margin-left: 0;
+  color: currentColor;
+  font-size: 9px;
+  font-weight: 650;
+  line-height: 1.2;
   text-align: left;
+  white-space: nowrap;
 }
 
 .account-admin-dashboard-arrow {
+  flex: 0 0 auto;
   margin-left: auto;
   opacity: 0.58;
   transition: transform 160ms ease, opacity 160ms ease;
@@ -39,4 +48,11 @@
 .account-nav .account-admin-dashboard-shortcut:focus-visible .account-admin-dashboard-arrow {
   transform: translateX(2px);
   opacity: 0.9;
+}
+
+@media (max-width: 760px) {
+  .account-nav .account-admin-dashboard-shortcut > span {
+    display: inline !important;
+    font-size: 11px !important;
+  }
 }
