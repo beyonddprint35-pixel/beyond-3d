@@ -12,7 +12,6 @@ import {
   QrCode,
   Radio,
   Sparkles,
-  Smartphone,
   X,
 } from "lucide-react";
 
@@ -1167,20 +1166,26 @@ export default function MenuHome() {
             <h2>
               {isHebrew
                 ? "מהרעיון לשולחן בשלושה צעדים."
-                : "From idea to table in three steps."}
+                : "From idea to table in 3 steps."}
             </h2>
           </div>
         </div>
 
         <div className="menu-home-step-grid">
           <article>
-            <div className="menu-home-step-icon">
-              <MenuIcon size={22} />
-            </div>
-
-            <span>
+            <div
+              className="menu-home-step-number"
+              style={{
+                marginBottom: "36px",
+                color: "var(--menu-text)",
+                fontSize: "38px",
+                fontWeight: 850,
+                letterSpacing: "-0.04em",
+                lineHeight: 1,
+              }}
+            >
               01
-            </span>
+            </div>
 
             <h3>
               {isHebrew
@@ -1196,13 +1201,19 @@ export default function MenuHome() {
           </article>
 
           <article>
-            <div className="menu-home-step-icon">
-              <Languages size={22} />
-            </div>
-
-            <span>
+            <div
+              className="menu-home-step-number"
+              style={{
+                marginBottom: "36px",
+                color: "var(--menu-text)",
+                fontSize: "38px",
+                fontWeight: 850,
+                letterSpacing: "-0.04em",
+                lineHeight: 1,
+              }}
+            >
               02
-            </span>
+            </div>
 
             <h3>
               {isHebrew
@@ -1218,13 +1229,19 @@ export default function MenuHome() {
           </article>
 
           <article>
-            <div className="menu-home-step-icon">
-              <Smartphone size={22} />
-            </div>
-
-            <span>
+            <div
+              className="menu-home-step-number"
+              style={{
+                marginBottom: "36px",
+                color: "var(--menu-text)",
+                fontSize: "38px",
+                fontWeight: 850,
+                letterSpacing: "-0.04em",
+                lineHeight: 1,
+              }}
+            >
               03
-            </span>
+            </div>
 
             <h3>
               {isHebrew
