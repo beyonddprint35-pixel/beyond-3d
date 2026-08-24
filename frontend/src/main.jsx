@@ -8,7 +8,9 @@ import './index.css'
 import App from './App.jsx'
 // BEYOND_MENU_PLATFORM_PHASE1
 import { BeyondMenuRoute } from "./components/BeyondMenuPlatform";
+import BeyondLiveMenuDesignPortal from "./components/BeyondLiveMenuDesignPortal";
 import "./components/BeyondMenuPlatform.css";
+import "./components/BeyondLiveMenuDesign.css";
 
 
 createRoot(document.getElementById('root')).render(
@@ -19,6 +21,8 @@ createRoot(document.getElementById('root')).render(
       <BeyondMenuRoute
         fallback={<App />}
       />
+
+      <BeyondLiveMenuDesignPortal />
     </BeyondLanguageProvider>
   </StrictMode>,
 )
