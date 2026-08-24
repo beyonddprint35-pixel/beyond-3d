@@ -1,0 +1,289 @@
+/* Final Admin dashboard polish. Loaded after AdminTheme.css. */
+
+body.beyond-admin-active .admin-topbar.beyond-admin-polish-ready {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+body.beyond-admin-active .admin-topbar.beyond-admin-polish-ready > div:first-child {
+  margin-right: auto;
+}
+
+body.beyond-admin-active .admin-home-button,
+body.beyond-admin-active .admin-logout-button {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 13px;
+  border: 1px solid var(--admin-border) !important;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--admin-surface) 82%, transparent) !important;
+  color: var(--admin-text) !important;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+body.beyond-admin-active .admin-home-button {
+  margin-left: auto;
+}
+
+body.beyond-admin-active .admin-theme-toggle,
+body.beyond-admin-active .admin-logout-button {
+  margin-left: 0 !important;
+}
+
+body.beyond-admin-active .admin-home-button:hover,
+body.beyond-admin-active .admin-logout-button:hover {
+  background: var(--admin-surface) !important;
+  border-color: color-mix(in srgb, var(--admin-blue) 30%, var(--admin-border)) !important;
+}
+
+body.beyond-admin-active .admin-home-button svg,
+body.beyond-admin-active .admin-logout-button svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+}
+
+/* Financial cards: never allow large currency values to escape their card. */
+body.beyond-admin-active .admin-financial-stats {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}
+
+body.beyond-admin-active .admin-financial-stats > .order-detail-card {
+  min-width: 0;
+  overflow: hidden;
+}
+
+body.beyond-admin-active .admin-financial-stats > .order-detail-card strong {
+  max-width: 100%;
+  display: block;
+  font-size: clamp(19px, 2.1vw, 27px) !important;
+  line-height: 1.08;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Delete order */
+body.beyond-admin-active .admin-delete-order-button {
+  min-height: 40px;
+  padding: 0 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid color-mix(in srgb, var(--admin-danger) 24%, var(--admin-border));
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--admin-danger) 7%, var(--admin-surface));
+  color: var(--admin-danger);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+body.beyond-admin-active .admin-delete-order-button:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--admin-danger) 48%, var(--admin-border));
+  background: color-mix(in srgb, var(--admin-danger) 12%, var(--admin-surface));
+}
+
+body.beyond-admin-active .admin-delete-order-button:disabled {
+  opacity: .55;
+  cursor: wait;
+}
+
+body.beyond-admin-active .admin-delete-order-button svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* Menu Pricing: compact mobile editor */
+@media (max-width: 640px) {
+  body.beyond-admin-active .admin-pricing-settings {
+    margin-bottom: 16px;
+    padding: 12px;
+    border-radius: 16px;
+  }
+
+  body.beyond-admin-active .admin-pricing-settings-head {
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  body.beyond-admin-active .admin-pricing-settings-head h2 {
+    margin: 2px 0 4px;
+    font-size: 21px;
+    line-height: 1.1;
+  }
+
+  body.beyond-admin-active .admin-pricing-settings-head p {
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  body.beyond-admin-active .admin-pricing-settings-head .primary-button,
+  body.beyond-admin-active .admin-pricing-settings-head .secondary-button {
+    min-height: 38px;
+    padding: 0 12px;
+    font-size: 12px;
+  }
+
+  body.beyond-admin-active .admin-pricing-copy-grid,
+  body.beyond-admin-active .admin-pricing-fields {
+    gap: 8px;
+  }
+
+  body.beyond-admin-active .admin-pricing-copy-grid {
+    margin-bottom: 12px;
+  }
+
+  body.beyond-admin-active .admin-pricing-settings label {
+    gap: 4px;
+  }
+
+  body.beyond-admin-active .admin-pricing-settings label > span {
+    font-size: 10px;
+  }
+
+  body.beyond-admin-active .admin-pricing-settings input[type="text"],
+  body.beyond-admin-active .admin-pricing-settings input:not([type]),
+  body.beyond-admin-active .admin-pricing-settings textarea {
+    min-height: 38px;
+    padding: 8px 10px;
+    border-radius: 9px;
+    font-size: 13px;
+  }
+
+  body.beyond-admin-active .admin-pricing-settings textarea {
+    min-height: 54px;
+  }
+
+  body.beyond-admin-active .admin-pricing-plans {
+    gap: 10px;
+  }
+
+  body.beyond-admin-active .admin-pricing-plan {
+    padding: 12px;
+    border-radius: 14px;
+  }
+
+  body.beyond-admin-active .admin-pricing-plan-title {
+    margin-bottom: 10px;
+  }
+
+  body.beyond-admin-active .admin-pricing-plan-title h3 {
+    font-size: 18px;
+  }
+
+  body.beyond-admin-active .admin-pricing-feature-head {
+    margin: 12px 0 7px;
+  }
+
+  body.beyond-admin-active .admin-pricing-feature-list {
+    gap: 6px;
+  }
+
+  body.beyond-admin-active .admin-pricing-feature-row {
+    gap: 6px;
+  }
+
+  body.beyond-admin-active .admin-pricing-feature-row button {
+    width: 34px;
+    height: 34px;
+  }
+
+  /* Three top-bar actions remain on the same row as the logo. */
+  body.beyond-admin-active .admin-topbar.beyond-admin-polish-ready {
+    min-height: 66px;
+    margin-bottom: 24px;
+    padding-inline: 12px;
+    gap: 6px;
+  }
+
+  body.beyond-admin-active .admin-topbar.beyond-admin-polish-ready > div:first-child span {
+    display: none;
+  }
+
+  body.beyond-admin-active .admin-home-button,
+  body.beyond-admin-active .admin-theme-toggle,
+  body.beyond-admin-active .admin-logout-button {
+    width: 38px;
+    min-width: 38px;
+    height: 38px;
+    min-height: 38px;
+    padding: 0;
+    border-radius: 50%;
+  }
+
+  body.beyond-admin-active .admin-home-button span,
+  body.beyond-admin-active .admin-logout-button span {
+    display: none;
+  }
+
+  body.beyond-admin-active .admin-home-button svg,
+  body.beyond-admin-active .admin-theme-toggle svg,
+  body.beyond-admin-active .admin-logout-button svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  body.beyond-admin-active .admin-financial-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    margin-bottom: 18px !important;
+  }
+
+  body.beyond-admin-active .admin-financial-stats > .order-detail-card {
+    padding: 13px 11px !important;
+    border-radius: 14px !important;
+  }
+
+  body.beyond-admin-active .admin-financial-stats > .order-detail-card .admin-label {
+    display: block;
+    min-height: 24px;
+    font-size: 8px !important;
+    line-height: 1.2;
+  }
+
+  body.beyond-admin-active .admin-financial-stats > .order-detail-card strong {
+    margin-top: 4px;
+    font-size: clamp(18px, 6.2vw, 23px) !important;
+    letter-spacing: -.035em;
+  }
+
+  body.beyond-admin-active .admin-order-card {
+    position: relative;
+    min-width: 0;
+  }
+
+  body.beyond-admin-active .admin-order-card > * {
+    min-width: 0;
+  }
+
+  body.beyond-admin-active .admin-view-button,
+  body.beyond-admin-active .admin-delete-order-button {
+    min-height: 38px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 390px) {
+  body.beyond-admin-active .admin-topbar.beyond-admin-polish-ready {
+    padding-inline: 8px;
+  }
+
+  body.beyond-admin-active .admin-home-button,
+  body.beyond-admin-active .admin-theme-toggle,
+  body.beyond-admin-active .admin-logout-button {
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    min-height: 36px;
+  }
+}
