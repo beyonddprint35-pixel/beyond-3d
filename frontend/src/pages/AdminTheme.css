@@ -486,6 +486,17 @@ html[data-beyond-theme="dark"] body.beyond-admin-active .admin-promo-email-serve
     padding-inline: 12px;
   }
 
+  body.beyond-admin-active .admin-topbar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+  }
+
+  body.beyond-admin-active .admin-topbar > div:first-child {
+    flex: 0 1 auto;
+  }
+
   body.beyond-admin-active .admin-topbar > div:first-child > span {
     display: none;
   }
