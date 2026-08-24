@@ -350,7 +350,7 @@ export default function MenuHomeRefined() {
       <section className="menu-home-hero" id="product">
         <div className="menu-home-hero-copy">
           <div className="menu-home-kicker"><Sparkles size={15} />{isHebrew ? "הדרך הפשוטה לתפריט דיגיטלי" : "THE SIMPLE WAY TO GO DIGITAL"}</div>
-          <h1>{isHebrew ? <>יוצרים תפריט דיגיטלי<span>בדקות.</span></> : <>Create your digital menu with <span style={{ display: "inline", marginTop: 0, background: "none", color: "#6073f2" }}>BEYOND AI</span> studio<span style={{ background: "none", color: "#FFF7F7" }}>in minutes.</span></>}</h1>
+          <h1>{isHebrew ? <>יוצרים תפריט דיגיטלי<span>בדקות.</span></> : <>Create your digital menu<span>in minutes.</span></>}</h1>
           <p>{isHebrew ? "בנו, עדכנו ושתפו את תפריט המסעדה ממקום אחד. QR, NFC, מספר שפות ועדכונים מיידיים — בלי אפליקציה ללקוח." : "Build, update and share your restaurant menu from one place. QR, NFC, multiple languages and instant updates — with no app for your customers."}</p>
           <div className="menu-home-hero-actions">
             <button type="button" className="menu-home-primary" onClick={handleStartMenu}>{isHebrew ? "יצירת תפריט בחינם" : "Create My Menu Free"}<ArrowRight size={18} /></button>
