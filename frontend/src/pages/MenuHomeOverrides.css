@@ -267,11 +267,11 @@
   }
 
   .menu-home-account-figma:hover {
-    background: #fff;
+    background: #6073f2;
   }
 
   .menu-home-account-figma .menu-home-account-name {
-    color: var(--menu-text);
+    color: #fff !important;
     font-size: 12px;
     font-weight: 760;
   }
