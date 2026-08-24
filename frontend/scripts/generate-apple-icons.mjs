@@ -6,11 +6,10 @@ import { fileURLToPath } from "node:url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const publicDir = path.resolve(__dirname, "../public");
 const sourcePath = path.join(publicDir, "beyond-logo.png");
-const darkPath = path.join(publicDir, "beyond-apple-dark-v2.png");
-const lightPath = path.join(publicDir, "beyond-apple-light-v2.png");
+const homeIconPath = path.join(publicDir, "beyond-home-icon-original-v1.png");
 
 const PNG_SIGNATURE = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
-const LIGHT_MODE_BACKGROUND = [6, 19, 31];
+const HOME_SCREEN_BACKGROUND = [6, 19, 31];
 
 function crc32(buffer) {
   let crc = 0xffffffff;
@@ -43,7 +42,9 @@ function paeth(a, b, c) {
 }
 
 function parsePng(buffer) {
-  if (!buffer.subarray(0, 8).equals(PNG_SIGNATURE)) throw new Error("Source logo is not a PNG file.");
+  if (!buffer.subarray(0, 8).equals(PNG_SIGNATURE)) {
+    throw new Error("Source logo is not a PNG file.");
+  }
 
   let offset = 8;
   let ihdr;
@@ -59,7 +60,9 @@ function parsePng(buffer) {
     if (type === "IEND") break;
   }
 
-  if (!ihdr || !idat.length) throw new Error("PNG is missing IHDR or IDAT data.");
+  if (!ihdr || !idat.length) {
+    throw new Error("PNG is missing IHDR or IDAT data.");
+  }
 
   const width = ihdr.readUInt32BE(0);
   const height = ihdr.readUInt32BE(4);
@@ -107,10 +110,10 @@ function parsePng(buffer) {
   return { width, height, colorType, channels, pixels };
 }
 
-function compositeOnDarkBackground(parsed) {
+function compositeOriginalLogoOnDarkBackground(parsed) {
   const { width, height, colorType, channels, pixels } = parsed;
   const rgba = Buffer.alloc(width * height * 4);
-  const [bgR, bgG, bgB] = LIGHT_MODE_BACKGROUND;
+  const [bgR, bgG, bgB] = HOME_SCREEN_BACKGROUND;
 
   for (let i = 0, out = 0; i < pixels.length; i += channels, out += 4) {
     let r;
@@ -161,13 +164,15 @@ function encodeRgbaPng(width, height, rgba) {
 
 const original = fs.readFileSync(sourcePath);
 const parsed = parsePng(original);
-const lightPixels = compositeOnDarkBackground(parsed);
+const iconPixels = compositeOriginalLogoOnDarkBackground(parsed);
 
-// Dark install: byte-for-byte original logo asset. No scaling, crop or rewrite.
-fs.writeFileSync(darkPath, original);
+// IMPORTANT: the original Beyond logo pixels and canvas are never resized,
+// cropped, stretched, or replaced. We only fill its transparent background.
+fs.writeFileSync(
+  homeIconPath,
+  encodeRgbaPng(parsed.width, parsed.height, iconPixels)
+);
 
-// Light install: same source pixels/canvas; only transparent pixels are composited
-// onto the Beyond navy background. Geometry and logo proportions are untouched.
-fs.writeFileSync(lightPath, encodeRgbaPng(parsed.width, parsed.height, lightPixels));
-
-console.log(`Generated Apple icons from ${parsed.width}x${parsed.height} source without resizing or changing proportions.`);
+console.log(
+  `Generated ${path.basename(homeIconPath)} from the original ${parsed.width}x${parsed.height} Beyond logo without changing its proportions.`
+);
