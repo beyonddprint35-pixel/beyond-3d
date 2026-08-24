@@ -3,11 +3,25 @@
 body.beyond-admin-active .admin-topbar.beyond-admin-polish-ready {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
+  gap: 18px;
 }
 
 body.beyond-admin-active .admin-topbar.beyond-admin-polish-ready > div:first-child {
-  margin-right: auto;
+  min-width: 0;
+  margin-right: 0 !important;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+body.beyond-admin-active .admin-topbar-actions-group {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex: 0 0 auto;
 }
 
 body.beyond-admin-active .admin-home-button,
@@ -17,31 +31,33 @@ body.beyond-admin-active .admin-logout-button {
   align-items: center;
   justify-content: center;
   gap: 7px;
-  padding: 0 13px;
+  padding: 0 14px;
   border: 1px solid var(--admin-border) !important;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--admin-surface) 82%, transparent) !important;
+  background: color-mix(in srgb, var(--admin-surface) 88%, transparent) !important;
   color: var(--admin-text) !important;
+  box-shadow: none !important;
   font: inherit;
   font-size: 12px;
   font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
   cursor: pointer;
   white-space: nowrap;
 }
 
-body.beyond-admin-active .admin-home-button {
-  margin-left: auto;
-}
-
 body.beyond-admin-active .admin-theme-toggle,
-body.beyond-admin-active .admin-logout-button {
+body.beyond-admin-active .admin-logout-button,
+body.beyond-admin-active .admin-home-button {
   margin-left: 0 !important;
 }
 
 body.beyond-admin-active .admin-home-button:hover,
-body.beyond-admin-active .admin-logout-button:hover {
+body.beyond-admin-active .admin-logout-button:hover,
+body.beyond-admin-active .admin-theme-toggle:hover {
   background: var(--admin-surface) !important;
-  border-color: color-mix(in srgb, var(--admin-blue) 30%, var(--admin-border)) !important;
+  border-color: color-mix(in srgb, var(--admin-blue) 32%, var(--admin-border)) !important;
+  transform: translateY(-1px);
 }
 
 body.beyond-admin-active .admin-home-button svg,
@@ -198,16 +214,26 @@ body.beyond-admin-active .admin-delete-order-button svg {
     height: 34px;
   }
 
-  /* Three top-bar actions remain on the same row as the logo. */
+  /* Homepage-like admin navbar: BEYOND left, three actions right. */
   body.beyond-admin-active .admin-topbar.beyond-admin-polish-ready {
     min-height: 66px;
     margin-bottom: 24px;
     padding-inline: 12px;
-    gap: 6px;
+    gap: 10px;
   }
 
-  body.beyond-admin-active .admin-topbar.beyond-admin-polish-ready > div:first-child span {
+  body.beyond-admin-active .admin-topbar.beyond-admin-polish-ready > div:first-child {
+    flex: 1 1 auto;
+    gap: 0;
+  }
+
+  body.beyond-admin-active .admin-topbar.beyond-admin-polish-ready > div:first-child > span {
     display: none;
+  }
+
+  body.beyond-admin-active .admin-topbar-actions-group {
+    margin-left: auto;
+    gap: 6px;
   }
 
   body.beyond-admin-active .admin-home-button,
