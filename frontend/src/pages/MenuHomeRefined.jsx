@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import {
   ArrowRight,
   Check,
-  ChevronDown,
   Languages,
   Menu as MenuIcon,
   MessageCircle,
@@ -139,7 +138,6 @@ function AccessPreview({ isHebrew }) {
 export default function MenuHomeRefined() {
   const { language, isHebrew, toggleLanguage } = useBeyondLanguage();
   const [navOpen, setNavOpen] = useState(false);
-  const [languageOpen, setLanguageOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [authInitialMode, setAuthInitialMode] = useState("login");
   const [accountOpen, setAccountOpen] = useState(false);
@@ -277,7 +275,6 @@ export default function MenuHomeRefined() {
   }
   function selectLanguage(nextLanguage) {
     if (nextLanguage !== language) toggleLanguage();
-    setLanguageOpen(false);
   }
 
   const accountName = profile?.full_name || profile?.email || session?.user?.user_metadata?.full_name || session?.user?.email || "Customer";
@@ -309,15 +306,10 @@ export default function MenuHomeRefined() {
 
         <div className="menu-home-nav-actions">
           <div className="menu-home-language-wrap">
-            <button type="button" className="menu-home-language menu-home-language-figma" onClick={() => setLanguageOpen(current => !current)} aria-expanded={languageOpen}>
-              <span>{language === "en" ? "EN" : "עב"}</span><ChevronDown size={13} />
-            </button>
-            {languageOpen && (
-              <div className="menu-home-language-menu">
-                <button type="button" className={language === "en" ? "active" : ""} onClick={() => selectLanguage("en")}><span>EN</span><small>English</small></button>
-                <button type="button" className={language === "he" ? "active" : ""} onClick={() => selectLanguage("he")}><span>עב</span><small>עברית</small></button>
-              </div>
-            )}
+            <div className="menu-home-language-toggle" role="group" aria-label={isHebrew ? "בחירת שפה" : "Choose language"}>
+              <button type="button" className={language === "en" ? "active" : ""} onClick={() => selectLanguage("en")} aria-pressed={language === "en"}>EN</button>
+              <button type="button" className={language === "he" ? "active" : ""} onClick={() => selectLanguage("he")} aria-pressed={language === "he"}>עב</button>
+            </div>
           </div>
 
           <button type="button" className="menu-home-theme-toggle" onClick={() => setTheme(current => current === "light" ? "dark" : "light")} aria-label={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}>
