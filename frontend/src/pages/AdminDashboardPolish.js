@@ -1,14 +1,15 @@
 const ADMIN_POLISH_CLASS = "beyond-admin-polish-ready";
+const ACTION_GROUP_CLASS = "admin-topbar-actions-group";
 const HOME_BUTTON_CLASS = "admin-home-button";
 const DELETE_BUTTON_CLASS = "admin-delete-order-button";
 
 function makeHomeButton() {
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = HOME_BUTTON_CLASS;
-  button.setAttribute("aria-label", "Back to home page");
-  button.setAttribute("title", "Home");
-  button.innerHTML = `
+  const link = document.createElement("a");
+  link.className = HOME_BUTTON_CLASS;
+  link.href = `${window.location.origin}/`;
+  link.setAttribute("aria-label", "Back to BEYOND home page");
+  link.setAttribute("title", "Home");
+  link.innerHTML = `
     <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
       <path d="M3 11.5 12 4l9 7.5"></path>
       <path d="M5.5 10.5V20h13v-9.5"></path>
@@ -16,10 +17,7 @@ function makeHomeButton() {
     </svg>
     <span>Home</span>
   `;
-  button.addEventListener("click", () => {
-    window.location.assign("/");
-  });
-  return button;
+  return link;
 }
 
 function decorateLogout(button) {
@@ -37,22 +35,25 @@ function decorateLogout(button) {
   `;
 }
 
-function actionsAreAlreadyLast(topbar, actions) {
-  const children = Array.from(topbar.children);
-  const existingActions = actions.filter(Boolean);
-  if (!existingActions.length || existingActions.length > children.length) return false;
-  const tail = children.slice(-existingActions.length);
-  return existingActions.every((node, index) => tail[index] === node);
+function ensureActionGroup(topbar) {
+  let group = topbar.querySelector(`.${ACTION_GROUP_CLASS}`);
+  if (!group) {
+    group = document.createElement("div");
+    group.className = ACTION_GROUP_CLASS;
+    topbar.appendChild(group);
+  }
+  return group;
 }
 
 function syncTopbar() {
   const topbar = document.querySelector(".admin-topbar");
   if (!topbar) return;
 
+  const group = ensureActionGroup(topbar);
+
   let home = topbar.querySelector(`.${HOME_BUTTON_CLASS}`);
   if (!home) {
     home = makeHomeButton();
-    topbar.appendChild(home);
   }
 
   const theme = topbar.querySelector(".admin-theme-toggle");
@@ -60,8 +61,19 @@ function syncTopbar() {
   decorateLogout(logout);
 
   const actions = [home, theme, logout].filter(Boolean);
-  if (!actionsAreAlreadyLast(topbar, actions)) {
-    actions.forEach((node) => topbar.appendChild(node));
+  actions.forEach((action) => {
+    if (action.parentElement !== group) {
+      group.appendChild(action);
+    }
+  });
+
+  const groupChildren = Array.from(group.children);
+  const alreadyOrdered =
+    groupChildren.length === actions.length &&
+    actions.every((action, index) => groupChildren[index] === action);
+
+  if (!alreadyOrdered) {
+    actions.forEach((action) => group.appendChild(action));
   }
 
   if (!topbar.classList.contains(ADMIN_POLISH_CLASS)) {
