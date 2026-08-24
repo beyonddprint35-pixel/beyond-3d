@@ -375,7 +375,7 @@ export default function MenuHomeRefined() {
       <section className="menu-home-studio-section">
         <div className="menu-home-studio-copy">
           <div className="menu-home-kicker"><PanelsTopLeft size={15} />MENU MANAGEMENT</div>
-          <h2>{isHebrew ? "כל מה שצריך כדי לנהל תפריט. במקום אחד." : "Everything you need to manage your menu. In one place."}</h2>
+          <h2>{isHebrew ? "כל מה שצריך כדי לנהל תפריט. במקום אחד." : <>Everything you need to manage <span style={{ color: "#6073f2" }}>your menu</span>. In one place.</>}</h2>
           <p>{isHebrew ? "שינוי מחיר, הוספת מנה או עדכון תיאור לא צריכים לחכות להדפסה מחדש. עורכים פעם אחת והשינוי מתעדכן בתפריט." : "Changing a price, adding an item or updating a description should not require a reprint. Edit once and your menu updates."}</p>
           <div className="menu-home-feature-list"><span><Check size={16} />{isHebrew ? "עריכת מחירים ומנות" : "Edit prices and items"}</span><span><Check size={16} />{isHebrew ? "קטגוריות מסודרות" : "Organized categories"}</span><span><Check size={16} />{isHebrew ? "מספר שפות" : "Multiple languages"}</span><span><Check size={16} />{isHebrew ? "תצוגה מקדימה בזמן אמת" : "Live preview"}</span></div>
         </div>
