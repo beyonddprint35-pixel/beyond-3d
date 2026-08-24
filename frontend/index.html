@@ -10,10 +10,28 @@
     />
 
     <link
+      id="beyond-apple-touch-icon"
       rel="apple-touch-icon"
       sizes="180x180"
-      href="/beyond-logo-email-v2.png?v=4"
+      href="/beyond-apple-light.png?v=6"
     />
+
+    <script>
+      (() => {
+        const media = window.matchMedia("(prefers-color-scheme: dark)");
+        const updateAppleIcon = () => {
+          const icon = document.getElementById("beyond-apple-touch-icon");
+          if (!icon) return;
+          icon.href = media.matches
+            ? "/beyond-apple-dark.png?v=6"
+            : "/beyond-apple-light.png?v=6";
+        };
+        updateAppleIcon();
+        if (typeof media.addEventListener === "function") {
+          media.addEventListener("change", updateAppleIcon);
+        }
+      })();
+    </script>
 
     <meta
       name="apple-mobile-web-app-title"
