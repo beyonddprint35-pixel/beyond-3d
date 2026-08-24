@@ -1,0 +1,21 @@
+/* Activated Menu Studio now has four actions:
+   Settings / Preview / Publish / Design your live menu.
+   Use a 2x2 mobile dock instead of squeezing four tiny columns. */
+
+@media (max-width: 760px), (hover: none) and (pointer: coarse) {
+  .bm-owner-dashboard {
+    padding-bottom: calc(152px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .bm-owner-dashboard .bm-owner-site-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .bm-owner-dashboard .bm-owner-site-actions .bm-owner-live-design-trigger {
+    min-width: 0 !important;
+    width: 100% !important;
+    font-size: 10px !important;
+    line-height: 1.15 !important;
+    white-space: normal !important;
+  }
+}
