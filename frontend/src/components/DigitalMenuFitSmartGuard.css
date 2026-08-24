@@ -1,0 +1,64 @@
+/* ==========================================================
+   SMART FIT TO VIEW — MENU STUDIO GUIDANCE
+
+   This message appears only inside the editing workspace when
+   Fit to View is ON but the active mobile category has too many
+   rows to stretch cleanly. It never appears in the customer menu.
+   ========================================================== */
+
+.menu-fit-smart-advice {
+  margin: 0;
+  padding: 10px 12px;
+  display: grid;
+  gap: 3px;
+  border-bottom: 1px solid rgba(180, 128, 38, .22);
+  background: rgba(245, 180, 55, .10);
+  color: #77551b;
+  text-align: left;
+}
+
+.menu-fit-smart-advice strong {
+  font-size: 10.5px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.menu-fit-smart-advice span {
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1.45;
+  opacity: .92;
+}
+
+.menu-fit-smart-advice[dir="rtl"] {
+  text-align: right;
+}
+
+.menu-builder-unified.theme-dark .menu-fit-smart-advice,
+.mobile-menu-preview-editor-shell .menu-fit-smart-advice {
+  border-bottom-color: rgba(229, 174, 73, .20);
+  background: rgba(205, 145, 35, .10);
+  color: #e2bd74;
+}
+
+.mobile-menu-preview-editor-shell .menu-fit-smart-advice strong {
+  font-size: 12px;
+}
+
+.mobile-menu-preview-editor-shell .menu-fit-smart-advice span {
+  font-size: 10.5px;
+}
+
+@media (max-width: 700px) {
+  .mobile-menu-preview-editor-shell .menu-fit-smart-advice {
+    padding: 10px 11px;
+  }
+
+  .mobile-menu-preview-editor-shell .menu-fit-smart-advice strong {
+    font-size: 13px;
+  }
+
+  .mobile-menu-preview-editor-shell .menu-fit-smart-advice span {
+    font-size: 11.5px;
+  }
+}
