@@ -36,6 +36,7 @@ import "./components/MenuBuilderMobileUX.css";
 import "./components/MenuBuilderMobileOverflowFix.css";
 import "./components/DigitalMenuFitSmartGuard.js";
 import "./components/DigitalMenuFitSmartGuard.css";
+import "./pages/MenuHomeMobilePhoneFrameFix.css";
 
 function App() {
   return (
