@@ -29,6 +29,13 @@ import beyondLogo from "../assets/beyond-logo-transparent.png";
 
 import "./MenuHome.css";
 
+const menuAccentTextStyle = {
+  background: "linear-gradient(100deg, #3975ec, #6073f2)",
+  WebkitBackgroundClip: "text",
+  backgroundClip: "text",
+  color: "transparent",
+};
+
 function BeyondPhonePreview({ isHebrew }) {
   return (
     <div className="menu-home-figma-phone" aria-label={isHebrew ? "תצוגת תפריט BEYOND" : "BEYOND menu preview"}>
@@ -353,11 +360,11 @@ export default function MenuHomeRefined() {
       </section>
 
       <section className="menu-home-how" id="how-it-works">
-        <div className="menu-home-section-heading"><span>01</span><div><small>{isHebrew ? "איך זה עובד" : "HOW IT WORKS"}</small><h2>{isHebrew ? "מהרעיון לשולחן בשלושה צעדים." : "From idea to table in 3 steps."}</h2></div></div>
+        <div className="menu-home-section-heading"><span>01</span><div><small>{isHebrew ? "איך זה עובד" : "HOW IT WORKS"}</small><h2 style={menuAccentTextStyle}>{isHebrew ? "מהרעיון לשולחן בשלושה צעדים." : "From idea to table in 3 steps."}</h2></div></div>
         <div className="menu-home-step-grid">
-          <article><div className="menu-home-step-number" style={{ marginBottom: "36px", color: "var(--menu-text)", fontSize: "38px", fontWeight: 850, letterSpacing: "-0.04em", lineHeight: 1 }}>01</div><h3>{isHebrew ? "יוצרים את התפריט" : "Create your menu"}</h3><p>{isHebrew ? "מוסיפים קטגוריות, מנות, מחירים, תיאורים ותמונות." : "Add categories, items, prices, descriptions and images."}</p></article>
-          <article><div className="menu-home-step-number" style={{ marginBottom: "36px", color: "var(--menu-text)", fontSize: "38px", fontWeight: 850, letterSpacing: "-0.04em", lineHeight: 1 }}>02</div><h3>{isHebrew ? "מתאימים למותג" : "Make it yours"}</h3><p>{isHebrew ? "מתאימים את השפה, התוכן והנראות למסעדה שלכם." : "Adjust the language, content and look to fit your restaurant."}</p></article>
-          <article><div className="menu-home-step-number" style={{ marginBottom: "36px", color: "var(--menu-text)", fontSize: "38px", fontWeight: 850, letterSpacing: "-0.04em", lineHeight: 1 }}>03</div><h3>{isHebrew ? "משתפים" : "Share it"}</h3><p>{isHebrew ? "הלקוחות סורקים QR או מצמידים את הטלפון ל-NFC והתפריט נפתח." : "Customers scan the QR or tap NFC and your menu opens instantly."}</p></article>
+          <article><div className="menu-home-step-number" style={{ ...menuAccentTextStyle, marginBottom: "36px", fontSize: "38px", fontWeight: 850, letterSpacing: "-0.04em", lineHeight: 1 }}>01</div><h3>{isHebrew ? "יוצרים את התפריט" : "Create your menu"}</h3><p>{isHebrew ? "מוסיפים קטגוריות, מנות, מחירים, תיאורים ותמונות." : "Add categories, items, prices, descriptions and images."}</p></article>
+          <article><div className="menu-home-step-number" style={{ ...menuAccentTextStyle, marginBottom: "36px", fontSize: "38px", fontWeight: 850, letterSpacing: "-0.04em", lineHeight: 1 }}>02</div><h3>{isHebrew ? "מתאימים למותג" : "Make it yours"}</h3><p>{isHebrew ? "מתאימים את השפה, התוכן והנראות למסעדה שלכם." : "Adjust the language, content and look to fit your restaurant."}</p></article>
+          <article><div className="menu-home-step-number" style={{ ...menuAccentTextStyle, marginBottom: "36px", fontSize: "38px", fontWeight: 850, letterSpacing: "-0.04em", lineHeight: 1 }}>03</div><h3>{isHebrew ? "משתפים" : "Share it"}</h3><p>{isHebrew ? "הלקוחות סורקים QR או מצמידים את הטלפון ל-NFC והתפריט נפתח." : "Customers scan the QR or tap NFC and your menu opens instantly."}</p></article>
         </div>
       </section>
 
