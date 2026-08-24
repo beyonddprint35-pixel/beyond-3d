@@ -34,6 +34,8 @@ import "./components/DigitalMenuLayoutsMobileFix.css";
 import "./components/DigitalMenuFitMode.css";
 import "./components/MenuBuilderMobileUX.css";
 import "./components/MenuBuilderMobileOverflowFix.css";
+import "./components/DigitalMenuFitSmartGuard.js";
+import "./components/DigitalMenuFitSmartGuard.css";
 
 function App() {
   return (
