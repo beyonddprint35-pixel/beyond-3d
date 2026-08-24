@@ -11,7 +11,6 @@ import {
   Phone,
   Radio,
   Sparkles,
-  Smartphone,
   Sun,
   UserRound,
   X,
@@ -354,11 +353,11 @@ export default function MenuHomeRefined() {
       </section>
 
       <section className="menu-home-how" id="how-it-works">
-        <div className="menu-home-section-heading"><span>01</span><div><small>{isHebrew ? "איך זה עובד" : "HOW IT WORKS"}</small><h2>{isHebrew ? "מהרעיון לשולחן בשלושה צעדים." : "From idea to table in three steps."}</h2></div></div>
+        <div className="menu-home-section-heading"><span>01</span><div><small>{isHebrew ? "איך זה עובד" : "HOW IT WORKS"}</small><h2>{isHebrew ? "מהרעיון לשולחן בשלושה צעדים." : "From idea to table in 3 steps."}</h2></div></div>
         <div className="menu-home-step-grid">
-          <article><div className="menu-home-step-icon"><MenuIcon size={22} /></div><span>01</span><h3>{isHebrew ? "יוצרים את התפריט" : "Create your menu"}</h3><p>{isHebrew ? "מוסיפים קטגוריות, מנות, מחירים, תיאורים ותמונות." : "Add categories, items, prices, descriptions and images."}</p></article>
-          <article><div className="menu-home-step-icon"><Languages size={22} /></div><span>02</span><h3>{isHebrew ? "מתאימים למותג" : "Make it yours"}</h3><p>{isHebrew ? "מתאימים את השפה, התוכן והנראות למסעדה שלכם." : "Adjust the language, content and look to fit your restaurant."}</p></article>
-          <article><div className="menu-home-step-icon"><Smartphone size={22} /></div><span>03</span><h3>{isHebrew ? "משתפים" : "Share it"}</h3><p>{isHebrew ? "הלקוחות סורקים QR או מצמידים את הטלפון ל-NFC והתפריט נפתח." : "Customers scan the QR or tap NFC and your menu opens instantly."}</p></article>
+          <article><div className="menu-home-step-number" style={{ marginBottom: "36px", color: "var(--menu-text)", fontSize: "38px", fontWeight: 850, letterSpacing: "-0.04em", lineHeight: 1 }}>01</div><h3>{isHebrew ? "יוצרים את התפריט" : "Create your menu"}</h3><p>{isHebrew ? "מוסיפים קטגוריות, מנות, מחירים, תיאורים ותמונות." : "Add categories, items, prices, descriptions and images."}</p></article>
+          <article><div className="menu-home-step-number" style={{ marginBottom: "36px", color: "var(--menu-text)", fontSize: "38px", fontWeight: 850, letterSpacing: "-0.04em", lineHeight: 1 }}>02</div><h3>{isHebrew ? "מתאימים למותג" : "Make it yours"}</h3><p>{isHebrew ? "מתאימים את השפה, התוכן והנראות למסעדה שלכם." : "Adjust the language, content and look to fit your restaurant."}</p></article>
+          <article><div className="menu-home-step-number" style={{ marginBottom: "36px", color: "var(--menu-text)", fontSize: "38px", fontWeight: 850, letterSpacing: "-0.04em", lineHeight: 1 }}>03</div><h3>{isHebrew ? "משתפים" : "Share it"}</h3><p>{isHebrew ? "הלקוחות סורקים QR או מצמידים את הטלפון ל-NFC והתפריט נפתח." : "Customers scan the QR or tap NFC and your menu opens instantly."}</p></article>
         </div>
       </section>
 
