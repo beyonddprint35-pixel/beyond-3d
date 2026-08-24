@@ -106,46 +106,70 @@
   color: var(--menu-text);
 }
 
-/* ---------- Language toggle ---------- */
+/* ---------- Figma-like language control ---------- */
 .menu-home-language-wrap {
   position: relative;
   flex: 0 0 auto;
 }
 
-.menu-home-language-toggle {
-  display: inline-flex;
-  align-items: center;
+.menu-home-language-figma {
+  display: inline-flex !important;
+  justify-content: center;
+  min-width: 58px;
   min-height: 40px;
-  padding: 3px;
-  border: 1px solid var(--menu-border);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.78);
-}
-
-.menu-home-language-toggle button {
-  display: grid;
-  place-items: center;
-  min-width: 40px;
-  height: 32px;
+  gap: 5px;
   padding: 0 10px;
-  border: 0;
   border-radius: 999px;
-  background: transparent;
-  color: #60718f;
+}
+
+.menu-home-language-figma span {
+  color: var(--menu-text) !important;
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 780;
+}
+
+.menu-home-language-menu {
+  position: absolute;
+  z-index: 95;
+  top: calc(100% + 8px);
+  inset-inline-end: 0;
+  display: grid;
+  width: 150px;
+  padding: 7px;
+  border: 1px solid var(--menu-border);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 18px 45px rgba(27, 45, 78, 0.16);
+}
+
+.menu-home-language-menu button {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  align-items: center;
+  min-height: 42px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  text-align: start;
   cursor: pointer;
-  transition: background 180ms ease, color 180ms ease, box-shadow 180ms ease;
 }
 
-.menu-home-language-toggle button.active {
-  background: #6073f2;
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(96, 115, 242, 0.22);
+.menu-home-language-menu button:hover,
+.menu-home-language-menu button.active {
+  background: var(--menu-blue-soft);
 }
 
-.menu-home-language-toggle button:not(.active):hover {
+.menu-home-language-menu button > span {
+  color: var(--menu-blue-strong);
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.menu-home-language-menu button > small {
   color: var(--menu-text);
+  font-size: 11px;
+  font-weight: 650;
 }
 
 /* ---------- Theme toggle ---------- */
@@ -487,6 +511,7 @@
 }
 
 .menu-home.theme-dark .menu-home-navbar-refined .menu-home-nav,
+.menu-home.theme-dark .menu-home-language-menu,
 .menu-home.theme-dark .menu-home-contact-panel {
   background: rgba(15, 26, 44, 0.99);
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
@@ -499,22 +524,13 @@
 }
 
 .menu-home.theme-dark .menu-home-theme-toggle,
-.menu-home.theme-dark .menu-home-language-toggle,
+.menu-home.theme-dark .menu-home-language-figma,
 .menu-home.theme-dark .menu-home-studio-button,
 .menu-home.theme-dark .menu-home-mobile-toggle,
 .menu-home.theme-dark .menu-home-login-refined {
   border-color: var(--menu-border);
   background: rgba(16, 27, 44, 0.9);
   color: var(--menu-text);
-}
-
-.menu-home.theme-dark .menu-home-language-toggle button {
-  color: #aab7cc;
-}
-
-.menu-home.theme-dark .menu-home-language-toggle button.active {
-  background: #6073f2;
-  color: #fff;
 }
 
 .menu-home.theme-dark .menu-home-kicker,
@@ -569,7 +585,8 @@
 
 .menu-home.theme-dark .menu-home-footer-links button,
 .menu-home.theme-dark .menu-home-footer-links a,
-.menu-home.theme-dark .menu-home-contact-panel strong {
+.menu-home.theme-dark .menu-home-contact-panel strong,
+.menu-home.theme-dark .menu-home-language-menu button > small {
   color: var(--menu-text);
 }
 
@@ -611,16 +628,10 @@
 }
 
 @media (max-width: 680px) {
-  .menu-home-language-toggle {
+  .menu-home-language-figma {
+    display: inline-flex !important;
+    min-width: 50px;
     min-height: 38px;
-    padding: 3px;
-  }
-
-  .menu-home-language-toggle button {
-    min-width: 34px;
-    height: 30px;
-    padding-inline: 8px;
-    font-size: 10px;
   }
 
   .menu-home-theme-toggle,
@@ -710,13 +721,9 @@
     display: none;
   }
 
-  .menu-home-language-toggle {
-    padding: 2px;
-  }
-
-  .menu-home-language-toggle button {
-    min-width: 32px;
-    padding-inline: 7px;
+  .menu-home-language-figma {
+    min-width: 46px;
+    padding-inline: 8px;
   }
 
   .menu-home-figma-phone {
