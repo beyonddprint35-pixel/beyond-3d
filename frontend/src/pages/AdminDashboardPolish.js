@@ -37,6 +37,14 @@ function decorateLogout(button) {
   `;
 }
 
+function actionsAreAlreadyLast(topbar, actions) {
+  const children = Array.from(topbar.children);
+  const existingActions = actions.filter(Boolean);
+  if (!existingActions.length || existingActions.length > children.length) return false;
+  const tail = children.slice(-existingActions.length);
+  return existingActions.every((node, index) => tail[index] === node);
+}
+
 function syncTopbar() {
   const topbar = document.querySelector(".admin-topbar");
   if (!topbar) return;
@@ -51,12 +59,14 @@ function syncTopbar() {
   const logout = topbar.querySelector(".admin-logout-button");
   decorateLogout(logout);
 
-  // Keep the brand first, then one compact action group: Home / Theme / Logout.
-  if (home) topbar.appendChild(home);
-  if (theme) topbar.appendChild(theme);
-  if (logout) topbar.appendChild(logout);
+  const actions = [home, theme, logout].filter(Boolean);
+  if (!actionsAreAlreadyLast(topbar, actions)) {
+    actions.forEach((node) => topbar.appendChild(node));
+  }
 
-  topbar.classList.add(ADMIN_POLISH_CLASS);
+  if (!topbar.classList.contains(ADMIN_POLISH_CLASS)) {
+    topbar.classList.add(ADMIN_POLISH_CLASS);
+  }
 }
 
 function tagFinancialStats() {
@@ -64,7 +74,7 @@ function tagFinancialStats() {
     const directCards = Array.from(section.children).filter((child) =>
       child.classList?.contains("order-detail-card")
     );
-    if (directCards.length === 4) {
+    if (directCards.length === 4 && !section.classList.contains("admin-financial-stats")) {
       section.classList.add("admin-financial-stats");
     }
   });
