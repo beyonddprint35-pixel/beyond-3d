@@ -32,6 +32,7 @@ import "./pages/AdminTheme.js";
 import "./pages/AdminTheme.css";
 import "./components/DigitalMenuLayoutsMobileFix.css";
 import "./components/DigitalMenuFitMode.css";
+import "./components/MenuBuilderMobileUX.css";
 
 function App() {
   return (
