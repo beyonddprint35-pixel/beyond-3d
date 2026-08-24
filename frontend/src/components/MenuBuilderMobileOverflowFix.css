@@ -1,0 +1,231 @@
+/* ==========================================================
+   BEYOND MENU BUILDER — MOBILE WIDTH / RTL SAFETY
+
+   Final narrow-screen guardrail. Nothing inside Menu Studio
+   may make the iPhone document wider than the viewport.
+   ========================================================== */
+
+@media (max-width: 700px) {
+  .menu-builder-unified,
+  .menu-builder-unified .menu-builder-page,
+  .menu-builder-unified .menu-builder-workspace,
+  .menu-builder-unified .menu-builder-result,
+  .menu-builder-unified .menu-builder-branding-layout {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .menu-builder-unified,
+  .menu-builder-unified .menu-builder-page {
+    overflow-x: clip !important;
+  }
+
+  .menu-builder-unified .menu-builder-workspace {
+    width: calc(100% - 20px) !important;
+    margin-inline: auto !important;
+  }
+
+  .menu-builder-unified .menu-builder-result {
+    margin-inline: 0 !important;
+  }
+
+  /* Every editor wrapper must be allowed to shrink. */
+  .menu-builder-unified .menu-brand-editor,
+  .menu-builder-unified .menu-brand-editor-head,
+  .menu-builder-unified .menu-brand-fit-row,
+  .menu-builder-unified .menu-brand-editor-body,
+  .menu-builder-unified .menu-brand-layout-section,
+  .menu-builder-unified .menu-brand-template-section,
+  .menu-builder-unified .menu-brand-compact-section,
+  .menu-builder-unified .menu-brand-color-grid,
+  .menu-builder-unified .menu-brand-size-controls,
+  .menu-builder-unified .menu-brand-size-row,
+  .menu-builder-unified .menu-brand-field,
+  .menu-builder-unified .menu-brand-color {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .menu-builder-unified .menu-brand-editor,
+  .menu-builder-unified .menu-brand-editor-body {
+    overflow-x: hidden !important;
+  }
+
+  /* --------------------------------------------------------
+     TABS
+     Five tabs no longer create a horizontal RTL scroll canvas.
+     -------------------------------------------------------- */
+  .menu-builder-unified .menu-brand-tabs {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 4px !important;
+    overflow: visible !important;
+    direction: inherit !important;
+  }
+
+  .menu-builder-unified .menu-brand-tabs button,
+  .menu-builder-unified .menu-brand-tabs button:nth-child(2) {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    padding-inline: 6px !important;
+    box-sizing: border-box !important;
+    white-space: normal !important;
+    line-height: 1.15 !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  /* --------------------------------------------------------
+     FIT ROW
+     -------------------------------------------------------- */
+  .menu-builder-unified .menu-brand-fit-row {
+    gap: 10px !important;
+  }
+
+  .menu-builder-unified .menu-brand-fit-copy {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    flex: 1 1 auto !important;
+  }
+
+  .menu-builder-unified .menu-brand-fit-copy strong,
+  .menu-builder-unified .menu-brand-fit-copy small {
+    overflow-wrap: anywhere !important;
+  }
+
+  .menu-builder-unified .menu-brand-fit-toggle {
+    flex: 0 0 auto !important;
+  }
+
+  /* --------------------------------------------------------
+     DESIGN / COLOR CARDS
+     -------------------------------------------------------- */
+  .menu-builder-unified .menu-brand-layout-grid,
+  .menu-builder-unified .menu-brand-design-grid {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .menu-builder-unified .menu-brand-layout-grid > button,
+  .menu-builder-unified .menu-brand-design-grid > button {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .menu-builder-unified .menu-brand-layout-grid > button {
+    grid-template-columns: minmax(92px, 108px) minmax(0, 1fr) !important;
+  }
+
+  .menu-builder-unified .menu-layout-preview {
+    width: 100% !important;
+    max-width: 108px !important;
+    min-width: 0 !important;
+  }
+
+  .menu-builder-unified .menu-layout-copy,
+  .menu-builder-unified .menu-brand-section-intro > div {
+    min-width: 0 !important;
+  }
+
+  .menu-builder-unified .menu-layout-copy strong,
+  .menu-builder-unified .menu-layout-copy small,
+  .menu-builder-unified .menu-brand-section-intro strong,
+  .menu-builder-unified .menu-brand-section-intro span {
+    overflow-wrap: anywhere !important;
+  }
+
+  /* --------------------------------------------------------
+     FORM CONTROLS / TYPE TAB
+     -------------------------------------------------------- */
+  .menu-builder-unified .menu-brand-field input,
+  .menu-builder-unified .menu-brand-field select,
+  .menu-builder-unified .menu-brand-color > div,
+  .menu-builder-unified .menu-brand-color input[type="text"],
+  .menu-builder-unified .menu-brand-size-row input[type="range"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .menu-builder-unified .menu-brand-field select {
+    display: block !important;
+  }
+
+  .menu-builder-unified .menu-brand-color-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .menu-builder-unified .menu-brand-color > div {
+    overflow: hidden !important;
+  }
+
+  .menu-builder-unified .menu-brand-color input[type="color"] {
+    flex: 0 0 30px !important;
+  }
+
+  .menu-builder-unified .menu-brand-size-row > div {
+    width: 100% !important;
+    min-width: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+  }
+
+  .menu-builder-unified .menu-brand-size-row > div > span {
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  .menu-builder-unified .menu-brand-size-row > div > strong {
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+  }
+
+  .menu-builder-unified .menu-brand-size-row input[type="range"] {
+    display: block !important;
+    margin: 0 !important;
+  }
+
+  /* Prevent any RTL child from creating a left-side document overflow. */
+  .menu-builder-unified[data-builder-language="he"] .menu-brand-editor,
+  .menu-builder-unified[data-builder-language="he"] .menu-brand-editor * {
+    max-inline-size: 100%;
+  }
+
+  .menu-builder-unified[data-builder-language="he"] .menu-brand-editor-body,
+  .menu-builder-unified[data-builder-language="he"] .menu-brand-compact-section,
+  .menu-builder-unified[data-builder-language="he"] .menu-brand-size-controls {
+    margin-inline: 0 !important;
+    padding-inline-start: 10px !important;
+    padding-inline-end: 10px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .menu-builder-unified .menu-brand-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .menu-builder-unified .menu-brand-layout-grid > button {
+    grid-template-columns: 92px minmax(0, 1fr) !important;
+  }
+
+  .menu-builder-unified .menu-layout-preview {
+    max-width: 92px !important;
+  }
+}
