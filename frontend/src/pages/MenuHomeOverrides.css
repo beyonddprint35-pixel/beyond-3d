@@ -256,6 +256,38 @@
   object-fit: cover;
 }
 
+@media (min-width: 1051px) {
+  .menu-home-account-figma {
+    height: 40px;
+    min-height: 40px;
+    padding: 0 7px 0 14px;
+    border: 1px solid var(--menu-border);
+    background: #FFF7F7;
+    gap: 8px;
+  }
+
+  .menu-home-account-figma:hover {
+    background: #fff;
+  }
+
+  .menu-home-account-figma .menu-home-account-name {
+    color: var(--menu-text);
+    font-size: 12px;
+    font-weight: 760;
+  }
+
+  .menu-home-account-figma .menu-home-account-avatar {
+    width: 30px !important;
+    height: 30px !important;
+    border: 0;
+    font-size: 12px;
+  }
+
+  .menu-home-account-figma:hover .menu-home-account-avatar {
+    box-shadow: none;
+  }
+}
+
 .menu-home-login-refined {
   display: inline-flex;
   align-items: center;
