@@ -20,6 +20,8 @@ import * as THREE from "three";
 const WEBSITE_BLUE =
   new THREE.Color("#4777EE");
 
+const TARGET_MODEL_HEIGHT = 2.2;
+
 function BuddyModel() {
   const group = useRef();
 
@@ -32,6 +34,22 @@ function BuddyModel() {
       () => scene.clone(true),
       [scene]
     );
+
+  const normalizedScale =
+    useMemo(() => {
+      const box = new THREE.Box3().setFromObject(
+        buddyScene
+      );
+
+      const size = new THREE.Vector3();
+      box.getSize(size);
+
+      if (!Number.isFinite(size.y) || size.y <= 0) {
+        return 1;
+      }
+
+      return TARGET_MODEL_HEIGHT / size.y;
+    }, [buddyScene]);
 
   useEffect(() => {
     buddyScene.traverse(
@@ -126,7 +144,7 @@ function BuddyModel() {
       <Center>
         <primitive
           object={buddyScene}
-          scale={1}
+          scale={normalizedScale}
         />
       </Center>
     </group>
