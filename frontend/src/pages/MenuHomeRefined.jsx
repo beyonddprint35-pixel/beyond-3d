@@ -27,6 +27,7 @@ import {
 import beyondLogo from "../assets/beyond-logo-transparent.png";
 
 import "./MenuHome.css";
+import BuddyMascot from "../components/BuddyMascot";
 
 const menuAccentTextStyle = {
   background: "linear-gradient(100deg, #3975ec, #6073f2)",
@@ -352,7 +353,13 @@ export default function MenuHomeRefined() {
             <span><Check size={15} />{isHebrew ? "ללא אפליקציה" : "No app required"}</span><span><Check size={15} />QR + NFC</span><span><Check size={15} />{isHebrew ? "עדכון בכל רגע" : "Update anytime"}</span>
           </div>
         </div>
-        <div className="menu-home-hero-visual menu-home-phone-hero-visual"><BeyondPhonePreview isHebrew={isHebrew} /></div>
+        <div className="menu-home-hero-visual menu-home-phone-hero-visual">
+          <div className="menu-home-buddy-slot">
+            <BuddyMascot />
+          </div>
+
+          <BeyondPhonePreview isHebrew={isHebrew} />
+        </div>
       </section>
 
       <section className="menu-home-how" id="how-it-works">

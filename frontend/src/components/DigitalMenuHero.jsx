@@ -3,6 +3,7 @@ import {
 } from "../i18n/BeyondLanguage";
 
 import "./DigitalMenuHero.css";
+import BuddyMascot from "./BuddyMascot";
 
 export default function DigitalMenuHero({
   onStartMenu,
@@ -122,6 +123,8 @@ export default function DigitalMenuHero({
 
       <div className="digital-menu-product">
         <div className="digital-menu-glow" />
+
+        <BuddyMascot />
 
         <div className="digital-menu-phone">
           <div className="digital-phone-island" />

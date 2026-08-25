@@ -158,3 +158,32 @@
     transform: scale(.7);
   }
 }
+
+/* BUDDY HORIZONTAL POSITION — FINAL OVERRIDE */
+.menu-home-hero
+.menu-home-phone-hero-visual
+.menu-home-buddy-slot {
+  left: 0 !important;
+  transform: translateX(260px) !important;
+}
+
+/* BUDDY POSITION — BETWEEN TEXT AND PHONE */
+.menu-home-hero
+.menu-home-phone-hero-visual
+.menu-home-buddy-slot {
+  transform: translateX(115px) !important;
+}
+
+/* BUDDY POSITION — MOVE LEFT */
+.menu-home-hero
+.menu-home-phone-hero-visual
+.menu-home-buddy-slot {
+  transform: translateX(-20px) !important;
+}
+
+/* BUDDY POSITION — MORE LEFT */
+.menu-home-hero
+.menu-home-phone-hero-visual
+.menu-home-buddy-slot {
+  transform: translateX(-110px) !important;
+}

@@ -2462,3 +2462,122 @@ html[data-beyond-language="he"]
   }
 
 }
+
+
+/* =========================================================
+   BEYOND BUDDY MASCOT — LOCAL 3D TEST
+   ========================================================= */
+
+.buddy-mascot {
+  position: absolute;
+
+  width: clamp(
+    220px,
+    22vw,
+    390px
+  );
+
+  height: clamp(
+    330px,
+    37vw,
+    560px
+  );
+
+  left: -29%;
+  bottom: -4%;
+
+  z-index: 7;
+
+  pointer-events: none;
+
+  opacity: 0;
+
+  transform:
+    translateY(28px)
+    scale(0.96);
+
+  animation:
+    buddy-arrive
+    900ms
+    cubic-bezier(
+      0.16,
+      1,
+      0.3,
+      1
+    )
+    300ms
+    forwards;
+}
+
+.buddy-mascot canvas {
+  width: 100% !important;
+  height: 100% !important;
+
+  display: block;
+}
+
+@keyframes buddy-arrive {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(28px)
+      scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+@media (
+  max-width: 900px
+) {
+  .buddy-mascot {
+    width: 190px;
+    height: 290px;
+
+    left: -10%;
+    bottom: -1%;
+  }
+}
+
+@media (
+  max-width: 640px
+) {
+  .buddy-mascot {
+    width: 150px;
+    height: 220px;
+
+    left: -4%;
+    bottom: 0;
+  }
+}
+
+@media (
+  prefers-reduced-motion:
+  reduce
+) {
+  .buddy-mascot {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* TEMP BUDDY VISIBILITY TEST */
+.buddy-mascot {
+  left: 0 !important;
+  right: auto !important;
+  bottom: 40px !important;
+  width: 400px !important;
+  height: 500px !important;
+  z-index: 999 !important;
+  opacity: 1 !important;
+  transform: none !important;
+  background: rgba(0, 255, 0, 0.08);
+}

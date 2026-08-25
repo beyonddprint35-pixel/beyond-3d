@@ -1,0 +1,91 @@
+
+
+/* =========================================================
+   BUDDY MASCOT — LOCAL TEST
+   Only affects Buddy beside the homepage phone.
+   ========================================================= */
+
+.menu-home-phone-hero-visual {
+  position: relative;
+}
+
+.menu-home-buddy-slot {
+  position: absolute;
+
+  left: -300px;
+  bottom: 10px;
+
+  width: 320px;
+  height: 500px;
+
+  z-index: 5;
+
+  pointer-events: none;
+}
+
+.menu-home-buddy-slot .buddy-mascot {
+  position: absolute !important;
+  inset: 0 !important;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  opacity: 1 !important;
+  transform: none !important;
+  background: transparent !important;
+}
+
+.menu-home-buddy-slot canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+@media (max-width: 1100px) {
+  .menu-home-buddy-slot {
+    left: -220px;
+    width: 260px;
+    height: 420px;
+  }
+}
+
+@media (max-width: 820px) {
+  .menu-home-buddy-slot {
+    display: none;
+  }
+}
+
+/* BUDDY POSITION TUNING V2 */
+.menu-home-buddy-slot {
+  left: -155px !important;
+  bottom: 0 !important;
+
+  width: 270px !important;
+  height: 455px !important;
+}
+
+/* BUDDY POSITION TUNING V3 */
+.menu-home-buddy-slot {
+  left: -40px !important;
+  bottom: 0 !important;
+}
+
+/* BUDDY POSITION TUNING V4 */
+.menu-home-buddy-slot {
+  left: 20px !important;
+}
+
+/* BUDDY POSITION TUNING V5 */
+.menu-home-buddy-slot {
+  left: 95px !important;
+}
+
+/* BUDDY POSITION TUNING V6 */
+.menu-home-buddy-slot {
+  left: 140px !important;
+}
+
+/* BUDDY FINAL HORIZONTAL POSITION */
+.menu-home-phone-hero-visual .menu-home-buddy-slot {
+  transform: translateX(190px) !important;
+}

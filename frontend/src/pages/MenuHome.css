@@ -1724,3 +1724,56 @@
     width: 115px;
   }
 }
+
+/* =========================================================
+   BUDDY MASCOT — LOCAL HERO TEST
+   Adds Buddy beside the existing phone only.
+   ========================================================= */
+
+.menu-home-hero-visual {
+  position: relative;
+}
+
+.menu-home-buddy-slot {
+  position: absolute;
+  left: -260px;
+  bottom: 15px;
+
+  width: 300px;
+  height: 470px;
+
+  z-index: 4;
+  pointer-events: none;
+}
+
+.menu-home-buddy-slot .buddy-mascot {
+  position: absolute !important;
+  inset: 0 !important;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  opacity: 1 !important;
+  transform: none !important;
+  background: transparent !important;
+}
+
+.menu-home-buddy-slot .buddy-mascot canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+@media (max-width: 1100px) {
+  .menu-home-buddy-slot {
+    left: -190px;
+    width: 240px;
+    height: 390px;
+  }
+}
+
+@media (max-width: 820px) {
+  .menu-home-buddy-slot {
+    display: none;
+  }
+}

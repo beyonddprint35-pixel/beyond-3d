@@ -35,6 +35,7 @@ import {
 import beyondLogo from "../assets/beyond-logo-transparent.png";
 
 import "./MenuHome.css";
+import BuddyMascot from "../components/BuddyMascot";
 
 function MenuPreview({
   isHebrew,
@@ -1130,6 +1131,10 @@ export default function MenuHome() {
             <span>
               QR + NFC
             </span>
+          </div>
+
+          <div className="menu-home-buddy-slot">
+            <BuddyMascot />
           </div>
 
           <MenuPreview

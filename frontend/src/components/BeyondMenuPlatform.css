@@ -5893,3 +5893,47 @@ input {
 
 }
 
+/* BEYOND_CUSTOMER_HEADER_DIRECTION_LOCK_START */
+
+/*
+  Restaurant identity never follows menu RTL/LTR direction.
+
+  LEFT:
+    logo
+    restaurant name
+    BAR · CAFÉ
+
+  RIGHT:
+    language selector
+*/
+
+.customers-template-menu .ep-header {
+  direction: ltr !important;
+}
+
+.customers-template-menu .ep-brand {
+  direction: ltr !important;
+  text-align: left !important;
+  margin-right: auto !important;
+  margin-left: 0 !important;
+}
+
+.customers-template-menu .ep-brand-copy {
+  direction: ltr !important;
+  text-align: left !important;
+  align-items: flex-start !important;
+}
+
+.customers-template-menu .ep-brand-title,
+.customers-template-menu .ep-brand-sub {
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+.customers-template-menu .ep-lang-pill {
+  direction: ltr !important;
+  margin-left: auto !important;
+  margin-right: 0 !important;
+}
+
+/* BEYOND_CUSTOMER_HEADER_DIRECTION_LOCK_END */
