@@ -278,32 +278,6 @@
   }
 }
 
-
-/* TEMP MOBILE POSITION GRID */
-@media (max-width: 820px) {
-  .menu-home-hero-copy {
-    position: relative !important;
-    background-image:
-      linear-gradient(to right, rgba(255,0,0,.12) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(0,0,255,.12) 1px, transparent 1px) !important;
-    background-size: 20px 20px !important;
-  }
-
-  .menu-home-hero-copy::after {
-    content: "20px grid";
-    position: absolute;
-    top: 4px;
-    right: 6px;
-    z-index: 999;
-    font-size: 10px;
-    color: #d00;
-    background: rgba(255,255,255,.85);
-    padding: 2px 5px;
-    border-radius: 4px;
-    pointer-events: none;
-  }
-}
-
 /* MOBILE BUDDY — EXACT POSITION ADJUSTMENT */
 @media (max-width: 820px) {
   .menu-home-hero-copy > .menu-home-buddy-mobile {

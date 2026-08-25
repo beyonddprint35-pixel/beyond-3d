@@ -2569,15 +2569,3 @@ html[data-beyond-language="he"]
   }
 }
 
-/* TEMP BUDDY VISIBILITY TEST */
-.buddy-mascot {
-  left: 0 !important;
-  right: auto !important;
-  bottom: 40px !important;
-  width: 400px !important;
-  height: 500px !important;
-  z-index: 999 !important;
-  opacity: 1 !important;
-  transform: none !important;
-  background: rgba(0, 255, 0, 0.08);
-}
