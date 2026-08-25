@@ -126,7 +126,7 @@ function BuddyModel() {
       <Center>
         <primitive
           object={buddyScene}
-          scale={1}
+          scale={10}
         />
       </Center>
     </group>
