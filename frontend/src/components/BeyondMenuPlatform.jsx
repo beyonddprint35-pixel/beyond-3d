@@ -712,6 +712,52 @@ export function BeyondPublicMenu({
     );
   }
 
+
+  /*
+    CUSTOMER-SPECIFIC CONTENT
+
+    Identity/design/content are intentionally separate:
+
+      site.name
+        -> restaurant identity
+
+      site.content_settings
+        -> customer-facing words
+
+      site.design_settings
+        -> visual design only
+
+    No restaurant-specific wording belongs in this renderer.
+  */
+  const customerContentSettings =
+    site?.content_settings &&
+    typeof site.content_settings === "object" &&
+    !Array.isArray(site.content_settings)
+      ? site.content_settings
+      : {};
+
+  const customerContent =
+    customerContentSettings?.[lang] &&
+    typeof customerContentSettings[lang] === "object"
+      ? customerContentSettings[lang]
+      : {};
+
+  const brandSubtitle =
+    String(
+      customerContent.brand_subtitle || ""
+    ).trim();
+
+  const customerHeroKicker =
+    String(
+      customerContent.hero_kicker || ""
+    ).trim();
+
+  const customerHeroTitle =
+    String(
+      customerContent.hero_title || ""
+    ).trim();
+
+
   const containsHebrew = value =>
     /[\u0590-\u05FF]/.test(
       String(value || "")
@@ -1424,6 +1470,8 @@ export function BeyondPublicMenu({
           : "is-en"
       }`}
       data-customer-template-menu="true"
+      data-menu-site-id={site.id}
+      data-menu-slug={site.slug}
       data-no-beyond-translate="true"
       translate="no"
       lang={lang}
@@ -1454,7 +1502,7 @@ export function BeyondPublicMenu({
         }
       >
         <header className="ep-header">
-          <div className="ep-brand">
+          <div className="ep-brand" dir="ltr">
             {site.logo_url ? (
               <img
                 className="ep-logo"
@@ -1467,14 +1515,16 @@ export function BeyondPublicMenu({
               </div>
             )}
 
-            <div className="ep-brand-copy">
+            <div className="ep-brand-copy" dir="ltr">
               <div className="ep-brand-title">
                 {site.name}
               </div>
 
+              {brandSubtitle ? (
               <div className="ep-brand-sub">
-                bar · café
+                {brandSubtitle}
               </div>
+            ) : null}
             </div>
           </div>
 
@@ -1518,23 +1568,23 @@ export function BeyondPublicMenu({
         </header>
 
         <section className="ep-hero">
+          {customerHeroKicker ? (
           <div
             id="ep-customer-hero-kicker"
             className="ep-hero-kicker"
           >
-            {lang === "he"
-              ? "התפריט הדיגיטלי שלנו"
-              : "OUR DIGITAL MENU"}
+            {customerHeroKicker}
           </div>
+        ) : null}
 
+          {customerHeroTitle ? (
           <h1
             id="ep-customer-hero-title"
             className="ep-hero-title"
           >
-            {lang === "he"
-              ? "משקאות ואוכל"
-              : "Drinks & Food"}
+            {customerHeroTitle}
           </h1>
+        ) : null}
 
           {site.logo_url && (
             <img

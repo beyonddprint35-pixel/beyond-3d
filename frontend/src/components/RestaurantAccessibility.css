@@ -2439,3 +2439,236 @@ html.restaurant-a11y-dark
 
 /* CUSTOMER TEMPLATE ACCESSIBILITY DARK STATEMENT END */
 
+/* BEYOND_A11Y_LIVE_DESIGN_COMPAT_START */
+
+/*
+  Accessibility is the FINAL presentation layer.
+
+  Menu Studio may define restaurant colors through --bld-*,
+  but when the visitor explicitly enables Dark Mode or
+  High Contrast, accessibility must override the complete
+  palette consistently instead of mixing both themes.
+*/
+
+
+/* ==========================================================
+   DARK MODE + LIVE MENU DESIGN
+   ========================================================== */
+
+html.restaurant-a11y-dark
+.ep-page.ep-live-designed {
+  --bld-bg: #111 !important;
+  --bld-header-bg: #111 !important;
+  --bld-hero-bg: #161616 !important;
+  --bld-paper: #1b1b1b !important;
+  --bld-card: #1b1b1b !important;
+
+  --bld-text: #fff !important;
+  --bld-muted: #d1d1d1 !important;
+
+  --bld-line: #555 !important;
+
+  --bld-category-bg: #fff !important;
+  --bld-category-text: #111 !important;
+
+  --ep-bg: #111 !important;
+  --ep-paper: #1b1b1b !important;
+  --ep-card: #1b1b1b !important;
+  --ep-text: #fff !important;
+  --ep-muted: #d1d1d1 !important;
+  --ep-line: #555 !important;
+}
+
+
+/* Structural surfaces */
+html.restaurant-a11y-dark
+.ep-page.ep-live-designed
+:is(
+  .ep-header,
+  .ep-tabs-wrap,
+  .ep-section-head,
+  .ep-menu-list,
+  .ep-footer
+) {
+  color: #fff !important;
+  background: #111 !important;
+  border-color: #555 !important;
+}
+
+
+/* Hero */
+html.restaurant-a11y-dark
+.ep-page.ep-live-designed
+.ep-hero {
+  color: #fff !important;
+  background: #161616 !important;
+  border-color: #555 !important;
+}
+
+
+/* Menu cards */
+html.restaurant-a11y-dark
+.ep-page.ep-live-designed
+:is(
+  .ep-item-row,
+  .ep-wine-row
+) {
+  color: #fff !important;
+  background: #1b1b1b !important;
+  border-color: #555 !important;
+}
+
+
+/* All major text */
+html.restaurant-a11y-dark
+.ep-page.ep-live-designed
+:is(
+  .ep-brand-title,
+  .ep-hero-title,
+  .ep-section-head h2,
+  .ep-item-name,
+  .ep-item-price,
+  .ep-dual-price strong,
+  .ep-wine-prices strong
+) {
+  color: #fff !important;
+}
+
+
+/* Secondary text */
+html.restaurant-a11y-dark
+.ep-page.ep-live-designed
+:is(
+  .ep-brand-sub,
+  .ep-hero-kicker,
+  .ep-section-count,
+  .ep-item-description,
+  .ep-wine-origin,
+  .ep-item-category
+) {
+  color: #d1d1d1 !important;
+}
+
+
+/* Keep subcategories as clean headings — NEVER cards */
+html.restaurant-a11y-dark
+.ep-page.ep-live-designed
+.ep-item-category {
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+
+/* Category buttons */
+html.restaurant-a11y-dark
+.ep-page.ep-live-designed
+.ep-tabs button {
+  color: #fff !important;
+  background: #1b1b1b !important;
+  border-color: #555 !important;
+}
+
+html.restaurant-a11y-dark
+.ep-page.ep-live-designed
+.ep-tabs button.active {
+  color: #111 !important;
+  background: #fff !important;
+  border-color: #fff !important;
+}
+
+
+/* ==========================================================
+   HIGH CONTRAST + LIVE MENU DESIGN
+   ========================================================== */
+
+html.restaurant-a11y-contrast
+.ep-page.ep-live-designed {
+  --bld-bg: #fff !important;
+  --bld-header-bg: #fff !important;
+  --bld-hero-bg: #fff !important;
+  --bld-paper: #fff !important;
+  --bld-card: #fff !important;
+
+  --bld-text: #000 !important;
+  --bld-muted: #000 !important;
+
+  --bld-line: #000 !important;
+
+  --bld-category-bg: #000 !important;
+  --bld-category-text: #fff !important;
+
+  --ep-bg: #fff !important;
+  --ep-paper: #fff !important;
+  --ep-card: #fff !important;
+  --ep-text: #000 !important;
+  --ep-muted: #000 !important;
+  --ep-line: #000 !important;
+}
+
+
+html.restaurant-a11y-contrast
+.ep-page.ep-live-designed
+:is(
+  .ep-header,
+  .ep-hero,
+  .ep-tabs-wrap,
+  .ep-section-head,
+  .ep-menu-list,
+  .ep-footer,
+  .ep-item-row,
+  .ep-wine-row
+) {
+  color: #000 !important;
+  background: #fff !important;
+  border-color: #000 !important;
+}
+
+
+html.restaurant-a11y-contrast
+.ep-page.ep-live-designed
+:is(
+  .ep-brand-title,
+  .ep-brand-sub,
+  .ep-hero-title,
+  .ep-hero-kicker,
+  .ep-section-head h2,
+  .ep-section-count,
+  .ep-item-name,
+  .ep-item-description,
+  .ep-item-price,
+  .ep-dual-price strong,
+  .ep-wine-prices strong,
+  .ep-wine-origin,
+  .ep-item-category
+) {
+  color: #000 !important;
+}
+
+
+html.restaurant-a11y-contrast
+.ep-page.ep-live-designed
+.ep-item-category {
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+
+html.restaurant-a11y-contrast
+.ep-page.ep-live-designed
+.ep-tabs button {
+  color: #000 !important;
+  background: #fff !important;
+  border-color: #000 !important;
+}
+
+html.restaurant-a11y-contrast
+.ep-page.ep-live-designed
+.ep-tabs button.active {
+  color: #fff !important;
+  background: #000 !important;
+}
+
+
+/* BEYOND_A11Y_LIVE_DESIGN_COMPAT_END */

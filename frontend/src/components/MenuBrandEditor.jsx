@@ -425,6 +425,12 @@ function LayoutPreview({ layout }) {
 export default function MenuBrandEditor({
   branding,
   onChange,
+
+  siteName = "",
+  contentSettings = {},
+  onSiteNameChange,
+  onContentSettingsChange,
+
   logoUrl,
   onLogoChange,
   onReset,
@@ -438,6 +444,37 @@ export default function MenuBrandEditor({
   function patch(updates) {
     onChange?.({ ...branding, ...updates });
   }
+
+
+  function contentFor(language) {
+    const value =
+      contentSettings?.[language];
+
+    return (
+      value &&
+      typeof value === "object" &&
+      !Array.isArray(value)
+        ? value
+        : {}
+    );
+  }
+
+  function patchContent(
+    language,
+    updates
+  ) {
+    const current =
+      contentFor(language);
+
+    onContentSettingsChange?.({
+      ...(contentSettings || {}),
+      [language]: {
+        ...current,
+        ...updates,
+      },
+    });
+  }
+
 
   function resetFontSizes() {
     patch({ ...BEYOND_MENU_CORE_FONT_SIZES });
@@ -641,21 +678,191 @@ export default function MenuBrandEditor({
 
           {activeTab === "brand" && (
             <section className="menu-brand-compact-section">
+
               <label className="menu-brand-field">
                 <span>RESTAURANT NAME</span>
                 <input
-                  value={branding.display_name || ""}
-                  onChange={(event) => patch({ display_name: event.target.value })}
+                  value={siteName}
+                  onChange={(event) =>
+                    onSiteNameChange?.(
+                      event.target.value
+                    )
+                  }
+                />
+              </label>
+
+              <div className="menu-brand-type-divider" />
+
+              <div className="menu-brand-type-title">
+                English content
+              </div>
+
+              <label className="menu-brand-field">
+                <span>BRAND SUBTITLE</span>
+                <input
+                  value={
+                    contentFor("en")
+                      .brand_subtitle || ""
+                  }
+                  placeholder="BAR · CAFÉ"
+                  onChange={(event) =>
+                    patchContent("en", {
+                      brand_subtitle:
+                        event.target.value,
+                    })
+                  }
                 />
               </label>
 
               <label className="menu-brand-field">
-                <span>SUBTITLE</span>
+                <span>HERO KICKER</span>
                 <input
-                  value={branding.subtitle || ""}
-                  onChange={(event) => patch({ subtitle: event.target.value })}
+                  value={
+                    contentFor("en")
+                      .hero_kicker || ""
+                  }
+                  placeholder="OUR DIGITAL MENU"
+                  onChange={(event) =>
+                    patchContent("en", {
+                      hero_kicker:
+                        event.target.value,
+                    })
+                  }
                 />
               </label>
+
+              <label className="menu-brand-field">
+                <span>HERO TITLE</span>
+                <input
+                  value={
+                    contentFor("en")
+                      .hero_title || ""
+                  }
+                  placeholder="Our Menu"
+                  onChange={(event) =>
+                    patchContent("en", {
+                      hero_title:
+                        event.target.value,
+                    })
+                  }
+                />
+              </label>
+
+              <div className="menu-brand-type-divider" />
+
+              <div className="menu-brand-type-title">
+                Hebrew content
+              </div>
+
+              <label className="menu-brand-field">
+                <span>BRAND SUBTITLE</span>
+                <input
+                  dir="rtl"
+                  value={
+                    contentFor("he")
+                      .brand_subtitle || ""
+                  }
+                  onChange={(event) =>
+                    patchContent("he", {
+                      brand_subtitle:
+                        event.target.value,
+                    })
+                  }
+                />
+              </label>
+
+              <label className="menu-brand-field">
+                <span>HERO KICKER</span>
+                <input
+                  dir="rtl"
+                  value={
+                    contentFor("he")
+                      .hero_kicker || ""
+                  }
+                  onChange={(event) =>
+                    patchContent("he", {
+                      hero_kicker:
+                        event.target.value,
+                    })
+                  }
+                />
+              </label>
+
+              <label className="menu-brand-field">
+                <span>HERO TITLE</span>
+                <input
+                  dir="rtl"
+                  value={
+                    contentFor("he")
+                      .hero_title || ""
+                  }
+                  onChange={(event) =>
+                    patchContent("he", {
+                      hero_title:
+                        event.target.value,
+                    })
+                  }
+                />
+              </label>
+
+              <div className="menu-brand-type-divider" />
+
+              <div className="menu-brand-type-title">
+                Arabic content
+              </div>
+
+              <label className="menu-brand-field">
+                <span>BRAND SUBTITLE</span>
+                <input
+                  dir="rtl"
+                  value={
+                    contentFor("ar")
+                      .brand_subtitle || ""
+                  }
+                  onChange={(event) =>
+                    patchContent("ar", {
+                      brand_subtitle:
+                        event.target.value,
+                    })
+                  }
+                />
+              </label>
+
+              <label className="menu-brand-field">
+                <span>HERO KICKER</span>
+                <input
+                  dir="rtl"
+                  value={
+                    contentFor("ar")
+                      .hero_kicker || ""
+                  }
+                  onChange={(event) =>
+                    patchContent("ar", {
+                      hero_kicker:
+                        event.target.value,
+                    })
+                  }
+                />
+              </label>
+
+              <label className="menu-brand-field">
+                <span>HERO TITLE</span>
+                <input
+                  dir="rtl"
+                  value={
+                    contentFor("ar")
+                      .hero_title || ""
+                  }
+                  onChange={(event) =>
+                    patchContent("ar", {
+                      hero_title:
+                        event.target.value,
+                    })
+                  }
+                />
+              </label>
+
+              <div className="menu-brand-type-divider" />
 
               {logoUrl && (
                 <div className="menu-brand-logo-preview">
@@ -770,6 +977,20 @@ export default function MenuBrandEditor({
                 <select
                   value={branding.body_font}
                   onChange={(event) => patch({ body_font: event.target.value })}
+                >
+                  {FONT_OPTIONS.map((font) => (
+                    <option key={font} value={font}>
+                      {font}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="menu-brand-field">
+                <span>NUMBERS</span>
+                <select
+                  value={branding.number_font || "Playfair Display"}
+                  onChange={(event) => patch({ number_font: event.target.value })}
                 >
                   {FONT_OPTIONS.map((font) => (
                     <option key={font} value={font}>

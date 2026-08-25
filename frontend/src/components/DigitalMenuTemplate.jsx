@@ -28,6 +28,7 @@ export const DEFAULT_MENU_BRANDING = {
   category_text: "#ffffff",
   heading_font: "Playfair Display",
   body_font: "Inter",
+  number_font: "Playfair Display",
   brand_font_size: 19,
   hero_font_size: 46,
   section_font_size: 38,

@@ -19,6 +19,30 @@ function isObject(value) {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }
 
+
+const CUSTOMER_CONTENT_DESIGN_KEYS = new Set([
+  "display_name",
+  "subtitle",
+  "hero_title_en",
+  "hero_title_he",
+  "hero_title_ar",
+  "logo_url",
+]);
+
+function designSettingsOnly(value) {
+  if (!isObject(value)) {
+    return {};
+  }
+
+  return Object.fromEntries(
+    Object.entries(value).filter(
+      ([key]) =>
+        !CUSTOMER_CONTENT_DESIGN_KEYS.has(key)
+    )
+  );
+}
+
+
 function hasSavedDesign(site) {
   return isObject(site?.design_settings) && Object.keys(site.design_settings).length > 0;
 }
@@ -28,20 +52,34 @@ function layoutName(design) {
 }
 
 function designForSite(site) {
-  const saved = isObject(site?.design_settings) ? site.design_settings : {};
-  const accent = saved.accent || site?.primary_color || DEFAULT_MENU_BRANDING.accent;
+  const saved =
+    designSettingsOnly(
+      site?.design_settings
+    );
+
+  const defaults =
+    designSettingsOnly(
+      DEFAULT_MENU_BRANDING
+    );
+
+  const accent =
+    saved.accent ||
+    site?.primary_color ||
+    defaults.accent;
 
   return {
-    ...DEFAULT_MENU_BRANDING,
+    ...defaults,
     ...saved,
-    display_name:
-      saved.display_name ||
-      site?.name ||
-      "Restaurant",
-    subtitle:
-      saved.subtitle ||
-      "restaurant · bar · café",
+
+    number_font:
+      saved.number_font ||
+      saved.heading_font ||
+      defaults.number_font ||
+      defaults.heading_font ||
+      "Playfair Display",
+
     accent,
+
     category_background:
       saved.category_background ||
       accent,
@@ -49,6 +87,15 @@ function designForSite(site) {
 }
 
 function designStyle(design) {
+  const menuFont =
+    design.heading_font ||
+    design.body_font ||
+    DEFAULT_MENU_BRANDING.heading_font ||
+    "Inter";
+
+  const menuFontStack =
+    `"${menuFont}", "Noto Sans Hebrew", "Noto Sans Arabic", Arial, sans-serif`;
+
   return {
     "--bld-bg": design.background,
     "--bld-header-bg": design.header_background,
@@ -64,6 +111,7 @@ function designStyle(design) {
     "--bld-category-text": design.category_text,
     "--bld-heading-font": `"${design.heading_font}", "Noto Sans Hebrew", "Noto Sans Arabic", Georgia, serif`,
     "--bld-body-font": `"${design.body_font}", "Noto Sans Hebrew", "Noto Sans Arabic", Arial, sans-serif`,
+    "--bld-number-font": `"${design.number_font || DEFAULT_MENU_BRANDING.number_font || "Playfair Display"}", "Noto Sans Hebrew", "Noto Sans Arabic", Georgia, serif`,
     "--bld-brand-size": `${design.brand_font_size}px`,
     "--bld-hero-size": `${design.hero_font_size}px`,
     "--bld-section-size": `${design.section_font_size}px`,
@@ -149,18 +197,22 @@ function applyDesignToPublicRoot(root, site, design) {
     }
   });
 
-  const language = root.getAttribute("lang") === "he" ? "he" : "en";
-  const displayName = design.display_name?.trim() || site.name || "Restaurant";
-  const heroTitle =
-    language === "he"
-      ? design.hero_title_he || "התפריט שלנו"
-      : design.hero_title_en || "Our Menu";
-
-  setTextIfChanged(root.querySelector(".ep-brand-title"), displayName);
-  setTextIfChanged(root.querySelector(".ep-brand-sub"), design.subtitle || "restaurant · bar · café");
-  setTextIfChanged(root.querySelector(".ep-hero-title"), heroTitle);
-
   applyFitState(root, design);
+}
+
+
+/* CUSTOMER_MENU_SITE_ISOLATION_GUARD */
+
+function customerMenuRootForSite(
+  siteId
+) {
+  if (!siteId) {
+    return null;
+  }
+
+  return document.querySelector(
+    `.ep-page.customers-template-menu[data-menu-site-id="${siteId}"]`
+  );
 }
 
 function PublicLiveDesignApplicator({ slug }) {
@@ -195,9 +247,10 @@ function PublicLiveDesignApplicator({ slug }) {
     const apply = () => {
       window.cancelAnimationFrame(frame);
       frame = window.requestAnimationFrame(() => {
-        const root = document.querySelector(
-          ".ep-page.customers-template-menu[data-customer-template-menu='true']"
-        );
+        const root =
+          customerMenuRootForSite(
+            site.id
+          );
         applyDesignToPublicRoot(root, site, design);
       });
     };
@@ -249,9 +302,9 @@ function LiveDesignPreview({ site, design, groups, items }) {
   const previewSite = useMemo(
     () => ({
       ...site,
-      name: design.display_name?.trim() || site?.name || "Restaurant",
+      name: site?.name || "Restaurant",
       primary_color: design.accent || site?.primary_color,
-      design_settings: design,
+      design_settings: designSettingsOnly(design),
     }),
     [site, design]
   );
@@ -311,7 +364,19 @@ function LiveMenuDesignStudio() {
   const [site, setSite] = useState(null);
   const [groups, setGroups] = useState([]);
   const [items, setItems] = useState([]);
-  const [design, setDesign] = useState(() => ({ ...DEFAULT_MENU_BRANDING }));
+  const [design, setDesign] = useState(() => ({
+    ...designSettingsOnly(DEFAULT_MENU_BRANDING),
+  }));
+
+  const [
+    contentSettings,
+    setContentSettings,
+  ] = useState({});
+
+  const [
+    siteName,
+    setSiteName,
+  ] = useState("");
   const [open, setOpen] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [saveStatus, setSaveStatus] = useState("");
@@ -367,6 +432,8 @@ function LiveMenuDesignStudio() {
       setSite(null);
       setGroups([]);
       setItems([]);
+      setSiteName("");
+      setContentSettings({});
       return undefined;
     }
 
@@ -405,6 +472,18 @@ function LiveMenuDesignStudio() {
       setSite(nextSite);
       setGroups(groupResult.data || []);
       setItems(itemResult.data || []);
+
+      setSiteName(
+        nextSite.name || ""
+      );
+
+      setContentSettings(
+        nextSite.content_settings &&
+        typeof nextSite.content_settings === "object"
+          ? nextSite.content_settings
+          : {}
+      );
+
       setDesign(designForSite(nextSite));
       setDirty(false);
       editVersionRef.current = 0;
@@ -422,11 +501,25 @@ function LiveMenuDesignStudio() {
     const timer = window.setTimeout(async () => {
       setSaveStatus(isHebrew ? "שומר…" : "Saving…");
 
+      const cleanSiteName =
+        siteName.trim() ||
+        site.name ||
+        "Restaurant";
+
       const { error } = await supabase
         .from("menu_sites")
         .update({
-          design_settings: design,
-          primary_color: design.accent || site.primary_color,
+          name: cleanSiteName,
+
+          content_settings:
+            contentSettings || {},
+
+          design_settings:
+            designSettingsOnly(design),
+
+          primary_color:
+            design.accent ||
+            site.primary_color,
         })
         .eq("id", site.id);
 
@@ -441,8 +534,20 @@ function LiveMenuDesignStudio() {
         current
           ? {
               ...current,
-              design_settings: design,
-              primary_color: design.accent || current.primary_color,
+
+              name:
+                siteName.trim() ||
+                current.name,
+
+              content_settings:
+                contentSettings || {},
+
+              design_settings:
+                designSettingsOnly(design),
+
+              primary_color:
+                design.accent ||
+                current.primary_color,
             }
           : current
       );
@@ -454,12 +559,76 @@ function LiveMenuDesignStudio() {
     }, 650);
 
     return () => window.clearTimeout(timer);
-  }, [dirty, design, site?.id, isHebrew]);
+  }, [
+    dirty,
+    design,
+    contentSettings,
+    siteName,
+    site?.id,
+    isHebrew,
+  ]);
+
+
+  function changeSiteName(
+    nextName
+  ) {
+    setSiteName(nextName);
+
+    setSite(current =>
+      current
+        ? {
+            ...current,
+            name: nextName,
+          }
+        : current
+    );
+
+    editVersionRef.current += 1;
+    setDirty(true);
+
+    setSaveStatus(
+      isHebrew
+        ? "שומר…"
+        : "Saving…"
+    );
+  }
+
+
+  function changeContentSettings(
+    nextContent
+  ) {
+    const value =
+      nextContent &&
+      typeof nextContent === "object"
+        ? nextContent
+        : {};
+
+    setContentSettings(value);
+
+    setSite(current =>
+      current
+        ? {
+            ...current,
+            content_settings: value,
+          }
+        : current
+    );
+
+    editVersionRef.current += 1;
+    setDirty(true);
+
+    setSaveStatus(
+      isHebrew
+        ? "שומר…"
+        : "Saving…"
+    );
+  }
+
 
   function changeDesign(nextDesign) {
     setDesign({
-      ...DEFAULT_MENU_BRANDING,
-      ...(nextDesign || {}),
+      ...designSettingsOnly(DEFAULT_MENU_BRANDING),
+      ...designSettingsOnly(nextDesign || {}),
     });
     editVersionRef.current += 1;
     setDirty(true);
@@ -469,7 +638,6 @@ function LiveMenuDesignStudio() {
   function resetDesign() {
     changeDesign({
       ...DEFAULT_MENU_BRANDING,
-      display_name: site?.name || "Restaurant",
       accent: site?.primary_color || DEFAULT_MENU_BRANDING.accent,
       category_background:
         site?.primary_color || DEFAULT_MENU_BRANDING.category_background,
@@ -613,6 +781,17 @@ function LiveMenuDesignStudio() {
               <div className="beyond-live-design-editor">
                 <MenuBrandEditor
                   branding={design}
+
+          siteName={siteName}
+          contentSettings={contentSettings}
+
+          onSiteNameChange={
+            changeSiteName
+          }
+
+          onContentSettingsChange={
+            changeContentSettings
+          }
                   onChange={changeDesign}
                   logoUrl={site.logo_url || ""}
                   onLogoChange={changeLogo}

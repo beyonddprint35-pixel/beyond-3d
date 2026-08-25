@@ -263,6 +263,9 @@
    LIVE CUSTOMER MENU — SHARED DESIGN TOKENS
    ========================================================== */
 
+
+
+
 .ep-page.ep-live-designed,
 .beyond-live-design-preview .ep-page {
   background: var(--bld-bg) !important;
@@ -287,7 +290,7 @@
 .ep-live-designed .ep-brand-title,
 .beyond-live-design-preview .ep-brand-title {
   color: var(--bld-text) !important;
-  font-family: var(--bld-heading-font) !important;
+  font-family: var(--bld-body-font) !important;
   font-size: var(--bld-brand-size) !important;
 }
 
@@ -321,7 +324,7 @@
 .ep-live-designed .ep-hero-title,
 .beyond-live-design-preview .ep-hero-title {
   color: var(--bld-text) !important;
-  font-family: var(--bld-heading-font) !important;
+  font-family: var(--bld-body-font) !important;
   font-size: var(--bld-hero-size) !important;
 }
 
@@ -354,7 +357,7 @@
 .ep-live-designed .ep-section-head h2,
 .beyond-live-design-preview .ep-section-head h2 {
   color: var(--bld-text) !important;
-  font-family: var(--bld-heading-font) !important;
+  font-family: var(--bld-body-font) !important;
   font-size: var(--bld-section-size) !important;
 }
 
@@ -373,7 +376,7 @@
 .ep-live-designed .ep-item-name,
 .beyond-live-design-preview .ep-item-name {
   color: var(--bld-text) !important;
-  font-family: var(--bld-heading-font) !important;
+  font-family: var(--bld-body-font) !important;
   font-size: var(--bld-item-size) !important;
 }
 
@@ -382,18 +385,31 @@
   font-size: var(--bld-description-size) !important;
 }
 
-.ep-live-designed :is(.ep-item-price, .ep-item-prices, .ep-wine-prices strong),
-.beyond-live-design-preview :is(.ep-item-price, .ep-item-prices, .ep-wine-prices strong) {
+.ep-live-designed :is(.ep-item-price, .ep-item-prices, .ep-dual-price strong, .ep-wine-prices strong),
+.beyond-live-design-preview :is(.ep-item-price, .ep-item-prices, .ep-dual-price strong, .ep-wine-prices strong) {
   color: var(--bld-text) !important;
-  font-family: var(--bld-body-font) !important;
+  font-family: 'Playfair Display', Georgia, serif !important;
   font-size: var(--bld-price-size) !important;
+  font-weight: 700 !important;
+  font-weight: 700 !important;
 }
 
-.ep-live-designed :is(.ep-item-category, .ep-mixers-box, .ep-dual-header),
-.beyond-live-design-preview :is(.ep-item-category, .ep-mixers-box, .ep-dual-header) {
+.ep-live-designed :is(.ep-mixers-box, .ep-dual-header),
+.beyond-live-design-preview :is(.ep-mixers-box, .ep-dual-header) {
   border-color: var(--bld-line) !important;
   color: var(--bld-muted) !important;
   background: color-mix(in srgb, var(--bld-paper) 82%, var(--bld-bg)) !important;
+}
+
+/* Subcategory headings keep the original customer-menu appearance.
+   Menu Studio may change their colors/font, but never turn them into cards. */
+.ep-live-designed .ep-item-category,
+.beyond-live-design-preview .ep-item-category {
+  border-color: var(--bld-line) !important;
+  color: var(--bld-muted) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
 }
 
 .ep-live-designed .ep-accessibility-statement-link,
@@ -672,3 +688,328 @@
     font-size: 16px !important;
   }
 }
+
+/* ==========================================================
+   CUSTOMER MENU — CANONICAL TYPOGRAPHY GROUPS
+
+   HEADINGS:
+   Restaurant name, hero title, section titles, item names.
+
+   BODY:
+   Categories, descriptions, labels, secondary text, footer.
+
+   NUMBERS:
+   Every price and numeric price heading such as 1/3 + 1/2.
+   ========================================================== */
+
+/* HEADINGS */
+.ep-live-designed :is(
+  .ep-brand-title,
+  .ep-hero-title,
+  .ep-section-head h2,
+  .ep-item-name
+),
+.beyond-live-design-preview :is(
+  .ep-brand-title,
+  .ep-hero-title,
+  .ep-section-head h2,
+  .ep-item-name
+) {
+  font-family: var(--bld-heading-font) !important;
+}
+
+/* BODY */
+.ep-live-designed :is(
+  .ep-brand-sub,
+  .ep-hero-kicker,
+  .ep-tabs button,
+  .ep-section-count,
+  .ep-item-description,
+  .ep-wine-origin,
+  .ep-item-category,
+  .ep-mixers-box,
+  .ep-footer,
+  .ep-accessibility-statement-link
+),
+.beyond-live-design-preview :is(
+  .ep-brand-sub,
+  .ep-hero-kicker,
+  .ep-tabs button,
+  .ep-section-count,
+  .ep-item-description,
+  .ep-wine-origin,
+  .ep-item-category,
+  .ep-mixers-box,
+  .ep-footer,
+  .ep-accessibility-statement-link
+) {
+  font-family: var(--bld-body-font) !important;
+}
+
+/* NUMBERS */
+.ep-live-designed :is(
+  .ep-item-price,
+  .ep-item-prices,
+  .ep-dual-price strong,
+  .ep-wine-prices strong,
+  .ep-dual-header,
+  .ep-dual-header *
+),
+.beyond-live-design-preview :is(
+  .ep-item-price,
+  .ep-item-prices,
+  .ep-dual-price strong,
+  .ep-wine-prices strong,
+  .ep-dual-header,
+  .ep-dual-header *
+) {
+  font-family: var(--bld-number-font) !important;
+}
+
+/* CUSTOMER_MENU_CANONICAL_TYPE_START */
+
+/*
+  ONE shared typography contract.
+
+  Every customer chooses the three fonts independently,
+  but element classification is identical for every menu.
+*/
+
+/* HEADINGS */
+.ep-live-designed :is(
+  .ep-brand-title,
+  .ep-hero-title,
+  .ep-section-head h2,
+  .ep-item-name
+),
+.beyond-live-design-preview :is(
+  .ep-brand-title,
+  .ep-hero-title,
+  .ep-section-head h2,
+  .ep-item-name
+) {
+  font-family:
+    var(--bld-heading-font) !important;
+}
+
+
+/* BODY */
+.ep-live-designed :is(
+  .ep-brand-sub,
+  .ep-hero-kicker,
+  .ep-tabs button,
+  .ep-section-count,
+  .ep-item-category,
+  .ep-item-description,
+  .ep-wine-origin,
+  .ep-mixers-box,
+  .ep-footer,
+  .ep-accessibility-statement-link
+),
+.beyond-live-design-preview :is(
+  .ep-brand-sub,
+  .ep-hero-kicker,
+  .ep-tabs button,
+  .ep-section-count,
+  .ep-item-category,
+  .ep-item-description,
+  .ep-wine-origin,
+  .ep-mixers-box,
+  .ep-footer,
+  .ep-accessibility-statement-link
+) {
+  font-family:
+    var(--bld-body-font) !important;
+}
+
+
+/* NUMBERS */
+.ep-live-designed :is(
+  .ep-item-price,
+  .ep-item-prices,
+  .ep-dual-price strong,
+  .ep-wine-prices strong,
+  .ep-dual-header,
+  .ep-dual-header *
+),
+.beyond-live-design-preview :is(
+  .ep-item-price,
+  .ep-item-prices,
+  .ep-dual-price strong,
+  .ep-wine-prices strong,
+  .ep-dual-header,
+  .ep-dual-header *
+) {
+  font-family:
+    var(--bld-number-font) !important;
+}
+
+/* CUSTOMER_MENU_CANONICAL_TYPE_END */
+
+/* BEYOND_LIVE_DESIGN_USABILITY_FIX_START */
+
+/* ==========================================================
+   DESIGN EDITOR SCROLLING
+
+   The editor itself stays fixed inside the workspace.
+   Only its content panel scrolls.
+   ========================================================== */
+
+.beyond-live-design-editor {
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+.beyond-live-design-editor .menu-brand-editor {
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+.beyond-live-design-editor .menu-brand-editor-body {
+  min-height: 0 !important;
+  flex: 1 1 auto !important;
+
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+
+  padding-bottom: 28px !important;
+}
+
+
+/* ==========================================================
+   LIVE PREVIEW
+
+   Use approximately the same width as the real public menu
+   instead of squeezing it into the old 390px phone frame.
+   ========================================================== */
+
+.beyond-live-design-preview-column {
+  min-width: 0 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+.beyond-live-design-phone {
+  width: min(500px, calc(100% - 24px)) !important;
+  max-width: 500px !important;
+
+  height: auto !important;
+  min-height: 0 !important;
+
+  flex: 1 1 auto !important;
+
+  margin-bottom: 12px;
+
+  overflow: hidden !important;
+
+  border-width: 5px !important;
+  border-radius: 28px !important;
+}
+
+.beyond-live-design-preview {
+  width: 100% !important;
+  height: 100% !important;
+
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+
+/*
+  Do not scale or compress the actual customer menu.
+  Preview shows the menu at its natural responsive width.
+*/
+.beyond-live-design-preview > .ep-page {
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 100% !important;
+}
+
+.beyond-live-design-preview .ep-app {
+  width: 100% !important;
+  min-width: 0 !important;
+  transform: none !important;
+}
+
+
+/* ==========================================================
+   SHORTER SCREENS
+
+   Never let the modal become taller than the browser.
+   ========================================================== */
+
+@media (max-height: 760px) {
+  .beyond-live-design-overlay {
+    padding: 10px !important;
+  }
+
+  .beyond-live-design-workspace {
+    width: min(1240px, calc(100vw - 20px)) !important;
+    height: calc(100dvh - 20px) !important;
+    min-height: 0 !important;
+  }
+
+  .beyond-live-design-head {
+    min-height: 68px !important;
+    padding-block: 10px !important;
+  }
+
+  .beyond-live-design-body {
+    min-height: 0 !important;
+    padding: 10px !important;
+  }
+}
+
+/* BEYOND_LIVE_DESIGN_USABILITY_FIX_END */
+
+/* ==========================================================
+   MENU STUDIO TAB CLIPPING FIX
+   ========================================================== */
+
+.beyond-live-design-editor .menu-brand-tabs {
+  min-height: 48px !important;
+  padding: 6px 8px !important;
+
+  align-items: center !important;
+
+  border-bottom:
+    1px solid var(--mb-border, rgba(110,157,196,.12)) !important;
+}
+
+.beyond-live-design-editor .menu-brand-tabs button {
+  min-height: 34px !important;
+
+  box-sizing: border-box !important;
+
+  margin: 0 !important;
+
+  position: relative !important;
+  top: 0 !important;
+
+  transform: none !important;
+
+  border:
+    2px solid transparent !important;
+
+  border-radius: 9px !important;
+}
+
+.beyond-live-design-editor .menu-brand-tabs button.active {
+  border-color:
+    var(--mb-blue, #348df0) !important;
+
+  background:
+    var(--mb-blue-soft, rgba(52,141,240,.08)) !important;
+
+  box-shadow: none !important;
+
+  transform: none !important;
+}
+

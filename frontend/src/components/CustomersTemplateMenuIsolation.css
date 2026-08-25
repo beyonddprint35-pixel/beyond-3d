@@ -46,7 +46,6 @@ Do not use html[data-beyond-language] here.
 
 .customers-template-menu[lang="en"]
 :is(
-  .ep-brand-copy,
   .ep-hero,
   .ep-section-head,
   .ep-item-category,
@@ -61,8 +60,6 @@ Do not use html[data-beyond-language] here.
 
 .customers-template-menu[lang="en"]
 :is(
-  .ep-brand-title,
-  .ep-brand-sub,
   .ep-hero-kicker,
   .ep-hero-title,
   .ep-section-head h2,
@@ -103,7 +100,6 @@ Do not use html[data-beyond-language] here.
 
 .customers-template-menu[lang="he"]
 :is(
-  .ep-brand-copy,
   .ep-hero,
   .ep-section-head,
   .ep-item-category,
@@ -118,8 +114,6 @@ Do not use html[data-beyond-language] here.
 
 .customers-template-menu[lang="he"]
 :is(
-  .ep-brand-title,
-  .ep-brand-sub,
   .ep-hero-kicker,
   .ep-hero-title,
   .ep-section-head h2,
@@ -267,3 +261,166 @@ button:last-child {
 .customers-template-menu .ep-dual-header {
   margin-block: 14px 4px !important;
 }
+
+/* CUSTOMER_IDENTITY_FIXED_LEFT_START */
+
+/*
+  Restaurant identity is NOT language content.
+
+  It always stays physically on the LEFT:
+    logo
+    restaurant name
+    BAR · CAFÉ
+
+  Language selector always stays on the RIGHT.
+*/
+
+.customers-template-menu .ep-header {
+  direction: ltr !important;
+  flex-direction: row !important;
+}
+
+.customers-template-menu .ep-brand {
+  direction: ltr !important;
+  text-align: left !important;
+
+  margin-left: 0 !important;
+  margin-right: auto !important;
+
+  flex-direction: row !important;
+}
+
+.customers-template-menu .ep-brand-copy {
+  direction: ltr !important;
+  text-align: left !important;
+
+  display: block !important;
+}
+
+.customers-template-menu .ep-brand-title,
+.customers-template-menu .ep-brand-sub {
+  direction: ltr !important;
+  text-align: left !important;
+
+  unicode-bidi: isolate !important;
+}
+
+.customers-template-menu .ep-lang-pill {
+  direction: ltr !important;
+
+  margin-left: auto !important;
+  margin-right: 0 !important;
+}
+
+/* CUSTOMER_IDENTITY_FIXED_LEFT_END */
+
+/* CUSTOMER_MENU_STRUCTURE_V2_START */
+
+/*
+  SHARED STRUCTURE ONLY.
+
+  Nothing in this block contains:
+  - restaurant names
+  - restaurant words
+  - restaurant colors
+  - restaurant fonts
+
+  Those values belong to Supabase for each site.
+*/
+
+
+/* --------------------------------------------------------
+   RESTAURANT IDENTITY
+   Always physically LEFT, independent of menu language.
+-------------------------------------------------------- */
+
+.customers-template-menu .ep-header {
+  direction: ltr !important;
+  flex-direction: row !important;
+}
+
+.customers-template-menu .ep-brand {
+  direction: ltr !important;
+  text-align: left !important;
+
+  margin-left: 0 !important;
+  margin-right: auto !important;
+
+  flex-direction: row !important;
+}
+
+.customers-template-menu .ep-brand-copy,
+.customers-template-menu .ep-brand-title,
+.customers-template-menu .ep-brand-sub {
+  direction: ltr !important;
+  text-align: left !important;
+
+  unicode-bidi: isolate !important;
+}
+
+.customers-template-menu .ep-lang-pill {
+  direction: ltr !important;
+
+  margin-left: auto !important;
+  margin-right: 0 !important;
+}
+
+
+/* --------------------------------------------------------
+   MENU CONTENT DIRECTION
+-------------------------------------------------------- */
+
+.customers-template-menu[lang="en"]
+:is(
+  .ep-hero,
+  .ep-section-head,
+  .ep-item-category,
+  .ep-item-info,
+  .ep-wine-origin,
+  .ep-mixers-box
+) {
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+.customers-template-menu[lang="he"]
+:is(
+  .ep-hero,
+  .ep-section-head,
+  .ep-item-category,
+  .ep-item-info,
+  .ep-wine-origin,
+  .ep-mixers-box
+) {
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+
+/* --------------------------------------------------------
+   SUBCATEGORY STRUCTURE
+   A subcategory is a heading/divider — never a card.
+-------------------------------------------------------- */
+
+.customers-template-menu .ep-item-category {
+  background:
+    transparent !important;
+
+  box-shadow:
+    none !important;
+
+  border-radius:
+    0 !important;
+}
+
+
+/* --------------------------------------------------------
+   DUAL PRICE HEADER
+-------------------------------------------------------- */
+
+.customers-template-menu .ep-dual-header {
+  margin-block:
+    14px 4px !important;
+}
+
+/* CUSTOMER_MENU_STRUCTURE_V2_END */
