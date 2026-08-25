@@ -343,8 +343,53 @@ export default function MenuHomeRefined() {
       <section className="menu-home-hero" id="product">
         <div className="menu-home-hero-copy">
           <div className="menu-home-kicker"><Sparkles size={15} />{isHebrew ? "הדרך הפשוטה לתפריט דיגיטלי" : "THE SIMPLE WAY TO GO DIGITAL"}</div>
-          <h1>{isHebrew ? <>יוצרים תפריט דיגיטלי<span>בדקות.</span></> : <>Create your digital menu<span>in minutes.</span></>}</h1>
-          <p>{isHebrew ? "בנו, עדכנו ושתפו את תפריט המסעדה ממקום אחד. QR, NFC, מספר שפות ועדכונים מיידיים — בלי אפליקציה ללקוח." : "Build, update and share your restaurant menu from one place. QR, NFC, multiple languages and instant updates — with no app for your customers."}</p>
+          <h1>
+            {isHebrew ? (
+              <>יוצרים תפריט דיגיטלי<span>בדקות.</span></>
+            ) : (
+              <>
+                <span className="menu-home-title-desktop">
+                  Create your digital menu<span>in minutes.</span>
+                </span>
+
+                <span className="menu-home-title-mobile">
+                  <span className="menu-home-title-mobile-back">
+                    Create your<br />
+                    digital<br />
+                    menu
+                  </span>
+
+                  <span className="menu-home-title-mobile-front">
+                    in minutes.
+                  </span>
+                </span>
+              </>
+            )}
+          </h1>
+          {isHebrew ? (
+            <p>
+              בנו, עדכנו ושתפו את תפריט המסעדה ממקום אחד. QR, NFC, מספר שפות ועדכונים מיידיים — בלי אפליקציה ללקוח.
+            </p>
+          ) : (
+            <>
+              <p className="menu-home-description-desktop-original">
+                Build, update and share your restaurant menu from one place. QR, NFC, multiple languages and instant updates — with no app for your customers.
+              </p>
+
+              <p className="menu-home-description-mobile-only">
+                Build, update and share<br />
+                share your restaurant menu<br />
+                menu from one place.<br />
+                QR, NFC, multiple languages<br />
+                and instant updates — with<br />
+                no app for your customer
+              </p>
+            </>
+          )}
+          <div className="menu-home-buddy-mobile" aria-hidden="true">
+            <BuddyMascot />
+          </div>
+
           <div className="menu-home-hero-actions">
             <button type="button" className="menu-home-primary" onClick={handleStartMenu}>{isHebrew ? "יצירת תפריט בחינם" : "Create My Menu Free"}<ArrowRight size={18} /></button>
             <button type="button" className="menu-home-secondary" onClick={() => window.open("/menu/el-puerto", "_blank", "noopener,noreferrer")}>{isHebrew ? "צפייה בתפריט לדוגמה" : "View Live Demo"}</button>

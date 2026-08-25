@@ -1,6 +1,5 @@
 import {
   Canvas,
-  useFrame,
 } from "@react-three/fiber";
 
 import {
@@ -115,32 +114,6 @@ function BuddyModel() {
     );
   }, [buddyScene]);
 
-  useFrame((state) => {
-    if (!group.current) {
-      return;
-    }
-
-    const time =
-      state.clock
-        .getElapsedTime();
-
-    group.current.position.y =
-      Math.sin(
-        time * 1.55
-      ) * 0.025;
-
-    group.current.rotation.y =
-      -0.08 +
-      Math.sin(
-        time * 0.7
-      ) * 0.018;
-
-    group.current.rotation.z =
-      Math.sin(
-        time * 0.9
-      ) * 0.004;
-  });
-
   return (
     <group
       ref={group}
@@ -153,7 +126,7 @@ function BuddyModel() {
       <Center>
         <primitive
           object={buddyScene}
-          scale={10}
+          scale={1}
         />
       </Center>
     </group>
