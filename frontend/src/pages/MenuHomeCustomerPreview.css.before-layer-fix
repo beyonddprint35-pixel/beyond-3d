@@ -1,0 +1,678 @@
+/* ==========================================================
+   HOMEPAGE CUSTOMER MENU PREVIEW
+
+   IMPORTANT:
+   This uses the EXACT same phone + 390 × 844 screen
+   structure as Menu Builder's Mobile View.
+
+   We never scale the iframe/menu internally.
+   We scale the entire physical phone as one object.
+   ========================================================== */
+
+.menu-home-exact-mobile-preview-host {
+  position: relative;
+  display: grid !important;
+  place-items: center !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-height: 620px !important;
+  overflow: visible !important;
+}
+
+/* Remove the older Figma phone. The exact Menu Builder phone
+   rendered by MenuHomeCustomerPreview replaces it completely. */
+.menu-home-exact-mobile-preview-host > .menu-home-figma-phone {
+  display: none !important;
+}
+
+.menu-home-mobile-demo-stage {
+  position: relative;
+  width: 287px;
+  height: 605px;
+  max-width: 100%;
+  flex: 0 0 auto;
+}
+
+/* MobileMenuPreview.css keeps this phone at exactly 410 × 864,
+   with a 390 × 844 screen and iframe. Only the complete device
+   is reduced to fit the landing-page composition. */
+.menu-home-mobile-demo-phone {
+  position: absolute !important;
+  top: 0;
+  left: 0;
+  margin: 0 !important;
+  transform: scale(.7);
+  transform-origin: top left;
+}
+
+/* Keep the exact Menu Builder screen geometry untouched. */
+.menu-home-mobile-demo-phone .mobile-menu-preview-screen,
+.menu-home-mobile-demo-phone .mobile-menu-preview-frame {
+  width: 390px !important;
+  height: 844px !important;
+}
+
+.menu-home-mobile-demo-phone .mobile-menu-preview-frame {
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  transform: none !important;
+  transform-origin: initial !important;
+  background: #f5f7fb;
+}
+
+/* This is a real embedded demo, so language/category controls can
+   still be tapped if the visitor wants to inspect the menu. */
+.menu-home-mobile-demo-phone iframe {
+  pointer-events: auto;
+}
+
+/* Keep the AIR-style expanding hover motion, but use BEYOND's
+   soft blush accent instead of the blue gradient. */
+.menu-home-secondary::before {
+  background: #FFF7F7;
+}
+
+.menu-home-secondary:hover {
+  color: #0d1b3a !important;
+  box-shadow: 0 14px 30px rgba(70, 57, 76, 0.12);
+}
+
+@media (max-width: 900px) {
+  .menu-home-exact-mobile-preview-host {
+    min-height: 590px !important;
+  }
+
+  .menu-home-mobile-demo-stage {
+    width: 271px;
+    height: 570px;
+  }
+
+  .menu-home-mobile-demo-phone {
+    transform: scale(.66);
+  }
+}
+
+/* On phones the preview should be a prominent part of the hero,
+   not a miniature desktop decoration. Keep the real 390 × 844
+   menu viewport and enlarge the complete physical phone. */
+@media (max-width: 680px) {
+  .menu-home-exact-mobile-preview-host {
+    min-height: 675px !important;
+    margin-top: 8px;
+  }
+
+  .menu-home-mobile-demo-stage {
+    width: 312px;
+    height: 657px;
+  }
+
+  .menu-home-mobile-demo-phone {
+    transform: scale(.76);
+  }
+}
+
+@media (max-width: 500px) {
+  .menu-home-exact-mobile-preview-host {
+    min-height: 725px !important;
+    margin-top: 10px;
+  }
+
+  .menu-home-mobile-demo-stage {
+    width: 336px;
+    height: 709px;
+  }
+
+  .menu-home-mobile-demo-phone {
+    transform: scale(.82);
+  }
+}
+
+@media (max-width: 380px) {
+  .menu-home-exact-mobile-preview-host {
+    min-height: 675px !important;
+  }
+
+  .menu-home-mobile-demo-stage {
+    width: 312px;
+    height: 657px;
+  }
+
+  .menu-home-mobile-demo-phone {
+    transform: scale(.76);
+  }
+}
+
+@media (max-width: 340px) {
+  .menu-home-exact-mobile-preview-host {
+    min-height: 620px !important;
+  }
+
+  .menu-home-mobile-demo-stage {
+    width: 287px;
+    height: 605px;
+  }
+
+  .menu-home-mobile-demo-phone {
+    transform: scale(.7);
+  }
+}
+
+/* BUDDY HORIZONTAL POSITION — FINAL OVERRIDE */
+.menu-home-hero
+.menu-home-phone-hero-visual
+.menu-home-buddy-slot {
+  left: 0 !important;
+  transform: translateX(260px) !important;
+}
+
+/* BUDDY POSITION — BETWEEN TEXT AND PHONE */
+.menu-home-hero
+.menu-home-phone-hero-visual
+.menu-home-buddy-slot {
+  transform: translateX(115px) !important;
+}
+
+/* BUDDY POSITION — MOVE LEFT */
+.menu-home-hero
+.menu-home-phone-hero-visual
+.menu-home-buddy-slot {
+  transform: translateX(-20px) !important;
+}
+
+/* BUDDY POSITION — MORE LEFT */
+.menu-home-hero
+.menu-home-phone-hero-visual
+.menu-home-buddy-slot {
+  transform: translateX(-110px) !important;
+}
+
+/* =========================================================
+   BUDDY VIEWPORT VISIBILITY — FINAL SOURCE OF TRUTH
+   ========================================================= */
+
+/* DESKTOP: show ONLY desktop Buddy */
+@media (min-width: 821px) {
+  .menu-home-buddy-mobile {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  .menu-home-phone-hero-visual > .menu-home-buddy-slot {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+}
+
+/* MOBILE: show ONLY mobile Buddy */
+@media (max-width: 820px) {
+  .menu-home-phone-hero-visual > .menu-home-buddy-slot {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
+  .menu-home-buddy-mobile {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+}
+
+
+/* MOBILE BUDDY — SMALLER / FIT BESIDE HERO TEXT */
+@media (max-width: 820px) {
+  .menu-home-buddy-mobile {
+    top: 150px !important;
+    right: 4px !important;
+
+    width: 72px !important;
+    height: 108px !important;
+  }
+
+  .menu-home-hero-copy h1 {
+    padding-right: 58px !important;
+  }
+
+  .menu-home-hero-copy > p {
+    padding-right: 72px !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .menu-home-buddy-mobile {
+    top: 154px !important;
+    right: 2px !important;
+
+    width: 66px !important;
+    height: 100px !important;
+  }
+
+  .menu-home-hero-copy h1 {
+    padding-right: 52px !important;
+  }
+
+  .menu-home-hero-copy > p {
+    padding-right: 66px !important;
+  }
+}
+
+/* MOBILE BUDDY — POSITION TWEAK ONLY */
+@media (max-width: 820px) {
+  .menu-home-buddy-mobile {
+    top: 138px !important;
+    right: -6px !important;
+  }
+}
+
+
+/* MOBILE BUDDY — POSITION ONLY */
+@media (max-width: 820px) {
+  .menu-home-hero-copy > .menu-home-buddy-mobile {
+    transform: translate(14px, -14px) !important;
+  }
+}
+
+
+/* TEMP MOBILE POSITION GRID */
+@media (max-width: 820px) {
+  .menu-home-hero-copy {
+    position: relative !important;
+    background-image:
+      linear-gradient(to right, rgba(255,0,0,.12) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0,0,255,.12) 1px, transparent 1px) !important;
+    background-size: 20px 20px !important;
+  }
+
+  .menu-home-hero-copy::after {
+    content: "20px grid";
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    z-index: 999;
+    font-size: 10px;
+    color: #d00;
+    background: rgba(255,255,255,.85);
+    padding: 2px 5px;
+    border-radius: 4px;
+    pointer-events: none;
+  }
+}
+
+/* MOBILE BUDDY — EXACT POSITION ADJUSTMENT */
+@media (max-width: 820px) {
+  .menu-home-hero-copy > .menu-home-buddy-mobile {
+    transform: translate(42px, 60px) !important;
+  }
+}
+
+
+/* MOBILE BUDDY — FINE POSITION ADJUSTMENT */
+@media (max-width: 820px) {
+  .menu-home-hero-copy > .menu-home-buddy-mobile {
+    transform: translate(57px, 80px) !important;
+  }
+}
+
+
+/* MOBILE BUDDY — MOVE 15PX LOWER */
+@media (max-width: 820px) {
+  .menu-home-hero-copy > .menu-home-buddy-mobile {
+    transform: translate(57px, 95px) !important;
+  }
+}
+
+
+/* MOBILE HERO TEXT — RESERVE SPACE FOR BUDDY ONLY */
+@media (max-width: 820px) {
+
+  .menu-home-hero-copy h1 {
+    padding-right: 92px !important;
+  }
+
+  .menu-home-hero-copy > p {
+    padding-right: 112px !important;
+  }
+}
+
+
+/* REVERT MOBILE HERO TEXT SPACING */
+@media (max-width: 820px) {
+  .menu-home-hero-copy h1 {
+    padding-right: 0 !important;
+  }
+
+  .menu-home-hero-copy > p {
+    padding-right: 0 !important;
+  }
+}
+
+
+/* MOBILE HERO TEXT — FLOW AROUND BUDDY */
+@media (max-width: 820px) {
+
+  .menu-home-hero-copy h1,
+  .menu-home-hero-copy > p {
+    max-width: calc(100% - 105px) !important;
+  }
+
+}
+
+/* REVERT MOBILE HERO TEXT MAX-WIDTH */
+@media (max-width: 820px) {
+  .menu-home-hero-copy h1,
+  .menu-home-hero-copy > p {
+    max-width: none !important;
+  }
+}
+
+
+/* MOBILE HERO — CLEAR TEXT AREA FOR BUDDY */
+@media (max-width: 820px) {
+
+  /* Same size and vertical position — only slightly farther right */
+  .menu-home-hero-copy > .menu-home-buddy-mobile {
+    transform: translate(87px, 95px) !important;
+  }
+
+  /* Rearrange only title + description */
+  .menu-home-hero-copy h1 {
+    padding-right: 72px !important;
+  }
+
+  .menu-home-hero-copy > p {
+    padding-right: 82px !important;
+  }
+}
+
+
+/* =========================================================
+   HEADLINE VISIBILITY — FINAL
+   Desktop title and mobile title are completely separate.
+   ========================================================= */
+
+@media (max-width: 820px) {
+  .menu-home-hero-copy h1 > .menu-home-title-desktop {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  .menu-home-hero-copy h1 > .menu-home-title-mobile {
+    display: block !important;
+    visibility: visible !important;
+  }
+}
+
+@media (min-width: 821px) {
+  .menu-home-hero-copy h1 > .menu-home-title-mobile {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
+  .menu-home-hero-copy h1 > .menu-home-title-desktop {
+    display: inline !important;
+    visibility: visible !important;
+  }
+}
+
+
+/* RESTORE DESKTOP HEADLINE / KEEP MOBILE CUSTOM LINES ONLY */
+@media (min-width: 821px) {
+  .menu-home-title-mobile {
+    display: none !important;
+  }
+
+  .menu-home-title-desktop {
+    display: inline !important;
+    visibility: visible !important;
+  }
+}
+
+@media (max-width: 820px) {
+  .menu-home-title-desktop {
+    display: none !important;
+  }
+
+  .menu-home-title-mobile {
+    display: block !important;
+  }
+}
+
+
+/* DESKTOP HEADLINE COLOR — ONLY "IN MINUTES." BLUE */
+@media (min-width: 821px) {
+  .menu-home-title-desktop {
+    color: #0d1b3a !important;
+  }
+
+  .menu-home-title-desktop > span {
+    color: #4777ee !important;
+  }
+}
+
+/* MOBILE BUDDY — MOVE 30PX UP */
+@media (max-width: 820px) {
+  .menu-home-hero-copy > .menu-home-buddy-mobile {
+    transform: translate(57px, 65px) !important;
+  }
+}
+
+
+/* FIX: custom description must NEVER appear on desktop */
+.menu-home-description-mobile-only {
+  display: none !important;
+}
+
+@media (max-width: 820px) {
+  .menu-home-description-mobile-only {
+    display: block !important;
+  }
+}
+
+@media (min-width: 821px) {
+  .menu-home-description-mobile-only {
+    display: none !important;
+  }
+}
+
+/* MOBILE ONLY — HIDE OLD DESCRIPTION, KEEP NEW DESCRIPTION */
+@media (max-width: 820px) {
+  .menu-home-description-desktop-original {
+    display: none !important;
+  }
+
+  .menu-home-description-mobile-only {
+    display: block !important;
+  }
+}
+
+/* MOBILE BUDDY — 30PX UP */
+@media (max-width: 820px) {
+  .menu-home-hero-copy > .menu-home-buddy-mobile {
+    transform: translate(57px, 35px) !important;
+  }
+}
+
+
+/* MOBILE BUDDY — MOVE 50PX UP */
+@media (max-width: 820px) {
+  .menu-home-hero-copy > .menu-home-buddy-mobile {
+    transform: translate(57px, -15px) !important;
+  }
+}
+
+
+/* STOP BUDDY HOVER / FLOAT ANIMATION — DESKTOP + MOBILE */
+.buddy-mascot,
+.menu-home-buddy-slot,
+.menu-home-buddy-mobile {
+  animation: none !important;
+}
+
+.buddy-mascot canvas {
+  animation: none !important;
+}
+
+/* MOBILE BUDDY — MOVE ANOTHER 15PX UP */
+@media (max-width: 820px) {
+  .menu-home-hero-copy > .menu-home-buddy-mobile {
+    transform: translate(57px, -30px) !important;
+  }
+}
+
+
+/* MOBILE HEADLINE — DROP ONLY "IN MINUTES." */
+@media (max-width: 820px) {
+  .menu-home-title-mobile > span {
+    display: inline-block;
+    transform: translateY(10px);
+  }
+}
+
+/* REVERT MOBILE "IN MINUTES." DROP */
+@media (max-width: 820px) {
+  .menu-home-title-mobile > span {
+    transform: none !important;
+  }
+}
+
+
+/* MOBILE ONLY — MOVE CTA + NOTES 70PX UP */
+@media (max-width: 820px) {
+  .menu-home-hero-actions,
+  .menu-home-hero-notes {
+    transform: translateY(-70px) !important;
+  }
+}
+
+/* MOBILE BUDDY — MOVE 20PX DOWN */
+@media (max-width: 820px) {
+  .menu-home-hero-copy > .menu-home-buddy-mobile {
+    transform: translate(57px, -10px) !important;
+  }
+}
+
+/* =========================================================
+   MOBILE HERO 3D LAYERS — SINGLE SOURCE OF TRUTH
+
+   1. CREATE YOUR / DIGITAL / MENU = behind Buddy
+   2. Buddy = middle
+   3. IN MINUTES. = in front
+   ========================================================= */
+
+@media (max-width: 820px) {
+
+  /*
+    The hero is the shared stacking context.
+    Do NOT change its dimensions or position.
+  */
+  .menu-home-hero-copy {
+    position: relative !important;
+    isolation: isolate !important;
+  }
+
+  /*
+    Critical:
+    H1 and its wrapper must NOT become their own
+    stacking contexts, otherwise both title parts
+    get trapped together above/below Buddy.
+  */
+  .menu-home-hero-copy h1,
+  .menu-home-title-mobile {
+    z-index: auto !important;
+    isolation: auto !important;
+    transform: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+    will-change: auto !important;
+  }
+
+  /* BLACK TEXT — BEHIND BUDDY */
+  .menu-home-title-mobile-back {
+    display: block !important;
+    position: relative !important;
+
+    z-index: 1 !important;
+
+    color: #0d1b3a !important;
+    -webkit-text-fill-color: #0d1b3a !important;
+
+    background: none !important;
+    background-image: none !important;
+  }
+
+  /* BUDDY — MIDDLE */
+  .menu-home-hero-copy > .menu-home-buddy-mobile {
+    z-index: 5 !important;
+  }
+
+  /* BLUE "IN MINUTES." — IN FRONT OF BUDDY */
+  .menu-home-title-mobile-front {
+    display: block !important;
+    position: relative !important;
+
+    z-index: 10 !important;
+
+    color: #4777ee !important;
+    -webkit-text-fill-color: #4777ee !important;
+
+    background: none !important;
+    background-image: none !important;
+  }
+}
+
+/* MOBILE — DEFINITIVE HEADLINE/BUDDY LAYERS */
+@media (max-width: 820px) {
+
+  /* Shared stacking context */
+  .menu-home-hero-copy {
+    position: relative !important;
+    isolation: isolate !important;
+  }
+
+  /* H1 itself must not sit above Buddy as one complete layer */
+  .menu-home-hero-copy h1 {
+    z-index: auto !important;
+    isolation: auto !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  /* Remove the wrapper from stacking entirely */
+  .menu-home-hero-copy h1 > .menu-home-title-mobile {
+    display: contents !important;
+    position: static !important;
+    z-index: auto !important;
+    isolation: auto !important;
+  }
+
+  /* CREATE YOUR / DIGITAL / MENU — BACK */
+  .menu-home-hero-copy .menu-home-title-mobile-back {
+    position: relative !important;
+    z-index: 1 !important;
+
+    color: #0d1b3a !important;
+    -webkit-text-fill-color: #0d1b3a !important;
+  }
+
+  /* BUDDY — MIDDLE
+     POSITION/SIZE ARE NOT TOUCHED */
+  .menu-home-hero-copy > .menu-home-buddy-mobile {
+    z-index: 2 !important;
+  }
+
+  /* IN MINUTES — FRONT */
+  .menu-home-hero-copy .menu-home-title-mobile-front {
+    position: relative !important;
+    z-index: 3 !important;
+
+    color: #4777ee !important;
+    -webkit-text-fill-color: #4777ee !important;
+  }
+}
+

@@ -301,7 +301,9 @@
 
 /* Keep the phone premium but visually clean: no fake side hardware. */
 .menu-home-phone-preview {
+  position: relative;
   isolation: isolate;
+  z-index: 20;
   width: 164px;
   min-height: 334px;
   margin: 20px auto;

@@ -26,7 +26,7 @@ function BuddyModel() {
   const group = useRef();
 
   const { scene } = useGLTF(
-    "/models/buddy.glb"
+    "/models/buddy-tests/buddy-new-50-meshopt.glb"
   );
 
   const buddyScene =
@@ -170,7 +170,7 @@ export default function BuddyMascot() {
           alpha: true,
           antialias: true,
         }}
-        dpr={[1, 1.5]}
+        dpr={[1.5, 2]}
       >
         <ambientLight
           intensity={2.4}
@@ -209,5 +209,5 @@ export default function BuddyMascot() {
 }
 
 useGLTF.preload(
-  "/models/buddy.glb"
+  "/models/buddy-tests/buddy-new-50-meshopt.glb"
 );

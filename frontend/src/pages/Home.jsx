@@ -1,4 +1,6 @@
 import {
+  lazy,
+  Suspense,
   useEffect,
   useState,
 } from "react";
@@ -16,7 +18,6 @@ import UploadProject from "../components/UploadProject";
 import HeroObject3D from "../components/HeroObject3D";
 import ProcessStory from "../components/ProcessStory";
 import DigitalMenuHero from "../components/DigitalMenuHero";
-import BeyondCreator from "../components/BeyondCreator";
 import BeyondCommunity from "../components/BeyondCommunity";
 
 import MyAccount from "../components/MyAccount";
@@ -37,6 +38,8 @@ import "./Home.css";
 import "./HomeTheme.css";
 import "./HomeHeadlineSystem.css";
 import "./HomeMobile.css";
+
+const BeyondCreator = lazy(() => import("../components/BeyondCreator"));
 
 function clamp(
   value,
@@ -66,6 +69,12 @@ function Home() {
     setAuthOpen,
   ] = useState(false);
 
+  // Load the heavy 3D Creator only when the visitor approaches it.
+  const [
+    shouldLoadCreator,
+    setShouldLoadCreator,
+  ] = useState(false);
+
   // BEYOND_SHARED_AUTH_FLOW_V1
   const [
     authInitialMode,
@@ -76,6 +85,40 @@ function Home() {
     accountOpen,
     setAccountOpen,
   ] = useState(false);
+
+  // Load Beyond Creator shortly before it enters the viewport.
+  // Once loaded, it stays mounted for the rest of the session.
+  useEffect(() => {
+    if (shouldLoadCreator) return;
+
+    const creatorElement =
+      document.getElementById("creator");
+
+    if (!creatorElement) return;
+
+    if (!("IntersectionObserver" in window)) {
+      setShouldLoadCreator(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+
+        setShouldLoadCreator(true);
+        observer.disconnect();
+      },
+      {
+        rootMargin: "800px 0px",
+      }
+    );
+
+    observer.observe(creatorElement);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [shouldLoadCreator]);
 
   // BEYOND_PASSWORD_RECOVERY_STATE_V1
   const [
@@ -1328,12 +1371,16 @@ function Home() {
         id="creator"
         className="home-creator-anchor"
       >
-        <BeyondCreator
-          session={session}
-          onRequireAuth={() =>
-            setAuthOpen(true)
-          }
-        />
+        {shouldLoadCreator && (
+          <Suspense fallback={null}>
+            <BeyondCreator
+              session={session}
+              onRequireAuth={() =>
+                setAuthOpen(true)
+              }
+            />
+          </Suspense>
+        )}
       </div>
 
       {/* =========================================

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import {
   ArrowRight,
   Check,
@@ -28,6 +28,14 @@ import beyondLogo from "../assets/beyond-logo-transparent.png";
 
 import "./MenuHome.css";
 import BuddyMascot from "../components/BuddyMascot";
+
+const BuddyChef = lazy(() =>
+  import("../components/BuddyChef")
+);
+
+const BuddyMasterChef = lazy(() =>
+  import("../components/BuddyMasterChef")
+);
 
 const menuAccentTextStyle = {
   background: "linear-gradient(100deg, #3975ec, #6073f2)",
@@ -156,6 +164,41 @@ export default function MenuHomeRefined() {
   const [isMenuStudioAdmin, setIsMenuStudioAdmin] = useState(false);
   const [contactPhone, setContactPhone] = useState("+972-537707072");
   const [contactActionsOpen, setContactActionsOpen] = useState(false);
+
+  // Buddy the Chef — Menu Management only.
+  // Loaded only when this section approaches the viewport.
+  const [shouldLoadBuddyChef, setShouldLoadBuddyChef] = useState(false);
+
+  useEffect(() => {
+    if (shouldLoadBuddyChef) return;
+
+    const section = document.querySelector(
+      ".menu-home-studio-section"
+    );
+
+    if (!section) return;
+
+    if (!("IntersectionObserver" in window)) {
+      setShouldLoadBuddyChef(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+
+        setShouldLoadBuddyChef(true);
+        observer.disconnect();
+      },
+      {
+        rootMargin: "700px 0px",
+      }
+    );
+
+    observer.observe(section);
+
+    return () => observer.disconnect();
+  }, [shouldLoadBuddyChef]);
 
   useEffect(() => {
     document.documentElement.setAttribute("data-beyond-theme", theme);
@@ -423,7 +466,20 @@ export default function MenuHomeRefined() {
           <p>{isHebrew ? "שינוי מחיר, הוספת מנה או עדכון תיאור לא צריכים לחכות להדפסה מחדש. עורכים פעם אחת והשינוי מתעדכן בתפריט." : "Changing a price, adding an item or updating a description should not require a reprint. Edit once and your menu updates."}</p>
           <div className="menu-home-feature-list"><span><Check size={16} />{isHebrew ? "עריכת מחירים ומנות" : "Edit prices and items"}</span><span><Check size={16} />{isHebrew ? "קטגוריות מסודרות" : "Organized categories"}</span><span><Check size={16} />{isHebrew ? "מספר שפות" : "Multiple languages"}</span><span><Check size={16} />{isHebrew ? "תצוגה מקדימה בזמן אמת" : "Live preview"}</span></div>
         </div>
-        <StudioPreview isHebrew={isHebrew} />
+        <div className="menu-home-studio-visual">
+          {shouldLoadBuddyChef && (
+            <div
+              className="menu-home-chef-slot"
+              aria-hidden="true"
+            >
+              <Suspense fallback={null}>
+                <BuddyChef />
+              </Suspense>
+            </div>
+          )}
+
+          <StudioPreview isHebrew={isHebrew} />
+        </div>
       </section>
       <section className="menu-home-access-section" id="qr-nfc">
         <AccessPreview isHebrew={isHebrew} />
@@ -432,6 +488,15 @@ export default function MenuHomeRefined() {
 
       <section className="menu-home-final">
         <div><span>BEYOND MENU</span><h2>{isHebrew ? "התפריט הבא שלכם יכול להיות באוויר היום." : "Your next menu can be live today."}</h2><p>{isHebrew ? "מתחילים פשוט, מעדכנים מתי שרוצים ונותנים ללקוחות חוויה ברורה ומהירה." : "Start simple, update whenever you need, and give customers a clear, fast experience."}</p></div>
+        <div
+          className="menu-home-master-chef-slot"
+          aria-hidden="true"
+        >
+          <Suspense fallback={null}>
+            <BuddyMasterChef />
+          </Suspense>
+        </div>
+
         <div className="menu-home-contact-action-wrap">
           <button type="button" className={`menu-home-primary menu-home-contact-trigger ${contactActionsOpen ? "is-open" : ""}`} onClick={() => setContactActionsOpen(current => !current)} aria-expanded={contactActionsOpen}>{isHebrew ? "צור קשר" : "Contact Us"}</button>
           {contactActionsOpen && (
