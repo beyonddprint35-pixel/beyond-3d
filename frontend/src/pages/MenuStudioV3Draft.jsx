@@ -14,8 +14,11 @@ const UI = {
     hide: "Hide", show: "Show", edit: "Edit", back: "Categories", noDescription: "No description",
     realDraft: "REAL CONTENT · LOCAL DRAFT", designDraft: "DESIGN · DRAFT ONLY", makeItYours: "Make it yours",
     designHint: "Changes update the preview instantly and stay local.", classic: "Classic", visual: "Visual",
-    classicHint: "No photos required", visualHint: "Image-led cards", colors: "Colors", typography: "Typography", layout: "Layout",
+    classicHint: "No photos required", visualHint: "Image-led cards", colors: "Colors", typography: "Typography", layout: "Layout", badges: "Badges",
     accent: "Accent", background: "Background", itemName: "Item name", cardRadius: "Card radius",
+    showBadgeSymbols: "Badge symbols", withSymbols: "Icon + text", textOnly: "Text only", badgeStyle: "Icon style",
+    autoStyle: "Auto", minimalStyle: "Minimal", filledStyle: "Filled", playfulStyle: "Playful",
+    autoStyleHint: "Automatically follows the selected menu template.",
     liveDraftPreview: "LIVE DRAFT PREVIEW", restaurant: "Restaurant", menuUrl: "Menu URL", languages: "Menu languages",
     menuSettings: "Menu settings", safety: "Publishing is disabled in this milestone. Nothing on this screen writes to Supabase.",
     itemDraft: "ITEM · LOCAL DRAFT", editItem: "Edit item", name: "Name", description: "Description", price: "Price",
@@ -36,8 +39,11 @@ const UI = {
     hide: "הסתר", show: "הצג", edit: "עריכה", back: "קטגוריות", noDescription: "ללא תיאור",
     realDraft: "תוכן אמיתי · טיוטה מקומית", designDraft: "עיצוב · טיוטה בלבד", makeItYours: "עצבו את התפריט",
     designHint: "השינויים מתעדכנים מיד בתצוגה ונשארים מקומיים.", classic: "קלאסי", visual: "ויזואלי",
-    classicHint: "לא דורש תמונות", visualHint: "כרטיסים מבוססי תמונה", colors: "צבעים", typography: "טיפוגרפיה", layout: "פריסה",
+    classicHint: "לא דורש תמונות", visualHint: "כרטיסים מבוססי תמונה", colors: "צבעים", typography: "טיפוגרפיה", layout: "פריסה", badges: "תגיות",
     accent: "צבע מוביל", background: "רקע", itemName: "שם פריט", cardRadius: "עיגול כרטיס",
+    showBadgeSymbols: "סמלים בתגיות", withSymbols: "סמל + טקסט", textOnly: "טקסט בלבד", badgeStyle: "סגנון סמלים",
+    autoStyle: "אוטומטי", minimalStyle: "מינימלי", filledStyle: "מלא", playfulStyle: "שובב",
+    autoStyleHint: "הסגנון מותאם אוטומטית לתבנית התפריט שנבחרה.",
     liveDraftPreview: "תצוגה חיה של הטיוטה", restaurant: "מסעדה", menuUrl: "כתובת התפריט", languages: "שפות התפריט",
     menuSettings: "הגדרות תפריט", safety: "הפרסום מושבת בשלב הזה. שום דבר במסך הזה לא נכתב ל-Supabase.",
     itemDraft: "פריט · טיוטה מקומית", editItem: "עריכת פריט", name: "שם", description: "תיאור", price: "מחיר",
@@ -58,8 +64,11 @@ const UI = {
     hide: "إخفاء", show: "إظهار", edit: "تعديل", back: "الفئات", noDescription: "لا يوجد وصف",
     realDraft: "محتوى حقيقي · مسودة محلية", designDraft: "التصميم · مسودة فقط", makeItYours: "صمّم قائمتك",
     designHint: "تظهر التغييرات فورًا في المعاينة وتبقى محلية.", classic: "كلاسيكي", visual: "مرئي",
-    classicHint: "لا يحتاج صورًا", visualHint: "بطاقات تعتمد على الصور", colors: "الألوان", typography: "الخطوط", layout: "التخطيط",
+    classicHint: "لا يحتاج صورًا", visualHint: "بطاقات تعتمد على الصور", colors: "الألوان", typography: "الخطوط", layout: "التخطيط", badges: "الشارات",
     accent: "اللون الرئيسي", background: "الخلفية", itemName: "اسم العنصر", cardRadius: "استدارة البطاقة",
+    showBadgeSymbols: "رموز الشارات", withSymbols: "رمز + نص", textOnly: "نص فقط", badgeStyle: "نمط الرموز",
+    autoStyle: "تلقائي", minimalStyle: "بسيط", filledStyle: "ممتلئ", playfulStyle: "مرح",
+    autoStyleHint: "يتم اختيار النمط تلقائيًا ليتناسب مع قالب القائمة.",
     liveDraftPreview: "معاينة مباشرة للمسودة", restaurant: "المطعم", menuUrl: "رابط القائمة", languages: "لغات القائمة",
     menuSettings: "إعدادات القائمة", safety: "النشر معطّل في هذه المرحلة. لا يتم حفظ أي شيء في Supabase من هذه الشاشة.",
     itemDraft: "عنصر · مسودة محلية", editItem: "تعديل العنصر", name: "الاسم", description: "الوصف", price: "السعر",
@@ -249,11 +258,25 @@ export default function MenuStudioV3Draft() {
                 {["classic","visual"].map(template => <button key={template} className={session.design.template===template?"active":""} onClick={()=>patchDesign(current=>({...current,template}))}><strong>{template==="classic"?t.classic:t.visual}</strong><span>{template==="classic"?t.classicHint:t.visualHint}</span></button>)}
               </div>
               <div className="studio-v3-design-tabs">
-                {["colors","type","layout"].map(key => <button key={key} className={designPanel===key?"active":""} onClick={()=>setDesignPanel(key)}>{key==="colors"?t.colors:key==="type"?t.typography:t.layout}</button>)}
+                {["colors","type","layout","badges"].map(key => <button key={key} className={designPanel===key?"active":""} onClick={()=>setDesignPanel(key)}>{key==="colors"?t.colors:key==="type"?t.typography:key==="layout"?t.layout:t.badges}</button>)}
               </div>
               {designPanel === "colors" && <><label className="studio-v3-color-field"><span>{t.accent}</span><input type="color" value={session.design.theme.accent} onChange={e=>patchDesign(current=>({...current,theme:{...current.theme,accent:e.target.value}}))}/></label><label className="studio-v3-color-field"><span>{t.background}</span><input type="color" value={session.design.theme.background} onChange={e=>patchDesign(current=>({...current,theme:{...current.theme,background:e.target.value}}))}/></label></>}
               {designPanel === "type" && <label className="studio-v3-range-field"><span>{t.itemName} <b>{session.design.typography.itemNameSize}px</b></span><input type="range" min="13" max="22" value={session.design.typography.itemNameSize} onChange={e=>patchDesign(current=>({...current,typography:{...current.typography,itemNameSize:Number(e.target.value)}}))}/></label>}
               {designPanel === "layout" && <label className="studio-v3-range-field"><span>{t.cardRadius} <b>{session.design.layout.cardRadius}px</b></span><input type="range" min="0" max="28" value={session.design.layout.cardRadius} onChange={e=>patchDesign(current=>({...current,layout:{...current.layout,cardRadius:Number(e.target.value)}}))}/></label>}
+              {designPanel === "badges" && (
+                <div className="studio-v3-badge-design-controls">
+                  <div className="studio-v3-control-label">{t.showBadgeSymbols}</div>
+                  <div className="studio-v3-choice-row">
+                    <button className={session.design.badges.showSymbols?"active":""} onClick={()=>patchDesign(current=>({...current,badges:{...current.badges,showSymbols:true}}))}>{t.withSymbols}</button>
+                    <button className={!session.design.badges.showSymbols?"active":""} onClick={()=>patchDesign(current=>({...current,badges:{...current.badges,showSymbols:false}}))}>{t.textOnly}</button>
+                  </div>
+                  <div className="studio-v3-control-label">{t.badgeStyle}</div>
+                  <div className="studio-v3-choice-grid">
+                    {[['auto',t.autoStyle],['minimal',t.minimalStyle],['filled',t.filledStyle],['playful',t.playfulStyle]].map(([value,label])=><button key={value} className={session.design.badges.iconStyle===value?"active":""} disabled={!session.design.badges.showSymbols} onClick={()=>patchDesign(current=>({...current,badges:{...current.badges,iconStyle:value}}))}>{label}</button>)}
+                  </div>
+                  <p className="studio-v3-control-help">{t.autoStyleHint}</p>
+                </div>
+              )}
             </section>
             <section className="studio-v3-preview-panel"><div className="studio-v3-preview-label">{t.liveDraftPreview} · 390PX</div><div className="studio-v3-phone-canvas"><MenuRenderer menu={previewMenu} design={session.design}/></div></section>
           </div>
@@ -267,9 +290,7 @@ export default function MenuStudioV3Draft() {
               <div><span className="studio-v3-eyebrow">{t.analyticsEyebrow}</span><h1>{t.analyticsTitle}</h1><p>{t.analyticsHint}</p></div>
               <div className="studio-v3-analytics-connection"><span className="dot"/><div><strong>{t.trackingNotConnected}</strong><small>{t.trackingNote}</small></div></div>
             </div>
-            <div className="studio-v3-analytics-metrics">
-              <EmptyMetric label={t.menuViews}/><EmptyMetric label={t.categoryViews}/><EmptyMetric label={t.itemImpressions}/><EmptyMetric label={t.itemOpens}/>
-            </div>
+            <div className="studio-v3-analytics-metrics"><EmptyMetric label={t.menuViews}/><EmptyMetric label={t.categoryViews}/><EmptyMetric label={t.itemImpressions}/><EmptyMetric label={t.itemOpens}/></div>
             <div className="studio-v3-analytics-grid">
               {[t.topCategories,t.topItems,t.engagement].map(title => <section className="studio-v3-panel studio-v3-analytics-card" key={title}><span className="studio-v3-eyebrow">{title}</span><div className="studio-v3-analytics-empty"><strong>{t.noData}</strong><span>{t.noDataHint}</span></div></section>)}
               <section className="studio-v3-panel studio-v3-analytics-card recommendation"><span className="studio-v3-eyebrow">{t.recommendations}</span><div className="studio-v3-analytics-empty"><strong>Buddy</strong><span>{t.recommendationHint}</span></div></section>
@@ -290,7 +311,7 @@ export default function MenuStudioV3Draft() {
             {!draftItem.price_options?.length ? <label className="studio-v3-field">{t.price}<input value={draftItem.price||""} onChange={e=>setDraftItem(item=>({...item,price:e.target.value}))}/></label> : null}
             <div className="studio-v3-badge-editor">
               <div className="studio-v3-badge-head"><strong>{t.merchandising}</strong><span>{t.ownerConfirmed}</span></div>
-              <div className="studio-v3-badge-grid studio-v3-merch-grid">{MENU_MERCHANDISING_BADGES.map(key=><button key={key} className={draftItem.metadata?.merchandising?.includes(key)?"active":""} onClick={()=>toggleBadge("merchandising",key)}>{key==="chefs_choice"?"★ ":""}{BADGE_LABELS[key]?.[studioLanguage]||BADGE_LABELS[key]?.en}</button>)}</div>
+              <div className="studio-v3-badge-grid studio-v3-merch-grid">{MENU_MERCHANDISING_BADGES.map(key=><button key={key} className={draftItem.metadata?.merchandising?.includes(key)?"active":""} onClick={()=>toggleBadge("merchandising",key)}>{BADGE_LABELS[key]?.[studioLanguage]||BADGE_LABELS[key]?.en}</button>)}</div>
               <div className="studio-v3-badge-head"><strong>{t.dietary}</strong><span>{t.ownerConfirmed}</span></div>
               <div className="studio-v3-badge-grid">{MENU_DIETARY_BADGES.map(key=><button key={key} className={draftItem.metadata?.dietary?.includes(key)?"active":""} onClick={()=>toggleBadge("dietary",key)}>{BADGE_LABELS[key]?.[studioLanguage]||BADGE_LABELS[key]?.en}</button>)}{MENU_ALLERGENS.map(key=><button key={key} className={draftItem.metadata?.allergens?.includes(key)?"active":""} onClick={()=>toggleBadge("allergens",key)}>{BADGE_LABELS[key]?.[studioLanguage]||BADGE_LABELS[key]?.en}</button>)}</div>
               <label className="studio-v3-field">{t.spiceLevel}<select value={draftItem.metadata?.spice||"none"} onChange={e=>setDraftItem(item=>({...item,metadata:{...item.metadata,spice:e.target.value,reviewedByOwner:true}}))}>{MENU_SPICE_LEVELS.map(key=><option key={key} value={key}>{key==="none"?t.notSpicy:(BADGE_LABELS[key]?.[studioLanguage]||BADGE_LABELS[key]?.en)}</option>)}</select></label>
