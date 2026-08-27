@@ -13,6 +13,7 @@ import MenuBuilder from "./pages/MenuBuilderStable";
 import MenuMobilePreviewPage from "./pages/MenuMobilePreviewPage";
 import MenuEngineV3Dev from "./pages/MenuEngineV3Dev";
 import MenuStudioV3Dev from "./pages/MenuStudioV3Dev";
+import MenuStudioV3RealData from "./pages/MenuStudioV3RealData";
 import CustomerShowcasePortal from "./components/CustomerShowcasePortal";
 
 import "./components/MyAccountAdminShortcut.js";
@@ -52,6 +53,7 @@ function App() {
           <>
             <Route path="/dev/menu-engine-v3" element={<MenuEngineV3Dev />} />
             <Route path="/dev/menu-studio-v3" element={<MenuStudioV3Dev />} />
+            <Route path="/dev/menu-studio-v3-real" element={<MenuStudioV3RealData />} />
           </>
         ) : null}
         <Route path="/admin" element={<Admin />} />
