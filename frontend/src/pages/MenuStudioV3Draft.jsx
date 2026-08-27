@@ -3,13 +3,13 @@ import { useSearchParams } from "react-router-dom";
 import MenuRenderer from "../features/menu-engine/renderer/MenuRenderer";
 import { loadPublishedMenuBySlug } from "../features/menu-engine/data/menuRepository";
 import { createMenuDraftSession, updateDraftDesign, updateDraftMenu } from "../features/menu-engine/studio/draftSession";
-import { MENU_ALLERGENS, MENU_DIETARY_BADGES, MENU_SPICE_LEVELS, BADGE_LABELS } from "../features/menu-engine/domain/itemMetadata";
+import { MENU_ALLERGENS, MENU_DIETARY_BADGES, MENU_MERCHANDISING_BADGES, MENU_SPICE_LEVELS, BADGE_LABELS } from "../features/menu-engine/domain/itemMetadata";
 import "./MenuStudioV3Dev.css";
 import "./MenuStudioV3Draft.css";
 
 const UI = {
   en: {
-    content: "Content", design: "Design", preview: "Preview", settings: "Settings",
+    content: "Content", design: "Design", preview: "Preview", analytics: "Analytics", settings: "Settings",
     categories: "Categories", category: "Category", items: "items", visible: "Visible", hidden: "Hidden",
     hide: "Hide", show: "Show", edit: "Edit", back: "Categories", noDescription: "No description",
     realDraft: "REAL CONTENT · LOCAL DRAFT", designDraft: "DESIGN · DRAFT ONLY", makeItYours: "Make it yours",
@@ -19,13 +19,19 @@ const UI = {
     liveDraftPreview: "LIVE DRAFT PREVIEW", restaurant: "Restaurant", menuUrl: "Menu URL", languages: "Menu languages",
     menuSettings: "Menu settings", safety: "Publishing is disabled in this milestone. Nothing on this screen writes to Supabase.",
     itemDraft: "ITEM · LOCAL DRAFT", editItem: "Edit item", name: "Name", description: "Description", price: "Price",
-    dietary: "Dietary & allergen badges", ownerConfirmed: "Owner-confirmed only", spiceLevel: "Spice level", notSpicy: "Not spicy",
+    dietary: "Dietary & allergen badges", merchandising: "Highlights & merchandising", ownerConfirmed: "Owner-confirmed only", spiceLevel: "Spice level", notSpicy: "Not spicy",
     aiSuggestions: "AI badge suggestions", aiNote: "AI may suggest likely badges from the name and description, but the restaurant must confirm them before they appear publicly.",
     cancel: "Cancel", applyDraft: "Apply to draft", liveLoaded: "LIVE DATA LOADED", unsaved: "UNSAVED DRAFT", noWrites: "NO WRITES",
     ownerLanguage: "Studio language", contentLanguage: "Menu content language", loading: "Loading real menu into a safe draft…",
+    analyticsTitle: "Menu performance", analyticsEyebrow: "ANALYTICS · PRIVACY-FIRST", analyticsHint: "This dashboard is ready for real anonymous menu events. No synthetic numbers are shown.",
+    trackingNotConnected: "Tracking not connected yet", trackingNote: "When the event collector is enabled, this view will show real behavior from your published menu.",
+    menuViews: "Menu views", categoryViews: "Category views", itemImpressions: "Item impressions", itemOpens: "Item opens",
+    topCategories: "Top categories", topItems: "Top items", engagement: "Engagement", recommendations: "Smart recommendations",
+    noData: "No analytics data yet", noDataHint: "We will start filling this automatically after analytics collection is enabled.",
+    recommendationHint: "Buddy will compare impressions, opens, position and category reach to suggest what to move, feature or mark as Popular / Chef’s Choice.",
   },
   he: {
-    content: "תוכן", design: "עיצוב", preview: "תצוגה מקדימה", settings: "הגדרות",
+    content: "תוכן", design: "עיצוב", preview: "תצוגה מקדימה", analytics: "אנליטיקה", settings: "הגדרות",
     categories: "קטגוריות", category: "קטגוריה", items: "פריטים", visible: "גלוי", hidden: "מוסתר",
     hide: "הסתר", show: "הצג", edit: "עריכה", back: "קטגוריות", noDescription: "ללא תיאור",
     realDraft: "תוכן אמיתי · טיוטה מקומית", designDraft: "עיצוב · טיוטה בלבד", makeItYours: "עצבו את התפריט",
@@ -35,13 +41,19 @@ const UI = {
     liveDraftPreview: "תצוגה חיה של הטיוטה", restaurant: "מסעדה", menuUrl: "כתובת התפריט", languages: "שפות התפריט",
     menuSettings: "הגדרות תפריט", safety: "הפרסום מושבת בשלב הזה. שום דבר במסך הזה לא נכתב ל-Supabase.",
     itemDraft: "פריט · טיוטה מקומית", editItem: "עריכת פריט", name: "שם", description: "תיאור", price: "מחיר",
-    dietary: "תגי תזונה ואלרגנים", ownerConfirmed: "באישור בעל העסק בלבד", spiceLevel: "רמת חריפות", notSpicy: "לא חריף",
+    dietary: "תגי תזונה ואלרגנים", merchandising: "הבלטות ושיווק", ownerConfirmed: "באישור בעל העסק בלבד", spiceLevel: "רמת חריפות", notSpicy: "לא חריף",
     aiSuggestions: "הצעות תגיות AI", aiNote: "ה-AI יכול להציע תגיות לפי שם ותיאור הפריט, אך בעל העסק חייב לאשר אותן לפני שיופיעו לציבור.",
     cancel: "ביטול", applyDraft: "החל על הטיוטה", liveLoaded: "נתונים חיים נטענו", unsaved: "טיוטה לא נשמרה", noWrites: "ללא כתיבה",
     ownerLanguage: "שפת הסטודיו", contentLanguage: "שפת תוכן התפריט", loading: "טוען את התפריט האמיתי לטיוטה בטוחה…",
+    analyticsTitle: "ביצועי התפריט", analyticsEyebrow: "אנליטיקה · פרטיות תחילה", analyticsHint: "הדשבורד מוכן לאירועים אנונימיים אמיתיים מהתפריט. לא מוצגים נתונים מלאכותיים.",
+    trackingNotConnected: "המעקב עדיין לא מחובר", trackingNote: "לאחר חיבור איסוף האירועים, המסך יציג שימוש אמיתי בתפריט שפורסם.",
+    menuViews: "צפיות בתפריט", categoryViews: "צפיות בקטגוריות", itemImpressions: "חשיפות לפריטים", itemOpens: "פתיחת פריטים",
+    topCategories: "קטגוריות מובילות", topItems: "פריטים מובילים", engagement: "מעורבות", recommendations: "המלצות חכמות",
+    noData: "אין עדיין נתוני אנליטיקה", noDataHint: "הנתונים יתמלאו אוטומטית לאחר הפעלת איסוף האנליטיקה.",
+    recommendationHint: "Buddy ישווה חשיפות, פתיחות, מיקום והגעה לקטגוריה ויציע מה לקדם, להזיז או לסמן כפופולרי / בחירת השף.",
   },
   ar: {
-    content: "المحتوى", design: "التصميم", preview: "المعاينة", settings: "الإعدادات",
+    content: "المحتوى", design: "التصميم", preview: "المعاينة", analytics: "التحليلات", settings: "الإعدادات",
     categories: "الفئات", category: "الفئة", items: "عناصر", visible: "ظاهر", hidden: "مخفي",
     hide: "إخفاء", show: "إظهار", edit: "تعديل", back: "الفئات", noDescription: "لا يوجد وصف",
     realDraft: "محتوى حقيقي · مسودة محلية", designDraft: "التصميم · مسودة فقط", makeItYours: "صمّم قائمتك",
@@ -51,10 +63,16 @@ const UI = {
     liveDraftPreview: "معاينة مباشرة للمسودة", restaurant: "المطعم", menuUrl: "رابط القائمة", languages: "لغات القائمة",
     menuSettings: "إعدادات القائمة", safety: "النشر معطّل في هذه المرحلة. لا يتم حفظ أي شيء في Supabase من هذه الشاشة.",
     itemDraft: "عنصر · مسودة محلية", editItem: "تعديل العنصر", name: "الاسم", description: "الوصف", price: "السعر",
-    dietary: "شارات الحمية والحساسية", ownerConfirmed: "بتأكيد صاحب المطعم فقط", spiceLevel: "درجة الحدة", notSpicy: "غير حار",
+    dietary: "شارات الحمية والحساسية", merchandising: "إبراز وتسويق العناصر", ownerConfirmed: "بتأكيد صاحب المطعم فقط", spiceLevel: "درجة الحدة", notSpicy: "غير حار",
     aiSuggestions: "اقتراحات شارات بالذكاء الاصطناعي", aiNote: "يمكن للذكاء الاصطناعي اقتراح شارات اعتمادًا على الاسم والوصف، لكن يجب على المطعم تأكيدها قبل ظهورها للعامة.",
     cancel: "إلغاء", applyDraft: "تطبيق على المسودة", liveLoaded: "تم تحميل البيانات", unsaved: "مسودة غير محفوظة", noWrites: "بدون حفظ",
     ownerLanguage: "لغة الاستوديو", contentLanguage: "لغة محتوى القائمة", loading: "جارٍ تحميل القائمة الحقيقية إلى مسودة آمنة…",
+    analyticsTitle: "أداء القائمة", analyticsEyebrow: "التحليلات · الخصوصية أولًا", analyticsHint: "لوحة التحليلات جاهزة لأحداث استخدام حقيقية ومجهولة الهوية. لا نعرض أرقامًا مصطنعة.",
+    trackingNotConnected: "التتبع غير متصل بعد", trackingNote: "بعد تفعيل جامع الأحداث ستعرض هذه الصفحة الاستخدام الحقيقي للقائمة المنشورة.",
+    menuViews: "مشاهدات القائمة", categoryViews: "مشاهدات الفئات", itemImpressions: "ظهور العناصر", itemOpens: "فتح العناصر",
+    topCategories: "أفضل الفئات", topItems: "أفضل العناصر", engagement: "التفاعل", recommendations: "توصيات ذكية",
+    noData: "لا توجد بيانات تحليلات بعد", noDataHint: "ستبدأ البيانات بالظهور تلقائيًا بعد تفعيل جمع التحليلات.",
+    recommendationHint: "سيحلل Buddy الظهور والفتح والموقع والوصول للفئات ليقترح ما يجب تقديمه أو نقله أو تمييزه كشائع / اختيار الشيف.",
   },
 };
 
@@ -65,6 +83,10 @@ function textFor(value, language) {
 function priceText(item) {
   if (item.price_options?.length) return item.price_options.map(option => option.price).filter(Boolean).join(" / ");
   return item.price || "";
+}
+
+function EmptyMetric({ label }) {
+  return <article className="studio-v3-analytics-metric"><span>{label}</span><strong>—</strong><small>Waiting for real events</small></article>;
 }
 
 export default function MenuStudioV3Draft() {
@@ -169,8 +191,8 @@ export default function MenuStudioV3Draft() {
         </div>
       </header>
 
-      <nav className="studio-v3-tabs">
-        {["content","design","preview","settings"].map(key => (
+      <nav className="studio-v3-tabs studio-v3-tabs-five">
+        {["content","design","preview","analytics","settings"].map(key => (
           <button key={key} className={tab===key?"active":""} onClick={()=>{setTab(key);setMobileDetail(false);}}>{t[key]}</button>
         ))}
       </nav>
@@ -239,6 +261,22 @@ export default function MenuStudioV3Draft() {
 
         {tab === "preview" && <section className="studio-v3-preview-full"><div className="studio-v3-preview-switcher">{["320","375","390","430","desktop"].map(size=><button key={size} className={viewport===size?"active":""} onClick={()=>setViewport(size)}>{size==="desktop"?"Desktop":size}</button>)}</div><div className="studio-v3-draft-preview-frame" style={{width:frameWidth}}><MenuRenderer menu={previewMenu} design={session.design}/></div></section>}
 
+        {tab === "analytics" && (
+          <section className="studio-v3-analytics">
+            <div className="studio-v3-analytics-head studio-v3-panel">
+              <div><span className="studio-v3-eyebrow">{t.analyticsEyebrow}</span><h1>{t.analyticsTitle}</h1><p>{t.analyticsHint}</p></div>
+              <div className="studio-v3-analytics-connection"><span className="dot"/><div><strong>{t.trackingNotConnected}</strong><small>{t.trackingNote}</small></div></div>
+            </div>
+            <div className="studio-v3-analytics-metrics">
+              <EmptyMetric label={t.menuViews}/><EmptyMetric label={t.categoryViews}/><EmptyMetric label={t.itemImpressions}/><EmptyMetric label={t.itemOpens}/>
+            </div>
+            <div className="studio-v3-analytics-grid">
+              {[t.topCategories,t.topItems,t.engagement].map(title => <section className="studio-v3-panel studio-v3-analytics-card" key={title}><span className="studio-v3-eyebrow">{title}</span><div className="studio-v3-analytics-empty"><strong>{t.noData}</strong><span>{t.noDataHint}</span></div></section>)}
+              <section className="studio-v3-panel studio-v3-analytics-card recommendation"><span className="studio-v3-eyebrow">{t.recommendations}</span><div className="studio-v3-analytics-empty"><strong>Buddy</strong><span>{t.recommendationHint}</span></div></section>
+            </div>
+          </section>
+        )}
+
         {tab === "settings" && <section className="studio-v3-panel studio-v3-settings-panel"><span className="studio-v3-eyebrow">{t.settings}</span><h1>{t.menuSettings}</h1><div className="studio-v3-setting-row"><span>{t.restaurant}</span><span>{menu.restaurant_name}</span></div><div className="studio-v3-setting-row"><span>{t.menuUrl}</span><span>/menu/{menu.slug}</span></div><div className="studio-v3-setting-row"><span>{t.languages}</span><span>{menuLanguages.join(" + ").toUpperCase()}</span></div><div className="studio-v3-safety-note">{t.safety}</div></section>}
       </main>
 
@@ -250,7 +288,14 @@ export default function MenuStudioV3Draft() {
             <label className="studio-v3-field">{t.name}<input value={draftItem.name?.[contentLanguage]||""} onChange={e=>setDraftItem(item=>({...item,name:{...item.name,[contentLanguage]:e.target.value}}))}/></label>
             <label className="studio-v3-field">{t.description}<textarea rows="3" value={draftItem.description?.[contentLanguage]||""} onChange={e=>setDraftItem(item=>({...item,description:{...item.description,[contentLanguage]:e.target.value}}))}/></label>
             {!draftItem.price_options?.length ? <label className="studio-v3-field">{t.price}<input value={draftItem.price||""} onChange={e=>setDraftItem(item=>({...item,price:e.target.value}))}/></label> : null}
-            <div className="studio-v3-badge-editor"><div className="studio-v3-badge-head"><strong>{t.dietary}</strong><span>{t.ownerConfirmed}</span></div><div className="studio-v3-badge-grid">{MENU_DIETARY_BADGES.map(key=><button key={key} className={draftItem.metadata?.dietary?.includes(key)?"active":""} onClick={()=>toggleBadge("dietary",key)}>{BADGE_LABELS[key]?.[studioLanguage]||BADGE_LABELS[key]?.en}</button>)}{MENU_ALLERGENS.map(key=><button key={key} className={draftItem.metadata?.allergens?.includes(key)?"active":""} onClick={()=>toggleBadge("allergens",key)}>{BADGE_LABELS[key]?.[studioLanguage]||BADGE_LABELS[key]?.en}</button>)}</div><label className="studio-v3-field">{t.spiceLevel}<select value={draftItem.metadata?.spice||"none"} onChange={e=>setDraftItem(item=>({...item,metadata:{...item.metadata,spice:e.target.value,reviewedByOwner:true}}))}>{MENU_SPICE_LEVELS.map(key=><option key={key} value={key}>{key==="none"?t.notSpicy:(BADGE_LABELS[key]?.[studioLanguage]||BADGE_LABELS[key]?.en)}</option>)}</select></label><div className="studio-v3-ai-suggestion-note"><strong>{t.aiSuggestions}</strong><span>{t.aiNote}</span></div></div>
+            <div className="studio-v3-badge-editor">
+              <div className="studio-v3-badge-head"><strong>{t.merchandising}</strong><span>{t.ownerConfirmed}</span></div>
+              <div className="studio-v3-badge-grid studio-v3-merch-grid">{MENU_MERCHANDISING_BADGES.map(key=><button key={key} className={draftItem.metadata?.merchandising?.includes(key)?"active":""} onClick={()=>toggleBadge("merchandising",key)}>{key==="chefs_choice"?"★ ":""}{BADGE_LABELS[key]?.[studioLanguage]||BADGE_LABELS[key]?.en}</button>)}</div>
+              <div className="studio-v3-badge-head"><strong>{t.dietary}</strong><span>{t.ownerConfirmed}</span></div>
+              <div className="studio-v3-badge-grid">{MENU_DIETARY_BADGES.map(key=><button key={key} className={draftItem.metadata?.dietary?.includes(key)?"active":""} onClick={()=>toggleBadge("dietary",key)}>{BADGE_LABELS[key]?.[studioLanguage]||BADGE_LABELS[key]?.en}</button>)}{MENU_ALLERGENS.map(key=><button key={key} className={draftItem.metadata?.allergens?.includes(key)?"active":""} onClick={()=>toggleBadge("allergens",key)}>{BADGE_LABELS[key]?.[studioLanguage]||BADGE_LABELS[key]?.en}</button>)}</div>
+              <label className="studio-v3-field">{t.spiceLevel}<select value={draftItem.metadata?.spice||"none"} onChange={e=>setDraftItem(item=>({...item,metadata:{...item.metadata,spice:e.target.value,reviewedByOwner:true}}))}>{MENU_SPICE_LEVELS.map(key=><option key={key} value={key}>{key==="none"?t.notSpicy:(BADGE_LABELS[key]?.[studioLanguage]||BADGE_LABELS[key]?.en)}</option>)}</select></label>
+              <div className="studio-v3-ai-suggestion-note"><strong>{t.aiSuggestions}</strong><span>{t.aiNote}</span></div>
+            </div>
             <div className="studio-v3-sheet-footer"><button className="studio-v3-secondary" onClick={()=>setDraftItem(null)}>{t.cancel}</button><button className="studio-v3-primary" onClick={saveItemLocally}>{t.applyDraft}</button></div>
           </section>
         </div>
