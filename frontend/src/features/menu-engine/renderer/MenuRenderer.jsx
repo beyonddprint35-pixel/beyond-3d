@@ -17,6 +17,11 @@ function isRtl(language) {
   return language === "he" || language === "ar";
 }
 
+function resolvedBadgeStyle(design) {
+  if (design.badges.iconStyle !== "auto") return design.badges.iconStyle;
+  return design.template === "visual" ? "filled" : "minimal";
+}
+
 function designVariables(design) {
   return {
     "--bme-bg": design.theme.background,
@@ -61,7 +66,7 @@ function Price({ item }) {
   return item.price ? <strong className="bme-price">{item.price}</strong> : null;
 }
 
-function ItemBadges({ item, language }) {
+function ItemBadges({ item, language, design }) {
   const metadata = normalizeItemMetadata(item.metadata);
   const keys = [...metadata.merchandising, ...metadata.dietary, ...metadata.allergens];
   if (metadata.spice !== "none") keys.push(metadata.spice);
@@ -71,7 +76,9 @@ function ItemBadges({ item, language }) {
     <div className="bme-item-badges" aria-label="Item information">
       {keys.map(key => (
         <span key={key} className={`bme-item-badge bme-badge-${key}`}>
-          <span className="bme-item-badge-symbol" aria-hidden="true">{BADGE_SYMBOLS[key] || "•"}</span>
+          {design.badges.showSymbols ? (
+            <span className="bme-item-badge-symbol" aria-hidden="true">{BADGE_SYMBOLS[key] || "•"}</span>
+          ) : null}
           <span>{BADGE_LABELS[key]?.[language] || BADGE_LABELS[key]?.en || key}</span>
         </span>
       ))}
@@ -79,7 +86,7 @@ function ItemBadges({ item, language }) {
   );
 }
 
-function ClassicItem({ item, language }) {
+function ClassicItem({ item, language, design }) {
   const name = chooseText(language, item.name);
   const description = chooseText(language, item.description);
   return (
@@ -87,7 +94,7 @@ function ClassicItem({ item, language }) {
       <div className="bme-item-copy">
         <h3>{name}</h3>
         {description ? <p>{description}</p> : null}
-        <ItemBadges item={item} language={language} />
+        <ItemBadges item={item} language={language} design={design} />
       </div>
       <Price item={item} />
     </article>
@@ -109,7 +116,7 @@ function VisualItem({ item, language, design }) {
         <div className="bme-item-copy">
           <h3>{name}</h3>
           {description ? <p>{description}</p> : null}
-          <ItemBadges item={item} language={language} />
+          <ItemBadges item={item} language={language} design={design} />
         </div>
         <Price item={item} />
       </div>
@@ -130,9 +137,10 @@ export default function MenuRenderer({ menu, design: incomingDesign, accessibili
   const rtl = isRtl(language);
   const isVisual = design.template === "visual";
   const restaurantName = menu?.restaurant_name || "Restaurant";
+  const badgeStyle = resolvedBadgeStyle(design);
 
   return (
-    <div className={`bme-menu bme-template-${design.template}`} style={designVariables(design)} dir={rtl ? "rtl" : "ltr"} lang={language}>
+    <div className={`bme-menu bme-template-${design.template} bme-badge-style-${badgeStyle}`} style={designVariables(design)} dir={rtl ? "rtl" : "ltr"} lang={language}>
       {accessibility ? <RestaurantAccessibility restaurantName={restaurantName} /> : null}
       <header className="bme-header">
         <div className="bme-brand">
@@ -175,7 +183,7 @@ export default function MenuRenderer({ menu, design: incomingDesign, accessibili
               {visibleItems.map(item => isVisual ? (
                 <VisualItem key={item.id} item={item} language={language} design={design} />
               ) : (
-                <ClassicItem key={item.id} item={item} language={language} />
+                <ClassicItem key={item.id} item={item} language={language} design={design} />
               ))}
             </div>
           </section>
