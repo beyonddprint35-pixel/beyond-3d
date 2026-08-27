@@ -22,7 +22,7 @@ function normalizePriceOptions(value) {
       label_ar: text(option?.label_ar),
       price: text(option?.price),
     }))
-    .filter(option => option.price);
+    .filter(option => option.price || option.label || option.label_en || option.label_he || option.label_ar);
 }
 
 function normalizeLanguages(site) {
@@ -35,39 +35,27 @@ function normalizeLanguages(site) {
   return fallback === "he" ? ["he", "en"] : [fallback];
 }
 
-function topLevelGroupId(groupId, groupMap) {
-  let current = groupMap.get(groupId);
-  const visited = new Set();
-  while (current) {
-    if (visited.has(current.id)) return null;
-    visited.add(current.id);
-    if (!current.parent_id) return current.id;
-    current = groupMap.get(current.parent_id);
-  }
-  return null;
-}
-
 export function adaptSupabaseMenuToV3(site, rawGroups = [], rawItems = []) {
-  const groupMap = new Map(rawGroups.map(group => [group.id, group]));
   const groups = rawGroups
-    .filter(group => !group.parent_id)
-    .sort((a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0))
     .map(group => ({
       id: group.id,
+      parent_id: group.parent_id || null,
+      group_key: text(group.group_key),
       name: languageObject(group, "name"),
       visible: group.visible !== false,
       sort_order: Number(group.sort_order || 0),
-    }));
+    }))
+    .sort((a, b) => a.sort_order - b.sort_order);
+
+  const validGroupIds = new Set(groups.map(group => group.id));
 
   const items = rawItems
     .map(item => {
-      const rootGroupId = topLevelGroupId(item.group_id, groupMap);
-      if (!rootGroupId) return null;
+      if (!validGroupIds.has(item.group_id)) return null;
       const options = normalizePriceOptions(item.price_options);
       return {
         id: item.id,
-        group_id: rootGroupId,
-        source_group_id: item.group_id,
+        group_id: item.group_id,
         name: languageObject(item, "name"),
         description: languageObject(item, "description"),
         price: options.length ? "" : text(item.price),
