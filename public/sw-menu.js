@@ -1,6 +1,7 @@
-const CACHE_NAME = "beyond-public-menu-v1";
+const CACHE_NAME = "beyond-public-menu-v2";
 const IMMUTABLE_MENU = /\/published-menus\/[^/]+\/[^/]+\.json$/;
 const ACTIVE_POINTER = /\/published-menus\/by-slug\/[^/]+\.json$/;
+const PUBLIC_MENU_ENDPOINT = "/.netlify/functions/published-menu";
 
 self.addEventListener("install", event => event.waitUntil(self.skipWaiting()));
 self.addEventListener("activate", event => event.waitUntil(self.clients.claim()));
@@ -16,7 +17,7 @@ self.addEventListener("fetch", event => {
     return;
   }
 
-  if (ACTIVE_POINTER.test(url.pathname)) {
+  if (ACTIVE_POINTER.test(url.pathname) || url.pathname === PUBLIC_MENU_ENDPOINT) {
     event.respondWith(networkFirst(request));
   }
 });
