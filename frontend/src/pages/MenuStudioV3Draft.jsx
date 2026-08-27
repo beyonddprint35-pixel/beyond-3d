@@ -2,7 +2,16 @@ import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import MenuRenderer from "../features/menu-engine/renderer/MenuRenderer";
 import { loadPublishedMenuBySlug } from "../features/menu-engine/data/menuRepository";
-import { createMenuDraftSession, updateDraftDesign, updateDraftMenu } from "../features/menu-engine/studio/draftSession";
+import {
+  createMenuDraftSession,
+  discardSavedDraftSession,
+  findSavedDraftSession,
+  restoreSavedDraftSession,
+  saveDraftSessionLocally,
+  updateDraftDesign,
+  updateDraftMenu,
+} from "../features/menu-engine/studio/draftSession";
+import { buildPublishContract, validatePublishContract } from "../features/menu-engine/studio/publishContract";
 import { MENU_ALLERGENS, MENU_DIETARY_BADGES, MENU_MERCHANDISING_BADGES, MENU_SPICE_LEVELS, BADGE_LABELS } from "../features/menu-engine/domain/itemMetadata";
 import "./MenuStudioV3Dev.css";
 import "./MenuStudioV3Draft.css";
@@ -20,12 +29,15 @@ const UI = {
     autoStyle: "Auto", minimalStyle: "Minimal", filledStyle: "Filled", playfulStyle: "Playful",
     autoStyleHint: "Automatically follows the selected menu template.",
     liveDraftPreview: "LIVE DRAFT PREVIEW", restaurant: "Restaurant", menuUrl: "Menu URL", languages: "Menu languages",
-    menuSettings: "Menu settings", safety: "Publishing is disabled in this milestone. Nothing on this screen writes to Supabase.",
+    menuSettings: "Menu settings", safety: "Live publishing remains locked in this milestone. Nothing here changes the current public menu.",
     itemDraft: "ITEM · LOCAL DRAFT", editItem: "Edit item", name: "Name", description: "Description", price: "Price",
     dietary: "Dietary & allergen badges", merchandising: "Highlights & merchandising", ownerConfirmed: "Owner-confirmed only", spiceLevel: "Spice level", notSpicy: "Not spicy",
     aiSuggestions: "AI badge suggestions", aiNote: "AI may suggest likely badges from the name and description, but the restaurant must confirm them before they appear publicly.",
-    cancel: "Cancel", applyDraft: "Apply to draft", liveLoaded: "LIVE DATA LOADED", unsaved: "UNSAVED DRAFT", noWrites: "NO WRITES",
+    cancel: "Cancel", applyDraft: "Apply to draft", liveLoaded: "LIVE DATA LOADED", unsaved: "UNSAVED CHANGES", noWrites: "LIVE PROTECTED",
     ownerLanguage: "Studio language", contentLanguage: "Menu content language", loading: "Loading real menu into a safe draft…",
+    saveDraft: "Save draft", savedDraft: "Draft saved", reviewPublish: "Review publish", publishReady: "Ready for publish migration", publishBlocked: "Publish check failed",
+    savedDraftFound: "A locally saved V3 draft was found for this menu.", restoreDraft: "Restore draft", discardDraft: "Discard saved draft",
+    localOnly: "Saved only in this browser for now.", publishReviewTitle: "Publish readiness", publishReviewNote: "The draft passed the V3 publish contract check. Live publishing is still intentionally locked until the reviewed Supabase migration and transactional publish function are enabled.", close: "Close",
     analyticsTitle: "Menu performance", analyticsEyebrow: "ANALYTICS · PRIVACY-FIRST", analyticsHint: "This dashboard is ready for real anonymous menu events. No synthetic numbers are shown.",
     trackingNotConnected: "Tracking not connected yet", trackingNote: "When the event collector is enabled, this view will show real behavior from your published menu.",
     menuViews: "Menu views", categoryViews: "Category views", itemImpressions: "Item impressions", itemOpens: "Item opens",
@@ -45,12 +57,15 @@ const UI = {
     autoStyle: "אוטומטי", minimalStyle: "מינימלי", filledStyle: "מלא", playfulStyle: "שובב",
     autoStyleHint: "הסגנון מותאם אוטומטית לתבנית התפריט שנבחרה.",
     liveDraftPreview: "תצוגה חיה של הטיוטה", restaurant: "מסעדה", menuUrl: "כתובת התפריט", languages: "שפות התפריט",
-    menuSettings: "הגדרות תפריט", safety: "הפרסום מושבת בשלב הזה. שום דבר במסך הזה לא נכתב ל-Supabase.",
+    menuSettings: "הגדרות תפריט", safety: "הפרסום החי עדיין נעול בשלב הזה. שום דבר כאן לא משנה את התפריט הציבורי הקיים.",
     itemDraft: "פריט · טיוטה מקומית", editItem: "עריכת פריט", name: "שם", description: "תיאור", price: "מחיר",
     dietary: "תגי תזונה ואלרגנים", merchandising: "הבלטות ושיווק", ownerConfirmed: "באישור בעל העסק בלבד", spiceLevel: "רמת חריפות", notSpicy: "לא חריף",
     aiSuggestions: "הצעות תגיות AI", aiNote: "ה-AI יכול להציע תגיות לפי שם ותיאור הפריט, אך בעל העסק חייב לאשר אותן לפני שיופיעו לציבור.",
-    cancel: "ביטול", applyDraft: "החל על הטיוטה", liveLoaded: "נתונים חיים נטענו", unsaved: "טיוטה לא נשמרה", noWrites: "ללא כתיבה",
+    cancel: "ביטול", applyDraft: "החל על הטיוטה", liveLoaded: "נתונים חיים נטענו", unsaved: "שינויים שלא נשמרו", noWrites: "התפריט החי מוגן",
     ownerLanguage: "שפת הסטודיו", contentLanguage: "שפת תוכן התפריט", loading: "טוען את התפריט האמיתי לטיוטה בטוחה…",
+    saveDraft: "שמור טיוטה", savedDraft: "הטיוטה נשמרה", reviewPublish: "בדיקת פרסום", publishReady: "מוכן למיגרציית פרסום", publishBlocked: "בדיקת הפרסום נכשלה",
+    savedDraftFound: "נמצאה טיוטת V3 שמורה מקומית עבור התפריט הזה.", restoreDraft: "שחזר טיוטה", discardDraft: "מחק טיוטה שמורה",
+    localOnly: "כרגע נשמר רק בדפדפן הזה.", publishReviewTitle: "בדיקת מוכנות לפרסום", publishReviewNote: "הטיוטה עברה את בדיקת חוזה הפרסום של V3. הפרסום החי נשאר נעול עד שנאשר ונפעיל את מיגרציית Supabase ואת פעולת הפרסום הטרנזקציונית.", close: "סגור",
     analyticsTitle: "ביצועי התפריט", analyticsEyebrow: "אנליטיקה · פרטיות תחילה", analyticsHint: "הדשבורד מוכן לאירועים אנונימיים אמיתיים מהתפריט. לא מוצגים נתונים מלאכותיים.",
     trackingNotConnected: "המעקב עדיין לא מחובר", trackingNote: "לאחר חיבור איסוף האירועים, המסך יציג שימוש אמיתי בתפריט שפורסם.",
     menuViews: "צפיות בתפריט", categoryViews: "צפיות בקטגוריות", itemImpressions: "חשיפות לפריטים", itemOpens: "פתיחת פריטים",
@@ -70,12 +85,15 @@ const UI = {
     autoStyle: "تلقائي", minimalStyle: "بسيط", filledStyle: "ممتلئ", playfulStyle: "مرح",
     autoStyleHint: "يتم اختيار النمط تلقائيًا ليتناسب مع قالب القائمة.",
     liveDraftPreview: "معاينة مباشرة للمسودة", restaurant: "المطعم", menuUrl: "رابط القائمة", languages: "لغات القائمة",
-    menuSettings: "إعدادات القائمة", safety: "النشر معطّل في هذه المرحلة. لا يتم حفظ أي شيء في Supabase من هذه الشاشة.",
+    menuSettings: "إعدادات القائمة", safety: "النشر المباشر ما زال مقفلاً في هذه المرحلة. لا شيء هنا يغيّر القائمة العامة الحالية.",
     itemDraft: "عنصر · مسودة محلية", editItem: "تعديل العنصر", name: "الاسم", description: "الوصف", price: "السعر",
     dietary: "شارات الحمية والحساسية", merchandising: "إبراز وتسويق العناصر", ownerConfirmed: "بتأكيد صاحب المطعم فقط", spiceLevel: "درجة الحدة", notSpicy: "غير حار",
     aiSuggestions: "اقتراحات شارات بالذكاء الاصطناعي", aiNote: "يمكن للذكاء الاصطناعي اقتراح شارات اعتمادًا على الاسم والوصف، لكن يجب على المطعم تأكيدها قبل ظهورها للعامة.",
-    cancel: "إلغاء", applyDraft: "تطبيق على المسودة", liveLoaded: "تم تحميل البيانات", unsaved: "مسودة غير محفوظة", noWrites: "بدون حفظ",
+    cancel: "إلغاء", applyDraft: "تطبيق على المسودة", liveLoaded: "تم تحميل البيانات", unsaved: "تغييرات غير محفوظة", noWrites: "القائمة المباشرة محمية",
     ownerLanguage: "لغة الاستوديو", contentLanguage: "لغة محتوى القائمة", loading: "جارٍ تحميل القائمة الحقيقية إلى مسودة آمنة…",
+    saveDraft: "حفظ المسودة", savedDraft: "تم حفظ المسودة", reviewPublish: "مراجعة النشر", publishReady: "جاهز لمرحلة النشر", publishBlocked: "فشل فحص النشر",
+    savedDraftFound: "تم العثور على مسودة V3 محفوظة محليًا لهذه القائمة.", restoreDraft: "استعادة المسودة", discardDraft: "حذف المسودة المحفوظة",
+    localOnly: "محفوظة حاليًا في هذا المتصفح فقط.", publishReviewTitle: "جاهزية النشر", publishReviewNote: "اجتازت المسودة فحص عقد النشر V3. يبقى النشر المباشر مقفلاً حتى نعتمد ونفعّل ترحيل Supabase وعملية النشر الذرية.", close: "إغلاق",
     analyticsTitle: "أداء القائمة", analyticsEyebrow: "التحليلات · الخصوصية أولًا", analyticsHint: "لوحة التحليلات جاهزة لأحداث استخدام حقيقية ومجهولة الهوية. لا نعرض أرقامًا مصطنعة.",
     trackingNotConnected: "التتبع غير متصل بعد", trackingNote: "بعد تفعيل جامع الأحداث ستعرض هذه الصفحة الاستخدام الحقيقي للقائمة المنشورة.",
     menuViews: "مشاهدات القائمة", categoryViews: "مشاهدات الفئات", itemImpressions: "ظهور العناصر", itemOpens: "فتح العناصر",
@@ -113,6 +131,8 @@ export default function MenuStudioV3Draft() {
   const [designPanel, setDesignPanel] = useState("colors");
   const [studioLanguage, setStudioLanguage] = useState("en");
   const [contentLanguage, setContentLanguage] = useState("he");
+  const [savedDraftCandidate, setSavedDraftCandidate] = useState(null);
+  const [publishCheck, setPublishCheck] = useState(null);
 
   const t = UI[studioLanguage];
   const studioRtl = studioLanguage === "he" || studioLanguage === "ar";
@@ -127,6 +147,7 @@ export default function MenuStudioV3Draft() {
         setSession(next);
         setSelectedGroupId(next.menu.groups[0]?.id || "");
         setContentLanguage(next.menu.default_language || next.menu.languages?.[0] || "en");
+        setSavedDraftCandidate(findSavedDraftSession(next));
         setStatus("ready");
       })
       .catch(err => {
@@ -163,6 +184,32 @@ export default function MenuStudioV3Draft() {
     setDraftItem(null);
   }
 
+  function saveWholeDraft() {
+    setSession(current => saveDraftSessionLocally(current));
+    setSavedDraftCandidate(null);
+  }
+
+  function restoreWholeDraft() {
+    if (!savedDraftCandidate) return;
+    setSession(current => restoreSavedDraftSession(current, savedDraftCandidate));
+    setSavedDraftCandidate(null);
+  }
+
+  function discardWholeDraft() {
+    setSession(current => discardSavedDraftSession(current));
+    setSavedDraftCandidate(null);
+  }
+
+  function reviewPublish() {
+    try {
+      const contract = buildPublishContract(session);
+      const result = validatePublishContract(contract);
+      setPublishCheck({ ...result, contract });
+    } catch (err) {
+      setPublishCheck({ ok: false, errors: [err?.message || "Publish contract failed"] });
+    }
+  }
+
   function toggleBadge(kind, key) {
     const current = draftItem.metadata?.[kind] || [];
     const exists = current.includes(key);
@@ -193,8 +240,10 @@ export default function MenuStudioV3Draft() {
           <div className="studio-v3-language-switch" aria-label={t.ownerLanguage}>
             {["en","he","ar"].map(code => <button key={code} className={studioLanguage===code?"active":""} onClick={()=>setStudioLanguage(code)}>{code.toUpperCase()}</button>)}
           </div>
+          <button className="studio-v3-save-button" onClick={saveWholeDraft}>{t.saveDraft}</button>
+          <button className="studio-v3-publish-review-button" onClick={reviewPublish}>{t.reviewPublish}</button>
           <div className="studio-v3-draft-status">
-            <span className={session.dirty ? "dirty" : "clean"}>{session.dirty ? t.unsaved : t.liveLoaded}</span>
+            <span className={session.dirty ? "dirty" : "clean"}>{session.dirty ? t.unsaved : (session.localSavedAt ? t.savedDraft : t.liveLoaded)}</span>
             <span className="studio-v3-live">{t.noWrites}</span>
           </div>
         </div>
@@ -205,6 +254,16 @@ export default function MenuStudioV3Draft() {
           <button key={key} className={tab===key?"active":""} onClick={()=>{setTab(key);setMobileDetail(false);}}>{t[key]}</button>
         ))}
       </nav>
+
+      {savedDraftCandidate ? (
+        <div className="studio-v3-restore-banner">
+          <div><strong>{t.savedDraftFound}</strong><span>{t.localOnly}</span></div>
+          <div className="studio-v3-restore-actions">
+            <button onClick={restoreWholeDraft}>{t.restoreDraft}</button>
+            <button className="secondary" onClick={discardWholeDraft}>{t.discardDraft}</button>
+          </div>
+        </div>
+      ) : null}
 
       <main className="studio-v3-main">
         {tab === "content" && (
@@ -321,6 +380,18 @@ export default function MenuStudioV3Draft() {
           </section>
         </div>
       )}
+
+      {publishCheck ? (
+        <div className="studio-v3-modal-backdrop" onMouseDown={()=>setPublishCheck(null)}>
+          <section className="studio-v3-publish-review" onMouseDown={e=>e.stopPropagation()}>
+            <span className={`studio-v3-publish-check ${publishCheck.ok ? "ok" : "error"}`}>{publishCheck.ok ? "✓" : "!"}</span>
+            <h2>{t.publishReviewTitle}</h2>
+            <strong>{publishCheck.ok ? t.publishReady : t.publishBlocked}</strong>
+            {publishCheck.ok ? <p>{t.publishReviewNote}</p> : <p>{publishCheck.errors?.join(" · ")}</p>}
+            <button onClick={()=>setPublishCheck(null)}>{t.close}</button>
+          </section>
+        </div>
+      ) : null}
     </div>
   );
 }
