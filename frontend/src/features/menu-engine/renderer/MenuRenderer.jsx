@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import RestaurantAccessibility from "../../../components/RestaurantAccessibility";
 import { normalizeMenuDesign } from "../domain/designSchema";
+import { BADGE_LABELS, normalizeItemMetadata } from "../domain/itemMetadata";
 import "./menuRenderer.css";
 
 function chooseText(language, values = {}) {
@@ -45,7 +46,6 @@ function designVariables(design) {
 
 function Price({ item }) {
   const options = Array.isArray(item.price_options) ? item.price_options : [];
-
   if (options.length) {
     return (
       <div className="bme-price-options">
@@ -58,19 +58,35 @@ function Price({ item }) {
       </div>
     );
   }
-
   return item.price ? <strong className="bme-price">{item.price}</strong> : null;
+}
+
+function ItemBadges({ item, language }) {
+  const metadata = normalizeItemMetadata(item.metadata);
+  const keys = [...metadata.dietary, ...metadata.allergens];
+  if (metadata.spice !== "none") keys.push(metadata.spice);
+  if (!keys.length) return null;
+
+  return (
+    <div className="bme-item-badges" aria-label="Item information">
+      {keys.map(key => (
+        <span key={key} className={`bme-item-badge bme-badge-${key}`}>
+          {BADGE_LABELS[key]?.[language] || BADGE_LABELS[key]?.en || key}
+        </span>
+      ))}
+    </div>
+  );
 }
 
 function ClassicItem({ item, language }) {
   const name = chooseText(language, item.name);
   const description = chooseText(language, item.description);
-
   return (
     <article className="bme-classic-item">
       <div className="bme-item-copy">
         <h3>{name}</h3>
         {description ? <p>{description}</p> : null}
+        <ItemBadges item={item} language={language} />
       </div>
       <Price item={item} />
     </article>
@@ -81,25 +97,18 @@ function VisualItem({ item, language, design }) {
   const name = chooseText(language, item.name);
   const description = chooseText(language, item.description);
   const hasImage = Boolean(item.image_url);
-
   return (
-    <article
-      className={`bme-visual-item bme-image-${design.layout.itemImagePosition}`}
-      data-image-ratio={design.layout.itemImageRatio}
-    >
+    <article className={`bme-visual-item bme-image-${design.layout.itemImagePosition}`} data-image-ratio={design.layout.itemImageRatio}>
       {hasImage ? (
-        <div className="bme-item-media">
-          <img src={item.image_url} alt={name} />
-        </div>
+        <div className="bme-item-media"><img src={item.image_url} alt={name} /></div>
       ) : (
-        <div className="bme-item-media bme-item-media-placeholder" aria-hidden="true">
-          <span>BEYOND</span>
-        </div>
+        <div className="bme-item-media bme-item-media-placeholder" aria-hidden="true"><span>BEYOND</span></div>
       )}
       <div className="bme-visual-copy">
         <div className="bme-item-copy">
           <h3>{name}</h3>
           {description ? <p>{description}</p> : null}
+          <ItemBadges item={item} language={language} />
         </div>
         <Price item={item} />
       </div>
@@ -107,11 +116,7 @@ function VisualItem({ item, language, design }) {
   );
 }
 
-export default function MenuRenderer({
-  menu,
-  design: incomingDesign,
-  accessibility = true,
-}) {
+export default function MenuRenderer({ menu, design: incomingDesign, accessibility = true }) {
   const design = useMemo(() => normalizeMenuDesign(incomingDesign), [incomingDesign]);
   const languages = Array.isArray(menu?.languages) && menu.languages.length ? menu.languages : ["en"];
   const [language, setLanguage] = useState(menu?.default_language || languages[0] || "en");
@@ -120,22 +125,14 @@ export default function MenuRenderer({
   const groups = Array.isArray(menu?.groups) ? menu.groups : [];
   const items = Array.isArray(menu?.items) ? menu.items : [];
   const activeGroup = groups.find(group => group.id === activeGroupId) || groups[0] || null;
-  const visibleItems = activeGroup ? items.filter(item => item.group_id === activeGroup.id) : [];
+  const visibleItems = activeGroup ? items.filter(item => item.group_id === activeGroup.id && item.visible !== false) : [];
   const rtl = isRtl(language);
   const isVisual = design.template === "visual";
   const restaurantName = menu?.restaurant_name || "Restaurant";
 
   return (
-    <div
-      className={`bme-menu bme-template-${design.template}`}
-      style={designVariables(design)}
-      dir={rtl ? "rtl" : "ltr"}
-      lang={language}
-    >
-      {accessibility ? (
-        <RestaurantAccessibility restaurantName={restaurantName} />
-      ) : null}
-
+    <div className={`bme-menu bme-template-${design.template}`} style={designVariables(design)} dir={rtl ? "rtl" : "ltr"} lang={language}>
+      {accessibility ? <RestaurantAccessibility restaurantName={restaurantName} /> : null}
       <header className="bme-header">
         <div className="bme-brand">
           {menu?.logo_url ? <img src={menu.logo_url} alt="" /> : null}
@@ -144,18 +141,10 @@ export default function MenuRenderer({
             {menu?.subtitle ? <span>{chooseText(language, menu.subtitle)}</span> : null}
           </div>
         </div>
-
         {languages.length > 1 ? (
           <div className="bme-languages" aria-label="Menu language">
             {languages.map(code => (
-              <button
-                key={code}
-                type="button"
-                className={language === code ? "active" : ""}
-                onClick={() => setLanguage(code)}
-              >
-                {code.toUpperCase()}
-              </button>
+              <button key={code} type="button" className={language === code ? "active" : ""} onClick={() => setLanguage(code)}>{code.toUpperCase()}</button>
             ))}
           </div>
         ) : null}
@@ -167,13 +156,8 @@ export default function MenuRenderer({
       </section>
 
       <nav className="bme-category-nav" aria-label="Menu categories">
-        {groups.map(group => (
-          <button
-            key={group.id}
-            type="button"
-            className={activeGroup?.id === group.id ? "active" : ""}
-            onClick={() => setActiveGroupId(group.id)}
-          >
+        {groups.filter(group => group.visible !== false).map(group => (
+          <button key={group.id} type="button" className={activeGroup?.id === group.id ? "active" : ""} onClick={() => setActiveGroupId(group.id)}>
             {chooseText(language, group.name)}
           </button>
         ))}
@@ -186,20 +170,15 @@ export default function MenuRenderer({
               <h2>{chooseText(language, activeGroup.name)}</h2>
               <span>{visibleItems.length} items</span>
             </div>
-
             <div className={isVisual ? "bme-visual-grid" : "bme-classic-list"}>
-              {visibleItems.map(item =>
-                isVisual ? (
-                  <VisualItem key={item.id} item={item} language={language} design={design} />
-                ) : (
-                  <ClassicItem key={item.id} item={item} language={language} />
-                )
-              )}
+              {visibleItems.map(item => isVisual ? (
+                <VisualItem key={item.id} item={item} language={language} design={design} />
+              ) : (
+                <ClassicItem key={item.id} item={item} language={language} />
+              ))}
             </div>
           </section>
-        ) : (
-          <div className="bme-empty">No menu categories yet.</div>
-        )}
+        ) : <div className="bme-empty">No menu categories yet.</div>}
       </main>
     </div>
   );
