@@ -63,7 +63,7 @@ function Price({ item }) {
 
 function ItemBadges({ item, language }) {
   const metadata = normalizeItemMetadata(item.metadata);
-  const keys = [...metadata.dietary, ...metadata.allergens];
+  const keys = [...metadata.merchandising, ...metadata.dietary, ...metadata.allergens];
   if (metadata.spice !== "none") keys.push(metadata.spice);
   if (!keys.length) return null;
 
