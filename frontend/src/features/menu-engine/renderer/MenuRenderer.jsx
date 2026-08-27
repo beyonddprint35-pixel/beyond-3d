@@ -4,6 +4,8 @@ import { normalizeMenuDesign } from "../domain/designSchema";
 import { BADGE_LABELS, BADGE_SYMBOLS, normalizeItemMetadata } from "../domain/itemMetadata";
 import "./menuRenderer.css";
 
+const DEFAULT_CURRENCY_SYMBOL = "₪";
+
 function chooseText(language, values = {}) {
   const en = values.en || "";
   const he = values.he || "";
@@ -20,6 +22,18 @@ function isRtl(language) {
 function resolvedBadgeStyle(design) {
   if (design.badges.iconStyle !== "auto") return design.badges.iconStyle;
   return design.template === "visual" ? "filled" : "minimal";
+}
+
+function cleanPrice(value) {
+  return String(value ?? "")
+    .replace(/₪/g, "")
+    .replace(/\b(?:ILS|NIS)\b/gi, "")
+    .trim();
+}
+
+function formatPrice(value, currencySymbol) {
+  const clean = cleanPrice(value);
+  return clean ? `${currencySymbol}${clean}` : "";
 }
 
 function designVariables(design) {
@@ -49,7 +63,7 @@ function designVariables(design) {
   };
 }
 
-function Price({ item }) {
+function Price({ item, currencySymbol }) {
   const options = Array.isArray(item.price_options) ? item.price_options : [];
   if (options.length) {
     return (
@@ -57,13 +71,13 @@ function Price({ item }) {
         {options.map((option, index) => (
           <span key={`${option.price}-${index}`} className="bme-price-option">
             {option.label ? <small>{option.label}</small> : null}
-            <strong>{option.price}</strong>
+            <strong>{formatPrice(option.price, currencySymbol)}</strong>
           </span>
         ))}
       </div>
     );
   }
-  return item.price ? <strong className="bme-price">{item.price}</strong> : null;
+  return item.price ? <strong className="bme-price">{formatPrice(item.price, currencySymbol)}</strong> : null;
 }
 
 function ItemBadges({ item, language, design }) {
@@ -76,9 +90,7 @@ function ItemBadges({ item, language, design }) {
     <div className="bme-item-badges" aria-label="Item information">
       {keys.map(key => (
         <span key={key} className={`bme-item-badge bme-badge-${key}`}>
-          {design.badges.showSymbols ? (
-            <span className="bme-item-badge-symbol" aria-hidden="true">{BADGE_SYMBOLS[key] || "•"}</span>
-          ) : null}
+          {design.badges.showSymbols ? <span className="bme-item-badge-symbol" aria-hidden="true">{BADGE_SYMBOLS[key] || "•"}</span> : null}
           <span>{BADGE_LABELS[key]?.[language] || BADGE_LABELS[key]?.en || key}</span>
         </span>
       ))}
@@ -86,7 +98,7 @@ function ItemBadges({ item, language, design }) {
   );
 }
 
-function ClassicItem({ item, language, design }) {
+function ClassicItem({ item, language, design, currencySymbol }) {
   const name = chooseText(language, item.name);
   const description = chooseText(language, item.description);
   return (
@@ -96,29 +108,25 @@ function ClassicItem({ item, language, design }) {
         {description ? <p>{description}</p> : null}
         <ItemBadges item={item} language={language} design={design} />
       </div>
-      <Price item={item} />
+      <Price item={item} currencySymbol={currencySymbol} />
     </article>
   );
 }
 
-function VisualItem({ item, language, design }) {
+function VisualItem({ item, language, design, currencySymbol }) {
   const name = chooseText(language, item.name);
   const description = chooseText(language, item.description);
   const hasImage = Boolean(item.image_url);
   return (
     <article className={`bme-visual-item bme-image-${design.layout.itemImagePosition}`} data-image-ratio={design.layout.itemImageRatio}>
-      {hasImage ? (
-        <div className="bme-item-media"><img src={item.image_url} alt={name} /></div>
-      ) : (
-        <div className="bme-item-media bme-item-media-placeholder" aria-hidden="true"><span>BEYOND</span></div>
-      )}
+      {hasImage ? <div className="bme-item-media"><img src={item.image_url} alt={name} /></div> : <div className="bme-item-media bme-item-media-placeholder" aria-hidden="true"><span>BEYOND</span></div>}
       <div className="bme-visual-copy">
         <div className="bme-item-copy">
           <h3>{name}</h3>
           {description ? <p>{description}</p> : null}
           <ItemBadges item={item} language={language} design={design} />
         </div>
-        <Price item={item} />
+        <Price item={item} currencySymbol={currencySymbol} />
       </div>
     </article>
   );
@@ -138,6 +146,7 @@ export default function MenuRenderer({ menu, design: incomingDesign, accessibili
   const isVisual = design.template === "visual";
   const restaurantName = menu?.restaurant_name || "Restaurant";
   const badgeStyle = resolvedBadgeStyle(design);
+  const currencySymbol = menu?.currency_symbol || DEFAULT_CURRENCY_SYMBOL;
 
   return (
     <div className={`bme-menu bme-template-${design.template} bme-badge-style-${badgeStyle}`} style={designVariables(design)} dir={rtl ? "rtl" : "ltr"} lang={language}>
@@ -145,49 +154,20 @@ export default function MenuRenderer({ menu, design: incomingDesign, accessibili
       <header className="bme-header">
         <div className="bme-brand">
           {menu?.logo_url ? <img src={menu.logo_url} alt="" /> : null}
-          <div>
-            <strong>{restaurantName}</strong>
-            {menu?.subtitle ? <span>{chooseText(language, menu.subtitle)}</span> : null}
-          </div>
+          <div><strong>{restaurantName}</strong>{menu?.subtitle ? <span>{chooseText(language, menu.subtitle)}</span> : null}</div>
         </div>
-        {languages.length > 1 ? (
-          <div className="bme-languages" aria-label="Menu language">
-            {languages.map(code => (
-              <button key={code} type="button" className={language === code ? "active" : ""} onClick={() => setLanguage(code)}>{code.toUpperCase()}</button>
-            ))}
-          </div>
-        ) : null}
+        {languages.length > 1 ? <div className="bme-languages" aria-label="Menu language">{languages.map(code => <button key={code} type="button" className={language === code ? "active" : ""} onClick={() => setLanguage(code)}>{code.toUpperCase()}</button>)}</div> : null}
       </header>
 
-      <section className="bme-hero">
-        <span>{chooseText(language, menu?.hero_kicker)}</span>
-        <h1>{chooseText(language, menu?.hero_title) || restaurantName || "Our Menu"}</h1>
-      </section>
+      <section className="bme-hero"><span>{chooseText(language, menu?.hero_kicker)}</span><h1>{chooseText(language, menu?.hero_title) || restaurantName || "Our Menu"}</h1></section>
 
-      <nav className="bme-category-nav" aria-label="Menu categories">
-        {groups.filter(group => group.visible !== false).map(group => (
-          <button key={group.id} type="button" className={activeGroup?.id === group.id ? "active" : ""} onClick={() => setActiveGroupId(group.id)}>
-            {chooseText(language, group.name)}
-          </button>
-        ))}
-      </nav>
+      <nav className="bme-category-nav" aria-label="Menu categories">{groups.filter(group => group.visible !== false).map(group => <button key={group.id} type="button" className={activeGroup?.id === group.id ? "active" : ""} onClick={() => setActiveGroupId(group.id)}>{chooseText(language, group.name)}</button>)}</nav>
 
       <main id="restaurant-main-content" className="bme-content" tabIndex="-1">
-        {activeGroup ? (
-          <section className="bme-section">
-            <div className="bme-section-heading">
-              <h2>{chooseText(language, activeGroup.name)}</h2>
-              <span>{visibleItems.length} items</span>
-            </div>
-            <div className={isVisual ? "bme-visual-grid" : "bme-classic-list"}>
-              {visibleItems.map(item => isVisual ? (
-                <VisualItem key={item.id} item={item} language={language} design={design} />
-              ) : (
-                <ClassicItem key={item.id} item={item} language={language} design={design} />
-              ))}
-            </div>
-          </section>
-        ) : <div className="bme-empty">No menu categories yet.</div>}
+        {activeGroup ? <section className="bme-section">
+          <div className="bme-section-heading"><h2>{chooseText(language, activeGroup.name)}</h2><span>{visibleItems.length} items</span></div>
+          <div className={isVisual ? "bme-visual-grid" : "bme-classic-list"}>{visibleItems.map(item => isVisual ? <VisualItem key={item.id} item={item} language={language} design={design} currencySymbol={currencySymbol} /> : <ClassicItem key={item.id} item={item} language={language} design={design} currencySymbol={currencySymbol} />)}</div>
+        </section> : <div className="bme-empty">No menu categories yet.</div>}
       </main>
     </div>
   );
