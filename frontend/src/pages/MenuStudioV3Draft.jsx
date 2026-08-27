@@ -11,7 +11,13 @@ import {
   updateDraftMenu,
 } from "../features/menu-engine/studio/draftSession";
 import { buildPublishContract, validatePublishContract } from "../features/menu-engine/studio/publishContract";
-import { MENU_ALLERGENS, MENU_DIETARY_BADGES, MENU_MERCHANDISING_BADGES, MENU_SPICE_LEVELS, BADGE_LABELS } from "../features/menu-engine/domain/itemMetadata";
+import {
+  MENU_ALLERGENS,
+  MENU_DIETARY_BADGES,
+  MENU_MERCHANDISING_BADGES,
+  MENU_SPICE_LEVELS,
+  BADGE_LABELS,
+} from "../features/menu-engine/domain/itemMetadata";
 import "./MenuStudioV3Dev.css";
 import "./MenuStudioV3Draft.css";
 
@@ -29,7 +35,8 @@ const UI = {
     autoStyleHint: "Automatically follows the selected menu template.",
     liveDraftPreview: "LIVE PREVIEW", restaurant: "Restaurant", menuUrl: "Menu URL", languages: "Menu languages",
     menuSettings: "Menu settings", safety: "Changes are saved automatically. They become visible to customers only when you publish.",
-    itemDraft: "ITEM", editItem: "Edit item", name: "Name", description: "Description", price: "Price",
+    itemDraft: "ITEM", editItem: "Edit item", name: "Name", description: "Description", price: "Price", prices: "Prices",
+    currencyHint: "Currency is added automatically", optionLabel: "Price label",
     dietary: "Dietary & allergen badges", merchandising: "Highlights & merchandising", ownerConfirmed: "Owner-confirmed only", spiceLevel: "Spice level", notSpicy: "Not spicy",
     aiSuggestions: "AI badge suggestions", aiNote: "AI may suggest likely badges from the name and description, but the restaurant must confirm them before they appear publicly.",
     cancel: "Cancel", applyDraft: "Apply", saving: "Saving…", allSaved: "All changes saved", publish: "Publish",
@@ -57,7 +64,8 @@ const UI = {
     autoStyleHint: "הסגנון מותאם אוטומטית לתבנית התפריט שנבחרה.",
     liveDraftPreview: "תצוגה חיה", restaurant: "מסעדה", menuUrl: "כתובת התפריט", languages: "שפות התפריט",
     menuSettings: "הגדרות תפריט", safety: "השינויים נשמרים אוטומטית ויופיעו ללקוחות רק לאחר פרסום.",
-    itemDraft: "פריט", editItem: "עריכת פריט", name: "שם", description: "תיאור", price: "מחיר",
+    itemDraft: "פריט", editItem: "עריכת פריט", name: "שם", description: "תיאור", price: "מחיר", prices: "מחירים",
+    currencyHint: "סמל המטבע מתווסף אוטומטית", optionLabel: "תווית מחיר",
     dietary: "תגי תזונה ואלרגנים", merchandising: "הבלטות ושיווק", ownerConfirmed: "באישור בעל העסק בלבד", spiceLevel: "רמת חריפות", notSpicy: "לא חריף",
     aiSuggestions: "הצעות תגיות AI", aiNote: "ה-AI יכול להציע תגיות לפי שם ותיאור הפריט, אך בעל העסק חייב לאשר אותן לפני שיופיעו לציבור.",
     cancel: "ביטול", applyDraft: "החל", saving: "שומר…", allSaved: "כל השינויים נשמרו", publish: "פרסום",
@@ -85,7 +93,8 @@ const UI = {
     autoStyleHint: "يتم اختيار النمط تلقائيًا ليتناسب مع قالب القائمة.",
     liveDraftPreview: "معاينة مباشرة", restaurant: "المطعم", menuUrl: "رابط القائمة", languages: "لغات القائمة",
     menuSettings: "إعدادات القائمة", safety: "يتم حفظ التغييرات تلقائيًا ولن تظهر للعملاء إلا بعد النشر.",
-    itemDraft: "عنصر", editItem: "تعديل العنصر", name: "الاسم", description: "الوصف", price: "السعر",
+    itemDraft: "عنصر", editItem: "تعديل العنصر", name: "الاسم", description: "الوصف", price: "السعر", prices: "الأسعار",
+    currencyHint: "تتم إضافة رمز العملة تلقائيًا", optionLabel: "تسمية السعر",
     dietary: "شارات الحمية والحساسية", merchandising: "إبراز وتسويق العناصر", ownerConfirmed: "بتأكيد صاحب المطعم فقط", spiceLevel: "درجة الحدة", notSpicy: "غير حار",
     aiSuggestions: "اقتراحات شارات بالذكاء الاصطناعي", aiNote: "يمكن للذكاء الاصطناعي اقتراح شارات اعتمادًا على الاسم والوصف، لكن يجب على المطعم تأكيدها قبل ظهورها للعامة.",
     cancel: "إلغاء", applyDraft: "تطبيق", saving: "جارٍ الحفظ…", allSaved: "تم حفظ جميع التغييرات", publish: "نشر",
@@ -102,17 +111,70 @@ const UI = {
   },
 };
 
+const CURRENCY_SYMBOL = "₪";
+
 function textFor(value, language) {
   return value?.[language] || value?.en || value?.he || value?.ar || "";
 }
 
-function priceText(item) {
-  if (item.price_options?.length) return item.price_options.map(option => option.price).filter(Boolean).join(" / ");
-  return item.price || "";
+function cleanPrice(value) {
+  return String(value ?? "")
+    .replace(/₪/g, "")
+    .replace(/\b(?:ILS|NIS)\b/gi, "")
+    .trim();
+}
+
+function displayPrice(value, currencySymbol = CURRENCY_SYMBOL) {
+  const clean = cleanPrice(value);
+  return clean ? `${currencySymbol}${clean}` : "";
+}
+
+function priceText(item, currencySymbol = CURRENCY_SYMBOL) {
+  if (item.price_options?.length) {
+    return item.price_options.map(option => displayPrice(option.price, currencySymbol)).filter(Boolean).join(" / ");
+  }
+  return displayPrice(item.price, currencySymbol);
 }
 
 function EmptyMetric({ label, waitingLabel }) {
   return <article className="studio-v3-analytics-metric"><span>{label}</span><strong>—</strong><small>{waitingLabel}</small></article>;
+}
+
+function PriceEditor({ item, setItem, t, currencySymbol }) {
+  const options = Array.isArray(item.price_options) ? item.price_options : [];
+
+  if (!options.length) {
+    return (
+      <label className="studio-v3-field studio-v3-price-field">
+        <span className="studio-v3-field-label-row"><span>{t.price}</span><small>{t.currencyHint}</small></span>
+        <span className="studio-v3-money-input"><span aria-hidden="true">{currencySymbol}</span><input inputMode="decimal" value={cleanPrice(item.price)} onChange={e=>setItem(current=>({...current,price:cleanPrice(e.target.value)}))}/></span>
+      </label>
+    );
+  }
+
+  return (
+    <div className="studio-v3-price-options-editor">
+      <div className="studio-v3-field-label-row"><strong>{t.prices}</strong><small>{t.currencyHint}</small></div>
+      {options.map((option, index) => (
+        <div className="studio-v3-price-option-edit" key={`${index}-${option.label || "price"}`}>
+          <label className="studio-v3-field compact">
+            <span>{t.optionLabel}</span>
+            <input value={option[`label_${item.__contentLanguage || ""}`] || option.label || ""} onChange={e=>setItem(current=>({
+              ...current,
+              price_options: current.price_options.map((row,rowIndex)=>rowIndex===index?{...row,label:e.target.value}:row),
+            }))}/>
+          </label>
+          <label className="studio-v3-field compact">
+            <span>{t.price}</span>
+            <span className="studio-v3-money-input"><span aria-hidden="true">{currencySymbol}</span><input inputMode="decimal" value={cleanPrice(option.price)} onChange={e=>setItem(current=>({
+              ...current,
+              price_options: current.price_options.map((row,rowIndex)=>rowIndex===index?{...row,price:cleanPrice(e.target.value)}:row),
+            }))}/></span>
+          </label>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 export default function MenuStudioV3Draft() {
@@ -166,6 +228,7 @@ export default function MenuStudioV3Draft() {
   }, [session?.dirty, session?.menu, session?.design]);
 
   const menu = session?.menu;
+  const currencySymbol = menu?.currency_symbol || CURRENCY_SYMBOL;
   const selectedGroup = menu?.groups?.find(group => group.id === selectedGroupId) || menu?.groups?.[0] || null;
   const selectedItems = selectedGroup ? menu.items.filter(item => item.group_id === selectedGroup.id) : [];
   const frameWidth = viewport === "desktop" ? "min(1080px,100%)" : `${viewport}px`;
@@ -174,6 +237,8 @@ export default function MenuStudioV3Draft() {
     if (!menu) return null;
     return {
       ...menu,
+      currency: menu.currency || "ILS",
+      currency_symbol: menu.currency_symbol || CURRENCY_SYMBOL,
       default_language: contentLanguage,
       groups: menu.groups.filter(group => group.visible !== false),
       items: menu.items.filter(item => item.visible !== false),
@@ -182,11 +247,12 @@ export default function MenuStudioV3Draft() {
 
   function patchMenu(updater) { setSession(current => updateDraftMenu(current, updater)); }
   function patchDesign(updater) { setSession(current => updateDraftDesign(current, updater)); }
-  function openItem(item) { setEditingItemId(item.id); setDraftItem(JSON.parse(JSON.stringify(item))); }
+  function openItem(item) { setEditingItemId(item.id); setDraftItem({ ...JSON.parse(JSON.stringify(item)), __contentLanguage: contentLanguage }); }
 
   function saveItemLocally() {
     if (!draftItem) return;
-    patchMenu(current => ({ ...current, items: current.items.map(item => item.id === editingItemId ? draftItem : item) }));
+    const { __contentLanguage, ...cleanItem } = draftItem;
+    patchMenu(current => ({ ...current, items: current.items.map(item => item.id === editingItemId ? cleanItem : item) }));
     setEditingItemId(null);
     setDraftItem(null);
   }
@@ -223,79 +289,42 @@ export default function MenuStudioV3Draft() {
   return (
     <div className="studio-v3-shell" dir={studioRtl ? "rtl" : "ltr"} lang={studioLanguage}>
       <header className="studio-v3-topbar">
-        <div className="studio-v3-brand">
-          <span className="studio-v3-mark">B</span>
-          <div><strong>Beyond Menu Studio</strong><span>{menu.restaurant_name}</span></div>
-        </div>
+        <div className="studio-v3-brand"><span className="studio-v3-mark">B</span><div><strong>Beyond Menu Studio</strong><span>{menu.restaurant_name}</span></div></div>
         <div className="studio-v3-top-actions">
-          <div className="studio-v3-language-switch" aria-label={t.ownerLanguage}>
-            {["en","he","ar"].map(code => <button key={code} className={studioLanguage===code?"active":""} onClick={()=>setStudioLanguage(code)}>{code.toUpperCase()}</button>)}
-          </div>
-          <div className={`studio-v3-autosave-status ${session.dirty ? "saving" : "saved"}`}>{session.dirty ? t.saving : t.allSaved}</div>
+          <div className="studio-v3-language-switch" aria-label={t.ownerLanguage}>{["en","he","ar"].map(code => <button key={code} className={studioLanguage===code?"active":""} onClick={()=>setStudioLanguage(code)}>{code.toUpperCase()}</button>)}</div>
+          <div className={`studio-v3-autosave-status ${session.dirty ? "saving" : "saved"}`} aria-live="polite"><span className="studio-v3-autosave-dot"/>{session.dirty ? t.saving : t.allSaved}</div>
           <button className="studio-v3-publish-review-button" onClick={publishMenu} title={t.publishNote}>{t.publish}</button>
         </div>
       </header>
 
-      <nav className="studio-v3-tabs studio-v3-tabs-five">
-        {["content","design","preview","analytics","settings"].map(key => (
-          <button key={key} className={tab===key?"active":""} onClick={()=>{setTab(key);setMobileDetail(false);}}>{t[key]}</button>
-        ))}
-      </nav>
+      <nav className="studio-v3-tabs studio-v3-tabs-five">{["content","design","preview","analytics","settings"].map(key => <button key={key} className={tab===key?"active":""} onClick={()=>{setTab(key);setMobileDetail(false);}}>{t[key]}</button>)}</nav>
 
       <main className="studio-v3-main">
-        {tab === "content" && (
-          <div className={`studio-v3-content-layout ${mobileDetail ? "mobile-detail" : ""}`}>
-            <section className="studio-v3-panel studio-v3-categories">
-              <div className="studio-v3-panel-heading"><div><span className="studio-v3-eyebrow">{t.realDraft}</span><h1>{t.categories}</h1></div></div>
-              <div className="studio-v3-content-language-row">
-                <span>{t.contentLanguage}</span>
-                <div className="studio-v3-language-switch">{menuLanguages.map(code => <button key={code} className={contentLanguage===code?"active":""} onClick={()=>setContentLanguage(code)}>{code.toUpperCase()}</button>)}</div>
-              </div>
-              <div className="studio-v3-category-list">
-                {menu.groups.map(group => {
-                  const count = menu.items.filter(item => item.group_id === group.id).length;
-                  return (
-                    <div className={`studio-v3-category-card ${selectedGroup?.id===group.id?"selected":""}`} key={group.id}>
-                      <button className="studio-v3-category-open" onClick={()=>{setSelectedGroupId(group.id);setMobileDetail(true);}}>
-                        <span className="studio-v3-category-copy"><strong>{textFor(group.name,contentLanguage)}</strong><small>{count} {t.items} · {group.visible===false?t.hidden:t.visible}</small></span>
-                        <span className="studio-v3-chevron">›</span>
-                      </button>
-                      <button className="studio-v3-draft-hide" onClick={()=>toggleVisibility(group.id,"groups")}>{group.visible===false?t.show:t.hide}</button>
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
+        {tab === "content" && <div className={`studio-v3-content-layout ${mobileDetail ? "mobile-detail" : ""}`}>
+          <section className="studio-v3-panel studio-v3-categories">
+            <div className="studio-v3-panel-heading"><div><span className="studio-v3-eyebrow">{t.realDraft}</span><h1>{t.categories}</h1></div></div>
+            <div className="studio-v3-content-language-row"><span>{t.contentLanguage}</span><div className="studio-v3-language-switch">{menuLanguages.map(code => <button key={code} className={contentLanguage===code?"active":""} onClick={()=>setContentLanguage(code)}>{code.toUpperCase()}</button>)}</div></div>
+            <div className="studio-v3-category-list">{menu.groups.map(group => { const count = menu.items.filter(item => item.group_id === group.id).length; return <div className={`studio-v3-category-card ${selectedGroup?.id===group.id?"selected":""}`} key={group.id}><button className="studio-v3-category-open" onClick={()=>{setSelectedGroupId(group.id);setMobileDetail(true);}}><span className="studio-v3-category-copy"><strong>{textFor(group.name,contentLanguage)}</strong><small>{count} {t.items} · {group.visible===false?t.hidden:t.visible}</small></span><span className="studio-v3-chevron">›</span></button><button className="studio-v3-draft-hide" onClick={()=>toggleVisibility(group.id,"groups")}>{group.visible===false?t.show:t.hide}</button></div>; })}</div>
+          </section>
+          <section className="studio-v3-panel studio-v3-items">
+            <button className="studio-v3-mobile-back" onClick={()=>setMobileDetail(false)}>← {t.back}</button>
+            <div className="studio-v3-panel-heading"><div><span className="studio-v3-eyebrow">{t.category}</span><h2>{textFor(selectedGroup?.name,contentLanguage)}</h2></div></div>
+            <div className="studio-v3-item-list">{selectedItems.map(item => <article className={`studio-v3-item-card ${item.visible===false?"is-hidden":""}`} key={item.id}><div className="studio-v3-item-copy"><div className="studio-v3-item-title-row"><strong>{textFor(item.name,contentLanguage)}</strong><span>{priceText(item,currencySymbol)}</span></div><p>{textFor(item.description,contentLanguage)||t.noDescription}</p></div><div className="studio-v3-item-actions"><button onClick={()=>openItem(item)}>{t.edit}</button><button onClick={()=>toggleVisibility(item.id,"items")}>{item.visible===false?t.show:t.hide}</button></div></article>)}</div>
+          </section>
+        </div>}
 
-            <section className="studio-v3-panel studio-v3-items">
-              <button className="studio-v3-mobile-back" onClick={()=>setMobileDetail(false)}>← {t.back}</button>
-              <div className="studio-v3-panel-heading"><div><span className="studio-v3-eyebrow">{t.category}</span><h2>{textFor(selectedGroup?.name,contentLanguage)}</h2></div></div>
-              <div className="studio-v3-item-list">
-                {selectedItems.map(item => (
-                  <article className={`studio-v3-item-card ${item.visible===false?"is-hidden":""}`} key={item.id}>
-                    <div className="studio-v3-item-copy"><div className="studio-v3-item-title-row"><strong>{textFor(item.name,contentLanguage)}</strong><span>{priceText(item)}</span></div><p>{textFor(item.description,contentLanguage)||t.noDescription}</p></div>
-                    <div className="studio-v3-item-actions"><button onClick={()=>openItem(item)}>{t.edit}</button><button onClick={()=>toggleVisibility(item.id,"items")}>{item.visible===false?t.show:t.hide}</button></div>
-                  </article>
-                ))}
-              </div>
-            </section>
-          </div>
-        )}
-
-        {tab === "design" && (
-          <div className="studio-v3-design-layout">
-            <section className="studio-v3-panel studio-v3-design-controls">
-              <span className="studio-v3-eyebrow">{t.designDraft}</span><h1>{t.makeItYours}</h1><p>{t.designHint}</p>
-              <div className="studio-v3-template-grid">{["classic","visual"].map(template => <button key={template} className={session.design.template===template?"active":""} onClick={()=>patchDesign(current=>({...current,template}))}><strong>{template==="classic"?t.classic:t.visual}</strong><span>{template==="classic"?t.classicHint:t.visualHint}</span></button>)}</div>
-              <div className="studio-v3-design-tabs">{["colors","type","layout","badges"].map(key => <button key={key} className={designPanel===key?"active":""} onClick={()=>setDesignPanel(key)}>{key==="colors"?t.colors:key==="type"?t.typography:key==="layout"?t.layout:t.badges}</button>)}</div>
-              {designPanel === "colors" && <><label className="studio-v3-color-field"><span>{t.accent}</span><input type="color" value={session.design.theme.accent} onChange={e=>patchDesign(current=>({...current,theme:{...current.theme,accent:e.target.value}}))}/></label><label className="studio-v3-color-field"><span>{t.background}</span><input type="color" value={session.design.theme.background} onChange={e=>patchDesign(current=>({...current,theme:{...current.theme,background:e.target.value}}))}/></label></>}
-              {designPanel === "type" && <label className="studio-v3-range-field"><span>{t.itemName} <b>{session.design.typography.itemNameSize}px</b></span><input type="range" min="13" max="22" value={session.design.typography.itemNameSize} onChange={e=>patchDesign(current=>({...current,typography:{...current.typography,itemNameSize:Number(e.target.value)}}))}/></label>}
-              {designPanel === "layout" && <label className="studio-v3-range-field"><span>{t.cardRadius} <b>{session.design.layout.cardRadius}px</b></span><input type="range" min="0" max="28" value={session.design.layout.cardRadius} onChange={e=>patchDesign(current=>({...current,layout:{...current.layout,cardRadius:Number(e.target.value)}}))}/></label>}
-              {designPanel === "badges" && <div className="studio-v3-badge-design-controls"><div className="studio-v3-control-label">{t.showBadgeSymbols}</div><div className="studio-v3-choice-row"><button className={session.design.badges.showSymbols?"active":""} onClick={()=>patchDesign(current=>({...current,badges:{...current.badges,showSymbols:true}}))}>{t.withSymbols}</button><button className={!session.design.badges.showSymbols?"active":""} onClick={()=>patchDesign(current=>({...current,badges:{...current.badges,showSymbols:false}}))}>{t.textOnly}</button></div><div className="studio-v3-control-label">{t.badgeStyle}</div><div className="studio-v3-choice-grid">{[["auto",t.autoStyle],["minimal",t.minimalStyle],["filled",t.filledStyle],["playful",t.playfulStyle]].map(([value,label])=><button key={value} className={session.design.badges.iconStyle===value?"active":""} disabled={!session.design.badges.showSymbols} onClick={()=>patchDesign(current=>({...current,badges:{...current.badges,iconStyle:value}}))}>{label}</button>)}</div><p className="studio-v3-control-help">{t.autoStyleHint}</p></div>}
-            </section>
-            <section className="studio-v3-preview-panel"><div className="studio-v3-preview-label">{t.liveDraftPreview} · 390PX</div><div className="studio-v3-phone-canvas"><MenuRenderer menu={previewMenu} design={session.design}/></div></section>
-          </div>
-        )}
+        {tab === "design" && <div className="studio-v3-design-layout">
+          <section className="studio-v3-panel studio-v3-design-controls">
+            <span className="studio-v3-eyebrow">{t.designDraft}</span><h1>{t.makeItYours}</h1><p>{t.designHint}</p>
+            <div className="studio-v3-template-grid">{["classic","visual"].map(template => <button key={template} className={session.design.template===template?"active":""} onClick={()=>patchDesign(current=>({...current,template}))}><strong>{template==="classic"?t.classic:t.visual}</strong><span>{template==="classic"?t.classicHint:t.visualHint}</span></button>)}</div>
+            <div className="studio-v3-design-tabs">{["colors","type","layout","badges"].map(key => <button key={key} className={designPanel===key?"active":""} onClick={()=>setDesignPanel(key)}>{key==="colors"?t.colors:key==="type"?t.typography:key==="layout"?t.layout:t.badges}</button>)}</div>
+            {designPanel === "colors" && <><label className="studio-v3-color-field"><span>{t.accent}</span><input type="color" value={session.design.theme.accent} onChange={e=>patchDesign(current=>({...current,theme:{...current.theme,accent:e.target.value}}))}/></label><label className="studio-v3-color-field"><span>{t.background}</span><input type="color" value={session.design.theme.background} onChange={e=>patchDesign(current=>({...current,theme:{...current.theme,background:e.target.value}}))}/></label></>}
+            {designPanel === "type" && <label className="studio-v3-range-field"><span>{t.itemName} <b>{session.design.typography.itemNameSize}px</b></span><input type="range" min="13" max="22" value={session.design.typography.itemNameSize} onChange={e=>patchDesign(current=>({...current,typography:{...current.typography,itemNameSize:Number(e.target.value)}}))}/></label>}
+            {designPanel === "layout" && <label className="studio-v3-range-field"><span>{t.cardRadius} <b>{session.design.layout.cardRadius}px</b></span><input type="range" min="0" max="28" value={session.design.layout.cardRadius} onChange={e=>patchDesign(current=>({...current,layout:{...current.layout,cardRadius:Number(e.target.value)}}))}/></label>}
+            {designPanel === "badges" && <div className="studio-v3-badge-design-controls"><div className="studio-v3-control-label">{t.showBadgeSymbols}</div><div className="studio-v3-choice-row"><button className={session.design.badges.showSymbols?"active":""} onClick={()=>patchDesign(current=>({...current,badges:{...current.badges,showSymbols:true}}))}>{t.withSymbols}</button><button className={!session.design.badges.showSymbols?"active":""} onClick={()=>patchDesign(current=>({...current,badges:{...current.badges,showSymbols:false}}))}>{t.textOnly}</button></div><div className="studio-v3-control-label">{t.badgeStyle}</div><div className="studio-v3-choice-grid">{[["auto",t.autoStyle],["minimal",t.minimalStyle],["filled",t.filledStyle],["playful",t.playfulStyle]].map(([value,label])=><button key={value} className={session.design.badges.iconStyle===value?"active":""} disabled={!session.design.badges.showSymbols} onClick={()=>patchDesign(current=>({...current,badges:{...current.badges,iconStyle:value}}))}>{label}</button>)}</div><p className="studio-v3-control-help">{t.autoStyleHint}</p></div>}
+          </section>
+          <section className="studio-v3-preview-panel"><div className="studio-v3-preview-label">{t.liveDraftPreview} · 390PX</div><div className="studio-v3-phone-canvas"><MenuRenderer menu={previewMenu} design={session.design}/></div></section>
+        </div>}
 
         {tab === "preview" && <section className="studio-v3-preview-full"><div className="studio-v3-preview-switcher">{["320","375","390","430","desktop"].map(size=><button key={size} className={viewport===size?"active":""} onClick={()=>setViewport(size)}>{size==="desktop"?"Desktop":size}</button>)}</div><div className="studio-v3-draft-preview-frame" style={{width:frameWidth}}><MenuRenderer menu={previewMenu} design={session.design}/></div></section>}
 
@@ -304,7 +333,7 @@ export default function MenuStudioV3Draft() {
         {tab === "settings" && <section className="studio-v3-panel studio-v3-settings-panel"><span className="studio-v3-eyebrow">{t.settings}</span><h1>{t.menuSettings}</h1><div className="studio-v3-setting-row"><span>{t.restaurant}</span><span>{menu.restaurant_name}</span></div><div className="studio-v3-setting-row"><span>{t.menuUrl}</span><span>/menu/{menu.slug}</span></div><div className="studio-v3-setting-row"><span>{t.languages}</span><span>{menuLanguages.join(" + ").toUpperCase()}</span></div><div className="studio-v3-safety-note">{t.safety}</div></section>}
       </main>
 
-      {draftItem && <div className="studio-v3-modal-backdrop" onMouseDown={()=>{setDraftItem(null);setEditingItemId(null);}}><section className="studio-v3-editor-sheet" onMouseDown={e=>e.stopPropagation()}><div className="studio-v3-sheet-handle"/><div className="studio-v3-sheet-heading"><div><span className="studio-v3-eyebrow">{t.itemDraft}</span><h2>{t.editItem}</h2></div><button className="studio-v3-icon-button" onClick={()=>setDraftItem(null)}>×</button></div><div className="studio-v3-content-language-row modal"><span>{t.contentLanguage}</span><div className="studio-v3-language-switch">{menuLanguages.map(code=><button key={code} className={contentLanguage===code?"active":""} onClick={()=>setContentLanguage(code)}>{code.toUpperCase()}</button>)}</div></div><label className="studio-v3-field">{t.name}<input value={draftItem.name?.[contentLanguage]||""} onChange={e=>setDraftItem(item=>({...item,name:{...item.name,[contentLanguage]:e.target.value}}))}/></label><label className="studio-v3-field">{t.description}<textarea rows="3" value={draftItem.description?.[contentLanguage]||""} onChange={e=>setDraftItem(item=>({...item,description:{...item.description,[contentLanguage]:e.target.value}}))}/></label>{!draftItem.price_options?.length ? <label className="studio-v3-field">{t.price}<input value={draftItem.price||""} onChange={e=>setDraftItem(item=>({...item,price:e.target.value}))}/></label> : null}<div className="studio-v3-badge-editor"><div className="studio-v3-badge-head"><strong>{t.merchandising}</strong><span>{t.ownerConfirmed}</span></div><div className="studio-v3-badge-grid studio-v3-merch-grid">{MENU_MERCHANDISING_BADGES.map(key=><button key={key} className={draftItem.metadata?.merchandising?.includes(key)?"active":""} onClick={()=>toggleBadge("merchandising",key)}>{BADGE_LABELS[key]?.[studioLanguage]||BADGE_LABELS[key]?.en}</button>)}</div><div className="studio-v3-badge-head"><strong>{t.dietary}</strong><span>{t.ownerConfirmed}</span></div><div className="studio-v3-badge-grid">{MENU_DIETARY_BADGES.map(key=><button key={key} className={draftItem.metadata?.dietary?.includes(key)?"active":""} onClick={()=>toggleBadge("dietary",key)}>{BADGE_LABELS[key]?.[studioLanguage]||BADGE_LABELS[key]?.en}</button>)}{MENU_ALLERGENS.map(key=><button key={key} className={draftItem.metadata?.allergens?.includes(key)?"active":""} onClick={()=>toggleBadge("allergens",key)}>{BADGE_LABELS[key]?.[studioLanguage]||BADGE_LABELS[key]?.en}</button>)}</div><label className="studio-v3-field">{t.spiceLevel}<select value={draftItem.metadata?.spice||"none"} onChange={e=>setDraftItem(item=>({...item,metadata:{...item.metadata,spice:e.target.value,reviewedByOwner:true}}))}>{MENU_SPICE_LEVELS.map(key=><option key={key} value={key}>{key==="none"?t.notSpicy:(BADGE_LABELS[key]?.[studioLanguage]||BADGE_LABELS[key]?.en)}</option>)}</select></label><div className="studio-v3-ai-suggestion-note"><strong>{t.aiSuggestions}</strong><span>{t.aiNote}</span></div></div><div className="studio-v3-sheet-footer"><button className="studio-v3-secondary" onClick={()=>setDraftItem(null)}>{t.cancel}</button><button className="studio-v3-primary" onClick={saveItemLocally}>{t.applyDraft}</button></div></section></div>}
+      {draftItem && <div className="studio-v3-modal-backdrop" onMouseDown={()=>{setDraftItem(null);setEditingItemId(null);}}><section className="studio-v3-editor-sheet" onMouseDown={e=>e.stopPropagation()}><div className="studio-v3-sheet-handle"/><div className="studio-v3-sheet-heading"><div><span className="studio-v3-eyebrow">{t.itemDraft}</span><h2>{t.editItem}</h2></div><button className="studio-v3-icon-button" onClick={()=>setDraftItem(null)}>×</button></div><div className="studio-v3-content-language-row modal"><span>{t.contentLanguage}</span><div className="studio-v3-language-switch">{menuLanguages.map(code=><button key={code} className={contentLanguage===code?"active":""} onClick={()=>{setContentLanguage(code);setDraftItem(item=>({...item,__contentLanguage:code}));}}>{code.toUpperCase()}</button>)}</div></div><label className="studio-v3-field">{t.name}<input value={draftItem.name?.[contentLanguage]||""} onChange={e=>setDraftItem(item=>({...item,name:{...item.name,[contentLanguage]:e.target.value}}))}/></label><label className="studio-v3-field">{t.description}<textarea rows="3" value={draftItem.description?.[contentLanguage]||""} onChange={e=>setDraftItem(item=>({...item,description:{...item.description,[contentLanguage]:e.target.value}}))}/></label><PriceEditor item={draftItem} setItem={setDraftItem} t={t} currencySymbol={currencySymbol}/><div className="studio-v3-badge-editor"><div className="studio-v3-badge-head"><strong>{t.merchandising}</strong><span>{t.ownerConfirmed}</span></div><div className="studio-v3-badge-grid studio-v3-merch-grid">{MENU_MERCHANDISING_BADGES.map(key=><button key={key} className={draftItem.metadata?.merchandising?.includes(key)?"active":""} onClick={()=>toggleBadge("merchandising",key)}>{BADGE_LABELS[key]?.[studioLanguage]||BADGE_LABELS[key]?.en}</button>)}</div><div className="studio-v3-badge-head"><strong>{t.dietary}</strong><span>{t.ownerConfirmed}</span></div><div className="studio-v3-badge-grid">{MENU_DIETARY_BADGES.map(key=><button key={key} className={draftItem.metadata?.dietary?.includes(key)?"active":""} onClick={()=>toggleBadge("dietary",key)}>{BADGE_LABELS[key]?.[studioLanguage]||BADGE_LABELS[key]?.en}</button>)}{MENU_ALLERGENS.map(key=><button key={key} className={draftItem.metadata?.allergens?.includes(key)?"active":""} onClick={()=>toggleBadge("allergens",key)}>{BADGE_LABELS[key]?.[studioLanguage]||BADGE_LABELS[key]?.en}</button>)}</div><label className="studio-v3-field">{t.spiceLevel}<select value={draftItem.metadata?.spice||"none"} onChange={e=>setDraftItem(item=>({...item,metadata:{...item.metadata,spice:e.target.value,reviewedByOwner:true}}))}>{MENU_SPICE_LEVELS.map(key=><option key={key} value={key}>{key==="none"?t.notSpicy:(BADGE_LABELS[key]?.[studioLanguage]||BADGE_LABELS[key]?.en)}</option>)}</select></label><div className="studio-v3-ai-suggestion-note"><strong>{t.aiSuggestions}</strong><span>{t.aiNote}</span></div></div><div className="studio-v3-sheet-footer"><button className="studio-v3-secondary" onClick={()=>setDraftItem(null)}>{t.cancel}</button><button className="studio-v3-primary" onClick={saveItemLocally}>{t.applyDraft}</button></div></section></div>}
 
       {publishCheck ? <div className="studio-v3-modal-backdrop" onMouseDown={()=>setPublishCheck(null)}><section className="studio-v3-publish-review" onMouseDown={e=>e.stopPropagation()}><span className={`studio-v3-publish-check ${publishCheck.ok ? "ok" : "error"}`}>{publishCheck.ok ? "✓" : "!"}</span><h2>{t.publishTitle}</h2><strong>{publishCheck.ok ? t.publishReady : t.publishBlocked}</strong>{publishCheck.ok ? <p>{t.publishNote}</p> : <p>{publishCheck.errors?.join(" · ")}</p>}<button onClick={()=>setPublishCheck(null)}>{t.close}</button></section></div> : null}
     </div>
