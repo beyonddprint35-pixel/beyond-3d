@@ -1,0 +1,109 @@
+/* =========================================================
+   BEYOND — NAVBAR BRAND + SECTION LABEL REFRESH
+   Focused visual override only. No page/section layout changes.
+========================================================= */
+
+/* Metallic BΞYOND wordmark inspired by the approved reference image. */
+.home-brand span {
+  position: relative;
+  display: inline-block;
+  font-size: 0 !important;
+  line-height: 1 !important;
+  color: transparent !important;
+  overflow: visible;
+}
+
+.home-brand span::after {
+  content: "BΞYOND";
+  display: inline-block;
+  font-family: var(--font-display-family, "Space Grotesk", "Inter", sans-serif);
+  font-size: clamp(18px, 1.45vw, 23px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.055em;
+  white-space: nowrap;
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff 0%,
+      #f5f6f8 17%,
+      #bfc4ca 43%,
+      #ffffff 58%,
+      #8f959d 78%,
+      #e8eaed 100%
+    );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  filter:
+    drop-shadow(0 1px 0 rgba(255, 255, 255, 0.55))
+    drop-shadow(0 2px 0 rgba(75, 82, 91, 0.78))
+    drop-shadow(0 4px 5px rgba(0, 0, 0, 0.62));
+  text-shadow:
+    0 0 14px rgba(214, 226, 238, 0.08);
+}
+
+.home-brand:hover span::after {
+  filter:
+    drop-shadow(0 1px 0 rgba(255, 255, 255, 0.65))
+    drop-shadow(0 2px 0 rgba(75, 82, 91, 0.82))
+    drop-shadow(0 4px 7px rgba(0, 0, 0, 0.68))
+    drop-shadow(0 0 8px rgba(132, 193, 231, 0.12));
+}
+
+/*
+ * Navigation names — keeps the existing button click behavior / anchors
+ * while presenting the new BEYOND section language.
+ */
+.home-nav-links > button {
+  font-size: 0 !important;
+  white-space: nowrap;
+}
+
+.home-nav-links > button::after {
+  font-family: var(--font-body-family, "Inter", sans-serif);
+  font-size: var(--type-label, 11px);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.075em;
+  color: inherit;
+}
+
+.home-nav-links > button:nth-child(1)::after {
+  content: "01  HOW IT WORKS";
+}
+
+.home-nav-links > button:nth-child(2)::after {
+  content: "02  BEYOND CRAFTING";
+}
+
+.home-nav-links > button:nth-child(3)::after {
+  content: "03  BEYOND AI";
+}
+
+.home-nav-links > button:nth-child(4)::after {
+  content: "04  BEYOND REVIEWS";
+}
+
+.home-nav-links > button:nth-child(5)::after {
+  content: "05  BEYOND ORDER";
+}
+
+/* Keep the five labels usable on common laptop widths. */
+@media (max-width: 1240px) {
+  .home-nav-links > button::after {
+    font-size: 10px;
+    letter-spacing: 0.045em;
+  }
+
+  .home-brand span::after {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 900px) {
+  .home-brand span::after {
+    font-size: 18px;
+  }
+}
