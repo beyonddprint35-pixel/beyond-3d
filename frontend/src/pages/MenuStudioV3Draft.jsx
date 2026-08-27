@@ -21,85 +21,88 @@ const UI = {
     content: "Content", design: "Design", preview: "Preview", analytics: "Analytics", settings: "Settings",
     categories: "Categories", category: "Category", items: "items", visible: "Visible", hidden: "Hidden",
     hide: "Hide", show: "Show", edit: "Edit", back: "Categories", noDescription: "No description",
-    realDraft: "REAL CONTENT · LOCAL DRAFT", designDraft: "DESIGN · DRAFT ONLY", makeItYours: "Make it yours",
-    designHint: "Changes update the preview instantly and stay local.", classic: "Classic", visual: "Visual",
+    realDraft: "MENU CONTENT · DRAFT", designDraft: "DESIGN · DRAFT", makeItYours: "Make it yours",
+    designHint: "Changes update the preview instantly and stay in your draft.", classic: "Classic", visual: "Visual",
     classicHint: "No photos required", visualHint: "Image-led cards", colors: "Colors", typography: "Typography", layout: "Layout", badges: "Badges",
     accent: "Accent", background: "Background", itemName: "Item name", cardRadius: "Card radius",
     showBadgeSymbols: "Badge symbols", withSymbols: "Icon + text", textOnly: "Text only", badgeStyle: "Icon style",
     autoStyle: "Auto", minimalStyle: "Minimal", filledStyle: "Filled", playfulStyle: "Playful",
     autoStyleHint: "Automatically follows the selected menu template.",
     liveDraftPreview: "LIVE DRAFT PREVIEW", restaurant: "Restaurant", menuUrl: "Menu URL", languages: "Menu languages",
-    menuSettings: "Menu settings", safety: "Live publishing remains locked in this milestone. Nothing here changes the current public menu.",
-    itemDraft: "ITEM · LOCAL DRAFT", editItem: "Edit item", name: "Name", description: "Description", price: "Price",
+    menuSettings: "Menu settings", safety: "Draft changes do not affect your current public menu until you publish them.",
+    itemDraft: "ITEM · DRAFT", editItem: "Edit item", name: "Name", description: "Description", price: "Price",
     dietary: "Dietary & allergen badges", merchandising: "Highlights & merchandising", ownerConfirmed: "Owner-confirmed only", spiceLevel: "Spice level", notSpicy: "Not spicy",
     aiSuggestions: "AI badge suggestions", aiNote: "AI may suggest likely badges from the name and description, but the restaurant must confirm them before they appear publicly.",
-    cancel: "Cancel", applyDraft: "Apply to draft", liveLoaded: "LIVE DATA LOADED", unsaved: "UNSAVED CHANGES", noWrites: "LIVE PROTECTED",
-    ownerLanguage: "Studio language", contentLanguage: "Menu content language", loading: "Loading real menu into a safe draft…",
-    saveDraft: "Save draft", savedDraft: "Draft saved", reviewPublish: "Review publish", publishReady: "Ready for publish migration", publishBlocked: "Publish check failed",
-    savedDraftFound: "A locally saved V3 draft was found for this menu.", restoreDraft: "Restore draft", discardDraft: "Discard saved draft",
-    localOnly: "Saved only in this browser for now.", publishReviewTitle: "Publish readiness", publishReviewNote: "The draft passed the V3 publish contract check. Live publishing is still intentionally locked until the reviewed Supabase migration and transactional publish function are enabled.", close: "Close",
-    analyticsTitle: "Menu performance", analyticsEyebrow: "ANALYTICS · PRIVACY-FIRST", analyticsHint: "This dashboard is ready for real anonymous menu events. No synthetic numbers are shown.",
-    trackingNotConnected: "Tracking not connected yet", trackingNote: "When the event collector is enabled, this view will show real behavior from your published menu.",
+    cancel: "Cancel", applyDraft: "Apply to draft", liveLoaded: "MENU LOADED", unsaved: "UNSAVED CHANGES", noWrites: "LIVE PROTECTED",
+    ownerLanguage: "Studio language", contentLanguage: "Menu content language", loading: "Loading your menu…",
+    saveDraft: "Save draft", savedDraft: "Draft saved", reviewPublish: "Review publish", publishReady: "Ready to publish", publishBlocked: "Publish check failed",
+    savedDraftFound: "A saved draft was found for this menu.", restoreDraft: "Restore draft", discardDraft: "Discard saved draft",
+    localOnly: "Saved in this browser for now.", publishReviewTitle: "Publish readiness", publishReviewNote: "Your draft passed all publishing checks. Your current public menu remains unchanged until secure publishing is enabled.", close: "Close",
+    analyticsTitle: "Menu performance", analyticsEyebrow: "ANALYTICS · PRIVACY-FIRST", analyticsHint: "This dashboard is ready for real anonymous menu activity. No synthetic numbers are shown.",
+    trackingNotConnected: "Analytics not active yet", trackingNote: "When analytics is enabled, this view will show real behavior from your published menu.",
     menuViews: "Menu views", categoryViews: "Category views", itemImpressions: "Item impressions", itemOpens: "Item opens",
     topCategories: "Top categories", topItems: "Top items", engagement: "Engagement", recommendations: "Smart recommendations",
-    noData: "No analytics data yet", noDataHint: "We will start filling this automatically after analytics collection is enabled.",
+    noData: "No analytics data yet", noDataHint: "This will start filling automatically when analytics is enabled.",
     recommendationHint: "Buddy will compare impressions, opens, position and category reach to suggest what to move, feature or mark as Popular / Chef’s Choice.",
+    waitingEvents: "Waiting for real activity",
   },
   he: {
     content: "תוכן", design: "עיצוב", preview: "תצוגה מקדימה", analytics: "אנליטיקה", settings: "הגדרות",
     categories: "קטגוריות", category: "קטגוריה", items: "פריטים", visible: "גלוי", hidden: "מוסתר",
     hide: "הסתר", show: "הצג", edit: "עריכה", back: "קטגוריות", noDescription: "ללא תיאור",
-    realDraft: "תוכן אמיתי · טיוטה מקומית", designDraft: "עיצוב · טיוטה בלבד", makeItYours: "עצבו את התפריט",
-    designHint: "השינויים מתעדכנים מיד בתצוגה ונשארים מקומיים.", classic: "קלאסי", visual: "ויזואלי",
+    realDraft: "תוכן התפריט · טיוטה", designDraft: "עיצוב · טיוטה", makeItYours: "עצבו את התפריט",
+    designHint: "השינויים מתעדכנים מיד בתצוגה ונשארים בטיוטה שלכם.", classic: "קלאסי", visual: "ויזואלי",
     classicHint: "לא דורש תמונות", visualHint: "כרטיסים מבוססי תמונה", colors: "צבעים", typography: "טיפוגרפיה", layout: "פריסה", badges: "תגיות",
     accent: "צבע מוביל", background: "רקע", itemName: "שם פריט", cardRadius: "עיגול כרטיס",
     showBadgeSymbols: "סמלים בתגיות", withSymbols: "סמל + טקסט", textOnly: "טקסט בלבד", badgeStyle: "סגנון סמלים",
     autoStyle: "אוטומטי", minimalStyle: "מינימלי", filledStyle: "מלא", playfulStyle: "שובב",
     autoStyleHint: "הסגנון מותאם אוטומטית לתבנית התפריט שנבחרה.",
     liveDraftPreview: "תצוגה חיה של הטיוטה", restaurant: "מסעדה", menuUrl: "כתובת התפריט", languages: "שפות התפריט",
-    menuSettings: "הגדרות תפריט", safety: "הפרסום החי עדיין נעול בשלב הזה. שום דבר כאן לא משנה את התפריט הציבורי הקיים.",
-    itemDraft: "פריט · טיוטה מקומית", editItem: "עריכת פריט", name: "שם", description: "תיאור", price: "מחיר",
+    menuSettings: "הגדרות תפריט", safety: "שינויים בטיוטה לא משפיעים על התפריט הציבורי עד לפרסום.",
+    itemDraft: "פריט · טיוטה", editItem: "עריכת פריט", name: "שם", description: "תיאור", price: "מחיר",
     dietary: "תגי תזונה ואלרגנים", merchandising: "הבלטות ושיווק", ownerConfirmed: "באישור בעל העסק בלבד", spiceLevel: "רמת חריפות", notSpicy: "לא חריף",
     aiSuggestions: "הצעות תגיות AI", aiNote: "ה-AI יכול להציע תגיות לפי שם ותיאור הפריט, אך בעל העסק חייב לאשר אותן לפני שיופיעו לציבור.",
-    cancel: "ביטול", applyDraft: "החל על הטיוטה", liveLoaded: "נתונים חיים נטענו", unsaved: "שינויים שלא נשמרו", noWrites: "התפריט החי מוגן",
-    ownerLanguage: "שפת הסטודיו", contentLanguage: "שפת תוכן התפריט", loading: "טוען את התפריט האמיתי לטיוטה בטוחה…",
-    saveDraft: "שמור טיוטה", savedDraft: "הטיוטה נשמרה", reviewPublish: "בדיקת פרסום", publishReady: "מוכן למיגרציית פרסום", publishBlocked: "בדיקת הפרסום נכשלה",
-    savedDraftFound: "נמצאה טיוטת V3 שמורה מקומית עבור התפריט הזה.", restoreDraft: "שחזר טיוטה", discardDraft: "מחק טיוטה שמורה",
-    localOnly: "כרגע נשמר רק בדפדפן הזה.", publishReviewTitle: "בדיקת מוכנות לפרסום", publishReviewNote: "הטיוטה עברה את בדיקת חוזה הפרסום של V3. הפרסום החי נשאר נעול עד שנאשר ונפעיל את מיגרציית Supabase ואת פעולת הפרסום הטרנזקציונית.", close: "סגור",
-    analyticsTitle: "ביצועי התפריט", analyticsEyebrow: "אנליטיקה · פרטיות תחילה", analyticsHint: "הדשבורד מוכן לאירועים אנונימיים אמיתיים מהתפריט. לא מוצגים נתונים מלאכותיים.",
-    trackingNotConnected: "המעקב עדיין לא מחובר", trackingNote: "לאחר חיבור איסוף האירועים, המסך יציג שימוש אמיתי בתפריט שפורסם.",
+    cancel: "ביטול", applyDraft: "החל על הטיוטה", liveLoaded: "התפריט נטען", unsaved: "שינויים שלא נשמרו", noWrites: "התפריט החי מוגן",
+    ownerLanguage: "שפת הסטודיו", contentLanguage: "שפת תוכן התפריט", loading: "טוען את התפריט שלכם…",
+    saveDraft: "שמור טיוטה", savedDraft: "הטיוטה נשמרה", reviewPublish: "בדיקת פרסום", publishReady: "מוכן לפרסום", publishBlocked: "בדיקת הפרסום נכשלה",
+    savedDraftFound: "נמצאה טיוטה שמורה עבור התפריט הזה.", restoreDraft: "שחזר טיוטה", discardDraft: "מחק טיוטה שמורה",
+    localOnly: "כרגע נשמר בדפדפן הזה.", publishReviewTitle: "בדיקת מוכנות לפרסום", publishReviewNote: "הטיוטה עברה את כל בדיקות הפרסום. התפריט הציבורי הקיים נשאר ללא שינוי עד להפעלת פרסום מאובטח.", close: "סגור",
+    analyticsTitle: "ביצועי התפריט", analyticsEyebrow: "אנליטיקה · פרטיות תחילה", analyticsHint: "הדשבורד מוכן לפעילות אמיתית ואנונימית מהתפריט. לא מוצגים נתונים מלאכותיים.",
+    trackingNotConnected: "האנליטיקה עדיין לא פעילה", trackingNote: "לאחר הפעלת האנליטיקה, המסך יציג שימוש אמיתי בתפריט שפורסם.",
     menuViews: "צפיות בתפריט", categoryViews: "צפיות בקטגוריות", itemImpressions: "חשיפות לפריטים", itemOpens: "פתיחת פריטים",
     topCategories: "קטגוריות מובילות", topItems: "פריטים מובילים", engagement: "מעורבות", recommendations: "המלצות חכמות",
-    noData: "אין עדיין נתוני אנליטיקה", noDataHint: "הנתונים יתמלאו אוטומטית לאחר הפעלת איסוף האנליטיקה.",
+    noData: "אין עדיין נתוני אנליטיקה", noDataHint: "הנתונים יתחילו להתמלא אוטומטית לאחר הפעלת האנליטיקה.",
     recommendationHint: "Buddy ישווה חשיפות, פתיחות, מיקום והגעה לקטגוריה ויציע מה לקדם, להזיז או לסמן כפופולרי / בחירת השף.",
+    waitingEvents: "ממתין לפעילות אמיתית",
   },
   ar: {
     content: "المحتوى", design: "التصميم", preview: "المعاينة", analytics: "التحليلات", settings: "الإعدادات",
     categories: "الفئات", category: "الفئة", items: "عناصر", visible: "ظاهر", hidden: "مخفي",
     hide: "إخفاء", show: "إظهار", edit: "تعديل", back: "الفئات", noDescription: "لا يوجد وصف",
-    realDraft: "محتوى حقيقي · مسودة محلية", designDraft: "التصميم · مسودة فقط", makeItYours: "صمّم قائمتك",
-    designHint: "تظهر التغييرات فورًا في المعاينة وتبقى محلية.", classic: "كلاسيكي", visual: "مرئي",
+    realDraft: "محتوى القائمة · مسودة", designDraft: "التصميم · مسودة", makeItYours: "صمّم قائمتك",
+    designHint: "تظهر التغييرات فورًا في المعاينة وتبقى في مسودتك.", classic: "كلاسيكي", visual: "مرئي",
     classicHint: "لا يحتاج صورًا", visualHint: "بطاقات تعتمد على الصور", colors: "الألوان", typography: "الخطوط", layout: "التخطيط", badges: "الشارات",
     accent: "اللون الرئيسي", background: "الخلفية", itemName: "اسم العنصر", cardRadius: "استدارة البطاقة",
     showBadgeSymbols: "رموز الشارات", withSymbols: "رمز + نص", textOnly: "نص فقط", badgeStyle: "نمط الرموز",
     autoStyle: "تلقائي", minimalStyle: "بسيط", filledStyle: "ممتلئ", playfulStyle: "مرح",
     autoStyleHint: "يتم اختيار النمط تلقائيًا ليتناسب مع قالب القائمة.",
     liveDraftPreview: "معاينة مباشرة للمسودة", restaurant: "المطعم", menuUrl: "رابط القائمة", languages: "لغات القائمة",
-    menuSettings: "إعدادات القائمة", safety: "النشر المباشر ما زال مقفلاً في هذه المرحلة. لا شيء هنا يغيّر القائمة العامة الحالية.",
-    itemDraft: "عنصر · مسودة محلية", editItem: "تعديل العنصر", name: "الاسم", description: "الوصف", price: "السعر",
+    menuSettings: "إعدادات القائمة", safety: "تغييرات المسودة لا تؤثر على القائمة العامة الحالية حتى تقوم بالنشر.",
+    itemDraft: "عنصر · مسودة", editItem: "تعديل العنصر", name: "الاسم", description: "الوصف", price: "السعر",
     dietary: "شارات الحمية والحساسية", merchandising: "إبراز وتسويق العناصر", ownerConfirmed: "بتأكيد صاحب المطعم فقط", spiceLevel: "درجة الحدة", notSpicy: "غير حار",
     aiSuggestions: "اقتراحات شارات بالذكاء الاصطناعي", aiNote: "يمكن للذكاء الاصطناعي اقتراح شارات اعتمادًا على الاسم والوصف، لكن يجب على المطعم تأكيدها قبل ظهورها للعامة.",
-    cancel: "إلغاء", applyDraft: "تطبيق على المسودة", liveLoaded: "تم تحميل البيانات", unsaved: "تغييرات غير محفوظة", noWrites: "القائمة المباشرة محمية",
-    ownerLanguage: "لغة الاستوديو", contentLanguage: "لغة محتوى القائمة", loading: "جارٍ تحميل القائمة الحقيقية إلى مسودة آمنة…",
-    saveDraft: "حفظ المسودة", savedDraft: "تم حفظ المسودة", reviewPublish: "مراجعة النشر", publishReady: "جاهز لمرحلة النشر", publishBlocked: "فشل فحص النشر",
-    savedDraftFound: "تم العثور على مسودة V3 محفوظة محليًا لهذه القائمة.", restoreDraft: "استعادة المسودة", discardDraft: "حذف المسودة المحفوظة",
-    localOnly: "محفوظة حاليًا في هذا المتصفح فقط.", publishReviewTitle: "جاهزية النشر", publishReviewNote: "اجتازت المسودة فحص عقد النشر V3. يبقى النشر المباشر مقفلاً حتى نعتمد ونفعّل ترحيل Supabase وعملية النشر الذرية.", close: "إغلاق",
-    analyticsTitle: "أداء القائمة", analyticsEyebrow: "التحليلات · الخصوصية أولًا", analyticsHint: "لوحة التحليلات جاهزة لأحداث استخدام حقيقية ومجهولة الهوية. لا نعرض أرقامًا مصطنعة.",
-    trackingNotConnected: "التتبع غير متصل بعد", trackingNote: "بعد تفعيل جامع الأحداث ستعرض هذه الصفحة الاستخدام الحقيقي للقائمة المنشورة.",
+    cancel: "إلغاء", applyDraft: "تطبيق على المسودة", liveLoaded: "تم تحميل القائمة", unsaved: "تغييرات غير محفوظة", noWrites: "القائمة المباشرة محمية",
+    ownerLanguage: "لغة الاستوديو", contentLanguage: "لغة محتوى القائمة", loading: "جارٍ تحميل قائمتك…",
+    saveDraft: "حفظ المسودة", savedDraft: "تم حفظ المسودة", reviewPublish: "مراجعة النشر", publishReady: "جاهز للنشر", publishBlocked: "فشل فحص النشر",
+    savedDraftFound: "تم العثور على مسودة محفوظة لهذه القائمة.", restoreDraft: "استعادة المسودة", discardDraft: "حذف المسودة المحفوظة",
+    localOnly: "محفوظة حاليًا في هذا المتصفح.", publishReviewTitle: "جاهزية النشر", publishReviewNote: "اجتازت المسودة جميع فحوصات النشر. تبقى القائمة العامة الحالية دون تغيير حتى يتم تفعيل النشر الآمن.", close: "إغلاق",
+    analyticsTitle: "أداء القائمة", analyticsEyebrow: "التحليلات · الخصوصية أولًا", analyticsHint: "لوحة التحليلات جاهزة لنشاط حقيقي ومجهول الهوية. لا نعرض أرقامًا مصطنعة.",
+    trackingNotConnected: "التحليلات غير مفعلة بعد", trackingNote: "بعد تفعيل التحليلات ستعرض هذه الصفحة الاستخدام الحقيقي للقائمة المنشورة.",
     menuViews: "مشاهدات القائمة", categoryViews: "مشاهدات الفئات", itemImpressions: "ظهور العناصر", itemOpens: "فتح العناصر",
     topCategories: "أفضل الفئات", topItems: "أفضل العناصر", engagement: "التفاعل", recommendations: "توصيات ذكية",
-    noData: "لا توجد بيانات تحليلات بعد", noDataHint: "ستبدأ البيانات بالظهور تلقائيًا بعد تفعيل جمع التحليلات.",
+    noData: "لا توجد بيانات تحليلات بعد", noDataHint: "ستبدأ البيانات بالظهور تلقائيًا بعد تفعيل التحليلات.",
     recommendationHint: "سيحلل Buddy الظهور والفتح والموقع والوصول للفئات ليقترح ما يجب تقديمه أو نقله أو تمييزه كشائع / اختيار الشيف.",
+    waitingEvents: "بانتظار نشاط حقيقي",
   },
 };
 
@@ -112,8 +115,8 @@ function priceText(item) {
   return item.price || "";
 }
 
-function EmptyMetric({ label }) {
-  return <article className="studio-v3-analytics-metric"><span>{label}</span><strong>—</strong><small>Waiting for real events</small></article>;
+function EmptyMetric({ label, waitingLabel }) {
+  return <article className="studio-v3-analytics-metric"><span>{label}</span><strong>—</strong><small>{waitingLabel}</small></article>;
 }
 
 export default function MenuStudioV3Draft() {
@@ -206,7 +209,7 @@ export default function MenuStudioV3Draft() {
       const result = validatePublishContract(contract);
       setPublishCheck({ ...result, contract });
     } catch (err) {
-      setPublishCheck({ ok: false, errors: [err?.message || "Publish contract failed"] });
+      setPublishCheck({ ok: false, errors: [err?.message || "Publish check failed"] });
     }
   }
 
@@ -234,7 +237,7 @@ export default function MenuStudioV3Draft() {
       <header className="studio-v3-topbar">
         <div className="studio-v3-brand">
           <span className="studio-v3-mark">B</span>
-          <div><strong>Menu Studio V3</strong><span>{menu.restaurant_name} · real data draft</span></div>
+          <div><strong>Beyond Menu Studio</strong><span>{menu.restaurant_name} · draft</span></div>
         </div>
         <div className="studio-v3-top-actions">
           <div className="studio-v3-language-switch" aria-label={t.ownerLanguage}>
@@ -331,7 +334,7 @@ export default function MenuStudioV3Draft() {
                   </div>
                   <div className="studio-v3-control-label">{t.badgeStyle}</div>
                   <div className="studio-v3-choice-grid">
-                    {[['auto',t.autoStyle],['minimal',t.minimalStyle],['filled',t.filledStyle],['playful',t.playfulStyle]].map(([value,label])=><button key={value} className={session.design.badges.iconStyle===value?"active":""} disabled={!session.design.badges.showSymbols} onClick={()=>patchDesign(current=>({...current,badges:{...current.badges,iconStyle:value}}))}>{label}</button>)}
+                    {[["auto",t.autoStyle],["minimal",t.minimalStyle],["filled",t.filledStyle],["playful",t.playfulStyle]].map(([value,label])=><button key={value} className={session.design.badges.iconStyle===value?"active":""} disabled={!session.design.badges.showSymbols} onClick={()=>patchDesign(current=>({...current,badges:{...current.badges,iconStyle:value}}))}>{label}</button>)}
                   </div>
                   <p className="studio-v3-control-help">{t.autoStyleHint}</p>
                 </div>
@@ -349,7 +352,7 @@ export default function MenuStudioV3Draft() {
               <div><span className="studio-v3-eyebrow">{t.analyticsEyebrow}</span><h1>{t.analyticsTitle}</h1><p>{t.analyticsHint}</p></div>
               <div className="studio-v3-analytics-connection"><span className="dot"/><div><strong>{t.trackingNotConnected}</strong><small>{t.trackingNote}</small></div></div>
             </div>
-            <div className="studio-v3-analytics-metrics"><EmptyMetric label={t.menuViews}/><EmptyMetric label={t.categoryViews}/><EmptyMetric label={t.itemImpressions}/><EmptyMetric label={t.itemOpens}/></div>
+            <div className="studio-v3-analytics-metrics"><EmptyMetric label={t.menuViews} waitingLabel={t.waitingEvents}/><EmptyMetric label={t.categoryViews} waitingLabel={t.waitingEvents}/><EmptyMetric label={t.itemImpressions} waitingLabel={t.waitingEvents}/><EmptyMetric label={t.itemOpens} waitingLabel={t.waitingEvents}/></div>
             <div className="studio-v3-analytics-grid">
               {[t.topCategories,t.topItems,t.engagement].map(title => <section className="studio-v3-panel studio-v3-analytics-card" key={title}><span className="studio-v3-eyebrow">{title}</span><div className="studio-v3-analytics-empty"><strong>{t.noData}</strong><span>{t.noDataHint}</span></div></section>)}
               <section className="studio-v3-panel studio-v3-analytics-card recommendation"><span className="studio-v3-eyebrow">{t.recommendations}</span><div className="studio-v3-analytics-empty"><strong>Buddy</strong><span>{t.recommendationHint}</span></div></section>
