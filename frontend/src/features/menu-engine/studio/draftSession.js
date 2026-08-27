@@ -1,5 +1,6 @@
 import { normalizeMenuDesign } from "../domain/designSchema";
 import { normalizeItemMetadata } from "../domain/itemMetadata";
+import { clearDraftLocally, loadDraftLocally, saveDraftLocally } from "./draftStorage";
 
 const copyText = value => ({
   en: String(value?.en || ""),
@@ -27,6 +28,8 @@ export function createMenuDraftSession(payload) {
       loadedFromSupabase: Boolean(payload?.site),
     },
     dirty: false,
+    localSavedAt: null,
+    restoredFromLocal: false,
     menu: {
       ...menu,
       subtitle: copyText(menu.subtitle),
@@ -70,6 +73,39 @@ export function updateDraftDesign(session, updater) {
     dirty: true,
     design: normalizeMenuDesign(nextDesign),
   };
+}
+
+export function saveDraftSessionLocally(session) {
+  const savedAt = saveDraftLocally(session);
+  if (!savedAt) return session;
+  return {
+    ...session,
+    dirty: false,
+    localSavedAt: savedAt,
+    restoredFromLocal: false,
+  };
+}
+
+export function findSavedDraftSession(session) {
+  if (!session?.source) return null;
+  return loadDraftLocally(session.source);
+}
+
+export function restoreSavedDraftSession(baseSession, savedDraft) {
+  if (!baseSession || !savedDraft) return baseSession;
+  return {
+    ...baseSession,
+    menu: savedDraft.menu,
+    design: normalizeMenuDesign(savedDraft.design),
+    dirty: false,
+    localSavedAt: savedDraft.savedAt || null,
+    restoredFromLocal: true,
+  };
+}
+
+export function discardSavedDraftSession(session) {
+  if (session?.source) clearDraftLocally(session.source);
+  return session;
 }
 
 export function resetDraftSession(payload) {
