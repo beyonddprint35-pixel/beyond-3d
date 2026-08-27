@@ -1,5 +1,4 @@
 import { normalizeMenuDesign } from "../domain/designSchema";
-import { activeMenuPointerPath, validatePublishedMenuArtifact } from "../publishing/publishedMenuArtifact";
 
 const MEMORY_CACHE = new Map();
 const STORAGE_PREFIX = "beyond:published-menu:";
@@ -10,7 +9,7 @@ function cacheKey(slug) {
 
 function remember(slug, payload) {
   MEMORY_CACHE.set(slug, payload);
-  try { window.localStorage.setItem(cacheKey(slug), JSON.stringify(payload)); } catch { /* browser storage is optional */ }
+  try { window.localStorage.setItem(cacheKey(slug), JSON.stringify(payload)); } catch { /* storage is an optional extra fallback */ }
   return payload;
 }
 
@@ -25,10 +24,14 @@ function remembered(slug) {
   } catch { return null; }
 }
 
-async function fetchJson(path, options = {}) {
-  const response = await fetch(path, options);
-  if (!response.ok) throw new Error(`Menu request failed (${response.status}).`);
-  return response.json();
+function validPayload(payload) {
+  return Boolean(
+    payload?.versionId &&
+    payload?.menu &&
+    Array.isArray(payload.menu.groups) &&
+    Array.isArray(payload.menu.items) &&
+    payload?.design
+  );
 }
 
 export async function loadResilientPublishedMenu(slug) {
@@ -36,21 +39,30 @@ export async function loadResilientPublishedMenu(slug) {
   if (!normalizedSlug) throw new Error("A menu slug is required.");
 
   try {
-    // The tiny pointer may be revalidated. The immutable artifact itself can be cached for a very long time by the edge.
-    const pointer = await fetchJson(activeMenuPointerPath(normalizedSlug), { cache: "no-cache" });
-    if (!pointer?.artifactPath) throw new Error("Published menu pointer is incomplete.");
-    const artifact = await fetchJson(pointer.artifactPath, { cache: "force-cache" });
-    const validation = validatePublishedMenuArtifact(artifact);
-    if (!validation.ok) throw new Error(validation.errors.join(" · "));
+    const response = await fetch(`/.netlify/functions/published-menu?slug=${encodeURIComponent(normalizedSlug)}`, {
+      headers: { Accept: "application/json" },
+    });
+    if (!response.ok) throw new Error(`Menu request failed (${response.status}).`);
+    const payload = await response.json();
+    if (!validPayload(payload)) throw new Error("Published menu is incomplete.");
+
     return remember(normalizedSlug, {
-      menu: artifact.menu,
-      designSettings: normalizeMenuDesign(artifact.design),
-      versionId: artifact.versionId,
-      source: "published-artifact",
+      menu: payload.menu,
+      designSettings: normalizeMenuDesign(payload.design),
+      versionId: payload.versionId,
+      versionNumber: payload.versionNumber,
+      publishedAt: payload.publishedAt,
+      source: "published",
     });
   } catch (error) {
     const fallback = remembered(normalizedSlug);
-    if (fallback) return { ...fallback, source: "last-known-good", fallbackReason: error?.message || "Menu temporarily unavailable." };
+    if (fallback) {
+      return {
+        ...fallback,
+        source: "last-known-good",
+        fallbackReason: error?.message || "Menu temporarily unavailable.",
+      };
+    }
     throw error;
   }
 }
