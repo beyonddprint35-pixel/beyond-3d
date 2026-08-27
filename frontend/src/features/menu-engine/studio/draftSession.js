@@ -8,13 +8,18 @@ const copyText = value => ({
   ar: String(value?.ar || ""),
 });
 
+const cleanStoredPrice = value => String(value ?? "")
+  .replace(/₪/g, "")
+  .replace(/\b(?:ILS|NIS)\b/gi, "")
+  .trim();
+
 const copyPriceOptions = value => Array.isArray(value)
   ? value.map(option => ({
       label: String(option?.label || ""),
       label_en: String(option?.label_en || ""),
       label_he: String(option?.label_he || ""),
       label_ar: String(option?.label_ar || ""),
-      price: String(option?.price || ""),
+      price: cleanStoredPrice(option?.price),
     }))
   : [];
 
@@ -32,6 +37,8 @@ export function createMenuDraftSession(payload) {
     restoredFromLocal: false,
     menu: {
       ...menu,
+      currency: menu.currency || "ILS",
+      currency_symbol: menu.currency_symbol || "₪",
       subtitle: copyText(menu.subtitle),
       hero_kicker: copyText(menu.hero_kicker),
       hero_title: copyText(menu.hero_title),
@@ -46,6 +53,7 @@ export function createMenuDraftSession(payload) {
             ...item,
             name: copyText(item.name),
             description: copyText(item.description),
+            price: cleanStoredPrice(item.price),
             price_options: copyPriceOptions(item.price_options),
             metadata: normalizeItemMetadata(item.metadata),
           }))
@@ -95,7 +103,11 @@ export function restoreSavedDraftSession(baseSession, savedDraft) {
   if (!baseSession || !savedDraft) return baseSession;
   return {
     ...baseSession,
-    menu: savedDraft.menu,
+    menu: {
+      ...savedDraft.menu,
+      currency: savedDraft.menu?.currency || "ILS",
+      currency_symbol: savedDraft.menu?.currency_symbol || "₪",
+    },
     design: normalizeMenuDesign(savedDraft.design),
     dirty: false,
     localSavedAt: savedDraft.savedAt || null,
