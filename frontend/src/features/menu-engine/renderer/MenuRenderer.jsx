@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import RestaurantAccessibility from "../../../components/RestaurantAccessibility";
 import { normalizeMenuDesign } from "../domain/designSchema";
 import "./menuRenderer.css";
 
@@ -106,7 +107,11 @@ function VisualItem({ item, language, design }) {
   );
 }
 
-export default function MenuRenderer({ menu, design: incomingDesign }) {
+export default function MenuRenderer({
+  menu,
+  design: incomingDesign,
+  accessibility = true,
+}) {
   const design = useMemo(() => normalizeMenuDesign(incomingDesign), [incomingDesign]);
   const languages = Array.isArray(menu?.languages) && menu.languages.length ? menu.languages : ["en"];
   const [language, setLanguage] = useState(menu?.default_language || languages[0] || "en");
@@ -118,6 +123,7 @@ export default function MenuRenderer({ menu, design: incomingDesign }) {
   const visibleItems = activeGroup ? items.filter(item => item.group_id === activeGroup.id) : [];
   const rtl = isRtl(language);
   const isVisual = design.template === "visual";
+  const restaurantName = menu?.restaurant_name || "Restaurant";
 
   return (
     <div
@@ -126,11 +132,15 @@ export default function MenuRenderer({ menu, design: incomingDesign }) {
       dir={rtl ? "rtl" : "ltr"}
       lang={language}
     >
+      {accessibility ? (
+        <RestaurantAccessibility restaurantName={restaurantName} />
+      ) : null}
+
       <header className="bme-header">
         <div className="bme-brand">
           {menu?.logo_url ? <img src={menu.logo_url} alt="" /> : null}
           <div>
-            <strong>{menu?.restaurant_name || "Restaurant"}</strong>
+            <strong>{restaurantName}</strong>
             {menu?.subtitle ? <span>{chooseText(language, menu.subtitle)}</span> : null}
           </div>
         </div>
@@ -153,7 +163,7 @@ export default function MenuRenderer({ menu, design: incomingDesign }) {
 
       <section className="bme-hero">
         <span>{chooseText(language, menu?.hero_kicker)}</span>
-        <h1>{chooseText(language, menu?.hero_title) || menu?.restaurant_name || "Our Menu"}</h1>
+        <h1>{chooseText(language, menu?.hero_title) || restaurantName || "Our Menu"}</h1>
       </section>
 
       <nav className="bme-category-nav" aria-label="Menu categories">
@@ -169,7 +179,7 @@ export default function MenuRenderer({ menu, design: incomingDesign }) {
         ))}
       </nav>
 
-      <main className="bme-content">
+      <main id="restaurant-main-content" className="bme-content" tabIndex="-1">
         {activeGroup ? (
           <section className="bme-section">
             <div className="bme-section-heading">
