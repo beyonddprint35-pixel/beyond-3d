@@ -41,7 +41,12 @@
 .bme-item-copy p { max-width:62ch;margin:6px 0 0;color:var(--bme-muted);font-size:clamp(11px,3.4vw,var(--bme-description-size));line-height:1.5;overflow-wrap:anywhere; }
 .bme-item-badges { display:flex;flex-wrap:wrap;gap:6px;margin-top:9px; }
 .bme-item-badge { display:inline-flex;align-items:center;gap:5px;min-height:24px;padding:3px 8px;border:1px solid color-mix(in srgb,var(--bme-accent) 28%,var(--bme-line));border-radius:999px;background:color-mix(in srgb,var(--bme-accent) 8%,var(--bme-surface));color:var(--bme-text);font-size:10px;font-weight:700;line-height:1;white-space:nowrap; }
-.bme-item-badge-symbol { display:inline-flex;align-items:center;justify-content:center;min-width:1em;font-size:1.05em;line-height:1;unicode-bidi:isolate; }
+.bme-item-badge-symbol { display:inline-flex;align-items:center;justify-content:center;min-width:1em;line-height:1;unicode-bidi:isolate; }
+.bme-badge-style-minimal .bme-item-badge-symbol { font-size:.95em;filter:grayscale(1); }
+.bme-badge-style-filled .bme-item-badge-symbol { width:20px;height:20px;border-radius:999px;background:var(--bme-accent);color:#fff;font-size:.9em;box-shadow:inset 0 0 0 1px color-mix(in srgb,#fff 24%,transparent); }
+.bme-badge-style-filled .bme-item-badge { padding-inline-start:5px;background:color-mix(in srgb,var(--bme-accent) 10%,var(--bme-surface)); }
+.bme-badge-style-playful .bme-item-badge-symbol { font-size:1.2em;transform:translateY(-.5px); }
+.bme-badge-style-playful .bme-item-badge { border-style:dashed;background:color-mix(in srgb,var(--bme-accent) 11%,var(--bme-surface)); }
 .bme-badge-chefs_choice,.bme-badge-popular,.bme-badge-signature,.bme-badge-new,.bme-badge-recommended,.bme-badge-limited { border-color:color-mix(in srgb,var(--bme-accent) 55%,var(--bme-line));background:color-mix(in srgb,var(--bme-accent) 15%,var(--bme-surface));font-weight:800; }
 .bme-badge-mild,.bme-badge-medium,.bme-badge-hot,.bme-badge-very_hot { border-color:rgba(180,70,25,.28);background:rgba(230,95,35,.09); }
 .bme-price,.bme-price-option strong { font-family:var(--bme-number-font);font-size:clamp(14px,4vw,var(--bme-price-size));white-space:nowrap;direction:ltr;unicode-bidi:isolate; }
