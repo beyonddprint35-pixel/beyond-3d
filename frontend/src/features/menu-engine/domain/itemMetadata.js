@@ -12,6 +12,42 @@ export const MENU_MERCHANDISING_BADGES = Object.freeze([
 
 export const MENU_SPICE_LEVELS = Object.freeze(["none","mild","medium","hot","very_hot"]);
 
+export const BADGE_SYMBOLS = Object.freeze({
+  // Allergens
+  gluten: "🌾",
+  milk: "🥛",
+  eggs: "🥚",
+  peanuts: "🥜",
+  tree_nuts: "🌰",
+  soy: "🫘",
+  sesame: "◉",
+  fish: "🐟",
+  shellfish: "🦐",
+  mustard: "●",
+  celery: "🥬",
+  sulfites: "⚗",
+
+  // Dietary
+  vegan: "🌱",
+  vegetarian: "🥗",
+  gluten_free: "⊘🌾",
+  lactose_free: "⊘🥛",
+
+  // Merchandising
+  chefs_choice: "★",
+  popular: "↗",
+  signature: "◆",
+  new: "✦",
+  recommended: "✓",
+  limited: "⌛",
+
+  // Spice
+  mild: "🌶",
+  medium: "🌶🌶",
+  hot: "🌶🌶🌶",
+  very_hot: "🔥",
+});
+
 export const BADGE_LABELS = Object.freeze({
   gluten: { en: "Gluten", he: "גלוטן", ar: "غلوتين" },
   milk: { en: "Milk", he: "חלב", ar: "حليب" },
