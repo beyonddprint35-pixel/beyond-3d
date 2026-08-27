@@ -11,6 +11,7 @@ import OrderDetails from "./pages/OrderDetails";
 import TrackOrder from "./pages/TrackOrder";
 import MenuBuilder from "./pages/MenuBuilderStable";
 import MenuMobilePreviewPage from "./pages/MenuMobilePreviewPage";
+import MenuEngineV3Dev from "./pages/MenuEngineV3Dev";
 import CustomerShowcasePortal from "./components/CustomerShowcasePortal";
 
 import "./components/MyAccountAdminShortcut.js";
@@ -46,6 +47,9 @@ function App() {
         <Route path="/3DPRINTING" element={<ThreeDPrinting />} />
         <Route path="/menu-builder" element={<MenuBuilder />} />
         <Route path="/menu-mobile-preview" element={<MenuMobilePreviewPage />} />
+        {import.meta.env.DEV ? (
+          <Route path="/dev/menu-engine-v3" element={<MenuEngineV3Dev />} />
+        ) : null}
         <Route path="/admin" element={<Admin />} />
         <Route path="/admin/order/:id" element={<OrderDetails />} />
         <Route path="/track" element={<TrackOrder />} />
