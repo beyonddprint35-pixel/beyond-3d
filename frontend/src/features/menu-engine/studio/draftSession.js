@@ -1,4 +1,5 @@
 import { normalizeMenuDesign } from "../domain/designSchema";
+import { normalizeItemMetadata } from "../domain/itemMetadata";
 
 const copyText = value => ({
   en: String(value?.en || ""),
@@ -43,6 +44,7 @@ export function createMenuDraftSession(payload) {
             name: copyText(item.name),
             description: copyText(item.description),
             price_options: copyPriceOptions(item.price_options),
+            metadata: normalizeItemMetadata(item.metadata),
           }))
         : [],
     },
