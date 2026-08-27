@@ -1,0 +1,115 @@
+.v3-dev-page {
+  min-height: 100dvh;
+  background: #0b0f17;
+  color: #f7f8fb;
+}
+
+.v3-dev-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 18px;
+  background: rgba(11, 15, 23, 0.96);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
+}
+
+.v3-dev-toolbar > div:first-child {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.v3-dev-toolbar strong {
+  font-size: 13px;
+  letter-spacing: 0.08em;
+}
+
+.v3-dev-toolbar span {
+  color: #9aa4b7;
+  font-size: 11px;
+}
+
+.v3-dev-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.v3-dev-segment {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 12px;
+  background: #151b27;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.v3-dev-segment button {
+  min-height: 34px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #b7c0d0;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.v3-dev-segment button.active {
+  background: #f4f7ff;
+  color: #101521;
+}
+
+.v3-dev-stage {
+  min-height: calc(100dvh - 72px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 34px 20px 80px;
+  overflow-x: auto;
+}
+
+.v3-dev-frame {
+  min-height: 760px;
+  max-width: 100%;
+  border-radius: 24px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 32px 90px rgba(0, 0, 0, 0.45);
+  transition: width 180ms ease;
+}
+
+@media (max-width: 760px) {
+  .v3-dev-toolbar {
+    position: static;
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .v3-dev-controls {
+    justify-content: flex-start;
+  }
+
+  .v3-dev-segment {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .v3-dev-stage {
+    padding: 16px 0 48px;
+  }
+
+  .v3-dev-frame {
+    max-width: calc(100vw - 16px);
+    border-radius: 18px;
+  }
+}
