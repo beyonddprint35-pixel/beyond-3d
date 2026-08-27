@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import RestaurantAccessibility from "../../../components/RestaurantAccessibility";
 import { normalizeMenuDesign } from "../domain/designSchema";
 import { BADGE_LABELS, BADGE_SYMBOLS, normalizeItemMetadata } from "../domain/itemMetadata";
@@ -17,11 +17,36 @@ function chooseText(language, values = {}) {
 
 function isRtl(language) { return language === "he" || language === "ar"; }
 function resolvedBadgeStyle(design) { return design.badges.iconStyle !== "auto" ? design.badges.iconStyle : design.template === "visual" ? "filled" : "minimal"; }
-
-function cleanPrice(value) {
-  return String(value ?? "").replace(/₪/g, "").replace(/\b(?:ILS|NIS)\b/gi, "").trim();
-}
+function cleanPrice(value) { return String(value ?? "").replace(/₪/g, "").replace(/\b(?:ILS|NIS)\b/gi, "").trim(); }
 function formatPrice(value, currencySymbol) { const clean = cleanPrice(value); return clean ? `${currencySymbol}${clean}` : ""; }
+
+function optionLabel(option, language) {
+  return option?.[`label_${language}`] || option?.label || option?.label_en || option?.label_he || option?.label_ar || "";
+}
+
+function displayableGroups(groups) {
+  const raw = groups.filter(group => group && group.visible !== false);
+  const map = new Map(raw.map(group => [group.id, group]));
+  const cache = new Map();
+
+  function valid(group) {
+    if (!group) return false;
+    if (cache.has(group.id)) return cache.get(group.id);
+    const visited = new Set();
+    let current = group;
+    while (current) {
+      if (visited.has(current.id) || current.visible === false) { cache.set(group.id, false); return false; }
+      visited.add(current.id);
+      if (!current.parent_id) { cache.set(group.id, true); return true; }
+      current = map.get(current.parent_id);
+      if (!current) { cache.set(group.id, false); return false; }
+    }
+    cache.set(group.id, false);
+    return false;
+  }
+
+  return raw.filter(valid);
+}
 
 function designVariables(design) {
   return {
@@ -50,10 +75,10 @@ function designVariables(design) {
   };
 }
 
-function Price({ item, currencySymbol }) {
+function Price({ item, currencySymbol, language }) {
   const options = Array.isArray(item.price_options) ? item.price_options : [];
   if (options.length) {
-    return <div className="bme-price-options">{options.map((option,index)=><span key={`${option.price}-${index}`} className="bme-price-option">{option.label?<small>{option.label}</small>:null}<strong>{formatPrice(option.price,currencySymbol)}</strong></span>)}</div>;
+    return <div className="bme-price-options">{options.map((option,index)=><span key={`${option.price}-${index}`} className="bme-price-option">{optionLabel(option,language)?<small>{optionLabel(option,language)}</small>:null}<strong>{formatPrice(option.price,currencySymbol)}</strong></span>)}</div>;
   }
   return item.price ? <strong className="bme-price">{formatPrice(item.price,currencySymbol)}</strong> : null;
 }
@@ -69,43 +94,71 @@ function ItemBadges({ item, language, design }) {
 function ClassicItem({ item, language, design, currencySymbol }) {
   const name = chooseText(language,item.name);
   const description = chooseText(language,item.description);
-  return <article className={`bme-classic-item bme-price-${design.layout.pricePosition}`}><div className="bme-item-copy"><h3>{name}</h3>{description?<p>{description}</p>:null}<ItemBadges item={item} language={language} design={design}/></div><Price item={item} currencySymbol={currencySymbol}/></article>;
+  return <article className={`bme-classic-item bme-price-${design.layout.pricePosition}`}><div className="bme-item-copy"><h3>{name}</h3>{description?<p>{description}</p>:null}<ItemBadges item={item} language={language} design={design}/></div><Price item={item} currencySymbol={currencySymbol} language={language}/></article>;
 }
 
 function VisualItem({ item, language, design, currencySymbol }) {
   const name = chooseText(language,item.name);
   const description = chooseText(language,item.description);
   const hasImage = Boolean(item.image_url);
-  return <article className={`bme-visual-item bme-image-${design.layout.itemImagePosition} bme-price-${design.layout.pricePosition}`} data-image-ratio={design.layout.itemImageRatio}>{hasImage?<div className="bme-item-media"><img src={item.image_url} alt={name}/></div>:<div className="bme-item-media bme-item-media-placeholder" aria-hidden="true"><span>BEYOND</span></div>}<div className="bme-visual-copy"><div className="bme-item-copy"><h3>{name}</h3>{description?<p>{description}</p>:null}<ItemBadges item={item} language={language} design={design}/></div><Price item={item} currencySymbol={currencySymbol}/></div></article>;
+  return <article className={`bme-visual-item bme-image-${design.layout.itemImagePosition} bme-price-${design.layout.pricePosition}`} data-image-ratio={design.layout.itemImageRatio}>{hasImage?<div className="bme-item-media"><img src={item.image_url} alt={name}/></div>:<div className="bme-item-media bme-item-media-placeholder" aria-hidden="true"><span>BEYOND</span></div>}<div className="bme-visual-copy"><div className="bme-item-copy"><h3>{name}</h3>{description?<p>{description}</p>:null}<ItemBadges item={item} language={language} design={design}/></div><Price item={item} currencySymbol={currencySymbol} language={language}/></div></article>;
 }
 
 export default function MenuRenderer({ menu, design: incomingDesign, accessibility = true }) {
   const design = useMemo(()=>normalizeMenuDesign(incomingDesign),[incomingDesign]);
   const languages = Array.isArray(menu?.languages)&&menu.languages.length?menu.languages:["en"];
-  const [language,setLanguage] = useState(menu?.default_language||languages[0]||"en");
-  const [activeGroupId,setActiveGroupId] = useState(menu?.groups?.[0]?.id||"");
   const groups = Array.isArray(menu?.groups)?menu.groups:[];
   const items = Array.isArray(menu?.items)?menu.items:[];
-  const activeGroup = groups.find(group=>group.id===activeGroupId)||groups[0]||null;
-  const visibleItems = activeGroup?items.filter(item=>item.group_id===activeGroup.id&&item.visible!==false):[];
+  const visibleGroups = useMemo(()=>displayableGroups(groups),[groups]);
+  const topGroups = useMemo(()=>visibleGroups.filter(group=>!group.parent_id),[visibleGroups]);
+  const [language,setLanguage] = useState(menu?.default_language||languages[0]||"en");
+  const [activeGroupId,setActiveGroupId] = useState(topGroups[0]?.id||"");
+
+  useEffect(()=>{
+    if (!topGroups.some(group=>group.id===activeGroupId)) setActiveGroupId(topGroups[0]?.id||"");
+  },[topGroups,activeGroupId]);
+
+  const activeGroup = topGroups.find(group=>group.id===activeGroupId)||topGroups[0]||null;
+  const groupMap = useMemo(()=>new Map(visibleGroups.map(group=>[group.id,group])),[visibleGroups]);
+  const childrenMap = useMemo(()=>{
+    const map = new Map();
+    visibleGroups.forEach(group=>{
+      const key = group.parent_id || "__root__";
+      if (!map.has(key)) map.set(key,[]);
+      map.get(key).push(group);
+    });
+    map.forEach(rows=>rows.sort((a,b)=>Number(a.sort_order||0)-Number(b.sort_order||0)));
+    return map;
+  },[visibleGroups]);
+
+  const contentBlocks = useMemo(()=>{
+    if (!activeGroup) return [];
+    const blocks = [];
+    const visit = (group,depth) => {
+      const groupItems = items.filter(item=>item.visible!==false&&item.group_id===group.id).sort((a,b)=>Number(a.sort_order||0)-Number(b.sort_order||0));
+      blocks.push({group,depth,items:groupItems});
+      (childrenMap.get(group.id)||[]).forEach(child=>visit(child,depth+1));
+    };
+    visit(activeGroup,0);
+    return blocks;
+  },[activeGroup,items,childrenMap]);
+
+  const visibleItemCount = contentBlocks.reduce((sum,block)=>sum+block.items.length,0);
   const rtl = isRtl(language);
   const isVisual = design.template === "visual";
   const restaurantName = menu?.restaurant_name || "Restaurant";
   const badgeStyle = resolvedBadgeStyle(design);
   const currencySymbol = menu?.currency_symbol || DEFAULT_CURRENCY_SYMBOL;
-  const menuClasses = [
-    "bme-menu",
-    `bme-template-${design.template}`,
-    `bme-badge-style-${badgeStyle}`,
-    `bme-density-${design.layout.density}`,
-    `bme-nav-${design.layout.navigationStyle}`,
-  ].join(" ");
+  const menuClasses = ["bme-menu",`bme-template-${design.template}`,`bme-badge-style-${badgeStyle}`,`bme-density-${design.layout.density}`,`bme-nav-${design.layout.navigationStyle}`].join(" ");
 
   return <div className={menuClasses} style={designVariables(design)} dir={rtl?"rtl":"ltr"} lang={language}>
     {accessibility?<RestaurantAccessibility restaurantName={restaurantName}/>:null}
     <header className="bme-header"><div className="bme-brand">{menu?.logo_url?<img src={menu.logo_url} alt=""/>:null}<div><strong>{restaurantName}</strong>{menu?.subtitle?<span>{chooseText(language,menu.subtitle)}</span>:null}</div></div>{languages.length>1?<div className="bme-languages" aria-label="Menu language">{languages.map(code=><button key={code} type="button" className={language===code?"active":""} onClick={()=>setLanguage(code)}>{code.toUpperCase()}</button>)}</div>:null}</header>
     <section className="bme-hero"><span>{chooseText(language,menu?.hero_kicker)}</span><h1>{chooseText(language,menu?.hero_title)||restaurantName||"Our Menu"}</h1></section>
-    <nav className="bme-category-nav" aria-label="Menu categories">{groups.filter(group=>group.visible!==false).map(group=><button key={group.id} type="button" className={activeGroup?.id===group.id?"active":""} onClick={()=>setActiveGroupId(group.id)}>{chooseText(language,group.name)}</button>)}</nav>
-    <main id="restaurant-main-content" className="bme-content" tabIndex="-1">{activeGroup?<section className="bme-section"><div className="bme-section-heading"><h2>{chooseText(language,activeGroup.name)}</h2><span>{visibleItems.length} items</span></div><div className={isVisual?"bme-visual-grid":"bme-classic-list"}>{visibleItems.map(item=>isVisual?<VisualItem key={item.id} item={item} language={language} design={design} currencySymbol={currencySymbol}/>:<ClassicItem key={item.id} item={item} language={language} design={design} currencySymbol={currencySymbol}/>)}</div></section>:<div className="bme-empty">No menu categories yet.</div>}</main>
+    <nav className="bme-category-nav" aria-label="Menu categories">{topGroups.map(group=><button key={group.id} type="button" className={activeGroup?.id===group.id?"active":""} onClick={()=>setActiveGroupId(group.id)}>{chooseText(language,group.name)}</button>)}</nav>
+    <main id="restaurant-main-content" className="bme-content" tabIndex="-1">{activeGroup?<section className="bme-section"><div className="bme-section-heading"><h2>{chooseText(language,activeGroup.name)}</h2><span>{visibleItemCount} items</span></div><div className="bme-group-blocks">{contentBlocks.map(block=>{
+      const nested = block.depth>0;
+      return <section className={`bme-group-block ${nested?"bme-subcategory-section":"bme-root-items"}`} data-depth={block.depth} key={block.group.id}>{nested?<div className="bme-subcategory-heading"><h3>{chooseText(language,block.group.name)}</h3></div>:null}{block.items.length?<div className={isVisual?"bme-visual-grid":"bme-classic-list"}>{block.items.map(item=>isVisual?<VisualItem key={item.id} item={item} language={language} design={design} currencySymbol={currencySymbol}/>:<ClassicItem key={item.id} item={item} language={language} design={design} currencySymbol={currencySymbol}/>)}</div>:null}</section>;
+    })}</div></section>:<div className="bme-empty">No menu categories yet.</div>}</main>
   </div>;
 }
