@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import RestaurantAccessibility from "../../../components/RestaurantAccessibility";
 import { normalizeMenuDesign } from "../domain/designSchema";
-import { BADGE_LABELS, normalizeItemMetadata } from "../domain/itemMetadata";
+import { BADGE_LABELS, BADGE_SYMBOLS, normalizeItemMetadata } from "../domain/itemMetadata";
 import "./menuRenderer.css";
 
 function chooseText(language, values = {}) {
@@ -71,7 +71,8 @@ function ItemBadges({ item, language }) {
     <div className="bme-item-badges" aria-label="Item information">
       {keys.map(key => (
         <span key={key} className={`bme-item-badge bme-badge-${key}`}>
-          {BADGE_LABELS[key]?.[language] || BADGE_LABELS[key]?.en || key}
+          <span className="bme-item-badge-symbol" aria-hidden="true">{BADGE_SYMBOLS[key] || "•"}</span>
+          <span>{BADGE_LABELS[key]?.[language] || BADGE_LABELS[key]?.en || key}</span>
         </span>
       ))}
     </div>
