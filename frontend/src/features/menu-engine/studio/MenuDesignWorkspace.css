@@ -1,4 +1,5 @@
 @import "./MenuDesignPremiumProfileThumbnails.css";
+@import "./MenuDesignSignatureProfileThumbnails.css";
 
 /* Design workspace: keep template discovery separate from fine-tuning. */
 .studio-v3-design-pro-controls{gap:10px}
