@@ -1,0 +1,167 @@
+/* =========================================================
+   BEYOND MENU ENGINE — PHASE 4 SIGNATURE PRESENTATIONS
+   Distinct compositions for the remaining Phase 4 directions.
+   All color decisions stay token-driven so accessibility modes can
+   override the complete template consistently.
+   ========================================================= */
+
+/* ---------- Levant Table ---------- */
+.bme-presentation-levant-table .bme-hero{padding-block:52px 42px;background:linear-gradient(145deg,var(--bme-surface),color-mix(in srgb,var(--bme-accent-secondary) 22%,var(--bme-surface)))}
+.bme-presentation-levant-table .bme-hero h1{max-width:12ch;letter-spacing:-.04em}
+.bme-presentation-levant-table .bme-category-nav{gap:8px;padding-block:12px 20px}
+.bme-presentation-levant-table .bme-category-nav button{border-radius:999px;background:transparent}
+.bme-presentation-levant-table .bme-content{width:min(100%,1040px);padding-top:28px}
+.bme-presentation-levant-table .bme-section-heading{border-bottom:0;padding-bottom:8px}
+.bme-presentation-levant-table .bme-classic-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.bme-presentation-levant-table .bme-classic-item{position:relative;min-height:118px;padding:22px 22px 20px;border:1px solid var(--bme-line);border-radius:28px;background:var(--bme-card);box-shadow:0 12px 28px color-mix(in srgb,var(--bme-text) 6%,transparent)}
+.bme-presentation-levant-table .bme-classic-item:nth-child(4n+1),.bme-presentation-levant-table .bme-classic-item:nth-child(4n+4){background:color-mix(in srgb,var(--bme-accent-secondary) 22%,var(--bme-card))}
+.bme-presentation-levant-table .bme-classic-item::before{content:"";position:absolute;inset-inline-start:0;top:24px;bottom:24px;width:4px;border-radius:999px;background:var(--bme-accent)}
+.bme-presentation-levant-table .bme-item-copy h3{font-family:var(--bme-heading-font);font-size:clamp(18px,2.4vw,var(--bme-item-size))}
+.bme-presentation-levant-table .bme-price,.bme-presentation-levant-table .bme-price-options{color:var(--bme-accent)}
+
+/* ---------- Nordic Paper ---------- */
+.bme-presentation-nordic-paper .bme-header{border-bottom:0}
+.bme-presentation-nordic-paper .bme-hero{padding-block:72px 58px;background:transparent}
+.bme-presentation-nordic-paper .bme-hero-copy{max-width:780px}
+.bme-presentation-nordic-paper .bme-hero h1{max-width:11ch;font-weight:600;letter-spacing:-.065em}
+.bme-presentation-nordic-paper .bme-category-nav{gap:24px;padding-block:13px;border-block:1px solid var(--bme-line)}
+.bme-presentation-nordic-paper .bme-category-nav button{padding-inline:0;border:0;border-radius:0;background:transparent;text-transform:uppercase;letter-spacing:.13em;font-size:9px}
+.bme-presentation-nordic-paper .bme-category-nav button.active{background:transparent;color:var(--bme-accent);border-bottom:1px solid var(--bme-accent)}
+.bme-presentation-nordic-paper .bme-content{width:min(100%,1040px);padding-top:44px}
+.bme-presentation-nordic-paper .bme-section-heading{padding-bottom:22px;border-bottom:1px solid var(--bme-text)}
+.bme-presentation-nordic-paper .bme-classic-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:52px;counter-reset:nordic-item}
+.bme-presentation-nordic-paper .bme-classic-item{counter-increment:nordic-item;position:relative;min-height:126px;padding:24px 0 24px 38px;border-bottom:1px solid var(--bme-line)}
+.bme-presentation-nordic-paper[dir="rtl"] .bme-classic-item{padding:24px 38px 24px 0}
+.bme-presentation-nordic-paper .bme-classic-item::before{content:counter(nordic-item,decimal-leading-zero);position:absolute;inset-inline-start:0;top:29px;color:var(--bme-muted);font:600 9px/1 var(--bme-number-font);letter-spacing:.08em}
+.bme-presentation-nordic-paper .bme-item-copy h3{font-family:var(--bme-heading-font);font-weight:600;letter-spacing:-.02em}
+.bme-presentation-nordic-paper .bme-price,.bme-presentation-nordic-paper .bme-price-options{align-self:center}
+
+/* ---------- Seoul Night ---------- */
+.bme-presentation-seoul-night .bme-header{border-bottom-color:color-mix(in srgb,var(--bme-accent) 30%,var(--bme-line))}
+.bme-presentation-seoul-night .bme-hero{min-height:330px;display:flex;align-items:flex-end;background:radial-gradient(circle at 82% 18%,color-mix(in srgb,var(--bme-accent) 24%,transparent),transparent 32%),linear-gradient(160deg,var(--bme-surface),var(--bme-bg))}
+.bme-presentation-seoul-night .bme-hero h1{text-transform:uppercase;letter-spacing:-.06em}
+.bme-presentation-seoul-night .bme-category-nav{gap:6px;padding-block:12px 20px}
+.bme-presentation-seoul-night .bme-category-nav button{border-color:color-mix(in srgb,var(--bme-accent) 28%,var(--bme-line));border-radius:8px;text-transform:uppercase;letter-spacing:.08em;font-size:9px}
+.bme-presentation-seoul-night .bme-category-nav button.active{box-shadow:0 0 18px color-mix(in srgb,var(--bme-accent) 34%,transparent)}
+.bme-presentation-seoul-night .bme-content{width:min(100%,1120px);padding-top:26px}
+.bme-presentation-seoul-night .bme-section-heading{border-bottom-color:color-mix(in srgb,var(--bme-accent) 42%,var(--bme-line))}
+.bme-presentation-seoul-night .bme-visual-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:14px!important}
+.bme-presentation-seoul-night .bme-visual-item{position:relative;border:1px solid color-mix(in srgb,var(--bme-accent) 28%,var(--bme-line));border-radius:12px;background:var(--bme-card);box-shadow:0 18px 44px rgba(0,0,0,.2)}
+.bme-presentation-seoul-night .bme-visual-item:nth-child(3n+2){transform:translateY(20px)}
+.bme-presentation-seoul-night .bme-item-media{aspect-ratio:3/4!important;filter:saturate(.9) contrast(1.05)}
+.bme-presentation-seoul-night .bme-visual-copy{padding:16px;align-items:start}
+.bme-presentation-seoul-night .bme-item-copy h3{text-transform:uppercase;letter-spacing:.02em}
+.bme-presentation-seoul-night .bme-price,.bme-presentation-seoul-night .bme-price-options{color:var(--bme-accent);text-shadow:0 0 14px color-mix(in srgb,var(--bme-accent) 30%,transparent)}
+
+/* ---------- Smokehouse Story ---------- */
+.bme-presentation-smokehouse-story .bme-hero{min-height:380px;display:flex;align-items:flex-end;background:radial-gradient(circle at 28% 0%,color-mix(in srgb,var(--bme-accent) 16%,transparent),transparent 42%),var(--bme-surface)}
+.bme-presentation-smokehouse-story .bme-content{width:min(100%,1160px);padding-top:28px}
+.bme-presentation-smokehouse-story .bme-section-heading{border-bottom:2px solid color-mix(in srgb,var(--bme-accent) 62%,var(--bme-line))}
+.bme-presentation-smokehouse-story .bme-visual-grid{display:grid!important;grid-template-columns:1fr!important;gap:22px!important}
+.bme-presentation-smokehouse-story .bme-visual-item{position:relative;min-height:430px;border:0;border-radius:10px;background:var(--bme-card);overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.28)}
+.bme-presentation-smokehouse-story .bme-item-media{position:absolute;inset:0;height:100%;aspect-ratio:auto!important}
+.bme-presentation-smokehouse-story .bme-item-media::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,color-mix(in srgb,var(--bme-bg) 92%,transparent) 0%,color-mix(in srgb,var(--bme-bg) 58%,transparent) 52%,transparent 100%)}
+.bme-presentation-smokehouse-story[dir="rtl"] .bme-item-media::after{background:linear-gradient(270deg,color-mix(in srgb,var(--bme-bg) 92%,transparent) 0%,color-mix(in srgb,var(--bme-bg) 58%,transparent) 52%,transparent 100%)}
+.bme-presentation-smokehouse-story .bme-visual-copy{position:relative;z-index:2;width:min(62%,660px);min-height:430px;align-content:end;padding:clamp(28px,5vw,54px);color:var(--bme-text)}
+.bme-presentation-smokehouse-story .bme-visual-copy::before{content:"LOW & SLOW";display:block;margin-bottom:18px;color:var(--bme-accent);font-size:9px;font-weight:900;letter-spacing:.18em}
+.bme-presentation-smokehouse-story .bme-item-copy h3{font-family:var(--bme-heading-font);font-size:clamp(30px,5vw,54px);line-height:.98}
+.bme-presentation-smokehouse-story .bme-price,.bme-presentation-smokehouse-story .bme-price-options{margin-top:18px;color:var(--bme-accent)}
+
+/* ---------- Tropical Club ---------- */
+.bme-presentation-tropical-club{padding-bottom:104px}
+.bme-presentation-tropical-club .bme-hero{min-height:320px;display:flex;align-items:flex-end;background:radial-gradient(circle at 86% 8%,color-mix(in srgb,var(--bme-accent-secondary) 55%,transparent),transparent 34%),linear-gradient(150deg,var(--bme-surface),color-mix(in srgb,var(--bme-accent) 8%,var(--bme-surface)))}
+.bme-presentation-tropical-club .bme-category-nav{position:fixed;z-index:80;left:50%;bottom:12px;transform:translateX(-50%);width:min(calc(100% - 22px),720px);display:flex;gap:5px;padding:7px;border:1px solid color-mix(in srgb,var(--bme-accent) 24%,var(--bme-line));border-radius:24px;background:color-mix(in srgb,var(--bme-surface) 92%,transparent);box-shadow:0 18px 48px color-mix(in srgb,var(--bme-text) 18%,transparent);backdrop-filter:blur(18px)}
+.bme-presentation-tropical-club .bme-category-nav button{flex:1;min-width:0;min-height:48px;border:0;border-radius:17px;background:transparent;white-space:normal;font-size:9px}
+.bme-presentation-tropical-club .bme-category-nav button.active{background:var(--bme-accent);color:var(--bme-category-text)}
+.bme-presentation-tropical-club .bme-content{width:min(100%,1080px);padding-top:30px;padding-bottom:118px}
+.bme-presentation-tropical-club .bme-section-heading{border-bottom:0}
+.bme-presentation-tropical-club .bme-visual-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:16px!important}
+.bme-presentation-tropical-club .bme-visual-item{border:0;border-radius:30px;background:var(--bme-card);box-shadow:0 16px 34px color-mix(in srgb,var(--bme-text) 9%,transparent)}
+.bme-presentation-tropical-club .bme-visual-item:nth-child(4n+2),.bme-presentation-tropical-club .bme-visual-item:nth-child(4n+3){background:color-mix(in srgb,var(--bme-accent-secondary) 18%,var(--bme-card))}
+.bme-presentation-tropical-club .bme-item-media{aspect-ratio:4/3!important;border-radius:30px 30px 0 0}
+.bme-presentation-tropical-club .bme-visual-copy{padding:18px}
+.bme-presentation-tropical-club .bme-price,.bme-presentation-tropical-club .bme-price-options{color:var(--bme-accent)}
+
+/* ---------- Dessert Magazine ---------- */
+.bme-presentation-dessert-magazine .bme-header{border-bottom:0}
+.bme-presentation-dessert-magazine .bme-hero{padding-block:72px 58px;background:transparent}
+.bme-presentation-dessert-magazine .bme-hero h1{max-width:9ch;font-size:clamp(50px,9vw,var(--bme-hero-size));letter-spacing:-.065em}
+.bme-presentation-dessert-magazine .bme-content{width:min(100%,1180px);padding-top:40px}
+.bme-presentation-dessert-magazine .bme-section-heading{border-bottom:2px solid var(--bme-text)}
+.bme-presentation-dessert-magazine .bme-visual-grid{display:grid!important;grid-template-columns:repeat(12,minmax(0,1fr))!important;grid-auto-flow:dense;gap:24px 16px!important}
+.bme-presentation-dessert-magazine .bme-visual-item{grid-column:span 4;border:0;border-radius:0;background:transparent;overflow:visible}
+.bme-presentation-dessert-magazine .bme-visual-item:nth-child(5n+1){grid-column:span 8;grid-row:span 2}
+.bme-presentation-dessert-magazine .bme-visual-item:nth-child(5n+2){grid-column:span 4;transform:translateY(34px)}
+.bme-presentation-dessert-magazine .bme-item-media{aspect-ratio:4/5!important;border-radius:2px;box-shadow:8px 10px 0 color-mix(in srgb,var(--bme-accent) 18%,transparent)}
+.bme-presentation-dessert-magazine .bme-visual-item:nth-child(5n+1) .bme-item-media{aspect-ratio:4/3!important}
+.bme-presentation-dessert-magazine .bme-visual-copy{padding:14px 0 0;border-bottom:1px solid var(--bme-line)}
+.bme-presentation-dessert-magazine .bme-item-copy h3{font-family:var(--bme-heading-font);font-size:clamp(20px,3vw,var(--bme-item-size))}
+.bme-presentation-dessert-magazine .bme-price,.bme-presentation-dessert-magazine .bme-price-options{color:var(--bme-accent)}
+
+/* ---------- Luxury Steak Story ---------- */
+.bme-presentation-luxury-steak .bme-header{border-bottom-color:color-mix(in srgb,var(--bme-accent) 34%,var(--bme-line))}
+.bme-presentation-luxury-steak .bme-hero{min-height:390px;display:flex;align-items:flex-end;background:linear-gradient(180deg,color-mix(in srgb,var(--bme-surface) 80%,#000),var(--bme-bg))}
+.bme-presentation-luxury-steak .bme-hero-copy>span{color:var(--bme-accent);letter-spacing:.2em}
+.bme-presentation-luxury-steak .bme-content{width:min(100%,1120px);padding-top:36px}
+.bme-presentation-luxury-steak .bme-section-heading{border-bottom:1px solid color-mix(in srgb,var(--bme-accent) 56%,var(--bme-line))}
+.bme-presentation-luxury-steak .bme-visual-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:20px!important}
+.bme-presentation-luxury-steak .bme-visual-item{position:relative;min-height:440px;border:1px solid color-mix(in srgb,var(--bme-accent) 28%,var(--bme-line));border-radius:4px;background:var(--bme-card);overflow:hidden}
+.bme-presentation-luxury-steak .bme-visual-item:first-child{grid-column:1/-1;min-height:540px}
+.bme-presentation-luxury-steak .bme-item-media{position:absolute;inset:0;height:100%;aspect-ratio:auto!important}
+.bme-presentation-luxury-steak .bme-item-media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 28%,color-mix(in srgb,var(--bme-bg) 94%,transparent) 100%)}
+.bme-presentation-luxury-steak .bme-visual-copy{position:absolute;z-index:2;left:0;right:0;bottom:0;padding:28px;color:var(--bme-text);align-items:end}
+.bme-presentation-luxury-steak .bme-visual-copy::before{content:"PRIME CUT";position:absolute;top:-18px;inset-inline-start:28px;color:var(--bme-accent);font-size:8px;font-weight:900;letter-spacing:.18em}
+.bme-presentation-luxury-steak .bme-item-copy h3{font-family:var(--bme-heading-font);font-size:clamp(25px,4vw,42px);font-weight:600}
+.bme-presentation-luxury-steak .bme-price,.bme-presentation-luxury-steak .bme-price-options{color:var(--bme-accent)}
+
+/* ---------- Beyond Blue Launcher ---------- */
+.bme-presentation-blue-launcher .bme-header{border-bottom:0}
+.bme-presentation-blue-launcher .bme-hero{padding-block:54px 34px;background:transparent}
+.bme-presentation-blue-launcher .bme-hero h1{max-width:10ch;letter-spacing:-.055em}
+.bme-presentation-blue-launcher .bme-category-nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:124px;gap:10px;overflow:visible;padding-block:12px 38px}
+.bme-presentation-blue-launcher .bme-category-nav button{position:relative;display:flex;align-items:flex-end;min-height:124px;padding:16px;border:1px solid color-mix(in srgb,var(--bme-accent) 14%,var(--bme-line));border-radius:22px;background:var(--bme-card);color:var(--bme-text);font-family:var(--bme-heading-font);font-size:18px;font-weight:800;line-height:1.02;text-align:start;white-space:normal;box-shadow:0 10px 26px color-mix(in srgb,var(--bme-text) 7%,transparent)}
+.bme-presentation-blue-launcher .bme-category-nav button:nth-child(6n+1),.bme-presentation-blue-launcher .bme-category-nav button:nth-child(6n+5){grid-column:span 2;background:var(--bme-accent);color:var(--bme-category-text)}
+.bme-presentation-blue-launcher .bme-category-nav button::after{content:"↗";position:absolute;top:14px;inset-inline-end:14px;width:28px;height:28px;display:grid;place-items:center;border-radius:9px;background:color-mix(in srgb,var(--bme-accent-secondary) 55%,transparent);color:inherit;font-size:13px}
+.bme-presentation-blue-launcher[dir="rtl"] .bme-category-nav button::after{content:"↖"}
+.bme-presentation-blue-launcher .bme-category-nav button.active{outline:3px solid color-mix(in srgb,var(--bme-accent) 42%,#fff);outline-offset:2px;background:var(--bme-accent);color:var(--bme-category-text)}
+.bme-presentation-blue-launcher .bme-content{padding-top:40px;border-top:1px solid var(--bme-line)}
+
+/* ---------- Family Pizzeria ---------- */
+.bme-presentation-family-pizzeria .bme-hero{padding-block:50px 34px;background:linear-gradient(150deg,var(--bme-surface),color-mix(in srgb,var(--bme-accent-secondary) 26%,var(--bme-surface)))}
+.bme-presentation-family-pizzeria .bme-hero h1{max-width:11ch;letter-spacing:-.055em}
+.bme-presentation-family-pizzeria .bme-category-nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;overflow:visible;padding-block:22px 36px}
+.bme-presentation-family-pizzeria .bme-category-nav button{position:relative;aspect-ratio:1/1;min-height:0;padding:42px 12px 12px;border:2px solid var(--bme-line);border-radius:50%;background:var(--bme-card);color:var(--bme-text);font-family:var(--bme-heading-font);font-size:16px;font-weight:800;white-space:normal;text-align:center;box-shadow:0 10px 24px color-mix(in srgb,var(--bme-text) 7%,transparent)}
+.bme-presentation-family-pizzeria .bme-category-nav button::before{content:"✦";position:absolute;top:22%;left:50%;transform:translate(-50%,-50%);color:var(--bme-accent);font-size:14px}
+.bme-presentation-family-pizzeria .bme-category-nav button.active{border-color:var(--bme-accent);background:var(--bme-accent);color:var(--bme-category-text);box-shadow:0 12px 30px color-mix(in srgb,var(--bme-accent) 24%,transparent)}
+.bme-presentation-family-pizzeria .bme-category-nav button.active::before{color:var(--bme-category-text)}
+.bme-presentation-family-pizzeria .bme-content{width:min(100%,980px);padding-top:26px}
+.bme-presentation-family-pizzeria .bme-section-heading{border-bottom:3px solid var(--bme-accent)}
+.bme-presentation-family-pizzeria .bme-classic-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.bme-presentation-family-pizzeria .bme-classic-item{padding:18px;border:1px solid var(--bme-line);border-radius:22px;background:var(--bme-card)}
+.bme-presentation-family-pizzeria .bme-price,.bme-presentation-family-pizzeria .bme-price-options{color:var(--bme-accent)}
+
+@media(max-width:760px){
+  .bme-presentation-levant-table .bme-classic-list,.bme-presentation-nordic-paper .bme-classic-list,.bme-presentation-family-pizzeria .bme-classic-list{grid-template-columns:1fr}
+  .bme-presentation-seoul-night .bme-visual-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .bme-presentation-seoul-night .bme-visual-item:nth-child(3n+2){transform:none}
+  .bme-presentation-smokehouse-story .bme-visual-copy{width:min(78%,650px)}
+  .bme-presentation-dessert-magazine .bme-visual-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .bme-presentation-dessert-magazine .bme-visual-item,.bme-presentation-dessert-magazine .bme-visual-item:nth-child(5n+1),.bme-presentation-dessert-magazine .bme-visual-item:nth-child(5n+2){grid-column:auto;grid-row:auto;transform:none}
+  .bme-presentation-dessert-magazine .bme-visual-item:first-child{grid-column:1/-1}
+  .bme-presentation-luxury-steak .bme-visual-grid{grid-template-columns:1fr!important}
+  .bme-presentation-luxury-steak .bme-visual-item:first-child{grid-column:auto}
+  .bme-presentation-blue-launcher .bme-category-nav{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .bme-presentation-blue-launcher .bme-category-nav button:nth-child(6n+1),.bme-presentation-blue-launcher .bme-category-nav button:nth-child(6n+5){grid-column:span 1}
+  .bme-presentation-family-pizzeria .bme-category-nav{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+}
+
+@media(max-width:430px){
+  .bme-presentation-seoul-night .bme-visual-grid,.bme-presentation-tropical-club .bme-visual-grid,.bme-presentation-dessert-magazine .bme-visual-grid{grid-template-columns:1fr!important}
+  .bme-presentation-smokehouse-story .bme-visual-item{min-height:390px}
+  .bme-presentation-smokehouse-story .bme-visual-copy{width:88%;min-height:390px;padding:26px}
+  .bme-presentation-tropical-club .bme-category-nav{bottom:8px;width:calc(100% - 16px)}
+  .bme-presentation-luxury-steak .bme-visual-item,.bme-presentation-luxury-steak .bme-visual-item:first-child{min-height:430px}
+  .bme-presentation-blue-launcher .bme-category-nav{grid-auto-rows:108px;gap:8px}
+  .bme-presentation-blue-launcher .bme-category-nav button{min-height:108px;padding:13px;border-radius:18px;font-size:16px}
+  .bme-presentation-family-pizzeria .bme-category-nav button{font-size:14px}
+}
