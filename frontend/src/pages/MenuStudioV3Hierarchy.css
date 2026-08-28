@@ -1,11 +1,7 @@
-/* Menu Studio hierarchy behavior only.
-   Visual styling belongs to MenuStudioV3Draft.css so the Studio has one design source of truth. */
-.studio-v3-category-card.is-subcategory{margin-inline-start:16px}
-.studio-v3-group-type-line{display:flex;align-items:center;gap:7px;flex-wrap:wrap;min-width:0}
-.studio-v3-entity-controls{display:flex;align-items:center;gap:4px;flex:0 0 auto}
-.studio-v3-order-buttons{display:flex;gap:3px}
-.studio-v3-item-actions .studio-v3-entity-controls{margin-inline-start:auto}
-.studio-v3-expand-chevron{transition:transform .16s ease}
-.studio-v3-expand-chevron.expanded{transform:rotate(180deg)}
-.studio-v3-parent-content,.studio-v3-content-block{display:grid}
-@media(max-width:759px){.studio-v3-price-option-edit{grid-template-columns:1fr}.studio-v3-item-actions .studio-v3-entity-controls{margin-inline-start:0}}
+/*
+ * Retired: hierarchy visuals now live in MenuStudioV3Draft.css.
+ *
+ * This file remains temporarily because the Draft page still imports it,
+ * but it intentionally contains no active rules. The hierarchy behavior is
+ * implemented in React; the Studio visual system has a single CSS owner.
+ */
