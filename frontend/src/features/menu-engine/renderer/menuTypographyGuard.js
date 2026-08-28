@@ -1,15 +1,19 @@
 const HEADLINE_SELECTOR = [
+  ".bme-menu .bme-brand strong",
   ".bme-menu .bme-hero h1",
+  ".bme-menu .bme-category-nav button",
   ".bme-menu .bme-section-heading h2",
   ".bme-menu .bme-subcategory-heading h3",
   ".bme-menu .bme-item-copy h3",
+  ".bme-heritage-exact .ep-brand-title",
   ".bme-heritage-exact .ep-hero-title",
+  ".bme-heritage-exact .ep-tabs button",
   ".bme-heritage-exact .ep-section-head h2",
   ".bme-heritage-exact .ep-item-name",
 ].join(",");
 
 const MENU_SELECTOR = ".bme-menu,.bme-heritage-exact";
-const MIN_FONT_SIZE = Object.freeze({ hero: 18, section: 16, item: 11 });
+const MIN_FONT_SIZE = Object.freeze({ hero: 18, section: 16, item: 11, compact: 9 });
 let canvasContext = null;
 let animationFrame = 0;
 let mutationObserver = null;
@@ -25,6 +29,7 @@ function getCanvasContext() {
 function headlineKind(element) {
   if (element.matches(".bme-hero h1,.ep-hero-title")) return "hero";
   if (element.matches(".bme-section-heading h2,.bme-subcategory-heading h3,.ep-section-head h2")) return "section";
+  if (element.matches(".bme-brand strong,.bme-category-nav button,.ep-brand-title,.ep-tabs button")) return "compact";
   return "item";
 }
 
@@ -47,7 +52,9 @@ function fitHeadline(element) {
   element.style.removeProperty("font-size");
   const style = window.getComputedStyle(element);
   const baseSize = Number.parseFloat(style.fontSize);
-  const availableWidth = element.getBoundingClientRect().width;
+  const boxWidth = element.getBoundingClientRect().width;
+  const paddingInline = (Number.parseFloat(style.paddingLeft) || 0) + (Number.parseFloat(style.paddingRight) || 0);
+  const availableWidth = Math.max(0, boxWidth - paddingInline);
   if (!Number.isFinite(baseSize) || baseSize <= 0 || availableWidth <= 0) return;
 
   const wordWidth = longestWordWidth(element, style, baseSize);
