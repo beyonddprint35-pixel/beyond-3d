@@ -3,6 +3,7 @@ import RestaurantAccessibility from "../../../components/RestaurantAccessibility
 import { normalizeMenuDesign } from "../domain/designSchema";
 import { BADGE_LABELS, BADGE_SYMBOLS, normalizeItemMetadata } from "../domain/itemMetadata";
 import "./menuRenderer.css";
+import "./menuRendererV3Fixes.css";
 
 const DEFAULT_CURRENCY_SYMBOL = "₪";
 const FOOTER_COPY = {
@@ -10,6 +11,7 @@ const FOOTER_COPY = {
   he:{items:"פריטים",accessibility:"הצהרת נגישות",powered:"מופעל באמצעות"},
   ar:{items:"عناصر",accessibility:"بيان إمكانية الوصول",powered:"بدعم من"},
 };
+const LANGUAGE_LABELS = { en:"English", he:"עברית", ar:"العربية" };
 function chooseText(language,values={}){const en=values.en||"",he=values.he||"",ar=values.ar||"";if(language==="he")return he||ar||en;if(language==="ar")return ar||he||en;return en||he||ar;}
 function isRtl(language){return language==="he"||language==="ar";}
 function resolvedBadgeStyle(design){return design.badges.iconStyle!=="auto"?design.badges.iconStyle:design.template==="visual"?"filled":"minimal";}
@@ -41,7 +43,7 @@ export default function MenuRenderer({menu,design:incomingDesign,accessibility=t
 
   return <div className={menuClasses} style={designVariables(design)} dir={rtl?"rtl":"ltr"} lang={language}>
     {accessibility?<RestaurantAccessibility restaurantName={restaurantName} language={language}/>:null}
-    <header className="bme-header"><div className="bme-brand">{logoUrl?<img src={logoUrl} alt={`${restaurantName} logo`}/>:null}<div><strong>{restaurantName}</strong>{menu?.subtitle?<span>{chooseText(language,menu.subtitle)}</span>:null}</div></div>{languages.length>1?<div className="bme-languages" aria-label="Menu language">{languages.map(code=><button key={code} type="button" className={language===code?"active":""} onClick={()=>setLanguage(code)}>{code.toUpperCase()}</button>)}</div>:null}</header>
+    <header className="bme-header"><div className="bme-brand">{logoUrl?<img src={logoUrl} alt={`${restaurantName} logo`}/>:null}<div><strong>{restaurantName}</strong>{menu?.subtitle?<span>{chooseText(language,menu.subtitle)}</span>:null}</div></div>{languages.length>1?<div className="bme-languages" aria-label="Menu language">{languages.map(code=><button key={code} type="button" lang={code} dir={isRtl(code)?"rtl":"ltr"} className={language===code?"active":""} onClick={()=>setLanguage(code)}>{LANGUAGE_LABELS[code]||code.toUpperCase()}</button>)}</div>:null}</header>
     <section className="bme-hero">{logoUrl?<img className="bme-hero-watermark" src={logoUrl} alt="" aria-hidden="true"/>:null}<div className="bme-hero-copy"><span>{chooseText(language,menu?.hero_kicker)}</span><h1>{chooseText(language,menu?.hero_title)||restaurantName||"Our Menu"}</h1></div></section>
     <nav className="bme-category-nav" aria-label="Menu categories">{topGroups.map(group=><button key={group.id} type="button" className={activeGroup?.id===group.id?"active":""} onClick={()=>setActiveGroupId(group.id)}>{chooseText(language,group.name)}</button>)}</nav>
     <main id="restaurant-main-content" className="bme-content" tabIndex="-1">{activeGroup?<section className="bme-section"><div className="bme-section-heading"><h2>{chooseText(language,activeGroup.name)}</h2><span>{visibleItemCount} {copy.items}</span></div><div className="bme-group-blocks">{contentBlocks.map(block=>{const nested=block.depth>0;return <section className={`bme-group-block ${nested?"bme-subcategory-section":"bme-root-items"}`} data-depth={block.depth} key={block.group.id}>{nested?<div className="bme-subcategory-heading"><h3>{chooseText(language,block.group.name)}</h3></div>:null}{block.items.length?<div className={isVisual?"bme-visual-grid":"bme-classic-list"}>{block.items.map(item=>isVisual?<VisualItem key={item.id} item={item} language={language} design={design} currencySymbol={currencySymbol}/>:<ClassicItem key={item.id} item={item} language={language} design={design} currencySymbol={currencySymbol}/>)}</div>:null}</section>;})}</div></section>:<div className="bme-empty">No menu categories yet.</div>}</main>
