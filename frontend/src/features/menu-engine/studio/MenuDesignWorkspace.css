@@ -1,3 +1,5 @@
+@import "./MenuDesignPremiumProfileThumbnails.css";
+
 /* Design workspace: keep template discovery separate from fine-tuning. */
 .studio-v3-design-pro-controls{gap:10px}
 .studio-v3-design-workspace-header{position:sticky;top:0;z-index:16;display:grid;gap:6px;padding:0 0 2px;background:linear-gradient(180deg,#fbfbfc 0%,rgba(251,251,252,.97) 86%,rgba(251,251,252,0) 100%);backdrop-filter:blur(12px)}
