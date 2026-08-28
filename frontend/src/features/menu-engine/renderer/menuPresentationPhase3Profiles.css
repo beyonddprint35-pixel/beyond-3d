@@ -1,0 +1,155 @@
+/* =========================================================
+   BEYOND MENU ENGINE — PHASE 3 SIGNATURE PRESENTATIONS
+   Dedicated compositions for the Phase 3 premium designs.
+   ========================================================= */
+
+/* ---------- Trattoria Chalk Ledger ---------- */
+.bme-presentation-trattoria-ledger .bme-header{border-bottom:3px double var(--bme-text)}
+.bme-presentation-trattoria-ledger .bme-hero{padding-block:46px 38px;background:transparent;text-align:center}
+.bme-presentation-trattoria-ledger .bme-hero-copy{max-width:720px;margin-inline:auto}
+.bme-presentation-trattoria-ledger .bme-hero h1{max-width:13ch;margin-inline:auto;letter-spacing:-.035em}
+.bme-presentation-trattoria-ledger .bme-category-nav{justify-content:center;border-block:1px dashed color-mix(in srgb,var(--bme-text) 45%,transparent)}
+.bme-presentation-trattoria-ledger .bme-content{width:min(100%,900px);padding-top:34px}
+.bme-presentation-trattoria-ledger .bme-section-heading{border-bottom:3px double var(--bme-text)}
+.bme-presentation-trattoria-ledger .bme-classic-item{padding-block:15px;border-bottom:1px dotted color-mix(in srgb,var(--bme-text) 42%,transparent)}
+.bme-presentation-trattoria-ledger .bme-classic-item::after{content:"";grid-column:1/2;align-self:center;border-bottom:1px dotted color-mix(in srgb,var(--bme-text) 28%,transparent);transform:translateY(-7px)}
+.bme-presentation-trattoria-ledger .bme-price,.bme-presentation-trattoria-ledger .bme-price-options{font-variant-numeric:tabular-nums;color:var(--bme-accent)}
+
+/* ---------- Tokyo Ink Columns ---------- */
+.bme-presentation-tokyo-ink .bme-header{border-bottom:0}
+.bme-presentation-tokyo-ink .bme-hero{padding-block:68px 58px;background:transparent}
+.bme-presentation-tokyo-ink .bme-hero-copy{max-width:600px}
+.bme-presentation-tokyo-ink .bme-hero h1{font-weight:500;letter-spacing:-.055em}
+.bme-presentation-tokyo-ink .bme-hero-copy::after{content:"印";display:grid;place-items:center;width:34px;height:34px;margin-top:22px;border:2px solid var(--bme-accent);color:var(--bme-accent);font-size:14px;font-weight:800}
+.bme-presentation-tokyo-ink .bme-category-nav{gap:18px;border-block:1px solid var(--bme-text)}
+.bme-presentation-tokyo-ink .bme-content{width:min(100%,980px);padding-top:48px}
+.bme-presentation-tokyo-ink .bme-section-heading{display:block;border-bottom:0;padding-bottom:24px}
+.bme-presentation-tokyo-ink .bme-classic-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 42px;counter-reset:ink-item}
+.bme-presentation-tokyo-ink .bme-classic-item{counter-increment:ink-item;position:relative;min-height:108px;padding:20px 0 20px 30px;border-bottom:1px solid var(--bme-line)}
+.bme-presentation-tokyo-ink[dir="rtl"] .bme-classic-item{padding:20px 30px 20px 0}
+.bme-presentation-tokyo-ink .bme-classic-item::before{content:counter(ink-item,decimal-leading-zero);position:absolute;inset-inline-start:0;top:23px;color:var(--bme-accent);font:800 9px/1 var(--bme-number-font)}
+
+/* ---------- Garden Journal ---------- */
+.bme-presentation-garden-journal .bme-hero{min-height:360px;display:flex;align-items:flex-end}
+.bme-presentation-garden-journal .bme-content{width:min(100%,1160px);padding-top:40px}
+.bme-presentation-garden-journal .bme-section-heading{border-bottom:0}
+.bme-presentation-garden-journal .bme-visual-grid{display:grid!important;grid-template-columns:1fr!important;gap:34px!important}
+.bme-presentation-garden-journal .bme-visual-item{display:grid!important;grid-template-columns:1fr 1fr;overflow:hidden;border:0;border-radius:30px;background:var(--bme-card);box-shadow:0 20px 55px color-mix(in srgb,var(--bme-text) 8%,transparent)}
+.bme-presentation-garden-journal .bme-visual-item:nth-child(even){grid-template-columns:1fr 1fr}
+.bme-presentation-garden-journal .bme-visual-item:nth-child(even) .bme-item-media{order:2}
+.bme-presentation-garden-journal .bme-item-media{height:100%;min-height:340px;aspect-ratio:auto!important}
+.bme-presentation-garden-journal .bme-visual-copy{align-content:center;padding:clamp(28px,5vw,58px);position:relative}
+.bme-presentation-garden-journal .bme-visual-copy::before{content:"SEASONAL";display:block;margin-bottom:18px;color:var(--bme-accent);font-size:9px;font-weight:900;letter-spacing:.16em}
+.bme-presentation-garden-journal .bme-item-copy h3{font-family:var(--bme-heading-font);font-size:clamp(26px,4vw,42px);line-height:1.02}
+
+/* ---------- Bakery Counter ---------- */
+.bme-presentation-bakery-counter .bme-hero{padding-block:48px 42px;text-align:center}
+.bme-presentation-bakery-counter .bme-hero-copy{max-width:720px;margin-inline:auto}
+.bme-presentation-bakery-counter .bme-category-nav{justify-content:center}
+.bme-presentation-bakery-counter .bme-content{width:min(100%,1080px);padding-top:34px}
+.bme-presentation-bakery-counter .bme-section-heading{border-bottom:0}
+.bme-presentation-bakery-counter .bme-visual-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:20px!important}
+.bme-presentation-bakery-counter .bme-visual-item{border:0;border-radius:24px 24px 12px 12px;background:var(--bme-card);box-shadow:0 12px 28px color-mix(in srgb,var(--bme-text) 8%,transparent)}
+.bme-presentation-bakery-counter .bme-item-media{aspect-ratio:1/1!important;border-radius:24px 24px 0 0}
+.bme-presentation-bakery-counter .bme-visual-copy{padding:15px 16px 18px;align-items:start}
+.bme-presentation-bakery-counter .bme-visual-item:nth-child(3n+2){transform:translateY(18px)}
+.bme-presentation-bakery-counter .bme-price,.bme-presentation-bakery-counter .bme-price-options{padding:5px 8px;border-radius:999px;background:color-mix(in srgb,var(--bme-accent) 12%,transparent);color:var(--bme-accent)}
+
+/* ---------- Neon Dock ---------- */
+.bme-presentation-neon-dock{padding-bottom:106px}
+.bme-presentation-neon-dock .bme-header{border-bottom-color:color-mix(in srgb,var(--bme-accent) 30%,var(--bme-line))}
+.bme-presentation-neon-dock .bme-hero{min-height:300px;display:flex;align-items:flex-end;background:radial-gradient(circle at 78% 20%,color-mix(in srgb,var(--bme-accent) 24%,transparent),transparent 38%),var(--bme-surface)}
+.bme-presentation-neon-dock .bme-category-nav{position:fixed;z-index:80;left:50%;bottom:12px;transform:translateX(-50%);width:min(calc(100% - 20px),690px);display:flex;gap:5px;padding:7px;border:1px solid color-mix(in srgb,var(--bme-accent) 35%,var(--bme-line));border-radius:22px;background:color-mix(in srgb,var(--bme-surface) 90%,transparent);box-shadow:0 0 34px color-mix(in srgb,var(--bme-accent) 22%,transparent),0 18px 46px rgba(0,0,0,.25);backdrop-filter:blur(18px)}
+.bme-presentation-neon-dock .bme-category-nav button{flex:1;min-width:0;min-height:50px;border:0;border-radius:15px;background:transparent;color:var(--bme-muted);font-size:9px;white-space:normal}
+.bme-presentation-neon-dock .bme-category-nav button.active{background:var(--bme-accent);color:#fff;box-shadow:0 0 18px color-mix(in srgb,var(--bme-accent) 55%,transparent)}
+.bme-presentation-neon-dock .bme-content{padding-bottom:110px}
+.bme-presentation-neon-dock .bme-visual-item{border-color:color-mix(in srgb,var(--bme-accent) 20%,var(--bme-line));box-shadow:0 12px 35px rgba(0,0,0,.18)}
+
+/* ---------- Desert Arch Covers ---------- */
+.bme-presentation-desert-arches .bme-hero{padding-bottom:30px}
+.bme-presentation-desert-arches .bme-category-nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;overflow:visible;padding-block:24px 34px}
+.bme-presentation-desert-arches .bme-category-nav button{position:relative;min-height:150px;padding:54px 18px 18px;border:0;border-radius:80px 80px 18px 18px;background:var(--bme-category-bg);color:var(--bme-category-text);font-family:var(--bme-heading-font);font-size:20px;white-space:normal;text-align:center}
+.bme-presentation-desert-arches .bme-category-nav button:nth-child(even){background:var(--bme-accent)}
+.bme-presentation-desert-arches .bme-category-nav button::before{content:"✦";position:absolute;top:24px;left:50%;transform:translateX(-50%);font-size:11px;opacity:.7}
+.bme-presentation-desert-arches .bme-content{padding-top:18px}
+
+/* ---------- Tapas Collage ---------- */
+.bme-presentation-tapas-collage .bme-hero{padding-block:62px 54px;background:transparent}
+.bme-presentation-tapas-collage .bme-content{width:min(100%,1180px);padding-top:40px}
+.bme-presentation-tapas-collage .bme-section-heading{border-bottom:2px solid var(--bme-text)}
+.bme-presentation-tapas-collage .bme-visual-grid{display:grid!important;grid-template-columns:repeat(12,minmax(0,1fr))!important;grid-auto-flow:dense;gap:18px!important}
+.bme-presentation-tapas-collage .bme-visual-item{grid-column:span 4;border:0;border-radius:0;background:transparent;overflow:visible}
+.bme-presentation-tapas-collage .bme-visual-item:nth-child(6n+1){grid-column:span 7;transform:rotate(-1deg)}
+.bme-presentation-tapas-collage .bme-visual-item:nth-child(6n+2){grid-column:span 5;transform:translateY(24px) rotate(1deg)}
+.bme-presentation-tapas-collage .bme-visual-item:nth-child(6n+4){grid-column:span 8}
+.bme-presentation-tapas-collage .bme-item-media{aspect-ratio:4/3!important;border-radius:2px;box-shadow:6px 8px 0 color-mix(in srgb,var(--bme-accent) 24%,transparent)}
+.bme-presentation-tapas-collage .bme-visual-copy{padding:13px 0 8px;border-bottom:1px solid var(--bme-line)}
+
+/* ---------- Butcher Ledger ---------- */
+.bme-presentation-butcher-ledger .bme-header{border-bottom:1px solid var(--bme-accent)}
+.bme-presentation-butcher-ledger .bme-hero{padding-block:54px 46px;background:linear-gradient(180deg,color-mix(in srgb,var(--bme-accent) 7%,var(--bme-surface)),var(--bme-surface))}
+.bme-presentation-butcher-ledger .bme-content{width:min(100%,940px);padding-top:34px}
+.bme-presentation-butcher-ledger .bme-section-heading{border-bottom:2px solid var(--bme-accent)}
+.bme-presentation-butcher-ledger .bme-classic-list{counter-reset:cut}
+.bme-presentation-butcher-ledger .bme-classic-item{counter-increment:cut;position:relative;padding:17px 0 17px 44px;border-bottom:1px solid color-mix(in srgb,var(--bme-line) 80%,transparent)}
+.bme-presentation-butcher-ledger[dir="rtl"] .bme-classic-item{padding:17px 44px 17px 0}
+.bme-presentation-butcher-ledger .bme-classic-item::before{content:"CUT " counter(cut,decimal-leading-zero);position:absolute;inset-inline-start:0;top:20px;color:var(--bme-accent);font:800 8px/1 var(--bme-body-font);letter-spacing:.08em}
+.bme-presentation-butcher-ledger .bme-item-copy h3{text-transform:uppercase;letter-spacing:.035em}
+.bme-presentation-butcher-ledger .bme-price,.bme-presentation-butcher-ledger .bme-price-options{padding:7px 9px;border:1px solid var(--bme-accent);border-radius:3px;color:var(--bme-accent)}
+
+/* ---------- Brunch Polaroids ---------- */
+.bme-presentation-brunch-polaroids .bme-hero{padding-block:56px 46px;text-align:center}
+.bme-presentation-brunch-polaroids .bme-hero-copy{max-width:720px;margin-inline:auto}
+.bme-presentation-brunch-polaroids .bme-content{width:min(100%,1080px);padding-top:36px}
+.bme-presentation-brunch-polaroids .bme-section-heading{border-bottom:0}
+.bme-presentation-brunch-polaroids .bme-visual-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:30px!important}
+.bme-presentation-brunch-polaroids .bme-visual-item{border:0;border-radius:3px;background:var(--bme-card);padding:12px 12px 4px;box-shadow:0 16px 38px color-mix(in srgb,var(--bme-text) 12%,transparent)}
+.bme-presentation-brunch-polaroids .bme-visual-item:nth-child(odd){transform:rotate(-1.4deg)}
+.bme-presentation-brunch-polaroids .bme-visual-item:nth-child(even){transform:translateY(18px) rotate(1.2deg)}
+.bme-presentation-brunch-polaroids .bme-item-media{aspect-ratio:4/3!important}
+.bme-presentation-brunch-polaroids .bme-visual-copy{padding:16px 6px 18px;align-items:start}
+.bme-presentation-brunch-polaroids .bme-price,.bme-presentation-brunch-polaroids .bme-price-options{color:var(--bme-accent)}
+
+/* ---------- Rose Lounge ---------- */
+.bme-presentation-rose-lounge .bme-hero{min-height:340px;display:flex;align-items:flex-end;background:radial-gradient(circle at 20% 10%,color-mix(in srgb,var(--bme-accent) 22%,transparent),transparent 42%),var(--bme-surface)}
+.bme-presentation-rose-lounge .bme-content{width:min(100%,1000px);padding-top:38px}
+.bme-presentation-rose-lounge .bme-section-heading{border-bottom:0}
+.bme-presentation-rose-lounge .bme-visual-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:22px!important}
+.bme-presentation-rose-lounge .bme-visual-item{position:relative;border:1px solid color-mix(in srgb,var(--bme-accent) 38%,var(--bme-line));border-radius:34px;background:linear-gradient(160deg,color-mix(in srgb,var(--bme-card) 92%,var(--bme-accent)),var(--bme-card));box-shadow:0 22px 60px rgba(0,0,0,.2)}
+.bme-presentation-rose-lounge .bme-item-media{aspect-ratio:3/4!important;border-radius:33px 33px 0 0}
+.bme-presentation-rose-lounge .bme-visual-copy{padding:20px;align-items:start}
+.bme-presentation-rose-lounge .bme-price,.bme-presentation-rose-lounge .bme-price-options{padding:7px 11px;border-radius:999px;background:var(--bme-accent);color:var(--bme-category-text)}
+
+/* ---------- Beyond App Launcher ---------- */
+.bme-presentation-beyond-launcher .bme-header{border-bottom:0}
+.bme-presentation-beyond-launcher .bme-hero{padding-block:48px 32px;background:transparent}
+.bme-presentation-beyond-launcher .bme-category-nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:minmax(132px,1fr);gap:10px;overflow:visible;padding-block:10px 34px}
+.bme-presentation-beyond-launcher .bme-category-nav button{position:relative;display:flex;align-items:flex-end;min-height:132px;padding:18px;border:0;border-radius:22px;background:var(--bme-category-bg);color:var(--bme-category-text);font-family:var(--bme-heading-font);font-size:22px;line-height:1;text-align:start;white-space:normal;box-shadow:0 12px 30px color-mix(in srgb,var(--bme-text) 10%,transparent)}
+.bme-presentation-beyond-launcher .bme-category-nav button:nth-child(4n+2),.bme-presentation-beyond-launcher .bme-category-nav button:nth-child(4n+3){background:var(--bme-accent)}
+.bme-presentation-beyond-launcher .bme-category-nav button::after{content:"→";position:absolute;top:16px;inset-inline-end:17px;width:30px;height:30px;display:grid;place-items:center;border-radius:10px;background:rgba(255,255,255,.14);font-size:14px}
+.bme-presentation-beyond-launcher[dir="rtl"] .bme-category-nav button::after{content:"←"}
+.bme-presentation-beyond-launcher .bme-category-nav button.active{outline:3px solid color-mix(in srgb,var(--bme-accent) 35%,#fff);outline-offset:2px}
+.bme-presentation-beyond-launcher .bme-content{padding-top:44px;border-top:1px solid var(--bme-line)}
+
+@media(max-width:760px){
+  .bme-presentation-tokyo-ink .bme-classic-list{grid-template-columns:1fr}
+  .bme-presentation-garden-journal .bme-visual-item,.bme-presentation-garden-journal .bme-visual-item:nth-child(even){grid-template-columns:1fr}
+  .bme-presentation-garden-journal .bme-visual-item:nth-child(even) .bme-item-media{order:0}
+  .bme-presentation-garden-journal .bme-item-media{min-height:0;aspect-ratio:4/3!important}
+  .bme-presentation-bakery-counter .bme-visual-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .bme-presentation-bakery-counter .bme-visual-item:nth-child(3n+2){transform:none}
+  .bme-presentation-desert-arches .bme-category-nav{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .bme-presentation-tapas-collage .bme-visual-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .bme-presentation-tapas-collage .bme-visual-item,.bme-presentation-tapas-collage .bme-visual-item:nth-child(6n+1),.bme-presentation-tapas-collage .bme-visual-item:nth-child(6n+2),.bme-presentation-tapas-collage .bme-visual-item:nth-child(6n+4){grid-column:auto;transform:none}
+  .bme-presentation-tapas-collage .bme-visual-item:first-child{grid-column:1/-1}
+  .bme-presentation-brunch-polaroids .bme-visual-item:nth-child(odd),.bme-presentation-brunch-polaroids .bme-visual-item:nth-child(even){transform:none}
+}
+
+@media(max-width:430px){
+  .bme-presentation-bakery-counter .bme-visual-grid,.bme-presentation-tapas-collage .bme-visual-grid,.bme-presentation-brunch-polaroids .bme-visual-grid,.bme-presentation-rose-lounge .bme-visual-grid{grid-template-columns:1fr!important}
+  .bme-presentation-desert-arches .bme-category-nav{grid-template-columns:1fr 1fr;gap:8px}
+  .bme-presentation-desert-arches .bme-category-nav button{min-height:118px;padding:42px 12px 12px;border-radius:62px 62px 16px 16px;font-size:17px}
+  .bme-presentation-beyond-launcher .bme-category-nav{grid-template-columns:1fr 1fr;grid-auto-rows:116px}
+  .bme-presentation-beyond-launcher .bme-category-nav button{min-height:116px;padding:14px;font-size:18px;border-radius:18px}
+  .bme-presentation-neon-dock .bme-category-nav{bottom:8px;width:calc(100% - 16px)}
+}
