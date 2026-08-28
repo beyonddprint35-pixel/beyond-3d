@@ -2,6 +2,8 @@ import { normalizeMenuDesign } from "../domain/designSchema";
 import { normalizeItemMetadata } from "../domain/itemMetadata";
 import { clearDraftLocally, loadDraftLocally, saveDraftLocally } from "./draftStorage";
 
+const menuBaselineDesign = new WeakMap();
+
 const copyText = value => ({
   en: String(value?.en || ""),
   he: String(value?.he || ""),
@@ -23,9 +25,45 @@ const copyPriceOptions = value => Array.isArray(value)
     }))
   : [];
 
+function rememberBaseline(menu, baselineDesign) {
+  if (menu && typeof menu === "object" && baselineDesign) {
+    menuBaselineDesign.set(menu, baselineDesign);
+  }
+  return menu;
+}
+
+export function getBaselineDesignForMenu(menu) {
+  return menu && typeof menu === "object" ? menuBaselineDesign.get(menu) || null : null;
+}
+
 export function createMenuDraftSession(payload) {
   const menu = payload?.menu || {};
   const baselineDesign = normalizeMenuDesign(payload?.designSettings || {});
+  const draftMenu = {
+    ...menu,
+    currency: menu.currency || "ILS",
+    currency_symbol: menu.currency_symbol || "₪",
+    subtitle: copyText(menu.subtitle),
+    hero_kicker: copyText(menu.hero_kicker),
+    hero_title: copyText(menu.hero_title),
+    groups: Array.isArray(menu.groups)
+      ? menu.groups.map(group => ({
+          ...group,
+          name: copyText(group.name),
+        }))
+      : [],
+    items: Array.isArray(menu.items)
+      ? menu.items.map(item => ({
+          ...item,
+          name: copyText(item.name),
+          description: copyText(item.description),
+          price: cleanStoredPrice(item.price),
+          price_options: copyPriceOptions(item.price_options),
+          metadata: normalizeItemMetadata(item.metadata),
+        }))
+      : [],
+  };
+  rememberBaseline(draftMenu, baselineDesign);
 
   return {
     source: {
@@ -37,30 +75,7 @@ export function createMenuDraftSession(payload) {
     localSavedAt: null,
     restoredFromLocal: false,
     baselineDesign,
-    menu: {
-      ...menu,
-      currency: menu.currency || "ILS",
-      currency_symbol: menu.currency_symbol || "₪",
-      subtitle: copyText(menu.subtitle),
-      hero_kicker: copyText(menu.hero_kicker),
-      hero_title: copyText(menu.hero_title),
-      groups: Array.isArray(menu.groups)
-        ? menu.groups.map(group => ({
-            ...group,
-            name: copyText(group.name),
-          }))
-        : [],
-      items: Array.isArray(menu.items)
-        ? menu.items.map(item => ({
-            ...item,
-            name: copyText(item.name),
-            description: copyText(item.description),
-            price: cleanStoredPrice(item.price),
-            price_options: copyPriceOptions(item.price_options),
-            metadata: normalizeItemMetadata(item.metadata),
-          }))
-        : [],
-    },
+    menu: draftMenu,
     design: baselineDesign,
   };
 }
@@ -68,6 +83,7 @@ export function createMenuDraftSession(payload) {
 export function updateDraftMenu(session, updater) {
   const currentMenu = session?.menu || {};
   const nextMenu = typeof updater === "function" ? updater(currentMenu) : updater;
+  rememberBaseline(nextMenu, session?.baselineDesign || getBaselineDesignForMenu(currentMenu));
   return {
     ...session,
     dirty: true,
@@ -103,13 +119,15 @@ export function findSavedDraftSession(session) {
 
 export function restoreSavedDraftSession(baseSession, savedDraft) {
   if (!baseSession || !savedDraft) return baseSession;
+  const restoredMenu = {
+    ...savedDraft.menu,
+    currency: savedDraft.menu?.currency || "ILS",
+    currency_symbol: savedDraft.menu?.currency_symbol || "₪",
+  };
+  rememberBaseline(restoredMenu, baseSession.baselineDesign);
   return {
     ...baseSession,
-    menu: {
-      ...savedDraft.menu,
-      currency: savedDraft.menu?.currency || "ILS",
-      currency_symbol: savedDraft.menu?.currency_symbol || "₪",
-    },
+    menu: restoredMenu,
     design: normalizeMenuDesign(savedDraft.design),
     baselineDesign: baseSession.baselineDesign,
     dirty: false,
