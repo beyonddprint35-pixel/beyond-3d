@@ -71,6 +71,7 @@
 .bme-presentation-desert-arches .bme-category-nav button{position:relative;min-height:150px;padding:54px 18px 18px;border:0;border-radius:80px 80px 18px 18px;background:var(--bme-category-bg);color:var(--bme-category-text);font-family:var(--bme-heading-font);font-size:20px;white-space:normal;text-align:center}
 .bme-presentation-desert-arches .bme-category-nav button:nth-child(even){background:var(--bme-accent)}
 .bme-presentation-desert-arches .bme-category-nav button::before{content:"✦";position:absolute;top:24px;left:50%;transform:translateX(-50%);font-size:11px;opacity:.7}
+.bme-presentation-desert-arches.bme-nav-minimal .bme-category-nav button.active{background:var(--bme-text);color:#fff;box-shadow:0 12px 28px color-mix(in srgb,var(--bme-text) 18%,transparent);transform:translateY(-3px)}
 .bme-presentation-desert-arches .bme-content{padding-top:18px}
 
 /* ---------- Tapas Collage ---------- */
@@ -90,12 +91,16 @@
 .bme-presentation-butcher-ledger .bme-hero{padding-block:54px 46px;background:linear-gradient(180deg,color-mix(in srgb,var(--bme-accent) 7%,var(--bme-surface)),var(--bme-surface))}
 .bme-presentation-butcher-ledger .bme-content{width:min(100%,940px);padding-top:34px}
 .bme-presentation-butcher-ledger .bme-section-heading{border-bottom:2px solid var(--bme-accent)}
-.bme-presentation-butcher-ledger .bme-classic-list{counter-reset:cut}
-.bme-presentation-butcher-ledger .bme-classic-item{counter-increment:cut;position:relative;padding:17px 0 17px 44px;border-bottom:1px solid color-mix(in srgb,var(--bme-line) 80%,transparent)}
-.bme-presentation-butcher-ledger[dir="rtl"] .bme-classic-item{padding:17px 44px 17px 0}
-.bme-presentation-butcher-ledger .bme-classic-item::before{content:"CUT " counter(cut,decimal-leading-zero);position:absolute;inset-inline-start:0;top:20px;color:var(--bme-accent);font:800 8px/1 var(--bme-body-font);letter-spacing:.08em}
+.bme-presentation-butcher-ledger .bme-classic-list{counter-reset:cut;border-top:1px solid color-mix(in srgb,var(--bme-line) 80%,transparent)}
+.bme-presentation-butcher-ledger .bme-classic-item{counter-increment:cut;position:relative;display:grid;grid-template-columns:54px minmax(0,1fr) auto;gap:16px;align-items:center;min-height:72px;padding:14px 0;border-bottom:1px solid color-mix(in srgb,var(--bme-line) 80%,transparent)}
+.bme-presentation-butcher-ledger .bme-classic-item::before{content:"CUT " counter(cut,decimal-leading-zero);position:static;grid-column:1;grid-row:1;align-self:center;color:var(--bme-accent);font:800 8px/1 var(--bme-body-font);letter-spacing:.08em;white-space:nowrap}
+.bme-presentation-butcher-ledger .bme-item-copy{grid-column:2;grid-row:1;align-self:center}
+.bme-presentation-butcher-ledger .bme-price,.bme-presentation-butcher-ledger .bme-price-options{grid-column:3;grid-row:1;align-self:center;padding:7px 9px;border:1px solid var(--bme-accent);border-radius:3px;color:var(--bme-accent)}
 .bme-presentation-butcher-ledger .bme-item-copy h3{text-transform:uppercase;letter-spacing:.035em}
-.bme-presentation-butcher-ledger .bme-price,.bme-presentation-butcher-ledger .bme-price-options{padding:7px 9px;border:1px solid var(--bme-accent);border-radius:3px;color:var(--bme-accent)}
+.bme-presentation-butcher-ledger[dir="rtl"] .bme-classic-item{grid-template-columns:auto minmax(0,1fr) 54px;padding:14px 0}
+.bme-presentation-butcher-ledger[dir="rtl"] .bme-classic-item::before{grid-column:3;justify-self:end}
+.bme-presentation-butcher-ledger[dir="rtl"] .bme-item-copy{grid-column:2}
+.bme-presentation-butcher-ledger[dir="rtl"] .bme-price,.bme-presentation-butcher-ledger[dir="rtl"] .bme-price-options{grid-column:1;justify-self:start}
 
 /* ---------- Brunch Polaroids ---------- */
 .bme-presentation-brunch-polaroids .bme-hero{padding-block:56px 46px;text-align:center}
@@ -128,7 +133,7 @@
 .bme-presentation-beyond-launcher .bme-category-nav button:nth-child(4n+2),.bme-presentation-beyond-launcher .bme-category-nav button:nth-child(4n+3){background:var(--bme-accent)}
 .bme-presentation-beyond-launcher .bme-category-nav button::after{content:"→";position:absolute;top:16px;inset-inline-end:17px;width:30px;height:30px;display:grid;place-items:center;border-radius:10px;background:rgba(255,255,255,.14);font-size:14px}
 .bme-presentation-beyond-launcher[dir="rtl"] .bme-category-nav button::after{content:"←"}
-.bme-presentation-beyond-launcher .bme-category-nav button.active{outline:3px solid color-mix(in srgb,var(--bme-accent) 35%,#fff);outline-offset:2px}
+.bme-presentation-beyond-launcher.bme-nav-minimal .bme-category-nav button.active{background:var(--bme-accent);color:#fff;outline:3px solid color-mix(in srgb,var(--bme-accent) 35%,#fff);outline-offset:2px;box-shadow:0 16px 36px color-mix(in srgb,var(--bme-accent) 25%,transparent);transform:translateY(-3px)}
 .bme-presentation-beyond-launcher .bme-content{padding-top:44px;border-top:1px solid var(--bme-line)}
 
 @media(max-width:760px){
