@@ -1,0 +1,19 @@
+/* Design workspace: keep template discovery separate from fine-tuning. */
+.studio-v3-design-workspace-nav{position:sticky;top:0;z-index:12;display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:5px;border:1px solid #dde1e7;border-radius:14px;background:rgba(247,245,242,.96);box-shadow:0 8px 24px rgba(24,34,56,.055);backdrop-filter:blur(14px)}
+.studio-v3-design-workspace-nav button{min-width:0;min-height:48px;display:grid;grid-template-columns:30px minmax(0,1fr);align-items:center;gap:8px;padding:7px 10px;border:1px solid transparent;border-radius:10px;background:transparent;color:#778191;text-align:start;cursor:pointer;transition:.15s ease}
+.studio-v3-design-workspace-nav button:hover{background:#fff;color:#40506a}
+.studio-v3-design-workspace-nav button.active{border-color:#b9c8f4;background:#fff;color:#315dd7;box-shadow:0 5px 16px rgba(46,67,118,.08)}
+.studio-v3-design-workspace-nav-icon{width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:#eef0f3;color:#707b8e;font-size:15px;font-weight:850}
+.studio-v3-design-workspace-nav button.active .studio-v3-design-workspace-nav-icon{background:#eef3ff;color:#315dd7}
+.studio-v3-design-workspace-nav-copy{min-width:0;display:grid;gap:2px}.studio-v3-design-workspace-nav-copy strong{overflow:hidden;font-size:10.5px;font-weight:900;text-overflow:ellipsis;white-space:nowrap}.studio-v3-design-workspace-nav-copy small{overflow:hidden;color:#9aa1ad;font-size:8.5px;font-weight:650;text-overflow:ellipsis;white-space:nowrap}
+
+.studio-v3-template-workspace{display:grid;gap:11px;min-height:0}.studio-v3-customize-workspace{display:grid;gap:10px;min-height:0}
+.studio-v3-current-design-strip{display:grid;grid-template-columns:58px minmax(0,1fr) auto;align-items:center;gap:10px;padding:9px 10px;border:1px solid #dce1eb;border-radius:12px;background:linear-gradient(180deg,#fff,#fafbfc);box-shadow:0 3px 10px rgba(24,34,56,.035)}
+.studio-v3-current-design-mini{width:58px;height:44px;display:grid;place-items:center;overflow:hidden;border:1px solid #e0e3e8;border-radius:8px;background:var(--current-bg,#fff)}
+.studio-v3-current-design-mini:before{content:"";width:32px;height:18px;border-top:4px solid var(--current-text,#182238);border-bottom:2px solid var(--current-accent,#4974e5);opacity:.85}
+.studio-v3-current-design-copy{min-width:0;display:grid;gap:2px}.studio-v3-current-design-copy span{color:#929aa7;font-size:8px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.studio-v3-current-design-copy strong{overflow:hidden;color:#1c2941;font-size:11px;text-overflow:ellipsis;white-space:nowrap}.studio-v3-current-design-copy small{overflow:hidden;color:#8d95a2;font-size:8.5px;text-overflow:ellipsis;white-space:nowrap}
+.studio-v3-current-design-customize{min-height:34px;padding:0 11px;border:1px solid #b9c8f4;border-radius:9px;background:#eef3ff;color:#315dd7;font-size:9px;font-weight:900;cursor:pointer;white-space:nowrap}.studio-v3-current-design-customize:hover{border-color:#94aaec;background:#e8efff}
+
+.studio-v3-inspector-summary-actions{display:flex;align-items:center;gap:8px}.studio-v3-change-template-button{min-height:31px;padding:0 9px;border:1px solid #e0e3e8;border-radius:8px;background:#fff;color:#738094;font-size:8.5px;font-weight:850;cursor:pointer}.studio-v3-change-template-button:hover{border-color:#b9c7ec;color:#315dd7}
+
+@media(max-width:520px){.studio-v3-design-workspace-nav button{grid-template-columns:26px minmax(0,1fr);padding-inline:7px}.studio-v3-design-workspace-nav-icon{width:26px;height:26px}.studio-v3-design-workspace-nav-copy small{display:none}.studio-v3-current-design-strip{grid-template-columns:48px minmax(0,1fr)}.studio-v3-current-design-mini{width:48px}.studio-v3-current-design-customize{grid-column:1/-1;width:100%}}
