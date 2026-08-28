@@ -7,6 +7,7 @@ import {
   applyMenuDesignPreset,
   normalizeMenuDesign,
 } from "../domain/designSchema";
+import { getBaselineDesignForMenu } from "./draftSession";
 import "./MenuDesignControls.css";
 
 const labels = {
@@ -29,7 +30,8 @@ export default function MenuDesignControls({design,baselineDesign,menu,language=
   const patchLayout=(key,value)=>patchDesign(current=>({...current,layout:{...current.layout,[key]:value}}));
   const patchBrand=(key,value)=>patchDesign(current=>({...current,brand:{...current.brand,[key]:value}}));
   const logo=Object.prototype.hasOwnProperty.call(design.brand||{},"logoUrl")?design.brand.logoUrl:(menu?.logo_url||"");
-  const original=baselineDesign?normalizeMenuDesign(baselineDesign):null;
+  const baseline=baselineDesign||getBaselineDesignForMenu(menu);
+  const original=baseline?normalizeMenuDesign(baseline):null;
   const isOriginal=Boolean(original&&comparable(design)===comparable(original));
 
   return <div className="studio-v3-design-pro-controls">
