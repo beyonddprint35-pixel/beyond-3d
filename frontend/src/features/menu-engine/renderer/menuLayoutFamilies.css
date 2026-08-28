@@ -1,0 +1,108 @@
+/* Structural layout families for Beyond Menu Engine.
+   These are real layout systems, not palette-only skins. */
+
+/* ---------- Editorial ---------- */
+.bme-template-editorial .bme-header{min-height:84px;border-bottom:0;background:transparent}
+.bme-template-editorial .bme-hero{padding-top:clamp(58px,11vw,118px);padding-bottom:clamp(46px,9vw,96px);background:transparent}
+.bme-template-editorial .bme-hero-copy{max-width:900px;margin-inline:auto;text-align:center}
+.bme-template-editorial .bme-hero-copy>span{margin-bottom:16px;letter-spacing:.22em}
+.bme-template-editorial .bme-hero h1{max-width:13ch;margin-inline:auto;font-size:clamp(46px,10vw,var(--bme-hero-size));line-height:.92;letter-spacing:-.045em}
+.bme-template-editorial .bme-category-nav{justify-content:center;padding-top:8px;padding-bottom:28px;border-top:1px solid var(--bme-line);border-bottom:1px solid var(--bme-line)}
+.bme-template-editorial .bme-category-nav button{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.bme-template-editorial .bme-content{width:min(100%,980px);padding-top:42px}
+.bme-template-editorial .bme-section{gap:42px}
+.bme-template-editorial .bme-section-heading{align-items:flex-start;padding-bottom:22px;border-bottom:2px solid var(--bme-text)}
+.bme-template-editorial .bme-section-heading h2{max-width:12ch;font-size:clamp(36px,7vw,var(--bme-section-size));letter-spacing:-.04em}
+.bme-template-editorial .bme-classic-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:46px}
+.bme-template-editorial .bme-classic-item{padding:22px 0;border-bottom:1px solid var(--bme-line)}
+.bme-template-editorial .bme-item-copy h3{font-family:var(--bme-heading-font);font-size:clamp(16px,3vw,var(--bme-item-size));letter-spacing:-.015em}
+.bme-template-editorial .bme-item-copy p{margin-top:9px;line-height:1.7}
+.bme-template-editorial .bme-subcategory-heading{padding-top:18px;border-top:1px solid var(--bme-line)}
+.bme-template-editorial .bme-subcategory-heading h3{font-size:18px;letter-spacing:.06em;text-transform:uppercase}
+
+/* ---------- Ledger / wine-book ---------- */
+.bme-template-ledger .bme-header{min-height:76px;border-bottom:2px solid var(--bme-text)}
+.bme-template-ledger .bme-hero{padding-top:42px;padding-bottom:38px;background:transparent;text-align:center}
+.bme-template-ledger .bme-hero-copy{max-width:760px;margin-inline:auto}
+.bme-template-ledger .bme-hero h1{max-width:none;font-size:clamp(36px,7vw,var(--bme-hero-size));line-height:1;letter-spacing:-.025em}
+.bme-template-ledger .bme-category-nav{justify-content:center;padding-block:12px;border-block:1px solid var(--bme-line)}
+.bme-template-ledger .bme-category-nav button{min-height:32px;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.bme-template-ledger .bme-content{width:min(100%,920px);padding-top:32px}
+.bme-template-ledger .bme-section-heading{align-items:center;padding:0 0 16px;border-bottom:3px double var(--bme-text)}
+.bme-template-ledger .bme-section-heading h2{font-size:clamp(28px,5vw,var(--bme-section-size));letter-spacing:-.025em}
+.bme-template-ledger .bme-classic-item{position:relative;align-items:center;padding:14px 0;border-bottom:1px dotted color-mix(in srgb,var(--bme-text) 38%,transparent)}
+.bme-template-ledger .bme-classic-item::before{content:"";position:absolute;inset-inline:0;bottom:-1px;height:1px;opacity:.12;background:var(--bme-text)}
+.bme-template-ledger .bme-item-copy h3{font-family:var(--bme-heading-font);font-size:var(--bme-item-size)}
+.bme-template-ledger .bme-item-copy p{max-width:54ch;margin-top:3px;font-size:var(--bme-description-size);line-height:1.35}
+.bme-template-ledger .bme-price,.bme-template-ledger .bme-price-option strong{min-width:54px;text-align:end;font-variant-numeric:tabular-nums}
+.bme-template-ledger .bme-subcategory-heading{padding:22px 0 5px}
+.bme-template-ledger .bme-subcategory-heading h3{font-size:14px;letter-spacing:.12em;text-transform:uppercase;color:var(--bme-accent)}
+
+/* ---------- Alternating split ---------- */
+.bme-template-split .bme-header{border-bottom:0}
+.bme-template-split .bme-hero{min-height:clamp(260px,48vw,480px);display:flex;align-items:flex-end;border-radius:0 0 clamp(30px,5vw,64px) clamp(30px,5vw,64px)}
+.bme-template-split .bme-hero-copy{padding-bottom:clamp(8px,2vw,20px)}
+.bme-template-split .bme-hero h1{max-width:12ch;font-size:clamp(42px,9vw,var(--bme-hero-size));letter-spacing:-.04em}
+.bme-template-split .bme-category-nav{padding-top:20px;padding-bottom:22px}
+.bme-template-split .bme-content{width:min(100%,1040px);padding-top:20px}
+.bme-template-split .bme-section-heading{padding-bottom:18px;border-bottom:0}
+.bme-template-split .bme-visual-grid{display:grid;grid-template-columns:1fr!important;gap:clamp(18px,4vw,34px)}
+.bme-template-split .bme-visual-item{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);min-height:260px;border:0;border-radius:var(--bme-radius);background:var(--bme-card);box-shadow:0 18px 55px color-mix(in srgb,var(--bme-text) 10%,transparent)}
+.bme-template-split .bme-visual-item:nth-child(even) .bme-item-media{order:2}
+.bme-template-split .bme-item-media{height:100%;min-height:260px;aspect-ratio:auto!important}
+.bme-template-split .bme-visual-copy{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:18px;padding:clamp(24px,5vw,52px)}
+.bme-template-split .bme-item-copy h3{font-family:var(--bme-heading-font);font-size:clamp(22px,4vw,var(--bme-item-size));line-height:1.05;letter-spacing:-.03em}
+.bme-template-split .bme-item-copy p{margin-top:12px;line-height:1.65}
+.bme-template-split .bme-price,.bme-template-split .bme-price-options{margin-top:4px;color:var(--bme-accent)}
+
+/* ---------- Image gallery ---------- */
+.bme-template-gallery .bme-header{border-bottom:0}
+.bme-template-gallery .bme-hero{padding-top:clamp(64px,12vw,126px);padding-bottom:clamp(52px,10vw,106px)}
+.bme-template-gallery .bme-hero h1{max-width:11ch;font-size:clamp(48px,10vw,var(--bme-hero-size));letter-spacing:-.045em}
+.bme-template-gallery .bme-category-nav{padding-block:20px}
+.bme-template-gallery .bme-content{width:min(100%,1160px);padding-top:12px}
+.bme-template-gallery .bme-section-heading{padding-bottom:22px;border-bottom:0}
+.bme-template-gallery .bme-visual-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:clamp(20px,3vw,34px)}
+.bme-template-gallery .bme-visual-item{overflow:visible;border:0;border-radius:0;background:transparent}
+.bme-template-gallery .bme-item-media{aspect-ratio:4/5!important;border-radius:var(--bme-radius);box-shadow:0 18px 55px color-mix(in srgb,var(--bme-text) 10%,transparent)}
+.bme-template-gallery .bme-visual-item:nth-child(4n+1) .bme-item-media,.bme-template-gallery .bme-visual-item:nth-child(4n+4) .bme-item-media{aspect-ratio:1/1!important}
+.bme-template-gallery .bme-visual-copy{padding:14px 2px 8px;align-items:start}
+.bme-template-gallery .bme-item-copy h3{font-family:var(--bme-heading-font);font-size:clamp(18px,3vw,var(--bme-item-size));letter-spacing:-.02em}
+.bme-template-gallery .bme-item-copy p{margin-top:7px}
+.bme-template-gallery .bme-price,.bme-template-gallery .bme-price-options{color:var(--bme-accent)}
+
+/* ---------- Café / street-food tiles ---------- */
+.bme-template-tiles .bme-hero{border-radius:0 0 28px 28px}
+.bme-template-tiles .bme-hero h1{max-width:14ch;letter-spacing:-.04em}
+.bme-template-tiles .bme-category-nav{padding-block:18px}
+.bme-template-tiles .bme-content{width:min(100%,1120px);padding-top:10px}
+.bme-template-tiles .bme-section-heading{border-bottom:0;padding-bottom:8px}
+.bme-template-tiles .bme-visual-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:var(--bme-item-gap)}
+.bme-template-tiles .bme-visual-item{border:0;border-radius:var(--bme-radius);background:var(--bme-card);box-shadow:0 10px 30px color-mix(in srgb,var(--bme-text) 9%,transparent);transition:transform .18s ease,box-shadow .18s ease}
+.bme-template-tiles .bme-visual-item:hover{transform:translateY(-3px);box-shadow:0 18px 42px color-mix(in srgb,var(--bme-text) 13%,transparent)}
+.bme-template-tiles .bme-item-media{aspect-ratio:1/1!important;border-radius:var(--bme-radius) var(--bme-radius) calc(var(--bme-radius)*.55) calc(var(--bme-radius)*.55)}
+.bme-template-tiles .bme-item-media-placeholder{background:linear-gradient(145deg,var(--bme-accent-secondary),color-mix(in srgb,var(--bme-accent) 22%,var(--bme-accent-secondary)))}
+.bme-template-tiles .bme-visual-copy{padding:var(--bme-card-padding)}
+.bme-template-tiles .bme-item-copy h3{font-size:clamp(16px,3.4vw,var(--bme-item-size));line-height:1.15}
+.bme-template-tiles .bme-price,.bme-template-tiles .bme-price-options{color:var(--bme-accent)}
+
+@media(max-width:760px){
+  .bme-template-editorial .bme-classic-list{grid-template-columns:1fr}
+  .bme-template-editorial .bme-category-nav,.bme-template-ledger .bme-category-nav{justify-content:flex-start}
+  .bme-template-split .bme-visual-item{grid-template-columns:1fr;min-height:0}
+  .bme-template-split .bme-visual-item:nth-child(even) .bme-item-media{order:0}
+  .bme-template-split .bme-item-media{min-height:0;aspect-ratio:4/3!important}
+  .bme-template-split .bme-visual-copy{padding:22px}
+  .bme-template-gallery .bme-visual-grid{grid-template-columns:1fr!important}
+  .bme-template-gallery .bme-item-media,.bme-template-gallery .bme-visual-item:nth-child(4n+1) .bme-item-media,.bme-template-gallery .bme-visual-item:nth-child(4n+4) .bme-item-media{aspect-ratio:4/3!important}
+  .bme-template-tiles .bme-visual-grid{grid-template-columns:1fr!important}
+  .bme-template-tiles .bme-visual-item{display:grid;grid-template-columns:116px minmax(0,1fr)}
+  .bme-template-tiles .bme-item-media{height:100%;min-height:116px;aspect-ratio:auto!important;border-radius:var(--bme-radius) calc(var(--bme-radius)*.55) calc(var(--bme-radius)*.55) var(--bme-radius)}
+  [dir="rtl"].bme-template-tiles .bme-item-media{border-radius:calc(var(--bme-radius)*.55) var(--bme-radius) var(--bme-radius) calc(var(--bme-radius)*.55)}
+  .bme-template-tiles .bme-visual-copy{align-content:center}
+}
+
+@media(max-width:420px){
+  .bme-template-tiles .bme-visual-item{grid-template-columns:96px minmax(0,1fr)}
+  .bme-template-tiles .bme-item-media{min-height:104px}
+}
