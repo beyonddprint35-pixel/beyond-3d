@@ -1,0 +1,36 @@
+/* Global menu typography safety.
+   Customer content may be unpredictable, so headlines are never allowed to
+   split a word in the middle. JavaScript only reduces type when one whole word
+   cannot fit the available headline width. */
+.bme-menu .bme-brand strong,
+.bme-menu .bme-hero h1,
+.bme-menu .bme-section-heading h2,
+.bme-menu .bme-subcategory-heading h3,
+.bme-menu .bme-item-copy h3,
+.bme-heritage-exact .ep-brand-title,
+.bme-heritage-exact .ep-hero-title,
+.bme-heritage-exact .ep-section-head h2,
+.bme-heritage-exact .ep-item-name {
+  max-width: 100%;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+  hyphens: none !important;
+  text-wrap: balance;
+}
+
+.bme-menu .bme-item-copy,
+.bme-menu .bme-hero-copy,
+.bme-menu .bme-section-heading,
+.bme-menu .bme-subcategory-heading,
+.bme-heritage-exact .ep-item-info,
+.bme-heritage-exact .ep-section-head {
+  min-width: 0;
+}
+
+/* Descriptions may wrap, but they still wrap at normal word boundaries. */
+.bme-menu .bme-item-copy p,
+.bme-heritage-exact .ep-item-description {
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: auto;
+}
