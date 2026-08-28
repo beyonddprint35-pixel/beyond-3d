@@ -5,166 +5,46 @@ import { BADGE_LABELS, BADGE_SYMBOLS, normalizeItemMetadata } from "../domain/it
 import "./menuRenderer.css";
 
 const DEFAULT_CURRENCY_SYMBOL = "₪";
+const FOOTER_COPY = {
+  en:{items:"items",accessibility:"Accessibility Statement",powered:"Powered by"},
+  he:{items:"פריטים",accessibility:"הצהרת נגישות",powered:"מופעל באמצעות"},
+  ar:{items:"عناصر",accessibility:"بيان إمكانية الوصول",powered:"بدعم من"},
+};
+function chooseText(language,values={}){const en=values.en||"",he=values.he||"",ar=values.ar||"";if(language==="he")return he||ar||en;if(language==="ar")return ar||he||en;return en||he||ar;}
+function isRtl(language){return language==="he"||language==="ar";}
+function resolvedBadgeStyle(design){return design.badges.iconStyle!=="auto"?design.badges.iconStyle:design.template==="visual"?"filled":"minimal";}
+function cleanPrice(value){return String(value??"").replace(/₪/g,"").replace(/\b(?:ILS|NIS)\b/gi,"").trim();}
+function formatPrice(value,currencySymbol){const clean=cleanPrice(value);return clean?`${currencySymbol}${clean}`:"";}
+function optionLabel(option,language){return option?.[`label_${language}`]||option?.label||option?.label_en||option?.label_he||option?.label_ar||"";}
 
-function chooseText(language, values = {}) {
-  const en = values.en || "";
-  const he = values.he || "";
-  const ar = values.ar || "";
-  if (language === "he") return he || ar || en;
-  if (language === "ar") return ar || he || en;
-  return en || he || ar;
-}
+function displayableGroups(groups){const raw=groups.filter(group=>group&&group.visible!==false);const map=new Map(raw.map(group=>[group.id,group]));const cache=new Map();function valid(group){if(!group)return false;if(cache.has(group.id))return cache.get(group.id);const visited=new Set();let current=group;while(current){if(visited.has(current.id)||current.visible===false){cache.set(group.id,false);return false;}visited.add(current.id);if(!current.parent_id){cache.set(group.id,true);return true;}current=map.get(current.parent_id);if(!current){cache.set(group.id,false);return false;}}cache.set(group.id,false);return false;}return raw.filter(valid);}
+function designVariables(design){return{"--bme-bg":design.theme.background,"--bme-surface":design.theme.surface,"--bme-card":design.theme.card,"--bme-text":design.theme.text,"--bme-muted":design.theme.muted,"--bme-accent":design.theme.accent,"--bme-accent-secondary":design.theme.accentSecondary,"--bme-line":design.theme.line,"--bme-category-bg":design.theme.categoryBackground,"--bme-category-text":design.theme.categoryText,"--bme-heading-font":`"${design.typography.headingFont}", "Noto Sans Hebrew", "Noto Sans Arabic", Georgia, serif`,"--bme-body-font":`"${design.typography.bodyFont}", "Noto Sans Hebrew", "Noto Sans Arabic", Arial, sans-serif`,"--bme-number-font":`"${design.typography.numberFont}", "Noto Sans Hebrew", "Noto Sans Arabic", Georgia, serif`,"--bme-heading-weight":design.typography.headingWeight,"--bme-body-weight":design.typography.bodyWeight,"--bme-item-weight":design.typography.itemWeight,"--bme-brand-size":`${design.typography.brandSize}px`,"--bme-hero-size":`${design.typography.heroSize}px`,"--bme-section-size":`${design.typography.sectionSize}px`,"--bme-category-size":`${design.typography.categorySize}px`,"--bme-item-size":`${design.typography.itemNameSize}px`,"--bme-description-size":`${design.typography.descriptionSize}px`,"--bme-price-size":`${design.typography.priceSize}px`,"--bme-logo-size":`${design.brand.logoSize}px`,"--bme-radius":`${design.layout.cardRadius}px`,"--bme-section-gap":`${design.layout.sectionGap}px`,"--bme-item-gap":`${design.layout.itemGap}px`,"--bme-card-padding":`${design.layout.cardPadding}px`};}
+function Price({item,currencySymbol,language}){const options=Array.isArray(item.price_options)?item.price_options:[];if(options.length)return <div className="bme-price-options">{options.map((option,index)=><span key={`${option.price}-${index}`} className="bme-price-option">{optionLabel(option,language)?<small>{optionLabel(option,language)}</small>:null}<strong>{formatPrice(option.price,currencySymbol)}</strong></span>)}</div>;return item.price?<strong className="bme-price">{formatPrice(item.price,currencySymbol)}</strong>:null;}
+function ItemBadges({item,language,design}){const metadata=normalizeItemMetadata(item.metadata);const keys=[...metadata.merchandising,...metadata.dietary,...metadata.allergens];if(metadata.spice!=="none")keys.push(metadata.spice);if(!keys.length)return null;return <div className="bme-item-badges">{keys.map(key=><span key={key} className={`bme-item-badge bme-badge-${key}`}>{design.badges.showSymbols?<span className="bme-item-badge-symbol" aria-hidden="true">{BADGE_SYMBOLS[key]||"•"}</span>:null}<span>{BADGE_LABELS[key]?.[language]||BADGE_LABELS[key]?.en||key}</span></span>)}</div>;}
+function ClassicItem({item,language,design,currencySymbol}){return <article className={`bme-classic-item bme-price-${design.layout.pricePosition}`}><div className="bme-item-copy"><h3>{chooseText(language,item.name)}</h3>{chooseText(language,item.description)?<p>{chooseText(language,item.description)}</p>:null}<ItemBadges item={item} language={language} design={design}/></div><Price item={item} currencySymbol={currencySymbol} language={language}/></article>;}
+function VisualItem({item,language,design,currencySymbol}){const name=chooseText(language,item.name),description=chooseText(language,item.description),hasImage=Boolean(item.image_url);return <article className={`bme-visual-item bme-image-${design.layout.itemImagePosition} bme-price-${design.layout.pricePosition}`} data-image-ratio={design.layout.itemImageRatio}>{hasImage?<div className="bme-item-media"><img src={item.image_url} alt={name}/></div>:<div className="bme-item-media bme-item-media-placeholder" aria-hidden="true"><span>BEYOND</span></div>}<div className="bme-visual-copy"><div className="bme-item-copy"><h3>{name}</h3>{description?<p>{description}</p>:null}<ItemBadges item={item} language={language} design={design}/></div><Price item={item} currencySymbol={currencySymbol} language={language}/></div></article>;}
 
-function isRtl(language) { return language === "he" || language === "ar"; }
-function resolvedBadgeStyle(design) { return design.badges.iconStyle !== "auto" ? design.badges.iconStyle : design.template === "visual" ? "filled" : "minimal"; }
-function cleanPrice(value) { return String(value ?? "").replace(/₪/g, "").replace(/\b(?:ILS|NIS)\b/gi, "").trim(); }
-function formatPrice(value, currencySymbol) { const clean = cleanPrice(value); return clean ? `${currencySymbol}${clean}` : ""; }
-
-function optionLabel(option, language) {
-  return option?.[`label_${language}`] || option?.label || option?.label_en || option?.label_he || option?.label_ar || "";
-}
-
-function displayableGroups(groups) {
-  const raw = groups.filter(group => group && group.visible !== false);
-  const map = new Map(raw.map(group => [group.id, group]));
-  const cache = new Map();
-
-  function valid(group) {
-    if (!group) return false;
-    if (cache.has(group.id)) return cache.get(group.id);
-    const visited = new Set();
-    let current = group;
-    while (current) {
-      if (visited.has(current.id) || current.visible === false) { cache.set(group.id, false); return false; }
-      visited.add(current.id);
-      if (!current.parent_id) { cache.set(group.id, true); return true; }
-      current = map.get(current.parent_id);
-      if (!current) { cache.set(group.id, false); return false; }
-    }
-    cache.set(group.id, false);
-    return false;
-  }
-
-  return raw.filter(valid);
-}
-
-function designVariables(design) {
-  return {
-    "--bme-bg": design.theme.background,
-    "--bme-surface": design.theme.surface,
-    "--bme-card": design.theme.card,
-    "--bme-text": design.theme.text,
-    "--bme-muted": design.theme.muted,
-    "--bme-accent": design.theme.accent,
-    "--bme-accent-secondary": design.theme.accentSecondary,
-    "--bme-line": design.theme.line,
-    "--bme-category-bg": design.theme.categoryBackground,
-    "--bme-category-text": design.theme.categoryText,
-    "--bme-heading-font": `"${design.typography.headingFont}", "Noto Sans Hebrew", "Noto Sans Arabic", Georgia, serif`,
-    "--bme-body-font": `"${design.typography.bodyFont}", "Noto Sans Hebrew", "Noto Sans Arabic", Arial, sans-serif`,
-    "--bme-number-font": `"${design.typography.numberFont}", "Noto Sans Hebrew", "Noto Sans Arabic", Georgia, serif`,
-    "--bme-heading-weight": design.typography.headingWeight,
-    "--bme-body-weight": design.typography.bodyWeight,
-    "--bme-item-weight": design.typography.itemWeight,
-    "--bme-brand-size": `${design.typography.brandSize}px`,
-    "--bme-hero-size": `${design.typography.heroSize}px`,
-    "--bme-section-size": `${design.typography.sectionSize}px`,
-    "--bme-category-size": `${design.typography.categorySize}px`,
-    "--bme-item-size": `${design.typography.itemNameSize}px`,
-    "--bme-description-size": `${design.typography.descriptionSize}px`,
-    "--bme-price-size": `${design.typography.priceSize}px`,
-    "--bme-logo-size": `${design.brand.logoSize}px`,
-    "--bme-radius": `${design.layout.cardRadius}px`,
-    "--bme-section-gap": `${design.layout.sectionGap}px`,
-    "--bme-item-gap": `${design.layout.itemGap}px`,
-    "--bme-card-padding": `${design.layout.cardPadding}px`,
-  };
-}
-
-function Price({ item, currencySymbol, language }) {
-  const options = Array.isArray(item.price_options) ? item.price_options : [];
-  if (options.length) {
-    return <div className="bme-price-options">{options.map((option,index)=><span key={`${option.price}-${index}`} className="bme-price-option">{optionLabel(option,language)?<small>{optionLabel(option,language)}</small>:null}<strong>{formatPrice(option.price,currencySymbol)}</strong></span>)}</div>;
-  }
-  return item.price ? <strong className="bme-price">{formatPrice(item.price,currencySymbol)}</strong> : null;
-}
-
-function ItemBadges({ item, language, design }) {
-  const metadata = normalizeItemMetadata(item.metadata);
-  const keys = [...metadata.merchandising, ...metadata.dietary, ...metadata.allergens];
-  if (metadata.spice !== "none") keys.push(metadata.spice);
-  if (!keys.length) return null;
-  return <div className="bme-item-badges" aria-label="Item information">{keys.map(key=><span key={key} className={`bme-item-badge bme-badge-${key}`}>{design.badges.showSymbols?<span className="bme-item-badge-symbol" aria-hidden="true">{BADGE_SYMBOLS[key]||"•"}</span>:null}<span>{BADGE_LABELS[key]?.[language]||BADGE_LABELS[key]?.en||key}</span></span>)}</div>;
-}
-
-function ClassicItem({ item, language, design, currencySymbol }) {
-  const name = chooseText(language,item.name);
-  const description = chooseText(language,item.description);
-  return <article className={`bme-classic-item bme-price-${design.layout.pricePosition}`}><div className="bme-item-copy"><h3>{name}</h3>{description?<p>{description}</p>:null}<ItemBadges item={item} language={language} design={design}/></div><Price item={item} currencySymbol={currencySymbol} language={language}/></article>;
-}
-
-function VisualItem({ item, language, design, currencySymbol }) {
-  const name = chooseText(language,item.name);
-  const description = chooseText(language,item.description);
-  const hasImage = Boolean(item.image_url);
-  return <article className={`bme-visual-item bme-image-${design.layout.itemImagePosition} bme-price-${design.layout.pricePosition}`} data-image-ratio={design.layout.itemImageRatio}>{hasImage?<div className="bme-item-media"><img src={item.image_url} alt={name}/></div>:<div className="bme-item-media bme-item-media-placeholder" aria-hidden="true"><span>BEYOND</span></div>}<div className="bme-visual-copy"><div className="bme-item-copy"><h3>{name}</h3>{description?<p>{description}</p>:null}<ItemBadges item={item} language={language} design={design}/></div><Price item={item} currencySymbol={currencySymbol} language={language}/></div></article>;
-}
-
-export default function MenuRenderer({ menu, design: incomingDesign, accessibility = true }) {
-  const design = useMemo(()=>normalizeMenuDesign(incomingDesign),[incomingDesign]);
-  const languages = Array.isArray(menu?.languages)&&menu.languages.length?menu.languages:["en"];
-  const groups = Array.isArray(menu?.groups)?menu.groups:[];
-  const items = Array.isArray(menu?.items)?menu.items:[];
-  const visibleGroups = useMemo(()=>displayableGroups(groups),[groups]);
-  const topGroups = useMemo(()=>visibleGroups.filter(group=>!group.parent_id),[visibleGroups]);
-  const [language,setLanguage] = useState(menu?.default_language||languages[0]||"en");
-  const [activeGroupId,setActiveGroupId] = useState(topGroups[0]?.id||"");
-
-  useEffect(()=>{
-    if (!topGroups.some(group=>group.id===activeGroupId)) setActiveGroupId(topGroups[0]?.id||"");
-  },[topGroups,activeGroupId]);
-
-  const activeGroup = topGroups.find(group=>group.id===activeGroupId)||topGroups[0]||null;
-  const childrenMap = useMemo(()=>{
-    const map = new Map();
-    visibleGroups.forEach(group=>{
-      const key = group.parent_id || "__root__";
-      if (!map.has(key)) map.set(key,[]);
-      map.get(key).push(group);
-    });
-    map.forEach(rows=>rows.sort((a,b)=>Number(a.sort_order||0)-Number(b.sort_order||0)));
-    return map;
-  },[visibleGroups]);
-
-  const contentBlocks = useMemo(()=>{
-    if (!activeGroup) return [];
-    const blocks = [];
-    const visit = (group,depth) => {
-      const groupItems = items.filter(item=>item.visible!==false&&item.group_id===group.id).sort((a,b)=>Number(a.sort_order||0)-Number(b.sort_order||0));
-      blocks.push({group,depth,items:groupItems});
-      (childrenMap.get(group.id)||[]).forEach(child=>visit(child,depth+1));
-    };
-    visit(activeGroup,0);
-    return blocks;
-  },[activeGroup,items,childrenMap]);
-
-  const visibleItemCount = contentBlocks.reduce((sum,block)=>sum+block.items.length,0);
-  const rtl = isRtl(language);
-  const isVisual = design.template === "visual";
-  const restaurantName = menu?.restaurant_name || "Restaurant";
-  const badgeStyle = resolvedBadgeStyle(design);
-  const currencySymbol = menu?.currency_symbol || DEFAULT_CURRENCY_SYMBOL;
-  const logoUrl = Object.prototype.hasOwnProperty.call(design.brand,"logoUrl") ? design.brand.logoUrl : menu?.logo_url;
-  const menuClasses = ["bme-menu",`bme-template-${design.template}`,`bme-badge-style-${badgeStyle}`,`bme-density-${design.layout.density}`,`bme-nav-${design.layout.navigationStyle}`,`bme-logo-${design.brand.logoShape}`].join(" ");
+export default function MenuRenderer({menu,design:incomingDesign,accessibility=true}){
+  const design=useMemo(()=>normalizeMenuDesign(incomingDesign),[incomingDesign]);
+  const languages=Array.isArray(menu?.languages)&&menu.languages.length?menu.languages:["en"];
+  const groups=Array.isArray(menu?.groups)?menu.groups:[];const items=Array.isArray(menu?.items)?menu.items:[];
+  const visibleGroups=useMemo(()=>displayableGroups(groups),[groups]);const topGroups=useMemo(()=>visibleGroups.filter(group=>!group.parent_id),[visibleGroups]);
+  const [language,setLanguage]=useState(menu?.default_language||languages[0]||"en");const [activeGroupId,setActiveGroupId]=useState(topGroups[0]?.id||"");
+  useEffect(()=>{if(!topGroups.some(group=>group.id===activeGroupId))setActiveGroupId(topGroups[0]?.id||"");},[topGroups,activeGroupId]);
+  useEffect(()=>{if(languages.includes(menu?.default_language)&&menu?.default_language!==language)setLanguage(menu.default_language);},[menu?.default_language]);
+  const activeGroup=topGroups.find(group=>group.id===activeGroupId)||topGroups[0]||null;
+  const childrenMap=useMemo(()=>{const map=new Map();visibleGroups.forEach(group=>{const key=group.parent_id||"__root__";if(!map.has(key))map.set(key,[]);map.get(key).push(group);});map.forEach(rows=>rows.sort((a,b)=>Number(a.sort_order||0)-Number(b.sort_order||0)));return map;},[visibleGroups]);
+  const contentBlocks=useMemo(()=>{if(!activeGroup)return[];const blocks=[];const visit=(group,depth)=>{const groupItems=items.filter(item=>item.visible!==false&&item.group_id===group.id).sort((a,b)=>Number(a.sort_order||0)-Number(b.sort_order||0));blocks.push({group,depth,items:groupItems});(childrenMap.get(group.id)||[]).forEach(child=>visit(child,depth+1));};visit(activeGroup,0);return blocks;},[activeGroup,items,childrenMap]);
+  const visibleItemCount=contentBlocks.reduce((sum,block)=>sum+block.items.length,0);const rtl=isRtl(language);const isVisual=design.template==="visual";const restaurantName=menu?.restaurant_name||"Restaurant";const badgeStyle=resolvedBadgeStyle(design);const currencySymbol=menu?.currency_symbol||DEFAULT_CURRENCY_SYMBOL;const logoUrl=Object.prototype.hasOwnProperty.call(design.brand,"logoUrl")?design.brand.logoUrl:menu?.logo_url;const copy=FOOTER_COPY[language]||FOOTER_COPY.en;
+  const menuClasses=["bme-menu",`bme-template-${design.template}`,`bme-badge-style-${badgeStyle}`,`bme-density-${design.layout.density}`,`bme-nav-${design.layout.navigationStyle}`,`bme-logo-${design.brand.logoShape}`].join(" ");
+  const openAccessibilityStatement=()=>window.dispatchEvent(new Event("beyond-open-accessibility-statement"));
 
   return <div className={menuClasses} style={designVariables(design)} dir={rtl?"rtl":"ltr"} lang={language}>
-    {accessibility?<RestaurantAccessibility restaurantName={restaurantName}/>:null}
+    {accessibility?<RestaurantAccessibility restaurantName={restaurantName} language={language}/>:null}
     <header className="bme-header"><div className="bme-brand">{logoUrl?<img src={logoUrl} alt={`${restaurantName} logo`}/>:null}<div><strong>{restaurantName}</strong>{menu?.subtitle?<span>{chooseText(language,menu.subtitle)}</span>:null}</div></div>{languages.length>1?<div className="bme-languages" aria-label="Menu language">{languages.map(code=><button key={code} type="button" className={language===code?"active":""} onClick={()=>setLanguage(code)}>{code.toUpperCase()}</button>)}</div>:null}</header>
-    <section className="bme-hero"><span>{chooseText(language,menu?.hero_kicker)}</span><h1>{chooseText(language,menu?.hero_title)||restaurantName||"Our Menu"}</h1></section>
+    <section className="bme-hero">{logoUrl?<img className="bme-hero-watermark" src={logoUrl} alt="" aria-hidden="true"/>:null}<div className="bme-hero-copy"><span>{chooseText(language,menu?.hero_kicker)}</span><h1>{chooseText(language,menu?.hero_title)||restaurantName||"Our Menu"}</h1></div></section>
     <nav className="bme-category-nav" aria-label="Menu categories">{topGroups.map(group=><button key={group.id} type="button" className={activeGroup?.id===group.id?"active":""} onClick={()=>setActiveGroupId(group.id)}>{chooseText(language,group.name)}</button>)}</nav>
-    <main id="restaurant-main-content" className="bme-content" tabIndex="-1">{activeGroup?<section className="bme-section"><div className="bme-section-heading"><h2>{chooseText(language,activeGroup.name)}</h2><span>{visibleItemCount} items</span></div><div className="bme-group-blocks">{contentBlocks.map(block=>{
-      const nested = block.depth>0;
-      return <section className={`bme-group-block ${nested?"bme-subcategory-section":"bme-root-items"}`} data-depth={block.depth} key={block.group.id}>{nested?<div className="bme-subcategory-heading"><h3>{chooseText(language,block.group.name)}</h3></div>:null}{block.items.length?<div className={isVisual?"bme-visual-grid":"bme-classic-list"}>{block.items.map(item=>isVisual?<VisualItem key={item.id} item={item} language={language} design={design} currencySymbol={currencySymbol}/>:<ClassicItem key={item.id} item={item} language={language} design={design} currencySymbol={currencySymbol}/>)}</div>:null}</section>;
-    })}</div></section>:<div className="bme-empty">No menu categories yet.</div>}</main>
+    <main id="restaurant-main-content" className="bme-content" tabIndex="-1">{activeGroup?<section className="bme-section"><div className="bme-section-heading"><h2>{chooseText(language,activeGroup.name)}</h2><span>{visibleItemCount} {copy.items}</span></div><div className="bme-group-blocks">{contentBlocks.map(block=>{const nested=block.depth>0;return <section className={`bme-group-block ${nested?"bme-subcategory-section":"bme-root-items"}`} data-depth={block.depth} key={block.group.id}>{nested?<div className="bme-subcategory-heading"><h3>{chooseText(language,block.group.name)}</h3></div>:null}{block.items.length?<div className={isVisual?"bme-visual-grid":"bme-classic-list"}>{block.items.map(item=>isVisual?<VisualItem key={item.id} item={item} language={language} design={design} currencySymbol={currencySymbol}/>:<ClassicItem key={item.id} item={item} language={language} design={design} currencySymbol={currencySymbol}/>)}</div>:null}</section>;})}</div></section>:<div className="bme-empty">No menu categories yet.</div>}</main>
+    <footer className="bme-footer"><button type="button" onClick={openAccessibilityStatement}>{copy.accessibility}</button><span>{copy.powered} <strong>Beyond</strong></span></footer>
   </div>;
 }
