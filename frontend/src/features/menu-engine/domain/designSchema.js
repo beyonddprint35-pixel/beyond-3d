@@ -4,9 +4,17 @@ import {
   isAllowedDesignValue,
 } from "./designConstraints";
 
-export const MENU_DESIGN_SCHEMA_VERSION = 3;
+export const MENU_DESIGN_SCHEMA_VERSION = 4;
 
-export const MENU_TEMPLATE_FAMILIES = Object.freeze(["classic", "visual"]);
+export const MENU_TEMPLATE_FAMILIES = Object.freeze([
+  "classic",
+  "visual",
+  "editorial",
+  "ledger",
+  "split",
+  "gallery",
+  "tiles",
+]);
 export const MENU_STYLE_VARIANTS = Object.freeze(["standard", "heritage"]);
 export const MENU_BADGE_ICON_STYLES = Object.freeze(["auto", "minimal", "filled", "playful"]);
 export const MENU_DENSITIES = Object.freeze(["compact", "comfortable", "spacious"]);
@@ -111,10 +119,10 @@ export const MENU_DESIGN_PRESETS = Object.freeze({
     brand: { heroMediaMode: "watermark" },
   },
   editorial: {
-    template: "classic",
+    template: "editorial",
     styleVariant: "standard",
-    typography: { headingFont: "Playfair Display", bodyFont: "Inter", numberFont: "Playfair Display", headingWeight: 700, bodyWeight: 400, itemWeight: 700, heroSize: 48, sectionSize: 38, itemNameSize: 16 },
-    layout: { density: "comfortable", navigationStyle: "underline", pricePosition: "inline", cardRadius: 8, sectionGap: 34, itemGap: 14, cardPadding: 16 },
+    typography: { headingFont: "Playfair Display", bodyFont: "Inter", numberFont: "Playfair Display", headingWeight: 700, bodyWeight: 400, itemWeight: 700, heroSize: 58, sectionSize: 42, itemNameSize: 17 },
+    layout: { density: "spacious", navigationStyle: "underline", pricePosition: "inline", cardRadius: 0, sectionGap: 40, itemGap: 18, cardPadding: 16 },
   },
   modern: {
     template: "visual",
@@ -122,17 +130,29 @@ export const MENU_DESIGN_PRESETS = Object.freeze({
     typography: { headingFont: "Inter", bodyFont: "Inter", numberFont: "Inter", headingWeight: 800, bodyWeight: 400, itemWeight: 700, heroSize: 42, sectionSize: 32, itemNameSize: 16 },
     layout: { density: "comfortable", navigationStyle: "pills", itemImagePosition: "top", itemImageRatio: "4:3", pricePosition: "bottom", cardRadius: 18, sectionGap: 28, itemGap: 16, cardPadding: 16 },
   },
-  compact: {
-    template: "classic",
+  ledger: {
+    template: "ledger",
     styleVariant: "standard",
-    typography: { headingFont: "Inter", bodyFont: "Inter", numberFont: "Inter", headingWeight: 800, bodyWeight: 400, itemWeight: 700, heroSize: 36, sectionSize: 30, itemNameSize: 15, descriptionSize: 11, priceSize: 15 },
-    layout: { density: "compact", navigationStyle: "minimal", pricePosition: "inline", cardRadius: 10, sectionGap: 22, itemGap: 10, cardPadding: 12 },
+    typography: { headingFont: "Merriweather", bodyFont: "DM Sans", numberFont: "Merriweather", headingWeight: 700, bodyWeight: 400, itemWeight: 700, heroSize: 44, sectionSize: 34, itemNameSize: 16 },
+    layout: { density: "comfortable", navigationStyle: "minimal", pricePosition: "inline", cardRadius: 0, sectionGap: 28, itemGap: 12, cardPadding: 12 },
+  },
+  split: {
+    template: "split",
+    styleVariant: "standard",
+    typography: { headingFont: "Lora", bodyFont: "DM Sans", numberFont: "DM Sans", headingWeight: 700, bodyWeight: 400, itemWeight: 700, heroSize: 52, sectionSize: 38, itemNameSize: 18 },
+    layout: { density: "comfortable", navigationStyle: "pills", itemImagePosition: "left", itemImageRatio: "4:3", pricePosition: "below", cardRadius: 22, sectionGap: 34, itemGap: 22, cardPadding: 20 },
   },
   gallery: {
-    template: "visual",
+    template: "gallery",
     styleVariant: "standard",
-    typography: { headingFont: "Playfair Display", bodyFont: "Inter", numberFont: "Inter", headingWeight: 700, bodyWeight: 400, itemWeight: 700, heroSize: 52, sectionSize: 36, itemNameSize: 17 },
+    typography: { headingFont: "Playfair Display", bodyFont: "Inter", numberFont: "Inter", headingWeight: 700, bodyWeight: 400, itemWeight: 700, heroSize: 56, sectionSize: 38, itemNameSize: 18 },
     layout: { density: "spacious", navigationStyle: "underline", itemImagePosition: "top", itemImageRatio: "1:1", pricePosition: "below", cardRadius: 24, sectionGap: 42, itemGap: 22, cardPadding: 18 },
+  },
+  tiles: {
+    template: "tiles",
+    styleVariant: "standard",
+    typography: { headingFont: "DM Sans", bodyFont: "DM Sans", numberFont: "DM Sans", headingWeight: 800, bodyWeight: 400, itemWeight: 700, heroSize: 44, sectionSize: 32, itemNameSize: 16 },
+    layout: { density: "comfortable", navigationStyle: "pills", itemImagePosition: "top", itemImageRatio: "1:1", pricePosition: "inline", cardRadius: 24, sectionGap: 28, itemGap: 14, cardPadding: 15 },
   },
 });
 
