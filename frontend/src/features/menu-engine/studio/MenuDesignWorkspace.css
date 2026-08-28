@@ -23,4 +23,26 @@
 
 .studio-v3-inspector-summary-actions{display:flex;align-items:center;gap:8px}.studio-v3-change-template-button{min-height:31px;padding:0 9px;border:1px solid #e0e3e8;border-radius:8px;background:#fff;color:#738094;font-size:8.5px;font-weight:850;cursor:pointer}.studio-v3-change-template-button:hover{border-color:#b9c7ec;color:#315dd7}
 
-@media(max-width:520px){.studio-v3-design-commandbar{grid-template-columns:1fr}.studio-v3-design-history-actions{justify-content:flex-end}.studio-v3-design-breadcrumb>span:nth-of-type(2),.studio-v3-design-breadcrumb>i:nth-of-type(2){display:none}.studio-v3-design-workspace-nav button{grid-template-columns:26px minmax(0,1fr);padding-inline:7px}.studio-v3-design-workspace-nav-icon{width:26px;height:26px}.studio-v3-design-workspace-nav-copy small{display:none}.studio-v3-current-design-strip{grid-template-columns:48px minmax(0,1fr)}.studio-v3-current-design-mini{width:48px}.studio-v3-current-design-customize{grid-column:1/-1;width:100%}}
+/* Unified five-part visual inspector. Badge controls used to sit below the inspector; the active UI now lives here. */
+.studio-v3-inspector-shell .studio-v3-design-tabs{grid-template-columns:repeat(5,minmax(0,1fr))}
+.studio-v3-design-controls>.studio-v3-badge-design-controls{display:none}
+
+.studio-v3-badge-display-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.studio-v3-badge-choice,.studio-v3-badge-style-choice{min-width:0;display:grid;gap:8px;padding:10px;border:1px solid #e1e3e8;border-radius:11px;background:#fff;color:#6f7a8c;text-align:start;cursor:pointer;transition:border-color .14s ease,background .14s ease,color .14s ease,transform .14s ease,box-shadow .14s ease}
+.studio-v3-badge-choice:hover,.studio-v3-badge-style-choice:hover:not(:disabled){transform:translateY(-1px);border-color:#c4cfec;color:#315dd7}
+.studio-v3-badge-choice.active,.studio-v3-badge-style-choice.active{border-color:#9eb2f1;background:#f0f4ff;color:#315dd7;box-shadow:0 0 0 1px rgba(73,116,229,.05),0 5px 14px rgba(73,116,229,.07)}
+.studio-v3-badge-choice>strong,.studio-v3-badge-style-choice>strong{font-size:9px;font-weight:900}
+.studio-v3-badge-choice-preview{min-height:42px;display:flex;align-items:center;justify-content:center;gap:6px;padding:7px;border:1px solid #e6e8ec;border-radius:9px;background:#fafbfc;color:#42506a}
+.studio-v3-badge-choice-preview i{width:20px;height:20px;display:grid;place-items:center;border-radius:6px;background:#eef3ff;color:#315dd7;font-size:9px;font-style:normal}.studio-v3-badge-choice-preview b{font-size:8.5px}
+.studio-v3-badge-choice-preview.text b{padding:5px 8px;border:1px solid #dde1e7;border-radius:999px;background:#fff}
+
+.studio-v3-badge-style-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.studio-v3-badge-style-choice:disabled{opacity:.38;cursor:not-allowed;transform:none}
+.studio-v3-badge-style-preview{min-height:44px;display:flex;align-items:center;justify-content:center;gap:5px;padding:7px;border-radius:9px;background:#fafbfc;color:#46536a}
+.studio-v3-badge-style-preview i{font-size:10px;font-style:normal}.studio-v3-badge-style-preview b{font-size:8px}
+.studio-v3-badge-style-choice.style-minimal .studio-v3-badge-style-preview{background:#fff}.studio-v3-badge-style-choice.style-minimal .studio-v3-badge-style-preview i{color:#315dd7}.studio-v3-badge-style-choice.style-minimal .studio-v3-badge-style-preview b{font-weight:700}
+.studio-v3-badge-style-choice.style-filled .studio-v3-badge-style-preview{background:#315dd7;color:#fff}.studio-v3-badge-style-choice.style-filled .studio-v3-badge-style-preview i{color:#fff}
+.studio-v3-badge-style-choice.style-playful .studio-v3-badge-style-preview{border:1px solid #c9d5f7;border-radius:999px;background:#eef3ff;color:#315dd7}.studio-v3-badge-style-choice.style-playful .studio-v3-badge-style-preview i{transform:rotate(12deg)}
+.studio-v3-badge-style-choice.style-auto .studio-v3-badge-style-preview{background:linear-gradient(135deg,#f7f5f2 0 49%,#eef3ff 50% 100%)}
+
+@media(max-width:520px){.studio-v3-design-commandbar{grid-template-columns:1fr}.studio-v3-design-history-actions{justify-content:flex-end}.studio-v3-design-breadcrumb>span:nth-of-type(2),.studio-v3-design-breadcrumb>i:nth-of-type(2){display:none}.studio-v3-design-workspace-nav button{grid-template-columns:26px minmax(0,1fr);padding-inline:7px}.studio-v3-design-workspace-nav-icon{width:26px;height:26px}.studio-v3-design-workspace-nav-copy small{display:none}.studio-v3-current-design-strip{grid-template-columns:48px minmax(0,1fr)}.studio-v3-current-design-mini{width:48px}.studio-v3-current-design-customize{grid-column:1/-1;width:100%}.studio-v3-inspector-shell .studio-v3-design-tabs{grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}.studio-v3-inspector-shell .studio-v3-design-tabs button{padding-inline:1px}.studio-v3-badge-display-grid,.studio-v3-badge-style-grid{grid-template-columns:1fr 1fr}}
