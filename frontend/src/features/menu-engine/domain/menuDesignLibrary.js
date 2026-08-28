@@ -2,12 +2,17 @@ import { normalizeMenuDesign } from "./designSchema";
 import { PREMIUM_MENU_DESIGNS as CORE_MENU_DESIGNS } from "./premiumMenuDesignLibrary";
 import { PHASE3_MENU_DESIGNS } from "./premiumMenuDesignLibraryPhase3";
 import { PHASE4_MENU_DESIGNS } from "./premiumMenuDesignLibraryPhase4";
+import { applyMenuDesignPresentationProfiles } from "./menuDesignPresentationProfiles";
 
-export const PREMIUM_MENU_DESIGNS = Object.freeze([
+const MENU_DESIGN_LIBRARY = [
   ...CORE_MENU_DESIGNS,
   ...PHASE3_MENU_DESIGNS,
   ...PHASE4_MENU_DESIGNS,
-]);
+];
+
+export const PREMIUM_MENU_DESIGNS = Object.freeze(
+  applyMenuDesignPresentationProfiles(MENU_DESIGN_LIBRARY),
+);
 
 export function applyPremiumMenuDesign(currentDesign, libraryId) {
   const entry = PREMIUM_MENU_DESIGNS.find((item) => item.id === libraryId);
