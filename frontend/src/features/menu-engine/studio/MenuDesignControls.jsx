@@ -9,6 +9,7 @@ import {
 import { PREMIUM_MENU_DESIGNS, applyPremiumMenuDesign } from "../domain/menuDesignLibrary";
 import { getBaselineDesignForMenu } from "./draftSession";
 import "./MenuDesignControls.css";
+import "./MenuDesignPresentationThumbnails.css";
 
 const labels = {
   en:{library:"Design library",libraryHint:"Real menu layouts, not just color skins. Choose a structure, then make it yours.",search:"Search designs",restore:"Restore original design",restoreHint:"Return to the design this menu started with",brand:"Brand",colors:"Colors",typography:"Typography",layout:"Layout",uploadLogo:"Upload logo",replaceLogo:"Replace logo",logoSize:"Logo size",logoShape:"Logo shape",removeLogo:"Remove logo",heroBackground:"Menu header background",watermark:"Logo watermark",image:"Background image",none:"No image",watermarkHint:"Use the restaurant logo as the hero watermark.",imageHint:"Upload a separate image for the menu header background.",uploadBackground:"Upload background",replaceBackground:"Replace background",removeBackground:"Remove background",headingFont:"Heading font",bodyFont:"Body font",headingWeight:"Heading weight",itemWeight:"Item weight",text:"Main text",muted:"Secondary text",accent:"Accent",background:"Background",cards:"Cards",category:"Categories",categoryText:"Category text",density:"Density",navigation:"Category navigation",price:"Price position",imagePosition:"Image position",imageRatio:"Image ratio",noMatches:"No designs match this search."},
@@ -19,10 +20,11 @@ const labels = {
 const IMAGE_LAYOUT_TEMPLATES=new Set(["visual","gallery","tiles","split"]);
 const titleCase=value=>String(value).replace(/_/g," ").replace(/\b\w/g,c=>c.toUpperCase());
 const comparable=value=>JSON.stringify(normalizeMenuDesign(value||{}));
+const previewLayout=entry=>entry.design?.layout?.presentation&&entry.design.layout.presentation!=="standard"?entry.design.layout.presentation:entry.design.template;
 function Choice({active,children,onClick,className=""}){return <button type="button" className={`studio-v3-design-choice ${active?"active":""} ${className}`.trim()} onClick={onClick}>{children}</button>}
 function ColorField({label,value,onChange}){return <label className="studio-v3-design-color"><span>{label}</span><span className="studio-v3-design-color-input"><code>{value}</code><input type="color" value={value} onChange={e=>onChange(e.target.value)}/></span></label>}
 function SelectField({label,value,values,onChange}){return <label className="studio-v3-design-select"><span>{label}</span><select value={value} onChange={e=>onChange(e.target.value)}>{values.map(option=><option key={option} value={option}>{titleCase(option)}</option>)}</select></label>}
-function DesignThumbnail({entry}){const [background,accent,text]=entry.swatches;return <span className={`studio-v3-premium-design-preview layout-${entry.design.template}`} style={{"--thumb-bg":background,"--thumb-accent":accent,"--thumb-text":text}}><span className="studio-v3-thumb-hero"/><span className="studio-v3-thumb-nav"><i/><i/><i/></span><span className="studio-v3-thumb-items"><i/><i/><i/><i/></span></span>}
+function DesignThumbnail({entry}){const [background,accent,text]=entry.swatches;return <span className={`studio-v3-premium-design-preview layout-${previewLayout(entry)}`} style={{"--thumb-bg":background,"--thumb-accent":accent,"--thumb-text":text}}><span className="studio-v3-thumb-hero"/><span className="studio-v3-thumb-nav"><i/><i/><i/></span><span className="studio-v3-thumb-items"><i/><i/><i/><i/></span></span>}
 
 export default function MenuDesignControls({design,baselineDesign,menu,language="en",panel,setPanel,patchDesign}){
   const l=labels[language]||labels.en;
@@ -47,10 +49,10 @@ export default function MenuDesignControls({design,baselineDesign,menu,language=
 
   return <div className="studio-v3-design-pro-controls">
     <section className="studio-v3-design-library">
-      <div className="studio-v3-design-library-head"><div><strong>{l.library}</strong><p>{l.libraryHint}</p></div></div>
+      <div className="studio-v3-design-library-head"><div><strong>{l.library}</strong><p>{l.libraryHint}</p></div><span className="studio-v3-design-count">{PREMIUM_MENU_DESIGNS.length}</span></div>
       <label className="studio-v3-design-search"><span aria-hidden="true">⌕</span><input value={query} onChange={e=>setQuery(e.target.value)} placeholder={l.search}/></label>
       <button type="button" className={`studio-v3-original-design ${isOriginal?"active":""}`} disabled={!original} onClick={()=>original&&patchDesign(()=>original)}><span><strong>{l.restore}</strong><small>{l.restoreHint}</small></span><span aria-hidden="true">↺</span></button>
-      <div className="studio-v3-premium-library-grid">{filteredDesigns.map(entry=><button type="button" className={`studio-v3-premium-design-card layout-${entry.design.template}`} key={entry.id} onClick={()=>patchDesign(current=>applyPremiumMenuDesign(current,entry.id))}><DesignThumbnail entry={entry}/><span className="studio-v3-premium-design-copy"><span><strong>{entry.name}</strong><small>{entry.layout}</small></span><em>{entry.description}</em><span className="studio-v3-design-category">{entry.category}</span></span></button>)}</div>
+      <div className="studio-v3-premium-library-grid">{filteredDesigns.map(entry=><button type="button" className={`studio-v3-premium-design-card layout-${previewLayout(entry)}`} key={entry.id} onClick={()=>patchDesign(current=>applyPremiumMenuDesign(current,entry.id))}><DesignThumbnail entry={entry}/><span className="studio-v3-premium-design-copy"><span><strong>{entry.name}</strong><small>{entry.layout}</small></span><em>{entry.description}</em><span className="studio-v3-design-category">{entry.category}</span></span></button>)}</div>
       {!filteredDesigns.length?<div className="studio-v3-design-library-empty">{l.noMatches}</div>:null}
     </section>
 
