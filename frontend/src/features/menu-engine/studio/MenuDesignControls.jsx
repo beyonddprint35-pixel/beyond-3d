@@ -15,6 +15,7 @@ import "./MenuDesignControls.css";
 import "./MenuDesignPresentationThumbnails.css";
 import "./MenuDesignLibraryExperience.css";
 import "./MenuDesignInspector.css";
+import "./MenuDesignWorkspace.css";
 
 const FAVORITES_STORAGE_KEY = "beyond-menu-design-favorites-v1";
 
@@ -30,21 +31,42 @@ const inspectorCopy = {
   ar:{customize:"تخصيص التصميم",custom:"تصميم مخصص",liveHint:"اضبط الاتجاه المختار. كل تغيير يظهر مباشرة في القائمة.",brandHint:"الشعار والشكل ووسائط رأس القائمة.",colorsHint:"ابدأ بلوحة ألوان ثم اضبط كل لون بشكل منفصل.",typeHint:"اختر الخطوط والأوزان وأحجام النص بدقة.",layoutHint:"تحكم بالكثافة والتنقل والأسعار والصور والمسافات.",logoAsset:"شعار المطعم",logoHelp:"PNG أو JPG أو WebP أو SVG",palettePresets:"لوحات الألوان",customColors:"ألوان مخصصة",fonts:"تنسيق الخطوط",weights:"أوزان الخط",typeScale:"أحجام النص",shapeSpacing:"الشكل والمسافات",imageCards:"بطاقات الصور",sectionGap:"مسافة الأقسام",itemGap:"مسافة العناصر",cardPadding:"حشوة البطاقة",cardRadius:"استدارة البطاقة",heroSize:"العنوان الرئيسي",sectionSize:"عنوان القسم",itemNameSize:"اسم العنصر",descriptionSize:"الوصف",priceSize:"السعر"},
 };
 
+const workspaceCopy = {
+  en:{templates:"Templates",templatesHint:"Choose a starting direction",customize:"Customize",customizeHint:"Brand, colors, type & layout",current:"Current design",customizeCurrent:"Customize",changeTemplate:"Change template"},
+  he:{templates:"תבניות",templatesHint:"בחרו כיוון עיצובי",customize:"התאמה",customizeHint:"מותג, צבעים, טיפוגרפיה ופריסה",current:"העיצוב הנוכחי",customizeCurrent:"התאמה",changeTemplate:"החלפת תבנית"},
+  ar:{templates:"القوالب",templatesHint:"اختر نقطة بداية",customize:"تخصيص",customizeHint:"العلامة والألوان والخطوط والتخطيط",current:"التصميم الحالي",customizeCurrent:"تخصيص",changeTemplate:"تغيير القالب"},
+};
+
 const IMAGE_LAYOUT_TEMPLATES=new Set(["visual","gallery","tiles","split"]);
 const titleCase=value=>String(value).replace(/_/g," ").replace(/\b\w/g,c=>c.toUpperCase());
 const comparable=value=>JSON.stringify(normalizeMenuDesign(value||{}));
 const previewLayout=entry=>entry.design?.layout?.presentation&&entry.design.layout.presentation!=="standard"?entry.design.layout.presentation:entry.design.template;
 const paletteMatches=(theme,preset)=>Object.entries(preset?.theme||{}).every(([key,value])=>theme?.[key]===value);
-function ColorField({label,value,onChange}){return <label className="studio-v3-design-color"><span>{label}</span><span className="studio-v3-design-color-input"><code>{value}</code><input type="color" value={value} onChange={e=>onChange(e.target.value)}/></span></label>}
-function RangeField({label,value,min,max,onChange,suffix="px"}){return <label className="studio-v3-inspector-range"><span className="studio-v3-inspector-range-head"><span>{label}</span><b>{value}{suffix}</b></span><input type="range" min={min} max={max} value={value} onChange={e=>onChange(Number(e.target.value))}/></label>}
-function FontField({label,value,onChange}){return <label className="studio-v3-font-field"><span>{label}</span><span className="studio-v3-font-picker"><b className="studio-v3-font-sample" style={{fontFamily:value}}>Aa</b><select value={value} onChange={e=>onChange(e.target.value)}>{MENU_FONT_FAMILIES.map(option=><option key={option} value={option}>{option}</option>)}</select></span></label>}
-function DesignThumbnail({entry}){const [background,accent,text]=entry.swatches;return <span className={`studio-v3-premium-design-preview layout-${previewLayout(entry)}`} style={{"--thumb-bg":background,"--thumb-accent":accent,"--thumb-text":text}}><span className="studio-v3-thumb-hero"/><span className="studio-v3-thumb-nav"><i/><i/><i/></span><span className="studio-v3-thumb-items"><i/><i/><i/><i/></span></span>}
+
+function ColorField({label,value,onChange}){
+  return <label className="studio-v3-design-color"><span>{label}</span><span className="studio-v3-design-color-input"><code>{value}</code><input type="color" value={value} onChange={e=>onChange(e.target.value)}/></span></label>;
+}
+
+function RangeField({label,value,min,max,onChange,suffix="px"}){
+  return <label className="studio-v3-inspector-range"><span className="studio-v3-inspector-range-head"><span>{label}</span><b>{value}{suffix}</b></span><input type="range" min={min} max={max} value={value} onChange={e=>onChange(Number(e.target.value))}/></label>;
+}
+
+function FontField({label,value,onChange}){
+  return <label className="studio-v3-font-field"><span>{label}</span><span className="studio-v3-font-picker"><b className="studio-v3-font-sample" style={{fontFamily:value}}>Aa</b><select value={value} onChange={e=>onChange(e.target.value)}>{MENU_FONT_FAMILIES.map(option=><option key={option} value={option}>{option}</option>)}</select></span></label>;
+}
+
+function DesignThumbnail({entry}){
+  const [background,accent,text]=entry.swatches;
+  return <span className={`studio-v3-premium-design-preview layout-${previewLayout(entry)}`} style={{"--thumb-bg":background,"--thumb-accent":accent,"--thumb-text":text}}><span className="studio-v3-thumb-hero"/><span className="studio-v3-thumb-nav"><i/><i/><i/></span><span className="studio-v3-thumb-items"><i/><i/><i/><i/></span></span>;
+}
+
 function presetMatches(current,preset){
   if(!current||!preset)return false;
   if(preset.template&&current.template!==preset.template)return false;
   if(preset.styleVariant&&current.styleVariant!==preset.styleVariant)return false;
   return ["theme","typography","layout","brand","badges"].every(section=>Object.entries(preset[section]||{}).every(([key,value])=>current?.[section]?.[key]===value));
 }
+
 function readFavorites(){
   if(typeof window==="undefined")return [];
   try{const parsed=JSON.parse(window.localStorage.getItem(FAVORITES_STORAGE_KEY)||"[]");return Array.isArray(parsed)?parsed.filter(Boolean):[];}catch{return [];}
@@ -53,15 +75,19 @@ function readFavorites(){
 export default function MenuDesignControls({design,baselineDesign,menu,language="en",panel,setPanel,patchDesign}){
   const l=labels[language]||labels.en;
   const c=inspectorCopy[language]||inspectorCopy.en;
+  const w=workspaceCopy[language]||workspaceCopy.en;
+  const [workspaceMode,setWorkspaceMode]=useState("templates");
   const [query,setQuery]=useState("");
   const [filters,setFilters]=useState({browse:"all",type:"all",layout:"all",tone:"all"});
   const [previewEntry,setPreviewEntry]=useState(null);
   const [favorites,setFavorites]=useState(readFavorites);
   const [favoritesOnly,setFavoritesOnly]=useState(false);
+
   const patchTheme=(key,value)=>patchDesign(current=>({...current,theme:{...current.theme,[key]:value}}));
   const patchType=(key,value)=>patchDesign(current=>({...current,typography:{...current.typography,[key]:value}}));
   const patchLayout=(key,value)=>patchDesign(current=>({...current,layout:{...current.layout,[key]:value}}));
   const patchBrand=(key,value)=>patchDesign(current=>({...current,brand:{...current.brand,[key]:value}}));
+
   const logo=Object.prototype.hasOwnProperty.call(design.brand||{},"logoUrl")?design.brand.logoUrl:(menu?.logo_url||"");
   const heroMode=design.brand?.heroMediaMode||"watermark";
   const heroImage=design.brand?.heroImageUrl||"";
@@ -76,6 +102,8 @@ export default function MenuDesignControls({design,baselineDesign,menu,language=
     return favoritesOnly?matches.filter(entry=>favorites.includes(entry.id)):matches;
   },[query,filters,favoritesOnly,favorites]);
   const previewDesign=useMemo(()=>previewEntry?applyPremiumMenuDesign(design,previewEntry.id):null,[design,previewEntry]);
+  const currentDesignName=activeDesign?.name||`${titleCase(design.template)} · ${c.custom}`;
+  const currentDesignDetail=activeDesign?`${activeDesign.layout} · ${activeDesign.category}`:c.liveHint;
   const panelMeta={
     brand:{icon:"✦",title:l.brand,hint:c.brandHint},
     colors:{icon:"◉",title:l.colors,hint:c.colorsHint},
@@ -96,122 +124,160 @@ export default function MenuDesignControls({design,baselineDesign,menu,language=
     return ()=>{document.body.style.overflow=previousOverflow;window.removeEventListener("keydown",onKeyDown);};
   },[previewEntry]);
 
-  function uploadImage(file,key){if(!file||!file.type?.startsWith("image/"))return;const reader=new FileReader();reader.onload=()=>patchBrand(key,String(reader.result||""));reader.readAsDataURL(file)}
-  function chooseDesign(entry){patchDesign(current=>applyPremiumMenuDesign(current,entry.id));}
-  function toggleFavorite(entryId){setFavorites(current=>current.includes(entryId)?current.filter(id=>id!==entryId):[...current,entryId]);}
-  function usePreviewDesign(){if(!previewEntry)return;chooseDesign(previewEntry);setPreviewEntry(null);}
+  function uploadImage(file,key){
+    if(!file||!file.type?.startsWith("image/"))return;
+    const reader=new FileReader();
+    reader.onload=()=>patchBrand(key,String(reader.result||""));
+    reader.readAsDataURL(file);
+  }
+
+  function chooseDesign(entry,{openCustomize=false}={}){
+    patchDesign(current=>applyPremiumMenuDesign(current,entry.id));
+    if(openCustomize)setWorkspaceMode("customize");
+  }
+
+  function toggleFavorite(entryId){
+    setFavorites(current=>current.includes(entryId)?current.filter(id=>id!==entryId):[...current,entryId]);
+  }
+
+  function usePreviewDesign(){
+    if(!previewEntry)return;
+    chooseDesign(previewEntry,{openCustomize:true});
+    setPreviewEntry(null);
+  }
 
   return <div className="studio-v3-design-pro-controls">
-    <section className="studio-v3-design-library">
-      <div className="studio-v3-design-library-head"><div><strong>{l.library}</strong><p>{l.libraryHint}</p></div><span className="studio-v3-design-count">{PREMIUM_MENU_DESIGNS.length}</span></div>
-      <label className="studio-v3-design-search"><span aria-hidden="true">⌕</span><input value={query} onChange={e=>setQuery(e.target.value)} placeholder={l.search}/></label>
-      <MenuDesignLibraryFilters language={language} filters={filters} setFilters={setFilters} resultCount={filteredDesigns.length} totalCount={PREMIUM_MENU_DESIGNS.length}/>
-      <button type="button" className={`studio-v3-design-favorites-toggle ${favoritesOnly?"active":""}`} onClick={()=>setFavoritesOnly(value=>!value)}><span aria-hidden="true">♥</span><span>{l.favorites}</span><b>{favorites.length}</b></button>
-      <button type="button" className={`studio-v3-original-design ${isOriginal?"active":""}`} disabled={!original} onClick={()=>original&&patchDesign(()=>original)}><span><strong>{l.restore}</strong><small>{l.restoreHint}</small></span><span aria-hidden="true">↺</span></button>
-      <div className="studio-v3-premium-library-grid">
-        {filteredDesigns.map(entry=>{
-          const selected=activeDesignId===entry.id;
-          const favorite=favorites.includes(entry.id);
-          return <article className={`studio-v3-premium-design-card layout-${previewLayout(entry)} ${selected?"selected":""}`} key={entry.id}>
-            {selected?<span className="studio-v3-design-selected-badge" aria-label={l.selected}>✓</span>:null}
-            <button type="button" className="studio-v3-premium-design-select" onClick={()=>chooseDesign(entry)} aria-pressed={selected}>
-              <DesignThumbnail entry={entry}/>
-              <span className="studio-v3-premium-design-copy"><span><strong>{entry.name}</strong><small>{entry.layout}</small></span><em>{entry.description}</em><span className="studio-v3-design-category">{entry.category}</span></span>
-            </button>
-            <div className="studio-v3-premium-design-actions">
-              <button type="button" className={`studio-v3-design-favorite ${favorite?"active":""}`} onClick={()=>toggleFavorite(entry.id)} aria-label={l.favorites} aria-pressed={favorite}><span aria-hidden="true">{favorite?"♥":"♡"}</span></button>
-              <button type="button" className="studio-v3-design-preview-button" onClick={()=>setPreviewEntry(entry)} disabled={!menu}><span aria-hidden="true">⛶</span>{l.preview}</button>
+    <div className="studio-v3-design-workspace-nav" role="tablist" aria-label={l.library}>
+      <button type="button" role="tab" aria-selected={workspaceMode==="templates"} className={workspaceMode==="templates"?"active":""} onClick={()=>setWorkspaceMode("templates")}>
+        <span className="studio-v3-design-workspace-nav-icon" aria-hidden="true">▦</span>
+        <span className="studio-v3-design-workspace-nav-copy"><strong>{w.templates}</strong><small>{w.templatesHint}</small></span>
+      </button>
+      <button type="button" role="tab" aria-selected={workspaceMode==="customize"} className={workspaceMode==="customize"?"active":""} onClick={()=>setWorkspaceMode("customize")}>
+        <span className="studio-v3-design-workspace-nav-icon" aria-hidden="true">✦</span>
+        <span className="studio-v3-design-workspace-nav-copy"><strong>{w.customize}</strong><small>{w.customizeHint}</small></span>
+      </button>
+    </div>
+
+    {workspaceMode==="templates"?<div className="studio-v3-template-workspace">
+      <div className="studio-v3-current-design-strip">
+        <span className="studio-v3-current-design-mini" style={{"--current-bg":design.theme.background,"--current-accent":design.theme.accent,"--current-text":design.theme.text}} aria-hidden="true"/>
+        <span className="studio-v3-current-design-copy"><span>{w.current}</span><strong>{currentDesignName}</strong><small>{currentDesignDetail}</small></span>
+        <button type="button" className="studio-v3-current-design-customize" onClick={()=>setWorkspaceMode("customize")}>{w.customizeCurrent}</button>
+      </div>
+
+      <section className="studio-v3-design-library">
+        <div className="studio-v3-design-library-head"><div><strong>{l.library}</strong><p>{l.libraryHint}</p></div><span className="studio-v3-design-count">{PREMIUM_MENU_DESIGNS.length}</span></div>
+        <label className="studio-v3-design-search"><span aria-hidden="true">⌕</span><input value={query} onChange={e=>setQuery(e.target.value)} placeholder={l.search}/></label>
+        <MenuDesignLibraryFilters language={language} filters={filters} setFilters={setFilters} resultCount={filteredDesigns.length} totalCount={PREMIUM_MENU_DESIGNS.length}/>
+        <button type="button" className={`studio-v3-design-favorites-toggle ${favoritesOnly?"active":""}`} onClick={()=>setFavoritesOnly(value=>!value)}><span aria-hidden="true">♥</span><span>{l.favorites}</span><b>{favorites.length}</b></button>
+        <button type="button" className={`studio-v3-original-design ${isOriginal?"active":""}`} disabled={!original} onClick={()=>original&&patchDesign(()=>original)}><span><strong>{l.restore}</strong><small>{l.restoreHint}</small></span><span aria-hidden="true">↺</span></button>
+        <div className="studio-v3-premium-library-grid">
+          {filteredDesigns.map(entry=>{
+            const selected=activeDesignId===entry.id;
+            const favorite=favorites.includes(entry.id);
+            return <article className={`studio-v3-premium-design-card layout-${previewLayout(entry)} ${selected?"selected":""}`} key={entry.id}>
+              {selected?<span className="studio-v3-design-selected-badge" aria-label={l.selected}>✓</span>:null}
+              <button type="button" className="studio-v3-premium-design-select" onClick={()=>chooseDesign(entry)} aria-pressed={selected}>
+                <DesignThumbnail entry={entry}/>
+                <span className="studio-v3-premium-design-copy"><span><strong>{entry.name}</strong><small>{entry.layout}</small></span><em>{entry.description}</em><span className="studio-v3-design-category">{entry.category}</span></span>
+              </button>
+              <div className="studio-v3-premium-design-actions">
+                <button type="button" className={`studio-v3-design-favorite ${favorite?"active":""}`} onClick={()=>toggleFavorite(entry.id)} aria-label={l.favorites} aria-pressed={favorite}><span aria-hidden="true">{favorite?"♥":"♡"}</span></button>
+                <button type="button" className="studio-v3-design-preview-button" onClick={()=>setPreviewEntry(entry)} disabled={!menu}><span aria-hidden="true">⛶</span>{l.preview}</button>
+              </div>
+            </article>;
+          })}
+        </div>
+        {!filteredDesigns.length?<div className="studio-v3-design-library-empty">{l.noMatches}</div>:null}
+      </section>
+    </div>:null}
+
+    {workspaceMode==="customize"?<div className="studio-v3-customize-workspace">
+      <section className="studio-v3-inspector-shell">
+        <div className="studio-v3-inspector-summary">
+          <div className="studio-v3-inspector-summary-copy"><div className="studio-v3-inspector-kicker">{c.customize}</div><strong>{currentDesignName}</strong><small>{c.liveHint}</small></div>
+          <div className="studio-v3-inspector-summary-actions"><span className="studio-v3-inspector-summary-swatches" aria-hidden="true"><i style={{background:design.theme.background}}/><i style={{background:design.theme.accent}}/><i style={{background:design.theme.text}}/></span><button type="button" className="studio-v3-change-template-button" onClick={()=>setWorkspaceMode("templates")}>{w.changeTemplate}</button></div>
+        </div>
+
+        <div className="studio-v3-design-tabs">{[["brand","✦",l.brand],["colors","◉",l.colors],["type","Aa",l.typography],["layout","⌗",l.layout]].map(([key,icon,label])=><button type="button" key={key} className={panel===key?"active":""} onClick={()=>setPanel(key)}><span className="studio-v3-design-tab-icon">{icon}</span><span className="studio-v3-design-tab-label">{label}</span></button>)}</div>
+
+        <div className="studio-v3-inspector-panel-head"><span aria-hidden="true">{panelMeta.icon}</span><div><strong>{panelMeta.title}</strong><small>{panelMeta.hint}</small></div></div>
+
+        {panel==="brand"?<div className="studio-v3-design-section studio-v3-inspector-panel">
+          <section className="studio-v3-inspector-block">
+            <div className="studio-v3-inspector-block-title"><span>{c.logoAsset}</span><small>{c.logoHelp}</small></div>
+            <div className="studio-v3-inspector-logo-card">
+              <div className="studio-v3-inspector-logo-preview">{logo?<img src={logo} alt=""/>:<span className="studio-v3-inspector-logo-placeholder">LOGO</span>}</div>
+              <div className="studio-v3-inspector-logo-actions"><label className="studio-v3-inspector-upload"><input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" onChange={e=>uploadImage(e.target.files?.[0],"logoUrl")}/><span>{logo?l.replaceLogo:l.uploadLogo}</span></label><button className="studio-v3-inspector-remove" type="button" disabled={!logo} onClick={()=>patchBrand("logoUrl","")}>{l.removeLogo}</button></div>
             </div>
-          </article>;
-        })}
-      </div>
-      {!filteredDesigns.length?<div className="studio-v3-design-library-empty">{l.noMatches}</div>:null}
-    </section>
+            <RangeField label={l.logoSize} value={design.brand.logoSize} min={24} max={120} onChange={value=>patchBrand("logoSize",value)}/>
+            <div className="studio-v3-inspector-block-title"><span>{l.logoShape}</span></div>
+            <div className="studio-v3-shape-grid">{["free","rounded","circle","square"].map(value=><button type="button" key={value} className={`studio-v3-shape-choice shape-${value} ${design.brand.logoShape===value?"active":""}`} onClick={()=>patchBrand("logoShape",value)}><i aria-hidden="true">B</i><span>{titleCase(value)}</span></button>)}</div>
+          </section>
 
-    <section className="studio-v3-inspector-shell">
-      <div className="studio-v3-inspector-summary">
-        <div className="studio-v3-inspector-summary-copy"><div className="studio-v3-inspector-kicker">{c.customize}</div><strong>{activeDesign?.name||`${titleCase(design.template)} · ${c.custom}`}</strong><small>{c.liveHint}</small></div>
-        <span className="studio-v3-inspector-summary-swatches" aria-hidden="true"><i style={{background:design.theme.background}}/><i style={{background:design.theme.accent}}/><i style={{background:design.theme.text}}/></span>
-      </div>
+          <section className="studio-v3-inspector-block">
+            <div className="studio-v3-inspector-block-title"><span>{l.heroBackground}</span></div>
+            <div className="studio-v3-hero-mode-grid">{[["watermark","◎",l.watermark],["image","▧",l.image],["none","—",l.none]].map(([value,icon,label])=><button type="button" key={value} className={`studio-v3-visual-choice ${heroMode===value?"active":""}`} onClick={()=>patchBrand("heroMediaMode",value)}><i aria-hidden="true">{icon}</i><span>{label}</span></button>)}</div>
+            {heroMode==="watermark"?<p className="studio-v3-inspector-help">{l.watermarkHint}</p>:null}
+            {heroMode==="image"?<div className="studio-v3-inspector-logo-actions"><p className="studio-v3-inspector-help">{l.imageHint}</p>{heroImage?<img className="studio-v3-inspector-background-preview" src={heroImage} alt=""/>:null}<label className="studio-v3-inspector-upload"><input type="file" accept="image/png,image/jpeg,image/webp" onChange={e=>uploadImage(e.target.files?.[0],"heroImageUrl")}/><span>{heroImage?l.replaceBackground:l.uploadBackground}</span></label>{heroImage?<button className="studio-v3-inspector-remove" type="button" onClick={()=>patchBrand("heroImageUrl","")}>{l.removeBackground}</button>:null}</div>:null}
+          </section>
+        </div>:null}
 
-      <div className="studio-v3-design-tabs">{[["brand","✦",l.brand],["colors","◉",l.colors],["type","Aa",l.typography],["layout","⌗",l.layout]].map(([key,icon,label])=><button type="button" key={key} className={panel===key?"active":""} onClick={()=>setPanel(key)}><span className="studio-v3-design-tab-icon">{icon}</span><span className="studio-v3-design-tab-label">{label}</span></button>)}</div>
+        {panel==="colors"?<div className="studio-v3-design-section studio-v3-inspector-panel">
+          <section className="studio-v3-inspector-block">
+            <div className="studio-v3-inspector-block-title"><span>{c.palettePresets}</span></div>
+            <div className="studio-v3-inspector-palette-grid">{Object.entries(MENU_COLOR_PRESETS).map(([key,preset])=><button type="button" key={key} className={`studio-v3-inspector-palette ${activePaletteKey===key?"active":""}`} onClick={()=>patchDesign(current=>applyMenuColorPreset(current,key))}><span className="studio-v3-inspector-palette-swatches">{[preset.theme.background,preset.theme.card,preset.theme.accent,preset.theme.text,preset.theme.categoryBackground].map((color,index)=><i key={`${color}-${index}`} style={{background:color}}/>)}</span><strong>{preset.label}</strong></button>)}</div>
+          </section>
+          <section className="studio-v3-inspector-block">
+            <div className="studio-v3-inspector-block-title"><span>{c.customColors}</span></div>
+            <div className="studio-v3-inspector-color-grid"><ColorField label={l.background} value={design.theme.background} onChange={value=>patchTheme("background",value)}/><ColorField label={l.cards} value={design.theme.card} onChange={value=>patchTheme("card",value)}/><ColorField label={l.text} value={design.theme.text} onChange={value=>patchTheme("text",value)}/><ColorField label={l.muted} value={design.theme.muted} onChange={value=>patchTheme("muted",value)}/><ColorField label={l.accent} value={design.theme.accent} onChange={value=>patchTheme("accent",value)}/><ColorField label={l.category} value={design.theme.categoryBackground} onChange={value=>patchTheme("categoryBackground",value)}/><ColorField label={l.categoryText} value={design.theme.categoryText} onChange={value=>patchTheme("categoryText",value)}/></div>
+          </section>
+        </div>:null}
 
-      <div className="studio-v3-inspector-panel-head"><span aria-hidden="true">{panelMeta.icon}</span><div><strong>{panelMeta.title}</strong><small>{panelMeta.hint}</small></div></div>
+        {panel==="type"?<div className="studio-v3-design-section studio-v3-inspector-panel">
+          <section className="studio-v3-inspector-block">
+            <div className="studio-v3-inspector-block-title"><span>{c.fonts}</span></div>
+            <div className="studio-v3-font-grid"><FontField label={l.headingFont} value={design.typography.headingFont} onChange={value=>patchType("headingFont",value)}/><FontField label={l.bodyFont} value={design.typography.bodyFont} onChange={value=>patchType("bodyFont",value)}/></div>
+          </section>
+          <section className="studio-v3-inspector-block">
+            <div className="studio-v3-inspector-block-title"><span>{c.weights}</span></div>
+            <div className="studio-v3-design-control-label">{l.headingWeight}</div><div className="studio-v3-weight-grid">{MENU_FONT_WEIGHTS.map(value=><button type="button" key={value} className={`studio-v3-weight-choice ${design.typography.headingWeight===value?"active":""}`} style={{fontWeight:value}} onClick={()=>patchType("headingWeight",value)}>{value}</button>)}</div>
+            <div className="studio-v3-design-control-label">{l.itemWeight}</div><div className="studio-v3-weight-grid">{MENU_FONT_WEIGHTS.map(value=><button type="button" key={value} className={`studio-v3-weight-choice ${design.typography.itemWeight===value?"active":""}`} style={{fontWeight:value}} onClick={()=>patchType("itemWeight",value)}>{value}</button>)}</div>
+          </section>
+          <section className="studio-v3-inspector-block">
+            <div className="studio-v3-inspector-block-title"><span>{c.typeScale}</span></div>
+            <div className="studio-v3-type-scale"><RangeField label={c.heroSize} value={design.typography.heroSize} min={MENU_DESIGN_CONSTRAINTS.typography.heroSize.min} max={MENU_DESIGN_CONSTRAINTS.typography.heroSize.max} onChange={value=>patchType("heroSize",value)}/><RangeField label={c.sectionSize} value={design.typography.sectionSize} min={MENU_DESIGN_CONSTRAINTS.typography.sectionSize.min} max={MENU_DESIGN_CONSTRAINTS.typography.sectionSize.max} onChange={value=>patchType("sectionSize",value)}/><RangeField label={c.itemNameSize} value={design.typography.itemNameSize} min={MENU_DESIGN_CONSTRAINTS.typography.itemNameSize.min} max={MENU_DESIGN_CONSTRAINTS.typography.itemNameSize.max} onChange={value=>patchType("itemNameSize",value)}/><RangeField label={c.descriptionSize} value={design.typography.descriptionSize} min={MENU_DESIGN_CONSTRAINTS.typography.descriptionSize.min} max={MENU_DESIGN_CONSTRAINTS.typography.descriptionSize.max} onChange={value=>patchType("descriptionSize",value)}/><RangeField label={c.priceSize} value={design.typography.priceSize} min={MENU_DESIGN_CONSTRAINTS.typography.priceSize.min} max={MENU_DESIGN_CONSTRAINTS.typography.priceSize.max} onChange={value=>patchType("priceSize",value)}/></div>
+          </section>
+        </div>:null}
 
-      {panel==="brand"&&<div className="studio-v3-design-section studio-v3-inspector-panel">
-        <section className="studio-v3-inspector-block">
-          <div className="studio-v3-inspector-block-title"><span>{c.logoAsset}</span><small>{c.logoHelp}</small></div>
-          <div className="studio-v3-inspector-logo-card">
-            <div className="studio-v3-inspector-logo-preview">{logo?<img src={logo} alt=""/>:<span className="studio-v3-inspector-logo-placeholder">LOGO</span>}</div>
-            <div className="studio-v3-inspector-logo-actions"><label className="studio-v3-inspector-upload"><input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" onChange={e=>uploadImage(e.target.files?.[0],"logoUrl")}/><span>{logo?l.replaceLogo:l.uploadLogo}</span></label><button className="studio-v3-inspector-remove" type="button" disabled={!logo} onClick={()=>patchBrand("logoUrl","")}>{l.removeLogo}</button></div>
-          </div>
-          <RangeField label={l.logoSize} value={design.brand.logoSize} min={24} max={120} onChange={value=>patchBrand("logoSize",value)}/>
-          <div className="studio-v3-inspector-block-title"><span>{l.logoShape}</span></div>
-          <div className="studio-v3-shape-grid">{["free","rounded","circle","square"].map(value=><button type="button" key={value} className={`studio-v3-shape-choice shape-${value} ${design.brand.logoShape===value?"active":""}`} onClick={()=>patchBrand("logoShape",value)}><i aria-hidden="true">B</i><span>{titleCase(value)}</span></button>)}</div>
-        </section>
-
-        <section className="studio-v3-inspector-block">
-          <div className="studio-v3-inspector-block-title"><span>{l.heroBackground}</span></div>
-          <div className="studio-v3-hero-mode-grid">{[["watermark","◎",l.watermark],["image","▧",l.image],["none","—",l.none]].map(([value,icon,label])=><button type="button" key={value} className={`studio-v3-visual-choice ${heroMode===value?"active":""}`} onClick={()=>patchBrand("heroMediaMode",value)}><i aria-hidden="true">{icon}</i><span>{label}</span></button>)}</div>
-          {heroMode==="watermark"?<p className="studio-v3-inspector-help">{l.watermarkHint}</p>:null}
-          {heroMode==="image"?<div className="studio-v3-inspector-logo-actions"><p className="studio-v3-inspector-help">{l.imageHint}</p>{heroImage?<img className="studio-v3-inspector-background-preview" src={heroImage} alt=""/>:null}<label className="studio-v3-inspector-upload"><input type="file" accept="image/png,image/jpeg,image/webp" onChange={e=>uploadImage(e.target.files?.[0],"heroImageUrl")}/><span>{heroImage?l.replaceBackground:l.uploadBackground}</span></label>{heroImage?<button className="studio-v3-inspector-remove" type="button" onClick={()=>patchBrand("heroImageUrl","")}>{l.removeBackground}</button>:null}</div>:null}
-        </section>
-      </div>}
-
-      {panel==="colors"&&<div className="studio-v3-design-section studio-v3-inspector-panel">
-        <section className="studio-v3-inspector-block">
-          <div className="studio-v3-inspector-block-title"><span>{c.palettePresets}</span></div>
-          <div className="studio-v3-inspector-palette-grid">{Object.entries(MENU_COLOR_PRESETS).map(([key,preset])=><button type="button" key={key} className={`studio-v3-inspector-palette ${activePaletteKey===key?"active":""}`} onClick={()=>patchDesign(current=>applyMenuColorPreset(current,key))}><span className="studio-v3-inspector-palette-swatches">{[preset.theme.background,preset.theme.card,preset.theme.accent,preset.theme.text,preset.theme.categoryBackground].map((color,index)=><i key={`${color}-${index}`} style={{background:color}}/>)}</span><strong>{preset.label}</strong></button>)}</div>
-        </section>
-        <section className="studio-v3-inspector-block">
-          <div className="studio-v3-inspector-block-title"><span>{c.customColors}</span></div>
-          <div className="studio-v3-inspector-color-grid"><ColorField label={l.background} value={design.theme.background} onChange={value=>patchTheme("background",value)}/><ColorField label={l.cards} value={design.theme.card} onChange={value=>patchTheme("card",value)}/><ColorField label={l.text} value={design.theme.text} onChange={value=>patchTheme("text",value)}/><ColorField label={l.muted} value={design.theme.muted} onChange={value=>patchTheme("muted",value)}/><ColorField label={l.accent} value={design.theme.accent} onChange={value=>patchTheme("accent",value)}/><ColorField label={l.category} value={design.theme.categoryBackground} onChange={value=>patchTheme("categoryBackground",value)}/><ColorField label={l.categoryText} value={design.theme.categoryText} onChange={value=>patchTheme("categoryText",value)}/></div>
-        </section>
-      </div>}
-
-      {panel==="type"&&<div className="studio-v3-design-section studio-v3-inspector-panel">
-        <section className="studio-v3-inspector-block">
-          <div className="studio-v3-inspector-block-title"><span>{c.fonts}</span></div>
-          <div className="studio-v3-font-grid"><FontField label={l.headingFont} value={design.typography.headingFont} onChange={value=>patchType("headingFont",value)}/><FontField label={l.bodyFont} value={design.typography.bodyFont} onChange={value=>patchType("bodyFont",value)}/></div>
-        </section>
-        <section className="studio-v3-inspector-block">
-          <div className="studio-v3-inspector-block-title"><span>{c.weights}</span></div>
-          <div className="studio-v3-design-control-label">{l.headingWeight}</div><div className="studio-v3-weight-grid">{MENU_FONT_WEIGHTS.map(value=><button type="button" key={value} className={`studio-v3-weight-choice ${design.typography.headingWeight===value?"active":""}`} style={{fontWeight:value}} onClick={()=>patchType("headingWeight",value)}>{value}</button>)}</div>
-          <div className="studio-v3-design-control-label">{l.itemWeight}</div><div className="studio-v3-weight-grid">{MENU_FONT_WEIGHTS.map(value=><button type="button" key={value} className={`studio-v3-weight-choice ${design.typography.itemWeight===value?"active":""}`} style={{fontWeight:value}} onClick={()=>patchType("itemWeight",value)}>{value}</button>)}</div>
-        </section>
-        <section className="studio-v3-inspector-block">
-          <div className="studio-v3-inspector-block-title"><span>{c.typeScale}</span></div>
-          <div className="studio-v3-type-scale"><RangeField label={c.heroSize} value={design.typography.heroSize} min={MENU_DESIGN_CONSTRAINTS.typography.heroSize.min} max={MENU_DESIGN_CONSTRAINTS.typography.heroSize.max} onChange={value=>patchType("heroSize",value)}/><RangeField label={c.sectionSize} value={design.typography.sectionSize} min={MENU_DESIGN_CONSTRAINTS.typography.sectionSize.min} max={MENU_DESIGN_CONSTRAINTS.typography.sectionSize.max} onChange={value=>patchType("sectionSize",value)}/><RangeField label={c.itemNameSize} value={design.typography.itemNameSize} min={MENU_DESIGN_CONSTRAINTS.typography.itemNameSize.min} max={MENU_DESIGN_CONSTRAINTS.typography.itemNameSize.max} onChange={value=>patchType("itemNameSize",value)}/><RangeField label={c.descriptionSize} value={design.typography.descriptionSize} min={MENU_DESIGN_CONSTRAINTS.typography.descriptionSize.min} max={MENU_DESIGN_CONSTRAINTS.typography.descriptionSize.max} onChange={value=>patchType("descriptionSize",value)}/><RangeField label={c.priceSize} value={design.typography.priceSize} min={MENU_DESIGN_CONSTRAINTS.typography.priceSize.min} max={MENU_DESIGN_CONSTRAINTS.typography.priceSize.max} onChange={value=>patchType("priceSize",value)}/></div>
-        </section>
-      </div>}
-
-      {panel==="layout"&&<div className="studio-v3-design-section studio-v3-inspector-panel">
-        <section className="studio-v3-inspector-block">
-          <div className="studio-v3-inspector-block-title"><span>{l.density}</span></div>
-          <div className="studio-v3-option-grid">{["compact","comfortable","spacious"].map(value=><button type="button" key={value} className={`studio-v3-layout-choice density-${value} ${design.layout.density===value?"active":""}`} onClick={()=>patchLayout("density",value)}><i aria-hidden="true"/><span>{titleCase(value)}</span></button>)}</div>
-        </section>
-        <section className="studio-v3-inspector-block">
-          <div className="studio-v3-inspector-block-title"><span>{l.navigation}</span></div>
-          <div className="studio-v3-option-grid">{["pills","underline","minimal"].map(value=><button type="button" key={value} className={`studio-v3-layout-choice nav-${value} ${design.layout.navigationStyle===value?"active":""}`} onClick={()=>patchLayout("navigationStyle",value)}><i aria-hidden="true"/><span>{titleCase(value)}</span></button>)}</div>
-        </section>
-        <section className="studio-v3-inspector-block">
-          <div className="studio-v3-inspector-block-title"><span>{l.price}</span></div>
-          <div className="studio-v3-option-grid">{["inline","below","bottom"].map(value=><button type="button" key={value} className={`studio-v3-layout-choice price-${value} ${design.layout.pricePosition===value?"active":""}`} onClick={()=>patchLayout("pricePosition",value)}><i aria-hidden="true"/><span>{titleCase(value)}</span></button>)}</div>
-        </section>
-        {IMAGE_LAYOUT_TEMPLATES.has(design.template)?<section className="studio-v3-inspector-block">
-          <div className="studio-v3-inspector-block-title"><span>{c.imageCards}</span></div>
-          <div className="studio-v3-design-control-label">{l.imagePosition}</div><div className="studio-v3-option-grid">{["top","left","right"].map(value=><button type="button" key={value} className={`studio-v3-layout-choice image-${value} ${design.layout.itemImagePosition===value?"active":""}`} onClick={()=>patchLayout("itemImagePosition",value)}><i aria-hidden="true"/><span>{titleCase(value)}</span></button>)}</div>
-          <div className="studio-v3-design-control-label">{l.imageRatio}</div><div className="studio-v3-option-grid ratios">{["1:1","4:3","3:2","16:9"].map(value=><button type="button" key={value} className={`studio-v3-layout-choice ratio-${value.replace(":","-")} ${design.layout.itemImageRatio===value?"active":""}`} onClick={()=>patchLayout("itemImageRatio",value)}><i aria-hidden="true"/><span>{value}</span></button>)}</div>
-        </section>:null}
-        <section className="studio-v3-inspector-block">
-          <div className="studio-v3-inspector-block-title"><span>{c.shapeSpacing}</span></div>
-          <div className="studio-v3-radius-row"><RangeField label={c.cardRadius} value={design.layout.cardRadius} min={MENU_DESIGN_CONSTRAINTS.radius.min} max={MENU_DESIGN_CONSTRAINTS.radius.max} onChange={value=>patchLayout("cardRadius",value)}/><span className="studio-v3-radius-preview" style={{borderRadius:design.layout.cardRadius}} aria-hidden="true"/></div>
-          <RangeField label={c.sectionGap} value={design.layout.sectionGap} min={MENU_DESIGN_CONSTRAINTS.spacing.sectionGap.min} max={MENU_DESIGN_CONSTRAINTS.spacing.sectionGap.max} onChange={value=>patchLayout("sectionGap",value)}/>
-          <RangeField label={c.itemGap} value={design.layout.itemGap} min={MENU_DESIGN_CONSTRAINTS.spacing.itemGap.min} max={MENU_DESIGN_CONSTRAINTS.spacing.itemGap.max} onChange={value=>patchLayout("itemGap",value)}/>
-          <RangeField label={c.cardPadding} value={design.layout.cardPadding} min={MENU_DESIGN_CONSTRAINTS.spacing.cardPadding.min} max={MENU_DESIGN_CONSTRAINTS.spacing.cardPadding.max} onChange={value=>patchLayout("cardPadding",value)}/>
-        </section>
-      </div>}
-    </section>
+        {panel==="layout"?<div className="studio-v3-design-section studio-v3-inspector-panel">
+          <section className="studio-v3-inspector-block">
+            <div className="studio-v3-inspector-block-title"><span>{l.density}</span></div>
+            <div className="studio-v3-option-grid">{["compact","comfortable","spacious"].map(value=><button type="button" key={value} className={`studio-v3-layout-choice density-${value} ${design.layout.density===value?"active":""}`} onClick={()=>patchLayout("density",value)}><i aria-hidden="true"/><span>{titleCase(value)}</span></button>)}</div>
+          </section>
+          <section className="studio-v3-inspector-block">
+            <div className="studio-v3-inspector-block-title"><span>{l.navigation}</span></div>
+            <div className="studio-v3-option-grid">{["pills","underline","minimal"].map(value=><button type="button" key={value} className={`studio-v3-layout-choice nav-${value} ${design.layout.navigationStyle===value?"active":""}`} onClick={()=>patchLayout("navigationStyle",value)}><i aria-hidden="true"/><span>{titleCase(value)}</span></button>)}</div>
+          </section>
+          <section className="studio-v3-inspector-block">
+            <div className="studio-v3-inspector-block-title"><span>{l.price}</span></div>
+            <div className="studio-v3-option-grid">{["inline","below","bottom"].map(value=><button type="button" key={value} className={`studio-v3-layout-choice price-${value} ${design.layout.pricePosition===value?"active":""}`} onClick={()=>patchLayout("pricePosition",value)}><i aria-hidden="true"/><span>{titleCase(value)}</span></button>)}</div>
+          </section>
+          {IMAGE_LAYOUT_TEMPLATES.has(design.template)?<section className="studio-v3-inspector-block">
+            <div className="studio-v3-inspector-block-title"><span>{c.imageCards}</span></div>
+            <div className="studio-v3-design-control-label">{l.imagePosition}</div><div className="studio-v3-option-grid">{["top","left","right"].map(value=><button type="button" key={value} className={`studio-v3-layout-choice image-${value} ${design.layout.itemImagePosition===value?"active":""}`} onClick={()=>patchLayout("itemImagePosition",value)}><i aria-hidden="true"/><span>{titleCase(value)}</span></button>)}</div>
+            <div className="studio-v3-design-control-label">{l.imageRatio}</div><div className="studio-v3-option-grid ratios">{["1:1","4:3","3:2","16:9"].map(value=><button type="button" key={value} className={`studio-v3-layout-choice ratio-${value.replace(":","-")} ${design.layout.itemImageRatio===value?"active":""}`} onClick={()=>patchLayout("itemImageRatio",value)}><i aria-hidden="true"/><span>{value}</span></button>)}</div>
+          </section>:null}
+          <section className="studio-v3-inspector-block">
+            <div className="studio-v3-inspector-block-title"><span>{c.shapeSpacing}</span></div>
+            <div className="studio-v3-radius-row"><RangeField label={c.cardRadius} value={design.layout.cardRadius} min={MENU_DESIGN_CONSTRAINTS.radius.min} max={MENU_DESIGN_CONSTRAINTS.radius.max} onChange={value=>patchLayout("cardRadius",value)}/><span className="studio-v3-radius-preview" style={{borderRadius:design.layout.cardRadius}} aria-hidden="true"/></div>
+            <RangeField label={c.sectionGap} value={design.layout.sectionGap} min={MENU_DESIGN_CONSTRAINTS.spacing.sectionGap.min} max={MENU_DESIGN_CONSTRAINTS.spacing.sectionGap.max} onChange={value=>patchLayout("sectionGap",value)}/>
+            <RangeField label={c.itemGap} value={design.layout.itemGap} min={MENU_DESIGN_CONSTRAINTS.spacing.itemGap.min} max={MENU_DESIGN_CONSTRAINTS.spacing.itemGap.max} onChange={value=>patchLayout("itemGap",value)}/>
+            <RangeField label={c.cardPadding} value={design.layout.cardPadding} min={MENU_DESIGN_CONSTRAINTS.spacing.cardPadding.min} max={MENU_DESIGN_CONSTRAINTS.spacing.cardPadding.max} onChange={value=>patchLayout("cardPadding",value)}/>
+          </section>
+        </div>:null}
+      </section>
+    </div>:null}
 
     {previewEntry&&previewDesign&&menu?<div className="studio-v3-design-preview-overlay" role="dialog" aria-modal="true" aria-label={`${l.designPreview}: ${previewEntry.name}`} onMouseDown={event=>{if(event.target===event.currentTarget)setPreviewEntry(null);}}>
       <div className="studio-v3-design-preview-shell">
@@ -223,5 +289,5 @@ export default function MenuDesignControls({design,baselineDesign,menu,language=
         <div className="studio-v3-design-preview-stage"><div className="studio-v3-design-preview-page"><MenuRenderer menu={menu} design={previewDesign} initialLanguage={language}/></div></div>
       </div>
     </div>:null}
-  </div>
+  </div>;
 }
