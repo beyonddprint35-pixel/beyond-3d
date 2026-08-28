@@ -9,6 +9,7 @@ import App from './App.jsx'
 // BEYOND_MENU_PLATFORM_PHASE1
 import { BeyondMenuRoute } from "./components/BeyondMenuPlatform";
 import BeyondLiveMenuDesignPortal from "./components/BeyondLiveMenuDesignPortal";
+import MenuStudioHomeReturn from "./components/MenuStudioHomeReturn";
 import "./components/BeyondMenuPlatform.css";
 import "./components/BeyondLiveMenuDesign.css";
 import "./components/BeyondLiveMenuDesignMobilePatch.css";
@@ -39,6 +40,7 @@ createRoot(document.getElementById('root')).render(
         fallback={<App />}
       />
 
+      <MenuStudioHomeReturn />
       <BeyondLiveMenuDesignPortal />
     </BeyondLanguageProvider>
   </StrictMode>,
