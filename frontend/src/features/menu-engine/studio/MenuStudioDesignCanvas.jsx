@@ -41,6 +41,10 @@ function clonePreviewStyles(targetDocument) {
     body{overflow-x:hidden}
     #beyond-menu-preview-root{isolation:isolate}
     .restaurant-a11y-toggle,.restaurant-a11y-panel,.restaurant-a11y-statement-backdrop{display:none!important}
+    .bme-item-media-placeholder{position:relative!important;display:grid!important;place-items:center!important;background:radial-gradient(circle at 28% 24%,color-mix(in srgb,var(--bme-accent) 20%,transparent),transparent 34%),linear-gradient(145deg,color-mix(in srgb,var(--bme-accent-secondary) 62%,var(--bme-card)),color-mix(in srgb,var(--bme-card) 82%,var(--bme-bg)))!important;color:var(--bme-muted)!important}
+    .bme-item-media-placeholder span{display:none!important}
+    .bme-item-media-placeholder:before{content:"";width:42px;height:32px;border:1px solid color-mix(in srgb,var(--bme-text) 24%,transparent);border-radius:9px;background:linear-gradient(145deg,transparent 54%,color-mix(in srgb,var(--bme-text) 12%,transparent) 55% 64%,transparent 65%),color-mix(in srgb,var(--bme-surface) 72%,transparent);box-shadow:0 8px 22px color-mix(in srgb,var(--bme-text) 10%,transparent)}
+    .bme-item-media-placeholder:after{content:"PHOTO";position:absolute;inset-inline:0;bottom:18%;text-align:center;font:800 8px/1 var(--bme-body-font);letter-spacing:.18em;color:color-mix(in srgb,var(--bme-text) 52%,transparent)}
   `;
   targetDocument.head.appendChild(previewBase);
 }
