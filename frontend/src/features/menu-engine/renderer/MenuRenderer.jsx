@@ -7,6 +7,7 @@ import "./menuRendererResponsive.css";
 import "./menuRendererV3Fixes.css";
 import "./menuHeroMedia.css";
 import "./menuHeritageClassic.css";
+import "./menuLayoutFamilies.css";
 
 const DEFAULT_CURRENCY_SYMBOL = "₪";
 const LANGUAGE_LABELS = { en:"English", he:"עברית", ar:"العربية" };
@@ -15,9 +16,10 @@ const FOOTER_COPY = {
   he:{items:"פריטים",accessibility:"הצהרת נגישות",powered:"מופעל באמצעות"},
   ar:{items:"عناصر",accessibility:"بيان إمكانية الوصول",powered:"بدعم من"},
 };
+const IMAGE_LAYOUT_TEMPLATES = new Set(["visual","gallery","tiles","split"]);
 function chooseText(language,values={}){const en=values.en||"",he=values.he||"",ar=values.ar||"";if(language==="he")return he||ar||en;if(language==="ar")return ar||he||en;return en||he||ar;}
 function isRtl(language){return language==="he"||language==="ar";}
-function resolvedBadgeStyle(design){return design.badges.iconStyle!=="auto"?design.badges.iconStyle:design.template==="visual"?"filled":"minimal";}
+function resolvedBadgeStyle(design){return design.badges.iconStyle!=="auto"?design.badges.iconStyle:IMAGE_LAYOUT_TEMPLATES.has(design.template)?"filled":"minimal";}
 function cleanPrice(value){return String(value??"").replace(/₪/g,"").replace(/\b(?:ILS|NIS)\b/gi,"").trim();}
 function formatPrice(value,currencySymbol){const clean=cleanPrice(value);return clean?`${currencySymbol}${clean}`:"";}
 function optionLabel(option,language){return option?.[`label_${language}`]||option?.label||option?.label_en||option?.label_he||option?.label_ar||"";}
@@ -81,7 +83,7 @@ function MenuRenderer({menu,design:designInput,initialLanguage}){
     <header className="bme-header"><div className="bme-brand">{logoUrl?<><img src={logoUrl} alt=""/><div><strong>{menu.restaurant_name}</strong>{menu.restaurant_subtitle?<span>{chooseText(language,menu.restaurant_subtitle)}</span>:null}</div></>:<div><strong>{menu.restaurant_name}</strong>{menu.restaurant_subtitle?<span>{chooseText(language,menu.restaurant_subtitle)}</span>:null}</div>}</div>{languages.length>1?<div className="bme-languages" aria-label="Menu language">{languages.map(code=><button key={code} className={language===code?"active":""} onClick={()=>setLanguage(code)}>{LANGUAGE_LABELS[code]||code.toUpperCase()}</button>)}</div>:null}</header>
     <section className={`bme-hero bme-hero-mode-${heroMode}`}><HeroMedia mode={heroMode} logoUrl={logoUrl} imageUrl={heroImageUrl} restaurantName={menu.restaurant_name}/><div className="bme-hero-copy">{menu.hero_eyebrow?<span>{chooseText(language,menu.hero_eyebrow)}</span>:null}<h1>{chooseText(language,menu.hero_title)||menu.restaurant_name}</h1></div></section>
     {topGroups.length?<nav className="bme-category-nav">{topGroups.map(group=><button key={group.id} className={group.id===activeGroup?.id?"active":""} onClick={()=>setActiveGroupId(group.id)}>{chooseText(language,group.name)}</button>)}</nav>:null}
-    <main className="bme-content">{activeGroup?<section className="bme-section"><div className="bme-section-heading"><h2>{chooseText(language,activeGroup.name)}</h2><span>{totalItems} {footer.items}</span></div><div className="bme-group-blocks">{blocks.map((block,index)=><section className={index===0?"bme-primary-group":"bme-subcategory-section"} key={block.group.id}>{index>0?<div className="bme-subcategory-heading"><h3>{chooseText(language,block.group.name)}</h3></div>:null}{design.template==="visual"?<div className="bme-visual-grid">{block.items.map(item=><VisualItem key={item.id} item={item} language={language} design={design} currencySymbol={currencySymbol}/>)}</div>:<div className="bme-classic-list">{block.items.map(item=><ClassicItem key={item.id} item={item} language={language} design={design} currencySymbol={currencySymbol}/>)}</div>}</section>)}</div></section>:<div className="bme-empty">—</div>}</main>
+    <main className="bme-content">{activeGroup?<section className="bme-section"><div className="bme-section-heading"><h2>{chooseText(language,activeGroup.name)}</h2><span>{totalItems} {footer.items}</span></div><div className="bme-group-blocks">{blocks.map((block,index)=><section className={index===0?"bme-primary-group":"bme-subcategory-section"} key={block.group.id}>{index>0?<div className="bme-subcategory-heading"><h3>{chooseText(language,block.group.name)}</h3></div>:null}{IMAGE_LAYOUT_TEMPLATES.has(design.template)?<div className="bme-visual-grid">{block.items.map(item=><VisualItem key={item.id} item={item} language={language} design={design} currencySymbol={currencySymbol}/>)}</div>:<div className="bme-classic-list">{block.items.map(item=><ClassicItem key={item.id} item={item} language={language} design={design} currencySymbol={currencySymbol}/>)}</div>}</section>)}</div></section>:<div className="bme-empty">—</div>}</main>
     <footer className="bme-footer"><button type="button" onClick={()=>window.dispatchEvent(new CustomEvent("beyond-open-accessibility-statement"))}>{footer.accessibility}</button><span>{footer.powered} <strong>Beyond</strong></span></footer>
     <RestaurantAccessibility restaurantName={menu.restaurant_name||"Restaurant"} language={language}/>
   </div>;
