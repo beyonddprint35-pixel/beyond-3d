@@ -4,11 +4,13 @@
    cannot fit the available headline width. */
 .bme-menu .bme-brand strong,
 .bme-menu .bme-hero h1,
+.bme-menu .bme-category-nav button,
 .bme-menu .bme-section-heading h2,
 .bme-menu .bme-subcategory-heading h3,
 .bme-menu .bme-item-copy h3,
 .bme-heritage-exact .ep-brand-title,
 .bme-heritage-exact .ep-hero-title,
+.bme-heritage-exact .ep-tabs button,
 .bme-heritage-exact .ep-section-head h2,
 .bme-heritage-exact .ep-item-name {
   max-width: 100%;
