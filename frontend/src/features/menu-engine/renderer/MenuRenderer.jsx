@@ -8,6 +8,7 @@ import "./menuRendererV3Fixes.css";
 import "./menuHeroMedia.css";
 import "./menuHeritageClassic.css";
 import "./menuLayoutFamilies.css";
+import "./menuPresentationFamilies.css";
 
 const DEFAULT_CURRENCY_SYMBOL = "₪";
 const LANGUAGE_LABELS = { en:"English", he:"עברית", ar:"العربية" };
@@ -77,9 +78,10 @@ function MenuRenderer({menu,design:designInput,initialLanguage}){
   const blocks=activeGroup?[activeGroup,...descendants].map(group=>({group,items:(menu.items||[]).filter(item=>item.group_id===group.id&&item.visible!==false).sort((a,b)=>(a.sort_order||0)-(b.sort_order||0))})):[];
   const totalItems=blocks.reduce((sum,block)=>sum+block.items.length,0);
   const style=designVariables(design),badgeStyle=resolvedBadgeStyle(design),heroMode=design.brand.heroMediaMode||"watermark",heroImageUrl=design.brand.heroImageUrl||"",logoUrl=design.brand.logoUrl||menu.logo_url||"";
+  const presentation=design.layout.presentation||"standard";
   const footer=FOOTER_COPY[language]||FOOTER_COPY.en;
   if(design.styleVariant==="heritage")return <HeritageClassicRenderer menu={menu} design={design} language={language} setLanguage={setLanguage} languages={languages} topGroups={topGroups} activeGroup={activeGroup} onSelectGroup={setActiveGroupId} blocks={blocks} totalItems={totalItems} currencySymbol={currencySymbol} logoUrl={logoUrl}/>;
-  return <div className={`bme-menu bme-template-${design.template} bme-density-${design.layout.density} bme-nav-${design.layout.navigationStyle} bme-logo-${design.brand.logoShape} bme-badge-style-${badgeStyle}`} style={style} dir={rtl?"rtl":"ltr"} lang={language}>
+  return <div className={`bme-menu bme-template-${design.template} bme-presentation-${presentation} bme-density-${design.layout.density} bme-nav-${design.layout.navigationStyle} bme-logo-${design.brand.logoShape} bme-badge-style-${badgeStyle}`} style={style} dir={rtl?"rtl":"ltr"} lang={language}>
     <header className="bme-header"><div className="bme-brand">{logoUrl?<><img src={logoUrl} alt=""/><div><strong>{menu.restaurant_name}</strong>{menu.restaurant_subtitle?<span>{chooseText(language,menu.restaurant_subtitle)}</span>:null}</div></>:<div><strong>{menu.restaurant_name}</strong>{menu.restaurant_subtitle?<span>{chooseText(language,menu.restaurant_subtitle)}</span>:null}</div>}</div>{languages.length>1?<div className="bme-languages" aria-label="Menu language">{languages.map(code=><button key={code} className={language===code?"active":""} onClick={()=>setLanguage(code)}>{LANGUAGE_LABELS[code]||code.toUpperCase()}</button>)}</div>:null}</header>
     <section className={`bme-hero bme-hero-mode-${heroMode}`}><HeroMedia mode={heroMode} logoUrl={logoUrl} imageUrl={heroImageUrl} restaurantName={menu.restaurant_name}/><div className="bme-hero-copy">{menu.hero_eyebrow?<span>{chooseText(language,menu.hero_eyebrow)}</span>:null}<h1>{chooseText(language,menu.hero_title)||menu.restaurant_name}</h1></div></section>
     {topGroups.length?<nav className="bme-category-nav">{topGroups.map(group=><button key={group.id} className={group.id===activeGroup?.id?"active":""} onClick={()=>setActiveGroupId(group.id)}>{chooseText(language,group.name)}</button>)}</nav>:null}
