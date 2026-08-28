@@ -130,6 +130,7 @@ export function adaptSupabaseMenuToV3(site, rawGroups = [], rawItems = []) {
         price: options.length ? "" : text(item.price),
         price_options: options,
         image_url: text(item.image_url || item.image),
+        image_path: text(item.image_path),
         visible: item.visible !== false,
         sort_order: Number(item.sort_order || 0),
       };
@@ -184,7 +185,7 @@ export async function loadPublishedMenuBySlug(slug) {
     .maybeSingle();
 
   if (siteError) throw siteError;
-  if (!site) throw new Error(`No published menu found for \"${slug}\".`);
+  if (!site) throw new Error(`No published menu found for "${slug}".`);
 
   const [groupsResult, itemsResult] = await Promise.all([
     supabase.from("menu_groups").select("*").eq("site_id", site.id).order("sort_order").order("created_at"),
