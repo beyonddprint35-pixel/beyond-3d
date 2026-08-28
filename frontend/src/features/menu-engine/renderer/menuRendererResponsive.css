@@ -1,0 +1,40 @@
+/* Renderer responsiveness must follow the menu's own width, not the browser viewport.
+   This keeps embedded Studio/device previews identical to a real menu at the same width. */
+.bme-menu { container-type: inline-size; container-name: beyond-menu; }
+
+@container beyond-menu (max-width: 699px) {
+  .bme-visual-grid { grid-template-columns: minmax(0,1fr); }
+  .bme-image-left,
+  .bme-image-right { display:grid;grid-template-columns:112px minmax(0,1fr); }
+  .bme-image-right .bme-item-media { order:2; }
+  .bme-image-left .bme-item-media,
+  .bme-image-right .bme-item-media { height:100%;aspect-ratio:auto; }
+  .bme-image-left .bme-visual-copy,
+  .bme-image-right .bme-visual-copy { align-content:center; }
+}
+
+@container beyond-menu (max-width: 359px) {
+  .bme-header,
+  .bme-hero,
+  .bme-category-nav,
+  .bme-content,
+  .bme-footer { padding-inline:14px; }
+  .bme-classic-item,
+  .bme-visual-copy { gap:10px; }
+  .bme-price-options { gap:6px; }
+  .bme-image-left,
+  .bme-image-right { grid-template-columns:96px minmax(0,1fr); }
+}
+
+@container beyond-menu (min-width: 700px) {
+  .bme-visual-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .bme-image-left,
+  .bme-image-right { display:grid;grid-template-columns:minmax(150px,.8fr) minmax(0,1.2fr); }
+  .bme-image-right .bme-item-media { order:2; }
+  .bme-image-left .bme-item-media,
+  .bme-image-right .bme-item-media { height:100%;aspect-ratio:auto; }
+}
+
+@container beyond-menu (min-width: 1024px) {
+  .bme-visual-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+}
