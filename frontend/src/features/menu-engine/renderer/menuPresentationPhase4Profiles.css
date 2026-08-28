@@ -54,18 +54,23 @@
 .bme-presentation-seoul-night .bme-price,.bme-presentation-seoul-night .bme-price-options{color:var(--bme-accent);text-shadow:0 0 14px color-mix(in srgb,var(--bme-accent) 30%,transparent)}
 
 /* ---------- Smokehouse Story ---------- */
-.bme-presentation-smokehouse-story .bme-hero{min-height:380px;display:flex;align-items:flex-end;background:radial-gradient(circle at 28% 0%,color-mix(in srgb,var(--bme-accent) 16%,transparent),transparent 42%),var(--bme-surface)}
-.bme-presentation-smokehouse-story .bme-content{width:min(100%,1160px);padding-top:28px}
-.bme-presentation-smokehouse-story .bme-section-heading{border-bottom:2px solid color-mix(in srgb,var(--bme-accent) 62%,var(--bme-line))}
-.bme-presentation-smokehouse-story .bme-visual-grid{display:grid!important;grid-template-columns:1fr!important;gap:22px!important}
-.bme-presentation-smokehouse-story .bme-visual-item{position:relative;min-height:430px;border:0;border-radius:10px;background:var(--bme-card);overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.28)}
-.bme-presentation-smokehouse-story .bme-item-media{position:absolute;inset:0;height:100%;aspect-ratio:auto!important}
-.bme-presentation-smokehouse-story .bme-item-media::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,color-mix(in srgb,var(--bme-bg) 92%,transparent) 0%,color-mix(in srgb,var(--bme-bg) 58%,transparent) 52%,transparent 100%)}
-.bme-presentation-smokehouse-story[dir="rtl"] .bme-item-media::after{background:linear-gradient(270deg,color-mix(in srgb,var(--bme-bg) 92%,transparent) 0%,color-mix(in srgb,var(--bme-bg) 58%,transparent) 52%,transparent 100%)}
-.bme-presentation-smokehouse-story .bme-visual-copy{position:relative;z-index:2;width:min(62%,660px);min-height:430px;align-content:end;padding:clamp(28px,5vw,54px);color:var(--bme-text)}
-.bme-presentation-smokehouse-story .bme-visual-copy::before{content:"LOW & SLOW";display:block;margin-bottom:18px;color:var(--bme-accent);font-size:9px;font-weight:900;letter-spacing:.18em}
-.bme-presentation-smokehouse-story .bme-item-copy h3{font-family:var(--bme-heading-font);font-size:clamp(30px,5vw,54px);line-height:.98}
-.bme-presentation-smokehouse-story .bme-price,.bme-presentation-smokehouse-story .bme-price-options{margin-top:18px;color:var(--bme-accent)}
+.bme-presentation-smokehouse-story .bme-hero{min-height:310px;display:flex;align-items:flex-end;background:radial-gradient(circle at 24% 0%,color-mix(in srgb,var(--bme-accent) 18%,transparent),transparent 40%),linear-gradient(155deg,var(--bme-surface),var(--bme-bg))}
+.bme-presentation-smokehouse-story .bme-hero-copy>span{letter-spacing:.2em}
+.bme-presentation-smokehouse-story .bme-content{width:min(100%,1120px);padding-top:34px}
+.bme-presentation-smokehouse-story .bme-section-heading{align-items:center;padding-bottom:18px;border-bottom:1px solid color-mix(in srgb,var(--bme-accent) 58%,var(--bme-line))}
+.bme-presentation-smokehouse-story .bme-visual-grid{display:grid!important;grid-template-columns:1fr!important;gap:26px!important}
+.bme-presentation-smokehouse-story .bme-visual-item{display:grid!important;grid-template-columns:minmax(0,1.18fr) minmax(270px,.82fr);min-height:330px;border:1px solid color-mix(in srgb,var(--bme-accent) 24%,var(--bme-line));border-radius:18px;background:var(--bme-card);overflow:hidden;box-shadow:0 18px 44px color-mix(in srgb,var(--bme-text) 16%,transparent)}
+.bme-presentation-smokehouse-story .bme-visual-item:first-child{grid-template-columns:minmax(0,1.35fr) minmax(290px,.65fr);min-height:400px}
+.bme-presentation-smokehouse-story .bme-visual-item:nth-child(even){grid-template-columns:minmax(270px,.82fr) minmax(0,1.18fr)}
+.bme-presentation-smokehouse-story .bme-visual-item:nth-child(even) .bme-item-media{order:2}
+.bme-presentation-smokehouse-story .bme-item-media{position:relative;width:100%;height:100%;min-height:100%;aspect-ratio:auto!important;border-radius:0;background:color-mix(in srgb,var(--bme-accent-secondary) 42%,var(--bme-card))}
+.bme-presentation-smokehouse-story .bme-item-media::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 62%,color-mix(in srgb,var(--bme-card) 42%,transparent) 100%);pointer-events:none}
+.bme-presentation-smokehouse-story .bme-visual-item:nth-child(even) .bme-item-media::after{background:linear-gradient(270deg,transparent 62%,color-mix(in srgb,var(--bme-card) 42%,transparent) 100%)}
+.bme-presentation-smokehouse-story .bme-visual-copy{position:relative;z-index:2;width:auto;min-width:0;min-height:100%;display:grid;grid-template-columns:minmax(0,1fr);align-content:center;gap:18px;padding:clamp(28px,4vw,46px);background:linear-gradient(155deg,color-mix(in srgb,var(--bme-card) 96%,var(--bme-accent)),var(--bme-card));color:var(--bme-text)}
+.bme-presentation-smokehouse-story .bme-visual-copy::before{content:"LOW & SLOW";display:block;width:max-content;padding:7px 10px;border:1px solid color-mix(in srgb,var(--bme-accent) 42%,var(--bme-line));border-radius:999px;color:var(--bme-accent);font-size:8px;font-weight:900;letter-spacing:.18em}
+.bme-presentation-smokehouse-story .bme-item-copy h3{font-family:var(--bme-heading-font);font-size:clamp(28px,4.5vw,46px);line-height:1;letter-spacing:-.035em}
+.bme-presentation-smokehouse-story .bme-item-copy p{margin-top:12px;max-width:42ch;line-height:1.65}
+.bme-presentation-smokehouse-story .bme-price,.bme-presentation-smokehouse-story .bme-price-options{justify-self:start;margin-top:2px;padding-top:14px;border-top:1px solid color-mix(in srgb,var(--bme-accent) 32%,var(--bme-line));color:var(--bme-accent)}
 
 /* ---------- Tropical Club ---------- */
 .bme-presentation-tropical-club{padding-bottom:104px}
@@ -88,15 +93,16 @@
 .bme-presentation-dessert-magazine .bme-hero h1{max-width:9ch;font-size:clamp(50px,9vw,var(--bme-hero-size));letter-spacing:-.065em}
 .bme-presentation-dessert-magazine .bme-content{width:min(100%,1180px);padding-top:40px}
 .bme-presentation-dessert-magazine .bme-section-heading{border-bottom:2px solid var(--bme-text)}
-.bme-presentation-dessert-magazine .bme-visual-grid{display:grid!important;grid-template-columns:repeat(12,minmax(0,1fr))!important;grid-auto-flow:dense;gap:24px 16px!important}
-.bme-presentation-dessert-magazine .bme-visual-item{grid-column:span 4;border:0;border-radius:0;background:transparent;overflow:visible}
-.bme-presentation-dessert-magazine .bme-visual-item:nth-child(5n+1){grid-column:span 8;grid-row:span 2}
-.bme-presentation-dessert-magazine .bme-visual-item:nth-child(5n+2){grid-column:span 4;transform:translateY(34px)}
+.bme-presentation-dessert-magazine .bme-visual-grid{display:grid!important;grid-template-columns:repeat(12,minmax(0,1fr))!important;grid-auto-flow:row;align-items:start;gap:32px 18px!important}
+.bme-presentation-dessert-magazine .bme-visual-item{min-width:0;grid-column:span 5;border:0;border-radius:0;background:transparent;overflow:visible;transform:none}
+.bme-presentation-dessert-magazine .bme-visual-item:nth-child(4n+1),.bme-presentation-dessert-magazine .bme-visual-item:nth-child(4n+4){grid-column:span 7}
+.bme-presentation-dessert-magazine .bme-visual-item:nth-child(4n+2),.bme-presentation-dessert-magazine .bme-visual-item:nth-child(4n+3){grid-column:span 5}
 .bme-presentation-dessert-magazine .bme-item-media{aspect-ratio:4/5!important;border-radius:2px;box-shadow:8px 10px 0 color-mix(in srgb,var(--bme-accent) 18%,transparent)}
-.bme-presentation-dessert-magazine .bme-visual-item:nth-child(5n+1) .bme-item-media{aspect-ratio:4/3!important}
-.bme-presentation-dessert-magazine .bme-visual-copy{padding:14px 0 0;border-bottom:1px solid var(--bme-line)}
-.bme-presentation-dessert-magazine .bme-item-copy h3{font-family:var(--bme-heading-font);font-size:clamp(20px,3vw,var(--bme-item-size))}
-.bme-presentation-dessert-magazine .bme-price,.bme-presentation-dessert-magazine .bme-price-options{color:var(--bme-accent)}
+.bme-presentation-dessert-magazine .bme-visual-item:nth-child(4n+1) .bme-item-media,.bme-presentation-dessert-magazine .bme-visual-item:nth-child(4n+4) .bme-item-media{aspect-ratio:16/10!important}
+.bme-presentation-dessert-magazine .bme-visual-copy{min-width:0;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:12px;padding:14px 0 10px;border-bottom:1px solid var(--bme-line)}
+.bme-presentation-dessert-magazine .bme-item-copy{min-width:0}
+.bme-presentation-dessert-magazine .bme-item-copy h3{font-family:var(--bme-heading-font);font-size:clamp(20px,3vw,var(--bme-item-size));overflow-wrap:anywhere}
+.bme-presentation-dessert-magazine .bme-price,.bme-presentation-dessert-magazine .bme-price-options{align-self:start;color:var(--bme-accent)}
 
 /* ---------- Luxury Steak Story ---------- */
 .bme-presentation-luxury-steak .bme-header{border-bottom-color:color-mix(in srgb,var(--bme-accent) 34%,var(--bme-line))}
@@ -144,9 +150,13 @@
   .bme-presentation-levant-table .bme-classic-list,.bme-presentation-nordic-paper .bme-classic-list,.bme-presentation-family-pizzeria .bme-classic-list{grid-template-columns:1fr}
   .bme-presentation-seoul-night .bme-visual-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
   .bme-presentation-seoul-night .bme-visual-item:nth-child(3n+2){transform:none}
-  .bme-presentation-smokehouse-story .bme-visual-copy{width:min(78%,650px)}
-  .bme-presentation-dessert-magazine .bme-visual-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
-  .bme-presentation-dessert-magazine .bme-visual-item,.bme-presentation-dessert-magazine .bme-visual-item:nth-child(5n+1),.bme-presentation-dessert-magazine .bme-visual-item:nth-child(5n+2){grid-column:auto;grid-row:auto;transform:none}
+  .bme-presentation-smokehouse-story .bme-visual-item,.bme-presentation-smokehouse-story .bme-visual-item:first-child,.bme-presentation-smokehouse-story .bme-visual-item:nth-child(even){grid-template-columns:1fr;min-height:0}
+  .bme-presentation-smokehouse-story .bme-visual-item:nth-child(even) .bme-item-media{order:0}
+  .bme-presentation-smokehouse-story .bme-item-media{height:auto;min-height:0;aspect-ratio:16/10!important}
+  .bme-presentation-smokehouse-story .bme-item-media::after,.bme-presentation-smokehouse-story .bme-visual-item:nth-child(even) .bme-item-media::after{background:linear-gradient(180deg,transparent 72%,color-mix(in srgb,var(--bme-card) 22%,transparent) 100%)}
+  .bme-presentation-smokehouse-story .bme-visual-copy{min-height:0;padding:28px}
+  .bme-presentation-dessert-magazine .bme-visual-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:28px 14px!important}
+  .bme-presentation-dessert-magazine .bme-visual-item,.bme-presentation-dessert-magazine .bme-visual-item:nth-child(4n+1),.bme-presentation-dessert-magazine .bme-visual-item:nth-child(4n+2),.bme-presentation-dessert-magazine .bme-visual-item:nth-child(4n+3),.bme-presentation-dessert-magazine .bme-visual-item:nth-child(4n+4){grid-column:auto}
   .bme-presentation-dessert-magazine .bme-visual-item:first-child{grid-column:1/-1}
   .bme-presentation-luxury-steak .bme-visual-grid{grid-template-columns:1fr!important}
   .bme-presentation-luxury-steak .bme-visual-item:first-child{grid-column:auto}
@@ -157,8 +167,10 @@
 
 @media(max-width:430px){
   .bme-presentation-seoul-night .bme-visual-grid,.bme-presentation-tropical-club .bme-visual-grid,.bme-presentation-dessert-magazine .bme-visual-grid{grid-template-columns:1fr!important}
-  .bme-presentation-smokehouse-story .bme-visual-item{min-height:390px}
-  .bme-presentation-smokehouse-story .bme-visual-copy{width:88%;min-height:390px;padding:26px}
+  .bme-presentation-smokehouse-story .bme-visual-copy{padding:24px}
+  .bme-presentation-smokehouse-story .bme-item-copy h3{font-size:clamp(25px,8vw,36px)}
+  .bme-presentation-dessert-magazine .bme-visual-item:first-child{grid-column:auto}
+  .bme-presentation-dessert-magazine .bme-visual-copy{grid-template-columns:minmax(0,1fr) auto;gap:10px}
   .bme-presentation-tropical-club .bme-category-nav{bottom:8px;width:calc(100% - 16px)}
   .bme-presentation-luxury-steak .bme-visual-item,.bme-presentation-luxury-steak .bme-visual-item:first-child{min-height:430px}
   .bme-presentation-blue-launcher .bme-category-nav{grid-auto-rows:108px;gap:8px}
