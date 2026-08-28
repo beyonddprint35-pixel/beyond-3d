@@ -29,6 +29,34 @@ function ClassicItem({item,language,design,currencySymbol}){return <article clas
 function VisualItem({item,language,design,currencySymbol}){const name=chooseText(language,item.name),description=chooseText(language,item.description),hasImage=Boolean(item.image_url);return <article className={`bme-visual-item bme-image-${design.layout.itemImagePosition} bme-price-${design.layout.pricePosition}`} data-image-ratio={design.layout.itemImageRatio}>{hasImage?<div className="bme-item-media"><img src={item.image_url} alt={name}/></div>:<div className="bme-item-media bme-item-media-placeholder" aria-hidden="true"><span>BEYOND</span></div>}<div className="bme-visual-copy"><div className="bme-item-copy"><h3>{name}</h3>{description?<p>{description}</p>:null}<ItemBadges item={item} language={language} design={design}/></div><Price item={item} currencySymbol={currencySymbol} language={language}/></div></article>;}
 function HeroMedia({mode,logoUrl,imageUrl,restaurantName}){if(mode==="none")return null;if(mode==="image"&&imageUrl)return <div className="bme-hero-media bme-hero-media-image"><img src={imageUrl} alt="" aria-hidden="true"/></div>;if(!logoUrl)return null;return <div className="bme-hero-media bme-hero-media-watermark" aria-hidden="true"><div className="bme-watermark-pill"><img src={logoUrl} alt=""/><span>{restaurantName}</span></div></div>;}
 
+function HeritagePrice({item,currencySymbol}){
+  const options=(Array.isArray(item.price_options)?item.price_options:[]).filter(option=>cleanPrice(option?.price)).slice(0,2);
+  if(options.length>=2)return <div className="ep-dual-price"><strong>{formatPrice(options[0].price,currencySymbol)}</strong><strong>{formatPrice(options[1].price,currencySymbol)}</strong></div>;
+  const legacyParts=String(item.price||"").split("/").map(cleanPrice).filter(Boolean);
+  if(legacyParts.length===2)return <div className="ep-dual-price"><strong>{formatPrice(legacyParts[0],currencySymbol)}</strong><strong>{formatPrice(legacyParts[1],currencySymbol)}</strong></div>;
+  const single=options[0]?.price??item.price;
+  return <div className="ep-item-price">{cleanPrice(single)?formatPrice(single,currencySymbol):"—"}</div>;
+}
+function HeritageItem({item,language,currencySymbol}){
+  const description=chooseText(language,item.description);
+  return <article className="ep-item-row"><div className="ep-item-info"><span className="ep-item-name">{chooseText(language,item.name)}</span>{description?<span className="ep-item-description">{description}</span>:null}</div><HeritagePrice item={item} currencySymbol={currencySymbol}/></article>;
+}
+function HeritageClassicRenderer({menu,design,language,setLanguage,languages,groups,topGroups,activeGroup,blocks,totalItems,currencySymbol,logoUrl}){
+  const rtl=isRtl(language); const footer=FOOTER_COPY[language]||FOOTER_COPY.en;
+  const heroMode=design.brand.heroMediaMode||"watermark"; const heroImageUrl=design.brand.heroImageUrl||"";
+  return <div className="ep-page customers-template-menu bme-heritage-exact" lang={language} dir={rtl?"rtl":"ltr"} style={{"--ep-accent":design.theme.accent}}>
+    <RestaurantAccessibility restaurantName={menu.restaurant_name||"Restaurant"} language={language}/>
+    <div id="restaurant-main-content" className={`ep-app ep-lang-${language}`} tabIndex={-1} lang={language} dir={rtl?"rtl":"ltr"}>
+      <header className="ep-header"><div className="ep-brand" dir="ltr">{logoUrl?<img className="ep-logo" src={logoUrl} alt=""/>:<div className="ep-logo ep-logo-fallback">B</div>}<div className="ep-brand-copy" dir="ltr"><div className="ep-brand-title">{menu.restaurant_name}</div>{menu.restaurant_subtitle?<div className="ep-brand-sub">{chooseText(language,menu.restaurant_subtitle)}</div>:null}</div></div>{languages.length>1?<div className="ep-lang-pill">{languages.map(code=><button type="button" key={code} lang={code} dir={isRtl(code)?"rtl":"ltr"} className={language===code?"active":""} onClick={()=>setLanguage(code)}>{LANGUAGE_LABELS[code]||code.toUpperCase()}</button>)}</div>:null}</header>
+      <section className="ep-hero">{menu.hero_eyebrow?<div className="ep-hero-kicker">{chooseText(language,menu.hero_eyebrow)}</div>:null}{menu.hero_title?<h1 className="ep-hero-title">{chooseText(language,menu.hero_title)}</h1>:null}{heroMode==="image"&&heroImageUrl?<img className="ep-hero-background-image" src={heroImageUrl} alt="" aria-hidden="true"/>:heroMode==="watermark"&&logoUrl?<img className="ep-hero-background-logo" src={logoUrl} alt="" aria-hidden="true"/>:null}</section>
+      {topGroups.length?<nav className="ep-tabs-wrap" aria-label="Menu categories"><div className="ep-tabs">{topGroups.map(group=><button type="button" key={group.id} className={group.id===activeGroup?.id?"active":""} onClick={()=>document.dispatchEvent(new CustomEvent("beyond-heritage-category",{detail:group.id}))}>{chooseText(language,group.name)}</button>)}</div></nav>:null}
+      <section className="ep-section-head"><h2>{activeGroup?chooseText(language,activeGroup.name):""}</h2><div className="ep-section-count">{totalItems} {footer.items}</div></section>
+      <section className="ep-menu-list">{blocks.map((block,index)=><div key={block.group.id}>{index>0?<div className="ep-item-category">{chooseText(language,block.group.name)}</div>:null}{block.items.map(item=><HeritageItem key={item.id} item={item} language={language} currencySymbol={currencySymbol}/>)}</div>)}</section>
+      <footer className="ep-footer"><div className="ep-footer-responsible">Enjoy responsibly</div><button type="button" className="ep-accessibility-statement-link" onClick={()=>window.dispatchEvent(new CustomEvent("beyond-open-accessibility-statement"))}>הצהרת נגישות / Accessibility Statement</button><span>Powered by <strong>Beyond</strong></span></footer>
+    </div>
+  </div>;
+}
+
 function MenuRenderer({menu,design:designInput,initialLanguage}){
   const design=useMemo(()=>normalizeMenuDesign(designInput),[designInput]);
   const languages=menu?.languages?.length?menu.languages:[menu?.default_language||"en"];
@@ -39,19 +67,21 @@ function MenuRenderer({menu,design:designInput,initialLanguage}){
   const groups=displayableGroups(menu.groups||[]),topGroups=groups.filter(group=>!group.parent_id).sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));
   const [activeGroupId,setActiveGroupId]=useState(topGroups[0]?.id||"");
   useEffect(()=>{if(!topGroups.some(group=>group.id===activeGroupId))setActiveGroupId(topGroups[0]?.id||"");},[topGroups.map(group=>group.id).join("|"),activeGroupId]);
+  useEffect(()=>{const handler=event=>{if(topGroups.some(group=>group.id===event.detail))setActiveGroupId(event.detail)};document.addEventListener("beyond-heritage-category",handler);return()=>document.removeEventListener("beyond-heritage-category",handler);},[topGroups.map(group=>group.id).join("|")]);
   const activeGroup=topGroups.find(group=>group.id===activeGroupId)||topGroups[0];
   const descendants=activeGroup?groups.filter(group=>group.parent_id===activeGroup.id).sort((a,b)=>(a.sort_order||0)-(b.sort_order||0)):[];
   const blocks=activeGroup?[activeGroup,...descendants].map(group=>({group,items:(menu.items||[]).filter(item=>item.group_id===group.id&&item.visible!==false).sort((a,b)=>(a.sort_order||0)-(b.sort_order||0))})):[];
   const totalItems=blocks.reduce((sum,block)=>sum+block.items.length,0);
   const style=designVariables(design),badgeStyle=resolvedBadgeStyle(design),heroMode=design.brand.heroMediaMode||"watermark",heroImageUrl=design.brand.heroImageUrl||"",logoUrl=design.brand.logoUrl||menu.logo_url||"";
   const footer=FOOTER_COPY[language]||FOOTER_COPY.en;
-  return <div className={`bme-menu bme-template-${design.template} bme-density-${design.layout.density} bme-nav-${design.layout.categoryNavigation} bme-logo-${design.brand.logoShape} bme-badge-style-${badgeStyle} ${design.stylePreset?`bme-style-${design.stylePreset}`:""}`} style={style} dir={rtl?"rtl":"ltr"} lang={language}>
+  if(design.styleVariant==="heritage")return <HeritageClassicRenderer menu={menu} design={design} language={language} setLanguage={setLanguage} languages={languages} groups={groups} topGroups={topGroups} activeGroup={activeGroup} blocks={blocks} totalItems={totalItems} currencySymbol={currencySymbol} logoUrl={logoUrl}/>;
+  return <div className={`bme-menu bme-template-${design.template} bme-density-${design.layout.density} bme-nav-${design.layout.navigationStyle} bme-logo-${design.brand.logoShape} bme-badge-style-${badgeStyle}`} style={style} dir={rtl?"rtl":"ltr"} lang={language}>
     <header className="bme-header"><div className="bme-brand">{logoUrl?<><img src={logoUrl} alt=""/><div><strong>{menu.restaurant_name}</strong>{menu.restaurant_subtitle?<span>{chooseText(language,menu.restaurant_subtitle)}</span>:null}</div></>:<div><strong>{menu.restaurant_name}</strong>{menu.restaurant_subtitle?<span>{chooseText(language,menu.restaurant_subtitle)}</span>:null}</div>}</div>{languages.length>1?<div className="bme-languages" aria-label="Menu language">{languages.map(code=><button key={code} className={language===code?"active":""} onClick={()=>setLanguage(code)}>{LANGUAGE_LABELS[code]||code.toUpperCase()}</button>)}</div>:null}</header>
     <section className={`bme-hero bme-hero-mode-${heroMode}`}><HeroMedia mode={heroMode} logoUrl={logoUrl} imageUrl={heroImageUrl} restaurantName={menu.restaurant_name}/><div className="bme-hero-copy">{menu.hero_eyebrow?<span>{chooseText(language,menu.hero_eyebrow)}</span>:null}<h1>{chooseText(language,menu.hero_title)||menu.restaurant_name}</h1></div></section>
     {topGroups.length?<nav className="bme-category-nav">{topGroups.map(group=><button key={group.id} className={group.id===activeGroup?.id?"active":""} onClick={()=>setActiveGroupId(group.id)}>{chooseText(language,group.name)}</button>)}</nav>:null}
     <main className="bme-content">{activeGroup?<section className="bme-section"><div className="bme-section-heading"><h2>{chooseText(language,activeGroup.name)}</h2><span>{totalItems} {footer.items}</span></div><div className="bme-group-blocks">{blocks.map((block,index)=><section className={index===0?"bme-primary-group":"bme-subcategory-section"} key={block.group.id}>{index>0?<div className="bme-subcategory-heading"><h3>{chooseText(language,block.group.name)}</h3></div>:null}{design.template==="visual"?<div className="bme-visual-grid">{block.items.map(item=><VisualItem key={item.id} item={item} language={language} design={design} currencySymbol={currencySymbol}/>)}</div>:<div className="bme-classic-list">{block.items.map(item=><ClassicItem key={item.id} item={item} language={language} design={design} currencySymbol={currencySymbol}/>)}</div>}</section>)}</div></section>:<div className="bme-empty">—</div>}</main>
     <footer className="bme-footer"><button type="button" onClick={()=>window.dispatchEvent(new CustomEvent("beyond-open-accessibility-statement"))}>{footer.accessibility}</button><span>{footer.powered} <strong>Beyond</strong></span></footer>
-    <RestaurantAccessibility language={language}/>
+    <RestaurantAccessibility restaurantName={menu.restaurant_name||"Restaurant"} language={language}/>
   </div>;
 }
 
