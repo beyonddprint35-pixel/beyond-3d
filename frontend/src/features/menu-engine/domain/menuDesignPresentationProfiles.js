@@ -1,4 +1,10 @@
 const PRESENTATION_PROFILES = Object.freeze({
+  "heritage-original": {
+    layout: "Heritage Classic",
+    presentation: "heritage-classic",
+    styleVariant: "standard",
+    tags: ["heritage classic", "fully customizable", "warm hospitality"],
+  },
   "atelier-editorial": {
     layout: "Atelier Editorial",
     presentation: "atelier",
@@ -156,6 +162,7 @@ export function applyMenuDesignPresentationProfile(entry) {
     tags: [...new Set([...(entry.tags || []), ...(profile.tags || [])])],
     design: {
       ...entry.design,
+      styleVariant: profile.styleVariant || entry.design?.styleVariant,
       layout: {
         ...entry.design?.layout,
         presentation: profile.presentation,
