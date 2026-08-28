@@ -1,0 +1,180 @@
+/* =========================================================
+   BEYOND MENU ENGINE — SIGNATURE PRESENTATION PROFILES
+   Distinct compositions for core premium menu directions.
+   ========================================================= */
+
+/* ---------- Atelier Editorial ---------- */
+.bme-presentation-atelier .bme-header{border-bottom:0}
+.bme-presentation-atelier .bme-hero{padding-top:clamp(76px,11vw,132px);padding-bottom:clamp(54px,8vw,94px);background:transparent}
+.bme-presentation-atelier .bme-hero-copy{max-width:880px}
+.bme-presentation-atelier .bme-hero h1{max-width:9ch;font-size:clamp(54px,9vw,var(--bme-hero-size));letter-spacing:-.06em}
+.bme-presentation-atelier .bme-category-nav{gap:28px;padding-block:18px;border-block:1px solid var(--bme-text)}
+.bme-presentation-atelier .bme-category-nav button{text-transform:uppercase;letter-spacing:.12em;font-size:9px}
+.bme-presentation-atelier .bme-content{width:min(100%,1180px);padding-top:50px}
+.bme-presentation-atelier .bme-section-heading{display:grid;grid-template-columns:1fr auto;align-items:start;padding-bottom:30px;border-bottom:2px solid var(--bme-text)}
+.bme-presentation-atelier .bme-classic-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:54px}
+.bme-presentation-atelier .bme-classic-item{min-height:132px;padding:25px 0;border-bottom:1px solid var(--bme-line)}
+.bme-presentation-atelier .bme-item-copy h3{font-family:var(--bme-heading-font);font-size:clamp(18px,2.2vw,var(--bme-item-size));font-weight:500}
+.bme-presentation-atelier .bme-price,.bme-presentation-atelier .bme-price-options{color:var(--bme-accent)}
+
+/* ---------- Noir Cinema Gallery ---------- */
+.bme-presentation-noir-gallery .bme-header{border-bottom-color:color-mix(in srgb,var(--bme-line) 55%,transparent)}
+.bme-presentation-noir-gallery .bme-hero{min-height:360px;display:flex;align-items:flex-end;background:linear-gradient(180deg,color-mix(in srgb,var(--bme-surface) 82%,#000),var(--bme-bg))}
+.bme-presentation-noir-gallery .bme-category-nav{padding-block:18px}
+.bme-presentation-noir-gallery .bme-content{width:min(100%,1180px);padding-top:36px}
+.bme-presentation-noir-gallery .bme-section-heading{border-bottom:0}
+.bme-presentation-noir-gallery .bme-visual-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:22px!important}
+.bme-presentation-noir-gallery .bme-visual-item{position:relative;min-height:360px;border:0;border-radius:24px;background:#090b10;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.28)}
+.bme-presentation-noir-gallery .bme-visual-item:first-child{grid-column:1/-1;min-height:520px}
+.bme-presentation-noir-gallery .bme-item-media{position:absolute;inset:0;height:100%;aspect-ratio:auto!important}
+.bme-presentation-noir-gallery .bme-item-media::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,rgba(0,0,0,.86) 100%)}
+.bme-presentation-noir-gallery .bme-visual-copy{position:absolute;z-index:2;left:0;right:0;bottom:0;padding:28px;color:#fff;align-items:end}
+.bme-presentation-noir-gallery .bme-item-copy h3{font-family:var(--bme-heading-font);font-size:clamp(24px,4vw,40px);color:#fff}
+.bme-presentation-noir-gallery .bme-item-copy p{color:rgba(255,255,255,.7)}
+.bme-presentation-noir-gallery .bme-price,.bme-presentation-noir-gallery .bme-price-options{color:var(--bme-accent)}
+
+/* ---------- Riviera Story ---------- */
+.bme-presentation-riviera .bme-hero{min-height:320px;display:flex;align-items:flex-end}
+.bme-presentation-riviera .bme-category-nav{justify-content:center;padding-block:18px}
+.bme-presentation-riviera .bme-content{width:min(100%,1160px);padding-top:44px}
+.bme-presentation-riviera .bme-section-heading{border-bottom:0}
+.bme-presentation-riviera .bme-visual-grid{display:grid!important;grid-template-columns:1fr!important;gap:34px!important}
+.bme-presentation-riviera .bme-visual-item{display:grid!important;grid-template-columns:1.18fr .82fr;min-height:330px;border:0;border-radius:34px;background:var(--bme-card);overflow:hidden;box-shadow:0 20px 50px color-mix(in srgb,var(--bme-text) 9%,transparent)}
+.bme-presentation-riviera .bme-visual-item:nth-child(even){grid-template-columns:.82fr 1.18fr}
+.bme-presentation-riviera .bme-visual-item:nth-child(even) .bme-item-media{order:2}
+.bme-presentation-riviera .bme-item-media{height:100%;aspect-ratio:auto!important;border-radius:0 34px 34px 0}
+.bme-presentation-riviera[dir="rtl"] .bme-item-media{border-radius:34px 0 0 34px}
+.bme-presentation-riviera .bme-visual-copy{align-content:center;padding:clamp(26px,5vw,54px)}
+.bme-presentation-riviera .bme-item-copy h3{font-family:var(--bme-heading-font);font-size:clamp(24px,4vw,38px);letter-spacing:-.035em}
+.bme-presentation-riviera .bme-item-copy p{margin-top:12px;line-height:1.65}
+.bme-presentation-riviera .bme-price,.bme-presentation-riviera .bme-price-options{margin-top:18px;color:var(--bme-accent)}
+
+/* ---------- Omakase Courses ---------- */
+.bme-presentation-omakase .bme-header{border-bottom:0}
+.bme-presentation-omakase .bme-hero{padding-top:68px;padding-bottom:58px;text-align:center;background:transparent}
+.bme-presentation-omakase .bme-hero-copy{max-width:640px;margin-inline:auto}
+.bme-presentation-omakase .bme-hero h1{max-width:12ch;margin-inline:auto;font-weight:500;letter-spacing:-.035em}
+.bme-presentation-omakase .bme-category-nav{justify-content:center;padding-block:14px;border-block:1px solid var(--bme-line)}
+.bme-presentation-omakase .bme-category-nav button{font-size:9px;letter-spacing:.12em;text-transform:uppercase}
+.bme-presentation-omakase .bme-content{width:min(100%,720px);padding-top:50px}
+.bme-presentation-omakase .bme-section-heading{display:block;text-align:center;border-bottom:0;padding-bottom:24px}
+.bme-presentation-omakase .bme-section-heading>span{display:none}
+.bme-presentation-omakase .bme-classic-list{counter-reset:course}
+.bme-presentation-omakase .bme-classic-item{counter-increment:course;position:relative;display:block;padding:28px 12px 28px 68px;text-align:start;border-bottom:1px solid var(--bme-line)}
+.bme-presentation-omakase[dir="rtl"] .bme-classic-item{padding:28px 68px 28px 12px}
+.bme-presentation-omakase .bme-classic-item::before{content:counter(course,decimal-leading-zero);position:absolute;inset-inline-start:12px;top:31px;color:var(--bme-accent);font:500 11px/1 var(--bme-number-font);letter-spacing:.16em}
+.bme-presentation-omakase .bme-item-copy h3{font-family:var(--bme-heading-font);font-weight:500;letter-spacing:.02em}
+.bme-presentation-omakase .bme-price,.bme-presentation-omakase .bme-price-options{display:inline-flex;margin-top:10px;color:var(--bme-muted)}
+
+/* ---------- Brasserie Sheet ---------- */
+.bme-presentation-brasserie .bme-header{border-bottom:2px solid var(--bme-text)}
+.bme-presentation-brasserie .bme-hero{padding-block:46px;background:transparent}
+.bme-presentation-brasserie .bme-category-nav{padding-block:12px;border-block:1px solid var(--bme-text)}
+.bme-presentation-brasserie .bme-content{width:min(100%,1040px);padding-top:38px}
+.bme-presentation-brasserie .bme-section-heading{padding:18px 20px;border:2px solid var(--bme-text);background:var(--bme-surface)}
+.bme-presentation-brasserie .bme-classic-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:42px;padding:24px 20px;border-inline:1px solid var(--bme-line);border-bottom:1px solid var(--bme-line)}
+.bme-presentation-brasserie .bme-classic-item{padding:17px 0;border-bottom:1px dotted color-mix(in srgb,var(--bme-text) 40%,transparent)}
+.bme-presentation-brasserie .bme-item-copy h3{font-family:var(--bme-heading-font);font-weight:700}
+.bme-presentation-brasserie .bme-price,.bme-presentation-brasserie .bme-price-options{font-variant-numeric:tabular-nums;color:var(--bme-accent)}
+
+/* ---------- White Gallery ---------- */
+.bme-presentation-white-gallery .bme-header{border-bottom:0}
+.bme-presentation-white-gallery .bme-hero{padding-top:64px;padding-bottom:48px;background:transparent}
+.bme-presentation-white-gallery .bme-content{width:min(100%,1240px);padding-top:36px}
+.bme-presentation-white-gallery .bme-section-heading{border-bottom:0}
+.bme-presentation-white-gallery .bme-visual-grid{display:grid!important;grid-template-columns:repeat(12,minmax(0,1fr))!important;grid-auto-flow:dense;gap:30px 18px!important}
+.bme-presentation-white-gallery .bme-visual-item{grid-column:span 4;border:0;border-radius:0;background:transparent;overflow:visible}
+.bme-presentation-white-gallery .bme-visual-item:nth-child(5n+1){grid-column:span 8}
+.bme-presentation-white-gallery .bme-visual-item:nth-child(5n+1) .bme-item-media{aspect-ratio:16/10!important}
+.bme-presentation-white-gallery .bme-item-media{aspect-ratio:4/5!important;border-radius:0}
+.bme-presentation-white-gallery .bme-visual-copy{padding:12px 0 0;border-bottom:1px solid var(--bme-line)}
+.bme-presentation-white-gallery .bme-item-copy h3{font-family:var(--bme-heading-font);font-size:clamp(18px,2.5vw,var(--bme-item-size))}
+
+/* ---------- Café Cards ---------- */
+.bme-presentation-cafe-cards .bme-hero{padding-bottom:40px}
+.bme-presentation-cafe-cards .bme-content{width:min(100%,1060px);padding-top:34px}
+.bme-presentation-cafe-cards .bme-section-heading{border-bottom:0}
+.bme-presentation-cafe-cards .bme-visual-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important}
+.bme-presentation-cafe-cards .bme-visual-item{display:grid!important;grid-template-columns:126px minmax(0,1fr);min-height:150px;border:0;border-radius:26px;background:var(--bme-card);overflow:hidden;box-shadow:0 10px 26px color-mix(in srgb,var(--bme-text) 7%,transparent)}
+.bme-presentation-cafe-cards .bme-item-media{height:100%;aspect-ratio:auto!important;border-radius:0}
+.bme-presentation-cafe-cards .bme-visual-copy{align-content:center;padding:18px}
+.bme-presentation-cafe-cards .bme-price,.bme-presentation-cafe-cards .bme-price-options{color:var(--bme-accent)}
+
+/* ---------- Street Poster ---------- */
+.bme-presentation-street-poster .bme-header{border-bottom:3px solid var(--bme-text)}
+.bme-presentation-street-poster .bme-hero{padding-top:52px;padding-bottom:44px;background:var(--bme-accent-secondary)}
+.bme-presentation-street-poster .bme-hero h1{text-transform:uppercase;letter-spacing:-.06em}
+.bme-presentation-street-poster .bme-category-nav{padding-block:12px;border-bottom:3px solid var(--bme-text)}
+.bme-presentation-street-poster .bme-content{width:min(100%,1080px);padding-top:30px}
+.bme-presentation-street-poster .bme-section-heading{border-bottom:3px solid var(--bme-text)}
+.bme-presentation-street-poster .bme-visual-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:16px!important}
+.bme-presentation-street-poster .bme-visual-item{position:relative;border:3px solid var(--bme-text);border-radius:18px;background:var(--bme-card);overflow:hidden;box-shadow:7px 7px 0 var(--bme-text)}
+.bme-presentation-street-poster .bme-visual-item:nth-child(even){transform:translateY(12px)}
+.bme-presentation-street-poster .bme-item-media{aspect-ratio:16/10!important;border-bottom:3px solid var(--bme-text)}
+.bme-presentation-street-poster .bme-visual-copy{padding:18px}
+.bme-presentation-street-poster .bme-item-copy h3{text-transform:uppercase;font-size:clamp(18px,3vw,var(--bme-item-size));letter-spacing:-.025em}
+.bme-presentation-street-poster .bme-price,.bme-presentation-street-poster .bme-price-options{padding:7px 10px;border:2px solid var(--bme-text);border-radius:999px;background:var(--bme-accent);color:#fff}
+
+/* ---------- Wine Register ---------- */
+.bme-presentation-wine-register .bme-header{border-bottom:0}
+.bme-presentation-wine-register .bme-hero{padding-top:62px;padding-bottom:48px;background:transparent}
+.bme-presentation-wine-register .bme-category-nav{padding-block:15px;border-block:1px solid var(--bme-line)}
+.bme-presentation-wine-register .bme-content{width:min(100%,820px);padding-top:42px}
+.bme-presentation-wine-register .bme-section-heading{padding-bottom:18px;border-bottom:3px double var(--bme-text)}
+.bme-presentation-wine-register .bme-classic-list{counter-reset:wine-row}
+.bme-presentation-wine-register .bme-classic-item{counter-increment:wine-row;position:relative;padding:14px 0 14px 34px;border-bottom:1px dotted color-mix(in srgb,var(--bme-text) 38%,transparent)}
+.bme-presentation-wine-register[dir="rtl"] .bme-classic-item{padding:14px 34px 14px 0}
+.bme-presentation-wine-register .bme-classic-item::before{content:counter(wine-row);position:absolute;inset-inline-start:0;top:17px;color:var(--bme-muted);font:600 9px/1 var(--bme-number-font)}
+.bme-presentation-wine-register .bme-item-copy h3{font-family:var(--bme-heading-font);font-weight:600}
+.bme-presentation-wine-register .bme-item-copy p{margin-top:3px;font-style:italic}
+.bme-presentation-wine-register .bme-price,.bme-presentation-wine-register .bme-price-options{color:var(--bme-accent);font-variant-numeric:tabular-nums}
+
+/* ---------- Coastal Story ---------- */
+.bme-presentation-coastal-story .bme-hero{min-height:340px;display:flex;align-items:flex-end}
+.bme-presentation-coastal-story .bme-content{width:min(100%,1200px);padding-top:42px}
+.bme-presentation-coastal-story .bme-section-heading{border-bottom:0}
+.bme-presentation-coastal-story .bme-visual-grid{display:grid!important;grid-template-columns:1fr!important;gap:46px!important}
+.bme-presentation-coastal-story .bme-visual-item{display:grid!important;grid-template-columns:minmax(0,1.3fr) minmax(280px,.7fr);min-height:360px;border:0;border-radius:0;background:transparent;overflow:visible}
+.bme-presentation-coastal-story .bme-visual-item:nth-child(even){grid-template-columns:minmax(280px,.7fr) minmax(0,1.3fr)}
+.bme-presentation-coastal-story .bme-visual-item:nth-child(even) .bme-item-media{order:2}
+.bme-presentation-coastal-story .bme-item-media{height:100%;aspect-ratio:auto!important;border-radius:36px}
+.bme-presentation-coastal-story .bme-visual-copy{align-content:center;padding:clamp(24px,4vw,48px);background:transparent}
+.bme-presentation-coastal-story .bme-item-copy h3{font-family:var(--bme-heading-font);font-size:clamp(26px,4vw,42px);letter-spacing:-.035em}
+.bme-presentation-coastal-story .bme-price,.bme-presentation-coastal-story .bme-price-options{margin-top:16px;color:var(--bme-accent)}
+
+/* ---------- Monochrome Grid ---------- */
+.bme-presentation-monochrome-grid .bme-header{border-bottom:2px solid var(--bme-text)}
+.bme-presentation-monochrome-grid .bme-hero{padding-top:70px;padding-bottom:60px;background:transparent}
+.bme-presentation-monochrome-grid .bme-hero h1{max-width:10ch;text-transform:uppercase;letter-spacing:-.075em}
+.bme-presentation-monochrome-grid .bme-category-nav{padding-block:12px;border-block:2px solid var(--bme-text)}
+.bme-presentation-monochrome-grid .bme-category-nav button{text-transform:uppercase;font-size:9px;letter-spacing:.1em}
+.bme-presentation-monochrome-grid .bme-content{width:min(100%,1140px);padding-top:0;border-inline:2px solid var(--bme-text)}
+.bme-presentation-monochrome-grid .bme-section-heading{padding:24px;border-bottom:2px solid var(--bme-text)}
+.bme-presentation-monochrome-grid .bme-classic-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.bme-presentation-monochrome-grid .bme-classic-item{min-height:150px;padding:26px;border-right:2px solid var(--bme-text);border-bottom:2px solid var(--bme-text)}
+.bme-presentation-monochrome-grid[dir="rtl"] .bme-classic-item{border-right:0;border-left:2px solid var(--bme-text)}
+.bme-presentation-monochrome-grid .bme-item-copy h3{text-transform:uppercase;font-family:var(--bme-heading-font);letter-spacing:-.025em}
+.bme-presentation-monochrome-grid .bme-price,.bme-presentation-monochrome-grid .bme-price-options{align-self:end}
+
+@media(max-width:760px){
+  .bme-presentation-atelier .bme-classic-list,.bme-presentation-brasserie .bme-classic-list,.bme-presentation-monochrome-grid .bme-classic-list{grid-template-columns:1fr}
+  .bme-presentation-noir-gallery .bme-visual-grid,.bme-presentation-cafe-cards .bme-visual-grid,.bme-presentation-street-poster .bme-visual-grid{grid-template-columns:1fr!important}
+  .bme-presentation-noir-gallery .bme-visual-item,.bme-presentation-noir-gallery .bme-visual-item:first-child{min-height:430px}
+  .bme-presentation-riviera .bme-visual-item,.bme-presentation-riviera .bme-visual-item:nth-child(even),.bme-presentation-coastal-story .bme-visual-item,.bme-presentation-coastal-story .bme-visual-item:nth-child(even){grid-template-columns:1fr;min-height:0}
+  .bme-presentation-riviera .bme-visual-item:nth-child(even) .bme-item-media,.bme-presentation-coastal-story .bme-visual-item:nth-child(even) .bme-item-media{order:0}
+  .bme-presentation-riviera .bme-item-media,.bme-presentation-coastal-story .bme-item-media{height:auto;aspect-ratio:16/10!important;border-radius:26px 26px 0 0}
+  .bme-presentation-white-gallery .bme-visual-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:22px 12px!important}
+  .bme-presentation-white-gallery .bme-visual-item,.bme-presentation-white-gallery .bme-visual-item:nth-child(5n+1){grid-column:auto}
+  .bme-presentation-white-gallery .bme-visual-item:nth-child(4n+1){grid-column:1/-1}
+  .bme-presentation-cafe-cards .bme-visual-item{grid-template-columns:112px minmax(0,1fr)}
+  .bme-presentation-street-poster .bme-visual-item:nth-child(even){transform:none}
+  .bme-presentation-monochrome-grid .bme-classic-item{border-right:0!important;border-left:0!important}
+}
+
+@media(max-width:430px){
+  .bme-presentation-white-gallery .bme-visual-grid{grid-template-columns:1fr!important}
+  .bme-presentation-white-gallery .bme-visual-item:nth-child(4n+1){grid-column:auto}
+  .bme-presentation-cafe-cards .bme-visual-item{grid-template-columns:96px minmax(0,1fr);border-radius:20px}
+  .bme-presentation-omakase .bme-classic-item{padding-inline-start:48px}
+  .bme-presentation-omakase[dir="rtl"] .bme-classic-item{padding-inline-start:12px;padding-inline-end:48px}
+}
