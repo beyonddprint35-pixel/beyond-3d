@@ -13,12 +13,21 @@ import "./components/BeyondMenuPlatform.css";
 import "./components/BeyondLiveMenuDesign.css";
 import "./components/BeyondLiveMenuDesignMobilePatch.css";
 
-// Public menu resilience only. This worker caches immutable published menu artifacts
-// and the last successful active-version pointer. Registration failure never blocks the app.
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw-menu.js").catch(() => {});
-  });
+// Development must never be controlled by a previously-installed service worker.
+// The app currently has no /sw-menu.js asset, so registering it here only creates
+// failed requests and can leave stale browser state on long-lived preview origins.
+if (import.meta.env.DEV && "serviceWorker" in navigator) {
+  navigator.serviceWorker
+    .getRegistrations()
+    .then((registrations) => Promise.all(registrations.map((registration) => registration.unregister())))
+    .catch(() => {});
+
+  if ("caches" in window) {
+    caches
+      .keys()
+      .then((keys) => Promise.all(keys.map((key) => caches.delete(key))))
+      .catch(() => {});
+  }
 }
 
 createRoot(document.getElementById('root')).render(
