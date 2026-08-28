@@ -25,6 +25,7 @@ const copyPriceOptions = value => Array.isArray(value)
 
 export function createMenuDraftSession(payload) {
   const menu = payload?.menu || {};
+  const baselineDesign = normalizeMenuDesign(payload?.designSettings || {});
 
   return {
     source: {
@@ -35,6 +36,7 @@ export function createMenuDraftSession(payload) {
     dirty: false,
     localSavedAt: null,
     restoredFromLocal: false,
+    baselineDesign,
     menu: {
       ...menu,
       currency: menu.currency || "ILS",
@@ -59,7 +61,7 @@ export function createMenuDraftSession(payload) {
           }))
         : [],
     },
-    design: normalizeMenuDesign(payload?.designSettings || {}),
+    design: baselineDesign,
   };
 }
 
@@ -109,6 +111,7 @@ export function restoreSavedDraftSession(baseSession, savedDraft) {
       currency_symbol: savedDraft.menu?.currency_symbol || "₪",
     },
     design: normalizeMenuDesign(savedDraft.design),
+    baselineDesign: baseSession.baselineDesign,
     dirty: false,
     localSavedAt: savedDraft.savedAt || null,
     restoredFromLocal: true,
