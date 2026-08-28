@@ -10,10 +10,12 @@ import App from './App.jsx'
 import { BeyondMenuRoute } from "./components/BeyondMenuPlatform";
 import BeyondLiveMenuDesignPortal from "./components/BeyondLiveMenuDesignPortal";
 import MenuStudioHomeReturn from "./components/MenuStudioHomeReturn";
+import installMenuTypographyGuard from "./features/menu-engine/renderer/menuTypographyGuard";
 import "./components/BeyondMenuPlatform.css";
 import "./components/BeyondLiveMenuDesign.css";
 import "./components/BeyondLiveMenuDesignMobilePatch.css";
 import "./pages/MenuStudioV3Controls.css";
+import "./features/menu-engine/renderer/menuTypographyGuard.css";
 
 // Development must never be controlled by a previously-installed service worker.
 // The app currently has no /sw-menu.js asset, so registering it here only creates
@@ -31,6 +33,8 @@ if (import.meta.env.DEV && "serviceWorker" in navigator) {
       .catch(() => {});
   }
 }
+
+installMenuTypographyGuard();
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
