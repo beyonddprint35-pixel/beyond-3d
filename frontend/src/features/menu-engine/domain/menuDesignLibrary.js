@@ -1,10 +1,12 @@
 import { normalizeMenuDesign } from "./designSchema";
 import { PREMIUM_MENU_DESIGNS as CORE_MENU_DESIGNS } from "./premiumMenuDesignLibrary";
 import { PHASE3_MENU_DESIGNS } from "./premiumMenuDesignLibraryPhase3";
+import { PHASE4_MENU_DESIGNS } from "./premiumMenuDesignLibraryPhase4";
 
 export const PREMIUM_MENU_DESIGNS = Object.freeze([
   ...CORE_MENU_DESIGNS,
   ...PHASE3_MENU_DESIGNS,
+  ...PHASE4_MENU_DESIGNS,
 ]);
 
 export function applyPremiumMenuDesign(currentDesign, libraryId) {
