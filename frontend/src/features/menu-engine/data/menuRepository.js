@@ -43,14 +43,16 @@ function valueOr(source, key, fallback) {
 function adaptLegacyDesignSettings(raw = {}) {
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
 
-  const alreadyV3 = raw.theme || raw.typography || raw.layout || raw.brand || raw.badges || raw.template;
+  const alreadyV3 = raw.theme || raw.typography || raw.layout || raw.brand || raw.badges || raw.template || raw.styleVariant;
   if (alreadyV3) return raw;
 
   const layoutStyle = String(raw.layout_style || "classic").trim().split(/\s+/)[0];
   const template = layoutStyle === "visual" ? "visual" : "classic";
+  const legacyClassic = template === "classic";
 
   return {
     template,
+    styleVariant: legacyClassic ? "heritage" : "standard",
     theme: {
       background: valueOr(raw, "background", "#f6f4ef"),
       surface: valueOr(raw, "paper", valueOr(raw, "hero_background", "#fffdf8")),
@@ -67,7 +69,7 @@ function adaptLegacyDesignSettings(raw = {}) {
       headingFont: valueOr(raw, "heading_font", "Playfair Display"),
       bodyFont: valueOr(raw, "body_font", "Inter"),
       numberFont: valueOr(raw, "number_font", "Playfair Display"),
-      headingWeight: Number(valueOr(raw, "heading_weight", 700)),
+      headingWeight: Number(valueOr(raw, "heading_weight", legacyClassic ? 800 : 700)),
       bodyWeight: Number(valueOr(raw, "body_weight", 400)),
       itemWeight: Number(valueOr(raw, "item_weight", 700)),
       brandSize: Number(valueOr(raw, "brand_font_size", 19)),
@@ -84,14 +86,16 @@ function adaptLegacyDesignSettings(raw = {}) {
       itemImagePosition: "top",
       itemImageRatio: "4:3",
       pricePosition: "inline",
-      cardRadius: Number(valueOr(raw, "card_radius", 16)),
-      sectionGap: Number(valueOr(raw, "section_gap", 32)),
-      itemGap: Number(valueOr(raw, "item_gap", 16)),
-      cardPadding: Number(valueOr(raw, "card_padding", 16)),
+      cardRadius: Number(valueOr(raw, "card_radius", legacyClassic ? 19 : 16)),
+      sectionGap: Number(valueOr(raw, "section_gap", legacyClassic ? 20 : 32)),
+      itemGap: Number(valueOr(raw, "item_gap", legacyClassic ? 9 : 16)),
+      cardPadding: Number(valueOr(raw, "card_padding", legacyClassic ? 15 : 16)),
     },
     brand: {
-      logoSize: Number(valueOr(raw, "logo_size", 44)),
+      logoSize: Number(valueOr(raw, "logo_size", 50)),
       logoShape: valueOr(raw, "logo_shape", "free"),
+      heroMediaMode: legacyClassic ? "watermark" : "none",
+      heroImageUrl: "",
     },
     badges: {
       showSymbols: raw.show_badge_symbols !== false,
