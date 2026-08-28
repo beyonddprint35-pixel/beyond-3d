@@ -1,4 +1,4 @@
-const DRAFT_STORAGE_VERSION = 1;
+const DRAFT_STORAGE_VERSION = 2;
 const DRAFT_PREFIX = "beyond-menu-v3-draft:";
 
 function canUseStorage() {
@@ -32,7 +32,12 @@ export function loadDraftLocally({ siteId, slug } = {}) {
 
   try {
     const parsed = JSON.parse(raw);
-    if (parsed?.version !== DRAFT_STORAGE_VERSION) return null;
+    if (parsed?.version !== DRAFT_STORAGE_VERSION) {
+      // Old V3 drafts may contain the pre-hierarchy flattened group model.
+      // Remove them so they cannot override the corrected nested menu structure.
+      window.localStorage.removeItem(key);
+      return null;
+    }
     if (!parsed?.menu || !parsed?.design) return null;
     return parsed;
   } catch {
