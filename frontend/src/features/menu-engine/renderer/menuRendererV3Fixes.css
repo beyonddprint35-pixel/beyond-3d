@@ -48,6 +48,122 @@
   font-weight: 700;
 }
 
+/*
+   CATEGORY NAVIGATION CUSTOMIZATION CONTRACT
+   Presentation profiles can keep a signature default, but once a different
+   navigation style is selected in Customize, the shared navigation style wins.
+*/
+.bme-menu.bme-nav-pills:not(.bme-presentation-heritage-classic) .bme-category-nav button {
+  min-height: 44px;
+  padding: 0 16px;
+  aspect-ratio: auto;
+  border: 1px solid var(--bme-line);
+  border-radius: 999px;
+  background: var(--bme-surface);
+  color: var(--bme-text);
+  box-shadow: none;
+  transform: none;
+  font-family: var(--bme-body-font);
+  font-size: max(12px, var(--bme-category-size));
+  font-weight: 600;
+  letter-spacing: normal;
+  line-height: 1.15;
+  text-align: center;
+  text-transform: none;
+  white-space: nowrap;
+}
+.bme-menu.bme-nav-pills:not(.bme-presentation-heritage-classic) .bme-category-nav button.active {
+  border-color: var(--bme-category-bg);
+  background: var(--bme-category-bg);
+  color: var(--bme-category-text);
+  outline: 0;
+}
+
+.bme-menu.bme-nav-underline:not(.bme-presentation-nordic-paper) .bme-category-nav button {
+  min-height: 42px;
+  padding: 0 0 8px;
+  aspect-ratio: auto;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  color: var(--bme-muted);
+  box-shadow: none;
+  transform: none;
+  font-family: var(--bme-body-font);
+  font-size: max(12px, var(--bme-category-size));
+  font-weight: 600;
+  letter-spacing: normal;
+  line-height: 1.15;
+  text-align: center;
+  text-transform: none;
+  white-space: nowrap;
+}
+.bme-menu.bme-nav-underline:not(.bme-presentation-nordic-paper) .bme-category-nav button.active {
+  border-bottom-color: var(--bme-accent);
+  background: transparent;
+  color: var(--bme-text);
+  outline: 0;
+}
+
+.bme-menu.bme-nav-minimal:not(.bme-presentation-category-covers):not(.bme-presentation-bottom-tabs):not(.bme-presentation-launcher):not(.bme-presentation-desert-arches):not(.bme-presentation-neon-dock):not(.bme-presentation-beyond-launcher):not(.bme-presentation-blue-launcher):not(.bme-presentation-tropical-club):not(.bme-presentation-family-pizzeria):not(.bme-presentation-seoul-night) .bme-category-nav button {
+  min-height: 36px;
+  padding: 0 10px;
+  aspect-ratio: auto;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--bme-muted);
+  box-shadow: none;
+  transform: none;
+  font-family: var(--bme-body-font);
+  font-size: max(12px, var(--bme-category-size));
+  font-weight: 600;
+  letter-spacing: normal;
+  line-height: 1.15;
+  text-align: center;
+  text-transform: none;
+  white-space: nowrap;
+}
+.bme-menu.bme-nav-minimal:not(.bme-presentation-category-covers):not(.bme-presentation-bottom-tabs):not(.bme-presentation-launcher):not(.bme-presentation-desert-arches):not(.bme-presentation-neon-dock):not(.bme-presentation-beyond-launcher):not(.bme-presentation-blue-launcher):not(.bme-presentation-tropical-club):not(.bme-presentation-family-pizzeria):not(.bme-presentation-seoul-night) .bme-category-nav button.active {
+  background: color-mix(in srgb, var(--bme-accent) 10%, transparent);
+  color: var(--bme-accent);
+  outline: 0;
+}
+
+/* Signature category launchers/docks keep their special layout only in Minimal mode. */
+.bme-menu:is(.bme-presentation-category-covers,.bme-presentation-bottom-tabs,.bme-presentation-launcher,.bme-presentation-desert-arches,.bme-presentation-neon-dock,.bme-presentation-beyond-launcher,.bme-presentation-blue-launcher,.bme-presentation-tropical-club,.bme-presentation-family-pizzeria):is(.bme-nav-pills,.bme-nav-underline) .bme-category-nav {
+  position: static;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  width: min(100%, 1120px);
+  display: flex;
+  grid-template-columns: none;
+  grid-auto-rows: auto;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding-top: 14px;
+  padding-bottom: 18px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  transform: none;
+}
+.bme-menu:is(.bme-presentation-category-covers,.bme-presentation-bottom-tabs,.bme-presentation-launcher,.bme-presentation-desert-arches,.bme-presentation-neon-dock,.bme-presentation-beyond-launcher,.bme-presentation-blue-launcher,.bme-presentation-tropical-club,.bme-presentation-family-pizzeria):is(.bme-nav-pills,.bme-nav-underline) .bme-category-nav button {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: max-content;
+  grid-column: auto;
+}
+.bme-menu:is(.bme-presentation-category-covers,.bme-presentation-bottom-tabs,.bme-presentation-launcher,.bme-presentation-desert-arches,.bme-presentation-neon-dock,.bme-presentation-beyond-launcher,.bme-presentation-blue-launcher,.bme-presentation-tropical-club,.bme-presentation-family-pizzeria):is(.bme-nav-pills,.bme-nav-underline) .bme-category-nav button::before,
+.bme-menu:is(.bme-presentation-category-covers,.bme-presentation-bottom-tabs,.bme-presentation-launcher,.bme-presentation-desert-arches,.bme-presentation-neon-dock,.bme-presentation-beyond-launcher,.bme-presentation-blue-launcher,.bme-presentation-tropical-club,.bme-presentation-family-pizzeria):is(.bme-nav-pills,.bme-nav-underline) .bme-category-nav button::after {
+  content: none;
+}
+
 /* V3 accessibility: the shared control toggles classes on html/body. */
 body.restaurant-a11y-text-1 .bme-menu { --bme-a11y-scale: 1.12; }
 body.restaurant-a11y-text-2 .bme-menu { --bme-a11y-scale: 1.25; }
@@ -101,13 +217,7 @@ html.restaurant-a11y-contrast .bme-menu .bme-subcategory-heading h3,
 html.restaurant-a11y-contrast .bme-menu .bme-footer,
 html.restaurant-a11y-contrast .bme-menu .bme-footer strong { color:#000 !important; }
 
-/*
-   Accessibility dark mode is also token-driven. The renderer normally receives
-   template colors as inline custom properties, so these !important tokens are
-   intentionally authoritative while the accessibility mode is active. This
-   prevents white cards / pale text combinations in Heritage, ledgers, tiles,
-   galleries and every signature presentation profile.
-*/
+/* Accessibility dark mode is token-driven so every structural template stays legible. */
 html.restaurant-a11y-dark .bme-menu {
   --bme-bg: #0b0e13 !important;
   --bme-surface: #11161d !important;
