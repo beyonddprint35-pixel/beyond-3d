@@ -1,4 +1,59 @@
 const PRESENTATION_PROFILES = Object.freeze({
+  "atelier-editorial": {
+    layout: "Atelier Editorial",
+    presentation: "atelier",
+    tags: ["atelier", "fashion editorial", "fine dining"],
+  },
+  "noir-gallery": {
+    layout: "Noir Cinema Gallery",
+    presentation: "noir-gallery",
+    tags: ["cinematic", "noir gallery", "nightlife"],
+  },
+  "riviera-split": {
+    layout: "Riviera Story",
+    presentation: "riviera",
+    tags: ["riviera", "mediterranean story", "alternating panels"],
+  },
+  "omakase-minimal": {
+    layout: "Omakase Courses",
+    presentation: "omakase",
+    tags: ["omakase", "courses", "japanese minimal"],
+  },
+  "brasserie-ledger": {
+    layout: "Brasserie Sheet",
+    presentation: "brasserie",
+    tags: ["brasserie", "menu sheet", "french bistro"],
+  },
+  "gallery-white": {
+    layout: "White Gallery",
+    presentation: "white-gallery",
+    tags: ["white gallery", "photography", "clean showcase"],
+  },
+  "studio-cafe-tiles": {
+    layout: "Café Cards",
+    presentation: "cafe-cards",
+    tags: ["cafe cards", "coffee shop", "friendly cards"],
+  },
+  "street-bold": {
+    layout: "Street Poster",
+    presentation: "street-poster",
+    tags: ["street poster", "fast casual", "bold cards"],
+  },
+  "wine-book": {
+    layout: "Wine Register",
+    presentation: "wine-register",
+    tags: ["wine register", "vintages", "sommelier list"],
+  },
+  "coastal-split": {
+    layout: "Coastal Story",
+    presentation: "coastal-story",
+    tags: ["coastal story", "beach", "image panels"],
+  },
+  "monochrome-editorial": {
+    layout: "Monochrome Grid",
+    presentation: "monochrome-grid",
+    tags: ["monochrome grid", "brutalist", "architectural"],
+  },
   "mezze-mosaic": {
     layout: "Mosaic",
     presentation: "mosaic",
