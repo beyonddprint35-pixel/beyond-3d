@@ -1,4 +1,4 @@
-const DRAFT_STORAGE_VERSION = 4;
+const DRAFT_STORAGE_VERSION = 5;
 const DRAFT_PREFIX = "beyond-menu-v3-draft:";
 
 function canUseStorage() {
