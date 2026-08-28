@@ -1,0 +1,103 @@
+/* V3 public menu compatibility/accessibility fixes. Keep generic: no customer-specific selectors. */
+
+/* Keep the hero watermark visually separate from the title, like the legacy menu. */
+.bme-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(86px, 30%);
+  align-items: center;
+  column-gap: clamp(14px, 5vw, 36px);
+}
+.bme-hero-copy { min-width: 0; }
+.bme-hero-watermark {
+  position: static !important;
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: center;
+  width: min(100%, 180px) !important;
+  height: auto !important;
+  max-height: 150px;
+  opacity: .11 !important;
+  transform: none !important;
+  filter: grayscale(1);
+  object-fit: contain;
+}
+.bme-hero-copy { grid-column: 1; grid-row: 1; z-index: 1; }
+.bme-menu[dir="rtl"] .bme-hero-copy { grid-column: 1; }
+.bme-menu[dir="rtl"] .bme-hero-watermark { grid-column: 2; }
+
+/* Restore the compact segmented language selector direction used by the older menu. */
+.bme-languages {
+  padding: 3px;
+  gap: 2px;
+  border: 1px solid var(--bme-line);
+  border-radius: 999px;
+  background: var(--bme-surface);
+}
+.bme-languages button {
+  min-width: 0 !important;
+  min-height: 32px !important;
+  padding: 0 10px;
+  border-radius: 999px !important;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* V3 accessibility: the shared control toggles classes on html/body. */
+body.restaurant-a11y-text-1 .bme-menu { --bme-a11y-scale: 1.12; }
+body.restaurant-a11y-text-2 .bme-menu { --bme-a11y-scale: 1.25; }
+body.restaurant-a11y-text-3 .bme-menu { --bme-a11y-scale: 1.4; }
+body.restaurant-a11y-text-4 .bme-menu { --bme-a11y-scale: 1.55; }
+body[class*="restaurant-a11y-text-"] .bme-menu .bme-category-nav button { font-size: calc(max(12px, var(--bme-category-size)) * var(--bme-a11y-scale, 1)) !important; }
+body[class*="restaurant-a11y-text-"] .bme-menu .bme-item-copy h3 { font-size: calc(var(--bme-item-size) * var(--bme-a11y-scale, 1)) !important; }
+body[class*="restaurant-a11y-text-"] .bme-menu .bme-item-copy p { font-size: calc(var(--bme-description-size) * var(--bme-a11y-scale, 1)) !important; }
+body[class*="restaurant-a11y-text-"] .bme-menu .bme-price,
+body[class*="restaurant-a11y-text-"] .bme-menu .bme-price-option strong { font-size: calc(var(--bme-price-size) * var(--bme-a11y-scale, 1)) !important; }
+body[class*="restaurant-a11y-text-"] .bme-menu .bme-price-option small,
+body[class*="restaurant-a11y-text-"] .bme-menu .bme-section-heading > span { font-size: calc(10px * var(--bme-a11y-scale, 1)) !important; }
+
+html.restaurant-a11y-readable .bme-menu,
+html.restaurant-a11y-readable .bme-menu button { font-family: Arial, "Heebo", sans-serif !important; }
+
+html.restaurant-a11y-contrast .bme-menu,
+html.restaurant-a11y-contrast .bme-menu .bme-header,
+html.restaurant-a11y-contrast .bme-menu .bme-hero,
+html.restaurant-a11y-contrast .bme-menu .bme-visual-item { color: #000 !important; background: #fff !important; }
+html.restaurant-a11y-contrast .bme-menu * { border-color: #000 !important; }
+html.restaurant-a11y-contrast .bme-menu .bme-category-nav button { color: #000 !important; background: #fff !important; }
+html.restaurant-a11y-contrast .bme-menu .bme-category-nav button.active { color: #fff !important; background: #000 !important; }
+html.restaurant-a11y-contrast .bme-menu .bme-item-copy p,
+html.restaurant-a11y-contrast .bme-menu .bme-section-heading span { color: #000 !important; }
+
+html.restaurant-a11y-dark .bme-menu,
+html.restaurant-a11y-dark .bme-menu .bme-header,
+html.restaurant-a11y-dark .bme-menu .bme-hero { color: #fff !important; background: #111 !important; }
+html.restaurant-a11y-dark .bme-menu .bme-visual-item,
+html.restaurant-a11y-dark .bme-menu .bme-category-nav button { color: #fff !important; background: #1b1b1b !important; border-color: #555 !important; }
+html.restaurant-a11y-dark .bme-menu .bme-category-nav button.active { color: #111 !important; background: #fff !important; }
+html.restaurant-a11y-dark .bme-menu .bme-item-copy p,
+html.restaurant-a11y-dark .bme-menu .bme-section-heading span,
+html.restaurant-a11y-dark .bme-menu .bme-footer { color: #ddd !important; }
+html.restaurant-a11y-dark .bme-menu .bme-footer strong { color: #fff !important; }
+
+html.restaurant-a11y-grayscale .bme-menu { filter: grayscale(1); }
+html.restaurant-a11y-links .bme-menu button,
+html.restaurant-a11y-links .bme-menu a { outline: 2px solid var(--bme-accent, #556b2f) !important; outline-offset: 2px !important; }
+html.restaurant-a11y-motion .bme-menu *,
+html.restaurant-a11y-motion .bme-menu *::before,
+html.restaurant-a11y-motion .bme-menu *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+
+/* The accessibility UI itself should never inherit menu filters/scaling. */
+html.restaurant-a11y-grayscale .restaurant-a11y-panel,
+html.restaurant-a11y-grayscale .restaurant-a11y-toggle,
+html.restaurant-a11y-grayscale .restaurant-a11y-statement-backdrop { filter: none !important; }
+
+@media (max-width: 430px) {
+  .bme-hero { grid-template-columns: minmax(0, 1fr) 92px; column-gap: 12px; }
+  .bme-hero-watermark { width: 86px !important; max-height: 100px; opacity: .13 !important; }
+  .bme-languages button { padding-inline: 8px; font-size: 9px; }
+}
+
+@media (max-width: 340px) {
+  .bme-hero { grid-template-columns: minmax(0, 1fr) 68px; }
+  .bme-hero-watermark { width: 64px !important; }
+}
