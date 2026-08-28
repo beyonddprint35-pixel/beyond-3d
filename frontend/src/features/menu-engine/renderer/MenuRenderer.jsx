@@ -58,9 +58,14 @@ function designVariables(design) {
     "--bme-accent": design.theme.accent,
     "--bme-accent-secondary": design.theme.accentSecondary,
     "--bme-line": design.theme.line,
+    "--bme-category-bg": design.theme.categoryBackground,
+    "--bme-category-text": design.theme.categoryText,
     "--bme-heading-font": `"${design.typography.headingFont}", "Noto Sans Hebrew", "Noto Sans Arabic", Georgia, serif`,
     "--bme-body-font": `"${design.typography.bodyFont}", "Noto Sans Hebrew", "Noto Sans Arabic", Arial, sans-serif`,
     "--bme-number-font": `"${design.typography.numberFont}", "Noto Sans Hebrew", "Noto Sans Arabic", Georgia, serif`,
+    "--bme-heading-weight": design.typography.headingWeight,
+    "--bme-body-weight": design.typography.bodyWeight,
+    "--bme-item-weight": design.typography.itemWeight,
     "--bme-brand-size": `${design.typography.brandSize}px`,
     "--bme-hero-size": `${design.typography.heroSize}px`,
     "--bme-section-size": `${design.typography.sectionSize}px`,
@@ -68,6 +73,7 @@ function designVariables(design) {
     "--bme-item-size": `${design.typography.itemNameSize}px`,
     "--bme-description-size": `${design.typography.descriptionSize}px`,
     "--bme-price-size": `${design.typography.priceSize}px`,
+    "--bme-logo-size": `${design.brand.logoSize}px`,
     "--bme-radius": `${design.layout.cardRadius}px`,
     "--bme-section-gap": `${design.layout.sectionGap}px`,
     "--bme-item-gap": `${design.layout.itemGap}px`,
@@ -119,7 +125,6 @@ export default function MenuRenderer({ menu, design: incomingDesign, accessibili
   },[topGroups,activeGroupId]);
 
   const activeGroup = topGroups.find(group=>group.id===activeGroupId)||topGroups[0]||null;
-  const groupMap = useMemo(()=>new Map(visibleGroups.map(group=>[group.id,group])),[visibleGroups]);
   const childrenMap = useMemo(()=>{
     const map = new Map();
     visibleGroups.forEach(group=>{
@@ -149,11 +154,11 @@ export default function MenuRenderer({ menu, design: incomingDesign, accessibili
   const restaurantName = menu?.restaurant_name || "Restaurant";
   const badgeStyle = resolvedBadgeStyle(design);
   const currencySymbol = menu?.currency_symbol || DEFAULT_CURRENCY_SYMBOL;
-  const menuClasses = ["bme-menu",`bme-template-${design.template}`,`bme-badge-style-${badgeStyle}`,`bme-density-${design.layout.density}`,`bme-nav-${design.layout.navigationStyle}`].join(" ");
+  const menuClasses = ["bme-menu",`bme-template-${design.template}`,`bme-badge-style-${badgeStyle}`,`bme-density-${design.layout.density}`,`bme-nav-${design.layout.navigationStyle}`,`bme-logo-${design.brand.logoShape}`].join(" ");
 
   return <div className={menuClasses} style={designVariables(design)} dir={rtl?"rtl":"ltr"} lang={language}>
     {accessibility?<RestaurantAccessibility restaurantName={restaurantName}/>:null}
-    <header className="bme-header"><div className="bme-brand">{menu?.logo_url?<img src={menu.logo_url} alt=""/>:null}<div><strong>{restaurantName}</strong>{menu?.subtitle?<span>{chooseText(language,menu.subtitle)}</span>:null}</div></div>{languages.length>1?<div className="bme-languages" aria-label="Menu language">{languages.map(code=><button key={code} type="button" className={language===code?"active":""} onClick={()=>setLanguage(code)}>{code.toUpperCase()}</button>)}</div>:null}</header>
+    <header className="bme-header"><div className="bme-brand">{menu?.logo_url?<img src={menu.logo_url} alt={`${restaurantName} logo`}/>:null}<div><strong>{restaurantName}</strong>{menu?.subtitle?<span>{chooseText(language,menu.subtitle)}</span>:null}</div></div>{languages.length>1?<div className="bme-languages" aria-label="Menu language">{languages.map(code=><button key={code} type="button" className={language===code?"active":""} onClick={()=>setLanguage(code)}>{code.toUpperCase()}</button>)}</div>:null}</header>
     <section className="bme-hero"><span>{chooseText(language,menu?.hero_kicker)}</span><h1>{chooseText(language,menu?.hero_title)||restaurantName||"Our Menu"}</h1></section>
     <nav className="bme-category-nav" aria-label="Menu categories">{topGroups.map(group=><button key={group.id} type="button" className={activeGroup?.id===group.id?"active":""} onClick={()=>setActiveGroupId(group.id)}>{chooseText(language,group.name)}</button>)}</nav>
     <main id="restaurant-main-content" className="bme-content" tabIndex="-1">{activeGroup?<section className="bme-section"><div className="bme-section-heading"><h2>{chooseText(language,activeGroup.name)}</h2><span>{visibleItemCount} items</span></div><div className="bme-group-blocks">{contentBlocks.map(block=>{
