@@ -4,7 +4,7 @@ import {
   isAllowedDesignValue,
 } from "./designConstraints";
 
-export const MENU_DESIGN_SCHEMA_VERSION = 4;
+export const MENU_DESIGN_SCHEMA_VERSION = 5;
 
 export const MENU_TEMPLATE_FAMILIES = Object.freeze([
   "classic",
@@ -101,7 +101,7 @@ export const MENU_COLOR_PRESETS = Object.freeze({
 export const MENU_DESIGN_PRESETS = Object.freeze({
   heritage_classic: {
     template: "classic",
-    styleVariant: "heritage",
+    styleVariant: "standard",
     theme: {
       background: "#f6f4ef",
       surface: "#fffdf8",
@@ -115,7 +115,7 @@ export const MENU_DESIGN_PRESETS = Object.freeze({
       categoryText: "#ffffff",
     },
     typography: { headingFont: "Playfair Display", bodyFont: "Inter", numberFont: "Playfair Display", headingWeight: 800, bodyWeight: 400, itemWeight: 700, brandSize: 19, heroSize: 46, sectionSize: 38, categorySize: 11, itemNameSize: 16, descriptionSize: 11, priceSize: 16 },
-    layout: { density: "comfortable", navigationStyle: "pills", pricePosition: "inline", cardRadius: 19, sectionGap: 20, itemGap: 9, cardPadding: 15 },
+    layout: { presentation: "heritage-classic", density: "comfortable", navigationStyle: "pills", pricePosition: "inline", cardRadius: 19, sectionGap: 20, itemGap: 9, cardPadding: 15 },
     brand: { heroMediaMode: "watermark" },
   },
   editorial: {
@@ -168,7 +168,13 @@ export function normalizeMenuDesign(value = {}) {
   const sourceBrand = objectOrEmpty(source.brand);
   const sourceBadges = objectOrEmpty(source.badges);
   const template = MENU_TEMPLATE_FAMILIES.includes(source.template) ? source.template : DEFAULT_MENU_DESIGN.template;
-  const styleVariant = MENU_STYLE_VARIANTS.includes(source.styleVariant) ? source.styleVariant : DEFAULT_MENU_DESIGN.styleVariant;
+  const legacyHeritage = source.styleVariant === "heritage";
+  const styleVariant = legacyHeritage
+    ? "standard"
+    : (MENU_STYLE_VARIANTS.includes(source.styleVariant) ? source.styleVariant : DEFAULT_MENU_DESIGN.styleVariant);
+  const normalizedLayout = legacyHeritage
+    ? { ...sourceLayout, presentation: sourceLayout.presentation || "heritage-classic" }
+    : sourceLayout;
 
   return {
     schemaVersion: MENU_DESIGN_SCHEMA_VERSION,
@@ -194,16 +200,16 @@ export function normalizeMenuDesign(value = {}) {
     },
     layout: {
       ...DEFAULT_MENU_DESIGN.layout,
-      ...sourceLayout,
-      density: MENU_DENSITIES.includes(sourceLayout.density) ? sourceLayout.density : DEFAULT_MENU_DESIGN.layout.density,
-      navigationStyle: MENU_NAVIGATION_STYLES.includes(sourceLayout.navigationStyle) ? sourceLayout.navigationStyle : DEFAULT_MENU_DESIGN.layout.navigationStyle,
-      itemImagePosition: isAllowedDesignValue(sourceLayout.itemImagePosition, MENU_DESIGN_CONSTRAINTS.itemImagePositions) ? sourceLayout.itemImagePosition : DEFAULT_MENU_DESIGN.layout.itemImagePosition,
-      itemImageRatio: isAllowedDesignValue(sourceLayout.itemImageRatio, MENU_DESIGN_CONSTRAINTS.imageRatios) ? sourceLayout.itemImageRatio : DEFAULT_MENU_DESIGN.layout.itemImageRatio,
-      pricePosition: isAllowedDesignValue(sourceLayout.pricePosition, MENU_DESIGN_CONSTRAINTS.pricePositions) ? sourceLayout.pricePosition : DEFAULT_MENU_DESIGN.layout.pricePosition,
-      cardRadius: clampDesignNumber(sourceLayout.cardRadius, MENU_DESIGN_CONSTRAINTS.radius, DEFAULT_MENU_DESIGN.layout.cardRadius),
-      sectionGap: clampDesignNumber(sourceLayout.sectionGap, MENU_DESIGN_CONSTRAINTS.spacing.sectionGap, DEFAULT_MENU_DESIGN.layout.sectionGap),
-      itemGap: clampDesignNumber(sourceLayout.itemGap, MENU_DESIGN_CONSTRAINTS.spacing.itemGap, DEFAULT_MENU_DESIGN.layout.itemGap),
-      cardPadding: clampDesignNumber(sourceLayout.cardPadding, MENU_DESIGN_CONSTRAINTS.spacing.cardPadding, DEFAULT_MENU_DESIGN.layout.cardPadding),
+      ...normalizedLayout,
+      density: MENU_DENSITIES.includes(normalizedLayout.density) ? normalizedLayout.density : DEFAULT_MENU_DESIGN.layout.density,
+      navigationStyle: MENU_NAVIGATION_STYLES.includes(normalizedLayout.navigationStyle) ? normalizedLayout.navigationStyle : DEFAULT_MENU_DESIGN.layout.navigationStyle,
+      itemImagePosition: isAllowedDesignValue(normalizedLayout.itemImagePosition, MENU_DESIGN_CONSTRAINTS.itemImagePositions) ? normalizedLayout.itemImagePosition : DEFAULT_MENU_DESIGN.layout.itemImagePosition,
+      itemImageRatio: isAllowedDesignValue(normalizedLayout.itemImageRatio, MENU_DESIGN_CONSTRAINTS.imageRatios) ? normalizedLayout.itemImageRatio : DEFAULT_MENU_DESIGN.layout.itemImageRatio,
+      pricePosition: isAllowedDesignValue(normalizedLayout.pricePosition, MENU_DESIGN_CONSTRAINTS.pricePositions) ? normalizedLayout.pricePosition : DEFAULT_MENU_DESIGN.layout.pricePosition,
+      cardRadius: clampDesignNumber(normalizedLayout.cardRadius, MENU_DESIGN_CONSTRAINTS.radius, DEFAULT_MENU_DESIGN.layout.cardRadius),
+      sectionGap: clampDesignNumber(normalizedLayout.sectionGap, MENU_DESIGN_CONSTRAINTS.spacing.sectionGap, DEFAULT_MENU_DESIGN.layout.sectionGap),
+      itemGap: clampDesignNumber(normalizedLayout.itemGap, MENU_DESIGN_CONSTRAINTS.spacing.itemGap, DEFAULT_MENU_DESIGN.layout.itemGap),
+      cardPadding: clampDesignNumber(normalizedLayout.cardPadding, MENU_DESIGN_CONSTRAINTS.spacing.cardPadding, DEFAULT_MENU_DESIGN.layout.cardPadding),
     },
     brand: {
       ...DEFAULT_MENU_DESIGN.brand,
