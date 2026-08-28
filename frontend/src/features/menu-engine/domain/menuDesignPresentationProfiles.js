@@ -115,15 +115,40 @@ const PRESENTATION_PROFILES = Object.freeze({
     presentation: "beyond-launcher",
     tags: ["beyond launcher", "app grid", "blue navigation"],
   },
+  "levant-table": {
+    layout: "Levant Shared Table",
+    presentation: "levant-table",
+    tags: ["shared table", "levant", "communal plates"],
+  },
   "mezze-mosaic": {
     layout: "Mosaic",
     presentation: "mosaic",
     tags: ["mosaic", "asymmetric", "shared plates"],
   },
+  "nordic-paper": {
+    layout: "Nordic Paper Columns",
+    presentation: "nordic-paper",
+    tags: ["scandinavian", "paper columns", "quiet minimal"],
+  },
+  "seoul-night": {
+    layout: "Seoul Neon Posters",
+    presentation: "seoul-night",
+    tags: ["seoul neon", "night posters", "korean bar"],
+  },
   "paris-patisserie": {
     layout: "Patisserie Showcase",
     presentation: "patisserie",
     tags: ["patisserie", "showcase", "pastry boutique"],
+  },
+  "smokehouse-story": {
+    layout: "Smokehouse Cinema",
+    presentation: "smokehouse-story",
+    tags: ["smokehouse cinema", "low and slow", "bbq story"],
+  },
+  "tropical-club": {
+    layout: "Tropical Mobile Club",
+    presentation: "tropical-club",
+    tags: ["tropical app", "floating dock", "beach club"],
   },
   "vegan-garden": {
     layout: "Botanical Split",
@@ -145,10 +170,30 @@ const PRESENTATION_PROFILES = Object.freeze({
     presentation: "tap-board",
     tags: ["tap board", "beer board", "price list"],
   },
+  "dessert-magazine": {
+    layout: "Dessert Editorial Spread",
+    presentation: "dessert-magazine",
+    tags: ["dessert editorial", "asymmetric spread", "sweet gallery"],
+  },
+  "luxury-steak-story": {
+    layout: "Prime Cut Cinema",
+    presentation: "luxury-steak",
+    tags: ["prime cut", "steak cinema", "luxury grill"],
+  },
+  "blue-launcher": {
+    layout: "Beyond Modular Launcher",
+    presentation: "blue-launcher",
+    tags: ["beyond modular", "category app", "blue launcher"],
+  },
   "chef-black-editorial": {
     layout: "Chef Editorial",
     presentation: "chef-editorial",
     tags: ["chef editorial", "tasting menu", "course menu"],
+  },
+  "family-pizzeria": {
+    layout: "Pizza Plate Launcher",
+    presentation: "family-pizzeria",
+    tags: ["pizza plates", "family menu", "circular categories"],
   },
 });
 
