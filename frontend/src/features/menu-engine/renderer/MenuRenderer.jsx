@@ -5,6 +5,7 @@ import { BADGE_LABELS, BADGE_SYMBOLS, normalizeItemMetadata } from "../domain/it
 import "./menuRenderer.css";
 import "./menuRendererV3Fixes.css";
 import "./menuHeroMedia.css";
+import "./menuHeritageClassic.css";
 
 const DEFAULT_CURRENCY_SYMBOL = "₪";
 const LANGUAGE_LABELS = { en:"English", he:"עברית", ar:"العربية" };
@@ -39,7 +40,7 @@ export default function MenuRenderer({menu,design:incomingDesign,accessibility=t
   const childrenMap=useMemo(()=>{const map=new Map();visibleGroups.forEach(group=>{const key=group.parent_id||"__root__";if(!map.has(key))map.set(key,[]);map.get(key).push(group);});map.forEach(rows=>rows.sort((a,b)=>Number(a.sort_order||0)-Number(b.sort_order||0)));return map;},[visibleGroups]);
   const contentBlocks=useMemo(()=>{if(!activeGroup)return[];const blocks=[];const visit=(group,depth)=>{const groupItems=items.filter(item=>item.visible!==false&&item.group_id===group.id).sort((a,b)=>Number(a.sort_order||0)-Number(b.sort_order||0));blocks.push({group,depth,items:groupItems});(childrenMap.get(group.id)||[]).forEach(child=>visit(child,depth+1));};visit(activeGroup,0);return blocks;},[activeGroup,items,childrenMap]);
   const visibleItemCount=contentBlocks.reduce((sum,block)=>sum+block.items.length,0);const rtl=isRtl(language);const isVisual=design.template==="visual";const restaurantName=menu?.restaurant_name||"Restaurant";const badgeStyle=resolvedBadgeStyle(design);const currencySymbol=menu?.currency_symbol||DEFAULT_CURRENCY_SYMBOL;const logoUrl=Object.prototype.hasOwnProperty.call(design.brand,"logoUrl")?design.brand.logoUrl:menu?.logo_url;const heroMode=design.brand?.heroMediaMode||"watermark";const heroImageUrl=design.brand?.heroImageUrl||"";const copy=FOOTER_COPY[language]||FOOTER_COPY.en;
-  const menuClasses=["bme-menu",`bme-template-${design.template}`,`bme-badge-style-${badgeStyle}`,`bme-density-${design.layout.density}`,`bme-nav-${design.layout.navigationStyle}`,`bme-logo-${design.brand.logoShape}`].join(" ");
+  const menuClasses=["bme-menu",`bme-template-${design.template}`,`bme-style-${design.styleVariant}`,`bme-badge-style-${badgeStyle}`,`bme-density-${design.layout.density}`,`bme-nav-${design.layout.navigationStyle}`,`bme-logo-${design.brand.logoShape}`].join(" ");
   const openAccessibilityStatement=()=>window.dispatchEvent(new Event("beyond-open-accessibility-statement"));
   return <div className={menuClasses} style={designVariables(design)} dir={rtl?"rtl":"ltr"} lang={language}>
     {accessibility?<RestaurantAccessibility restaurantName={restaurantName} language={language}/>:null}
