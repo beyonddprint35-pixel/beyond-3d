@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   MENU_COLOR_PRESETS,
   MENU_FONT_FAMILIES,
@@ -32,9 +32,9 @@ const inspectorCopy = {
 };
 
 const workspaceCopy = {
-  en:{templates:"Templates",templatesHint:"Choose a starting direction",customize:"Customize",customizeHint:"Brand, colors, type & layout",current:"Current design",customizeCurrent:"Customize",changeTemplate:"Change template"},
-  he:{templates:"תבניות",templatesHint:"בחרו כיוון עיצובי",customize:"התאמה",customizeHint:"מותג, צבעים, טיפוגרפיה ופריסה",current:"העיצוב הנוכחי",customizeCurrent:"התאמה",changeTemplate:"החלפת תבנית"},
-  ar:{templates:"القوالب",templatesHint:"اختر نقطة بداية",customize:"تخصيص",customizeHint:"العلامة والألوان والخطوط والتخطيط",current:"التصميم الحالي",customizeCurrent:"تخصيص",changeTemplate:"تغيير القالب"},
+  en:{design:"Design",templates:"Templates",templatesHint:"Choose a starting direction",customize:"Customize",customizeHint:"Brand, colors, type & layout",current:"Current design",customizeCurrent:"Customize",changeTemplate:"Change template",templateState:"Template",modifiedState:"Modified",undo:"Undo",redo:"Redo"},
+  he:{design:"עיצוב",templates:"תבניות",templatesHint:"בחרו כיוון עיצובי",customize:"התאמה",customizeHint:"מותג, צבעים, טיפוגרפיה ופריסה",current:"העיצוב הנוכחי",customizeCurrent:"התאמה",changeTemplate:"החלפת תבנית",templateState:"תבנית",modifiedState:"שונה",undo:"בטל",redo:"בצע שוב"},
+  ar:{design:"التصميم",templates:"القوالب",templatesHint:"اختر نقطة بداية",customize:"تخصيص",customizeHint:"العلامة والألوان والخطوط والتخطيط",current:"التصميم الحالي",customizeCurrent:"تخصيص",changeTemplate:"تغيير القالب",templateState:"قالب",modifiedState:"معدل",undo:"تراجع",redo:"إعادة"},
 };
 
 const IMAGE_LAYOUT_TEMPLATES=new Set(["visual","gallery","tiles","split"]);
@@ -82,6 +82,11 @@ export default function MenuDesignControls({design,baselineDesign,menu,language=
   const [previewEntry,setPreviewEntry]=useState(null);
   const [favorites,setFavorites]=useState(readFavorites);
   const [favoritesOnly,setFavoritesOnly]=useState(false);
+  const [history,setHistory]=useState({past:[],future:[]});
+  const previousDesignRef=useRef(design);
+  const historyModeRef=useRef("normal");
+  const lastHistoryAtRef=useRef(0);
+  const baseDesignNameRef=useRef("");
 
   const patchTheme=(key,value)=>patchDesign(current=>({...current,theme:{...current.theme,[key]:value}}));
   const patchType=(key,value)=>patchDesign(current=>({...current,typography:{...current.typography,[key]:value}}));
@@ -102,14 +107,47 @@ export default function MenuDesignControls({design,baselineDesign,menu,language=
     return favoritesOnly?matches.filter(entry=>favorites.includes(entry.id)):matches;
   },[query,filters,favoritesOnly,favorites]);
   const previewDesign=useMemo(()=>previewEntry?applyPremiumMenuDesign(design,previewEntry.id):null,[design,previewEntry]);
-  const currentDesignName=activeDesign?.name||`${titleCase(design.template)} · ${c.custom}`;
-  const currentDesignDetail=activeDesign?`${activeDesign.layout} · ${activeDesign.category}`:c.liveHint;
+  const baseDesignName=activeDesign?.name||baseDesignNameRef.current||titleCase(design.template);
+  const designIsModified=!activeDesign;
+  const currentDesignName=baseDesignName;
+  const currentDesignDetail=activeDesign?`${activeDesign.layout} · ${activeDesign.category}`:`${titleCase(design.template)} · ${w.modifiedState}`;
   const panelMeta={
     brand:{icon:"✦",title:l.brand,hint:c.brandHint},
     colors:{icon:"◉",title:l.colors,hint:c.colorsHint},
     type:{icon:"Aa",title:l.typography,hint:c.typeHint},
     layout:{icon:"⌗",title:l.layout,hint:c.layoutHint},
   }[panel]||{icon:"✦",title:l.brand,hint:c.brandHint};
+
+  useEffect(()=>{
+    if(activeDesign?.name)baseDesignNameRef.current=activeDesign.name;
+  },[activeDesign?.name]);
+
+  useEffect(()=>{
+    previousDesignRef.current=design;
+    historyModeRef.current="normal";
+    lastHistoryAtRef.current=0;
+    baseDesignNameRef.current=activeDesign?.name||"";
+    setHistory({past:[],future:[]});
+  },[menu?.slug]);
+
+  useEffect(()=>{
+    const previous=previousDesignRef.current;
+    if(comparable(previous)===comparable(design))return;
+    previousDesignRef.current=design;
+    if(historyModeRef.current!=="normal"){
+      historyModeRef.current="normal";
+      return;
+    }
+    const now=Date.now();
+    setHistory(current=>{
+      const startsNewStep=now-lastHistoryAtRef.current>420||!current.past.length;
+      lastHistoryAtRef.current=now;
+      return {
+        past:startsNewStep?[...current.past,normalizeMenuDesign(previous)].slice(-60):current.past,
+        future:[],
+      };
+    });
+  },[design]);
 
   useEffect(()=>{
     try{window.localStorage.setItem(FAVORITES_STORAGE_KEY,JSON.stringify(favorites));}catch{}
@@ -123,6 +161,43 @@ export default function MenuDesignControls({design,baselineDesign,menu,language=
     window.addEventListener("keydown",onKeyDown);
     return ()=>{document.body.style.overflow=previousOverflow;window.removeEventListener("keydown",onKeyDown);};
   },[previewEntry]);
+
+  useEffect(()=>{
+    const onKeyDown=event=>{
+      if(!(event.metaKey||event.ctrlKey)||String(event.key).toLowerCase()!=="z")return;
+      const target=event.target;
+      const tag=target?.tagName?.toLowerCase();
+      if(target?.isContentEditable||["input","textarea","select"].includes(tag))return;
+      event.preventDefault();
+      if(event.shiftKey)redoDesign();else undoDesign();
+    };
+    window.addEventListener("keydown",onKeyDown);
+    return ()=>window.removeEventListener("keydown",onKeyDown);
+  },[history.past.length,history.future.length,design]);
+
+  function undoDesign(){
+    if(!history.past.length)return;
+    const previous=history.past[history.past.length-1];
+    historyModeRef.current="undo";
+    lastHistoryAtRef.current=0;
+    setHistory(current=>({
+      past:current.past.slice(0,-1),
+      future:[normalizeMenuDesign(design),...current.future].slice(0,60),
+    }));
+    patchDesign(()=>previous);
+  }
+
+  function redoDesign(){
+    if(!history.future.length)return;
+    const next=history.future[0];
+    historyModeRef.current="redo";
+    lastHistoryAtRef.current=0;
+    setHistory(current=>({
+      past:[...current.past,normalizeMenuDesign(design)].slice(-60),
+      future:current.future.slice(1),
+    }));
+    patchDesign(()=>next);
+  }
 
   function uploadImage(file,key){
     if(!file||!file.type?.startsWith("image/"))return;
@@ -147,15 +222,27 @@ export default function MenuDesignControls({design,baselineDesign,menu,language=
   }
 
   return <div className="studio-v3-design-pro-controls">
-    <div className="studio-v3-design-workspace-nav" role="tablist" aria-label={l.library}>
-      <button type="button" role="tab" aria-selected={workspaceMode==="templates"} className={workspaceMode==="templates"?"active":""} onClick={()=>setWorkspaceMode("templates")}>
-        <span className="studio-v3-design-workspace-nav-icon" aria-hidden="true">▦</span>
-        <span className="studio-v3-design-workspace-nav-copy"><strong>{w.templates}</strong><small>{w.templatesHint}</small></span>
-      </button>
-      <button type="button" role="tab" aria-selected={workspaceMode==="customize"} className={workspaceMode==="customize"?"active":""} onClick={()=>setWorkspaceMode("customize")}>
-        <span className="studio-v3-design-workspace-nav-icon" aria-hidden="true">✦</span>
-        <span className="studio-v3-design-workspace-nav-copy"><strong>{w.customize}</strong><small>{w.customizeHint}</small></span>
-      </button>
+    <div className="studio-v3-design-workspace-header">
+      <div className="studio-v3-design-commandbar">
+        <div className="studio-v3-design-breadcrumb" title={baseDesignName}>
+          <span>{w.design}</span><i aria-hidden="true">›</i><span>{workspaceMode==="templates"?w.templates:w.customize}</span><i aria-hidden="true">›</i><strong>{baseDesignName}</strong><em className={designIsModified?"modified":"template"}>{designIsModified?w.modifiedState:w.templateState}</em>
+        </div>
+        <div className="studio-v3-design-history-actions" role="group" aria-label={`${w.undo} / ${w.redo}`}>
+          <button type="button" disabled={!history.past.length} onClick={undoDesign} aria-label={w.undo} title={`${w.undo} · Ctrl/⌘ Z`}><span aria-hidden="true">↶</span><small>{w.undo}</small></button>
+          <button type="button" disabled={!history.future.length} onClick={redoDesign} aria-label={w.redo} title={`${w.redo} · Shift + Ctrl/⌘ Z`}><span aria-hidden="true">↷</span><small>{w.redo}</small></button>
+        </div>
+      </div>
+
+      <div className="studio-v3-design-workspace-nav" role="tablist" aria-label={l.library}>
+        <button type="button" role="tab" aria-selected={workspaceMode==="templates"} className={workspaceMode==="templates"?"active":""} onClick={()=>setWorkspaceMode("templates")}>
+          <span className="studio-v3-design-workspace-nav-icon" aria-hidden="true">▦</span>
+          <span className="studio-v3-design-workspace-nav-copy"><strong>{w.templates}</strong><small>{w.templatesHint}</small></span>
+        </button>
+        <button type="button" role="tab" aria-selected={workspaceMode==="customize"} className={workspaceMode==="customize"?"active":""} onClick={()=>setWorkspaceMode("customize")}>
+          <span className="studio-v3-design-workspace-nav-icon" aria-hidden="true">✦</span>
+          <span className="studio-v3-design-workspace-nav-copy"><strong>{w.customize}</strong><small>{w.customizeHint}</small></span>
+        </button>
+      </div>
     </div>
 
     {workspaceMode==="templates"?<div className="studio-v3-template-workspace">
