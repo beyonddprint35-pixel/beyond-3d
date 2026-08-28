@@ -111,9 +111,10 @@
 .bme-presentation-street-poster .bme-visual-item{position:relative;border:3px solid var(--bme-text);border-radius:18px;background:var(--bme-card);overflow:hidden;box-shadow:7px 7px 0 var(--bme-text)}
 .bme-presentation-street-poster .bme-visual-item:nth-child(even){transform:translateY(12px)}
 .bme-presentation-street-poster .bme-item-media{aspect-ratio:16/10!important;border-bottom:3px solid var(--bme-text)}
-.bme-presentation-street-poster .bme-visual-copy{padding:18px}
+.bme-presentation-street-poster .bme-visual-copy{position:relative;grid-template-columns:minmax(0,1fr);gap:12px;padding:20px 18px 18px}
 .bme-presentation-street-poster .bme-item-copy h3{text-transform:uppercase;font-size:clamp(18px,3vw,var(--bme-item-size));letter-spacing:-.025em}
-.bme-presentation-street-poster .bme-price,.bme-presentation-street-poster .bme-price-options{padding:7px 10px;border:2px solid var(--bme-text);border-radius:999px;background:var(--bme-accent);color:#fff}
+.bme-presentation-street-poster .bme-price,.bme-presentation-street-poster .bme-price-options{position:absolute;z-index:4;top:-22px;inset-inline-end:14px;display:flex;align-items:center;gap:8px;max-width:calc(100% - 28px);padding:8px 11px;border:2px solid var(--bme-text);border-radius:999px;background:var(--bme-text);color:#fff;box-shadow:4px 4px 0 var(--bme-accent)}
+.bme-presentation-street-poster .bme-price-option small{color:rgba(255,255,255,.78)}
 
 /* ---------- Wine Register ---------- */
 .bme-presentation-wine-register .bme-header{border-bottom:0}
@@ -121,13 +122,14 @@
 .bme-presentation-wine-register .bme-category-nav{padding-block:15px;border-block:1px solid var(--bme-line)}
 .bme-presentation-wine-register .bme-content{width:min(100%,820px);padding-top:42px}
 .bme-presentation-wine-register .bme-section-heading{padding-bottom:18px;border-bottom:3px double var(--bme-text)}
-.bme-presentation-wine-register .bme-classic-list{counter-reset:wine-row}
-.bme-presentation-wine-register .bme-classic-item{counter-increment:wine-row;position:relative;padding:14px 0 14px 34px;border-bottom:1px dotted color-mix(in srgb,var(--bme-text) 38%,transparent)}
-.bme-presentation-wine-register[dir="rtl"] .bme-classic-item{padding:14px 34px 14px 0}
-.bme-presentation-wine-register .bme-classic-item::before{content:counter(wine-row);position:absolute;inset-inline-start:0;top:17px;color:var(--bme-muted);font:600 9px/1 var(--bme-number-font)}
+.bme-presentation-wine-register .bme-classic-list{counter-reset:wine-row;border-top:1px dotted color-mix(in srgb,var(--bme-text) 38%,transparent)}
+.bme-presentation-wine-register .bme-classic-item{counter-increment:wine-row;position:relative;min-height:64px;align-items:center;padding:16px 0 16px 34px;border-bottom:1px dotted color-mix(in srgb,var(--bme-text) 38%,transparent)}
+.bme-presentation-wine-register[dir="rtl"] .bme-classic-item{padding:16px 34px 16px 0}
+.bme-presentation-wine-register .bme-classic-item::before{content:counter(wine-row);position:absolute;inset-inline-start:0;top:50%;transform:translateY(-50%);color:var(--bme-muted);font:600 9px/1 var(--bme-number-font)}
+.bme-presentation-wine-register .bme-item-copy{align-self:center}
 .bme-presentation-wine-register .bme-item-copy h3{font-family:var(--bme-heading-font);font-weight:600}
 .bme-presentation-wine-register .bme-item-copy p{margin-top:3px;font-style:italic}
-.bme-presentation-wine-register .bme-price,.bme-presentation-wine-register .bme-price-options{color:var(--bme-accent);font-variant-numeric:tabular-nums}
+.bme-presentation-wine-register .bme-price,.bme-presentation-wine-register .bme-price-options{align-self:center;color:var(--bme-accent);font-variant-numeric:tabular-nums}
 
 /* ---------- Coastal Story ---------- */
 .bme-presentation-coastal-story .bme-hero{min-height:340px;display:flex;align-items:flex-end}
