@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import "./MenuStudioSettingsPanel.css";
 
 const COPY={
   en:{eyebrow:"MENU SETTINGS",title:"Restaurant & publishing",subtitle:"Manage the identity, public address and assets customers use to reach your menu.",identity:"Restaurant identity",restaurant:"Restaurant name",publicMenu:"Public menu",publicHint:"This is the address your QR and NFC touchpoints should open.",copy:"Copy link",copied:"Copied",open:"Open menu",qr:"Restaurant QR",qrHint:"Use this QR on printed menus, tables, windows and Beyond stands.",download:"Download QR",languages:"Languages",languagesHint:"Languages currently available on this menu.",defaultLanguage:"Default language",currency:"Currency",publishing:"Publishing",draftSafe:"Edits stay private until you publish.",liveUrl:"Live address",slug:"Menu slug"},
