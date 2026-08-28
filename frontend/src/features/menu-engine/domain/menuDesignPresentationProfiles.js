@@ -54,6 +54,61 @@ const PRESENTATION_PROFILES = Object.freeze({
     presentation: "monochrome-grid",
     tags: ["monochrome grid", "brutalist", "architectural"],
   },
+  "trattoria-ledger": {
+    layout: "Trattoria Chalk Ledger",
+    presentation: "trattoria-ledger",
+    tags: ["trattoria", "chalk ledger", "italian menu board"],
+  },
+  "tokyo-ink": {
+    layout: "Tokyo Ink Columns",
+    presentation: "tokyo-ink",
+    tags: ["tokyo ink", "japanese columns", "red stamp"],
+  },
+  "garden-split": {
+    layout: "Garden Journal",
+    presentation: "garden-journal",
+    tags: ["garden journal", "seasonal story", "farm to table"],
+  },
+  "bakery-tiles": {
+    layout: "Bakery Counter",
+    presentation: "bakery-counter",
+    tags: ["bakery counter", "pastry shelf", "cafe display"],
+  },
+  "neon-bottom-tabs": {
+    layout: "Neon Dock",
+    presentation: "neon-dock",
+    tags: ["neon dock", "nightlife app", "mobile tabs"],
+  },
+  "desert-covers": {
+    layout: "Desert Arch Covers",
+    presentation: "desert-arches",
+    tags: ["desert arches", "levant covers", "terracotta"],
+  },
+  "tapas-magazine": {
+    layout: "Tapas Collage",
+    presentation: "tapas-collage",
+    tags: ["tapas collage", "spanish editorial", "shared plates"],
+  },
+  "steakhouse-ledger": {
+    layout: "Butcher Ledger",
+    presentation: "butcher-ledger",
+    tags: ["butcher ledger", "steakhouse", "cuts list"],
+  },
+  "brunch-photo-story": {
+    layout: "Brunch Polaroids",
+    presentation: "brunch-polaroids",
+    tags: ["brunch polaroids", "breakfast story", "sunny photos"],
+  },
+  "rose-cocktail-cards": {
+    layout: "Rose Lounge Cards",
+    presentation: "rose-lounge",
+    tags: ["rose lounge", "cocktail cards", "rooftop"],
+  },
+  "blue-category-launcher": {
+    layout: "Beyond App Launcher",
+    presentation: "beyond-launcher",
+    tags: ["beyond launcher", "app grid", "blue navigation"],
+  },
   "mezze-mosaic": {
     layout: "Mosaic",
     presentation: "mosaic",
