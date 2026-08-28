@@ -6,7 +6,7 @@ import {
   applyMenuColorPreset,
   normalizeMenuDesign,
 } from "../domain/designSchema";
-import { PREMIUM_MENU_DESIGNS, applyPremiumMenuDesign } from "../domain/premiumMenuDesignLibrary";
+import { PREMIUM_MENU_DESIGNS, applyPremiumMenuDesign } from "../domain/menuDesignLibrary";
 import { getBaselineDesignForMenu } from "./draftSession";
 import "./MenuDesignControls.css";
 
