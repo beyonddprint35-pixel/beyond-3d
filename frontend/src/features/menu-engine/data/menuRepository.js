@@ -35,6 +35,71 @@ function normalizeLanguages(site) {
   return fallback === "he" ? ["he", "en"] : [fallback];
 }
 
+function valueOr(source, key, fallback) {
+  const value = source?.[key];
+  return value === undefined || value === null || value === "" ? fallback : value;
+}
+
+function adaptLegacyDesignSettings(raw = {}) {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
+
+  const alreadyV3 = raw.theme || raw.typography || raw.layout || raw.brand || raw.badges || raw.template;
+  if (alreadyV3) return raw;
+
+  const layoutStyle = String(raw.layout_style || "classic").trim().split(/\s+/)[0];
+  const template = layoutStyle === "visual" ? "visual" : "classic";
+
+  return {
+    template,
+    theme: {
+      background: valueOr(raw, "background", "#f6f4ef"),
+      surface: valueOr(raw, "paper", valueOr(raw, "hero_background", "#fffdf8")),
+      card: valueOr(raw, "card", "#ffffff"),
+      text: valueOr(raw, "text", "#121212"),
+      muted: valueOr(raw, "muted", "#7b756e"),
+      accent: valueOr(raw, "accent", "#556b2f"),
+      accentSecondary: valueOr(raw, "accent_secondary", "#d8c79b"),
+      line: valueOr(raw, "line", "#e5ded2"),
+      categoryBackground: valueOr(raw, "category_background", "#111111"),
+      categoryText: valueOr(raw, "category_text", "#ffffff"),
+    },
+    typography: {
+      headingFont: valueOr(raw, "heading_font", "Playfair Display"),
+      bodyFont: valueOr(raw, "body_font", "Inter"),
+      numberFont: valueOr(raw, "number_font", "Playfair Display"),
+      headingWeight: Number(valueOr(raw, "heading_weight", 700)),
+      bodyWeight: Number(valueOr(raw, "body_weight", 400)),
+      itemWeight: Number(valueOr(raw, "item_weight", 700)),
+      brandSize: Number(valueOr(raw, "brand_font_size", 19)),
+      heroSize: Number(valueOr(raw, "hero_font_size", 46)),
+      sectionSize: Number(valueOr(raw, "section_font_size", 38)),
+      categorySize: Number(valueOr(raw, "category_font_size", 11)),
+      itemNameSize: Number(valueOr(raw, "item_name_font_size", 16)),
+      descriptionSize: Number(valueOr(raw, "description_font_size", 11)),
+      priceSize: Number(valueOr(raw, "price_font_size", 16)),
+    },
+    layout: {
+      density: "comfortable",
+      navigationStyle: "pills",
+      itemImagePosition: "top",
+      itemImageRatio: "4:3",
+      pricePosition: "inline",
+      cardRadius: Number(valueOr(raw, "card_radius", 16)),
+      sectionGap: Number(valueOr(raw, "section_gap", 32)),
+      itemGap: Number(valueOr(raw, "item_gap", 16)),
+      cardPadding: Number(valueOr(raw, "card_padding", 16)),
+    },
+    brand: {
+      logoSize: Number(valueOr(raw, "logo_size", 44)),
+      logoShape: valueOr(raw, "logo_shape", "free"),
+    },
+    badges: {
+      showSymbols: raw.show_badge_symbols !== false,
+      iconStyle: "auto",
+    },
+  };
+}
+
 export function adaptSupabaseMenuToV3(site, rawGroups = [], rawItems = []) {
   const groups = rawGroups
     .map(group => ({
@@ -70,6 +135,8 @@ export function adaptSupabaseMenuToV3(site, rawGroups = [], rawItems = []) {
 
   const content = site?.content_settings && typeof site.content_settings === "object" ? site.content_settings : {};
   const localContent = code => content?.[code] && typeof content[code] === "object" ? content[code] : {};
+  const rawDesignSettings = site?.design_settings && typeof site.design_settings === "object" ? site.design_settings : {};
+  const legacyLogo = text(rawDesignSettings.logo_url);
 
   return {
     site,
@@ -77,13 +144,13 @@ export function adaptSupabaseMenuToV3(site, rawGroups = [], rawItems = []) {
       site_id: site.id,
       slug: site.slug,
       restaurant_name: text(site.name || site.display_name || "Restaurant"),
-      logo_url: text(site.logo_url),
+      logo_url: text(site.logo_url || legacyLogo),
       languages: normalizeLanguages(site),
       default_language: ["en", "he", "ar"].includes(site.default_language) ? site.default_language : "he",
       subtitle: {
-        en: text(localContent("en").brand_subtitle),
-        he: text(localContent("he").brand_subtitle),
-        ar: text(localContent("ar").brand_subtitle),
+        en: text(localContent("en").brand_subtitle || rawDesignSettings.subtitle),
+        he: text(localContent("he").brand_subtitle || rawDesignSettings.subtitle),
+        ar: text(localContent("ar").brand_subtitle || rawDesignSettings.subtitle),
       },
       hero_kicker: {
         en: text(localContent("en").hero_kicker || "Digital Menu"),
@@ -91,14 +158,14 @@ export function adaptSupabaseMenuToV3(site, rawGroups = [], rawItems = []) {
         ar: text(localContent("ar").hero_kicker),
       },
       hero_title: {
-        en: text(localContent("en").hero_title || "Our Menu"),
-        he: text(localContent("he").hero_title || "התפריט שלנו"),
-        ar: text(localContent("ar").hero_title),
+        en: text(localContent("en").hero_title || rawDesignSettings.hero_title_en || "Our Menu"),
+        he: text(localContent("he").hero_title || rawDesignSettings.hero_title_he || "התפריט שלנו"),
+        ar: text(localContent("ar").hero_title || rawDesignSettings.hero_title_ar),
       },
       groups,
       items,
     },
-    designSettings: site?.design_settings && typeof site.design_settings === "object" ? site.design_settings : {},
+    designSettings: adaptLegacyDesignSettings(rawDesignSettings),
   };
 }
 
