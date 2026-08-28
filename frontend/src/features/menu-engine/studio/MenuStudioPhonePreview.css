@@ -1,14 +1,10 @@
-/* BEYOND Menu Studio — phone preview component.
-   Owns only the device shell. Studio layout/theme lives in MenuStudioV3Draft.css. */
-.studio-v3-preview-label{margin:0;color:#4974e5;font-size:8px;font-weight:800;letter-spacing:.18em;text-transform:uppercase}
-.studio-v3-preview-panel{min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:10px}
+/* BEYOND Menu Studio — physical phone component only. */
+.studio-v3-preview-label{margin:0 0 10px;color:#4974e5;font-size:9px;font-weight:850;letter-spacing:.16em;text-transform:uppercase;text-align:center}
 .studio-v3-phone-canvas{position:relative;width:410px;height:864px;padding:9px;box-sizing:border-box;flex:0 0 auto;overflow:visible;border:1px solid rgba(164,188,204,.4);border-radius:54px;background:linear-gradient(145deg,#394751,#090e12 22%,#020405 73%,#34424c);box-shadow:0 36px 90px rgba(17,24,39,.30),0 12px 30px rgba(17,24,39,.18),inset 0 0 0 2px rgba(255,255,255,.055);isolation:isolate}
 .studio-v3-phone-canvas>.bme-menu,.studio-v3-phone-canvas>.ep-page{position:relative;width:390px!important;height:844px!important;min-height:844px!important;max-width:none!important;overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior:contain;scrollbar-width:none;border-radius:45px;container-type:inline-size}
 .studio-v3-phone-canvas>.bme-menu::-webkit-scrollbar,.studio-v3-phone-canvas>.ep-page::-webkit-scrollbar{width:0;height:0}
 .studio-v3-phone-canvas::before{content:"";position:absolute;z-index:1000;top:19px;left:50%;transform:translateX(-50%);width:110px;height:30px;border-radius:999px;background:#020202;box-shadow:inset -13px 0 0 -8px #102b40;pointer-events:none}
 .studio-v3-phone-canvas::after{content:"";position:absolute;z-index:-1;left:-3px;top:120px;width:3px;height:27px;border-radius:3px;background:#34414a;box-shadow:0 36px 0 #34414a,0 95px 0 #34414a,412px 35px 0 #34414a;pointer-events:none}
-.studio-v3-phone-canvas .bme-category-nav,.studio-v3-phone-canvas .ep-tabs{overflow-x:auto!important;overflow-y:hidden!important;overscroll-behavior-inline:contain;touch-action:pan-x;cursor:grab;scrollbar-width:none!important}
-.studio-v3-phone-canvas .bme-category-nav:active,.studio-v3-phone-canvas .ep-tabs:active{cursor:grabbing}
-.studio-v3-phone-canvas .bme-category-nav::-webkit-scrollbar,.studio-v3-phone-canvas .ep-tabs::-webkit-scrollbar{display:none!important}
-@media(max-width:759px){.studio-v3-preview-panel{width:410px;max-width:100%;margin:0 auto}.studio-v3-phone-canvas{transform:scale(.86);transform-origin:top center;margin-bottom:-121px}}
+.studio-v3-phone-canvas .bme-category-nav,.studio-v3-phone-canvas .ep-tabs{overflow-x:auto!important;overflow-y:hidden!important;overscroll-behavior-inline:contain;touch-action:pan-x;cursor:grab;scrollbar-width:none!important}.studio-v3-phone-canvas .bme-category-nav:active,.studio-v3-phone-canvas .ep-tabs:active{cursor:grabbing}.studio-v3-phone-canvas .bme-category-nav::-webkit-scrollbar,.studio-v3-phone-canvas .ep-tabs::-webkit-scrollbar{display:none!important}
+@media(max-width:880px){.studio-v3-phone-canvas{transform:scale(.86);transform-origin:top center;margin-bottom:-121px}}
 @media(max-width:450px){.studio-v3-phone-canvas{transform:scale(.82);margin-bottom:-155px}}
