@@ -1,0 +1,42 @@
+/* Premium browsing layer for the 45-design Beyond library. */
+.studio-v3-design-library-head{align-items:center}
+.studio-v3-design-count{flex:0 0 auto;display:grid;place-items:center;min-width:34px;height:28px;padding:0 9px;border:1px solid #cdd8f7;border-radius:999px;background:#eef3ff;color:#315dd7;font:900 10px/1 Inter,system-ui,sans-serif}
+.studio-v3-design-favorites-toggle{width:100%;min-height:38px;display:flex;align-items:center;justify-content:center;gap:7px;border:1px solid #e2e4e8;border-radius:10px;background:#fff;color:#687386;font:800 10px/1 Inter,system-ui,sans-serif;cursor:pointer;transition:.15s ease}.studio-v3-design-favorites-toggle>span:first-child{font-size:14px;color:#d85667}.studio-v3-design-favorites-toggle b{min-width:21px;padding:4px 6px;border-radius:999px;background:#f2f3f5;color:#6e7785;font-size:9px}.studio-v3-design-favorites-toggle:hover{border-color:#c9d3ef;color:#315dd7}.studio-v3-design-favorites-toggle.active{border-color:#bdcafa;background:#eef3ff;color:#315dd7}.studio-v3-design-favorites-toggle.active b{background:#fff;color:#315dd7}
+
+/* Large Canva-like cards: one clear design at a time instead of tiny swatches. */
+.studio-v3-premium-library-grid{grid-template-columns:1fr;gap:12px}
+.studio-v3-premium-design-card{position:relative;display:grid;overflow:hidden;padding:0;border:1px solid #e0e3e8;border-radius:15px;background:#fff;cursor:default;box-shadow:0 3px 10px rgba(24,34,56,.035);transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
+.studio-v3-premium-design-card:hover{transform:translateY(-2px);border-color:#cbd4eb;box-shadow:0 14px 30px rgba(33,46,76,.09)}
+.studio-v3-premium-design-card.selected{border-color:#4974e5;box-shadow:0 0 0 2px rgba(73,116,229,.12),0 14px 32px rgba(45,67,124,.11)}
+.studio-v3-premium-design-select{display:grid;width:100%;padding:0;border:0;background:transparent;color:inherit;text-align:start;cursor:pointer}
+.studio-v3-premium-design-card .studio-v3-premium-design-preview{height:142px;border-bottom-color:rgba(24,34,56,.07)}
+.studio-v3-premium-design-card .studio-v3-thumb-hero{top:14px;left:14px;right:14px}
+.studio-v3-premium-design-card .studio-v3-thumb-nav{left:14px;right:14px}
+.studio-v3-premium-design-card .studio-v3-thumb-items{left:14px;right:14px;bottom:12px}
+.studio-v3-premium-design-copy{gap:7px;padding:13px 14px 11px}
+.studio-v3-premium-design-copy strong{font-size:13px;color:#1d2a42}.studio-v3-premium-design-copy small{font-size:9px}.studio-v3-premium-design-copy em{min-height:0;color:#7f8998;font-size:10.5px;line-height:1.5}.studio-v3-design-category{font-size:9px!important}
+.studio-v3-design-selected-badge{position:absolute;z-index:4;top:10px;left:10px;display:grid;place-items:center;width:26px;height:26px;border:2px solid rgba(255,255,255,.92);border-radius:999px;background:#4974e5;color:#fff;font:900 12px/1 Inter,system-ui,sans-serif;box-shadow:0 5px 14px rgba(45,74,157,.28)}
+[dir="rtl"] .studio-v3-design-selected-badge{left:auto;right:10px}
+.studio-v3-premium-design-actions{display:flex;align-items:center;gap:7px;padding:0 11px 11px}
+.studio-v3-premium-design-actions button{height:34px;border:1px solid #e1e4e9;border-radius:9px;background:#fff;color:#677386;font:800 10px/1 Inter,system-ui,sans-serif;cursor:pointer;transition:.14s ease}.studio-v3-premium-design-actions button:hover{border-color:#bdc9eb;background:#f8faff;color:#315dd7}
+.studio-v3-design-favorite{flex:0 0 38px;font-size:18px!important;color:#9aa2af!important}.studio-v3-design-favorite.active{border-color:#f0c3cb!important;background:#fff6f7!important;color:#d85667!important}.studio-v3-design-preview-button{flex:1;display:flex;align-items:center;justify-content:center;gap:7px}.studio-v3-design-preview-button>span{font-size:14px}.studio-v3-design-preview-button:disabled{opacity:.45;cursor:not-allowed}
+
+/* Full-screen live preview. It uses the real renderer and does not apply a design until Use is clicked. */
+.studio-v3-design-preview-overlay{position:fixed;z-index:10050;inset:0;padding:18px;background:rgba(17,24,39,.58);backdrop-filter:blur(12px);display:grid;place-items:center}
+.studio-v3-design-preview-shell{width:min(1440px,100%);height:min(920px,calc(100vh - 36px));display:grid;grid-template-rows:auto minmax(0,1fr);overflow:hidden;border:1px solid rgba(255,255,255,.72);border-radius:22px;background:#f3f4f7;box-shadow:0 32px 90px rgba(10,17,30,.34)}
+.studio-v3-design-preview-toolbar{min-height:72px;display:grid;grid-template-columns:42px minmax(0,1fr) auto;align-items:center;gap:13px;padding:10px 14px;border-bottom:1px solid #dde1e7;background:#f7f5f2}
+.studio-v3-design-preview-close{width:40px;height:40px;border:1px solid #dfe2e7;border-radius:11px;background:#fff;color:#687386;font:500 24px/1 Inter,system-ui,sans-serif;cursor:pointer}.studio-v3-design-preview-close:hover{border-color:#c7d1ed;color:#315dd7}
+.studio-v3-design-preview-title{min-width:0;display:grid;gap:2px}.studio-v3-design-preview-title>span{color:#8992a0;font-size:9px;font-weight:850;text-transform:uppercase;letter-spacing:.09em}.studio-v3-design-preview-title strong{overflow:hidden;color:#182238;font-size:15px;letter-spacing:-.015em;text-overflow:ellipsis;white-space:nowrap}.studio-v3-design-preview-title small{color:#7d8795;font-size:10px}
+.studio-v3-design-preview-use{min-height:40px;padding:0 17px;border:0;border-radius:10px;background:#4974e5;color:#fff;font:850 11px/1 Inter,system-ui,sans-serif;cursor:pointer;box-shadow:0 7px 18px rgba(73,116,229,.22)}.studio-v3-design-preview-use:hover{background:#3f67d3}
+.studio-v3-design-preview-stage{min-height:0;overflow:auto;padding:24px;background:radial-gradient(circle at 50% 0,#ffffff 0,#f3f4f7 44%,#ebeef2 100%)}
+.studio-v3-design-preview-page{width:min(1180px,100%);min-height:100%;margin:0 auto;overflow:hidden;border-radius:16px;background:#fff;box-shadow:0 16px 55px rgba(23,35,58,.13)}
+.studio-v3-design-preview-page>.bme-menu,.studio-v3-design-preview-page>.ep-page{min-height:100%}
+
+@media(max-width:700px){
+  .studio-v3-design-preview-overlay{padding:0}
+  .studio-v3-design-preview-shell{width:100%;height:100vh;border:0;border-radius:0}
+  .studio-v3-design-preview-toolbar{grid-template-columns:40px minmax(0,1fr);min-height:68px;padding:8px 10px}
+  .studio-v3-design-preview-use{grid-column:1/-1;width:100%;min-height:38px}
+  .studio-v3-design-preview-stage{padding:10px}
+  .studio-v3-design-preview-page{border-radius:12px}
+}
