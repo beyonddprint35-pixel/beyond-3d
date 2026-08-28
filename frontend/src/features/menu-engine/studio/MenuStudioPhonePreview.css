@@ -1,12 +1,195 @@
-/* Menu Studio phone shell. Reuses the proven Menu Builder device proportions while keeping the V3 renderer in-process. */
-.studio-v3-preview-panel{overflow:visible!important;padding:0 18px 30px!important;}
-.studio-v3-preview-label{margin-bottom:2px;}
-.studio-v3-phone-canvas{position:relative!important;width:390px!important;max-width:calc(100vw - 56px)!important;height:min(844px,calc(100vh - 190px))!important;aspect-ratio:390/844!important;box-sizing:content-box!important;padding:9px!important;overflow-y:auto!important;overflow-x:hidden!important;border:1px solid rgba(164,188,204,.4)!important;border-radius:54px!important;background:#fff!important;box-shadow:0 32px 80px rgba(15,24,38,.28),0 12px 32px rgba(15,24,38,.18),inset 0 0 0 9px #0a0f13!important;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:rgba(90,102,125,.35) transparent;isolation:isolate;}
-.studio-v3-phone-canvas::before{content:"";position:sticky;z-index:120;display:block;top:10px;left:50%;width:110px;height:30px;margin-left:calc(50% - 55px);margin-bottom:-30px;border-radius:999px;background:#020202;box-shadow:inset -13px 0 0 -8px #102b40;pointer-events:none;}
-.studio-v3-phone-canvas::after{content:"";position:absolute;z-index:-1;top:118px;left:-4px;width:3px;height:28px;border-radius:3px;background:#34414a;box-shadow:0 39px 0 #34414a,0 98px 0 #34414a,397px 36px 0 0 #34414a;pointer-events:none;}
-.studio-v3-phone-canvas>.bme-menu{min-height:100%;border-radius:45px;overflow:visible;}
-.studio-v3-phone-canvas::-webkit-scrollbar{width:5px}.studio-v3-phone-canvas::-webkit-scrollbar-thumb{background:rgba(90,102,125,.3);border-radius:999px}.studio-v3-phone-canvas::-webkit-scrollbar-track{background:transparent}
-.studio-v3-phone-canvas .bme-category-nav{overflow-x:auto!important;overflow-y:hidden!important;scrollbar-width:thin!important;touch-action:pan-x;overscroll-behavior-inline:contain;cursor:grab;}
-.studio-v3-phone-canvas .bme-category-nav:active{cursor:grabbing}.studio-v3-phone-canvas .bme-category-nav::-webkit-scrollbar{display:block!important;height:4px}.studio-v3-phone-canvas .bme-category-nav::-webkit-scrollbar-thumb{background:rgba(90,102,125,.3);border-radius:999px}
-@media(max-height:900px) and (min-width:760px){.studio-v3-phone-canvas{height:690px!important;width:319px!important;}.studio-v3-phone-canvas::before{width:90px;height:25px;margin-left:calc(50% - 45px);}.studio-v3-phone-canvas>.bme-menu{border-radius:37px}.studio-v3-preview-panel{padding-bottom:18px!important;}}
-@media(max-width:759px){.studio-v3-preview-panel{overflow-x:auto!important;padding:0 8px 20px!important}.studio-v3-phone-canvas{width:min(390px,calc(100vw - 54px))!important;height:min(720px,72vh)!important;border-radius:46px!important;padding:7px!important}.studio-v3-phone-canvas>.bme-menu{border-radius:39px}.studio-v3-phone-canvas::before{top:8px;width:96px;height:27px;margin-left:calc(50% - 48px)}}
+/* V3 Menu Studio device workspace.
+   The renderer always keeps a 390px mobile layout; on shorter screens we scale
+   the device visually instead of changing its internal responsive breakpoint. */
+
+@media (min-width: 760px) {
+  .studio-v3-main {
+    width: min(1320px, 100%);
+  }
+
+  .studio-v3-design-layout {
+    grid-template-columns: minmax(340px, 440px) minmax(520px, 1fr);
+    gap: 28px;
+    align-items: start;
+  }
+
+  .studio-v3-design-controls {
+    max-height: calc(100vh - 150px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+
+  .studio-v3-preview-panel {
+    position: sticky;
+    top: 132px;
+    width: 100%;
+    min-width: 0;
+    min-height: calc(100vh - 160px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 9px;
+    padding: 8px 24px 28px;
+    box-sizing: border-box;
+    overflow: visible;
+    border-radius: 28px;
+    background:
+      radial-gradient(circle at 50% 18%, rgba(81,116,237,.10), transparent 31%),
+      linear-gradient(180deg, rgba(247,249,253,.96), rgba(240,244,250,.78));
+  }
+}
+
+.studio-v3-preview-label {
+  position: relative;
+  z-index: 2;
+  margin: 0 0 2px;
+  color: #7f8da2;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .14em;
+}
+
+.studio-v3-phone-canvas {
+  --studio-phone-scale: 1;
+  position: relative;
+  width: 390px;
+  height: 844px;
+  flex: 0 0 auto;
+  box-sizing: content-box;
+  padding: 9px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border: 1px solid rgba(164,188,204,.42);
+  border-radius: 54px;
+  background: #fff;
+  box-shadow:
+    0 38px 90px rgba(15,24,38,.27),
+    0 13px 34px rgba(15,24,38,.17),
+    inset 0 0 0 9px #080d11,
+    inset 0 0 0 10px rgba(255,255,255,.07);
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  isolation: isolate;
+  transform: scale(var(--studio-phone-scale));
+  transform-origin: top center;
+}
+
+/* Dynamic Island remains pinned while the menu scrolls underneath it. */
+.studio-v3-phone-canvas::before {
+  content: "";
+  position: sticky;
+  z-index: 120;
+  display: block;
+  top: 10px;
+  left: 50%;
+  width: 110px;
+  height: 30px;
+  margin-left: calc(50% - 55px);
+  margin-bottom: -30px;
+  border-radius: 999px;
+  background: #020202;
+  box-shadow: inset -13px 0 0 -8px #102b40;
+  pointer-events: none;
+}
+
+/* Side-button silhouette, matching the existing Menu Builder phone language. */
+.studio-v3-phone-canvas::after {
+  content: "";
+  position: absolute;
+  z-index: 4;
+  top: 122px;
+  left: 0;
+  width: 3px;
+  height: 28px;
+  border-radius: 3px;
+  background: #34414a;
+  box-shadow:
+    0 39px 0 #34414a,
+    0 98px 0 #34414a,
+    405px 36px 0 0 #34414a;
+  pointer-events: none;
+}
+
+.studio-v3-phone-canvas > .bme-menu {
+  min-height: 100%;
+  border-radius: 45px;
+}
+
+.studio-v3-phone-canvas::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* Category navigation behaves like a real horizontally scrollable mobile rail. */
+.studio-v3-phone-canvas .bme-category-nav {
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  overscroll-behavior-inline: contain;
+  touch-action: pan-x;
+  cursor: grab;
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(90,102,125,.30) transparent;
+}
+
+.studio-v3-phone-canvas .bme-category-nav:active {
+  cursor: grabbing;
+}
+
+.studio-v3-phone-canvas .bme-category-nav::-webkit-scrollbar {
+  display: block !important;
+  height: 4px;
+}
+
+.studio-v3-phone-canvas .bme-category-nav::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(90,102,125,.30);
+}
+
+.studio-v3-phone-canvas .bme-category-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Preserve the 390px renderer breakpoint; only the visual device is scaled. */
+@media (max-height: 980px) and (min-width: 760px) {
+  .studio-v3-phone-canvas {
+    --studio-phone-scale: .86;
+    margin-bottom: -121px;
+  }
+}
+
+@media (max-height: 850px) and (min-width: 760px) {
+  .studio-v3-phone-canvas {
+    --studio-phone-scale: .74;
+    margin-bottom: -225px;
+  }
+
+  .studio-v3-preview-panel {
+    top: 124px;
+    min-height: calc(100vh - 148px);
+  }
+}
+
+@media (max-width: 759px) {
+  .studio-v3-design-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .studio-v3-preview-panel {
+    order: -1;
+    width: 100%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0 18px;
+    overflow-x: auto;
+  }
+
+  .studio-v3-phone-canvas {
+    --studio-phone-scale: min(1, calc((100vw - 38px) / 408));
+    margin-bottom: calc((1 - var(--studio-phone-scale)) * -862px);
+  }
+}
