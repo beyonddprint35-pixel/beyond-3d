@@ -63,26 +63,120 @@ body[class*="restaurant-a11y-text-"] .bme-menu .bme-section-heading > span { fon
 html.restaurant-a11y-readable .bme-menu,
 html.restaurant-a11y-readable .bme-menu button { font-family: Arial, "Heebo", sans-serif !important; }
 
-html.restaurant-a11y-contrast .bme-menu,
+/* High contrast is token-driven so it stays correct for every structural template. */
+html.restaurant-a11y-contrast .bme-menu {
+  --bme-bg: #fff !important;
+  --bme-surface: #fff !important;
+  --bme-card: #fff !important;
+  --bme-text: #000 !important;
+  --bme-muted: #000 !important;
+  --bme-accent: #000 !important;
+  --bme-accent-secondary: #fff !important;
+  --bme-line: #000 !important;
+  --bme-category-bg: #000 !important;
+  --bme-category-text: #fff !important;
+  color: #000 !important;
+  background: #fff !important;
+}
 html.restaurant-a11y-contrast .bme-menu .bme-header,
 html.restaurant-a11y-contrast .bme-menu .bme-hero,
-html.restaurant-a11y-contrast .bme-menu .bme-visual-item { color: #000 !important; background: #fff !important; }
-html.restaurant-a11y-contrast .bme-menu * { border-color: #000 !important; }
-html.restaurant-a11y-contrast .bme-menu .bme-category-nav button { color: #000 !important; background: #fff !important; }
-html.restaurant-a11y-contrast .bme-menu .bme-category-nav button.active { color: #fff !important; background: #000 !important; }
+html.restaurant-a11y-contrast .bme-menu .bme-category-nav,
+html.restaurant-a11y-contrast .bme-menu .bme-classic-item,
+html.restaurant-a11y-contrast .bme-menu .bme-visual-item,
+html.restaurant-a11y-contrast .bme-menu .bme-languages,
+html.restaurant-a11y-contrast .bme-menu .bme-item-badge { color:#000 !important;background:#fff !important;border-color:#000 !important;box-shadow:none !important; }
+html.restaurant-a11y-contrast .bme-menu .bme-category-nav button,
+html.restaurant-a11y-contrast .bme-menu .bme-languages button { color:#000 !important;background:#fff !important;border-color:#000 !important; }
+html.restaurant-a11y-contrast .bme-menu .bme-category-nav button.active,
+html.restaurant-a11y-contrast .bme-menu .bme-languages button.active { color:#fff !important;background:#000 !important;border-color:#000 !important; }
+html.restaurant-a11y-contrast .bme-menu .bme-item-copy h3,
 html.restaurant-a11y-contrast .bme-menu .bme-item-copy p,
-html.restaurant-a11y-contrast .bme-menu .bme-section-heading span { color: #000 !important; }
+html.restaurant-a11y-contrast .bme-menu .bme-price,
+html.restaurant-a11y-contrast .bme-menu .bme-price-option strong,
+html.restaurant-a11y-contrast .bme-menu .bme-price-option small,
+html.restaurant-a11y-contrast .bme-menu .bme-section-heading h2,
+html.restaurant-a11y-contrast .bme-menu .bme-section-heading span,
+html.restaurant-a11y-contrast .bme-menu .bme-subcategory-heading h3,
+html.restaurant-a11y-contrast .bme-menu .bme-footer,
+html.restaurant-a11y-contrast .bme-menu .bme-footer strong { color:#000 !important; }
 
-html.restaurant-a11y-dark .bme-menu,
+/*
+   Accessibility dark mode is also token-driven. The renderer normally receives
+   template colors as inline custom properties, so these !important tokens are
+   intentionally authoritative while the accessibility mode is active. This
+   prevents white cards / pale text combinations in Heritage, ledgers, tiles,
+   galleries and every signature presentation profile.
+*/
+html.restaurant-a11y-dark .bme-menu {
+  --bme-bg: #0b0e13 !important;
+  --bme-surface: #11161d !important;
+  --bme-card: #171d26 !important;
+  --bme-text: #f7f9fc !important;
+  --bme-muted: #c4cad4 !important;
+  --bme-accent: #9ab6ff !important;
+  --bme-accent-secondary: #252d39 !important;
+  --bme-line: #3d4655 !important;
+  --bme-category-bg: #f4f6fa !important;
+  --bme-category-text: #0b0e13 !important;
+  color-scheme: dark;
+  color: #f7f9fc !important;
+  background: #0b0e13 !important;
+}
 html.restaurant-a11y-dark .bme-menu .bme-header,
-html.restaurant-a11y-dark .bme-menu .bme-hero { color: #fff !important; background: #111 !important; }
-html.restaurant-a11y-dark .bme-menu .bme-visual-item,
-html.restaurant-a11y-dark .bme-menu .bme-category-nav button { color: #fff !important; background: #1b1b1b !important; border-color: #555 !important; }
-html.restaurant-a11y-dark .bme-menu .bme-category-nav button.active { color: #111 !important; background: #fff !important; }
+html.restaurant-a11y-dark .bme-menu .bme-hero,
+html.restaurant-a11y-dark .bme-menu .bme-category-nav,
+html.restaurant-a11y-dark .bme-menu .bme-languages { color:#f7f9fc !important;background:#11161d !important;border-color:#3d4655 !important; }
+html.restaurant-a11y-dark .bme-menu .bme-classic-item,
+html.restaurant-a11y-dark .bme-menu .bme-visual-item { color:#f7f9fc !important;background:#171d26 !important;border-color:#3d4655 !important;box-shadow:none !important; }
+html.restaurant-a11y-dark .bme-menu .bme-item-media,
+html.restaurant-a11y-dark .bme-menu .bme-item-media-placeholder { background:#252d39 !important;color:#c4cad4 !important; }
+html.restaurant-a11y-dark .bme-menu .bme-item-copy h3,
+html.restaurant-a11y-dark .bme-menu .bme-section-heading h2,
+html.restaurant-a11y-dark .bme-menu .bme-subcategory-heading h3,
+html.restaurant-a11y-dark .bme-menu .bme-price,
+html.restaurant-a11y-dark .bme-menu .bme-price-option strong,
+html.restaurant-a11y-dark .bme-menu .bme-brand strong { color:#f7f9fc !important; }
 html.restaurant-a11y-dark .bme-menu .bme-item-copy p,
+html.restaurant-a11y-dark .bme-menu .bme-price-option small,
 html.restaurant-a11y-dark .bme-menu .bme-section-heading span,
-html.restaurant-a11y-dark .bme-menu .bme-footer { color: #ddd !important; }
-html.restaurant-a11y-dark .bme-menu .bme-footer strong { color: #fff !important; }
+html.restaurant-a11y-dark .bme-menu .bme-brand span,
+html.restaurant-a11y-dark .bme-menu .bme-footer { color:#c4cad4 !important; }
+html.restaurant-a11y-dark .bme-menu .bme-footer strong,
+html.restaurant-a11y-dark .bme-menu .bme-footer button { color:#f7f9fc !important; }
+html.restaurant-a11y-dark .bme-menu .bme-item-badge { color:#f7f9fc !important;background:#202733 !important;border-color:#566174 !important; }
+html.restaurant-a11y-dark .bme-menu .bme-item-badge-symbol { color:inherit !important; }
+html.restaurant-a11y-dark .bme-menu .bme-category-nav button,
+html.restaurant-a11y-dark .bme-menu .bme-languages button { color:#d7dce5 !important;background:#171d26 !important;border-color:#4a5567 !important; }
+html.restaurant-a11y-dark .bme-menu .bme-category-nav button.active,
+html.restaurant-a11y-dark .bme-menu .bme-languages button.active { color:#0b0e13 !important;background:#f4f6fa !important;border-color:#f4f6fa !important; }
+html.restaurant-a11y-dark .bme-menu.bme-nav-underline .bme-category-nav button,
+html.restaurant-a11y-dark .bme-menu.bme-nav-minimal .bme-category-nav button { background:transparent !important; }
+html.restaurant-a11y-dark .bme-menu.bme-nav-underline .bme-category-nav button.active,
+html.restaurant-a11y-dark .bme-menu.bme-nav-minimal .bme-category-nav button.active { color:#fff !important;background:#252d39 !important; }
+html.restaurant-a11y-dark .bme-menu .bme-watermark-pill { background:#202733 !important;border-color:#4a5567 !important; }
+html.restaurant-a11y-dark .bme-menu .bme-watermark-pill img,
+html.restaurant-a11y-dark .bme-menu .bme-hero-watermark { filter:grayscale(1) brightness(1.45) !important; }
+
+/* Legacy Heritage renderer safety: old saved sessions still get a coherent dark palette. */
+html.restaurant-a11y-dark .bme-heritage-exact {
+  --ep-bg:#0b0e13 !important;
+  --ep-paper:#11161d !important;
+  --ep-card:#171d26 !important;
+  --ep-ink:#f7f9fc !important;
+  --ep-muted:#c4cad4 !important;
+  --ep-line:#3d4655 !important;
+  --ep-accent:#9ab6ff !important;
+  --ep-accent-secondary:#252d39 !important;
+  --ep-category-bg:#f4f6fa !important;
+  --ep-category-text:#0b0e13 !important;
+}
+html.restaurant-a11y-dark .bme-heritage-exact .ep-item-row { background:#171d26 !important;color:#f7f9fc !important;border-color:#3d4655 !important;box-shadow:none !important; }
+html.restaurant-a11y-dark .bme-heritage-exact .ep-item-name,
+html.restaurant-a11y-dark .bme-heritage-exact .ep-item-price,
+html.restaurant-a11y-dark .bme-heritage-exact .ep-dual-price strong { color:#f7f9fc !important; }
+html.restaurant-a11y-dark .bme-heritage-exact .ep-item-description,
+html.restaurant-a11y-dark .bme-heritage-exact .ep-section-count { color:#c4cad4 !important; }
+html.restaurant-a11y-dark .bme-heritage-exact .ep-hero-background-logo { opacity:.18;filter:grayscale(1) brightness(1.45); }
 
 html.restaurant-a11y-grayscale .bme-menu { filter: grayscale(1); }
 html.restaurant-a11y-links .bme-menu button,
