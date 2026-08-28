@@ -1,4 +1,4 @@
-const DRAFT_STORAGE_VERSION = 3;
+const DRAFT_STORAGE_VERSION = 4;
 const DRAFT_PREFIX = "beyond-menu-v3-draft:";
 
 function canUseStorage() {
@@ -33,8 +33,8 @@ export function loadDraftLocally({ siteId, slug } = {}) {
   try {
     const parsed = JSON.parse(raw);
     if (parsed?.version !== DRAFT_STORAGE_VERSION) {
-      // Older V3 drafts may contain flattened hierarchy or design schemas that
-      // no longer preserve the customer's current published appearance.
+      // Older V3 drafts may contain flattened hierarchy, stale multilingual
+      // labels, or design schemas that no longer preserve the current menu.
       window.localStorage.removeItem(key);
       return null;
     }
