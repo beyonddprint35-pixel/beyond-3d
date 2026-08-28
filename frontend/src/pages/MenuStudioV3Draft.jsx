@@ -26,7 +26,8 @@ const UI = {
   en: {
     content:"Content",design:"Design",preview:"Preview",analytics:"Analytics",settings:"Settings",
     categories:"Categories",category:"Category",subcategory:"Subcategory",items:"items",visible:"Visible",hidden:"Hidden",
-    hide:"Hide",show:"Show",edit:"Edit",back:"Categories",noDescription:"No description",addCategory:"Add category",addSubcategory:"Add subcategory",addItem:"Add item",add:"Add",groupName:"Category / subcategory name",
+    edit:"Edit",back:"Categories",noDescription:"No description",addCategory:"Add category",addSubcategory:"Add subcategory",addItem:"Add item",add:"Add",groupName:"Category / subcategory name",
+    moveUp:"Move up",moveDown:"Move down",delete:"Delete",deleteItemConfirm:"Delete this item?",deleteGroupConfirm:"Delete this category/subcategory and everything inside it?",shown:"Shown",hiddenStatus:"Hidden",
     realDraft:"MENU CONTENT",designDraft:"DESIGN",makeItYours:"Make it yours",designHint:"Changes update the preview instantly and save automatically.",classic:"Classic",visual:"Visual",classicHint:"No photos required",visualHint:"Image-led cards",colors:"Colors",typography:"Typography",layout:"Layout",badges:"Badges",
     accent:"Accent",background:"Background",itemName:"Item name",cardRadius:"Card radius",showBadgeSymbols:"Badge symbols",withSymbols:"Icon + text",textOnly:"Text only",badgeStyle:"Icon style",autoStyle:"Auto",minimalStyle:"Minimal",filledStyle:"Filled",playfulStyle:"Playful",autoStyleHint:"Automatically follows the selected menu template.",
     liveDraftPreview:"LIVE PREVIEW",restaurant:"Restaurant",menuUrl:"Menu URL",languages:"Menu languages",menuSettings:"Menu settings",safety:"Changes are saved automatically. They become visible to customers only when you publish.",
@@ -38,7 +39,8 @@ const UI = {
   },
   he: {
     content:"תוכן",design:"עיצוב",preview:"תצוגה מקדימה",analytics:"אנליטיקה",settings:"הגדרות",
-    categories:"קטגוריות",category:"קטגוריה",subcategory:"תת-קטגוריה",items:"פריטים",visible:"גלוי",hidden:"מוסתר",hide:"הסתר",show:"הצג",edit:"עריכה",back:"קטגוריות",noDescription:"ללא תיאור",addCategory:"הוספת קטגוריה",addSubcategory:"הוספת תת-קטגוריה",addItem:"הוספת פריט",add:"הוסף",groupName:"שם קטגוריה / תת-קטגוריה",
+    categories:"קטגוריות",category:"קטגוריה",subcategory:"תת-קטגוריה",items:"פריטים",visible:"גלוי",hidden:"מוסתר",edit:"עריכה",back:"קטגוריות",noDescription:"ללא תיאור",addCategory:"הוספת קטגוריה",addSubcategory:"הוספת תת-קטגוריה",addItem:"הוספת פריט",add:"הוסף",groupName:"שם קטגוריה / תת-קטגוריה",
+    moveUp:"הזז למעלה",moveDown:"הזז למטה",delete:"מחיקה",deleteItemConfirm:"למחוק את הפריט?",deleteGroupConfirm:"למחוק את הקטגוריה/תת-הקטגוריה וכל מה שבתוכה?",shown:"מוצג",hiddenStatus:"מוסתר",
     realDraft:"תוכן התפריט",designDraft:"עיצוב",makeItYours:"עצבו את התפריט",designHint:"השינויים מתעדכנים מיד בתצוגה ונשמרים אוטומטית.",classic:"קלאסי",visual:"ויזואלי",classicHint:"לא דורש תמונות",visualHint:"כרטיסים מבוססי תמונה",colors:"צבעים",typography:"טיפוגרפיה",layout:"פריסה",badges:"תגיות",
     accent:"צבע מוביל",background:"רקע",itemName:"שם פריט",cardRadius:"עיגול כרטיס",showBadgeSymbols:"סמלים בתגיות",withSymbols:"סמל + טקסט",textOnly:"טקסט בלבד",badgeStyle:"סגנון סמלים",autoStyle:"אוטומטי",minimalStyle:"מינימלי",filledStyle:"מלא",playfulStyle:"שובב",autoStyleHint:"הסגנון מותאם אוטומטית לתבנית התפריט שנבחרה.",
     liveDraftPreview:"תצוגה חיה",restaurant:"מסעדה",menuUrl:"כתובת התפריט",languages:"שפות התפריט",menuSettings:"הגדרות תפריט",safety:"השינויים נשמרים אוטומטית ויופיעו ללקוחות רק לאחר פרסום.",
@@ -50,7 +52,8 @@ const UI = {
   },
   ar: {
     content:"المحتوى",design:"التصميم",preview:"المعاينة",analytics:"التحليلات",settings:"الإعدادات",
-    categories:"الفئات",category:"الفئة",subcategory:"فئة فرعية",items:"عناصر",visible:"ظاهر",hidden:"مخفي",hide:"إخفاء",show:"إظهار",edit:"تعديل",back:"الفئات",noDescription:"لا يوجد وصف",addCategory:"إضافة فئة",addSubcategory:"إضافة فئة فرعية",addItem:"إضافة عنصر",add:"إضافة",groupName:"اسم الفئة / الفئة الفرعية",
+    categories:"الفئات",category:"الفئة",subcategory:"فئة فرعية",items:"عناصر",visible:"ظاهر",hidden:"مخفي",edit:"تعديل",back:"الفئات",noDescription:"لا يوجد وصف",addCategory:"إضافة فئة",addSubcategory:"إضافة فئة فرعية",addItem:"إضافة عنصر",add:"إضافة",groupName:"اسم الفئة / الفئة الفرعية",
+    moveUp:"تحريك لأعلى",moveDown:"تحريك لأسفل",delete:"حذف",deleteItemConfirm:"حذف هذا العنصر؟",deleteGroupConfirm:"حذف هذه الفئة/الفئة الفرعية وكل ما بداخلها؟",shown:"ظاهر",hiddenStatus:"مخفي",
     realDraft:"محتوى القائمة",designDraft:"التصميم",makeItYours:"صمّم قائمتك",designHint:"تظهر التغييرات فورًا في المعاينة ويتم حفظها تلقائيًا.",classic:"كلاسيكي",visual:"مرئي",classicHint:"لا يحتاج صورًا",visualHint:"بطاقات تعتمد على الصور",colors:"الألوان",typography:"الخطوط",layout:"التخطيط",badges:"الشارات",
     accent:"اللون الرئيسي",background:"الخلفية",itemName:"اسم العنصر",cardRadius:"استدارة البطاقة",showBadgeSymbols:"رموز الشارات",withSymbols:"رمز + نص",textOnly:"نص فقط",badgeStyle:"نمط الرموز",autoStyle:"تلقائي",minimalStyle:"بسيط",filledStyle:"ممتلئ",playfulStyle:"مرح",autoStyleHint:"يتم اختيار النمط تلقائيًا ليتناسب مع قالب القائمة.",
     liveDraftPreview:"معاينة مباشرة",restaurant:"المطعم",menuUrl:"رابط القائمة",languages:"لغات القائمة",menuSettings:"إعدادات القائمة",safety:"يتم حفظ التغييرات تلقائيًا ولن تظهر للعملاء إلا بعد النشر.",
@@ -88,94 +91,62 @@ function flattenGroupTree(groups=[]) {
   return rows;
 }
 
+function collectGroupBranch(groups, rootId) {
+  const ids=new Set([rootId]);
+  let changed=true;
+  while(changed){changed=false;groups.forEach(group=>{if(group.parent_id&&ids.has(group.parent_id)&&!ids.has(group.id)){ids.add(group.id);changed=true;}});}
+  return ids;
+}
+
+function reorderSiblingGroups(groups,id,direction) {
+  const target=groups.find(group=>group.id===id); if(!target)return groups;
+  const parentId=target.parent_id||null;
+  const siblings=groups.filter(group=>(group.parent_id||null)===parentId).sort((a,b)=>Number(a.sort_order||0)-Number(b.sort_order||0));
+  const index=siblings.findIndex(group=>group.id===id); const nextIndex=index+direction;
+  if(index<0||nextIndex<0||nextIndex>=siblings.length)return groups;
+  const reordered=[...siblings]; [reordered[index],reordered[nextIndex]]=[reordered[nextIndex],reordered[index]];
+  const orderMap=new Map(reordered.map((group,rowIndex)=>[group.id,rowIndex+1]));
+  return groups.map(group=>orderMap.has(group.id)?{...group,sort_order:orderMap.get(group.id)}:group);
+}
+
+function reorderItems(items,id,direction) {
+  const target=items.find(item=>item.id===id); if(!target)return items;
+  const siblings=items.filter(item=>item.group_id===target.group_id).sort((a,b)=>Number(a.sort_order||0)-Number(b.sort_order||0));
+  const index=siblings.findIndex(item=>item.id===id); const nextIndex=index+direction;
+  if(index<0||nextIndex<0||nextIndex>=siblings.length)return items;
+  const reordered=[...siblings]; [reordered[index],reordered[nextIndex]]=[reordered[nextIndex],reordered[index]];
+  const orderMap=new Map(reordered.map((item,rowIndex)=>[item.id,rowIndex+1]));
+  return items.map(item=>orderMap.has(item.id)?{...item,sort_order:orderMap.get(item.id)}:item);
+}
+
+function VisibilityToggle({visible,onChange,t}) {
+  const isVisible=visible!==false;
+  return <button type="button" role="switch" aria-checked={isVisible} aria-label={isVisible?t.shown:t.hiddenStatus} title={isVisible?t.shown:t.hiddenStatus} className={`studio-v3-visibility-toggle ${isVisible?"visible":"hidden"}`} onClick={onChange}/>;
+}
+
 function EmptyMetric({label,waitingLabel}) { return <article className="studio-v3-analytics-metric"><span>{label}</span><strong>—</strong><small>{waitingLabel}</small></article>; }
 
 function PriceEditor({item,setItem,t,currencySymbol,language}) {
   const options=Array.isArray(item.price_options)?item.price_options:[];
   const suggestions=PRICE_TYPE_SUGGESTIONS[language]||PRICE_TYPE_SUGGESTIONS.en;
   const labelKey=`label_${language}`;
-
-  function addPriceType() {
-    setItem(current=>{
-      const currentOptions=Array.isArray(current.price_options)?current.price_options:[];
-      if(currentOptions.length) return {...current,price_options:[...currentOptions,{label:"",label_en:"",label_he:"",label_ar:"",price:""}]};
-      return {...current,price:"",price_options:[
-        {label:"",label_en:"",label_he:"",label_ar:"",price:cleanPrice(current.price)},
-        {label:"",label_en:"",label_he:"",label_ar:"",price:""},
-      ]};
-    });
-  }
-
-  function removePrice(index) {
-    setItem(current=>({...current,price_options:(current.price_options||[]).filter((_,rowIndex)=>rowIndex!==index)}));
-  }
-
-  function useSinglePrice() {
-    setItem(current=>({...current,price:cleanPrice(current.price_options?.[0]?.price||""),price_options:[]}));
-  }
-
-  if(!options.length) return <div className="studio-v3-price-options-editor"><label className="studio-v3-field studio-v3-price-field"><span className="studio-v3-field-label-row"><span>{t.price}</span><small>{t.currencyHint}</small></span><span className="studio-v3-money-input"><span aria-hidden="true">{currencySymbol}</span><input inputMode="decimal" value={cleanPrice(item.price)} onChange={e=>setItem(current=>({...current,price:cleanPrice(e.target.value)}))}/></span></label><div className="studio-v3-price-mode-actions"><button type="button" onClick={addPriceType}>+ {t.addPrice}</button></div></div>;
-
-  return <div className="studio-v3-price-options-editor">
-    <div className="studio-v3-field-label-row"><strong>{t.prices}</strong><small>{t.currencyHint}</small></div>
-    {options.map((option,index)=>{
-      const listId=`price-types-${language}-${index}`;
-      const localizedLabel=option[labelKey]||option.label||"";
-      return <div className="studio-v3-price-option-edit" key={`price-${index}`}>
-        <label className="studio-v3-field compact studio-v3-price-type-input"><span>{t.optionLabel}</span><input list={listId} placeholder={t.priceTypeHint} value={localizedLabel} onChange={e=>setItem(current=>({...current,price_options:current.price_options.map((row,rowIndex)=>rowIndex===index?{...row,[labelKey]:e.target.value,label:row.label||e.target.value}:row)}))}/><datalist id={listId}>{suggestions.map(value=><option value={value} key={value}/>)}</datalist></label>
-        <label className="studio-v3-field compact"><span>{t.price}</span><span className="studio-v3-money-input"><span aria-hidden="true">{currencySymbol}</span><input inputMode="decimal" value={cleanPrice(option.price)} onChange={e=>setItem(current=>({...current,price_options:current.price_options.map((row,rowIndex)=>rowIndex===index?{...row,price:cleanPrice(e.target.value)}:row)}))}/></span></label>
-        <button className="studio-v3-price-remove" type="button" onClick={()=>removePrice(index)}>{t.removePrice}</button>
-      </div>;
-    })}
-    <div className="studio-v3-price-mode-actions"><button type="button" onClick={addPriceType}>+ {t.addAnotherPrice}</button><button type="button" onClick={useSinglePrice}>{t.singlePrice}</button></div>
-  </div>;
+  function addPriceType(){setItem(current=>{const currentOptions=Array.isArray(current.price_options)?current.price_options:[];if(currentOptions.length)return {...current,price_options:[...currentOptions,{label:"",label_en:"",label_he:"",label_ar:"",price:""}]};return {...current,price:"",price_options:[{label:"",label_en:"",label_he:"",label_ar:"",price:cleanPrice(current.price)},{label:"",label_en:"",label_he:"",label_ar:"",price:""}]};});}
+  function removePrice(index){setItem(current=>({...current,price_options:(current.price_options||[]).filter((_,rowIndex)=>rowIndex!==index)}));}
+  function useSinglePrice(){setItem(current=>({...current,price:cleanPrice(current.price_options?.[0]?.price||""),price_options:[]}));}
+  if(!options.length)return <div className="studio-v3-price-options-editor"><label className="studio-v3-field studio-v3-price-field"><span className="studio-v3-field-label-row"><span>{t.price}</span><small>{t.currencyHint}</small></span><span className="studio-v3-money-input"><span aria-hidden="true">{currencySymbol}</span><input inputMode="decimal" value={cleanPrice(item.price)} onChange={e=>setItem(current=>({...current,price:cleanPrice(e.target.value)}))}/></span></label><div className="studio-v3-price-mode-actions"><button type="button" onClick={addPriceType}>+ {t.addPrice}</button></div></div>;
+  return <div className="studio-v3-price-options-editor"><div className="studio-v3-field-label-row"><strong>{t.prices}</strong><small>{t.currencyHint}</small></div>{options.map((option,index)=>{const listId=`price-types-${language}-${index}`;const localizedLabel=option[labelKey]||option.label||"";return <div className="studio-v3-price-option-edit" key={`price-${index}`}><label className="studio-v3-field compact studio-v3-price-type-input"><span>{t.optionLabel}</span><input list={listId} placeholder={t.priceTypeHint} value={localizedLabel} onChange={e=>setItem(current=>({...current,price_options:current.price_options.map((row,rowIndex)=>rowIndex===index?{...row,[labelKey]:e.target.value,label:row.label||e.target.value}:row)}))}/><datalist id={listId}>{suggestions.map(value=><option value={value} key={value}/>)}</datalist></label><label className="studio-v3-field compact"><span>{t.price}</span><span className="studio-v3-money-input"><span aria-hidden="true">{currencySymbol}</span><input inputMode="decimal" value={cleanPrice(option.price)} onChange={e=>setItem(current=>({...current,price_options:current.price_options.map((row,rowIndex)=>rowIndex===index?{...row,price:cleanPrice(e.target.value)}:row)}))}/></span></label><button className="studio-v3-price-remove" type="button" onClick={()=>removePrice(index)}>{t.removePrice}</button></div>;})}<div className="studio-v3-price-mode-actions"><button type="button" onClick={addPriceType}>+ {t.addAnotherPrice}</button><button type="button" onClick={useSinglePrice}>{t.singlePrice}</button></div></div>;
 }
 
 export default function MenuStudioV3Draft() {
-  const [params]=useSearchParams();
-  const slug=params.get("slug")||"el-puerto";
-  const [status,setStatus]=useState("loading");
-  const [error,setError]=useState("");
-  const [session,setSession]=useState(null);
-  const [tab,setTab]=useState("content");
-  const [selectedGroupId,setSelectedGroupId]=useState("");
-  const [editingItemId,setEditingItemId]=useState(null);
-  const [draftItem,setDraftItem]=useState(null);
-  const [mobileDetail,setMobileDetail]=useState(false);
-  const [viewport,setViewport]=useState("390");
-  const [designPanel,setDesignPanel]=useState("colors");
-  const [studioLanguage,setStudioLanguage]=useState("en");
-  const [contentLanguage,setContentLanguage]=useState("he");
-  const [publishCheck,setPublishCheck]=useState(null);
-  const [groupCreator,setGroupCreator]=useState(null);
+  const [params]=useSearchParams(); const slug=params.get("slug")||"el-puerto";
+  const [status,setStatus]=useState("loading"); const [error,setError]=useState(""); const [session,setSession]=useState(null); const [tab,setTab]=useState("content"); const [selectedGroupId,setSelectedGroupId]=useState(""); const [editingItemId,setEditingItemId]=useState(null); const [draftItem,setDraftItem]=useState(null); const [mobileDetail,setMobileDetail]=useState(false); const [viewport,setViewport]=useState("390"); const [designPanel,setDesignPanel]=useState("colors"); const [studioLanguage,setStudioLanguage]=useState("en"); const [contentLanguage,setContentLanguage]=useState("he"); const [publishCheck,setPublishCheck]=useState(null); const [groupCreator,setGroupCreator]=useState(null);
+  const t=UI[studioLanguage]; const studioRtl=studioLanguage==="he"||studioLanguage==="ar";
 
-  const t=UI[studioLanguage];
-  const studioRtl=studioLanguage==="he"||studioLanguage==="ar";
+  useEffect(()=>{let active=true;setStatus("loading");loadPublishedMenuBySlug(slug).then(payload=>{if(!active)return;const base=createMenuDraftSession(payload);const saved=findSavedDraftSession(base);const next=saved?restoreSavedDraftSession(base,saved):base;setSession(next);setSelectedGroupId(next.menu.groups.find(group=>!group.parent_id)?.id||next.menu.groups[0]?.id||"");setContentLanguage(next.menu.default_language||next.menu.languages?.[0]||"en");setStatus("ready");}).catch(err=>{if(!active)return;setError(err?.message||"Could not load menu.");setStatus("error");});return()=>{active=false;};},[slug]);
+  useEffect(()=>{if(!session?.dirty)return undefined;const timer=window.setTimeout(()=>setSession(current=>current?.dirty?saveDraftSessionLocally(current):current),650);return()=>window.clearTimeout(timer);},[session?.dirty,session?.menu,session?.design]);
 
-  useEffect(()=>{
-    let active=true; setStatus("loading");
-    loadPublishedMenuBySlug(slug).then(payload=>{if(!active)return;const base=createMenuDraftSession(payload);const saved=findSavedDraftSession(base);const next=saved?restoreSavedDraftSession(base,saved):base;setSession(next);setSelectedGroupId(next.menu.groups.find(group=>!group.parent_id)?.id||next.menu.groups[0]?.id||"");setContentLanguage(next.menu.default_language||next.menu.languages?.[0]||"en");setStatus("ready");}).catch(err=>{if(!active)return;setError(err?.message||"Could not load menu.");setStatus("error");});
-    return()=>{active=false;};
-  },[slug]);
-
-  useEffect(()=>{
-    if(!session?.dirty)return undefined;
-    const timer=window.setTimeout(()=>setSession(current=>current?.dirty?saveDraftSessionLocally(current):current),650);
-    return()=>window.clearTimeout(timer);
-  },[session?.dirty,session?.menu,session?.design]);
-
-  const menu=session?.menu;
-  const currencySymbol=menu?.currency_symbol||CURRENCY_SYMBOL;
-  const groupRows=useMemo(()=>flattenGroupTree(menu?.groups||[]),[menu?.groups]);
-  const selectedGroup=menu?.groups?.find(group=>group.id===selectedGroupId)||groupRows[0]?.group||null;
-  const selectedDepth=groupRows.find(row=>row.group.id===selectedGroup?.id)?.depth||0;
-  const selectedItems=selectedGroup?menu.items.filter(item=>item.group_id===selectedGroup.id):[];
-  const frameWidth=viewport==="desktop"?"min(1080px,100%)":`${viewport}px`;
-
-  const previewMenu=useMemo(()=>{
-    if(!menu)return null;
-    return {...menu,currency:menu.currency||"ILS",currency_symbol:menu.currency_symbol||CURRENCY_SYMBOL,default_language:contentLanguage,groups:menu.groups,items:menu.items.filter(item=>item.visible!==false)};
-  },[menu,contentLanguage]);
+  const menu=session?.menu; const currencySymbol=menu?.currency_symbol||CURRENCY_SYMBOL; const groupRows=useMemo(()=>flattenGroupTree(menu?.groups||[]),[menu?.groups]); const selectedGroup=menu?.groups?.find(group=>group.id===selectedGroupId)||groupRows[0]?.group||null; const selectedDepth=groupRows.find(row=>row.group.id===selectedGroup?.id)?.depth||0; const selectedItems=selectedGroup?menu.items.filter(item=>item.group_id===selectedGroup.id).sort((a,b)=>Number(a.sort_order||0)-Number(b.sort_order||0)):[]; const frameWidth=viewport==="desktop"?"min(1080px,100%)":`${viewport}px`;
+  const previewMenu=useMemo(()=>{if(!menu)return null;return {...menu,currency:menu.currency||"ILS",currency_symbol:menu.currency_symbol||CURRENCY_SYMBOL,default_language:contentLanguage,groups:menu.groups,items:menu.items.filter(item=>item.visible!==false)};},[menu,contentLanguage]);
 
   function patchMenu(updater){setSession(current=>updateDraftMenu(current,updater));}
   function patchDesign(updater){setSession(current=>updateDraftDesign(current,updater));}
@@ -184,30 +155,15 @@ export default function MenuStudioV3Draft() {
   function publishMenu(){try{const contract=buildPublishContract(session);const result=validatePublishContract(contract);setPublishCheck({...result,contract});}catch(err){setPublishCheck({ok:false,errors:[err?.message||"Publish check failed"]});}}
   function toggleBadge(kind,key){const current=draftItem.metadata?.[kind]||[];const exists=current.includes(key);setDraftItem(item=>({...item,metadata:{...item.metadata,[kind]:exists?current.filter(value=>value!==key):[...current,key],reviewedByOwner:true}}));}
   function toggleVisibility(id,type){patchMenu(current=>({...current,[type]:current[type].map(row=>row.id===id?{...row,visible:row.visible===false}:row)}));}
+  function moveGroup(id,direction){patchMenu(current=>({...current,groups:reorderSiblingGroups(current.groups,id,direction)}));}
+  function moveItem(id,direction){patchMenu(current=>({...current,items:reorderItems(current.items,id,direction)}));}
+  function deleteItem(id){if(!window.confirm(t.deleteItemConfirm))return;patchMenu(current=>({...current,items:current.items.filter(item=>item.id!==id)}));if(editingItemId===id){setEditingItemId(null);setDraftItem(null);}}
+  function deleteGroup(id){if(!window.confirm(t.deleteGroupConfirm))return;patchMenu(current=>{const removed=collectGroupBranch(current.groups,id);return {...current,groups:current.groups.filter(group=>!removed.has(group.id)),items:current.items.filter(item=>!removed.has(item.group_id))};});const fallback=menu.groups.find(group=>group.id!==id&&!collectGroupBranch(menu.groups,id).has(group.id));setSelectedGroupId(fallback?.id||"");setMobileDetail(false);}
+  function createGroup(){const value=String(groupCreator?.value||"").trim();if(!value)return;const parentId=groupCreator?.parentId||null;const id=draftId("group");patchMenu(current=>{const siblings=current.groups.filter(group=>(group.parent_id||null)===parentId);const maxSort=siblings.reduce((max,group)=>Math.max(max,Number(group.sort_order||0)),0);return {...current,groups:[...current.groups,{id,parent_id:parentId,group_key:"",name:emptyLanguageText(contentLanguage,value),visible:true,sort_order:maxSort+1}]};});setSelectedGroupId(id);setGroupCreator(null);setMobileDetail(true);}
+  function addItem(){if(!selectedGroup)return;const id=draftId("item");const item={id,group_id:selectedGroup.id,name:emptyLanguageText(contentLanguage,""),description:emptyLanguageText(contentLanguage,""),price:"",price_options:[],image_url:"",visible:true,sort_order:selectedItems.length+1,metadata:{allergens:[],dietary:[],merchandising:[],spice:"none",aiSuggestions:[],reviewedByOwner:false}};patchMenu(current=>({...current,items:[...current.items,item]}));setEditingItemId(id);setDraftItem({...item,__contentLanguage:contentLanguage});}
+  function renameSelectedGroup(value){if(!selectedGroup)return;patchMenu(current=>({...current,groups:current.groups.map(group=>group.id===selectedGroup.id?{...group,name:{...group.name,[contentLanguage]:value}}:group)}));}
 
-  function createGroup() {
-    const value=String(groupCreator?.value||"").trim(); if(!value)return;
-    const parentId=groupCreator?.parentId||null; const id=draftId("group");
-    patchMenu(current=>{const siblings=current.groups.filter(group=>(group.parent_id||null)===parentId);const maxSort=siblings.reduce((max,group)=>Math.max(max,Number(group.sort_order||0)),0);return {...current,groups:[...current.groups,{id,parent_id:parentId,group_key:"",name:emptyLanguageText(contentLanguage,value),visible:true,sort_order:maxSort+1}]};});
-    setSelectedGroupId(id); setGroupCreator(null); setMobileDetail(true);
-  }
-
-  function addItem() {
-    if(!selectedGroup)return;
-    const id=draftId("item");
-    const item={id,group_id:selectedGroup.id,name:emptyLanguageText(contentLanguage,""),description:emptyLanguageText(contentLanguage,""),price:"",price_options:[],image_url:"",visible:true,sort_order:selectedItems.length+1,metadata:{allergens:[],dietary:[],merchandising:[],spice:"none",aiSuggestions:[],reviewedByOwner:false}};
-    patchMenu(current=>({...current,items:[...current.items,item]}));
-    setEditingItemId(id); setDraftItem({...item,__contentLanguage:contentLanguage});
-  }
-
-  function renameSelectedGroup(value) {
-    if(!selectedGroup)return;
-    patchMenu(current=>({...current,groups:current.groups.map(group=>group.id===selectedGroup.id?{...group,name:{...group.name,[contentLanguage]:value}}:group)}));
-  }
-
-  if(status==="loading")return <div className="studio-v3-draft-state">{t.loading}</div>;
-  if(status==="error")return <div className="studio-v3-draft-state error">{error}</div>;
-  if(!session||!menu)return null;
+  if(status==="loading")return <div className="studio-v3-draft-state">{t.loading}</div>; if(status==="error")return <div className="studio-v3-draft-state error">{error}</div>; if(!session||!menu)return null;
   const menuLanguages=menu.languages?.length?menu.languages:[menu.default_language||"en"];
 
   return <div className="studio-v3-shell" dir={studioRtl?"rtl":"ltr"} lang={studioLanguage}>
@@ -221,14 +177,14 @@ export default function MenuStudioV3Draft() {
           <div className="studio-v3-content-language-row"><span>{t.contentLanguage}</span><div className="studio-v3-language-switch">{menuLanguages.map(code=><button key={code} className={contentLanguage===code?"active":""} onClick={()=>setContentLanguage(code)}>{code.toUpperCase()}</button>)}</div></div>
           <div className="studio-v3-category-toolbar"><button className="primary" onClick={()=>setGroupCreator({parentId:null,value:""})}>+ {t.addCategory}</button><button disabled={!selectedGroup} onClick={()=>setGroupCreator({parentId:selectedGroup?.id||null,value:""})}>+ {t.addSubcategory}</button></div>
           {groupCreator&&<div className="studio-v3-group-create-row"><input autoFocus value={groupCreator.value} placeholder={groupCreator.parentId?t.addSubcategory:t.addCategory} onChange={e=>setGroupCreator(current=>({...current,value:e.target.value}))} onKeyDown={e=>{if(e.key==="Enter")createGroup();if(e.key==="Escape")setGroupCreator(null);}}/><button onClick={createGroup}>{t.add}</button><button className="secondary" onClick={()=>setGroupCreator(null)}>{t.cancel}</button></div>}
-          <div className="studio-v3-category-list">{groupRows.map(({group,depth})=>{const count=menu.items.filter(item=>item.group_id===group.id).length;return <div className={`studio-v3-category-card ${depth>0?"is-subcategory":""} ${selectedGroup?.id===group.id?"selected":""}`} key={group.id}><button className="studio-v3-category-open" onClick={()=>{setSelectedGroupId(group.id);setMobileDetail(true);}}><span className="studio-v3-category-copy"><span className="studio-v3-group-type-line"><strong>{textFor(group.name,contentLanguage)||"—"}</strong>{depth>0?<span className="studio-v3-subcategory-tag">{t.subcategory}</span>:null}</span><small>{count} {t.items} · {group.visible===false?t.hidden:t.visible}</small></span><span className="studio-v3-chevron">›</span></button><button className="studio-v3-draft-hide" onClick={()=>toggleVisibility(group.id,"groups")}>{group.visible===false?t.show:t.hide}</button></div>;})}</div>
+          <div className="studio-v3-category-list">{groupRows.map(({group,depth})=>{const count=menu.items.filter(item=>item.group_id===group.id).length;const siblings=menu.groups.filter(row=>(row.parent_id||null)===(group.parent_id||null)).sort((a,b)=>Number(a.sort_order||0)-Number(b.sort_order||0));const siblingIndex=siblings.findIndex(row=>row.id===group.id);return <div className={`studio-v3-category-card ${depth>0?"is-subcategory":""} ${selectedGroup?.id===group.id?"selected":""}`} key={group.id}><button className="studio-v3-category-open" onClick={()=>{setSelectedGroupId(group.id);setMobileDetail(true);}}><span className="studio-v3-category-copy"><span className="studio-v3-group-type-line"><strong>{textFor(group.name,contentLanguage)||"—"}</strong>{depth>0?<span className="studio-v3-subcategory-tag">{t.subcategory}</span>:null}</span><small>{count} {t.items} · {group.visible===false?t.hidden:t.visible}</small></span><span className="studio-v3-chevron">›</span></button><div className="studio-v3-entity-controls"><div className="studio-v3-order-buttons"><button className="studio-v3-order-button" disabled={siblingIndex<=0} title={t.moveUp} onClick={()=>moveGroup(group.id,-1)}>↑</button><button className="studio-v3-order-button" disabled={siblingIndex<0||siblingIndex>=siblings.length-1} title={t.moveDown} onClick={()=>moveGroup(group.id,1)}>↓</button></div><VisibilityToggle visible={group.visible} onChange={()=>toggleVisibility(group.id,"groups")} t={t}/><button className="studio-v3-delete-button" title={t.delete} onClick={()=>deleteGroup(group.id)}>×</button></div></div>;})}</div>
         </section>
 
         <section className="studio-v3-panel studio-v3-items">
           <button className="studio-v3-mobile-back" onClick={()=>setMobileDetail(false)}>← {t.back}</button>
           <div className="studio-v3-panel-heading"><div><span className="studio-v3-eyebrow">{selectedDepth>0?t.subcategory:t.category}</span><h2>{textFor(selectedGroup?.name,contentLanguage)}</h2></div><button className="studio-v3-save-button" onClick={addItem}>+ {t.addItem}</button></div>
           {selectedGroup?<label className="studio-v3-field studio-v3-group-name-field"><span>{t.groupName}</span><input value={selectedGroup.name?.[contentLanguage]||""} onChange={e=>renameSelectedGroup(e.target.value)}/></label>:null}
-          <div className="studio-v3-item-list">{selectedItems.map(item=><article className={`studio-v3-item-card ${item.visible===false?"is-hidden":""}`} key={item.id}><div className="studio-v3-item-copy"><div className="studio-v3-item-title-row"><strong>{textFor(item.name,contentLanguage)||"—"}</strong><span>{priceText(item,currencySymbol)}</span></div><p>{textFor(item.description,contentLanguage)||t.noDescription}</p></div><div className="studio-v3-item-actions"><button onClick={()=>openItem(item)}>{t.edit}</button><button onClick={()=>toggleVisibility(item.id,"items")}>{item.visible===false?t.show:t.hide}</button></div></article>)}</div>
+          <div className="studio-v3-item-list">{selectedItems.map((item,index)=><article className={`studio-v3-item-card ${item.visible===false?"is-hidden":""}`} key={item.id}><div className="studio-v3-item-copy"><div className="studio-v3-item-title-row"><strong>{textFor(item.name,contentLanguage)||"—"}</strong><span>{priceText(item,currencySymbol)}</span></div><p>{textFor(item.description,contentLanguage)||t.noDescription}</p></div><div className="studio-v3-item-actions"><button onClick={()=>openItem(item)}>{t.edit}</button><div className="studio-v3-entity-controls"><div className="studio-v3-order-buttons"><button className="studio-v3-order-button" disabled={index===0} title={t.moveUp} onClick={()=>moveItem(item.id,-1)}>↑</button><button className="studio-v3-order-button" disabled={index===selectedItems.length-1} title={t.moveDown} onClick={()=>moveItem(item.id,1)}>↓</button></div><VisibilityToggle visible={item.visible} onChange={()=>toggleVisibility(item.id,"items")} t={t}/><button className="studio-v3-delete-button" title={t.delete} onClick={()=>deleteItem(item.id)}>×</button></div></div></article>)}</div>
         </section>
       </div>}
 
