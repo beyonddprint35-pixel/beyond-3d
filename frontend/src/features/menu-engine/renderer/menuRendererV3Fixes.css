@@ -1,6 +1,7 @@
 @import "./menuPresentationPremiumProfiles.css";
 @import "./menuPresentationSignatureProfiles.css";
 @import "./menuPresentationPhase3Profiles.css";
+@import "./menuPresentationHeritageClassic.css";
 
 /* V3 public menu compatibility/accessibility fixes. Keep generic: no customer-specific selectors. */
 
