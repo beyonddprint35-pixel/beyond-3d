@@ -154,11 +154,12 @@ export default function MenuRenderer({ menu, design: incomingDesign, accessibili
   const restaurantName = menu?.restaurant_name || "Restaurant";
   const badgeStyle = resolvedBadgeStyle(design);
   const currencySymbol = menu?.currency_symbol || DEFAULT_CURRENCY_SYMBOL;
+  const logoUrl = Object.prototype.hasOwnProperty.call(design.brand,"logoUrl") ? design.brand.logoUrl : menu?.logo_url;
   const menuClasses = ["bme-menu",`bme-template-${design.template}`,`bme-badge-style-${badgeStyle}`,`bme-density-${design.layout.density}`,`bme-nav-${design.layout.navigationStyle}`,`bme-logo-${design.brand.logoShape}`].join(" ");
 
   return <div className={menuClasses} style={designVariables(design)} dir={rtl?"rtl":"ltr"} lang={language}>
     {accessibility?<RestaurantAccessibility restaurantName={restaurantName}/>:null}
-    <header className="bme-header"><div className="bme-brand">{menu?.logo_url?<img src={menu.logo_url} alt={`${restaurantName} logo`}/>:null}<div><strong>{restaurantName}</strong>{menu?.subtitle?<span>{chooseText(language,menu.subtitle)}</span>:null}</div></div>{languages.length>1?<div className="bme-languages" aria-label="Menu language">{languages.map(code=><button key={code} type="button" className={language===code?"active":""} onClick={()=>setLanguage(code)}>{code.toUpperCase()}</button>)}</div>:null}</header>
+    <header className="bme-header"><div className="bme-brand">{logoUrl?<img src={logoUrl} alt={`${restaurantName} logo`}/>:null}<div><strong>{restaurantName}</strong>{menu?.subtitle?<span>{chooseText(language,menu.subtitle)}</span>:null}</div></div>{languages.length>1?<div className="bme-languages" aria-label="Menu language">{languages.map(code=><button key={code} type="button" className={language===code?"active":""} onClick={()=>setLanguage(code)}>{code.toUpperCase()}</button>)}</div>:null}</header>
     <section className="bme-hero"><span>{chooseText(language,menu?.hero_kicker)}</span><h1>{chooseText(language,menu?.hero_title)||restaurantName||"Our Menu"}</h1></section>
     <nav className="bme-category-nav" aria-label="Menu categories">{topGroups.map(group=><button key={group.id} type="button" className={activeGroup?.id===group.id?"active":""} onClick={()=>setActiveGroupId(group.id)}>{chooseText(language,group.name)}</button>)}</nav>
     <main id="restaurant-main-content" className="bme-content" tabIndex="-1">{activeGroup?<section className="bme-section"><div className="bme-section-heading"><h2>{chooseText(language,activeGroup.name)}</h2><span>{visibleItemCount} items</span></div><div className="bme-group-blocks">{contentBlocks.map(block=>{
