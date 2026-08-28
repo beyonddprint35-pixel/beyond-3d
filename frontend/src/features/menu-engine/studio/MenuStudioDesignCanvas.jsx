@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import MenuRenderer from "../renderer/MenuRenderer";
+import installMenuTypographyGuard from "../renderer/menuTypographyGuard";
 import "./MenuStudioDesignCanvas.css";
 
 const VIEWPORTS = Object.freeze({
@@ -7,6 +9,8 @@ const VIEWPORTS = Object.freeze({
   tablet: { width:768, height:820 },
   desktop: { width:1080, height:720 },
 });
+const DEVICE_CHROME_HEIGHT = 24;
+const PREVIEW_DOCUMENT = "<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'></head><body><div id='beyond-menu-preview-root'></div></body></html>";
 
 const COPY = {
   en:{mobile:"Mobile",tablet:"Tablet",desktop:"Desktop",fit:"Fit",zoomOut:"Zoom out",zoomIn:"Zoom in",resetZoom:"Reset to 100%",live:"Live"},
@@ -20,14 +24,38 @@ function DeviceIcon({ type }) {
   return <span className={`studio-v3-canvas-device-icon ${type}`} aria-hidden="true"/>;
 }
 
+function clonePreviewStyles(targetDocument) {
+  targetDocument.head.querySelectorAll("[data-beyond-preview-style]").forEach((node) => node.remove());
+  document.querySelectorAll('link[rel="stylesheet"],style').forEach((node) => {
+    const clone = node.cloneNode(true);
+    clone.setAttribute("data-beyond-preview-style", "true");
+    targetDocument.head.appendChild(clone);
+  });
+
+  const previewBase = targetDocument.createElement("style");
+  previewBase.setAttribute("data-beyond-preview-style", "true");
+  previewBase.textContent = `
+    html,body,#beyond-menu-preview-root{margin:0;min-height:100%;width:100%;background:#fff}
+    html{scrollbar-width:none}
+    html::-webkit-scrollbar,body::-webkit-scrollbar{display:none}
+    body{overflow-x:hidden}
+    #beyond-menu-preview-root{isolation:isolate}
+    .restaurant-a11y-toggle,.restaurant-a11y-panel,.restaurant-a11y-statement-backdrop{display:none!important}
+  `;
+  targetDocument.head.appendChild(previewBase);
+}
+
 export default function MenuStudioDesignCanvas({ menu, design, language="en", uiLanguage="en", label="Live preview" }) {
   const copy = COPY[uiLanguage] || COPY.en;
   const stageRef = useRef(null);
+  const iframeRef = useRef(null);
+  const [iframeRoot,setIframeRoot] = useState(null);
   const [deviceKey,setDeviceKey] = useState("mobile");
   const [fitMode,setFitMode] = useState(true);
   const [zoom,setZoom] = useState(.8);
   const [fitScale,setFitScale] = useState(.8);
   const device = VIEWPORTS[deviceKey];
+  const outerHeight = device.height + DEVICE_CHROME_HEIGHT;
 
   useEffect(() => {
     const stage = stageRef.current;
@@ -35,7 +63,7 @@ export default function MenuStudioDesignCanvas({ menu, design, language="en", ui
     const measure = () => {
       const rect = stage.getBoundingClientRect();
       const widthScale = Math.max(0,(rect.width - 58) / device.width);
-      const heightScale = Math.max(0,(rect.height - 58) / device.height);
+      const heightScale = Math.max(0,(rect.height - 58) / outerHeight);
       const next = clamp(Math.min(widthScale,heightScale,1),.34,1);
       setFitScale(Number.isFinite(next) ? next : .8);
     };
@@ -47,12 +75,33 @@ export default function MenuStudioDesignCanvas({ menu, design, language="en", ui
     const observer = new ResizeObserver(measure);
     observer.observe(stage);
     return () => observer.disconnect();
-  },[device.width,device.height]);
+  },[device.width,outerHeight]);
+
+  useEffect(() => {
+    if (!iframeRoot?.ownerDocument) return undefined;
+    return installMenuTypographyGuard(iframeRoot.ownerDocument);
+  },[iframeRoot]);
+
+  useEffect(() => {
+    const frameWindow = iframeRef.current?.contentWindow;
+    const frameDocument = iframeRef.current?.contentDocument;
+    if (!frameWindow || !frameDocument) return;
+    frameWindow.scrollTo(0,0);
+    frameDocument.documentElement.scrollTop = 0;
+    frameDocument.body.scrollTop = 0;
+  },[deviceKey,design?.template,design?.layout?.presentation,language]);
 
   const scale = fitMode ? fitScale : zoom;
   const percent = Math.round(scale * 100);
-  const holderStyle = useMemo(() => ({ width:`${Math.round(device.width * scale)}px`, height:`${Math.round(device.height * scale)}px` }),[device.width,device.height,scale]);
-  const deviceStyle = useMemo(() => ({ width:`${device.width}px`, height:`${device.height}px`, transform:`scale(${scale})` }),[device.width,device.height,scale]);
+  const holderStyle = useMemo(() => ({ width:`${Math.round(device.width * scale)}px`, height:`${Math.round(outerHeight * scale)}px` }),[device.width,outerHeight,scale]);
+  const deviceStyle = useMemo(() => ({ width:`${device.width}px`, height:`${outerHeight}px`, transform:`scale(${scale})` }),[device.width,outerHeight,scale]);
+
+  function preparePreviewFrame() {
+    const frameDocument = iframeRef.current?.contentDocument;
+    if (!frameDocument) return;
+    clonePreviewStyles(frameDocument);
+    setIframeRoot(frameDocument.getElementById("beyond-menu-preview-root"));
+  }
 
   function chooseDevice(key) {
     setDeviceKey(key);
@@ -91,9 +140,17 @@ export default function MenuStudioDesignCanvas({ menu, design, language="en", ui
       <div className="studio-v3-design-canvas-holder" style={holderStyle}>
         <div className={`studio-v3-design-device-frame ${deviceKey}`} style={deviceStyle}>
           <div className="studio-v3-design-device-chrome" aria-hidden="true"><span/><span/><span/></div>
-          <div className="studio-v3-design-device-scroll">
-            <MenuRenderer menu={menu} design={design} initialLanguage={language}/>
-          </div>
+          <iframe
+            ref={iframeRef}
+            className="studio-v3-design-device-iframe"
+            title={`${copy[deviceKey]} menu preview`}
+            srcDoc={PREVIEW_DOCUMENT}
+            onLoad={preparePreviewFrame}
+          />
+          {iframeRoot ? createPortal(
+            <MenuRenderer menu={menu} design={design} initialLanguage={language} previewMode showAccessibility={false}/>,
+            iframeRoot,
+          ) : null}
         </div>
       </div>
     </div>
