@@ -3,6 +3,7 @@ export const BEYOND_PHOTO_PROFILE = "natural-auto-v1";
 const MAX_SOURCE_BYTES = 20 * 1024 * 1024;
 const MAX_UPLOAD_BYTES = 4.75 * 1024 * 1024;
 const ANALYSIS_SIZE = 180;
+const DEFAULT_THEME_GRADE = Object.freeze({ brightness:1, contrast:1.04, saturation:1, sepia:0, hue:0, warmth:0, vignette:0.02 });
 
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
@@ -13,7 +14,7 @@ function canvasToBlob(canvas, type, quality) {
 }
 
 async function loadDrawable(file) {
-  if (!(file instanceof File) || !file.type.startsWith("image/")) {
+  if (!(file instanceof Blob) || !file.type.startsWith("image/")) {
     throw new Error("Choose a JPEG, PNG or WebP image.");
   }
   if (file.size > MAX_SOURCE_BYTES) {
@@ -146,7 +147,48 @@ function dimensionsFor(drawable, maxDimension) {
   };
 }
 
-async function renderVariant(drawable, analysis, { maxDimension, quality, enhanced }) {
+function naturalCorrection(analysis) {
+  return {
+    brightness:analysis.metrics.brightness < 90 ? 1.10 : analysis.metrics.brightness > 190 ? 0.96 : 1.02,
+    contrast:analysis.metrics.contrast < 35 ? 1.12 : 1.06,
+    saturation:1.06,
+  };
+}
+
+function safeGrade(profile) {
+  const grade = profile?.grade || DEFAULT_THEME_GRADE;
+  return {
+    brightness:clamp(Number(grade.brightness) || 1, 0.9, 1.12),
+    contrast:clamp(Number(grade.contrast) || 1, 0.9, 1.22),
+    saturation:clamp(Number(grade.saturation) || 1, 0.82, 1.2),
+    sepia:clamp(Number(grade.sepia) || 0, 0, 0.08),
+    hue:clamp(Number(grade.hue) || 0, -6, 6),
+    warmth:clamp(Number(grade.warmth) || 0, 0, 0.08),
+    vignette:clamp(Number(grade.vignette) || 0, 0, 0.18),
+  };
+}
+
+function applyFinishing(context, width, height, grade) {
+  if (grade.warmth > 0) {
+    context.save();
+    context.globalCompositeOperation = "soft-light";
+    context.fillStyle = `rgba(255, 174, 92, ${grade.warmth})`;
+    context.fillRect(0, 0, width, height);
+    context.restore();
+  }
+
+  if (grade.vignette > 0) {
+    const radius = Math.max(width, height) * 0.72;
+    const gradient = context.createRadialGradient(width / 2, height / 2, radius * 0.28, width / 2, height / 2, radius);
+    gradient.addColorStop(0, "rgba(0,0,0,0)");
+    gradient.addColorStop(0.68, "rgba(0,0,0,0)");
+    gradient.addColorStop(1, `rgba(0,0,0,${grade.vignette})`);
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, width, height);
+  }
+}
+
+async function renderVariant(drawable, analysis, { maxDimension, quality, mode="original", profile=null }) {
   const { width, height } = dimensionsFor(drawable, maxDimension);
   const canvas = document.createElement("canvas");
   canvas.width = width;
@@ -156,15 +198,20 @@ async function renderVariant(drawable, analysis, { maxDimension, quality, enhanc
   context.imageSmoothingEnabled = true;
   context.imageSmoothingQuality = "high";
 
-  if (enhanced && "filter" in context) {
-    const brightness = analysis.metrics.brightness < 90 ? 1.10 : analysis.metrics.brightness > 190 ? 0.96 : 1.02;
-    const contrast = analysis.metrics.contrast < 35 ? 1.12 : 1.06;
-    const saturation = 1.06;
-    context.filter = `brightness(${brightness}) contrast(${contrast}) saturate(${saturation})`;
+  if (mode !== "original" && "filter" in context) {
+    const correction = naturalCorrection(analysis);
+    if (mode === "theme") {
+      const grade = safeGrade(profile);
+      context.filter = `brightness(${clamp(correction.brightness * grade.brightness, 0.9, 1.16)}) contrast(${clamp(correction.contrast * grade.contrast, 0.95, 1.28)}) saturate(${clamp(correction.saturation * grade.saturation, 0.82, 1.24)}) sepia(${grade.sepia}) hue-rotate(${grade.hue}deg)`;
+    } else {
+      context.filter = `brightness(${correction.brightness}) contrast(${correction.contrast}) saturate(${correction.saturation})`;
+    }
   }
 
   context.drawImage(drawable.source, 0, 0, width, height);
   context.filter = "none";
+
+  if (mode === "theme") applyFinishing(context, width, height, safeGrade(profile));
 
   let blob = await canvasToBlob(canvas, "image/webp", quality);
   let extension = "webp";
@@ -176,33 +223,52 @@ async function renderVariant(drawable, analysis, { maxDimension, quality, enhanc
   return { blob, extension, width, height };
 }
 
-async function renderBoundedVariant(drawable, analysis, enhanced) {
-  const attempts = enhanced
-    ? [[1800, 0.84], [1500, 0.78], [1200, 0.70]]
-    : [[2200, 0.88], [1800, 0.82], [1400, 0.74]];
+async function renderBoundedVariant(drawable, analysis, mode, profile=null) {
+  const attempts = mode === "original"
+    ? [[2200, 0.88], [1800, 0.82], [1400, 0.74]]
+    : [[1800, 0.84], [1500, 0.78], [1200, 0.70]];
 
   let result = null;
   for (const [maxDimension, quality] of attempts) {
-    result = await renderVariant(drawable, analysis, { maxDimension, quality, enhanced });
+    result = await renderVariant(drawable, analysis, { maxDimension, quality, mode, profile });
     if (result.blob.size <= MAX_UPLOAD_BYTES) return result;
   }
   throw new Error("This photo is still too large after optimization. Try a smaller image.");
 }
 
-export async function prepareBeyondMenuPhoto(file) {
+export async function prepareBeyondMenuPhoto(file, { themeProfile=null } = {}) {
   const drawable = await loadDrawable(file);
   try {
     const analysis = analyzeDrawable(drawable);
-    const [original, processed] = await Promise.all([
-      renderBoundedVariant(drawable, analysis, false),
-      renderBoundedVariant(drawable, analysis, true),
+    const [original, processed, theme] = await Promise.all([
+      renderBoundedVariant(drawable, analysis, "original"),
+      renderBoundedVariant(drawable, analysis, "enhanced"),
+      themeProfile ? renderBoundedVariant(drawable, analysis, "theme", themeProfile) : Promise.resolve(null),
     ]);
 
     return {
       original,
       processed,
+      theme,
       analysis,
       profile:BEYOND_PHOTO_PROFILE,
+      themeProfile:themeProfile?.id || "",
+      processedAt:new Date().toISOString(),
+    };
+  } finally {
+    drawable.cleanup?.();
+  }
+}
+
+export async function prepareBeyondThemePhoto(file, themeProfile) {
+  const drawable = await loadDrawable(file);
+  try {
+    const analysis = analyzeDrawable(drawable);
+    const theme = await renderBoundedVariant(drawable, analysis, "theme", themeProfile);
+    return {
+      theme,
+      analysis,
+      themeProfile:themeProfile?.id || "",
       processedAt:new Date().toISOString(),
     };
   } finally {
