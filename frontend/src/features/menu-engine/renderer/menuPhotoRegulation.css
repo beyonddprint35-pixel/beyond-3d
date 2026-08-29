@@ -1,60 +1,66 @@
 /* =========================================================
    BEYOND MENU ENGINE — PHOTO REGULATION
-   Global visual invariant layer shared by every image-led template.
-   Keeps customer photos readable, prevents oversized media blocks and
-   protects source images when a template crop would remove too much.
+   Shared photo-framing rules for every image-led template.
+
+   Product rule:
+   - never letterbox item photos with visible/blurred side bars
+   - prefer a clean crop over duplicated-background filler
+   - adapt card geometry when the source is strongly portrait
+   - cap oversized editorial media on tablet / desktop
+   - keep cinematic templates full-bleed
    ========================================================= */
 
-/* No menu item photo should dominate an entire screen simply because the
-   template uses a large editorial span. The width remains template-driven;
-   only the media height is regulated. */
 .bme-menu .bme-item-media{
   position:relative;
   isolation:isolate;
-  max-block-size:clamp(240px,40vw,400px);
+  overflow:hidden;
+  background:var(--bme-accent-secondary);
 }
 
 .bme-menu .bme-item-media>img{
   position:relative;
   z-index:1;
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
   object-position:50% 50%;
-  transition:object-fit .18s ease,opacity .18s ease;
 }
 
-/* When cover would crop away more than the allowed amount, MenuRenderer
-   switches the frame to protected mode. The complete photograph remains
-   visible while a softened copy of the same image fills the frame behind it,
-   avoiding empty letterbox bars. */
-.bme-menu .bme-item-media[data-photo-fit="protect"]{
-  background:color-mix(in srgb,var(--bme-card) 72%,var(--bme-accent-secondary));
-}
-
+/* The previous protected mode used contain + a blurred duplicate image.
+   That created visible side bars. Protected photos now stay clean and use
+   the source-orientation rules below instead. */
 .bme-menu .bme-item-media[data-photo-fit="protect"]::before{
-  content:"";
-  position:absolute;
-  z-index:0;
-  inset:-10%;
-  background-image:var(--bme-photo-image);
-  background-repeat:no-repeat;
-  background-position:center;
-  background-size:cover;
-  filter:blur(18px) saturate(.82) brightness(.74);
-  opacity:.42;
-  transform:scale(1.08);
-  pointer-events:none;
+  content:none;
 }
 
 .bme-menu .bme-item-media[data-photo-fit="protect"]>img{
-  object-fit:contain;
-  padding:clamp(2px,.45vw,6px);
+  object-fit:cover;
+  padding:0;
 }
 
-/* Template gradients and cinematic overlays remain above the regulated image. */
-.bme-menu .bme-item-media::after{z-index:2}
+/* Standard stacked cards choose the closest useful frame for the source.
+   This keeps portrait dishes from being forced into a very wide crop while
+   preserving the template's composition for balanced / landscape photos. */
+.bme-menu:not(.bme-presentation-noir-gallery):not(.bme-presentation-luxury-steak):not(.bme-presentation-smokehouse-story):not(.bme-presentation-riviera):not(.bme-presentation-botanical)
+  .bme-item-media[data-photo-source="portrait"]{
+  aspect-ratio:4/5!important;
+  max-block-size:420px;
+}
 
-/* Split-story designs previously forced tall rows (330–400px+) even when
-   their content did not need the height. Let content determine the row and
-   keep the photograph within the global media ceiling. */
+.bme-menu:not(.bme-presentation-noir-gallery):not(.bme-presentation-luxury-steak):not(.bme-presentation-smokehouse-story):not(.bme-presentation-riviera):not(.bme-presentation-botanical)
+  .bme-item-media[data-photo-source="balanced"]{
+  max-block-size:380px;
+}
+
+.bme-menu:not(.bme-presentation-noir-gallery):not(.bme-presentation-luxury-steak):not(.bme-presentation-smokehouse-story):not(.bme-presentation-riviera):not(.bme-presentation-botanical)
+  .bme-item-media[data-photo-source="landscape"]{
+  max-block-size:360px;
+}
+
+/* Split-story templates: keep the image panel controlled instead of allowing
+   a photo to stretch the full card height indefinitely. Portrait sources get
+   a narrower image column on larger screens, reducing crop without bars. */
 .bme-menu.bme-presentation-smokehouse-story .bme-visual-item,
 .bme-menu.bme-presentation-smokehouse-story .bme-visual-item:first-child,
 .bme-menu.bme-presentation-riviera .bme-visual-item,
@@ -69,8 +75,35 @@
   max-block-size:360px;
 }
 
-/* Full-bleed cinema cards still feel cinematic, but no longer create giant
-   photo panels on tablet or desktop. */
+@media(min-width:761px){
+  .bme-menu.bme-presentation-smokehouse-story .bme-visual-item:has(.bme-item-media[data-photo-source="portrait"]),
+  .bme-menu.bme-presentation-smokehouse-story .bme-visual-item:first-child:has(.bme-item-media[data-photo-source="portrait"]){
+    grid-template-columns:minmax(230px,.7fr) minmax(0,1.3fr);
+  }
+
+  .bme-menu.bme-presentation-smokehouse-story .bme-visual-item:nth-child(even):has(.bme-item-media[data-photo-source="portrait"]){
+    grid-template-columns:minmax(0,1.3fr) minmax(230px,.7fr);
+  }
+
+  .bme-menu.bme-presentation-riviera .bme-visual-item:has(.bme-item-media[data-photo-source="portrait"]),
+  .bme-menu.bme-presentation-botanical .bme-visual-item:has(.bme-item-media[data-photo-source="portrait"]){
+    grid-template-columns:minmax(230px,.72fr) minmax(0,1.28fr);
+  }
+
+  .bme-menu.bme-presentation-riviera .bme-visual-item:nth-child(even):has(.bme-item-media[data-photo-source="portrait"]),
+  .bme-menu.bme-presentation-botanical .bme-visual-item:nth-child(even):has(.bme-item-media[data-photo-source="portrait"]){
+    grid-template-columns:minmax(0,1.28fr) minmax(230px,.72fr);
+  }
+}
+
+/* Full-bleed cinema templates must remain edge-to-edge. Their media is never
+   height-capped directly; the card controls the framing. Portrait sources
+   get a taller card instead of contain/letterboxing. */
+.bme-menu.bme-presentation-noir-gallery .bme-item-media,
+.bme-menu.bme-presentation-luxury-steak .bme-item-media{
+  max-block-size:none;
+}
+
 .bme-menu.bme-presentation-noir-gallery .bme-visual-item,
 .bme-menu.bme-presentation-luxury-steak .bme-visual-item{
   min-height:clamp(280px,31vw,360px);
@@ -81,8 +114,45 @@
   min-height:clamp(320px,36vw,420px);
 }
 
+@media(min-width:761px){
+  .bme-menu.bme-presentation-noir-gallery .bme-visual-item:has(.bme-item-media[data-photo-source="portrait"]),
+  .bme-menu.bme-presentation-luxury-steak .bme-visual-item:has(.bme-item-media[data-photo-source="portrait"]){
+    min-height:clamp(390px,48vw,500px);
+  }
+
+  .bme-menu.bme-presentation-noir-gallery .bme-visual-item:first-child:has(.bme-item-media[data-photo-source="portrait"]),
+  .bme-menu.bme-presentation-luxury-steak .bme-visual-item:first-child:has(.bme-item-media[data-photo-source="portrait"]){
+    grid-column:auto;
+    min-height:clamp(430px,52vw,540px);
+  }
+}
+
+/* Existing template overlays stay above the image. */
+.bme-menu .bme-item-media::after{z-index:2}
+
 @media(max-width:760px){
-  .bme-menu .bme-item-media{max-block-size:300px}
+  /* On stacked mobile/tablet story cards, use the source orientation itself
+     rather than forcing every photo into 16:10. */
+  .bme-menu.bme-presentation-smokehouse-story .bme-item-media[data-photo-source="portrait"],
+  .bme-menu.bme-presentation-riviera .bme-item-media[data-photo-source="portrait"],
+  .bme-menu.bme-presentation-botanical .bme-item-media[data-photo-source="portrait"]{
+    aspect-ratio:4/5!important;
+    max-block-size:340px;
+  }
+
+  .bme-menu.bme-presentation-smokehouse-story .bme-item-media[data-photo-source="balanced"],
+  .bme-menu.bme-presentation-riviera .bme-item-media[data-photo-source="balanced"],
+  .bme-menu.bme-presentation-botanical .bme-item-media[data-photo-source="balanced"]{
+    aspect-ratio:4/3!important;
+    max-block-size:300px;
+  }
+
+  .bme-menu.bme-presentation-smokehouse-story .bme-item-media[data-photo-source="landscape"],
+  .bme-menu.bme-presentation-riviera .bme-item-media[data-photo-source="landscape"],
+  .bme-menu.bme-presentation-botanical .bme-item-media[data-photo-source="landscape"]{
+    aspect-ratio:16/10!important;
+    max-block-size:280px;
+  }
 
   .bme-menu.bme-presentation-noir-gallery .bme-visual-item,
   .bme-menu.bme-presentation-noir-gallery .bme-visual-item:first-child,
@@ -90,15 +160,32 @@
   .bme-menu.bme-presentation-luxury-steak .bme-visual-item:first-child{
     min-height:300px;
   }
+
+  .bme-menu.bme-presentation-noir-gallery .bme-visual-item:has(.bme-item-media[data-photo-source="portrait"]),
+  .bme-menu.bme-presentation-noir-gallery .bme-visual-item:first-child:has(.bme-item-media[data-photo-source="portrait"]),
+  .bme-menu.bme-presentation-luxury-steak .bme-visual-item:has(.bme-item-media[data-photo-source="portrait"]),
+  .bme-menu.bme-presentation-luxury-steak .bme-visual-item:first-child:has(.bme-item-media[data-photo-source="portrait"]){
+    min-height:360px;
+  }
 }
 
 @media(max-width:430px){
-  .bme-menu .bme-item-media{max-block-size:260px}
+  .bme-menu:not(.bme-presentation-noir-gallery):not(.bme-presentation-luxury-steak)
+    .bme-item-media[data-photo-source="portrait"]{
+    max-block-size:320px;
+  }
 
   .bme-menu.bme-presentation-noir-gallery .bme-visual-item,
   .bme-menu.bme-presentation-noir-gallery .bme-visual-item:first-child,
   .bme-menu.bme-presentation-luxury-steak .bme-visual-item,
   .bme-menu.bme-presentation-luxury-steak .bme-visual-item:first-child{
-    min-height:270px;
+    min-height:285px;
+  }
+
+  .bme-menu.bme-presentation-noir-gallery .bme-visual-item:has(.bme-item-media[data-photo-source="portrait"]),
+  .bme-menu.bme-presentation-noir-gallery .bme-visual-item:first-child:has(.bme-item-media[data-photo-source="portrait"]),
+  .bme-menu.bme-presentation-luxury-steak .bme-visual-item:has(.bme-item-media[data-photo-source="portrait"]),
+  .bme-menu.bme-presentation-luxury-steak .bme-visual-item:first-child:has(.bme-item-media[data-photo-source="portrait"]){
+    min-height:340px;
   }
 }
