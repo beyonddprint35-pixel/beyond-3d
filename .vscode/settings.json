@@ -1,9 +1,12 @@
 {
+  "task.allowAutomaticTasks": "on",
   "remote.restoreForwardedPorts": true,
+  "remote.autoForwardPorts": true,
+  "remote.autoForwardPortsSource": "process",
   "remote.portsAttributes": {
     "5174": {
       "label": "Beyond Menu Studio",
-      "onAutoForward": "openPreview"
+      "onAutoForward": "openBrowser"
     }
   }
 }
