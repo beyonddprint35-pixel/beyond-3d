@@ -19,16 +19,16 @@ const COPY = {
 };
 
 const clamp = (value,min,max) => Math.min(max,Math.max(min,value));
-const TARGET_SELECTOR = ".bme-item-badge,.bme-visual-item,.bme-classic-item,.bme-category-nav,.bme-hero,.bme-brand,.bme-header";
+const TARGET_SELECTOR = ".bme-item-badge,.bme-visual-item,.bme-classic-item,.bme-category-nav,.bme-hero,.bme-brand,.bme-header,.ep-item-row,.ep-tabs-wrap,.ep-hero,.ep-brand,.ep-header";
 
 function targetName(node) {
   if (!node) return "";
   if (node.classList.contains("bme-item-badge")) return "badges";
-  if (node.classList.contains("bme-visual-item") || node.classList.contains("bme-classic-item")) return "items";
-  if (node.classList.contains("bme-category-nav")) return "categories";
-  if (node.classList.contains("bme-hero")) return "hero";
-  if (node.classList.contains("bme-brand")) return "brand";
-  if (node.classList.contains("bme-header")) return "brand";
+  if (node.classList.contains("bme-visual-item") || node.classList.contains("bme-classic-item") || node.classList.contains("ep-item-row")) return "items";
+  if (node.classList.contains("bme-category-nav") || node.classList.contains("ep-tabs-wrap")) return "categories";
+  if (node.classList.contains("bme-hero") || node.classList.contains("ep-hero")) return "hero";
+  if (node.classList.contains("bme-brand") || node.classList.contains("ep-brand")) return "brand";
+  if (node.classList.contains("bme-header") || node.classList.contains("ep-header")) return "brand";
   return "";
 }
 
