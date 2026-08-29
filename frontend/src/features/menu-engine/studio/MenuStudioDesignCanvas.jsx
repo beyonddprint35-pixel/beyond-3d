@@ -13,12 +13,24 @@ const DEVICE_CHROME_HEIGHT = 24;
 const PREVIEW_DOCUMENT = "<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'></head><body><div id='beyond-menu-preview-root'></div></body></html>";
 
 const COPY = {
-  en:{mobile:"Mobile",tablet:"Tablet",desktop:"Desktop",fit:"Fit",zoomOut:"Zoom out",zoomIn:"Zoom in",resetZoom:"Reset to 100%",live:"Live"},
-  he:{mobile:"נייד",tablet:"טאבלט",desktop:"מחשב",fit:"התאם",zoomOut:"הקטן",zoomIn:"הגדל",resetZoom:"חזרה ל־100%",live:"חי"},
-  ar:{mobile:"هاتف",tablet:"جهاز لوحي",desktop:"سطح المكتب",fit:"ملاءمة",zoomOut:"تصغير",zoomIn:"تكبير",resetZoom:"العودة إلى 100%",live:"مباشر"},
+  en:{mobile:"Mobile",tablet:"Tablet",desktop:"Desktop",fit:"Fit",zoomOut:"Zoom out",zoomIn:"Zoom in",resetZoom:"Reset to 100%",live:"Live",editHint:"Click any part of the menu to edit it"},
+  he:{mobile:"נייד",tablet:"טאבלט",desktop:"מחשב",fit:"התאם",zoomOut:"הקטן",zoomIn:"הגדל",resetZoom:"חזרה ל־100%",live:"חי",editHint:"לחצו על כל חלק בתפריט כדי לערוך אותו"},
+  ar:{mobile:"هاتف",tablet:"جهاز لوحي",desktop:"سطح المكتب",fit:"ملاءمة",zoomOut:"تصغير",zoomIn:"تكبير",resetZoom:"العودة إلى 100%",live:"مباشر",editHint:"انقر على أي جزء من القائمة لتعديله"},
 };
 
 const clamp = (value,min,max) => Math.min(max,Math.max(min,value));
+const TARGET_SELECTOR = ".bme-item-badge,.bme-visual-item,.bme-classic-item,.bme-category-nav,.bme-hero,.bme-brand,.bme-header";
+
+function targetName(node) {
+  if (!node) return "";
+  if (node.classList.contains("bme-item-badge")) return "badges";
+  if (node.classList.contains("bme-visual-item") || node.classList.contains("bme-classic-item")) return "items";
+  if (node.classList.contains("bme-category-nav")) return "categories";
+  if (node.classList.contains("bme-hero")) return "hero";
+  if (node.classList.contains("bme-brand")) return "brand";
+  if (node.classList.contains("bme-header")) return "brand";
+  return "";
+}
 
 function DeviceIcon({ type }) {
   return <span className={`studio-v3-canvas-device-icon ${type}`} aria-hidden="true"/>;
@@ -45,6 +57,8 @@ function clonePreviewStyles(targetDocument) {
     .bme-item-media-placeholder span{display:none!important}
     .bme-item-media-placeholder:before{content:"";width:42px;height:32px;border:1px solid color-mix(in srgb,var(--bme-text) 24%,transparent);border-radius:9px;background:linear-gradient(145deg,transparent 54%,color-mix(in srgb,var(--bme-text) 12%,transparent) 55% 64%,transparent 65%),color-mix(in srgb,var(--bme-surface) 72%,transparent);box-shadow:0 8px 22px color-mix(in srgb,var(--bme-text) 10%,transparent)}
     .bme-item-media-placeholder:after{content:"PHOTO";position:absolute;inset-inline:0;bottom:18%;text-align:center;font:800 8px/1 var(--bme-body-font);letter-spacing:.18em;color:color-mix(in srgb,var(--bme-text) 52%,transparent)}
+    .beyond-design-target-hover{outline:2px solid #4974e5!important;outline-offset:-2px!important;cursor:pointer!important}
+    .beyond-design-target-selected{outline:3px solid #4974e5!important;outline-offset:-3px!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.75)!important}
   `;
   targetDocument.head.appendChild(previewBase);
 }
@@ -87,6 +101,47 @@ export default function MenuStudioDesignCanvas({ menu, design, language="en", ui
   },[iframeRoot]);
 
   useEffect(() => {
+    const frameDocument = iframeRoot?.ownerDocument;
+    if (!frameDocument) return undefined;
+    let hovered = null;
+    let selected = null;
+    const resolve = event => event.target?.closest?.(TARGET_SELECTOR) || null;
+    const onPointerOver = event => {
+      const node = resolve(event);
+      if (hovered === node) return;
+      hovered?.classList.remove("beyond-design-target-hover");
+      hovered = node;
+      hovered?.classList.add("beyond-design-target-hover");
+    };
+    const onPointerOut = event => {
+      if (!hovered) return;
+      const next = event.relatedTarget;
+      if (next && hovered.contains(next)) return;
+      hovered.classList.remove("beyond-design-target-hover");
+      hovered = null;
+    };
+    const onClick = event => {
+      const node = resolve(event);
+      const focus = targetName(node);
+      if (!node || !focus) return;
+      selected?.classList.remove("beyond-design-target-selected");
+      selected = node;
+      selected.classList.add("beyond-design-target-selected");
+      window.dispatchEvent(new CustomEvent("beyond-menu-design-focus",{detail:{focus}}));
+    };
+    frameDocument.addEventListener("pointerover",onPointerOver,true);
+    frameDocument.addEventListener("pointerout",onPointerOut,true);
+    frameDocument.addEventListener("click",onClick,true);
+    return () => {
+      hovered?.classList.remove("beyond-design-target-hover");
+      selected?.classList.remove("beyond-design-target-selected");
+      frameDocument.removeEventListener("pointerover",onPointerOver,true);
+      frameDocument.removeEventListener("pointerout",onPointerOut,true);
+      frameDocument.removeEventListener("click",onClick,true);
+    };
+  },[iframeRoot,design?.template,design?.layout?.presentation]);
+
+  useEffect(() => {
     const frameWindow = iframeRef.current?.contentWindow;
     const frameDocument = iframeRef.current?.contentDocument;
     if (!frameWindow || !frameDocument) return;
@@ -125,6 +180,7 @@ export default function MenuStudioDesignCanvas({ menu, design, language="en", ui
       <div className="studio-v3-design-canvas-title">
         <span className="studio-v3-design-canvas-live"><i aria-hidden="true"/>{copy.live}</span>
         <strong>{label}</strong>
+        <small>{copy.editHint}</small>
       </div>
 
       <div className="studio-v3-design-canvas-device-switch" role="group" aria-label="Preview viewport">
