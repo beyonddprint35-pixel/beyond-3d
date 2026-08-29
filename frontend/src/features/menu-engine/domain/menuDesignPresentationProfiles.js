@@ -13,11 +13,13 @@ const PRESENTATION_PROFILES = Object.freeze({
   "noir-gallery": {
     layout: "Noir Cinema Gallery",
     presentation: "noir-gallery",
+    heroMediaMode: "image",
     tags: ["cinematic", "noir gallery", "nightlife"],
   },
   "riviera-split": {
     layout: "Riviera Story",
     presentation: "riviera",
+    heroMediaMode: "image",
     tags: ["riviera", "mediterranean story", "alternating panels"],
   },
   "omakase-minimal": {
@@ -33,6 +35,7 @@ const PRESENTATION_PROFILES = Object.freeze({
   "gallery-white": {
     layout: "White Gallery",
     presentation: "white-gallery",
+    heroMediaMode: "image",
     tags: ["white gallery", "photography", "clean showcase"],
   },
   "studio-cafe-tiles": {
@@ -53,6 +56,7 @@ const PRESENTATION_PROFILES = Object.freeze({
   "coastal-split": {
     layout: "Coastal Story",
     presentation: "coastal-story",
+    heroMediaMode: "image",
     tags: ["coastal story", "beach", "image panels"],
   },
   "monochrome-editorial": {
@@ -73,11 +77,13 @@ const PRESENTATION_PROFILES = Object.freeze({
   "garden-split": {
     layout: "Garden Journal",
     presentation: "garden-journal",
+    heroMediaMode: "image",
     tags: ["garden journal", "seasonal story", "farm to table"],
   },
   "bakery-tiles": {
     layout: "Bakery Counter",
     presentation: "bakery-counter",
+    heroMediaMode: "image",
     tags: ["bakery counter", "pastry shelf", "cafe display"],
   },
   "neon-bottom-tabs": {
@@ -93,6 +99,7 @@ const PRESENTATION_PROFILES = Object.freeze({
   "tapas-magazine": {
     layout: "Tapas Collage",
     presentation: "tapas-collage",
+    heroMediaMode: "image",
     tags: ["tapas collage", "spanish editorial", "shared plates"],
   },
   "steakhouse-ledger": {
@@ -103,11 +110,13 @@ const PRESENTATION_PROFILES = Object.freeze({
   "brunch-photo-story": {
     layout: "Brunch Polaroids",
     presentation: "brunch-polaroids",
+    heroMediaMode: "image",
     tags: ["brunch polaroids", "breakfast story", "sunny photos"],
   },
   "rose-cocktail-cards": {
     layout: "Rose Lounge Cards",
     presentation: "rose-lounge",
+    heroMediaMode: "image",
     tags: ["rose lounge", "cocktail cards", "rooftop"],
   },
   "blue-category-launcher": {
@@ -123,6 +132,7 @@ const PRESENTATION_PROFILES = Object.freeze({
   "mezze-mosaic": {
     layout: "Mosaic",
     presentation: "mosaic",
+    heroMediaMode: "image",
     tags: ["mosaic", "asymmetric", "shared plates"],
   },
   "nordic-paper": {
@@ -138,31 +148,37 @@ const PRESENTATION_PROFILES = Object.freeze({
   "paris-patisserie": {
     layout: "Patisserie Showcase",
     presentation: "patisserie",
+    heroMediaMode: "image",
     tags: ["patisserie", "showcase", "pastry boutique"],
   },
   "smokehouse-story": {
     layout: "Smokehouse Cinema",
     presentation: "smokehouse-story",
+    heroMediaMode: "image",
     tags: ["smokehouse cinema", "low and slow", "bbq story"],
   },
   "tropical-club": {
     layout: "Tropical Mobile Club",
     presentation: "tropical-club",
+    heroMediaMode: "image",
     tags: ["tropical app", "floating dock", "beach club"],
   },
   "vegan-garden": {
     layout: "Botanical Split",
     presentation: "botanical",
+    heroMediaMode: "image",
     tags: ["botanical", "seasonal", "garden"],
   },
   "seafood-gallery": {
     layout: "Coastal Gallery",
     presentation: "coastal-gallery",
+    heroMediaMode: "image",
     tags: ["coastal gallery", "staggered", "raw bar"],
   },
   "breakfast-club": {
     layout: "Breakfast Board",
     presentation: "breakfast-board",
+    heroMediaMode: "image",
     tags: ["breakfast board", "brunch board", "morning"],
   },
   "taproom-board": {
@@ -173,11 +189,13 @@ const PRESENTATION_PROFILES = Object.freeze({
   "dessert-magazine": {
     layout: "Dessert Editorial Spread",
     presentation: "dessert-magazine",
+    heroMediaMode: "image",
     tags: ["dessert editorial", "asymmetric spread", "sweet gallery"],
   },
   "luxury-steak-story": {
     layout: "Prime Cut Cinema",
     presentation: "luxury-steak",
+    heroMediaMode: "image",
     tags: ["prime cut", "steak cinema", "luxury grill"],
   },
   "blue-launcher": {
@@ -211,6 +229,10 @@ export function applyMenuDesignPresentationProfile(entry) {
       layout: {
         ...entry.design?.layout,
         presentation: profile.presentation,
+      },
+      brand: {
+        ...entry.design?.brand,
+        ...(profile.heroMediaMode ? { heroMediaMode: profile.heroMediaMode } : {}),
       },
     },
   };
