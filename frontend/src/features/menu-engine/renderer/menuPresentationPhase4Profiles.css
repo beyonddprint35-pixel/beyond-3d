@@ -121,7 +121,7 @@
 .bme-presentation-luxury-steak .bme-price,.bme-presentation-luxury-steak .bme-price-options{color:var(--bme-accent)}
 
 /* ---------- Beyond Blue Launcher ---------- */
-.bme-presentation-blue-launcher .bme-header{border-bottom:0}
+.bme-presentation-blue-launcher .bme-header{border-bottom:0;background:var(--bme-surface)}
 .bme-presentation-blue-launcher .bme-hero{padding-block:54px 34px;background:transparent}
 .bme-presentation-blue-launcher .bme-hero h1{max-width:10ch;letter-spacing:-.055em}
 .bme-presentation-blue-launcher .bme-category-nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:124px;gap:10px;overflow:visible;padding-block:12px 38px}
