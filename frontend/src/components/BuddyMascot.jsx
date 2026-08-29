@@ -1,213 +1,24 @@
-import {
-  Canvas,
-} from "@react-three/fiber";
-
-import {
-  Center,
-  Environment,
-  useGLTF,
-} from "@react-three/drei";
-
-import {
-  Suspense,
-  useEffect,
-  useMemo,
-  useRef,
-} from "react";
-
-import * as THREE from "three";
-
-const WEBSITE_BLUE =
-  new THREE.Color("#4777EE");
-
-const TARGET_MODEL_HEIGHT = 2.2;
-
-function BuddyModel() {
-  const group = useRef();
-
-  const { scene } = useGLTF(
-    "/models/buddy-tests/buddy-new-50-meshopt.glb"
-  );
-
-  const buddyScene =
-    useMemo(
-      () => scene.clone(true),
-      [scene]
-    );
-
-  const normalizedScale =
-    useMemo(() => {
-      const box = new THREE.Box3().setFromObject(
-        buddyScene
-      );
-
-      const size = new THREE.Vector3();
-      box.getSize(size);
-
-      if (!Number.isFinite(size.y) || size.y <= 0) {
-        return 1;
-      }
-
-      return TARGET_MODEL_HEIGHT / size.y;
-    }, [buddyScene]);
-
-  useEffect(() => {
-    buddyScene.traverse(
-      (object) => {
-        if (
-          !object.isMesh ||
-          !object.material
-        ) {
-          return;
-        }
-
-        const materials =
-          Array.isArray(
-            object.material
-          )
-            ? object.material
-            : [object.material];
-
-        const nextMaterials =
-          materials.map(
-            (material) => {
-              const cloned =
-                material.clone();
-
-              if (!cloned.color) {
-                return cloned;
-              }
-
-              const {
-                r,
-                g,
-                b,
-              } =
-                cloned.color;
-
-              /*
-                Recolor only materials
-                that are clearly blue.
-
-                Leave:
-                - white face
-                - black eyes
-                - white shoes
-                - pink details
-                untouched.
-              */
-              const looksBlue =
-                b > r * 1.12 &&
-                b > g * 1.05 &&
-                b > 0.25;
-
-              if (looksBlue) {
-                cloned.color.copy(
-                  WEBSITE_BLUE
-                );
-
-                if (
-                  "roughness" in cloned
-                ) {
-                  cloned.roughness =
-                    Math.min(
-                      cloned.roughness ??
-                        0.6,
-                      0.72
-                    );
-                }
-              }
-
-              return cloned;
-            }
-          );
-
-        object.material =
-          Array.isArray(
-            object.material
-          )
-            ? nextMaterials
-            : nextMaterials[0];
-      }
-    );
-  }, [buddyScene]);
-
-  return (
-    <group
-      ref={group}
-      rotation={[
-        0,
-        -0.08,
-        0,
-      ]}
-    >
-      <Center>
-        <primitive
-          object={buddyScene}
-          scale={normalizedScale}
-        />
-      </Center>
-    </group>
-  );
-}
-
 export default function BuddyMascot() {
   return (
     <div
       className="buddy-mascot"
       aria-hidden="true"
     >
-      <Canvas
-        camera={{
-          position: [
-            0,
-            0.05,
-            4.8,
-          ],
-          fov: 30,
+      <img
+        src="/images/salad-buddy-presenting.webp"
+        alt=""
+        draggable="false"
+        decoding="async"
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "block",
+          objectFit: "contain",
+          objectPosition: "center bottom",
+          userSelect: "none",
+          pointerEvents: "none",
         }}
-        gl={{
-          alpha: true,
-          antialias: true,
-        }}
-        dpr={[1.5, 2]}
-      >
-        <ambientLight
-          intensity={2.4}
-        />
-
-        <directionalLight
-          position={[
-            3,
-            5,
-            5,
-          ]}
-          intensity={2.6}
-        />
-
-        <directionalLight
-          position={[
-            -3,
-            2,
-            4,
-          ]}
-          intensity={0.9}
-        />
-
-        <Suspense
-          fallback={null}
-        >
-          <BuddyModel />
-
-          <Environment
-            preset="studio"
-          />
-        </Suspense>
-      </Canvas>
+      />
     </div>
   );
 }
-
-useGLTF.preload(
-  "/models/buddy-tests/buddy-new-50-meshopt.glb"
-);
