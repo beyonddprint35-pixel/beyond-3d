@@ -1,13 +1,15 @@
-import { useRef, useState } from "react";
-import { uploadMenuItemImage, retuneMenuItemImage } from "./menuItemImageStorage";
+import { useEffect, useRef, useState } from "react";
+import AuthModal from "../../../components/AuthModal";
+import { supabase } from "../../../lib/supabaseClient";
+import { MENU_PHOTO_AUTH_REQUIRED, uploadMenuItemImage, retuneMenuItemImage } from "./menuItemImageStorage";
 import { getCurrentDraftDesign } from "./draftSession";
 import { resolveMenuPhotoProfile, menuPhotoProfileDescription, menuPhotoProfileLabel } from "../domain/menuPhotoProfiles";
 import "./MenuStudioItemPhotoField.css";
 
 const COPY = {
-  en:{label:"Item photo",upload:"Upload photo",replace:"Replace photo",remove:"Remove",uploading:"Analyzing, enhancing & matching to menu…",hint:"JPEG, PNG or WebP · up to 20 MB · Beyond keeps the real photo and creates polished versions",drop:"Drop a food photo here",empty:"Add a photo for image-led menu designs",error:"Photo upload failed",standard:"Beyond Photo Standard",original:"Original",enhanced:"Enhanced",theme:"Theme match",recommended:"Recommended",currentMenu:"Current menu",natural:"Natural enhancement only — the dish itself is not changed.",themeSafe:"Theme matching adjusts light, color and contrast only. It never invents ingredients or changes the dish.",retune:"Match current theme",retuning:"Matching to theme…",themeOutdated:"The menu design changed. Update this photo so it matches the current theme.",excellent:"Excellent",good:"Good",needs_improvement:"Needs improvement",low_quality:"Low quality"},
-  he:{label:"תמונת הפריט",upload:"העלאת תמונה",replace:"החלפת תמונה",remove:"הסרה",uploading:"מנתח, משפר ומתאים לתפריט…",hint:"JPEG, PNG או WebP · עד 20MB · Beyond שומר את התמונה האמיתית ויוצר גרסאות מלוטשות",drop:"שחררו כאן תמונת מנה",empty:"הוסיפו תמונה לעיצובים מבוססי תמונות",error:"העלאת התמונה נכשלה",standard:"תקן התמונות של Beyond",original:"מקור",enhanced:"משופר",theme:"התאמה לעיצוב",recommended:"מומלץ",currentMenu:"התפריט הנוכחי",natural:"שיפור טבעי בלבד — המנה עצמה אינה משתנה.",themeSafe:"ההתאמה לעיצוב משנה רק אור, צבע וניגודיות. היא לא ממציאה מרכיבים ולא משנה את המנה.",retune:"התאמה לעיצוב הנוכחי",retuning:"מתאים לעיצוב…",themeOutdated:"עיצוב התפריט השתנה. עדכנו את התמונה כדי שתתאים לעיצוב הנוכחי.",excellent:"מצוין",good:"טוב",needs_improvement:"דורש שיפור",low_quality:"איכות נמוכה"},
-  ar:{label:"صورة العنصر",upload:"رفع صورة",replace:"استبدال الصورة",remove:"إزالة",uploading:"جارٍ التحليل والتحسين والمطابقة مع القائمة…",hint:"JPEG أو PNG أو WebP · حتى 20 MB · يحتفظ Beyond بالصورة الحقيقية وينشئ نسخًا مصقولة",drop:"أفلت صورة الطبق هنا",empty:"أضف صورة لتصاميم القوائم المعتمدة على الصور",error:"فشل رفع الصورة",standard:"معيار صور Beyond",original:"الأصل",enhanced:"محسنة",theme:"مطابقة التصميم",recommended:"موصى بها",currentMenu:"القائمة الحالية",natural:"تحسين طبيعي فقط — لا يتم تغيير الطبق نفسه.",themeSafe:"مطابقة التصميم تعدّل الإضاءة واللون والتباين فقط ولا تضيف مكونات أو تغيّر الطبق.",retune:"مطابقة التصميم الحالي",retuning:"جارٍ المطابقة…",themeOutdated:"تم تغيير تصميم القائمة. حدّث الصورة لتطابق التصميم الحالي.",excellent:"ممتاز",good:"جيد",needs_improvement:"بحاجة لتحسين",low_quality:"جودة منخفضة"},
+  en:{label:"Item photo",upload:"Upload photo",replace:"Replace photo",remove:"Remove",signInUpload:"Sign in to upload",authRequired:"Sign in to Beyond to upload and save menu photos.",uploading:"Analyzing, enhancing & matching to menu…",hint:"JPEG, PNG or WebP · up to 20 MB · Beyond keeps the real photo and creates polished versions",drop:"Drop a food photo here",empty:"Add a photo for image-led menu designs",error:"Photo upload failed",standard:"Beyond Photo Standard",original:"Original",enhanced:"Enhanced",theme:"Theme match",recommended:"Recommended",currentMenu:"Current menu",natural:"Natural enhancement only — the dish itself is not changed.",themeSafe:"Theme matching adjusts light, color and contrast only. It never invents ingredients or changes the dish.",retune:"Match current theme",retuning:"Matching to theme…",themeOutdated:"The menu design changed. Update this photo so it matches the current theme.",excellent:"Excellent",good:"Good",needs_improvement:"Needs improvement",low_quality:"Low quality"},
+  he:{label:"תמונת הפריט",upload:"העלאת תמונה",replace:"החלפת תמונה",remove:"הסרה",signInUpload:"התחברות להעלאת תמונה",authRequired:"יש להתחבר ל-Beyond כדי להעלות ולשמור תמונות בתפריט.",uploading:"מנתח, משפר ומתאים לתפריט…",hint:"JPEG, PNG או WebP · עד 20MB · Beyond שומר את התמונה האמיתית ויוצר גרסאות מלוטשות",drop:"שחררו כאן תמונת מנה",empty:"הוסיפו תמונה לעיצובים מבוססי תמונות",error:"העלאת התמונה נכשלה",standard:"תקן התמונות של Beyond",original:"מקור",enhanced:"משופר",theme:"התאמה לעיצוב",recommended:"מומלץ",currentMenu:"התפריט הנוכחי",natural:"שיפור טבעי בלבד — המנה עצמה אינה משתנה.",themeSafe:"ההתאמה לעיצוב משנה רק אור, צבע וניגודיות. היא לא ממציאה מרכיבים ולא משנה את המנה.",retune:"התאמה לעיצוב הנוכחי",retuning:"מתאים לעיצוב…",themeOutdated:"עיצוב התפריט השתנה. עדכנו את התמונה כדי שתתאים לעיצוב הנוכחי.",excellent:"מצוין",good:"טוב",needs_improvement:"דורש שיפור",low_quality:"איכות נמוכה"},
+  ar:{label:"صورة العنصر",upload:"رفع صورة",replace:"استبدال الصورة",remove:"إزالة",signInUpload:"تسجيل الدخول لرفع صورة",authRequired:"سجّل الدخول إلى Beyond لرفع صور القائمة وحفظها.",uploading:"جارٍ التحليل والتحسين والمطابقة مع القائمة…",hint:"JPEG أو PNG أو WebP · حتى 20 MB · يحتفظ Beyond بالصورة الحقيقية وينشئ نسخًا مصقولة",drop:"أفلت صورة الطبق هنا",empty:"أضف صورة لتصاميم القوائم المعتمدة على الصور",error:"فشل رفع الصورة",standard:"معيار صور Beyond",original:"الأصل",enhanced:"محسنة",theme:"مطابقة التصميم",recommended:"موصى بها",currentMenu:"القائمة الحالية",natural:"تحسين طبيعي فقط — لا يتم تغيير الطبق نفسه.",themeSafe:"مطابقة التصميم تعدّل الإضاءة واللون والتباين فقط ولا تضيف مكونات أو تغيّر الطبق.",retune:"مطابقة التصميم الحالي",retuning:"جارٍ المطابقة…",themeOutdated:"تم تغيير تصميم القائمة. حدّث الصورة لتطابق التصميم الحالي.",excellent:"ممتاز",good:"جيد",needs_improvement:"بحاجة لتحسين",low_quality:"جودة منخفضة"},
 };
 
 const NOTE_COPY = {
@@ -24,6 +26,28 @@ export default function MenuStudioItemPhotoField({ item, onChange, siteId, slug,
   const [retuning,setRetuning] = useState(false);
   const [dragging,setDragging] = useState(false);
   const [error,setError] = useState("");
+  const [authUser,setAuthUser] = useState(undefined);
+  const [authOpen,setAuthOpen] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    supabase.auth.getSession()
+      .then(({ data }) => { if (active) setAuthUser(data?.session?.user || null); })
+      .catch(() => { if (active) setAuthUser(null); });
+
+    const { data } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      if (active) setAuthUser(nextSession?.user || null);
+    });
+
+    return () => {
+      active = false;
+      data?.subscription?.unsubscribe?.();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (authUser) setError(current => current === copy.authRequired ? "" : current);
+  }, [authUser, copy.authRequired]);
 
   const currentDesign = getCurrentDraftDesign({ siteId, slug }) || {};
   const currentThemeProfile = resolveMenuPhotoProfile(currentDesign);
@@ -46,6 +70,25 @@ export default function MenuStudioItemPhotoField({ item, onChange, siteId, slug,
   const themeIsCurrent = Boolean(themeUrl && storedThemeProfile === currentThemeProfile.id);
   const themeNeedsUpdate = Boolean((originalUrl || processedUrl) && !themeIsCurrent);
   const busy = uploading || retuning;
+
+  function handlePhotoError(err) {
+    if (err?.code === MENU_PHOTO_AUTH_REQUIRED) {
+      setAuthUser(null);
+      setError(copy.authRequired);
+      setAuthOpen(true);
+      return;
+    }
+    setError(err?.message || copy.error);
+  }
+
+  function requestUpload() {
+    setError("");
+    if (!authUser) {
+      setAuthOpen(true);
+      return;
+    }
+    inputRef.current?.click();
+  }
 
   async function handleFile(file) {
     if (!file || busy) return;
@@ -76,7 +119,7 @@ export default function MenuStudioItemPhotoField({ item, onChange, siteId, slug,
         image_processed_at:uploaded.processedAt,
       });
     } catch (err) {
-      setError(err?.message || copy.error);
+      handlePhotoError(err);
     } finally {
       setUploading(false);
       if (inputRef.current) inputRef.current.value = "";
@@ -109,7 +152,7 @@ export default function MenuStudioItemPhotoField({ item, onChange, siteId, slug,
         image_status:"ready",
       });
     } catch (err) {
-      setError(err?.message || copy.error);
+      handlePhotoError(err);
     } finally {
       setRetuning(false);
     }
@@ -118,6 +161,10 @@ export default function MenuStudioItemPhotoField({ item, onChange, siteId, slug,
   function handleDrop(event) {
     event.preventDefault();
     setDragging(false);
+    if (!authUser) {
+      setAuthOpen(true);
+      return;
+    }
     const file = event.dataTransfer?.files?.[0];
     if (file) handleFile(file);
   }
@@ -174,7 +221,7 @@ export default function MenuStudioItemPhotoField({ item, onChange, siteId, slug,
     >
       {imageUrl ? <img src={imageUrl} alt=""/> : <div className="studio-v3-item-photo-empty"><span className="studio-v3-item-photo-icon" aria-hidden="true"><i/><i/></span><strong>{dragging ? copy.drop : copy.empty}</strong></div>}
       <div className="studio-v3-item-photo-overlay">
-        <button type="button" className="primary" disabled={busy} onClick={() => inputRef.current?.click()}>{uploading ? copy.uploading : (imageUrl ? copy.replace : copy.upload)}</button>
+        <button type="button" className="primary" disabled={busy} onClick={requestUpload}>{uploading ? copy.uploading : (!authUser ? copy.signInUpload : (imageUrl ? copy.replace : copy.upload))}</button>
         {imageUrl ? <button type="button" className="secondary" disabled={busy} onClick={removePhoto}>{copy.remove}</button> : null}
       </div>
       {busy ? <span className="studio-v3-item-photo-progress" aria-hidden="true"/> : null}
@@ -201,5 +248,6 @@ export default function MenuStudioItemPhotoField({ item, onChange, siteId, slug,
 
     <input ref={inputRef} className="studio-v3-item-photo-native-input" type="file" accept="image/jpeg,image/png,image/webp" onChange={event => handleFile(event.target.files?.[0])}/>
     {error ? <div className="studio-v3-item-photo-error" role="alert">{error}</div> : null}
+    <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} initialMode="login"/>
   </section>;
 }
