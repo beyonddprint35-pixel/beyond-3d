@@ -125,6 +125,7 @@ export function adaptSupabaseMenuToV3(site, rawGroups = [], rawItems = []) {
       const score = item.image_quality_score == null ? null : Number(item.image_quality_score);
       const focusX = item.image_focus_x == null ? 50 : Number(item.image_focus_x);
       const focusY = item.image_focus_y == null ? 50 : Number(item.image_focus_y);
+      const finishConfidence = item.image_finish_confidence == null ? null : Number(item.image_finish_confidence);
       return {
         id: item.id,
         group_id: item.group_id,
@@ -153,6 +154,12 @@ export function adaptSupabaseMenuToV3(site, rawGroups = [], rawItems = []) {
         image_height: item.image_height == null ? null : Number(item.image_height),
         image_focus_x: Number.isFinite(focusX) ? Math.min(100, Math.max(0, focusX)) : 50,
         image_focus_y: Number.isFinite(focusY) ? Math.min(100, Math.max(0, focusY)) : 50,
+        image_finish_profile: text(item.image_finish_profile),
+        image_finish_source: text(item.image_finish_source),
+        image_finish_safety: text(item.image_finish_safety),
+        image_finish_confidence: Number.isFinite(finishConfidence) ? Math.min(1, Math.max(0, finishConfidence)) : null,
+        image_finish_model: text(item.image_finish_model),
+        image_finish_recipe: item.image_finish_recipe && typeof item.image_finish_recipe === "object" && !Array.isArray(item.image_finish_recipe) ? item.image_finish_recipe : null,
         visible: item.visible !== false,
         sort_order: Number(item.sort_order || 0),
       };
