@@ -109,3 +109,18 @@ export async function saveMenuPhotoVariant({ assetId, themeProfile, imageUrl, im
   if (error) throw error;
   return data;
 }
+
+export async function invalidateMenuPhotoVariants(assetId) {
+  if (!assetId) return [];
+  const { data:rows, error:readError } = await supabase
+    .from("menu_photo_asset_variants")
+    .select("image_path")
+    .eq("asset_id", assetId);
+  if (readError) throw readError;
+  const { error:deleteError } = await supabase
+    .from("menu_photo_asset_variants")
+    .delete()
+    .eq("asset_id", assetId);
+  if (deleteError) throw deleteError;
+  return (rows || []).map(row => row.image_path).filter(Boolean);
+}
