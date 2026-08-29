@@ -6,9 +6,9 @@ import { menuPhotoProfileDescription, menuPhotoProfileLabel, resolveMenuPhotoPro
 import "./MenuPhotoBatchControl.css";
 
 const COPY = {
-  en:{eyebrow:"MENU PHOTOGRAPHY",title:"Match all photos",photos:"photos",matched:"matched",needs:"need matching",empty:"Add item photos to use automatic menu-wide styling.",ready:"Every menu photo already matches this design.",button:"Match all photos",working:"Matching photos",safe:"Light, color and contrast only. Beyond never changes the dish.",done:"Menu photography matched",partial:"Some photos could not be matched",auth:"Sign in to match menu photos.",failed:"Photo matching failed"},
-  he:{eyebrow:"צילום התפריט",title:"התאמת כל התמונות",photos:"תמונות",matched:"מותאמות",needs:"דורשות התאמה",empty:"הוסיפו תמונות לפריטים כדי להשתמש בהתאמה אוטומטית לכל התפריט.",ready:"כל תמונות התפריט כבר מותאמות לעיצוב הזה.",button:"התאמת כל התמונות",working:"מתאים תמונות",safe:"אור, צבע וניגודיות בלבד. Beyond לעולם לא משנה את המנה.",done:"תמונות התפריט הותאמו",partial:"חלק מהתמונות לא הותאמו",auth:"יש להתחבר כדי להתאים את תמונות התפריט.",failed:"התאמת התמונות נכשלה"},
-  ar:{eyebrow:"تصوير القائمة",title:"مطابقة كل الصور",photos:"صور",matched:"مطابقة",needs:"تحتاج مطابقة",empty:"أضف صور العناصر لاستخدام التنسيق التلقائي لكل القائمة.",ready:"كل صور القائمة مطابقة لهذا التصميم بالفعل.",button:"مطابقة كل الصور",working:"جارٍ مطابقة الصور",safe:"الإضاءة واللون والتباين فقط. لا يغيّر Beyond الطبق أبداً.",done:"تمت مطابقة صور القائمة",partial:"تعذر مطابقة بعض الصور",auth:"سجّل الدخول لمطابقة صور القائمة.",failed:"فشلت مطابقة الصور"},
+  en:{eyebrow:"BEYOND PRO FINISH",title:"Professional photo finish",photos:"photos",matched:"finished",needs:"need finishing",empty:"Add item photos to use professional menu-wide finishing.",ready:"Every menu photo is professionally finished for this design.",button:"Finish all photos",working:"Finishing photos",safe:"Dish Integrity Lock · adaptive light, white balance, shadows, highlights and contrast only. No generative food edits.",done:"Professional photo finish complete",aiDone:"AI vision directed the finish inside Beyond's local safety guardrails",localDone:"Beyond local vision completed the professional finish",partial:"Some photos could not be finished",auth:"Sign in to finish menu photos.",failed:"Photo finishing failed"},
+  he:{eyebrow:"BEYOND PRO FINISH",title:"גימור מקצועי לתמונות",photos:"תמונות",matched:"הושלמו",needs:"דורשות גימור",empty:"הוסיפו תמונות לפריטים כדי להשתמש בגימור מקצועי לכל התפריט.",ready:"כל תמונות התפריט עברו גימור מקצועי לעיצוב הזה.",button:"גימור לכל התמונות",working:"מבצע גימור לתמונות",safe:"נעילת שלמות המנה · התאמות אור, איזון לבן, צללים, אזורים בהירים וניגודיות בלבד. ללא עריכה גנרטיבית של האוכל.",done:"הגימור המקצועי הושלם",aiDone:"ראיית AI כיוונה את הגימור בתוך מגבלות הבטיחות המקומיות של Beyond",localDone:"מנוע הראייה המקומי של Beyond השלים את הגימור המקצועי",partial:"חלק מהתמונות לא עברו גימור",auth:"יש להתחבר כדי לבצע גימור לתמונות התפריט.",failed:"גימור התמונות נכשל"},
+  ar:{eyebrow:"BEYOND PRO FINISH",title:"تشطيب احترافي للصور",photos:"صور",matched:"مكتملة",needs:"تحتاج تشطيباً",empty:"أضف صور العناصر لاستخدام التشطيب الاحترافي على مستوى القائمة.",ready:"تم تشطيب كل صور القائمة احترافياً لهذا التصميم.",button:"تشطيب كل الصور",working:"جارٍ تشطيب الصور",safe:"قفل سلامة الطبق · تعديلات الإضاءة وتوازن الأبيض والظلال والإضاءات العالية والتباين فقط. بدون تعديلات توليدية للطعام.",done:"اكتمل التشطيب الاحترافي للصور",aiDone:"وجّهت رؤية AI التشطيب داخل ضوابط الأمان المحلية في Beyond",localDone:"أكمل محرك الرؤية المحلي في Beyond التشطيب الاحترافي",partial:"تعذر تشطيب بعض الصور",auth:"سجّل الدخول لتشطيب صور القائمة.",failed:"فشل تشطيب الصور"},
 };
 
 function sourceFor(item) {
@@ -28,6 +28,17 @@ function patchForExistingTheme(item) {
       image_variant:"theme",
       image_status:"ready",
     },
+  };
+}
+
+function finishPatch(finish) {
+  return {
+    image_finish_profile:finish?.profile || "dish-safe-pro-v1",
+    image_finish_source:finish?.source || "local-vision",
+    image_finish_safety:finish?.safety || "dish-integrity-locked",
+    image_finish_confidence:Number.isFinite(Number(finish?.confidence)) ? Number(finish.confidence) : null,
+    image_finish_model:finish?.model || "",
+    image_finish_recipe:finish?.recipe || null,
   };
 }
 
@@ -84,7 +95,7 @@ export default function MenuPhotoBatchControl({ menu, design, siteId, slug, lang
 
   useEffect(() => {
     if (messageType === "success") {
-      const timer = window.setTimeout(() => { setMessage(""); setMessageType(""); }, 3200);
+      const timer = window.setTimeout(() => { setMessage(""); setMessageType(""); }, 4200);
       return () => window.clearTimeout(timer);
     }
     return undefined;
@@ -136,6 +147,7 @@ export default function MenuPhotoBatchControl({ menu, design, siteId, slug, lang
             image_height:tuned.theme.height,
             image_variant:"theme",
             image_status:"ready",
+            ...finishPatch(tuned.finish),
           },
         };
       }, done => setProgress({done:direct.length + done,total:needsAction}));
@@ -156,7 +168,8 @@ export default function MenuPhotoBatchControl({ menu, design, siteId, slug, lang
         }
         setMessageType("error");
       } else {
-        setMessage(copy.done);
+        const aiUsed = successful.some(result => String(result.patch?.image_finish_source || "").includes("ai-vision"));
+        setMessage(`${copy.done} · ${aiUsed ? copy.aiDone : copy.localDone}`);
         setMessageType("success");
       }
     } catch (error) {
