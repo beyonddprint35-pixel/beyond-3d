@@ -4,6 +4,7 @@ import MenuRenderer from "../features/menu-engine/renderer/MenuRenderer";
 import MenuDesignControls from "../features/menu-engine/studio/MenuDesignControls";
 import MenuPhotoBatchControl from "../features/menu-engine/studio/MenuPhotoBatchControl";
 import MenuStudioDesignCanvas from "../features/menu-engine/studio/MenuStudioDesignCanvas";
+import MenuStudioPreviewStage from "../features/menu-engine/studio/MenuStudioPreviewStage";
 import MenuStudioSettingsPanel from "../features/menu-engine/studio/MenuStudioSettingsPanel";
 import MenuStudioItemPhotoField from "../features/menu-engine/studio/MenuStudioItemPhotoField";
 import { loadPublishedMenuBySlug } from "../features/menu-engine/data/menuRepository";
@@ -202,7 +203,6 @@ export default function MenuStudioV3Draft() {
   const [editingItemId,setEditingItemId] = useState(null);
   const [draftItem,setDraftItem] = useState(null);
   const [mobileDetail,setMobileDetail] = useState(false);
-  const [viewport,setViewport] = useState("390");
   const [designPanel,setDesignPanel] = useState("brand");
   const [studioLanguage,setStudioLanguage] = useState("en");
   const [contentLanguage,setContentLanguage] = useState("he");
@@ -238,7 +238,6 @@ export default function MenuStudioV3Draft() {
   const selectedGroup = menu?.groups?.find(group => group.id === selectedGroupId) || menu?.groups?.find(group => !group.parent_id) || null;
   const selectedDepth = selectedGroup ? groupDepth(menu?.groups || [], selectedGroup.id) : 0;
   const selectedBlocks = useMemo(() => selectedGroup ? contentBlocksForGroup(menu?.groups || [], menu?.items || [], selectedGroup.id) : [], [menu?.groups, menu?.items, selectedGroup?.id]);
-  const frameWidth = viewport === "desktop" ? "min(1080px,100%)" : `${viewport}px`;
   const previewMenu = useMemo(() => menu ? { ...menu, currency:menu.currency || "ILS", currency_symbol:menu.currency_symbol || CURRENCY_SYMBOL, default_language:contentLanguage, groups:menu.groups, items:menu.items.filter(item => item.visible !== false) } : null, [menu, contentLanguage]);
 
   function patchMenu(updater) { setSession(current => updateDraftMenu(current, updater)); }
@@ -285,7 +284,7 @@ export default function MenuStudioV3Draft() {
 
       {tab === "design" && <div className="studio-v3-design-layout"><section className="studio-v3-panel studio-v3-design-controls"><span className="studio-v3-eyebrow">{t.designDraft}</span><h1>{t.makeItYours}</h1><p>{t.designHint}</p><MenuDesignControls design={session.design} baselineDesign={session.baselineDesign} menu={menu} language={studioLanguage} panel={designPanel} setPanel={setDesignPanel} patchDesign={patchDesign}/><MenuPhotoBatchControl menu={menu} design={session.design} siteId={session.source.siteId} slug={session.source.slug || slug} language={studioLanguage} onApplyItemPatches={applyPhotoBatchPatches}/><div className="studio-v3-badge-design-controls"><div className="studio-v3-control-label">{t.showBadgeSymbols}</div><div className="studio-v3-choice-row"><button className={session.design.badges.showSymbols ? "active" : ""} onClick={() => patchDesign(current => ({ ...current, badges:{ ...current.badges, showSymbols:true } }))}>{t.withSymbols}</button><button className={!session.design.badges.showSymbols ? "active" : ""} onClick={() => patchDesign(current => ({ ...current, badges:{ ...current.badges, showSymbols:false } }))}>{t.textOnly}</button></div><div className="studio-v3-control-label">{t.badgeStyle}</div><div className="studio-v3-choice-grid">{[["auto",t.autoStyle],["minimal",t.minimalStyle],["filled",t.filledStyle],["playful",t.playfulStyle]].map(([value,label]) => <button key={value} className={session.design.badges.iconStyle === value ? "active" : ""} disabled={!session.design.badges.showSymbols} onClick={() => patchDesign(current => ({ ...current, badges:{ ...current.badges, iconStyle:value } }))}>{label}</button>)}</div><p className="studio-v3-control-help">{t.autoStyleHint}</p></div></section><section className="studio-v3-preview-panel"><MenuStudioDesignCanvas menu={previewMenu} design={session.design} language={contentLanguage} uiLanguage={studioLanguage} label={t.liveDraftPreview}/></section></div>}
 
-      {tab === "preview" && <section className="studio-v3-preview-full"><div className="studio-v3-preview-switcher">{["320","375","390","430","desktop"].map(size => <button key={size} className={viewport === size ? "active" : ""} onClick={() => setViewport(size)}>{size === "desktop" ? "Desktop" : size}</button>)}</div><div className="studio-v3-draft-preview-frame" style={{ width:frameWidth }}><MenuRenderer menu={previewMenu} design={session.design}/></div></section>}
+      {tab === "preview" && <MenuStudioPreviewStage menu={previewMenu} design={session.design} language={contentLanguage} uiLanguage={studioLanguage}/>} 
 
       {tab === "analytics" && <section className="studio-v3-analytics"><div className="studio-v3-analytics-head studio-v3-panel"><div><span className="studio-v3-eyebrow">{t.analyticsEyebrow}</span><h1>{t.analyticsTitle}</h1><p>{t.analyticsHint}</p></div><div className="studio-v3-analytics-connection"><span className="dot"/><div><strong>{t.trackingNotConnected}</strong><small>{t.trackingNote}</small></div></div></div><div className="studio-v3-analytics-metrics"><EmptyMetric label={t.menuViews} waitingLabel={t.waitingEvents}/><EmptyMetric label={t.categoryViews} waitingLabel={t.waitingEvents}/><EmptyMetric label={t.itemImpressions} waitingLabel={t.waitingEvents}/><EmptyMetric label={t.itemOpens} waitingLabel={t.waitingEvents}/></div><div className="studio-v3-analytics-grid">{[t.topCategories,t.topItems,t.engagement].map(title => <section className="studio-v3-panel studio-v3-analytics-card" key={title}><span className="studio-v3-eyebrow">{title}</span><div className="studio-v3-analytics-empty"><strong>{t.noData}</strong><span>{t.noDataHint}</span></div></section>)}<section className="studio-v3-panel studio-v3-analytics-card recommendation"><span className="studio-v3-eyebrow">{t.recommendations}</span><div className="studio-v3-analytics-empty"><strong>Buddy</strong><span>{t.recommendationHint}</span></div></section></div></section>}
 
