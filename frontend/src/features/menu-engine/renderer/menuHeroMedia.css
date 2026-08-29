@@ -1,12 +1,1144 @@
-.bme-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(120px,.42fr);align-items:center;gap:18px}
-.bme-hero-copy{min-width:0}
-.bme-hero-media{min-width:0;display:flex;align-items:center;justify-content:center}
-.bme-hero-media-watermark{align-self:stretch}
-.bme-watermark-pill{width:min(100%,240px);min-height:112px;border-radius:999px;background:color-mix(in srgb,var(--bme-accent-secondary) 34%,var(--bme-surface));border:1px solid color-mix(in srgb,var(--bme-accent) 11%,var(--bme-line));display:flex;align-items:center;justify-content:center;gap:10px;padding:16px 22px;overflow:hidden;opacity:.52}
-.bme-watermark-pill img{width:clamp(54px,10vw,88px);height:clamp(54px,10vw,88px);object-fit:contain;filter:grayscale(.3)}
-.bme-watermark-pill span{display:none}
-.bme-hero-media-image{height:132px;border-radius:28px;overflow:hidden;background:var(--bme-accent-secondary)}
-.bme-hero-media-image img{width:100%;height:100%;display:block;object-fit:cover}
-.bme-hero-mode-none{grid-template-columns:minmax(0,1fr)}
-@media(max-width:520px){.bme-hero{grid-template-columns:minmax(0,1.45fr) minmax(96px,.55fr);gap:12px}.bme-watermark-pill{min-height:92px;padding:12px 16px;border-radius:999px}.bme-watermark-pill img{width:58px;height:58px}.bme-hero-media-image{height:104px;border-radius:24px}}
-@media(max-width:350px){.bme-hero{grid-template-columns:minmax(0,1fr) 86px}.bme-watermark-pill{min-height:78px;padding:8px 12px}.bme-watermark-pill img{width:48px;height:48px}.bme-hero-media-image{height:86px;border-radius:20px}}
+/* =========================================================
+   BEYOND MENU ENGINE — HERO COMPOSITION SYSTEM
+
+   Every presentation keeps its own personality, but heroes now resolve into
+   six maintainable structural families instead of sharing one generic title +
+   logo block:
+   1. editorial-cover  2. immersive  3. split-identity
+   4. poster            5. brand-stage 6. category-led
+
+   The selectors deliberately include .bme-menu so these structural rules win
+   over older presentation-specific hero cosmetics without needing !important.
+   ========================================================= */
+
+/* ---------- Shared hero/header foundation ---------- */
+.bme-menu .bme-header{
+  position:relative;
+  z-index:20;
+  min-height:78px;
+  border-bottom:1px solid color-mix(in srgb,var(--bme-line) 72%,transparent);
+  background:color-mix(in srgb,var(--bme-bg) 94%,transparent);
+}
+.bme-menu .bme-brand{gap:13px}
+.bme-menu .bme-brand img{
+  filter:drop-shadow(0 7px 16px color-mix(in srgb,var(--bme-text) 10%,transparent));
+}
+.bme-menu .bme-brand strong{line-height:1.05;letter-spacing:-.025em;text-wrap:balance}
+.bme-menu .bme-brand span{margin-top:2px;line-height:1.35}
+
+.bme-menu .bme-hero{
+  isolation:isolate;
+  min-width:0;
+}
+.bme-menu .bme-hero::before,
+.bme-menu .bme-hero::after{
+  pointer-events:none;
+}
+.bme-menu .bme-hero-copy{
+  min-width:0;
+  position:relative;
+  z-index:4;
+}
+.bme-menu .bme-hero-copy>span{
+  max-width:48ch;
+  line-height:1.35;
+}
+.bme-menu .bme-hero h1{
+  text-wrap:balance;
+  hyphens:auto;
+}
+.bme-menu .bme-hero-media{
+  min-width:0;
+  position:relative;
+  z-index:2;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.bme-menu .bme-watermark-pill{
+  width:min(100%,250px);
+  min-height:128px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  padding:18px 24px;
+  overflow:hidden;
+  border:1px solid color-mix(in srgb,var(--bme-accent) 14%,var(--bme-line));
+  border-radius:999px;
+  background:color-mix(in srgb,var(--bme-accent-secondary) 24%,var(--bme-surface));
+  box-shadow:0 20px 60px color-mix(in srgb,var(--bme-text) 8%,transparent);
+}
+.bme-menu .bme-watermark-pill img{
+  width:clamp(58px,10cqw,96px);
+  height:clamp(58px,10cqw,96px);
+  display:block;
+  object-fit:contain;
+  filter:grayscale(.15);
+}
+.bme-menu .bme-watermark-pill span{display:none}
+.bme-menu .bme-hero-media-image{
+  height:clamp(160px,25cqw,290px);
+  overflow:hidden;
+  border-radius:32px;
+  background:var(--bme-accent-secondary);
+  box-shadow:0 28px 70px color-mix(in srgb,var(--bme-text) 14%,transparent);
+}
+.bme-menu .bme-hero-media-image img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+}
+.bme-menu .bme-hero-mode-none{grid-template-columns:minmax(0,1fr)}
+
+/* =========================================================
+   1. EDITORIAL COVER
+   Atelier / Nordic / monochrome / quiet editorial directions
+   ========================================================= */
+.bme-menu:is(
+  .bme-presentation-atelier,
+  .bme-presentation-nordic-paper,
+  .bme-presentation-monochrome-grid,
+  .bme-presentation-chef-editorial,
+  .bme-presentation-minimal-grid,
+  .bme-presentation-tokyo-ink
+) .bme-header{
+  min-height:72px;
+  border-bottom:0;
+}
+.bme-menu:is(
+  .bme-presentation-atelier,
+  .bme-presentation-nordic-paper,
+  .bme-presentation-monochrome-grid,
+  .bme-presentation-chef-editorial,
+  .bme-presentation-minimal-grid,
+  .bme-presentation-tokyo-ink
+) .bme-hero{
+  min-height:clamp(330px,48cqw,560px);
+  display:grid;
+  grid-template-columns:minmax(0,1.35fr) minmax(150px,.5fr);
+  align-items:end;
+  gap:clamp(20px,5cqw,62px);
+  padding-top:clamp(58px,9cqw,112px);
+  padding-bottom:clamp(42px,7cqw,86px);
+  background:
+    linear-gradient(90deg,color-mix(in srgb,var(--bme-line) 58%,transparent) 1px,transparent 1px) 0 0/25% 100%,
+    linear-gradient(180deg,color-mix(in srgb,var(--bme-surface) 98%,var(--bme-accent)),var(--bme-surface));
+  border-bottom:1px solid var(--bme-line);
+}
+.bme-menu:is(
+  .bme-presentation-atelier,
+  .bme-presentation-nordic-paper,
+  .bme-presentation-monochrome-grid,
+  .bme-presentation-chef-editorial,
+  .bme-presentation-minimal-grid,
+  .bme-presentation-tokyo-ink
+) .bme-hero::after{
+  content:"";
+  position:absolute;
+  inset-inline-end:clamp(18px,4cqw,48px);
+  top:clamp(20px,4cqw,48px);
+  width:clamp(34px,5cqw,62px);
+  aspect-ratio:1;
+  border-top:2px solid var(--bme-accent);
+  border-inline-end:2px solid var(--bme-accent);
+  opacity:.72;
+}
+.bme-menu:is(
+  .bme-presentation-atelier,
+  .bme-presentation-nordic-paper,
+  .bme-presentation-monochrome-grid,
+  .bme-presentation-chef-editorial,
+  .bme-presentation-minimal-grid,
+  .bme-presentation-tokyo-ink
+) .bme-hero-copy{grid-column:1;grid-row:1;align-self:end}
+.bme-menu:is(
+  .bme-presentation-atelier,
+  .bme-presentation-nordic-paper,
+  .bme-presentation-monochrome-grid,
+  .bme-presentation-chef-editorial,
+  .bme-presentation-minimal-grid,
+  .bme-presentation-tokyo-ink
+) .bme-hero h1{
+  max-width:10ch;
+  font-size:clamp(48px,8.3cqw,var(--bme-hero-size));
+  line-height:.9;
+  letter-spacing:-.065em;
+}
+.bme-menu:is(
+  .bme-presentation-atelier,
+  .bme-presentation-nordic-paper,
+  .bme-presentation-monochrome-grid,
+  .bme-presentation-chef-editorial,
+  .bme-presentation-minimal-grid,
+  .bme-presentation-tokyo-ink
+) .bme-hero-media{grid-column:2;grid-row:1;align-self:stretch;justify-content:flex-end}
+.bme-menu:is(
+  .bme-presentation-atelier,
+  .bme-presentation-nordic-paper,
+  .bme-presentation-monochrome-grid,
+  .bme-presentation-chef-editorial,
+  .bme-presentation-minimal-grid,
+  .bme-presentation-tokyo-ink
+) .bme-watermark-pill{
+  width:100%;
+  min-height:100%;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  opacity:.22;
+  justify-content:flex-end;
+  padding:0;
+}
+.bme-menu:is(
+  .bme-presentation-atelier,
+  .bme-presentation-nordic-paper,
+  .bme-presentation-monochrome-grid,
+  .bme-presentation-chef-editorial,
+  .bme-presentation-minimal-grid,
+  .bme-presentation-tokyo-ink
+) .bme-watermark-pill img{width:min(100%,180px);height:min(100%,180px)}
+.bme-menu:is(
+  .bme-presentation-atelier,
+  .bme-presentation-nordic-paper,
+  .bme-presentation-monochrome-grid,
+  .bme-presentation-chef-editorial,
+  .bme-presentation-minimal-grid,
+  .bme-presentation-tokyo-ink
+) .bme-hero-media-image{
+  width:100%;height:100%;min-height:250px;border-radius:2px;box-shadow:none;
+}
+
+/* =========================================================
+   2. IMMERSIVE FOOD / CINEMA
+   Photo-first nightlife, steak, smokehouse and gallery directions
+   ========================================================= */
+.bme-menu:is(
+  .bme-presentation-noir-gallery,
+  .bme-presentation-smokehouse-story,
+  .bme-presentation-luxury-steak,
+  .bme-presentation-white-gallery,
+  .bme-presentation-coastal-gallery,
+  .bme-presentation-brunch-polaroids,
+  .bme-presentation-patisserie,
+  .bme-presentation-photo-story
+) .bme-header{
+  border-bottom:0;
+}
+.bme-menu:is(
+  .bme-presentation-noir-gallery,
+  .bme-presentation-smokehouse-story,
+  .bme-presentation-luxury-steak,
+  .bme-presentation-white-gallery,
+  .bme-presentation-coastal-gallery,
+  .bme-presentation-brunch-polaroids,
+  .bme-presentation-patisserie,
+  .bme-presentation-photo-story
+) .bme-hero{
+  min-height:clamp(390px,58cqw,660px);
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  align-items:end;
+  padding-top:clamp(72px,12cqw,150px);
+  padding-bottom:clamp(38px,7cqw,82px);
+  background:
+    radial-gradient(circle at 80% 14%,color-mix(in srgb,var(--bme-accent) 28%,transparent),transparent 34%),
+    linear-gradient(145deg,color-mix(in srgb,var(--bme-surface) 88%,#000),var(--bme-bg));
+  overflow:hidden;
+}
+.bme-menu:is(
+  .bme-presentation-noir-gallery,
+  .bme-presentation-smokehouse-story,
+  .bme-presentation-luxury-steak,
+  .bme-presentation-white-gallery,
+  .bme-presentation-coastal-gallery,
+  .bme-presentation-brunch-polaroids,
+  .bme-presentation-patisserie,
+  .bme-presentation-photo-story
+) .bme-hero::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:1;
+  background:linear-gradient(180deg,transparent 22%,color-mix(in srgb,var(--bme-bg) 90%,transparent) 100%);
+}
+.bme-menu:is(
+  .bme-presentation-noir-gallery,
+  .bme-presentation-smokehouse-story,
+  .bme-presentation-luxury-steak,
+  .bme-presentation-white-gallery,
+  .bme-presentation-coastal-gallery,
+  .bme-presentation-brunch-polaroids,
+  .bme-presentation-patisserie,
+  .bme-presentation-photo-story
+) .bme-hero-copy{
+  grid-column:1;grid-row:1;align-self:end;max-width:760px;z-index:4;
+}
+.bme-menu:is(
+  .bme-presentation-noir-gallery,
+  .bme-presentation-smokehouse-story,
+  .bme-presentation-luxury-steak,
+  .bme-presentation-white-gallery,
+  .bme-presentation-coastal-gallery,
+  .bme-presentation-brunch-polaroids,
+  .bme-presentation-patisserie,
+  .bme-presentation-photo-story
+) .bme-hero h1{
+  max-width:11ch;
+  font-size:clamp(46px,8.8cqw,var(--bme-hero-size));
+  line-height:.91;
+  letter-spacing:-.055em;
+}
+.bme-menu:is(
+  .bme-presentation-noir-gallery,
+  .bme-presentation-smokehouse-story,
+  .bme-presentation-luxury-steak,
+  .bme-presentation-white-gallery,
+  .bme-presentation-coastal-gallery,
+  .bme-presentation-brunch-polaroids,
+  .bme-presentation-patisserie,
+  .bme-presentation-photo-story
+) .bme-hero-media{
+  position:absolute;
+  inset:0;
+  z-index:0;
+  width:100%;
+  height:100%;
+}
+.bme-menu:is(
+  .bme-presentation-noir-gallery,
+  .bme-presentation-smokehouse-story,
+  .bme-presentation-luxury-steak,
+  .bme-presentation-white-gallery,
+  .bme-presentation-coastal-gallery,
+  .bme-presentation-brunch-polaroids,
+  .bme-presentation-patisserie,
+  .bme-presentation-photo-story
+) .bme-hero-media-image{
+  width:100%;height:100%;border-radius:0;box-shadow:none;
+}
+.bme-menu:is(
+  .bme-presentation-noir-gallery,
+  .bme-presentation-smokehouse-story,
+  .bme-presentation-luxury-steak,
+  .bme-presentation-white-gallery,
+  .bme-presentation-coastal-gallery,
+  .bme-presentation-brunch-polaroids,
+  .bme-presentation-patisserie,
+  .bme-presentation-photo-story
+) .bme-hero-media-image img{filter:saturate(.88) contrast(1.05)}
+.bme-menu:is(
+  .bme-presentation-noir-gallery,
+  .bme-presentation-smokehouse-story,
+  .bme-presentation-luxury-steak,
+  .bme-presentation-white-gallery,
+  .bme-presentation-coastal-gallery,
+  .bme-presentation-brunch-polaroids,
+  .bme-presentation-patisserie,
+  .bme-presentation-photo-story
+) .bme-watermark-pill{
+  position:absolute;
+  inset-inline-end:clamp(20px,6cqw,72px);
+  top:50%;
+  transform:translateY(-50%);
+  width:clamp(150px,24cqw,290px);
+  min-height:clamp(150px,24cqw,290px);
+  border-radius:50%;
+  background:color-mix(in srgb,var(--bme-accent-secondary) 18%,transparent);
+  border:1px solid color-mix(in srgb,var(--bme-accent) 22%,transparent);
+  box-shadow:none;
+  opacity:.22;
+}
+.bme-menu:is(
+  .bme-presentation-noir-gallery,
+  .bme-presentation-smokehouse-story,
+  .bme-presentation-luxury-steak,
+  .bme-presentation-white-gallery,
+  .bme-presentation-coastal-gallery,
+  .bme-presentation-brunch-polaroids,
+  .bme-presentation-patisserie,
+  .bme-presentation-photo-story
+) .bme-watermark-pill img{width:58%;height:58%}
+.bme-menu:is(
+  .bme-presentation-noir-gallery,
+  .bme-presentation-smokehouse-story,
+  .bme-presentation-luxury-steak,
+  .bme-presentation-white-gallery,
+  .bme-presentation-coastal-gallery,
+  .bme-presentation-brunch-polaroids,
+  .bme-presentation-patisserie,
+  .bme-presentation-photo-story
+).bme-hero-mode-image .bme-hero-copy>span,
+.bme-menu:is(
+  .bme-presentation-noir-gallery,
+  .bme-presentation-smokehouse-story,
+  .bme-presentation-luxury-steak,
+  .bme-presentation-white-gallery,
+  .bme-presentation-coastal-gallery,
+  .bme-presentation-brunch-polaroids,
+  .bme-presentation-patisserie,
+  .bme-presentation-photo-story
+) .bme-hero-mode-image .bme-hero-copy>span{color:#fff}
+.bme-menu:is(
+  .bme-presentation-noir-gallery,
+  .bme-presentation-smokehouse-story,
+  .bme-presentation-luxury-steak,
+  .bme-presentation-white-gallery,
+  .bme-presentation-coastal-gallery,
+  .bme-presentation-brunch-polaroids,
+  .bme-presentation-patisserie,
+  .bme-presentation-photo-story
+) .bme-hero-mode-image .bme-hero-copy{color:#fff;text-shadow:0 2px 30px rgba(0,0,0,.35)}
+
+/* =========================================================
+   3. SPLIT IDENTITY
+   Brand/story on one side, media/logo stage on the other
+   ========================================================= */
+.bme-menu:is(
+  .bme-presentation-riviera,
+  .bme-presentation-coastal-story,
+  .bme-presentation-botanical,
+  .bme-presentation-garden-journal,
+  .bme-presentation-breakfast-board,
+  .bme-presentation-levant-table
+) .bme-hero{
+  min-height:clamp(360px,46cqw,540px);
+  display:grid;
+  grid-template-columns:minmax(0,1.05fr) minmax(240px,.95fr);
+  gap:clamp(22px,5cqw,68px);
+  align-items:stretch;
+  padding-top:clamp(36px,6cqw,70px);
+  padding-bottom:clamp(36px,6cqw,70px);
+  background:linear-gradient(135deg,var(--bme-surface),color-mix(in srgb,var(--bme-accent-secondary) 16%,var(--bme-surface)));
+}
+.bme-menu:is(
+  .bme-presentation-riviera,
+  .bme-presentation-coastal-story,
+  .bme-presentation-botanical,
+  .bme-presentation-garden-journal,
+  .bme-presentation-breakfast-board,
+  .bme-presentation-levant-table
+) .bme-hero-copy{grid-column:1;grid-row:1;align-self:center}
+.bme-menu:is(
+  .bme-presentation-riviera,
+  .bme-presentation-coastal-story,
+  .bme-presentation-botanical,
+  .bme-presentation-garden-journal,
+  .bme-presentation-breakfast-board,
+  .bme-presentation-levant-table
+) .bme-hero h1{max-width:11ch;font-size:clamp(42px,7.2cqw,var(--bme-hero-size));line-height:.93;letter-spacing:-.05em}
+.bme-menu:is(
+  .bme-presentation-riviera,
+  .bme-presentation-coastal-story,
+  .bme-presentation-botanical,
+  .bme-presentation-garden-journal,
+  .bme-presentation-breakfast-board,
+  .bme-presentation-levant-table
+) .bme-hero-media{
+  grid-column:2;grid-row:1;align-self:stretch;width:100%;
+}
+.bme-menu:is(
+  .bme-presentation-riviera,
+  .bme-presentation-coastal-story,
+  .bme-presentation-botanical,
+  .bme-presentation-garden-journal,
+  .bme-presentation-breakfast-board,
+  .bme-presentation-levant-table
+) .bme-hero-media-image{
+  width:100%;height:100%;min-height:270px;border-radius:clamp(28px,5cqw,58px);box-shadow:0 28px 68px color-mix(in srgb,var(--bme-text) 14%,transparent);
+}
+.bme-menu:is(
+  .bme-presentation-riviera,
+  .bme-presentation-coastal-story,
+  .bme-presentation-botanical,
+  .bme-presentation-garden-journal,
+  .bme-presentation-breakfast-board,
+  .bme-presentation-levant-table
+) .bme-watermark-pill{
+  width:100%;height:100%;min-height:270px;border-radius:clamp(28px,5cqw,58px);background:linear-gradient(145deg,color-mix(in srgb,var(--bme-accent) 11%,var(--bme-card)),var(--bme-card));
+}
+
+/* =========================================================
+   4. POSTER
+   Graphic, expressive, high-energy restaurant directions
+   ========================================================= */
+.bme-menu:is(
+  .bme-presentation-street-poster,
+  .bme-presentation-seoul-night,
+  .bme-presentation-neon-dock,
+  .bme-presentation-mosaic,
+  .bme-presentation-tapas-collage,
+  .bme-presentation-dessert-magazine,
+  .bme-presentation-rose-lounge,
+  .bme-presentation-bakery-counter,
+  .bme-presentation-cafe-cards,
+  .bme-presentation-cocktail-cards,
+  .bme-presentation-magazine
+) .bme-hero{
+  min-height:clamp(330px,48cqw,560px);
+  display:grid;
+  grid-template-columns:minmax(0,1.25fr) minmax(160px,.55fr);
+  align-items:center;
+  gap:clamp(16px,4cqw,46px);
+  padding-top:clamp(48px,8cqw,96px);
+  padding-bottom:clamp(44px,7cqw,84px);
+  background:
+    linear-gradient(135deg,transparent 0 66%,color-mix(in srgb,var(--bme-accent) 16%,transparent) 66% 100%),
+    linear-gradient(160deg,var(--bme-surface),color-mix(in srgb,var(--bme-accent-secondary) 22%,var(--bme-surface)));
+  border-block:1px solid color-mix(in srgb,var(--bme-accent) 26%,var(--bme-line));
+}
+.bme-menu:is(
+  .bme-presentation-street-poster,
+  .bme-presentation-seoul-night,
+  .bme-presentation-neon-dock,
+  .bme-presentation-mosaic,
+  .bme-presentation-tapas-collage,
+  .bme-presentation-dessert-magazine,
+  .bme-presentation-rose-lounge,
+  .bme-presentation-bakery-counter,
+  .bme-presentation-cafe-cards,
+  .bme-presentation-cocktail-cards,
+  .bme-presentation-magazine
+) .bme-hero::before{
+  content:"";
+  position:absolute;
+  width:clamp(90px,18cqw,210px);
+  aspect-ratio:1;
+  inset-inline-end:clamp(-38px,-3cqw,-12px);
+  top:clamp(-44px,-3cqw,-14px);
+  border:2px solid color-mix(in srgb,var(--bme-accent) 54%,transparent);
+  border-radius:50%;
+  box-shadow:inset 0 0 0 18px color-mix(in srgb,var(--bme-accent) 5%,transparent);
+}
+.bme-menu:is(
+  .bme-presentation-street-poster,
+  .bme-presentation-seoul-night,
+  .bme-presentation-neon-dock,
+  .bme-presentation-mosaic,
+  .bme-presentation-tapas-collage,
+  .bme-presentation-dessert-magazine,
+  .bme-presentation-rose-lounge,
+  .bme-presentation-bakery-counter,
+  .bme-presentation-cafe-cards,
+  .bme-presentation-cocktail-cards,
+  .bme-presentation-magazine
+) .bme-hero h1{
+  max-width:10ch;
+  font-size:clamp(46px,8cqw,var(--bme-hero-size));
+  line-height:.89;
+  letter-spacing:-.06em;
+}
+.bme-menu:is(
+  .bme-presentation-street-poster,
+  .bme-presentation-seoul-night,
+  .bme-presentation-neon-dock,
+  .bme-presentation-mosaic,
+  .bme-presentation-tapas-collage,
+  .bme-presentation-dessert-magazine,
+  .bme-presentation-rose-lounge,
+  .bme-presentation-bakery-counter,
+  .bme-presentation-cafe-cards,
+  .bme-presentation-cocktail-cards,
+  .bme-presentation-magazine
+) .bme-hero-media{transform:rotate(2.5deg)}
+.bme-menu:is(
+  .bme-presentation-street-poster,
+  .bme-presentation-seoul-night,
+  .bme-presentation-neon-dock,
+  .bme-presentation-mosaic,
+  .bme-presentation-tapas-collage,
+  .bme-presentation-dessert-magazine,
+  .bme-presentation-rose-lounge,
+  .bme-presentation-bakery-counter,
+  .bme-presentation-cafe-cards,
+  .bme-presentation-cocktail-cards,
+  .bme-presentation-magazine
+) .bme-watermark-pill,
+.bme-menu:is(
+  .bme-presentation-street-poster,
+  .bme-presentation-seoul-night,
+  .bme-presentation-neon-dock,
+  .bme-presentation-mosaic,
+  .bme-presentation-tapas-collage,
+  .bme-presentation-dessert-magazine,
+  .bme-presentation-rose-lounge,
+  .bme-presentation-bakery-counter,
+  .bme-presentation-cafe-cards,
+  .bme-presentation-cocktail-cards,
+  .bme-presentation-magazine
+) .bme-hero-media-image{
+  border-radius:22px;
+  border:2px solid color-mix(in srgb,var(--bme-accent) 42%,var(--bme-line));
+  box-shadow:9px 11px 0 color-mix(in srgb,var(--bme-accent) 22%,transparent);
+}
+
+/* =========================================================
+   5. BRAND STAGE
+   Logo / typography led menus where restraint is the premium gesture
+   ========================================================= */
+.bme-menu:is(
+  .bme-presentation-omakase,
+  .bme-presentation-brasserie,
+  .bme-presentation-wine-register,
+  .bme-presentation-trattoria-ledger,
+  .bme-presentation-butcher-ledger,
+  .bme-presentation-tap-board,
+  .bme-presentation-heritage-classic,
+  .bme-presentation-standard
+) .bme-hero{
+  min-height:clamp(300px,40cqw,470px);
+  display:grid;
+  grid-template-columns:1fr;
+  justify-items:center;
+  align-content:center;
+  gap:24px;
+  text-align:center;
+  padding-top:clamp(48px,8cqw,92px);
+  padding-bottom:clamp(48px,8cqw,92px);
+  background:
+    radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--bme-accent) 8%,transparent),transparent 42%),
+    var(--bme-surface);
+}
+.bme-menu:is(
+  .bme-presentation-omakase,
+  .bme-presentation-brasserie,
+  .bme-presentation-wine-register,
+  .bme-presentation-trattoria-ledger,
+  .bme-presentation-butcher-ledger,
+  .bme-presentation-tap-board,
+  .bme-presentation-heritage-classic,
+  .bme-presentation-standard
+) .bme-hero::before{
+  content:"";
+  position:absolute;
+  left:50%;top:20px;bottom:20px;
+  width:1px;
+  background:linear-gradient(180deg,transparent,var(--bme-line),transparent);
+  opacity:.65;
+}
+.bme-menu:is(
+  .bme-presentation-omakase,
+  .bme-presentation-brasserie,
+  .bme-presentation-wine-register,
+  .bme-presentation-trattoria-ledger,
+  .bme-presentation-butcher-ledger,
+  .bme-presentation-tap-board,
+  .bme-presentation-heritage-classic,
+  .bme-presentation-standard
+) .bme-hero-media{grid-column:1;grid-row:1;z-index:3}
+.bme-menu:is(
+  .bme-presentation-omakase,
+  .bme-presentation-brasserie,
+  .bme-presentation-wine-register,
+  .bme-presentation-trattoria-ledger,
+  .bme-presentation-butcher-ledger,
+  .bme-presentation-tap-board,
+  .bme-presentation-heritage-classic,
+  .bme-presentation-standard
+) .bme-hero-copy{grid-column:1;grid-row:2;justify-self:center;max-width:760px}
+.bme-menu:is(
+  .bme-presentation-omakase,
+  .bme-presentation-brasserie,
+  .bme-presentation-wine-register,
+  .bme-presentation-trattoria-ledger,
+  .bme-presentation-butcher-ledger,
+  .bme-presentation-tap-board,
+  .bme-presentation-heritage-classic,
+  .bme-presentation-standard
+) .bme-hero h1{max-width:13ch;margin-inline:auto;font-size:clamp(40px,6.8cqw,var(--bme-hero-size));line-height:.95}
+.bme-menu:is(
+  .bme-presentation-omakase,
+  .bme-presentation-brasserie,
+  .bme-presentation-wine-register,
+  .bme-presentation-trattoria-ledger,
+  .bme-presentation-butcher-ledger,
+  .bme-presentation-tap-board,
+  .bme-presentation-heritage-classic,
+  .bme-presentation-standard
+) .bme-watermark-pill{
+  width:clamp(104px,14cqw,156px);
+  min-height:clamp(104px,14cqw,156px);
+  padding:18px;
+  border-radius:50%;
+  background:var(--bme-card);
+  box-shadow:0 18px 56px color-mix(in srgb,var(--bme-text) 9%,transparent);
+  opacity:1;
+}
+.bme-menu:is(
+  .bme-presentation-omakase,
+  .bme-presentation-brasserie,
+  .bme-presentation-wine-register,
+  .bme-presentation-trattoria-ledger,
+  .bme-presentation-butcher-ledger,
+  .bme-presentation-tap-board,
+  .bme-presentation-heritage-classic,
+  .bme-presentation-standard
+) .bme-watermark-pill img{width:70%;height:70%}
+
+/* =========================================================
+   6. CATEGORY-LED HERO
+   The menu starts acting like an app immediately.
+   ========================================================= */
+.bme-menu:is(
+  .bme-presentation-beyond-launcher,
+  .bme-presentation-blue-launcher,
+  .bme-presentation-tropical-club,
+  .bme-presentation-family-pizzeria,
+  .bme-presentation-launcher,
+  .bme-presentation-category-covers,
+  .bme-presentation-desert-arches,
+  .bme-presentation-bottom-tabs
+) .bme-header{
+  border-bottom:0;
+}
+.bme-menu:is(
+  .bme-presentation-beyond-launcher,
+  .bme-presentation-blue-launcher,
+  .bme-presentation-tropical-club,
+  .bme-presentation-family-pizzeria,
+  .bme-presentation-launcher,
+  .bme-presentation-category-covers,
+  .bme-presentation-desert-arches,
+  .bme-presentation-bottom-tabs
+) .bme-hero{
+  min-height:clamp(270px,34cqw,410px);
+  display:grid;
+  grid-template-columns:minmax(0,1.25fr) minmax(110px,.45fr);
+  align-items:center;
+  gap:clamp(14px,4cqw,42px);
+  padding-top:clamp(42px,7cqw,78px);
+  padding-bottom:clamp(54px,8cqw,96px);
+  border-radius:0 0 clamp(28px,5cqw,58px) clamp(28px,5cqw,58px);
+  background:
+    radial-gradient(circle at 86% 20%,color-mix(in srgb,var(--bme-accent-secondary) 58%,transparent),transparent 34%),
+    linear-gradient(145deg,color-mix(in srgb,var(--bme-accent) 10%,var(--bme-surface)),var(--bme-surface));
+  overflow:hidden;
+}
+.bme-menu:is(
+  .bme-presentation-beyond-launcher,
+  .bme-presentation-blue-launcher,
+  .bme-presentation-tropical-club,
+  .bme-presentation-family-pizzeria,
+  .bme-presentation-launcher,
+  .bme-presentation-category-covers,
+  .bme-presentation-desert-arches,
+  .bme-presentation-bottom-tabs
+) .bme-hero::after{
+  content:"";
+  position:absolute;
+  inset-inline-end:-24px;
+  bottom:-58px;
+  width:clamp(160px,28cqw,330px);
+  aspect-ratio:1;
+  border-radius:36%;
+  background:color-mix(in srgb,var(--bme-accent) 12%,transparent);
+  transform:rotate(24deg);
+}
+.bme-menu:is(
+  .bme-presentation-beyond-launcher,
+  .bme-presentation-blue-launcher,
+  .bme-presentation-tropical-club,
+  .bme-presentation-family-pizzeria,
+  .bme-presentation-launcher,
+  .bme-presentation-category-covers,
+  .bme-presentation-desert-arches,
+  .bme-presentation-bottom-tabs
+) .bme-hero h1{
+  max-width:11ch;
+  font-size:clamp(42px,7.5cqw,var(--bme-hero-size));
+  line-height:.91;
+  letter-spacing:-.055em;
+}
+.bme-menu:is(
+  .bme-presentation-beyond-launcher,
+  .bme-presentation-blue-launcher,
+  .bme-presentation-tropical-club,
+  .bme-presentation-family-pizzeria,
+  .bme-presentation-launcher,
+  .bme-presentation-category-covers,
+  .bme-presentation-desert-arches,
+  .bme-presentation-bottom-tabs
+) .bme-watermark-pill{
+  min-height:0;
+  aspect-ratio:1;
+  border-radius:28%;
+  transform:rotate(5deg);
+  background:color-mix(in srgb,var(--bme-card) 82%,var(--bme-accent));
+  box-shadow:0 24px 60px color-mix(in srgb,var(--bme-text) 12%,transparent);
+}
+.bme-menu:is(
+  .bme-presentation-beyond-launcher,
+  .bme-presentation-blue-launcher,
+  .bme-presentation-tropical-club,
+  .bme-presentation-family-pizzeria,
+  .bme-presentation-launcher,
+  .bme-presentation-category-covers,
+  .bme-presentation-desert-arches,
+  .bme-presentation-bottom-tabs
+) .bme-hero-media-image{height:clamp(120px,20cqw,210px);border-radius:28%;transform:rotate(3deg)}
+
+/* Pull launcher navigation into the hero experience rather than leaving a dead
+   gap between brand statement and interaction. Individual template button
+   shapes still come from their presentation stylesheet. */
+.bme-menu:is(
+  .bme-presentation-beyond-launcher,
+  .bme-presentation-blue-launcher,
+  .bme-presentation-tropical-club,
+  .bme-presentation-family-pizzeria,
+  .bme-presentation-launcher,
+  .bme-presentation-category-covers,
+  .bme-presentation-desert-arches,
+  .bme-presentation-bottom-tabs
+) .bme-category-nav{
+  position:relative;
+  z-index:12;
+  left:auto;
+  right:auto;
+  bottom:auto;
+  transform:none;
+  margin-top:-28px;
+  border:1px solid color-mix(in srgb,var(--bme-accent) 18%,var(--bme-line));
+  background:color-mix(in srgb,var(--bme-bg) 94%,transparent);
+  box-shadow:0 22px 58px color-mix(in srgb,var(--bme-text) 10%,transparent);
+  backdrop-filter:blur(18px);
+}
+
+/* ---------- Focus + motion polish shared by hero systems ---------- */
+.bme-menu .bme-header,
+.bme-menu .bme-hero,
+.bme-menu .bme-hero-media-image,
+.bme-menu .bme-watermark-pill{
+  transition:background-color .2s ease,border-color .2s ease,box-shadow .2s ease;
+}
+
+/* =========================================================
+   CONTAINER RESPONSIVENESS
+   Hero structure follows the rendered menu width, matching Studio previews.
+   ========================================================= */
+@container beyond-menu (max-width:760px){
+  .bme-menu .bme-header{min-height:70px}
+
+  .bme-menu:is(
+    .bme-presentation-atelier,
+    .bme-presentation-nordic-paper,
+    .bme-presentation-monochrome-grid,
+    .bme-presentation-chef-editorial,
+    .bme-presentation-minimal-grid,
+    .bme-presentation-tokyo-ink
+  ) .bme-hero{
+    min-height:360px;
+    grid-template-columns:minmax(0,1.35fr) minmax(105px,.45fr);
+    gap:18px;
+  }
+
+  .bme-menu:is(
+    .bme-presentation-riviera,
+    .bme-presentation-coastal-story,
+    .bme-presentation-botanical,
+    .bme-presentation-garden-journal,
+    .bme-presentation-breakfast-board,
+    .bme-presentation-levant-table
+  ) .bme-hero{
+    min-height:0;
+    grid-template-columns:minmax(0,1fr) minmax(130px,.62fr);
+    gap:18px;
+  }
+  .bme-menu:is(
+    .bme-presentation-riviera,
+    .bme-presentation-coastal-story,
+    .bme-presentation-botanical,
+    .bme-presentation-garden-journal,
+    .bme-presentation-breakfast-board,
+    .bme-presentation-levant-table
+  ) .bme-hero-media-image,
+  .bme-menu:is(
+    .bme-presentation-riviera,
+    .bme-presentation-coastal-story,
+    .bme-presentation-botanical,
+    .bme-presentation-garden-journal,
+    .bme-presentation-breakfast-board,
+    .bme-presentation-levant-table
+  ) .bme-watermark-pill{min-height:230px}
+
+  .bme-menu:is(
+    .bme-presentation-beyond-launcher,
+    .bme-presentation-blue-launcher,
+    .bme-presentation-tropical-club,
+    .bme-presentation-family-pizzeria,
+    .bme-presentation-launcher,
+    .bme-presentation-category-covers,
+    .bme-presentation-desert-arches,
+    .bme-presentation-bottom-tabs
+  ) .bme-category-nav{margin-top:-20px}
+}
+
+@container beyond-menu (max-width:430px){
+  .bme-menu .bme-header{min-height:64px;gap:9px}
+  .bme-menu .bme-brand{gap:9px}
+
+  /* Editorial becomes a bold compact cover rather than squeezed desktop. */
+  .bme-menu:is(
+    .bme-presentation-atelier,
+    .bme-presentation-nordic-paper,
+    .bme-presentation-monochrome-grid,
+    .bme-presentation-chef-editorial,
+    .bme-presentation-minimal-grid,
+    .bme-presentation-tokyo-ink
+  ) .bme-hero{
+    min-height:330px;
+    grid-template-columns:minmax(0,1fr) 78px;
+    align-items:end;
+    gap:12px;
+    padding-top:56px;
+    padding-bottom:38px;
+  }
+  .bme-menu:is(
+    .bme-presentation-atelier,
+    .bme-presentation-nordic-paper,
+    .bme-presentation-monochrome-grid,
+    .bme-presentation-chef-editorial,
+    .bme-presentation-minimal-grid,
+    .bme-presentation-tokyo-ink
+  ) .bme-hero h1{font-size:clamp(38px,12cqw,52px);max-width:9ch}
+  .bme-menu:is(
+    .bme-presentation-atelier,
+    .bme-presentation-nordic-paper,
+    .bme-presentation-monochrome-grid,
+    .bme-presentation-chef-editorial,
+    .bme-presentation-minimal-grid,
+    .bme-presentation-tokyo-ink
+  ) .bme-watermark-pill img{width:72px;height:72px}
+
+  /* Immersive heroes become intentional mobile covers. */
+  .bme-menu:is(
+    .bme-presentation-noir-gallery,
+    .bme-presentation-smokehouse-story,
+    .bme-presentation-luxury-steak,
+    .bme-presentation-white-gallery,
+    .bme-presentation-coastal-gallery,
+    .bme-presentation-brunch-polaroids,
+    .bme-presentation-patisserie,
+    .bme-presentation-photo-story
+  ) .bme-hero{
+    min-height:clamp(390px,118cqw,520px);
+    padding-top:76px;
+    padding-bottom:34px;
+  }
+  .bme-menu:is(
+    .bme-presentation-noir-gallery,
+    .bme-presentation-smokehouse-story,
+    .bme-presentation-luxury-steak,
+    .bme-presentation-white-gallery,
+    .bme-presentation-coastal-gallery,
+    .bme-presentation-brunch-polaroids,
+    .bme-presentation-patisserie,
+    .bme-presentation-photo-story
+  ) .bme-hero h1{font-size:clamp(40px,12cqw,52px)}
+  .bme-menu:is(
+    .bme-presentation-noir-gallery,
+    .bme-presentation-smokehouse-story,
+    .bme-presentation-luxury-steak,
+    .bme-presentation-white-gallery,
+    .bme-presentation-coastal-gallery,
+    .bme-presentation-brunch-polaroids,
+    .bme-presentation-patisserie,
+    .bme-presentation-photo-story
+  ) .bme-watermark-pill{width:170px;min-height:170px;inset-inline-end:-22px;opacity:.16}
+
+  /* Split hero stacks naturally on phones. */
+  .bme-menu:is(
+    .bme-presentation-riviera,
+    .bme-presentation-coastal-story,
+    .bme-presentation-botanical,
+    .bme-presentation-garden-journal,
+    .bme-presentation-breakfast-board,
+    .bme-presentation-levant-table
+  ) .bme-hero{
+    grid-template-columns:1fr;
+    gap:24px;
+    padding-top:42px;
+    padding-bottom:32px;
+  }
+  .bme-menu:is(
+    .bme-presentation-riviera,
+    .bme-presentation-coastal-story,
+    .bme-presentation-botanical,
+    .bme-presentation-garden-journal,
+    .bme-presentation-breakfast-board,
+    .bme-presentation-levant-table
+  ) .bme-hero-copy{grid-column:1;grid-row:1}
+  .bme-menu:is(
+    .bme-presentation-riviera,
+    .bme-presentation-coastal-story,
+    .bme-presentation-botanical,
+    .bme-presentation-garden-journal,
+    .bme-presentation-breakfast-board,
+    .bme-presentation-levant-table
+  ) .bme-hero-media{grid-column:1;grid-row:2}
+  .bme-menu:is(
+    .bme-presentation-riviera,
+    .bme-presentation-coastal-story,
+    .bme-presentation-botanical,
+    .bme-presentation-garden-journal,
+    .bme-presentation-breakfast-board,
+    .bme-presentation-levant-table
+  ) .bme-hero-media-image,
+  .bme-menu:is(
+    .bme-presentation-riviera,
+    .bme-presentation-coastal-story,
+    .bme-presentation-botanical,
+    .bme-presentation-garden-journal,
+    .bme-presentation-breakfast-board,
+    .bme-presentation-levant-table
+  ) .bme-watermark-pill{min-height:190px;max-height:220px;border-radius:28px}
+
+  /* Poster keeps the graphic punch while simplifying the artwork. */
+  .bme-menu:is(
+    .bme-presentation-street-poster,
+    .bme-presentation-seoul-night,
+    .bme-presentation-neon-dock,
+    .bme-presentation-mosaic,
+    .bme-presentation-tapas-collage,
+    .bme-presentation-dessert-magazine,
+    .bme-presentation-rose-lounge,
+    .bme-presentation-bakery-counter,
+    .bme-presentation-cafe-cards,
+    .bme-presentation-cocktail-cards,
+    .bme-presentation-magazine
+  ) .bme-hero{
+    min-height:320px;
+    grid-template-columns:minmax(0,1fr) 82px;
+    gap:12px;
+    padding-top:48px;
+    padding-bottom:42px;
+  }
+  .bme-menu:is(
+    .bme-presentation-street-poster,
+    .bme-presentation-seoul-night,
+    .bme-presentation-neon-dock,
+    .bme-presentation-mosaic,
+    .bme-presentation-tapas-collage,
+    .bme-presentation-dessert-magazine,
+    .bme-presentation-rose-lounge,
+    .bme-presentation-bakery-counter,
+    .bme-presentation-cafe-cards,
+    .bme-presentation-cocktail-cards,
+    .bme-presentation-magazine
+  ) .bme-hero h1{font-size:clamp(38px,12cqw,50px)}
+  .bme-menu:is(
+    .bme-presentation-street-poster,
+    .bme-presentation-seoul-night,
+    .bme-presentation-neon-dock,
+    .bme-presentation-mosaic,
+    .bme-presentation-tapas-collage,
+    .bme-presentation-dessert-magazine,
+    .bme-presentation-rose-lounge,
+    .bme-presentation-bakery-counter,
+    .bme-presentation-cafe-cards,
+    .bme-presentation-cocktail-cards,
+    .bme-presentation-magazine
+  ) .bme-hero-media{transform:rotate(2deg)}
+  .bme-menu:is(
+    .bme-presentation-street-poster,
+    .bme-presentation-seoul-night,
+    .bme-presentation-neon-dock,
+    .bme-presentation-mosaic,
+    .bme-presentation-tapas-collage,
+    .bme-presentation-dessert-magazine,
+    .bme-presentation-rose-lounge,
+    .bme-presentation-bakery-counter,
+    .bme-presentation-cafe-cards,
+    .bme-presentation-cocktail-cards,
+    .bme-presentation-magazine
+  ) .bme-watermark-pill{min-height:82px;padding:10px}
+
+  /* Brand stage stays serene but becomes shorter on mobile. */
+  .bme-menu:is(
+    .bme-presentation-omakase,
+    .bme-presentation-brasserie,
+    .bme-presentation-wine-register,
+    .bme-presentation-trattoria-ledger,
+    .bme-presentation-butcher-ledger,
+    .bme-presentation-tap-board,
+    .bme-presentation-heritage-classic,
+    .bme-presentation-standard
+  ) .bme-hero{min-height:300px;padding-top:42px;padding-bottom:42px}
+
+  /* Category-led becomes a compact app intro with nav attached directly below. */
+  .bme-menu:is(
+    .bme-presentation-beyond-launcher,
+    .bme-presentation-blue-launcher,
+    .bme-presentation-tropical-club,
+    .bme-presentation-family-pizzeria,
+    .bme-presentation-launcher,
+    .bme-presentation-category-covers,
+    .bme-presentation-desert-arches,
+    .bme-presentation-bottom-tabs
+  ) .bme-hero{
+    min-height:260px;
+    grid-template-columns:minmax(0,1fr) 82px;
+    gap:12px;
+    padding-top:40px;
+    padding-bottom:58px;
+    border-radius:0 0 28px 28px;
+  }
+  .bme-menu:is(
+    .bme-presentation-beyond-launcher,
+    .bme-presentation-blue-launcher,
+    .bme-presentation-tropical-club,
+    .bme-presentation-family-pizzeria,
+    .bme-presentation-launcher,
+    .bme-presentation-category-covers,
+    .bme-presentation-desert-arches,
+    .bme-presentation-bottom-tabs
+  ) .bme-hero h1{font-size:clamp(38px,11cqw,48px)}
+  .bme-menu:is(
+    .bme-presentation-beyond-launcher,
+    .bme-presentation-blue-launcher,
+    .bme-presentation-tropical-club,
+    .bme-presentation-family-pizzeria,
+    .bme-presentation-launcher,
+    .bme-presentation-category-covers,
+    .bme-presentation-desert-arches,
+    .bme-presentation-bottom-tabs
+  ) .bme-category-nav{
+    margin-top:-22px;
+    max-width:calc(100% - 20px);
+    border-radius:20px;
+  }
+}
+
+@container beyond-menu (max-width:350px){
+  .bme-menu .bme-header{min-height:60px}
+  .bme-menu .bme-hero h1{overflow-wrap:anywhere}
+  .bme-menu:is(
+    .bme-presentation-atelier,
+    .bme-presentation-nordic-paper,
+    .bme-presentation-monochrome-grid,
+    .bme-presentation-chef-editorial,
+    .bme-presentation-minimal-grid,
+    .bme-presentation-tokyo-ink,
+    .bme-presentation-street-poster,
+    .bme-presentation-seoul-night,
+    .bme-presentation-neon-dock,
+    .bme-presentation-mosaic,
+    .bme-presentation-tapas-collage,
+    .bme-presentation-dessert-magazine,
+    .bme-presentation-rose-lounge,
+    .bme-presentation-bakery-counter,
+    .bme-presentation-cafe-cards,
+    .bme-presentation-cocktail-cards,
+    .bme-presentation-magazine,
+    .bme-presentation-beyond-launcher,
+    .bme-presentation-blue-launcher,
+    .bme-presentation-tropical-club,
+    .bme-presentation-family-pizzeria,
+    .bme-presentation-launcher,
+    .bme-presentation-category-covers,
+    .bme-presentation-desert-arches,
+    .bme-presentation-bottom-tabs
+  ) .bme-hero{grid-template-columns:minmax(0,1fr) 66px}
+  .bme-menu .bme-watermark-pill img{max-width:58px;max-height:58px}
+}
