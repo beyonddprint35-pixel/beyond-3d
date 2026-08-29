@@ -4,8 +4,10 @@
   "portsAttributes": {
     "5174": {
       "label": "Beyond Menu Studio",
-      "onAutoForward": "silent",
+      "onAutoForward": "openPreview",
       "protocol": "http"
     }
-  }
+  },
+  "postStartCommand": "bash .devcontainer/start-menu-studio.sh",
+  "postAttachCommand": "bash .devcontainer/start-menu-studio.sh"
 }
