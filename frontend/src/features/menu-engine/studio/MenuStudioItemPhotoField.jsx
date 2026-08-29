@@ -4,6 +4,7 @@ import { supabase } from "../../../lib/supabaseClient";
 import { MENU_PHOTO_AUTH_REQUIRED, uploadMenuItemImage, retuneMenuItemImage, reanalyzeMenuItemImage } from "./menuItemImageStorage";
 import { getCurrentDraftDesign } from "./draftSession";
 import { resolveMenuPhotoProfile, menuPhotoProfileDescription, menuPhotoProfileLabel } from "../domain/menuPhotoProfiles";
+import MenuPhotoReviewCompare from "./MenuPhotoReviewCompare";
 import "./MenuStudioItemPhotoField.css";
 
 const COPY = {
@@ -416,6 +417,18 @@ export default function MenuStudioItemPhotoField({ item, onChange, siteId, slug,
         <div><span>{copy.currentMenu}</span><strong>{currentThemeLabel}</strong><small>{currentThemeDescription}</small></div>
         {themeIsCurrent && finishIsCurrent && photoAssetId ? <span className="is-matched">✓ {copy.theme}</span> : null}
       </div>
+      <MenuPhotoReviewCompare
+        originalUrl={originalUrl}
+        finishedUrl={themeUrl || processedUrl}
+        finishedKind={themeUrl ? "theme" : "enhanced"}
+        activeVariant={activeVariant}
+        focusX={savedFocusX}
+        focusY={savedFocusY}
+        finishSource={item?.image_finish_source || ""}
+        finishSafety={item?.image_finish_safety || ""}
+        language={studioLanguage}
+        onSelect={chooseVariant}
+      />
       {photoAssetId ? <div className="studio-v3-item-photo-asset-row">
         <div><span>{copy.analyzedOnce}</span><strong>✓ {copy.cached}</strong><small>{copy.reanalyzeHint}</small></div>
         <button type="button" disabled={busy} onClick={reanalyzePhoto}>{reanalyzing ? copy.reanalyzing : copy.reanalyze}</button>
