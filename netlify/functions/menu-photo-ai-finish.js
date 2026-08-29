@@ -1,5 +1,6 @@
 const OPENAI_RESPONSES_URL = "https://api.openai.com/v1/responses";
 const DEFAULT_MODEL = "gpt-5.6-luna";
+const MENU_BUCKET_PATH = "/storage/v1/object/public/menu-item-images/";
 
 function jsonResponse(statusCode, body) {
   return {
@@ -23,10 +24,18 @@ function clamp(value, min, max, fallback = 0) {
   return Math.min(max, Math.max(min, number));
 }
 
-function safeImageUrl(value) {
-  const url = String(value || "").trim();
-  if (!/^https:\/\//i.test(url) || url.length > 2400) return "";
-  return url;
+function safeImageUrl(value, supabaseUrl) {
+  const raw = String(value || "").trim();
+  if (!raw || raw.length > 2400 || !supabaseUrl) return "";
+  try {
+    const image = new URL(raw);
+    const project = new URL(supabaseUrl);
+    if (image.protocol !== "https:" || image.origin !== project.origin) return "";
+    if (!image.pathname.startsWith(MENU_BUCKET_PATH)) return "";
+    return image.toString();
+  } catch {
+    return "";
+  }
 }
 
 async function verifyUser(event) {
@@ -42,7 +51,7 @@ async function verifyUser(event) {
   });
   const data = await response.json().catch(() => null);
   if (!response.ok || !data?.id) return { ok:false, status:401, error:"Your session is invalid or expired." };
-  return { ok:true, user:data };
+  return { ok:true, user:data, supabaseUrl };
 }
 
 function recipeSchema() {
@@ -104,8 +113,8 @@ exports.handler = async event => {
     return jsonResponse(400, { error:"Invalid request." });
   }
 
-  const imageUrl = safeImageUrl(body.imageUrl);
-  if (!imageUrl) return jsonResponse(400, { error:"A valid HTTPS menu photo is required." });
+  const imageUrl = safeImageUrl(body.imageUrl, auth.supabaseUrl);
+  if (!imageUrl) return jsonResponse(400, { error:"A valid Beyond menu photo is required." });
 
   const profileLabel = String(body.profileLabel || "Natural premium menu photography").slice(0, 120);
   const profileDescription = String(body.profileDescription || "").slice(0, 260);
