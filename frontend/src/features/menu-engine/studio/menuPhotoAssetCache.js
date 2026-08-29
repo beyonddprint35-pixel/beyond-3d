@@ -23,15 +23,16 @@ export async function hashMenuPhotoBlob(blob) {
   return Array.from(new Uint8Array(digest), value => value.toString(16).padStart(2, "0")).join("");
 }
 
-export async function findMenuPhotoAsset({ siteId, imageHash, analysisProfile=MENU_PHOTO_ASSET_ANALYSIS_PROFILE }) {
+export async function findMenuPhotoAsset({ siteId, ownerId="", imageHash, analysisProfile=MENU_PHOTO_ASSET_ANALYSIS_PROFILE }) {
   if (!siteId || !imageHash) return null;
-  const { data, error } = await supabase
+  let query = supabase
     .from("menu_photo_assets")
     .select("*")
     .eq("site_id", siteId)
     .eq("image_hash", imageHash)
-    .eq("analysis_profile", analysisProfile)
-    .maybeSingle();
+    .eq("analysis_profile", analysisProfile);
+  if (ownerId) query = query.eq("owner_id", ownerId);
+  const { data, error } = await query.maybeSingle();
   if (error) throw error;
   return normalizeAsset(data);
 }
@@ -58,6 +59,7 @@ export async function createMenuPhotoAsset(payload) {
   if (error.code === "23505") {
     const existing = await findMenuPhotoAsset({
       siteId:row.site_id,
+      ownerId:row.owner_id,
       imageHash:row.image_hash,
       analysisProfile:row.analysis_profile,
     });
