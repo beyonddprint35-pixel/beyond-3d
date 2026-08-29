@@ -1,0 +1,104 @@
+/* =========================================================
+   BEYOND MENU ENGINE — PHOTO REGULATION
+   Global visual invariant layer shared by every image-led template.
+   Keeps customer photos readable, prevents oversized media blocks and
+   protects source images when a template crop would remove too much.
+   ========================================================= */
+
+/* No menu item photo should dominate an entire screen simply because the
+   template uses a large editorial span. The width remains template-driven;
+   only the media height is regulated. */
+.bme-menu .bme-item-media{
+  position:relative;
+  isolation:isolate;
+  max-block-size:clamp(240px,40vw,400px);
+}
+
+.bme-menu .bme-item-media>img{
+  position:relative;
+  z-index:1;
+  object-position:50% 50%;
+  transition:object-fit .18s ease,opacity .18s ease;
+}
+
+/* When cover would crop away more than the allowed amount, MenuRenderer
+   switches the frame to protected mode. The complete photograph remains
+   visible while a softened copy of the same image fills the frame behind it,
+   avoiding empty letterbox bars. */
+.bme-menu .bme-item-media[data-photo-fit="protect"]{
+  background:color-mix(in srgb,var(--bme-card) 72%,var(--bme-accent-secondary));
+}
+
+.bme-menu .bme-item-media[data-photo-fit="protect"]::before{
+  content:"";
+  position:absolute;
+  z-index:0;
+  inset:-10%;
+  background-image:var(--bme-photo-image);
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:cover;
+  filter:blur(18px) saturate(.82) brightness(.74);
+  opacity:.42;
+  transform:scale(1.08);
+  pointer-events:none;
+}
+
+.bme-menu .bme-item-media[data-photo-fit="protect"]>img{
+  object-fit:contain;
+  padding:clamp(2px,.45vw,6px);
+}
+
+/* Template gradients and cinematic overlays remain above the regulated image. */
+.bme-menu .bme-item-media::after{z-index:2}
+
+/* Split-story designs previously forced tall rows (330–400px+) even when
+   their content did not need the height. Let content determine the row and
+   keep the photograph within the global media ceiling. */
+.bme-menu.bme-presentation-smokehouse-story .bme-visual-item,
+.bme-menu.bme-presentation-smokehouse-story .bme-visual-item:first-child,
+.bme-menu.bme-presentation-riviera .bme-visual-item,
+.bme-menu.bme-presentation-botanical .bme-visual-item{
+  min-height:0;
+}
+
+.bme-menu.bme-presentation-smokehouse-story .bme-item-media,
+.bme-menu.bme-presentation-riviera .bme-item-media,
+.bme-menu.bme-presentation-botanical .bme-item-media{
+  min-height:0;
+  max-block-size:360px;
+}
+
+/* Full-bleed cinema cards still feel cinematic, but no longer create giant
+   photo panels on tablet or desktop. */
+.bme-menu.bme-presentation-noir-gallery .bme-visual-item,
+.bme-menu.bme-presentation-luxury-steak .bme-visual-item{
+  min-height:clamp(280px,31vw,360px);
+}
+
+.bme-menu.bme-presentation-noir-gallery .bme-visual-item:first-child,
+.bme-menu.bme-presentation-luxury-steak .bme-visual-item:first-child{
+  min-height:clamp(320px,36vw,420px);
+}
+
+@media(max-width:760px){
+  .bme-menu .bme-item-media{max-block-size:300px}
+
+  .bme-menu.bme-presentation-noir-gallery .bme-visual-item,
+  .bme-menu.bme-presentation-noir-gallery .bme-visual-item:first-child,
+  .bme-menu.bme-presentation-luxury-steak .bme-visual-item,
+  .bme-menu.bme-presentation-luxury-steak .bme-visual-item:first-child{
+    min-height:300px;
+  }
+}
+
+@media(max-width:430px){
+  .bme-menu .bme-item-media{max-block-size:260px}
+
+  .bme-menu.bme-presentation-noir-gallery .bme-visual-item,
+  .bme-menu.bme-presentation-noir-gallery .bme-visual-item:first-child,
+  .bme-menu.bme-presentation-luxury-steak .bme-visual-item,
+  .bme-menu.bme-presentation-luxury-steak .bme-visual-item:first-child{
+    min-height:270px;
+  }
+}
