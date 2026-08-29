@@ -5,6 +5,7 @@
    Product rule:
    - never letterbox item photos with visible/blurred side bars
    - prefer a clean crop over duplicated-background filler
+   - preserve the restaurant owner's chosen focal point
    - adapt card geometry when the source is strongly portrait
    - cap oversized editorial media on tablet / desktop
    - keep cinematic templates full-bleed
@@ -24,19 +25,7 @@
   height:100%;
   display:block;
   object-fit:cover;
-  object-position:50% 50%;
-}
-
-/* The previous protected mode used contain + a blurred duplicate image.
-   That created visible side bars. Protected photos now stay clean and use
-   the source-orientation rules below instead. */
-.bme-menu .bme-item-media[data-photo-fit="protect"]::before{
-  content:none;
-}
-
-.bme-menu .bme-item-media[data-photo-fit="protect"]>img{
-  object-fit:cover;
-  padding:0;
+  object-position:var(--bme-photo-focus-x,50%) var(--bme-photo-focus-y,50%);
 }
 
 /* Standard stacked cards choose the closest useful frame for the source.
@@ -96,9 +85,10 @@
   }
 }
 
-/* Full-bleed cinema templates must remain edge-to-edge. Their media is never
-   height-capped directly; the card controls the framing. Portrait sources
-   get a taller card instead of contain/letterboxing. */
+/* Full-bleed cinema templates remain edge-to-edge. Their media is never
+   height-capped directly; the card controls framing. Portrait sources get a
+   taller card, and the focal point determines which part of the source stays
+   visible when cover-cropping is still necessary. */
 .bme-menu.bme-presentation-noir-gallery .bme-item-media,
 .bme-menu.bme-presentation-luxury-steak .bme-item-media{
   max-block-size:none;
