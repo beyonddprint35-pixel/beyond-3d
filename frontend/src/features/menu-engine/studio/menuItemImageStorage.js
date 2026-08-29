@@ -16,6 +16,7 @@ import {
 
 export const MENU_ITEM_IMAGE_BUCKET = "menu-item-images";
 export const MENU_PHOTO_AUTH_REQUIRED = "BEYOND_MENU_PHOTO_AUTH_REQUIRED";
+export const MENU_PHOTO_AI_ROUTING_PROFILE = "smart-ai-routing-v1";
 
 function safeSegment(value, fallback = "menu") {
   const safe = String(value || "")
@@ -120,6 +121,36 @@ function aiRecipeFromAsset(asset) {
   return recipe && typeof recipe === "object" ? recipe : null;
 }
 
+function shouldRequestAiForAnalysis(analysis) {
+  const score = Number(analysis?.score);
+  const notes = new Set(Array.isArray(analysis?.notes) ? analysis.notes : []);
+  if (!Number.isFinite(score)) return true;
+  if (score < 72) return true;
+  if (["too_dark", "too_bright", "low_contrast", "soft_focus"].some(code => notes.has(code))) return true;
+  if (score < 82 && ["slightly_dark", "slightly_bright", "soft_contrast", "slightly_soft"].some(code => notes.has(code))) return true;
+  return false;
+}
+
+async function smartAiRecipe({ sourceUrl, analysis }) {
+  const eligible = shouldRequestAiForAnalysis(analysis);
+  if (!eligible) return { recipe:null, eligible:false };
+  const recipe = await requestMenuPhotoAiRecipe({ sourceUrl }).catch(() => null);
+  return { recipe, eligible:true };
+}
+
+function analysisDocument({ prepared, focus, aiRecipe, aiEligible, forcedAi=false }) {
+  return {
+    ...prepared.analysis,
+    processingProfile:prepared.profile,
+    focusConfidence:Number(focus?.confidence || 0),
+    focusMethod:focus?.method || "",
+    aiStrategy:MENU_PHOTO_AI_ROUTING_PROFILE,
+    aiEligible:Boolean(aiEligible),
+    aiForced:Boolean(forcedAi),
+    aiRecipe:aiRecipe || null,
+  };
+}
+
 function assetResult({ asset, variant=null, themeProfile=null, finish=null, cacheHit=false }) {
   const original = assetOriginal(asset);
   const processed = assetProcessed(asset);
@@ -196,8 +227,10 @@ export async function uploadMenuItemImage({ file, siteId, slug, itemId, themePro
     const processed = await uploadVariant(processedPath, prepared.processed);
     uploadedPaths.push(processed.path);
 
-    // One AI call at most for this unique normalized photo. The recipe is neutral and reusable across every menu theme.
-    const aiRecipe = await requestMenuPhotoAiRecipe({ sourceUrl:original.url }).catch(() => null);
+    // Cost guard: easy/high-quality photos stay local-only. Difficult photos can use one neutral AI analysis,
+    // and that result is cached forever for this unique photo until the owner explicitly requests Reanalyze.
+    const ai = await smartAiRecipe({ sourceUrl:original.url, analysis:prepared.analysis });
+    const aiRecipe = ai.recipe;
     const themePrepared = themeProfile
       ? await prepareBeyondThemePhoto(file, themeProfile, { aiRecipe })
       : null;
@@ -218,13 +251,7 @@ export async function uploadMenuItemImage({ file, siteId, slug, itemId, themePro
       quality_score:prepared.analysis.score,
       quality_level:prepared.analysis.level,
       quality_notes:prepared.analysis.notes,
-      analysis:{
-        ...prepared.analysis,
-        processingProfile:prepared.profile,
-        focusConfidence:Number(focus?.confidence || 0),
-        focusMethod:focus?.method || "",
-        aiRecipe:aiRecipe || null,
-      },
+      analysis:analysisDocument({ prepared, focus, aiRecipe, aiEligible:ai.eligible }),
       focus_x:Number(focus?.x ?? 50),
       focus_y:Number(focus?.y ?? 50),
       finish_profile:finish?.profile || "dish-safe-pro-v1",
@@ -278,7 +305,8 @@ async function adoptLegacyPhoto({ user, sourceUrl, sourcePath="", siteId, slug, 
   const existing = await findMenuPhotoAsset({ siteId, imageHash });
   if (existing) return { asset:existing, blob };
 
-  const aiRecipe = await requestMenuPhotoAiRecipe({ sourceUrl }).catch(() => null);
+  const ai = await smartAiRecipe({ sourceUrl, analysis:prepared.analysis });
+  const aiRecipe = ai.recipe;
   const themed = themeProfile ? await prepareBeyondThemePhoto(blob, themeProfile, { aiRecipe }) : null;
   const finish = themed?.finish || prepared.finish;
   const asset = await createMenuPhotoAsset({
@@ -295,7 +323,7 @@ async function adoptLegacyPhoto({ user, sourceUrl, sourcePath="", siteId, slug, 
     quality_score:prepared.analysis.score,
     quality_level:prepared.analysis.level,
     quality_notes:prepared.analysis.notes,
-    analysis:{ ...prepared.analysis, processingProfile:prepared.profile, focusConfidence:Number(focus?.confidence || 0), focusMethod:focus?.method || "", aiRecipe:aiRecipe || null },
+    analysis:analysisDocument({ prepared, focus, aiRecipe, aiEligible:ai.eligible }),
     focus_x:Number(focus?.x ?? 50),
     focus_y:Number(focus?.y ?? 50),
     finish_profile:finish?.profile || "dish-safe-pro-v1",
@@ -342,11 +370,12 @@ export async function reanalyzeMenuItemImage({ sourceUrl, sourcePath="", siteId,
   const imageHash = await hashMenuPhotoBlob(prepared.original.blob);
   if (!asset) asset = await findMenuPhotoAsset({ siteId, imageHash });
 
-  // This is the only explicit path allowed to ask AI to analyze the same unique photo again.
+  // Explicit owner action is the only path allowed to ask AI to analyze the same unique photo again.
   const aiRecipe = await requestMenuPhotoAiRecipe({ sourceUrl:canonicalUrl }).catch(() => null);
   const themePrepared = themeProfile ? await prepareBeyondThemePhoto(blob, themeProfile, { aiRecipe }) : null;
   const finish = themePrepared?.finish || prepared.finish;
   const now = themePrepared?.processedAt || prepared.processedAt || new Date().toISOString();
+  const analysis = analysisDocument({ prepared, focus, aiRecipe, aiEligible:true, forcedAi:true });
 
   if (!asset) {
     asset = await createMenuPhotoAsset({
@@ -363,7 +392,7 @@ export async function reanalyzeMenuItemImage({ sourceUrl, sourcePath="", siteId,
       quality_score:prepared.analysis.score,
       quality_level:prepared.analysis.level,
       quality_notes:prepared.analysis.notes,
-      analysis:{ ...prepared.analysis, processingProfile:prepared.profile, focusConfidence:Number(focus?.confidence || 0), focusMethod:focus?.method || "", aiRecipe:aiRecipe || null },
+      analysis,
       focus_x:Number(focus?.x ?? 50),
       focus_y:Number(focus?.y ?? 50),
       finish_profile:finish?.profile || "dish-safe-pro-v1",
@@ -382,7 +411,7 @@ export async function reanalyzeMenuItemImage({ sourceUrl, sourcePath="", siteId,
       quality_score:prepared.analysis.score,
       quality_level:prepared.analysis.level,
       quality_notes:prepared.analysis.notes,
-      analysis:{ ...prepared.analysis, processingProfile:prepared.profile, focusConfidence:Number(focus?.confidence || 0), focusMethod:focus?.method || "", aiRecipe:aiRecipe || null },
+      analysis,
       focus_x:Number(focus?.x ?? asset.focus_x ?? 50),
       focus_y:Number(focus?.y ?? asset.focus_y ?? 50),
       finish_profile:finish?.profile || "dish-safe-pro-v1",
