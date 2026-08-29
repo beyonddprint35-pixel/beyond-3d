@@ -63,22 +63,41 @@ function uploadBase({ userId, siteId, slug, itemId }) {
 export async function uploadMenuItemImage({ file, siteId, slug, itemId, themeProfile=null }) {
   const user = await currentUser();
   const [prepared, focus] = await Promise.all([
-    prepareBeyondMenuPhoto(file, { themeProfile }),
+    prepareBeyondMenuPhoto(file),
     detectMenuPhotoFocus(file),
   ]);
   const base = uploadBase({ userId:user.id, siteId, slug, itemId });
   const originalPath = `${base}/original.${prepared.original.extension}`;
   const processedPath = `${base}/enhanced.${prepared.processed.extension}`;
-  const themePath = prepared.theme ? `${base}/theme-${safeSegment(prepared.themeProfile, "match")}.${prepared.theme.extension}` : "";
-
   const uploadedPaths = [];
+
   try {
     const original = await uploadVariant(originalPath, prepared.original);
     uploadedPaths.push(original.path);
-    const processed = await uploadVariant(processedPath, prepared.processed);
-    uploadedPaths.push(processed.path);
-    const theme = prepared.theme ? await uploadVariant(themePath, prepared.theme) : null;
-    if (theme?.path) uploadedPaths.push(theme.path);
+
+    const processedPromise = uploadVariant(processedPath, prepared.processed).then(uploaded => {
+      uploadedPaths.push(uploaded.path);
+      return uploaded;
+    });
+
+    const aiRecipe = themeProfile
+      ? await requestMenuPhotoAiRecipe({ sourceUrl:original.url, themeProfile }).catch(() => null)
+      : null;
+    const themePrepared = themeProfile
+      ? await prepareBeyondThemePhoto(file, themeProfile, { aiRecipe })
+      : null;
+    const themePath = themePrepared
+      ? `${base}/theme-${safeSegment(themePrepared.themeProfile, "match")}.${themePrepared.theme.extension}`
+      : "";
+    const themePromise = themePrepared
+      ? uploadVariant(themePath, themePrepared.theme).then(uploaded => {
+          uploadedPaths.push(uploaded.path);
+          return uploaded;
+        })
+      : Promise.resolve(null);
+
+    const [processed, theme] = await Promise.all([processedPromise, themePromise]);
+    const finished = themePrepared || prepared;
 
     return {
       original,
@@ -86,10 +105,10 @@ export async function uploadMenuItemImage({ file, siteId, slug, itemId, themePro
       theme,
       focus,
       analysis:prepared.analysis,
-      finish:prepared.finish,
+      finish:finished.finish,
       profile:prepared.profile,
-      themeProfile:prepared.themeProfile,
-      processedAt:prepared.processedAt,
+      themeProfile:themePrepared?.themeProfile || "",
+      processedAt:themePrepared?.processedAt || prepared.processedAt,
     };
   } catch (error) {
     if (uploadedPaths.length) {
