@@ -1,5 +1,6 @@
 import { supabase } from "../../../lib/supabaseClient";
 import { prepareBeyondMenuPhoto, prepareBeyondThemePhoto } from "./menuPhotoTuning";
+import { detectMenuPhotoFocus } from "./menuPhotoFocus";
 
 export const MENU_ITEM_IMAGE_BUCKET = "menu-item-images";
 export const MENU_PHOTO_AUTH_REQUIRED = "BEYOND_MENU_PHOTO_AUTH_REQUIRED";
@@ -60,7 +61,10 @@ function uploadBase({ userId, siteId, slug, itemId }) {
 
 export async function uploadMenuItemImage({ file, siteId, slug, itemId, themeProfile=null }) {
   const user = await currentUser();
-  const prepared = await prepareBeyondMenuPhoto(file, { themeProfile });
+  const [prepared, focus] = await Promise.all([
+    prepareBeyondMenuPhoto(file, { themeProfile }),
+    detectMenuPhotoFocus(file),
+  ]);
   const base = uploadBase({ userId:user.id, siteId, slug, itemId });
   const originalPath = `${base}/original.${prepared.original.extension}`;
   const processedPath = `${base}/enhanced.${prepared.processed.extension}`;
@@ -79,6 +83,7 @@ export async function uploadMenuItemImage({ file, siteId, slug, itemId, themePro
       original,
       processed,
       theme,
+      focus,
       analysis:prepared.analysis,
       profile:prepared.profile,
       themeProfile:prepared.themeProfile,
