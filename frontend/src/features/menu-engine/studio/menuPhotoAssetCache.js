@@ -112,15 +112,13 @@ export async function saveMenuPhotoVariant({ assetId, themeProfile, imageUrl, im
 
 export async function invalidateMenuPhotoVariants(assetId) {
   if (!assetId) return [];
-  const { data:rows, error:readError } = await supabase
-    .from("menu_photo_asset_variants")
-    .select("image_path")
-    .eq("asset_id", assetId);
-  if (readError) throw readError;
-  const { error:deleteError } = await supabase
+  const { error } = await supabase
     .from("menu_photo_asset_variants")
     .delete()
     .eq("asset_id", assetId);
-  if (deleteError) throw deleteError;
-  return (rows || []).map(row => row.image_path).filter(Boolean);
+  if (error) throw error;
+
+  // Do not remove old storage objects here. A published menu or another item may still reference
+  // the previous immutable URL. Fresh variants will get new paths and old files can be garbage-collected later.
+  return [];
 }
