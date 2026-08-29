@@ -1,4 +1,14 @@
 {
   "task.allowAutomaticTasks": "on",
-  "workbench.browser.enableRemoteProxy": true
+  "workbench.browser.enableRemoteProxy": true,
+  "remote.restoreForwardedPorts": true,
+  "remote.autoForwardPorts": true,
+  "remote.autoForwardPortsSource": "process",
+  "remote.portsAttributes": {
+    "5174": {
+      "label": "Beyond Menu Studio",
+      "onAutoForward": "openPreview",
+      "protocol": "http"
+    }
+  }
 }
