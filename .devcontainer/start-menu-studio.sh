@@ -3,7 +3,8 @@ set -uo pipefail
 
 PORT=5174
 ROUTE="/dev/menu-studio-v3-draft"
-ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 FRONTEND="$ROOT/frontend"
 VITE_LOG="/tmp/beyond-vite.log"
 PID_FILE="/tmp/beyond-vite.pid"
