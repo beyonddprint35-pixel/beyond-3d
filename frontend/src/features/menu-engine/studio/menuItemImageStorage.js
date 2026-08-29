@@ -1,5 +1,5 @@
 import { supabase } from "../../../lib/supabaseClient";
-import { prepareBeyondMenuPhoto } from "./menuPhotoTuning";
+import { prepareBeyondMenuPhoto, prepareBeyondThemePhoto } from "./menuPhotoTuning";
 
 export const MENU_ITEM_IMAGE_BUCKET = "menu-item-images";
 
@@ -36,34 +36,75 @@ async function uploadVariant(path, prepared) {
   };
 }
 
-export async function uploadMenuItemImage({ file, siteId, slug, itemId }) {
-  const { data:{ user }, error:userError } = await supabase.auth.getUser();
-  if (userError) throw userError;
+async function currentUser() {
+  const { data:{ user }, error } = await supabase.auth.getUser();
+  if (error) throw error;
   if (!user) throw new Error("Sign in to Beyond before uploading item photos.");
+  return user;
+}
 
-  const prepared = await prepareBeyondMenuPhoto(file);
+function uploadBase({ userId, siteId, slug, itemId }) {
   const menuSegment = safeSegment(siteId || slug, "menu");
   const itemSegment = safeSegment(itemId, "item");
   const random = globalThis.crypto?.randomUUID?.() || Math.random().toString(36).slice(2);
-  const base = `${user.id}/${menuSegment}/${itemSegment}/${Date.now()}-${random}`;
+  return `${userId}/${menuSegment}/${itemSegment}/${Date.now()}-${random}`;
+}
+
+export async function uploadMenuItemImage({ file, siteId, slug, itemId, themeProfile=null }) {
+  const user = await currentUser();
+  const prepared = await prepareBeyondMenuPhoto(file, { themeProfile });
+  const base = uploadBase({ userId:user.id, siteId, slug, itemId });
   const originalPath = `${base}/original.${prepared.original.extension}`;
   const processedPath = `${base}/enhanced.${prepared.processed.extension}`;
+  const themePath = prepared.theme ? `${base}/theme-${safeSegment(prepared.themeProfile, "match")}.${prepared.theme.extension}` : "";
 
-  let original = null;
+  const uploadedPaths = [];
   try {
-    original = await uploadVariant(originalPath, prepared.original);
+    const original = await uploadVariant(originalPath, prepared.original);
+    uploadedPaths.push(original.path);
     const processed = await uploadVariant(processedPath, prepared.processed);
+    uploadedPaths.push(processed.path);
+    const theme = prepared.theme ? await uploadVariant(themePath, prepared.theme) : null;
+    if (theme?.path) uploadedPaths.push(theme.path);
+
     return {
       original,
       processed,
+      theme,
       analysis:prepared.analysis,
       profile:prepared.profile,
+      themeProfile:prepared.themeProfile,
       processedAt:prepared.processedAt,
     };
   } catch (error) {
-    if (original?.path) {
-      await supabase.storage.from(MENU_ITEM_IMAGE_BUCKET).remove([original.path]).catch(() => null);
+    if (uploadedPaths.length) {
+      await supabase.storage.from(MENU_ITEM_IMAGE_BUCKET).remove(uploadedPaths).catch(() => null);
     }
     throw error;
   }
+}
+
+export async function retuneMenuItemImage({ sourceUrl, siteId, slug, itemId, themeProfile, previousThemePath="" }) {
+  if (!sourceUrl) throw new Error("Upload an original photo before matching it to the menu theme.");
+  const user = await currentUser();
+
+  const response = await fetch(sourceUrl, { mode:"cors", cache:"no-store" });
+  if (!response.ok) throw new Error("Beyond could not reopen the original photo for theme matching.");
+  const sourceBlob = await response.blob();
+  if (!sourceBlob.type.startsWith("image/")) throw new Error("The stored item photo is not a supported image.");
+
+  const prepared = await prepareBeyondThemePhoto(sourceBlob, themeProfile);
+  const base = uploadBase({ userId:user.id, siteId, slug, itemId });
+  const themePath = `${base}/theme-${safeSegment(prepared.themeProfile, "match")}.${prepared.theme.extension}`;
+  const theme = await uploadVariant(themePath, prepared.theme);
+
+  if (previousThemePath && previousThemePath !== theme.path) {
+    await supabase.storage.from(MENU_ITEM_IMAGE_BUCKET).remove([previousThemePath]).catch(() => null);
+  }
+
+  return {
+    theme,
+    themeProfile:prepared.themeProfile,
+    processedAt:prepared.processedAt,
+  };
 }
