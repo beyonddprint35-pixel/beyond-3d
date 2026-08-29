@@ -2,18 +2,15 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Beyond: Start Menu Studio",
+      "label": "Beyond: Repair Menu Studio Preview",
       "type": "shell",
       "command": "bash .devcontainer/start-menu-studio.sh",
       "options": {
         "cwd": "${workspaceFolder}"
       },
-      "runOptions": {
-        "runOn": "folderOpen"
-      },
       "problemMatcher": [],
       "presentation": {
-        "reveal": "silent",
+        "reveal": "always",
         "focus": false,
         "panel": "dedicated",
         "clear": true,
