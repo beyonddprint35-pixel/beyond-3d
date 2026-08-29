@@ -31,6 +31,7 @@ function hasReusableAsset(item) {
 
 function isProfessionallyFinished(item, profileId) {
   return Boolean(
+    hasReusableAsset(item) &&
     item?.image_theme_url &&
     item?.image_theme_profile === profileId &&
     item?.image_finish_profile === PRO_FINISH_PROFILE &&
