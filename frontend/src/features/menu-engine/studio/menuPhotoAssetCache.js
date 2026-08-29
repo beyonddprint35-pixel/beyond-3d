@@ -25,13 +25,19 @@ export async function hashMenuPhotoBlob(blob) {
 
 export async function findMenuPhotoAsset({ siteId, ownerId="", imageHash, analysisProfile=MENU_PHOTO_ASSET_ANALYSIS_PROFILE }) {
   if (!siteId || !imageHash) return null;
+  let scopedOwnerId = ownerId;
+  if (!scopedOwnerId) {
+    const { data } = await supabase.auth.getSession();
+    scopedOwnerId = data?.session?.user?.id || "";
+  }
+
   let query = supabase
     .from("menu_photo_assets")
     .select("*")
     .eq("site_id", siteId)
     .eq("image_hash", imageHash)
     .eq("analysis_profile", analysisProfile);
-  if (ownerId) query = query.eq("owner_id", ownerId);
+  if (scopedOwnerId) query = query.eq("owner_id", scopedOwnerId);
   const { data, error } = await query.maybeSingle();
   if (error) throw error;
   return normalizeAsset(data);
