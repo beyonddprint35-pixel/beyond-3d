@@ -122,6 +122,7 @@ export function adaptSupabaseMenuToV3(site, rawGroups = [], rawItems = []) {
     .map(item => {
       if (!validGroupIds.has(item.group_id)) return null;
       const options = normalizePriceOptions(item.price_options);
+      const score = item.image_quality_score == null ? null : Number(item.image_quality_score);
       return {
         id: item.id,
         group_id: item.group_id,
@@ -129,8 +130,21 @@ export function adaptSupabaseMenuToV3(site, rawGroups = [], rawItems = []) {
         description: languageObject(item, "description"),
         price: options.length ? "" : text(item.price),
         price_options: options,
-        image_url: text(item.image_url || item.image),
+        image_url: text(item.image_url || item.image_processed_url || item.image_original_url || item.image),
         image_path: text(item.image_path),
+        image_original_url: text(item.image_original_url),
+        image_original_path: text(item.image_original_path),
+        image_processed_url: text(item.image_processed_url),
+        image_processed_path: text(item.image_processed_path),
+        image_variant: text(item.image_variant),
+        image_status: text(item.image_status),
+        image_quality_score: Number.isFinite(score) ? score : null,
+        image_quality_level: text(item.image_quality_level),
+        image_quality_notes: Array.isArray(item.image_quality_notes) ? item.image_quality_notes : [],
+        image_processing_profile: text(item.image_processing_profile),
+        image_processed_at: text(item.image_processed_at),
+        image_width: item.image_width == null ? null : Number(item.image_width),
+        image_height: item.image_height == null ? null : Number(item.image_height),
         visible: item.visible !== false,
         sort_order: Number(item.sort_order || 0),
       };
