@@ -1,0 +1,12 @@
+{
+  "name": "Beyond Development",
+  "forwardPorts": [5174],
+  "portsAttributes": {
+    "5174": {
+      "label": "Beyond Menu Studio",
+      "onAutoForward": "openPreview",
+      "protocol": "http"
+    }
+  },
+  "postAttachCommand": "bash .devcontainer/start-menu-studio.sh"
+}
