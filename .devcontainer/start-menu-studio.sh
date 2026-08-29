@@ -37,16 +37,16 @@ fi
 echo "BEYOND MENU STUDIO READY LOCALLY"
 echo "$LOCAL_URL"
 echo "Vite log: $VITE_LOG"
+echo "Open with VS Code Run and Debug: Beyond: Open Menu Studio Locally"
 
-# VS Code's integrated browser can proxy localhost over the remote Codespace
-# connection. This is the primary local preview path and does not depend on a
-# GitHub forwarded-port URL being healthy.
-if command -v code >/dev/null 2>&1; then
-  code --open-url "$LOCAL_URL" >/dev/null 2>&1 || true
-fi
+# Do not call `code --open-url` here. In browser-based Codespaces that can
+# resolve through GitHub's stale forwarded-port tunnel and reproduce the 404.
+# The .vscode/launch.json editor-browser configuration opens localhost through
+# VS Code's remote proxy instead, which is independent from that tunnel.
 
 # Also report the authoritative Codespaces browse URL when GitHub has created
-# one. Never synthesize this address and never force public visibility.
+# one. This is diagnostic only; never synthesize this address or force public
+# visibility. The editor-browser localhost launch remains the primary path.
 if [ -n "${CODESPACE_NAME:-}" ] && command -v gh >/dev/null 2>&1; then
   BROWSE_URL=""
 
@@ -69,6 +69,6 @@ if [ -n "${CODESPACE_NAME:-}" ] && command -v gh >/dev/null 2>&1; then
   if [ -n "$BROWSE_URL" ]; then
     REMOTE_URL="${BROWSE_URL%/}${ROUTE}"
     printf '%s\n' "$REMOTE_URL" > /tmp/beyond-menu-studio-url
-    echo "Codespaces browser URL: $REMOTE_URL"
+    echo "Codespaces forwarded URL (diagnostic only): $REMOTE_URL"
   fi
 fi
