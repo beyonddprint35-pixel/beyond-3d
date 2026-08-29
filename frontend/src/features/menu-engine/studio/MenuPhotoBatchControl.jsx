@@ -95,7 +95,7 @@ export default function MenuPhotoBatchControl({ menu, design, siteId, slug, lang
   const activationItems = useMemo(() => currentThemeItems.filter(item => item.image_variant !== "theme" || item.image_url !== item.image_theme_url), [currentThemeItems]);
   const retuneItems = useMemo(() => photoItems.filter(item => !(item.image_theme_url && item.image_theme_profile === profile.id)), [photoItems, profile.id]);
   const needsAction = retuneItems.length + activationItems.length;
-  const matchedCount = photoItems.length - retuneItems.length;
+  const matchedCount = Math.max(0, photoItems.length - needsAction);
 
   async function matchAll() {
     if (running || !photoItems.length || !needsAction) return;
@@ -111,7 +111,7 @@ export default function MenuPhotoBatchControl({ menu, design, siteId, slug, lang
 
     setRunning(true);
     const direct = activationItems.map(patchForExistingTheme);
-    setProgress({done:0,total:retuneItems.length});
+    setProgress({done:direct.length,total:needsAction});
 
     try {
       const results = await mapWithConcurrency(retuneItems, 2, async item => {
@@ -138,7 +138,7 @@ export default function MenuPhotoBatchControl({ menu, design, siteId, slug, lang
             image_status:"ready",
           },
         };
-      }, (done,total) => setProgress({done,total}));
+      }, done => setProgress({done:direct.length + done,total:needsAction}));
 
       const successful = results.filter(result => result?.ok).map(result => result.value);
       const failed = results.filter(result => result && !result.ok);
@@ -191,7 +191,7 @@ export default function MenuPhotoBatchControl({ menu, design, siteId, slug, lang
       <div className="studio-v3-photo-batch-status">
         <span>{photoItems.length} {copy.photos}</span>
         <span>{matchedCount} {copy.matched}</span>
-        <span className={retuneItems.length ? "needs" : "ready"}>{retuneItems.length} {copy.needs}</span>
+        <span className={needsAction ? "needs" : "ready"}>{needsAction} {copy.needs}</span>
       </div>
       {running ? <div className="studio-v3-photo-batch-progress" aria-live="polite">
         <div><span>{copy.working}</span><strong>{progress.done}/{progress.total}</strong></div>
