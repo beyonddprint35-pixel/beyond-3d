@@ -4,7 +4,7 @@
     {
       "label": "Beyond: Start Menu Studio",
       "type": "shell",
-      "command": "fuser -k 5174/tcp 2>/dev/null || true; npm run dev -- --host 0.0.0.0 --port 5174",
+      "command": "bash -lc 'fuser -k 5174/tcp 2>/dev/null || true; (for i in $(seq 1 80); do if curl -fsS http://127.0.0.1:5174/ >/dev/null 2>&1; then if command -v gh >/dev/null 2>&1 && [ -n \"${CODESPACE_NAME:-}\" ]; then gh codespace ports visibility 5174:public -c \"$CODESPACE_NAME\" >/tmp/beyond-port.log 2>&1 || true; fi; URL=\"https://${CODESPACE_NAME}-5174.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}/dev/menu-studio-v3-draft\"; echo; echo \"BEYOND MENU STUDIO READY\"; echo \"$URL\"; if [ -n \"${BROWSER:-}\" ]; then \"$BROWSER\" \"$URL\" >/dev/null 2>&1 || true; fi; break; fi; sleep 0.5; done) & exec npm run dev -- --host 0.0.0.0 --port 5174'",
       "options": {
         "cwd": "${workspaceFolder}/frontend"
       },
