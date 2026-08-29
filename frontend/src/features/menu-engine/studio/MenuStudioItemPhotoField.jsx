@@ -7,9 +7,9 @@ import { resolveMenuPhotoProfile, menuPhotoProfileDescription, menuPhotoProfileL
 import "./MenuStudioItemPhotoField.css";
 
 const COPY = {
-  en:{label:"Item photo",upload:"Upload photo",replace:"Replace photo",remove:"Remove",signInUpload:"Sign in to upload",authRequired:"Sign in to Beyond to upload and save menu photos.",uploading:"Analyzing, enhancing & matching to menu…",hint:"JPEG, PNG or WebP · up to 20 MB · Beyond keeps the real photo and creates polished versions",drop:"Drop a food photo here",empty:"Add a photo for image-led menu designs",error:"Photo upload failed",standard:"Beyond Photo Standard",original:"Original",enhanced:"Enhanced",theme:"Theme match",recommended:"Recommended",currentMenu:"Current menu",natural:"Natural enhancement only — the dish itself is not changed.",themeSafe:"Theme matching adjusts light, color and contrast only. It never invents ingredients or changes the dish.",retune:"Match current theme",retuning:"Matching to theme…",themeOutdated:"The menu design changed. Update this photo so it matches the current theme.",excellent:"Excellent",good:"Good",needs_improvement:"Needs improvement",low_quality:"Low quality"},
-  he:{label:"תמונת הפריט",upload:"העלאת תמונה",replace:"החלפת תמונה",remove:"הסרה",signInUpload:"התחברות להעלאת תמונה",authRequired:"יש להתחבר ל-Beyond כדי להעלות ולשמור תמונות בתפריט.",uploading:"מנתח, משפר ומתאים לתפריט…",hint:"JPEG, PNG או WebP · עד 20MB · Beyond שומר את התמונה האמיתית ויוצר גרסאות מלוטשות",drop:"שחררו כאן תמונת מנה",empty:"הוסיפו תמונה לעיצובים מבוססי תמונות",error:"העלאת התמונה נכשלה",standard:"תקן התמונות של Beyond",original:"מקור",enhanced:"משופר",theme:"התאמה לעיצוב",recommended:"מומלץ",currentMenu:"התפריט הנוכחי",natural:"שיפור טבעי בלבד — המנה עצמה אינה משתנה.",themeSafe:"ההתאמה לעיצוב משנה רק אור, צבע וניגודיות. היא לא ממציאה מרכיבים ולא משנה את המנה.",retune:"התאמה לעיצוב הנוכחי",retuning:"מתאים לעיצוב…",themeOutdated:"עיצוב התפריט השתנה. עדכנו את התמונה כדי שתתאים לעיצוב הנוכחי.",excellent:"מצוין",good:"טוב",needs_improvement:"דורש שיפור",low_quality:"איכות נמוכה"},
-  ar:{label:"صورة العنصر",upload:"رفع صورة",replace:"استبدال الصورة",remove:"إزالة",signInUpload:"تسجيل الدخول لرفع صورة",authRequired:"سجّل الدخول إلى Beyond لرفع صور القائمة وحفظها.",uploading:"جارٍ التحليل والتحسين والمطابقة مع القائمة…",hint:"JPEG أو PNG أو WebP · حتى 20 MB · يحتفظ Beyond بالصورة الحقيقية وينشئ نسخًا مصقولة",drop:"أفلت صورة الطبق هنا",empty:"أضف صورة لتصاميم القوائم المعتمدة على الصور",error:"فشل رفع الصورة",standard:"معيار صور Beyond",original:"الأصل",enhanced:"محسنة",theme:"مطابقة التصميم",recommended:"موصى بها",currentMenu:"القائمة الحالية",natural:"تحسين طبيعي فقط — لا يتم تغيير الطبق نفسه.",themeSafe:"مطابقة التصميم تعدّل الإضاءة واللون والتباين فقط ولا تضيف مكونات أو تغيّر الطبق.",retune:"مطابقة التصميم الحالي",retuning:"جارٍ المطابقة…",themeOutdated:"تم تغيير تصميم القائمة. حدّث الصورة لتطابق التصميم الحالي.",excellent:"ممتاز",good:"جيد",needs_improvement:"بحاجة لتحسين",low_quality:"جودة منخفضة"},
+  en:{label:"Item photo",upload:"Upload photo",replace:"Replace photo",remove:"Remove",signInUpload:"Sign in to upload",authRequired:"Sign in to Beyond to upload and save menu photos.",uploading:"Analyzing, enhancing & matching to menu…",hint:"JPEG, PNG or WebP · up to 20 MB · Beyond keeps the real photo and creates polished versions",drop:"Drop a food photo here",empty:"Add a photo for image-led menu designs",error:"Photo upload failed",standard:"Beyond Photo Standard",original:"Original",enhanced:"Enhanced",theme:"Theme match",recommended:"Recommended",currentMenu:"Current menu",natural:"Natural enhancement only — the dish itself is not changed.",themeSafe:"Theme matching adjusts light, color and contrast only. It never invents ingredients or changes the dish.",retune:"Match current theme",retuning:"Matching to theme…",themeOutdated:"The menu design changed. Update this photo so it matches the current theme.",excellent:"Excellent",good:"Good",needs_improvement:"Needs improvement",low_quality:"Low quality",framing:"Photo framing",framingHint:"Tap or drag the target onto the most important part of the photo. Beyond keeps that point visible across menu layouts.",adjustFraming:"Adjust framing",doneFraming:"Done framing",centerFraming:"Center"},
+  he:{label:"תמונת הפריט",upload:"העלאת תמונה",replace:"החלפת תמונה",remove:"הסרה",signInUpload:"התחברות להעלאת תמונה",authRequired:"יש להתחבר ל-Beyond כדי להעלות ולשמור תמונות בתפריט.",uploading:"מנתח, משפר ומתאים לתפריט…",hint:"JPEG, PNG או WebP · עד 20MB · Beyond שומר את התמונה האמיתית ויוצר גרסאות מלוטשות",drop:"שחררו כאן תמונת מנה",empty:"הוסיפו תמונה לעיצובים מבוססי תמונות",error:"העלאת התמונה נכשלה",standard:"תקן התמונות של Beyond",original:"מקור",enhanced:"משופר",theme:"התאמה לעיצוב",recommended:"מומלץ",currentMenu:"התפריט הנוכחי",natural:"שיפור טבעי בלבד — המנה עצמה אינה משתנה.",themeSafe:"ההתאמה לעיצוב משנה רק אור, צבע וניגודיות. היא לא ממציאה מרכיבים ולא משנה את המנה.",retune:"התאמה לעיצוב הנוכחי",retuning:"מתאים לעיצוב…",themeOutdated:"עיצוב התפריט השתנה. עדכנו את התמונה כדי שתתאים לעיצוב הנוכחי.",excellent:"מצוין",good:"טוב",needs_improvement:"דורש שיפור",low_quality:"איכות נמוכה",framing:"מסגור התמונה",framingHint:"לחצו או גררו את הסמן אל החלק החשוב ביותר בתמונה. Beyond ישמור על הנקודה הזו גלויה בין עיצובי התפריט.",adjustFraming:"התאמת מסגור",doneFraming:"סיום מסגור",centerFraming:"מרכז"},
+  ar:{label:"صورة العنصر",upload:"رفع صورة",replace:"استبدال الصورة",remove:"إزالة",signInUpload:"تسجيل الدخول لرفع صورة",authRequired:"سجّل الدخول إلى Beyond لرفع صور القائمة وحفظها.",uploading:"جارٍ التحليل والتحسين والمطابقة مع القائمة…",hint:"JPEG أو PNG أو WebP · حتى 20 MB · يحتفظ Beyond بالصورة الحقيقية وينشئ نسخًا مصقولة",drop:"أفلت صورة الطبق هنا",empty:"أضف صورة لتصاميم القوائم المعتمدة على الصور",error:"فشل رفع الصورة",standard:"معيار صور Beyond",original:"الأصل",enhanced:"محسنة",theme:"مطابقة التصميم",recommended:"موصى بها",currentMenu:"القائمة الحالية",natural:"تحسين طبيعي فقط — لا يتم تغيير الطبق نفسه.",themeSafe:"مطابقة التصميم تعدّل الإضاءة واللون والتباين فقط ولا تضيف مكونات أو تغيّر الطبق.",retune:"مطابقة التصميم الحالي",retuning:"جارٍ المطابقة…",themeOutdated:"تم تغيير تصميم القائمة. حدّث الصورة لتطابق التصميم الحالي.",excellent:"ممتاز",good:"جيد",needs_improvement:"بحاجة لتحسين",low_quality:"جودة منخفضة",framing:"تأطير الصورة",framingHint:"اضغط أو اسحب الهدف إلى أهم جزء في الصورة. يحافظ Beyond على هذه النقطة ظاهرة عبر تصاميم القائمة.",adjustFraming:"ضبط التأطير",doneFraming:"إنهاء التأطير",centerFraming:"توسيط"},
 };
 
 const NOTE_COPY = {
@@ -18,16 +18,28 @@ const NOTE_COPY = {
   ar:{low_resolution:"الدقة منخفضة جدًا للتصاميم المميزة.",medium_resolution:"الدقة مقبولة، لكن صورة أكبر ستبدو أكثر حدة.",too_dark:"الصورة داكنة جدًا.",slightly_dark:"الصورة داكنة قليلًا.",too_bright:"الإضاءة الساطعة قوية جدًا.",slightly_bright:"الصورة ساطعة قليلًا.",low_contrast:"الصورة مسطحة وتحتاج إلى فصل أوضح.",soft_contrast:"التباين ناعم قليلًا.",soft_focus:"قد تكون الصورة خارج نطاق التركيز.",slightly_soft:"الصورة ناعمة قليلًا."},
 };
 
+function clampFocus(value) {
+  const number = Number(value);
+  return Number.isFinite(number) ? Math.min(100, Math.max(0, number)) : 50;
+}
+
+function roundedFocus(value) {
+  return Math.round(clampFocus(value) * 10) / 10;
+}
+
 export default function MenuStudioItemPhotoField({ item, onChange, siteId, slug, studioLanguage="en" }) {
   const copy = COPY[studioLanguage] || COPY.en;
   const noteCopy = NOTE_COPY[studioLanguage] || NOTE_COPY.en;
   const inputRef = useRef(null);
+  const focusDraggingRef = useRef(false);
   const [uploading,setUploading] = useState(false);
   const [retuning,setRetuning] = useState(false);
   const [dragging,setDragging] = useState(false);
   const [error,setError] = useState("");
   const [authUser,setAuthUser] = useState(undefined);
   const [authOpen,setAuthOpen] = useState(false);
+  const [focusMode,setFocusMode] = useState(false);
+  const [focusPoint,setFocusPoint] = useState({x:50,y:50});
 
   useEffect(() => {
     let active = true;
@@ -65,11 +77,18 @@ export default function MenuStudioItemPhotoField({ item, onChange, siteId, slug,
   const qualityScore = Number.isFinite(Number(item?.image_quality_score)) ? Number(item.image_quality_score) : null;
   const qualityLevel = String(item?.image_quality_level || "");
   const qualityNotes = Array.isArray(item?.image_quality_notes) ? item.image_quality_notes : [];
+  const savedFocusX = clampFocus(item?.image_focus_x);
+  const savedFocusY = clampFocus(item?.image_focus_y);
   const activeVariant = item?.image_variant === "original" ? "original" : item?.image_variant === "theme" ? "theme" : "enhanced";
   const hasComparison = Boolean(originalUrl && processedUrl);
   const themeIsCurrent = Boolean(themeUrl && storedThemeProfile === currentThemeProfile.id);
   const themeNeedsUpdate = Boolean((originalUrl || processedUrl) && !themeIsCurrent);
   const busy = uploading || retuning;
+  const displayedFocus = focusMode ? focusPoint : {x:savedFocusX,y:savedFocusY};
+
+  useEffect(() => {
+    if (!focusMode) setFocusPoint({x:savedFocusX,y:savedFocusY});
+  }, [savedFocusX, savedFocusY, focusMode]);
 
   function handlePhotoError(err) {
     if (err?.code === MENU_PHOTO_AUTH_REQUIRED) {
@@ -110,6 +129,8 @@ export default function MenuStudioItemPhotoField({ item, onChange, siteId, slug,
         image_theme_processed_at:uploaded.theme ? uploaded.processedAt : null,
         image_width:selected.width,
         image_height:selected.height,
+        image_focus_x:50,
+        image_focus_y:50,
         image_variant:uploaded.theme ? "theme" : "enhanced",
         image_status:"ready",
         image_quality_score:uploaded.analysis.score,
@@ -118,6 +139,7 @@ export default function MenuStudioItemPhotoField({ item, onChange, siteId, slug,
         image_processing_profile:uploaded.profile,
         image_processed_at:uploaded.processedAt,
       });
+      setFocusPoint({x:50,y:50});
     } catch (err) {
       handlePhotoError(err);
     } finally {
@@ -161,6 +183,7 @@ export default function MenuStudioItemPhotoField({ item, onChange, siteId, slug,
   function handleDrop(event) {
     event.preventDefault();
     setDragging(false);
+    if (focusMode) return;
     if (!authUser) {
       setAuthOpen(true);
       return;
@@ -183,6 +206,8 @@ export default function MenuStudioItemPhotoField({ item, onChange, siteId, slug,
 
   function removePhoto() {
     setError("");
+    setFocusMode(false);
+    setFocusPoint({x:50,y:50});
     onChange?.({
       image_url:"",
       image_path:"",
@@ -196,6 +221,8 @@ export default function MenuStudioItemPhotoField({ item, onChange, siteId, slug,
       image_theme_processed_at:null,
       image_width:null,
       image_height:null,
+      image_focus_x:50,
+      image_focus_y:50,
       image_variant:"",
       image_status:"none",
       image_quality_score:null,
@@ -206,6 +233,58 @@ export default function MenuStudioItemPhotoField({ item, onChange, siteId, slug,
     });
   }
 
+  function pointFromPointer(event) {
+    const box = event.currentTarget.getBoundingClientRect();
+    if (!box.width || !box.height) return focusPoint;
+    return {
+      x: roundedFocus(((event.clientX - box.left) / box.width) * 100),
+      y: roundedFocus(((event.clientY - box.top) / box.height) * 100),
+    };
+  }
+
+  function commitFocus(point = focusPoint) {
+    const next = {x:roundedFocus(point.x),y:roundedFocus(point.y)};
+    setFocusPoint(next);
+    onChange?.({ image_focus_x:next.x, image_focus_y:next.y });
+  }
+
+  function handleFocusPointerDown(event) {
+    event.preventDefault();
+    focusDraggingRef.current = true;
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+    setFocusPoint(pointFromPointer(event));
+  }
+
+  function handleFocusPointerMove(event) {
+    if (!focusDraggingRef.current) return;
+    setFocusPoint(pointFromPointer(event));
+  }
+
+  function handleFocusPointerUp(event) {
+    if (!focusDraggingRef.current) return;
+    focusDraggingRef.current = false;
+    const next = pointFromPointer(event);
+    setFocusPoint(next);
+    commitFocus(next);
+    event.currentTarget.releasePointerCapture?.(event.pointerId);
+  }
+
+  function startFraming() {
+    setFocusPoint({x:savedFocusX,y:savedFocusY});
+    setFocusMode(true);
+  }
+
+  function centerFraming() {
+    const centered = {x:50,y:50};
+    setFocusPoint(centered);
+    commitFocus(centered);
+  }
+
+  function finishFraming() {
+    commitFocus();
+    setFocusMode(false);
+  }
+
   return <section className="studio-v3-item-photo-field">
     <div className="studio-v3-item-photo-label-row">
       <strong>{copy.label}</strong>
@@ -213,19 +292,38 @@ export default function MenuStudioItemPhotoField({ item, onChange, siteId, slug,
     </div>
 
     <div
-      className={`studio-v3-item-photo-dropzone ${imageUrl ? "has-image" : "empty"} ${dragging ? "is-dragging" : ""} ${busy ? "is-uploading" : ""}`}
-      onDragEnter={event => { event.preventDefault(); setDragging(true); }}
+      className={`studio-v3-item-photo-dropzone ${imageUrl ? "has-image" : "empty"} ${dragging ? "is-dragging" : ""} ${busy ? "is-uploading" : ""} ${focusMode ? "is-framing" : ""}`}
+      onDragEnter={event => { if (focusMode) return; event.preventDefault(); setDragging(true); }}
       onDragOver={event => event.preventDefault()}
       onDragLeave={event => { if (!event.currentTarget.contains(event.relatedTarget)) setDragging(false); }}
       onDrop={handleDrop}
     >
-      {imageUrl ? <img src={imageUrl} alt=""/> : <div className="studio-v3-item-photo-empty"><span className="studio-v3-item-photo-icon" aria-hidden="true"><i/><i/></span><strong>{dragging ? copy.drop : copy.empty}</strong></div>}
+      {imageUrl ? <img src={imageUrl} alt="" style={{objectPosition:`${displayedFocus.x}% ${displayedFocus.y}%`}}/> : <div className="studio-v3-item-photo-empty"><span className="studio-v3-item-photo-icon" aria-hidden="true"><i/><i/></span><strong>{dragging ? copy.drop : copy.empty}</strong></div>}
+      {focusMode && imageUrl ? <div
+        className="studio-v3-item-photo-focus-layer"
+        role="application"
+        aria-label={copy.framingHint}
+        onPointerDown={handleFocusPointerDown}
+        onPointerMove={handleFocusPointerMove}
+        onPointerUp={handleFocusPointerUp}
+        onPointerCancel={() => { focusDraggingRef.current = false; }}
+      ><span className="studio-v3-item-photo-focus-target" style={{left:`${focusPoint.x}%`,top:`${focusPoint.y}%`}} aria-hidden="true"><i/><i/></span></div> : null}
       <div className="studio-v3-item-photo-overlay">
-        <button type="button" className="primary" disabled={busy} onClick={requestUpload}>{uploading ? copy.uploading : (!authUser ? copy.signInUpload : (imageUrl ? copy.replace : copy.upload))}</button>
-        {imageUrl ? <button type="button" className="secondary" disabled={busy} onClick={removePhoto}>{copy.remove}</button> : null}
+        {focusMode ? <>
+          <button type="button" className="primary" onClick={finishFraming}>{copy.doneFraming}</button>
+          <button type="button" className="secondary" onClick={centerFraming}>{copy.centerFraming}</button>
+        </> : <>
+          <button type="button" className="primary" disabled={busy} onClick={requestUpload}>{uploading ? copy.uploading : (!authUser ? copy.signInUpload : (imageUrl ? copy.replace : copy.upload))}</button>
+          {imageUrl ? <button type="button" className="secondary" disabled={busy} onClick={removePhoto}>{copy.remove}</button> : null}
+        </>}
       </div>
       {busy ? <span className="studio-v3-item-photo-progress" aria-hidden="true"/> : null}
     </div>
+
+    {imageUrl ? <div className={`studio-v3-item-photo-framing-row ${focusMode ? "active" : ""}`}>
+      <div><strong>{copy.framing}</strong><span>{copy.framingHint}</span></div>
+      {!focusMode ? <button type="button" disabled={busy} onClick={startFraming}>{copy.adjustFraming}</button> : <span className="studio-v3-item-photo-focus-coordinates">{Math.round(focusPoint.x)} · {Math.round(focusPoint.y)}</span>}
+    </div> : null}
 
     {hasComparison ? <div className="studio-v3-item-photo-tuning">
       <div className="studio-v3-item-photo-standard-head">
