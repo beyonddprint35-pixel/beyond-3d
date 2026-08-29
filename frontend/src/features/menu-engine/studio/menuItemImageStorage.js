@@ -2,6 +2,7 @@ import { supabase } from "../../../lib/supabaseClient";
 import { prepareBeyondMenuPhoto, prepareBeyondThemePhoto } from "./menuPhotoTuning";
 
 export const MENU_ITEM_IMAGE_BUCKET = "menu-item-images";
+export const MENU_PHOTO_AUTH_REQUIRED = "BEYOND_MENU_PHOTO_AUTH_REQUIRED";
 
 function safeSegment(value, fallback = "menu") {
   const safe = String(value || "")
@@ -36,10 +37,17 @@ async function uploadVariant(path, prepared) {
   };
 }
 
+function authRequiredError() {
+  const error = new Error("Sign in to Beyond before uploading item photos.");
+  error.code = MENU_PHOTO_AUTH_REQUIRED;
+  return error;
+}
+
 async function currentUser() {
   const { data:{ user }, error } = await supabase.auth.getUser();
+  const authMissing = !user || error?.name === "AuthSessionMissingError" || /auth session missing|refresh token/i.test(String(error?.message || ""));
+  if (authMissing) throw authRequiredError();
   if (error) throw error;
-  if (!user) throw new Error("Sign in to Beyond before uploading item photos.");
   return user;
 }
 
