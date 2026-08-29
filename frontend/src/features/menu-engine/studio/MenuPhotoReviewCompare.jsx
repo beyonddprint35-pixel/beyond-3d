@@ -43,9 +43,9 @@ export default function MenuPhotoReviewCompare({
       </div>
     </div>
 
-    <div className="studio-v3-photo-review-stage" style={{"--review-focus-x":`${safeX}%`,"--review-focus-y":`${safeY}%`}}>
+    <div className="studio-v3-photo-review-stage" style={{"--review-focus-x":`${safeX}%`,"--review-focus-y":`${safeY}%`,"--review-split":`${split}%`}}>
       <img className="studio-v3-photo-review-before" src={originalUrl} alt=""/>
-      <div className="studio-v3-photo-review-after" style={{width:`${split}%`}}><img src={finishedUrl} alt=""/></div>
+      <div className="studio-v3-photo-review-after"><img src={finishedUrl} alt=""/></div>
       <div className="studio-v3-photo-review-divider" style={{left:`${split}%`}} aria-hidden="true"><i/><span>↔</span></div>
       <span className="studio-v3-photo-review-label before">{copy.before}</span>
       <span className="studio-v3-photo-review-label after">{finishedKind === "theme" ? copy.after : copy.enhanced}</span>
