@@ -8,5 +8,6 @@
       "protocol": "http"
     }
   },
+  "postStartCommand": "bash .devcontainer/start-menu-studio.sh",
   "postAttachCommand": "bash .devcontainer/start-menu-studio.sh"
 }
