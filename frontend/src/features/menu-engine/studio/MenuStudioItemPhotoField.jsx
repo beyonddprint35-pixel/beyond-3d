@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import AuthModal from "../../../components/AuthModal";
 import { supabase } from "../../../lib/supabaseClient";
-import { MENU_PHOTO_AUTH_REQUIRED, uploadMenuItemImage, retuneMenuItemImage } from "./menuItemImageStorage";
+import { MENU_PHOTO_AUTH_REQUIRED, uploadMenuItemImage, retuneMenuItemImage, reanalyzeMenuItemImage } from "./menuItemImageStorage";
 import { getCurrentDraftDesign } from "./draftSession";
 import { resolveMenuPhotoProfile, menuPhotoProfileDescription, menuPhotoProfileLabel } from "../domain/menuPhotoProfiles";
 import "./MenuStudioItemPhotoField.css";
 
 const COPY = {
-  en:{label:"Item photo",upload:"Upload photo",replace:"Replace photo",remove:"Remove",signInUpload:"Sign in to upload",authRequired:"Sign in to Beyond to upload and save menu photos.",uploading:"Analyzing, enhancing & matching to menu…",hint:"JPEG, PNG or WebP · up to 20 MB · Beyond keeps the real photo and creates polished versions",drop:"Drop a food photo here",empty:"Add a photo for image-led menu designs",error:"Photo upload failed",standard:"Beyond Photo Standard",original:"Original",enhanced:"Enhanced",theme:"Theme match",recommended:"Recommended",currentMenu:"Current menu",natural:"Natural enhancement only — the dish itself is not changed.",themeSafe:"Theme matching adjusts light, color and contrast only. It never invents ingredients or changes the dish.",retune:"Match current theme",retuning:"Matching to theme…",themeOutdated:"The menu design changed. Update this photo so it matches the current theme.",excellent:"Excellent",good:"Good",needs_improvement:"Needs improvement",low_quality:"Low quality",framing:"Photo framing",framingHint:"Beyond chooses the important visual area automatically. Tap or drag the target only if you want to override it.",adjustFraming:"Adjust framing",doneFraming:"Done framing",centerFraming:"Center"},
-  he:{label:"תמונת הפריט",upload:"העלאת תמונה",replace:"החלפת תמונה",remove:"הסרה",signInUpload:"התחברות להעלאת תמונה",authRequired:"יש להתחבר ל-Beyond כדי להעלות ולשמור תמונות בתפריט.",uploading:"מנתח, משפר ומתאים לתפריט…",hint:"JPEG, PNG או WebP · עד 20MB · Beyond שומר את התמונה האמיתית ויוצר גרסאות מלוטשות",drop:"שחררו כאן תמונת מנה",empty:"הוסיפו תמונה לעיצובים מבוססי תמונות",error:"העלאת התמונה נכשלה",standard:"תקן התמונות של Beyond",original:"מקור",enhanced:"משופר",theme:"התאמה לעיצוב",recommended:"מומלץ",currentMenu:"התפריט הנוכחי",natural:"שיפור טבעי בלבד — המנה עצמה אינה משתנה.",themeSafe:"ההתאמה לעיצוב משנה רק אור, צבע וניגודיות. היא לא ממציאה מרכיבים ולא משנה את המנה.",retune:"התאמה לעיצוב הנוכחי",retuning:"מתאים לעיצוב…",themeOutdated:"עיצוב התפריט השתנה. עדכנו את התמונה כדי שתתאים לעיצוב הנוכחי.",excellent:"מצוין",good:"טוב",needs_improvement:"דורש שיפור",low_quality:"איכות נמוכה",framing:"מסגור התמונה",framingHint:"Beyond בוחר אוטומטית את האזור החשוב בתמונה. לחצו או גררו את הסמן רק אם תרצו לשנות אותו.",adjustFraming:"התאמת מסגור",doneFraming:"סיום מסגור",centerFraming:"מרכז"},
-  ar:{label:"صورة العنصر",upload:"رفع صورة",replace:"استبدال الصورة",remove:"إزالة",signInUpload:"تسجيل الدخول لرفع صورة",authRequired:"سجّل الدخول إلى Beyond لرفع صور القائمة وحفظها.",uploading:"جارٍ التحليل والتحسين والمطابقة مع القائمة…",hint:"JPEG أو PNG أو WebP · حتى 20 MB · يحتفظ Beyond بالصورة الحقيقية وينشئ نسخًا مصقولة",drop:"أفلت صورة الطبق هنا",empty:"أضف صورة لتصاميم القوائم المعتمدة على الصور",error:"فشل رفع الصورة",standard:"معيار صور Beyond",original:"الأصل",enhanced:"محسنة",theme:"مطابقة التصميم",recommended:"موصى بها",currentMenu:"القائمة الحالية",natural:"تحسين طبيعي فقط — لا يتم تغيير الطبق نفسه.",themeSafe:"مطابقة التصميم تعدّل الإضاءة واللون والتباين فقط ولا تضيف مكونات أو تغيّر الطبق.",retune:"مطابقة التصميم الحالي",retuning:"جارٍ المطابقة…",themeOutdated:"تم تغيير تصميم القائمة. حدّث الصورة لتطابق التصميم الحالي.",excellent:"ممتاز",good:"جيد",needs_improvement:"بحاجة لتحسين",low_quality:"جودة منخفضة",framing:"تأطير الصورة",framingHint:"يختار Beyond المنطقة الأهم في الصورة تلقائيًا. اضغط أو اسحب الهدف فقط إذا أردت تعديلها.",adjustFraming:"ضبط التأطير",doneFraming:"إنهاء التأطير",centerFraming:"توسيط"},
+  en:{label:"Item photo",upload:"Upload photo",replace:"Replace photo",remove:"Remove",signInUpload:"Sign in to upload",authRequired:"Sign in to Beyond to upload and save menu photos.",uploading:"Analyzing, enhancing & matching to menu…",hint:"JPEG, PNG or WebP · up to 20 MB · each unique photo is analyzed once and reused",drop:"Drop a food photo here",empty:"Add a photo for image-led menu designs",error:"Photo upload failed",standard:"Beyond Photo Standard",original:"Original",enhanced:"Enhanced",theme:"Theme match",recommended:"Recommended",currentMenu:"Current menu",natural:"Natural enhancement only — the dish itself is not changed.",themeSafe:"Theme matching reuses the saved photo analysis and adjusts locally. No new AI call is needed when designs change.",retune:"Match current theme",retuning:"Matching to theme…",themeOutdated:"The menu design changed. Reuse the saved analysis to match this photo locally.",excellent:"Excellent",good:"Good",needs_improvement:"Needs improvement",low_quality:"Low quality",framing:"Photo framing",framingHint:"Beyond chooses the important visual area automatically. Tap or drag the target only if you want to override it.",adjustFraming:"Adjust framing",doneFraming:"Done framing",centerFraming:"Center",analyzedOnce:"Reusable photo analysis",cached:"Analyzed once · reusable across designs",reanalyze:"Reanalyze",reanalyzing:"Reanalyzing…",reanalyzeHint:"Only use this when the original photo or finishing standard genuinely needs a fresh analysis."},
+  he:{label:"תמונת הפריט",upload:"העלאת תמונה",replace:"החלפת תמונה",remove:"הסרה",signInUpload:"התחברות להעלאת תמונה",authRequired:"יש להתחבר ל-Beyond כדי להעלות ולשמור תמונות בתפריט.",uploading:"מנתח, משפר ומתאים לתפריט…",hint:"JPEG, PNG או WebP · עד 20MB · כל תמונה ייחודית מנותחת פעם אחת ונשמרת לשימוש חוזר",drop:"שחררו כאן תמונת מנה",empty:"הוסיפו תמונה לעיצובים מבוססי תמונות",error:"העלאת התמונה נכשלה",standard:"תקן התמונות של Beyond",original:"מקור",enhanced:"משופר",theme:"התאמה לעיצוב",recommended:"מומלץ",currentMenu:"התפריט הנוכחי",natural:"שיפור טבעי בלבד — המנה עצמה אינה משתנה.",themeSafe:"התאמת העיצוב משתמשת מחדש בניתוח השמור ומעבדת מקומית. אין צורך בקריאת AI חדשה בעת החלפת עיצוב.",retune:"התאמה לעיצוב הנוכחי",retuning:"מתאים לעיצוב…",themeOutdated:"עיצוב התפריט השתנה. הניתוח השמור ישמש להתאמה מקומית לעיצוב החדש.",excellent:"מצוין",good:"טוב",needs_improvement:"דורש שיפור",low_quality:"איכות נמוכה",framing:"מסגור התמונה",framingHint:"Beyond בוחר אוטומטית את האזור החשוב בתמונה. לחצו או גררו את הסמן רק אם תרצו לשנות אותו.",adjustFraming:"התאמת מסגור",doneFraming:"סיום מסגור",centerFraming:"מרכז",analyzedOnce:"ניתוח תמונה לשימוש חוזר",cached:"נותחה פעם אחת · לשימוש בכל העיצובים",reanalyze:"ניתוח מחדש",reanalyzing:"מנתח מחדש…",reanalyzeHint:"השתמשו בזה רק אם תמונת המקור או תקן הגימור באמת דורשים ניתוח חדש."},
+  ar:{label:"صورة العنصر",upload:"رفع صورة",replace:"استبدال الصورة",remove:"إزالة",signInUpload:"تسجيل الدخول لرفع صورة",authRequired:"سجّل الدخول إلى Beyond لرفع صور القائمة وحفظها.",uploading:"جارٍ التحليل والتحسين والمطابقة مع القائمة…",hint:"JPEG أو PNG أو WebP · حتى 20 MB · يتم تحليل كل صورة فريدة مرة واحدة وإعادة استخدامها",drop:"أفلت صورة الطبق هنا",empty:"أضف صورة لتصاميم القوائم المعتمدة على الصور",error:"فشل رفع الصورة",standard:"معيار صور Beyond",original:"الأصل",enhanced:"محسنة",theme:"مطابقة التصميم",recommended:"موصى بها",currentMenu:"القائمة الحالية",natural:"تحسين طبيعي فقط — لا يتم تغيير الطبق نفسه.",themeSafe:"مطابقة التصميم تعيد استخدام تحليل الصورة المحفوظ وتتم محلياً. لا توجد حاجة لاتصال AI جديد عند تغيير التصميم.",retune:"مطابقة التصميم الحالي",retuning:"جارٍ المطابقة…",themeOutdated:"تم تغيير تصميم القائمة. سيعاد استخدام التحليل المحفوظ للمطابقة محلياً.",excellent:"ممتاز",good:"جيد",needs_improvement:"بحاجة لتحسين",low_quality:"جودة منخفضة",framing:"تأطير الصورة",framingHint:"يختار Beyond المنطقة الأهم في الصورة تلقائيًا. اضغط أو اسحب الهدف فقط إذا أردت تعديلها.",adjustFraming:"ضبط التأطير",doneFraming:"إنهاء التأطير",centerFraming:"توسيط",analyzedOnce:"تحليل صورة قابل لإعادة الاستخدام",cached:"تم تحليلها مرة واحدة · قابلة لإعادة الاستخدام عبر التصاميم",reanalyze:"إعادة التحليل",reanalyzing:"جارٍ إعادة التحليل…",reanalyzeHint:"استخدم هذا فقط عندما تحتاج الصورة الأصلية أو معيار التشطيب فعلاً إلى تحليل جديد."},
 };
 
 const NOTE_COPY = {
@@ -27,6 +27,38 @@ function roundedFocus(value) {
   return Math.round(clampFocus(value) * 10) / 10;
 }
 
+function finishPatch(finish) {
+  return {
+    image_finish_profile:finish?.profile || "dish-safe-pro-v1",
+    image_finish_source:finish?.source || "local-vision",
+    image_finish_safety:finish?.safety || "dish-integrity-locked",
+    image_finish_confidence:Number.isFinite(Number(finish?.confidence)) ? Number(finish.confidence) : null,
+    image_finish_model:finish?.model || "",
+    image_finish_recipe:finish?.recipe || null,
+  };
+}
+
+function assetPatch(result) {
+  const asset = result?.asset;
+  if (!asset) return {};
+  return {
+    photo_asset_id:asset.id,
+    image_hash:result.imageHash || asset.image_hash || "",
+    image_analysis_profile:result.analysisProfile || asset.analysis_profile || "",
+    image_original_url:asset.original_url || result.original?.url || "",
+    image_original_path:asset.original_path || result.original?.path || "",
+    image_processed_url:asset.processed_url || result.processed?.url || asset.original_url || "",
+    image_processed_path:asset.processed_path || result.processed?.path || asset.original_path || "",
+    image_quality_score:Number.isFinite(Number(asset.quality_score)) ? Number(asset.quality_score) : result.analysis?.score ?? null,
+    image_quality_level:asset.quality_level || result.analysis?.level || "",
+    image_quality_notes:Array.isArray(asset.quality_notes) ? asset.quality_notes : (result.analysis?.notes || []),
+    image_focus_x:Number.isFinite(Number(asset.focus_x)) ? Number(asset.focus_x) : 50,
+    image_focus_y:Number.isFinite(Number(asset.focus_y)) ? Number(asset.focus_y) : 50,
+    image_processing_profile:asset.analysis?.processingProfile || result.profile || "natural-auto-v2",
+    image_processed_at:asset.analyzed_at || result.processedAt || null,
+  };
+}
+
 export default function MenuStudioItemPhotoField({ item, onChange, siteId, slug, studioLanguage="en" }) {
   const copy = COPY[studioLanguage] || COPY.en;
   const noteCopy = NOTE_COPY[studioLanguage] || NOTE_COPY.en;
@@ -34,6 +66,7 @@ export default function MenuStudioItemPhotoField({ item, onChange, siteId, slug,
   const focusDraggingRef = useRef(false);
   const [uploading,setUploading] = useState(false);
   const [retuning,setRetuning] = useState(false);
+  const [reanalyzing,setReanalyzing] = useState(false);
   const [dragging,setDragging] = useState(false);
   const [error,setError] = useState("");
   const [authUser,setAuthUser] = useState(undefined);
@@ -74,6 +107,7 @@ export default function MenuStudioItemPhotoField({ item, onChange, siteId, slug,
   const processedPath = String(item?.image_processed_path || "");
   const themePath = String(item?.image_theme_path || "");
   const storedThemeProfile = String(item?.image_theme_profile || "");
+  const photoAssetId = String(item?.photo_asset_id || "");
   const qualityScore = Number.isFinite(Number(item?.image_quality_score)) ? Number(item.image_quality_score) : null;
   const qualityLevel = String(item?.image_quality_level || "");
   const qualityNotes = Array.isArray(item?.image_quality_notes) ? item.image_quality_notes : [];
@@ -83,7 +117,7 @@ export default function MenuStudioItemPhotoField({ item, onChange, siteId, slug,
   const hasComparison = Boolean(originalUrl && processedUrl);
   const themeIsCurrent = Boolean(themeUrl && storedThemeProfile === currentThemeProfile.id);
   const themeNeedsUpdate = Boolean((originalUrl || processedUrl) && !themeIsCurrent);
-  const busy = uploading || retuning;
+  const busy = uploading || retuning || reanalyzing;
   const displayedFocus = focusMode ? focusPoint : {x:savedFocusX,y:savedFocusY};
 
   useEffect(() => {
@@ -119,12 +153,14 @@ export default function MenuStudioItemPhotoField({ item, onChange, siteId, slug,
       const smartFocus = uploaded.focus || {x:50,y:50};
       const nextFocus = {x:roundedFocus(smartFocus.x),y:roundedFocus(smartFocus.y)};
       onChange?.({
+        ...assetPatch(uploaded),
+        ...finishPatch(uploaded.finish),
         image_url:selected.url,
         image_path:selected.path,
-        image_original_url:uploaded.original.url,
-        image_original_path:uploaded.original.path,
-        image_processed_url:uploaded.processed.url,
-        image_processed_path:uploaded.processed.path,
+        image_original_url:uploaded.original?.url || "",
+        image_original_path:uploaded.original?.path || "",
+        image_processed_url:uploaded.processed?.url || "",
+        image_processed_path:uploaded.processed?.path || "",
         image_theme_url:uploaded.theme?.url || "",
         image_theme_path:uploaded.theme?.path || "",
         image_theme_profile:uploaded.themeProfile || "",
@@ -135,11 +171,6 @@ export default function MenuStudioItemPhotoField({ item, onChange, siteId, slug,
         image_focus_y:nextFocus.y,
         image_variant:uploaded.theme ? "theme" : "enhanced",
         image_status:"ready",
-        image_quality_score:uploaded.analysis.score,
-        image_quality_level:uploaded.analysis.level,
-        image_quality_notes:uploaded.analysis.notes,
-        image_processing_profile:uploaded.profile,
-        image_processed_at:uploaded.processedAt,
       });
       setFocusPoint(nextFocus);
     } catch (err) {
@@ -151,19 +182,22 @@ export default function MenuStudioItemPhotoField({ item, onChange, siteId, slug,
   }
 
   async function retuneCurrentTheme() {
-    if (busy || !(originalUrl || processedUrl)) return;
+    if (busy || !(originalUrl || processedUrl || photoAssetId)) return;
     setError("");
     setRetuning(true);
     try {
       const tuned = await retuneMenuItemImage({
         sourceUrl:originalUrl || processedUrl,
+        sourcePath:originalPath || processedPath,
         siteId,
         slug,
         itemId:item?.id,
         themeProfile:currentThemeProfile,
-        previousThemePath:themePath,
+        photoAssetId,
       });
       onChange?.({
+        ...assetPatch(tuned),
+        ...finishPatch(tuned.finish),
         image_url:tuned.theme.url,
         image_path:tuned.theme.path,
         image_theme_url:tuned.theme.url,
@@ -179,6 +213,42 @@ export default function MenuStudioItemPhotoField({ item, onChange, siteId, slug,
       handlePhotoError(err);
     } finally {
       setRetuning(false);
+    }
+  }
+
+  async function reanalyzePhoto() {
+    if (busy || !(originalUrl || processedUrl || photoAssetId)) return;
+    setError("");
+    setReanalyzing(true);
+    try {
+      const analyzed = await reanalyzeMenuItemImage({
+        sourceUrl:originalUrl || processedUrl,
+        sourcePath:originalPath || processedPath,
+        siteId,
+        slug,
+        itemId:item?.id,
+        themeProfile:currentThemeProfile,
+        photoAssetId,
+      });
+      const selected = analyzed.theme || analyzed.processed;
+      onChange?.({
+        ...assetPatch(analyzed),
+        ...finishPatch(analyzed.finish),
+        image_url:selected?.url || imageUrl,
+        image_path:selected?.path || item?.image_path || "",
+        image_theme_url:analyzed.theme?.url || "",
+        image_theme_path:analyzed.theme?.path || "",
+        image_theme_profile:analyzed.themeProfile || "",
+        image_theme_processed_at:analyzed.theme ? analyzed.processedAt : null,
+        image_width:selected?.width || item?.image_width || null,
+        image_height:selected?.height || item?.image_height || null,
+        image_variant:analyzed.theme ? "theme" : "enhanced",
+        image_status:"ready",
+      });
+    } catch (err) {
+      handlePhotoError(err);
+    } finally {
+      setReanalyzing(false);
     }
   }
 
@@ -221,6 +291,9 @@ export default function MenuStudioItemPhotoField({ item, onChange, siteId, slug,
       image_theme_path:"",
       image_theme_profile:"",
       image_theme_processed_at:null,
+      photo_asset_id:"",
+      image_hash:"",
+      image_analysis_profile:"",
       image_width:null,
       image_height:null,
       image_focus_x:50,
@@ -232,6 +305,12 @@ export default function MenuStudioItemPhotoField({ item, onChange, siteId, slug,
       image_quality_notes:[],
       image_processing_profile:"",
       image_processed_at:null,
+      image_finish_profile:"",
+      image_finish_source:"",
+      image_finish_safety:"",
+      image_finish_confidence:null,
+      image_finish_model:"",
+      image_finish_recipe:null,
     });
   }
 
@@ -336,6 +415,10 @@ export default function MenuStudioItemPhotoField({ item, onChange, siteId, slug,
         <div><span>{copy.currentMenu}</span><strong>{currentThemeLabel}</strong><small>{currentThemeDescription}</small></div>
         {themeIsCurrent ? <span className="is-matched">✓ {copy.theme}</span> : null}
       </div>
+      {photoAssetId ? <div className="studio-v3-item-photo-asset-row">
+        <div><span>{copy.analyzedOnce}</span><strong>✓ {copy.cached}</strong><small>{copy.reanalyzeHint}</small></div>
+        <button type="button" disabled={busy} onClick={reanalyzePhoto}>{reanalyzing ? copy.reanalyzing : copy.reanalyze}</button>
+      </div> : null}
       <div className="studio-v3-item-photo-variants" role="group" aria-label={copy.standard}>
         <button type="button" className={activeVariant === "original" ? "active" : ""} onClick={() => chooseVariant("original")}><span>{copy.original}</span></button>
         <button type="button" className={activeVariant === "enhanced" ? "active" : ""} onClick={() => chooseVariant("enhanced")}><span>{copy.enhanced}</span></button>
