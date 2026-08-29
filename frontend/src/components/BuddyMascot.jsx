@@ -1,3 +1,5 @@
+import "./BuddyMascot.css";
+
 export default function BuddyMascot() {
   return (
     <div
