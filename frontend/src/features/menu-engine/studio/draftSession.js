@@ -3,6 +3,7 @@ import { normalizeItemMetadata } from "../domain/itemMetadata";
 import { clearDraftLocally, loadDraftLocally, saveDraftLocally } from "./draftStorage";
 
 const menuBaselineDesign = new WeakMap();
+const currentDesignBySource = new Map();
 
 const copyText = value => ({
   en: String(value?.en || ""),
@@ -24,6 +25,19 @@ const copyPriceOptions = value => Array.isArray(value)
       price: cleanStoredPrice(option?.price),
     }))
   : [];
+
+function sourceKey(source = {}) {
+  return String(source.siteId || source.slug || "unknown");
+}
+
+function rememberCurrentDesign(source, design) {
+  if (!design) return;
+  currentDesignBySource.set(sourceKey(source), normalizeMenuDesign(design));
+}
+
+export function getCurrentDraftDesign(source = {}) {
+  return currentDesignBySource.get(sourceKey(source)) || null;
+}
 
 function rememberBaseline(menu, baselineDesign) {
   if (menu && typeof menu === "object" && baselineDesign) {
@@ -65,7 +79,7 @@ export function createMenuDraftSession(payload) {
   };
   rememberBaseline(draftMenu, baselineDesign);
 
-  return {
+  const session = {
     source: {
       siteId: menu.site_id || payload?.site?.id || null,
       slug: menu.slug || payload?.site?.slug || "",
@@ -78,6 +92,8 @@ export function createMenuDraftSession(payload) {
     menu: draftMenu,
     design: baselineDesign,
   };
+  rememberCurrentDesign(session.source, session.design);
+  return session;
 }
 
 export function updateDraftMenu(session, updater) {
@@ -94,11 +110,13 @@ export function updateDraftMenu(session, updater) {
 export function updateDraftDesign(session, updater) {
   const currentDesign = session?.design || {};
   const nextDesign = typeof updater === "function" ? updater(currentDesign) : updater;
-  return {
+  const nextSession = {
     ...session,
     dirty: true,
     design: normalizeMenuDesign(nextDesign),
   };
+  rememberCurrentDesign(nextSession.source, nextSession.design);
+  return nextSession;
 }
 
 export function saveDraftSessionLocally(session) {
@@ -125,7 +143,7 @@ export function restoreSavedDraftSession(baseSession, savedDraft) {
     currency_symbol: savedDraft.menu?.currency_symbol || "₪",
   };
   rememberBaseline(restoredMenu, baseSession.baselineDesign);
-  return {
+  const restoredSession = {
     ...baseSession,
     menu: restoredMenu,
     design: normalizeMenuDesign(savedDraft.design),
@@ -134,6 +152,8 @@ export function restoreSavedDraftSession(baseSession, savedDraft) {
     localSavedAt: savedDraft.savedAt || null,
     restoredFromLocal: true,
   };
+  rememberCurrentDesign(restoredSession.source, restoredSession.design);
+  return restoredSession;
 }
 
 export function discardSavedDraftSession(session) {
