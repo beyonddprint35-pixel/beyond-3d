@@ -1,40 +1,266 @@
-/* Renderer responsiveness must follow the menu's own width, not the browser viewport.
-   This keeps embedded Studio/device previews identical to a real menu at the same width. */
-.bme-menu { container-type: inline-size; container-name: beyond-menu; }
+/*
+   BEYOND MENU ENGINE — CONTAINER RESPONSIVE CONTRACT
 
-@container beyond-menu (max-width: 699px) {
-  .bme-visual-grid { grid-template-columns: minmax(0,1fr); }
-  .bme-image-left,
-  .bme-image-right { display:grid;grid-template-columns:112px minmax(0,1fr); }
-  .bme-image-right .bme-item-media { order:2; }
-  .bme-image-left .bme-item-media,
-  .bme-image-right .bme-item-media { height:100%;aspect-ratio:auto; }
-  .bme-image-left .bme-visual-copy,
-  .bme-image-right .bme-visual-copy { align-content:center; }
+   The menu can live inside the Studio phone/tablet canvas, an iframe, or the
+   public browser page. Responsive behavior must therefore follow the menu's
+   rendered width — never the browser viewport. Keep all device-width rules in
+   container queries so a 390px Studio preview behaves exactly like a 390px
+   public menu.
+*/
+.bme-menu {
+  container-type: inline-size;
+  container-name: beyond-menu;
+}
+
+/* Shared overflow/price safety at every width. */
+.bme-menu .bme-item-copy,
+.bme-menu .bme-visual-copy,
+.bme-menu .bme-classic-item,
+.bme-menu .bme-price-options { min-width: 0; }
+.bme-menu .bme-price,
+.bme-menu .bme-price-option strong { flex: 0 0 auto; }
+.bme-menu .bme-category-nav {
+  scroll-padding-inline: 16px;
+  -webkit-overflow-scrolling: touch;
+}
+.bme-menu .bme-category-nav button { scroll-snap-align: nearest; }
+
+@container beyond-menu (max-width: 760px) {
+  /* Shared renderer */
+  .bme-menu .bme-visual-grid { grid-template-columns: minmax(0,1fr); }
+  .bme-menu .bme-image-left,
+  .bme-menu .bme-image-right { display:grid;grid-template-columns:112px minmax(0,1fr); }
+  .bme-menu .bme-image-right .bme-item-media { order:2; }
+  .bme-menu .bme-image-left .bme-item-media,
+  .bme-menu .bme-image-right .bme-item-media { height:100%;aspect-ratio:auto; }
+  .bme-menu .bme-image-left .bme-visual-copy,
+  .bme-menu .bme-image-right .bme-visual-copy { align-content:center; }
+
+  /* Layout families */
+  .bme-menu.bme-template-editorial .bme-classic-list { grid-template-columns:1fr; }
+  .bme-menu.bme-template-editorial .bme-category-nav,
+  .bme-menu.bme-template-ledger .bme-category-nav { justify-content:flex-start; }
+  .bme-menu.bme-template-split .bme-visual-item { grid-template-columns:1fr;min-height:0; }
+  .bme-menu.bme-template-split .bme-visual-item:nth-child(even) .bme-item-media { order:0; }
+  .bme-menu.bme-template-split .bme-item-media { min-height:0;aspect-ratio:4/3!important; }
+  .bme-menu.bme-template-split .bme-visual-copy { padding:22px; }
+  .bme-menu.bme-template-gallery .bme-visual-grid { grid-template-columns:1fr!important; }
+  .bme-menu.bme-template-gallery .bme-item-media,
+  .bme-menu.bme-template-gallery .bme-visual-item:nth-child(4n+1) .bme-item-media,
+  .bme-menu.bme-template-gallery .bme-visual-item:nth-child(4n+4) .bme-item-media { aspect-ratio:4/3!important; }
+  .bme-menu.bme-template-tiles .bme-visual-grid { grid-template-columns:1fr!important; }
+  .bme-menu.bme-template-tiles .bme-visual-item { display:grid;grid-template-columns:116px minmax(0,1fr); }
+  .bme-menu.bme-template-tiles .bme-item-media { height:100%;min-height:116px;aspect-ratio:auto!important;border-radius:var(--bme-radius) calc(var(--bme-radius)*.55) calc(var(--bme-radius)*.55) var(--bme-radius); }
+  .bme-menu[dir="rtl"].bme-template-tiles .bme-item-media { border-radius:calc(var(--bme-radius)*.55) var(--bme-radius) var(--bme-radius) calc(var(--bme-radius)*.55); }
+  .bme-menu.bme-template-tiles .bme-visual-copy { align-content:center; }
+
+  /* Core presentation families */
+  .bme-menu.bme-presentation-category-covers .bme-category-nav { grid-template-columns:1fr 1fr;gap:8px; }
+  .bme-menu.bme-presentation-category-covers .bme-category-nav button { min-height:110px;padding:16px;font-size:20px;border-radius:18px; }
+  .bme-menu.bme-presentation-bottom-tabs .bme-category-nav { bottom:8px;width:calc(100% - 16px);border-radius:18px; }
+  .bme-menu.bme-presentation-bottom-tabs .bme-category-nav button { min-height:48px;padding:5px 6px;font-size:9px; }
+  .bme-menu.bme-presentation-magazine .bme-visual-grid { grid-template-columns:1fr!important;gap:24px; }
+  .bme-menu.bme-presentation-magazine .bme-visual-item,
+  .bme-menu.bme-presentation-magazine .bme-visual-item:nth-child(3n+1) { grid-column:auto; }
+  .bme-menu.bme-presentation-magazine .bme-item-media,
+  .bme-menu.bme-presentation-magazine .bme-visual-item:nth-child(3n+1) .bme-item-media { aspect-ratio:4/3!important; }
+  .bme-menu.bme-presentation-cocktail-cards .bme-visual-grid { grid-template-columns:1fr!important; }
+  .bme-menu.bme-presentation-cocktail-cards .bme-item-media { aspect-ratio:16/10!important; }
+  .bme-menu.bme-presentation-photo-story .bme-visual-item { min-height:480px; }
+  .bme-menu.bme-presentation-photo-story .bme-visual-copy { grid-template-columns:1fr;gap:18px;padding:28px 20px; }
+  .bme-menu.bme-presentation-minimal-grid .bme-classic-list { grid-template-columns:1fr; }
+  .bme-menu.bme-presentation-launcher .bme-category-nav { min-height:auto;grid-template-columns:1fr 1fr;grid-auto-rows:132px;padding-inline:12px; }
+  .bme-menu.bme-presentation-launcher .bme-category-nav button { min-height:132px;padding:16px;font-size:22px; }
+
+  /* Premium profiles */
+  .bme-menu.bme-presentation-mosaic .bme-visual-grid { grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important; }
+  .bme-menu.bme-presentation-mosaic .bme-visual-item,
+  .bme-menu.bme-presentation-mosaic .bme-visual-item:nth-child(7n+4) { grid-column:auto;grid-row:auto; }
+  .bme-menu.bme-presentation-mosaic .bme-visual-item:nth-child(7n+1) { grid-column:1/-1;grid-row:auto; }
+  .bme-menu.bme-presentation-mosaic .bme-item-media,
+  .bme-menu.bme-presentation-mosaic .bme-visual-item:nth-child(7n+1) .bme-item-media,
+  .bme-menu.bme-presentation-mosaic .bme-visual-item:nth-child(7n+4) .bme-item-media { aspect-ratio:1/1!important; }
+  .bme-menu.bme-presentation-patisserie .bme-visual-grid { grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:22px 12px!important; }
+  .bme-menu.bme-presentation-patisserie .bme-visual-item:nth-child(5n+1) { grid-column:1/-1; }
+  .bme-menu.bme-presentation-patisserie .bme-visual-item:nth-child(5n+1) .bme-item-media { aspect-ratio:16/10!important; }
+  .bme-menu.bme-presentation-botanical .bme-visual-item,
+  .bme-menu.bme-presentation-botanical .bme-visual-item:nth-child(even) { grid-template-columns:1fr;min-height:0; }
+  .bme-menu.bme-presentation-botanical .bme-visual-item:nth-child(even) .bme-item-media { order:0; }
+  .bme-menu.bme-presentation-botanical .bme-item-media { aspect-ratio:4/3!important; }
+  .bme-menu.bme-presentation-botanical .bme-visual-copy { padding:24px 20px; }
+  .bme-menu.bme-presentation-coastal-gallery .bme-visual-grid { grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:22px 12px!important; }
+  .bme-menu.bme-presentation-coastal-gallery .bme-visual-item,
+  .bme-menu.bme-presentation-coastal-gallery .bme-visual-item:nth-child(6n+1),
+  .bme-menu.bme-presentation-coastal-gallery .bme-visual-item:nth-child(6n+2),
+  .bme-menu.bme-presentation-coastal-gallery .bme-visual-item:nth-child(6n+5) { grid-column:auto; }
+  .bme-menu.bme-presentation-coastal-gallery .bme-visual-item:nth-child(4n+1) { grid-column:1/-1; }
+  .bme-menu.bme-presentation-coastal-gallery .bme-item-media,
+  .bme-menu.bme-presentation-coastal-gallery .bme-visual-item:nth-child(6n+1) .bme-item-media,
+  .bme-menu.bme-presentation-coastal-gallery .bme-visual-item:nth-child(6n+2) .bme-item-media { aspect-ratio:4/3!important; }
+  .bme-menu.bme-presentation-breakfast-board .bme-visual-item:first-child { grid-template-columns:1fr;min-height:0; }
+  .bme-menu.bme-presentation-breakfast-board .bme-visual-item:first-child .bme-item-media { aspect-ratio:16/10!important; }
+  .bme-menu.bme-presentation-tap-board .bme-content { padding-inline:18px; }
+
+  /* Signature profiles */
+  .bme-menu.bme-presentation-atelier .bme-classic-list,
+  .bme-menu.bme-presentation-brasserie .bme-classic-list,
+  .bme-menu.bme-presentation-monochrome-grid .bme-classic-list { grid-template-columns:1fr; }
+  .bme-menu.bme-presentation-noir-gallery .bme-visual-grid,
+  .bme-menu.bme-presentation-cafe-cards .bme-visual-grid,
+  .bme-menu.bme-presentation-street-poster .bme-visual-grid { grid-template-columns:1fr!important; }
+  .bme-menu.bme-presentation-noir-gallery .bme-visual-item,
+  .bme-menu.bme-presentation-noir-gallery .bme-visual-item:first-child { min-height:430px; }
+  .bme-menu.bme-presentation-riviera .bme-visual-item,
+  .bme-menu.bme-presentation-riviera .bme-visual-item:nth-child(even),
+  .bme-menu.bme-presentation-coastal-story .bme-visual-item,
+  .bme-menu.bme-presentation-coastal-story .bme-visual-item:nth-child(even) { grid-template-columns:1fr;min-height:0; }
+  .bme-menu.bme-presentation-riviera .bme-visual-item:nth-child(even) .bme-item-media,
+  .bme-menu.bme-presentation-coastal-story .bme-visual-item:nth-child(even) .bme-item-media { order:0; }
+  .bme-menu.bme-presentation-riviera .bme-item-media,
+  .bme-menu.bme-presentation-coastal-story .bme-item-media { height:auto;aspect-ratio:16/10!important;border-radius:26px 26px 0 0; }
+  .bme-menu.bme-presentation-white-gallery .bme-visual-grid { grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:22px 12px!important; }
+  .bme-menu.bme-presentation-white-gallery .bme-visual-item,
+  .bme-menu.bme-presentation-white-gallery .bme-visual-item:nth-child(5n+1) { grid-column:auto; }
+  .bme-menu.bme-presentation-white-gallery .bme-visual-item:nth-child(4n+1) { grid-column:1/-1; }
+  .bme-menu.bme-presentation-cafe-cards .bme-visual-item { grid-template-columns:112px minmax(0,1fr); }
+  .bme-menu.bme-presentation-street-poster .bme-visual-item:nth-child(even) { transform:none; }
+  .bme-menu.bme-presentation-monochrome-grid .bme-classic-item { border-right:0!important;border-left:0!important; }
+
+  /* Phase 3 profiles */
+  .bme-menu.bme-presentation-tokyo-ink .bme-classic-list { grid-template-columns:1fr; }
+  .bme-menu.bme-presentation-garden-journal .bme-visual-item,
+  .bme-menu.bme-presentation-garden-journal .bme-visual-item:nth-child(even) { grid-template-columns:1fr; }
+  .bme-menu.bme-presentation-garden-journal .bme-visual-item:nth-child(even) .bme-item-media { order:0; }
+  .bme-menu.bme-presentation-garden-journal .bme-item-media { min-height:0;aspect-ratio:4/3!important; }
+  .bme-menu.bme-presentation-bakery-counter .bme-visual-grid { grid-template-columns:repeat(2,minmax(0,1fr))!important; }
+  .bme-menu.bme-presentation-bakery-counter .bme-visual-item:nth-child(3n+2) { transform:none; }
+  .bme-menu.bme-presentation-desert-arches .bme-category-nav { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .bme-menu.bme-presentation-tapas-collage .bme-visual-grid { grid-template-columns:repeat(2,minmax(0,1fr))!important; }
+  .bme-menu.bme-presentation-tapas-collage .bme-visual-item,
+  .bme-menu.bme-presentation-tapas-collage .bme-visual-item:nth-child(6n+1),
+  .bme-menu.bme-presentation-tapas-collage .bme-visual-item:nth-child(6n+2),
+  .bme-menu.bme-presentation-tapas-collage .bme-visual-item:nth-child(6n+4) { grid-column:auto;transform:none; }
+  .bme-menu.bme-presentation-tapas-collage .bme-visual-item:first-child { grid-column:1/-1; }
+  .bme-menu.bme-presentation-brunch-polaroids .bme-visual-item:nth-child(odd),
+  .bme-menu.bme-presentation-brunch-polaroids .bme-visual-item:nth-child(even) { transform:none; }
+
+  /* Phase 4 profiles */
+  .bme-menu.bme-presentation-levant-table .bme-classic-list,
+  .bme-menu.bme-presentation-nordic-paper .bme-classic-list,
+  .bme-menu.bme-presentation-family-pizzeria .bme-classic-list { grid-template-columns:1fr; }
+  .bme-menu.bme-presentation-seoul-night .bme-visual-grid { grid-template-columns:repeat(2,minmax(0,1fr))!important; }
+  .bme-menu.bme-presentation-seoul-night .bme-visual-item:nth-child(3n+2) { transform:none; }
+  .bme-menu.bme-presentation-smokehouse-story .bme-visual-item,
+  .bme-menu.bme-presentation-smokehouse-story .bme-visual-item:first-child,
+  .bme-menu.bme-presentation-smokehouse-story .bme-visual-item:nth-child(even) { grid-template-columns:1fr;min-height:0; }
+  .bme-menu.bme-presentation-smokehouse-story .bme-visual-item:nth-child(even) .bme-item-media { order:0; }
+  .bme-menu.bme-presentation-smokehouse-story .bme-item-media { height:auto;min-height:0;aspect-ratio:16/10!important; }
+  .bme-menu.bme-presentation-smokehouse-story .bme-item-media::after,
+  .bme-menu.bme-presentation-smokehouse-story .bme-visual-item:nth-child(even) .bme-item-media::after { background:linear-gradient(180deg,transparent 72%,color-mix(in srgb,var(--bme-card) 22%,transparent) 100%); }
+  .bme-menu.bme-presentation-smokehouse-story .bme-visual-copy { min-height:0;padding:28px; }
+  .bme-menu.bme-presentation-dessert-magazine .bme-visual-grid { grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:28px 14px!important; }
+  .bme-menu.bme-presentation-dessert-magazine .bme-visual-item,
+  .bme-menu.bme-presentation-dessert-magazine .bme-visual-item:nth-child(4n+1),
+  .bme-menu.bme-presentation-dessert-magazine .bme-visual-item:nth-child(4n+2),
+  .bme-menu.bme-presentation-dessert-magazine .bme-visual-item:nth-child(4n+3),
+  .bme-menu.bme-presentation-dessert-magazine .bme-visual-item:nth-child(4n+4) { grid-column:auto; }
+  .bme-menu.bme-presentation-dessert-magazine .bme-visual-item:first-child { grid-column:1/-1; }
+  .bme-menu.bme-presentation-luxury-steak .bme-visual-grid { grid-template-columns:1fr!important; }
+  .bme-menu.bme-presentation-luxury-steak .bme-visual-item:first-child { grid-column:auto; }
+  .bme-menu.bme-presentation-blue-launcher .bme-category-nav { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .bme-menu.bme-presentation-blue-launcher .bme-category-nav button:nth-child(6n+1),
+  .bme-menu.bme-presentation-blue-launcher .bme-category-nav button:nth-child(6n+5) { grid-column:span 1; }
+  .bme-menu.bme-presentation-family-pizzeria .bme-category-nav { grid-template-columns:repeat(2,minmax(0,1fr));gap:10px; }
+}
+
+@container beyond-menu (max-width: 430px) {
+  /* Compact shared shell */
+  .bme-menu .bme-header,
+  .bme-menu .bme-hero,
+  .bme-menu .bme-category-nav,
+  .bme-menu .bme-content,
+  .bme-menu .bme-footer { padding-inline:14px; }
+  .bme-menu .bme-classic-item,
+  .bme-menu .bme-visual-copy { gap:10px; }
+  .bme-menu .bme-price-options { gap:6px;max-width:100%;overflow-x:auto;justify-content:flex-start; }
+  .bme-menu .bme-price-option { flex:0 0 auto; }
+  .bme-menu .bme-image-left,
+  .bme-menu .bme-image-right { grid-template-columns:96px minmax(0,1fr); }
+
+  /* Core */
+  .bme-menu.bme-presentation-category-covers .bme-category-nav,
+  .bme-menu.bme-presentation-launcher .bme-category-nav { grid-template-columns:1fr; }
+  .bme-menu.bme-presentation-launcher .bme-category-nav { grid-auto-rows:118px; }
+  .bme-menu.bme-presentation-launcher .bme-category-nav button { min-height:118px; }
+  .bme-menu.bme-presentation-photo-story .bme-visual-item { min-height:430px; }
+
+  /* Premium */
+  .bme-menu.bme-presentation-patisserie .bme-visual-grid,
+  .bme-menu.bme-presentation-coastal-gallery .bme-visual-grid,
+  .bme-menu.bme-presentation-breakfast-board .bme-visual-grid { grid-template-columns:1fr!important; }
+  .bme-menu.bme-presentation-patisserie .bme-visual-item:nth-child(5n+1),
+  .bme-menu.bme-presentation-coastal-gallery .bme-visual-item:nth-child(4n+1) { grid-column:auto; }
+  .bme-menu.bme-presentation-mosaic .bme-visual-copy { padding:12px; }
+  .bme-menu.bme-presentation-breakfast-board .bme-visual-item { border-radius:22px; }
+
+  /* Signature */
+  .bme-menu.bme-presentation-white-gallery .bme-visual-grid { grid-template-columns:1fr!important; }
+  .bme-menu.bme-presentation-white-gallery .bme-visual-item:nth-child(4n+1) { grid-column:auto; }
+  .bme-menu.bme-presentation-cafe-cards .bme-visual-item { grid-template-columns:96px minmax(0,1fr);border-radius:20px; }
+  .bme-menu.bme-presentation-omakase .bme-classic-item { padding-inline-start:48px; }
+  .bme-menu.bme-presentation-omakase[dir="rtl"] .bme-classic-item { padding-inline-start:12px;padding-inline-end:48px; }
+
+  /* Phase 3 */
+  .bme-menu.bme-presentation-bakery-counter .bme-visual-grid,
+  .bme-menu.bme-presentation-tapas-collage .bme-visual-grid,
+  .bme-menu.bme-presentation-brunch-polaroids .bme-visual-grid,
+  .bme-menu.bme-presentation-rose-lounge .bme-visual-grid { grid-template-columns:1fr!important; }
+  .bme-menu.bme-presentation-desert-arches .bme-category-nav { grid-template-columns:1fr 1fr;gap:8px; }
+  .bme-menu.bme-presentation-desert-arches .bme-category-nav button { min-height:118px;padding:42px 12px 12px;border-radius:62px 62px 16px 16px;font-size:17px; }
+  .bme-menu.bme-presentation-beyond-launcher .bme-category-nav { grid-template-columns:1fr 1fr;grid-auto-rows:116px; }
+  .bme-menu.bme-presentation-beyond-launcher .bme-category-nav button { min-height:116px;padding:14px;font-size:18px;border-radius:18px; }
+  .bme-menu.bme-presentation-neon-dock .bme-category-nav { bottom:8px;width:calc(100% - 16px); }
+
+  /* Phase 4 */
+  .bme-menu.bme-presentation-seoul-night .bme-visual-grid,
+  .bme-menu.bme-presentation-tropical-club .bme-visual-grid,
+  .bme-menu.bme-presentation-dessert-magazine .bme-visual-grid { grid-template-columns:1fr!important; }
+  .bme-menu.bme-presentation-smokehouse-story .bme-visual-copy { padding:24px; }
+  .bme-menu.bme-presentation-smokehouse-story .bme-item-copy h3 { font-size:clamp(25px,8cqw,36px); }
+  .bme-menu.bme-presentation-dessert-magazine .bme-visual-item:first-child { grid-column:auto; }
+  .bme-menu.bme-presentation-dessert-magazine .bme-visual-copy { grid-template-columns:minmax(0,1fr) auto;gap:10px; }
+  .bme-menu.bme-presentation-tropical-club .bme-category-nav { bottom:8px;width:calc(100% - 16px); }
+  .bme-menu.bme-presentation-luxury-steak .bme-visual-item,
+  .bme-menu.bme-presentation-luxury-steak .bme-visual-item:first-child { min-height:430px; }
+  .bme-menu.bme-presentation-blue-launcher .bme-category-nav { grid-auto-rows:108px;gap:8px; }
+  .bme-menu.bme-presentation-blue-launcher .bme-category-nav button { min-height:108px;padding:13px;border-radius:18px;font-size:16px; }
+  .bme-menu.bme-presentation-family-pizzeria .bme-category-nav button { font-size:14px; }
 }
 
 @container beyond-menu (max-width: 359px) {
-  .bme-header,
-  .bme-hero,
-  .bme-category-nav,
-  .bme-content,
-  .bme-footer { padding-inline:14px; }
-  .bme-classic-item,
-  .bme-visual-copy { gap:10px; }
-  .bme-price-options { gap:6px; }
-  .bme-image-left,
-  .bme-image-right { grid-template-columns:96px minmax(0,1fr); }
+  .bme-menu .bme-header,
+  .bme-menu .bme-hero,
+  .bme-menu .bme-category-nav,
+  .bme-menu .bme-content,
+  .bme-menu .bme-footer { padding-inline:12px; }
+  .bme-menu .bme-image-left,
+  .bme-menu .bme-image-right { grid-template-columns:88px minmax(0,1fr); }
+  .bme-menu.bme-template-tiles .bme-visual-item { grid-template-columns:88px minmax(0,1fr); }
+  .bme-menu.bme-template-tiles .bme-item-media { min-height:96px; }
+  .bme-menu.bme-presentation-blue-launcher .bme-category-nav,
+  .bme-menu.bme-presentation-family-pizzeria .bme-category-nav { grid-template-columns:1fr; }
+  .bme-menu.bme-presentation-family-pizzeria .bme-category-nav button { aspect-ratio:auto;min-height:92px;border-radius:28px;padding:36px 14px 14px; }
 }
 
 @container beyond-menu (min-width: 700px) {
-  .bme-visual-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
-  .bme-image-left,
-  .bme-image-right { display:grid;grid-template-columns:minmax(150px,.8fr) minmax(0,1.2fr); }
-  .bme-image-right .bme-item-media { order:2; }
-  .bme-image-left .bme-item-media,
-  .bme-image-right .bme-item-media { height:100%;aspect-ratio:auto; }
+  .bme-menu .bme-visual-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .bme-menu .bme-image-left,
+  .bme-menu .bme-image-right { display:grid;grid-template-columns:minmax(150px,.8fr) minmax(0,1.2fr); }
+  .bme-menu .bme-image-right .bme-item-media { order:2; }
+  .bme-menu .bme-image-left .bme-item-media,
+  .bme-menu .bme-image-right .bme-item-media { height:100%;aspect-ratio:auto; }
 }
 
 @container beyond-menu (min-width: 1024px) {
-  .bme-visual-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .bme-menu .bme-visual-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
 }
