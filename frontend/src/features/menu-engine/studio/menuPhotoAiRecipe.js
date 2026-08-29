@@ -14,7 +14,7 @@ function safeUrl(value) {
   return /^https:\/\//i.test(url) ? url : "";
 }
 
-export async function requestMenuPhotoAiRecipe({ sourceUrl, themeProfile }) {
+export async function requestMenuPhotoAiRecipe({ sourceUrl }) {
   const imageUrl = safeUrl(sourceUrl);
   if (!imageUrl || !shouldTryAi()) return null;
 
@@ -32,12 +32,7 @@ export async function requestMenuPhotoAiRecipe({ sourceUrl, themeProfile }) {
         "Content-Type":"application/json",
         Authorization:`Bearer ${token}`,
       },
-      body:JSON.stringify({
-        imageUrl,
-        profileId:themeProfile?.id || "",
-        profileLabel:themeProfile?.label?.en || "",
-        profileDescription:themeProfile?.description?.en || "",
-      }),
+      body:JSON.stringify({ imageUrl }),
       signal:controller.signal,
     });
 
