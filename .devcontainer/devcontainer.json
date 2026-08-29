@@ -7,6 +7,5 @@
       "onAutoForward": "silent",
       "protocol": "http"
     }
-  },
-  "postAttachCommand": "bash .devcontainer/start-menu-studio.sh"
+  }
 }
