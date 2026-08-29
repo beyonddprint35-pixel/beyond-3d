@@ -8,17 +8,25 @@ import "./MenuPhotoBatchControl.css";
 const PRO_FINISH_PROFILE = "dish-safe-pro-v1";
 
 const COPY = {
-  en:{eyebrow:"BEYOND PRO FINISH",title:"Professional photo finish",photos:"photos",matched:"ready",needs:"need finishing",empty:"Add item photos to use professional menu-wide finishing.",ready:"Every menu photo is professionally finished for this design.",button:"Finish all photos",working:"Finishing photos",safe:"Dish Integrity Lock · adaptive light, white balance, shadows, highlights and contrast only. No generative food edits.",done:"Professional photo finish complete",aiDone:"AI vision directed the finish inside Beyond's local safety guardrails",localDone:"Beyond local vision completed the professional finish",partial:"Some photos could not be finished",auth:"Sign in to finish menu photos.",failed:"Photo finishing failed",audit:"PHOTO REGULATION",consistency:"Menu photo consistency",coverage:"Finish coverage",quality:"Average quality",attention:"Need attention",replace:"Replace low-quality originals rather than over-processing them.",qualityMissing:"Upload or re-process photos to calculate quality.",local:"Local vision",ai:"AI + guardrails"},
-  he:{eyebrow:"BEYOND PRO FINISH",title:"גימור מקצועי לתמונות",photos:"תמונות",matched:"מוכנות",needs:"דורשות גימור",empty:"הוסיפו תמונות לפריטים כדי להשתמש בגימור מקצועי לכל התפריט.",ready:"כל תמונות התפריט עברו גימור מקצועי לעיצוב הזה.",button:"גימור לכל התמונות",working:"מבצע גימור לתמונות",safe:"נעילת שלמות המנה · התאמות אור, איזון לבן, צללים, אזורים בהירים וניגודיות בלבד. ללא עריכה גנרטיבית של האוכל.",done:"הגימור המקצועי הושלם",aiDone:"ראיית AI כיוונה את הגימור בתוך מגבלות הבטיחות המקומיות של Beyond",localDone:"מנוע הראייה המקומי של Beyond השלים את הגימור המקצועי",partial:"חלק מהתמונות לא עברו גימור",auth:"יש להתחבר כדי לבצע גימור לתמונות התפריט.",failed:"גימור התמונות נכשל",audit:"תקן תמונות",consistency:"אחידות תמונות התפריט",coverage:"כיסוי גימור",quality:"איכות ממוצעת",attention:"דורשות תשומת לב",replace:"מומלץ להחליף תמונות מקור באיכות נמוכה במקום לעבד אותן יתר על המידה.",qualityMissing:"העלו או עבדו מחדש תמונות כדי לחשב איכות.",local:"ראייה מקומית",ai:"AI + מגבלות"},
-  ar:{eyebrow:"BEYOND PRO FINISH",title:"تشطيب احترافي للصور",photos:"صور",matched:"جاهزة",needs:"تحتاج تشطيباً",empty:"أضف صور العناصر لاستخدام التشطيب الاحترافي على مستوى القائمة.",ready:"تم تشطيب كل صور القائمة احترافياً لهذا التصميم.",button:"تشطيب كل الصور",working:"جارٍ تشطيب الصور",safe:"قفل سلامة الطبق · تعديلات الإضاءة وتوازن الأبيض والظلال والإضاءات العالية والتباين فقط. بدون تعديلات توليدية للطعام.",done:"اكتمل التشطيب الاحترافي للصور",aiDone:"وجّهت رؤية AI التشطيب داخل ضوابط الأمان المحلية في Beyond",localDone:"أكمل محرك الرؤية المحلي في Beyond التشطيب الاحترافي",partial:"تعذر تشطيب بعض الصور",auth:"سجّل الدخول لتشطيب صور القائمة.",failed:"فشل تشطيب الصور",audit:"تنظيم الصور",consistency:"اتساق صور القائمة",coverage:"تغطية التشطيب",quality:"متوسط الجودة",attention:"تحتاج انتباهاً",replace:"استبدل الصور الأصلية منخفضة الجودة بدلاً من الإفراط في معالجتها.",qualityMissing:"ارفع الصور أو أعد معالجتها لحساب الجودة.",local:"رؤية محلية",ai:"AI + ضوابط"},
+  en:{eyebrow:"BEYOND PRO FINISH",title:"Professional photo finish",photos:"photos",matched:"ready",needs:"need finishing",empty:"Add item photos to use professional menu-wide finishing.",ready:"Every menu photo is professionally finished for this design.",button:"Finish all photos",working:"Finishing photos",safe:"Each unique photo is analyzed once. Theme changes reuse the saved recipe locally · Dish Integrity Lock stays on.",done:"Professional photo finish complete",aiDone:"AI analysis was reused from the photo asset cache",localDone:"Beyond local vision completed the professional finish",partial:"Some photos could not be finished",auth:"Sign in to finish menu photos.",failed:"Photo finishing failed",audit:"PHOTO REGULATION",consistency:"Menu photo consistency",coverage:"Finish coverage",quality:"Average quality",attention:"Need attention",replace:"Replace low-quality originals rather than over-processing them.",qualityMissing:"Upload or re-process photos to calculate quality.",local:"Local vision",ai:"AI cached",analysis:"Need first analysis",cached:"Reusable assets"},
+  he:{eyebrow:"BEYOND PRO FINISH",title:"גימור מקצועי לתמונות",photos:"תמונות",matched:"מוכנות",needs:"דורשות גימור",empty:"הוסיפו תמונות לפריטים כדי להשתמש בגימור מקצועי לכל התפריט.",ready:"כל תמונות התפריט עברו גימור מקצועי לעיצוב הזה.",button:"גימור לכל התמונות",working:"מבצע גימור לתמונות",safe:"כל תמונה ייחודית מנותחת פעם אחת. החלפת עיצוב משתמשת במתכון השמור מקומית · נעילת שלמות המנה נשארת פעילה.",done:"הגימור המקצועי הושלם",aiDone:"נעשה שימוש חוזר בניתוח ה-AI השמור של התמונה",localDone:"מנוע הראייה המקומי של Beyond השלים את הגימור המקצועי",partial:"חלק מהתמונות לא עברו גימור",auth:"יש להתחבר כדי לבצע גימור לתמונות התפריט.",failed:"גימור התמונות נכשל",audit:"תקן תמונות",consistency:"אחידות תמונות התפריט",coverage:"כיסוי גימור",quality:"איכות ממוצעת",attention:"דורשות תשומת לב",replace:"מומלץ להחליף תמונות מקור באיכות נמוכה במקום לעבד אותן יתר על המידה.",qualityMissing:"העלו או עבדו מחדש תמונות כדי לחשב איכות.",local:"ראייה מקומית",ai:"AI שמור",analysis:"דורשות ניתוח ראשון",cached:"נכסים לשימוש חוזר"},
+  ar:{eyebrow:"BEYOND PRO FINISH",title:"تشطيب احترافي للصور",photos:"صور",matched:"جاهزة",needs:"تحتاج تشطيباً",empty:"أضف صور العناصر لاستخدام التشطيب الاحترافي على مستوى القائمة.",ready:"تم تشطيب كل صور القائمة احترافياً لهذا التصميم.",button:"تشطيب كل الصور",working:"جارٍ تشطيب الصور",safe:"يتم تحليل كل صورة فريدة مرة واحدة. تغييرات التصميم تعيد استخدام الوصفة المحفوظة محلياً · يبقى قفل سلامة الطبق فعالاً.",done:"اكتمل التشطيب الاحترافي للصور",aiDone:"تمت إعادة استخدام تحليل AI المحفوظ للصورة",localDone:"أكمل محرك الرؤية المحلي في Beyond التشطيب الاحترافي",partial:"تعذر تشطيب بعض الصور",auth:"سجّل الدخول لتشطيب صور القائمة.",failed:"فشل تشطيب الصور",audit:"تنظيم الصور",consistency:"اتساق صور القائمة",coverage:"تغطية التشطيب",quality:"متوسط الجودة",attention:"تحتاج انتباهاً",replace:"استبدل الصور الأصلية منخفضة الجودة بدلاً من الإفراط في معالجتها.",qualityMissing:"ارفع الصور أو أعد معالجتها لحساب الجودة.",local:"رؤية محلية",ai:"AI محفوظ",analysis:"تحتاج أول تحليل",cached:"أصول قابلة لإعادة الاستخدام"},
 };
 
 function sourceFor(item) {
   return String(item?.image_original_url || item?.image_processed_url || item?.image_url || "");
 }
 
+function sourcePathFor(item) {
+  return String(item?.image_original_path || item?.image_processed_path || item?.image_path || "");
+}
+
 function hasPhoto(item) {
   return Boolean(sourceFor(item));
+}
+
+function hasReusableAsset(item) {
+  return Boolean(item?.photo_asset_id && item?.image_hash && item?.image_analysis_profile);
 }
 
 function isProfessionallyFinished(item, profileId) {
@@ -50,6 +58,27 @@ function finishPatch(finish) {
     image_finish_confidence:Number.isFinite(Number(finish?.confidence)) ? Number(finish.confidence) : null,
     image_finish_model:finish?.model || "",
     image_finish_recipe:finish?.recipe || null,
+  };
+}
+
+function assetPatch(result) {
+  const asset = result?.asset;
+  if (!asset) return {};
+  return {
+    photo_asset_id:asset.id,
+    image_hash:result.imageHash || asset.image_hash || "",
+    image_analysis_profile:result.analysisProfile || asset.analysis_profile || "",
+    image_original_url:asset.original_url || "",
+    image_original_path:asset.original_path || "",
+    image_processed_url:asset.processed_url || asset.original_url || "",
+    image_processed_path:asset.processed_path || asset.original_path || "",
+    image_quality_score:Number.isFinite(Number(asset.quality_score)) ? Number(asset.quality_score) : null,
+    image_quality_level:asset.quality_level || "",
+    image_quality_notes:Array.isArray(asset.quality_notes) ? asset.quality_notes : [],
+    image_focus_x:Number.isFinite(Number(asset.focus_x)) ? Number(asset.focus_x) : 50,
+    image_focus_y:Number.isFinite(Number(asset.focus_y)) ? Number(asset.focus_y) : 50,
+    image_processing_profile:asset.analysis?.processingProfile || "natural-auto-v2",
+    image_processed_at:asset.analyzed_at || result.processedAt || null,
   };
 }
 
@@ -118,6 +147,8 @@ export default function MenuPhotoBatchControl({ menu, design, siteId, slug, lang
   const retuneItems = useMemo(() => photoItems.filter(item => !isProfessionallyFinished(item, profile.id)), [photoItems, profile.id]);
   const needsAction = retuneItems.length + activationItems.length;
   const readyCount = Math.max(0, photoItems.length - needsAction);
+  const reusableCount = useMemo(() => photoItems.filter(hasReusableAsset).length, [photoItems]);
+  const firstAnalysisCount = useMemo(() => retuneItems.filter(item => !hasReusableAsset(item)).length, [retuneItems]);
 
   const qualityScores = useMemo(() => photoItems.map(item => Number(item.image_quality_score)).filter(Number.isFinite), [photoItems]);
   const averageQuality = qualityScores.length ? Math.round(qualityScores.reduce((sum,value) => sum + value, 0) / qualityScores.length) : null;
@@ -129,8 +160,8 @@ export default function MenuPhotoBatchControl({ menu, design, siteId, slug, lang
     const score = Number(item.image_quality_score);
     return Number.isFinite(score) && score < 52;
   }), [photoItems]);
-  const aiFinished = useMemo(() => finishedItems.filter(item => String(item.image_finish_source || "").includes("ai-vision")).length, [finishedItems]);
-  const localFinished = Math.max(0, finishedItems.length - aiFinished);
+  const aiFinished = useMemo(() => photoItems.filter(item => String(item.image_finish_source || "").includes("ai-vision")).length, [photoItems]);
+  const localFinished = Math.max(0, photoItems.length - aiFinished);
   const coverage = photoItems.length ? Math.round((finishedItems.length / photoItems.length) * 100) : 0;
 
   async function matchAll() {
@@ -153,15 +184,18 @@ export default function MenuPhotoBatchControl({ menu, design, siteId, slug, lang
       const results = await mapWithConcurrency(retuneItems, 2, async item => {
         const tuned = await retuneMenuItemImage({
           sourceUrl:sourceFor(item),
+          sourcePath:sourcePathFor(item),
           siteId,
           slug,
           itemId:item.id,
           themeProfile:profile,
-          previousThemePath:item.image_theme_path || "",
+          photoAssetId:item.photo_asset_id || "",
         });
+        if (!tuned.theme?.url) throw new Error("Beyond could not create the current theme photo.");
         return {
           id:item.id,
           patch:{
+            ...assetPatch(tuned),
             image_url:tuned.theme.url,
             image_path:tuned.theme.path,
             image_theme_url:tuned.theme.url,
@@ -193,8 +227,8 @@ export default function MenuPhotoBatchControl({ menu, design, siteId, slug, lang
         }
         setMessageType("error");
       } else {
-        const aiUsed = successful.some(result => String(result.patch?.image_finish_source || "").includes("ai-vision"));
-        setMessage(`${copy.done}${successful.length ? ` · ${aiUsed ? copy.aiDone : copy.localDone}` : ""}`);
+        const reused = successful.some(result => result.patch?.photo_asset_id);
+        setMessage(`${copy.done}${successful.length ? ` · ${reused ? copy.aiDone : copy.localDone}` : ""}`);
         setMessageType("success");
       }
     } catch (error) {
@@ -232,7 +266,7 @@ export default function MenuPhotoBatchControl({ menu, design, siteId, slug, lang
         <div className={averageQuality === null ? "neutral" : averageQuality >= 72 ? "ok" : "warn"}><span>{copy.quality}</span><strong>{averageQuality === null ? "—" : `${averageQuality}/100`}</strong><small>{averageQuality === null ? copy.qualityMissing : `${qualityScores.length}/${photoItems.length}`}</small></div>
         <div className={attentionItems.length ? "warn" : "ok"}><span>{copy.attention}</span><strong>{attentionItems.length}</strong><small>{lowQualityItems.length ? `${lowQualityItems.length} low quality` : "✓"}</small></div>
       </div>
-      {finishedItems.length ? <div className="studio-v3-photo-regulation-engine"><span>{copy.local} {localFinished}</span>{aiFinished ? <span>{copy.ai} {aiFinished}</span> : null}<b>Dish Integrity Lock</b></div> : null}
+      <div className="studio-v3-photo-regulation-engine"><span>{copy.cached} {reusableCount}/{photoItems.length}</span><span>{copy.analysis} {firstAnalysisCount}</span><span>{copy.local} {localFinished}</span>{aiFinished ? <span>{copy.ai} {aiFinished}</span> : null}<b>Dish Integrity Lock</b></div>
       {lowQualityItems.length ? <p className="studio-v3-photo-regulation-warning">{copy.replace}</p> : null}
     </div> : null}
 
