@@ -21,9 +21,25 @@
 .bme-menu .bme-price-option strong { flex: 0 0 auto; }
 .bme-menu .bme-category-nav {
   scroll-padding-inline: 16px;
+  scroll-snap-type: inline proximity;
   -webkit-overflow-scrolling: touch;
 }
-.bme-menu .bme-category-nav button { scroll-snap-align: nearest; }
+.bme-menu .bme-category-nav button {
+  scroll-snap-align: nearest;
+  position: relative;
+}
+.bme-menu .bme-category-nav button.active { z-index: 1; }
+.bme-menu .bme-category-nav button:focus-visible {
+  outline: 3px solid color-mix(in srgb,var(--bme-accent) 72%,#fff);
+  outline-offset: 2px;
+}
+.bme-menu[dir="rtl"] .bme-item-copy,
+.bme-menu[dir="rtl"] .bme-section-heading,
+.bme-menu[dir="rtl"] .bme-subcategory-heading { text-align:right; }
+
+/* Decorative English-only labels do not belong in multilingual menu content. */
+.bme-menu.bme-presentation-smokehouse-story .bme-visual-copy::before,
+.bme-menu.bme-presentation-luxury-steak .bme-visual-copy::before { content:none!important; }
 
 @container beyond-menu (max-width: 760px) {
   /* Shared renderer */
@@ -35,6 +51,32 @@
   .bme-menu .bme-image-right .bme-item-media { height:100%;aspect-ratio:auto; }
   .bme-menu .bme-image-left .bme-visual-copy,
   .bme-menu .bme-image-right .bme-visual-copy { align-content:center; }
+
+  /* Bottom navigation must stay attached to the menu container in Studio as
+     well as in the public page. Sticky avoids fixed-position escape from a
+     transformed preview canvas and still gives the intended dock behavior. */
+  .bme-menu.bme-presentation-bottom-tabs .bme-category-nav,
+  .bme-menu.bme-presentation-neon-dock .bme-category-nav,
+  .bme-menu.bme-presentation-tropical-club .bme-category-nav {
+    position:sticky;
+    z-index:80;
+    inset-inline:auto;
+    left:auto;
+    right:auto;
+    bottom:8px;
+    transform:none;
+    width:calc(100% - 16px);
+    max-width:720px;
+    margin-inline:auto;
+    overflow-x:auto;
+    justify-content:flex-start;
+  }
+  .bme-menu.bme-presentation-bottom-tabs .bme-category-nav button,
+  .bme-menu.bme-presentation-neon-dock .bme-category-nav button,
+  .bme-menu.bme-presentation-tropical-club .bme-category-nav button {
+    flex:0 0 auto;
+    min-width:84px;
+  }
 
   /* Layout families */
   .bme-menu.bme-template-editorial .bme-classic-list { grid-template-columns:1fr; }
@@ -57,8 +99,8 @@
   /* Core presentation families */
   .bme-menu.bme-presentation-category-covers .bme-category-nav { grid-template-columns:1fr 1fr;gap:8px; }
   .bme-menu.bme-presentation-category-covers .bme-category-nav button { min-height:110px;padding:16px;font-size:20px;border-radius:18px; }
-  .bme-menu.bme-presentation-bottom-tabs .bme-category-nav { bottom:8px;width:calc(100% - 16px);border-radius:18px; }
-  .bme-menu.bme-presentation-bottom-tabs .bme-category-nav button { min-height:48px;padding:5px 6px;font-size:9px; }
+  .bme-menu.bme-presentation-bottom-tabs .bme-category-nav { border-radius:18px; }
+  .bme-menu.bme-presentation-bottom-tabs .bme-category-nav button { min-height:48px;padding:5px 10px;font-size:9px; }
   .bme-menu.bme-presentation-magazine .bme-visual-grid { grid-template-columns:1fr!important;gap:24px; }
   .bme-menu.bme-presentation-magazine .bme-visual-item,
   .bme-menu.bme-presentation-magazine .bme-visual-item:nth-child(3n+1) { grid-column:auto; }
@@ -219,7 +261,6 @@
   .bme-menu.bme-presentation-desert-arches .bme-category-nav button { min-height:118px;padding:42px 12px 12px;border-radius:62px 62px 16px 16px;font-size:17px; }
   .bme-menu.bme-presentation-beyond-launcher .bme-category-nav { grid-template-columns:1fr 1fr;grid-auto-rows:116px; }
   .bme-menu.bme-presentation-beyond-launcher .bme-category-nav button { min-height:116px;padding:14px;font-size:18px;border-radius:18px; }
-  .bme-menu.bme-presentation-neon-dock .bme-category-nav { bottom:8px;width:calc(100% - 16px); }
 
   /* Phase 4 */
   .bme-menu.bme-presentation-seoul-night .bme-visual-grid,
@@ -229,7 +270,6 @@
   .bme-menu.bme-presentation-smokehouse-story .bme-item-copy h3 { font-size:clamp(25px,8cqw,36px); }
   .bme-menu.bme-presentation-dessert-magazine .bme-visual-item:first-child { grid-column:auto; }
   .bme-menu.bme-presentation-dessert-magazine .bme-visual-copy { grid-template-columns:minmax(0,1fr) auto;gap:10px; }
-  .bme-menu.bme-presentation-tropical-club .bme-category-nav { bottom:8px;width:calc(100% - 16px); }
   .bme-menu.bme-presentation-luxury-steak .bme-visual-item,
   .bme-menu.bme-presentation-luxury-steak .bme-visual-item:first-child { min-height:430px; }
   .bme-menu.bme-presentation-blue-launcher .bme-category-nav { grid-auto-rows:108px;gap:8px; }
@@ -247,6 +287,13 @@
   .bme-menu .bme-image-right { grid-template-columns:88px minmax(0,1fr); }
   .bme-menu.bme-template-tiles .bme-visual-item { grid-template-columns:88px minmax(0,1fr); }
   .bme-menu.bme-template-tiles .bme-item-media { min-height:96px; }
+
+  /* Long labels and multi-price items get a second row instead of clipping. */
+  .bme-menu .bme-classic-item:has(> .bme-price-options),
+  .bme-menu .bme-visual-copy:has(> .bme-price-options) { grid-template-columns:minmax(0,1fr); }
+  .bme-menu .bme-classic-item:has(> .bme-price-options) > .bme-price-options,
+  .bme-menu .bme-visual-copy:has(> .bme-price-options) > .bme-price-options { justify-self:start;margin-top:8px; }
+
   .bme-menu.bme-presentation-blue-launcher .bme-category-nav,
   .bme-menu.bme-presentation-family-pizzeria .bme-category-nav { grid-template-columns:1fr; }
   .bme-menu.bme-presentation-family-pizzeria .bme-category-nav button { aspect-ratio:auto;min-height:92px;border-radius:28px;padding:36px 14px 14px; }
