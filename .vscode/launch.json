@@ -1,0 +1,12 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Beyond: Open Menu Studio Locally",
+      "type": "editor-browser",
+      "request": "launch",
+      "url": "http://127.0.0.1:5174/dev/menu-studio-v3-draft",
+      "preLaunchTask": "Beyond: Start Menu Studio"
+    }
+  ]
+}
