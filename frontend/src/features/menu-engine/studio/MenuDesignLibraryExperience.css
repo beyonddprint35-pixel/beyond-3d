@@ -1,42 +1,40 @@
-/* Premium browsing layer for the 45-design Beyond library. */
-.studio-v3-design-library-head{align-items:center}
-.studio-v3-design-count{flex:0 0 auto;display:grid;place-items:center;min-width:34px;height:28px;padding:0 9px;border:1px solid #cdd8f7;border-radius:999px;background:#eef3ff;color:#315dd7;font:900 10px/1 Inter,system-ui,sans-serif}
-.studio-v3-design-favorites-toggle{width:100%;min-height:38px;display:flex;align-items:center;justify-content:center;gap:7px;border:1px solid #e2e4e8;border-radius:10px;background:#fff;color:#687386;font:800 10px/1 Inter,system-ui,sans-serif;cursor:pointer;transition:.15s ease}.studio-v3-design-favorites-toggle>span:first-child{font-size:14px;color:#d85667}.studio-v3-design-favorites-toggle b{min-width:21px;padding:4px 6px;border-radius:999px;background:#f2f3f5;color:#6e7785;font-size:9px}.studio-v3-design-favorites-toggle:hover{border-color:#c9d3ef;color:#315dd7}.studio-v3-design-favorites-toggle.active{border-color:#bdcafa;background:#eef3ff;color:#315dd7}.studio-v3-design-favorites-toggle.active b{background:#fff;color:#315dd7}
+/* =========================================================
+   DESIGN LIBRARY EXPERIENCE
+   Large visual cards and a calm native-style full preview.
+   ========================================================= */
 
-/* Large Canva-like cards: one clear design at a time instead of tiny swatches. */
+.studio-v3-design-library-head{align-items:flex-start}
+.studio-v3-design-count{flex:0 0 auto;display:grid;place-items:center;min-width:36px;height:30px;padding:0 10px;border:0;border-radius:999px;background:#eef3ff;color:#4974e5;font:760 10.5px/1 Inter,-apple-system,BlinkMacSystemFont,sans-serif}
+.studio-v3-design-favorites-toggle{width:100%;min-height:42px;display:flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:12px;background:#f2f2f4;color:#55555a;font:700 11px/1 Inter,-apple-system,BlinkMacSystemFont,sans-serif;cursor:pointer;transition:background .15s ease,color .15s ease}.studio-v3-design-favorites-toggle>span:first-child{font-size:15px;color:#d85667}.studio-v3-design-favorites-toggle b{min-width:23px;padding:5px 7px;border-radius:999px;background:#fff;color:#66666b;font-size:9.5px}.studio-v3-design-favorites-toggle:hover{background:#e9e9ed;color:#343438}.studio-v3-design-favorites-toggle.active{background:#eef3ff;color:#4974e5}.studio-v3-design-favorites-toggle.active b{color:#4974e5}
+
 .studio-v3-premium-library-grid{grid-template-columns:1fr;gap:12px}
-.studio-v3-premium-design-card{position:relative;display:grid;overflow:hidden;padding:0;border:1px solid #e0e3e8;border-radius:15px;background:#fff;cursor:default;box-shadow:0 3px 10px rgba(24,34,56,.035);transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
-.studio-v3-premium-design-card:hover{transform:translateY(-2px);border-color:#cbd4eb;box-shadow:0 14px 30px rgba(33,46,76,.09)}
-.studio-v3-premium-design-card.selected{border-color:#4974e5;box-shadow:0 0 0 2px rgba(73,116,229,.12),0 14px 32px rgba(45,67,124,.11)}
+.studio-v3-premium-design-card{position:relative;display:grid;overflow:hidden;padding:0;border:1px solid rgba(60,60,67,.13);border-radius:17px;background:#fff;cursor:default;box-shadow:0 1px 2px rgba(0,0,0,.025);transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
+.studio-v3-premium-design-card:hover{transform:translateY(-1px);border-color:rgba(73,116,229,.3);box-shadow:0 14px 34px rgba(0,0,0,.08)}
+.studio-v3-premium-design-card.selected{border-color:rgba(73,116,229,.72);box-shadow:0 0 0 2px rgba(73,116,229,.08),0 14px 34px rgba(0,0,0,.07)}
 .studio-v3-premium-design-select{display:grid;width:100%;padding:0;border:0;background:transparent;color:inherit;text-align:start;cursor:pointer}
-.studio-v3-premium-design-card .studio-v3-premium-design-preview{height:142px;border-bottom-color:rgba(24,34,56,.07)}
-.studio-v3-premium-design-card .studio-v3-thumb-hero{top:14px;left:14px;right:14px}
-.studio-v3-premium-design-card .studio-v3-thumb-nav{left:14px;right:14px}
-.studio-v3-premium-design-card .studio-v3-thumb-items{left:14px;right:14px;bottom:12px}
-.studio-v3-premium-design-copy{gap:7px;padding:13px 14px 11px}
-.studio-v3-premium-design-copy strong{font-size:13px;color:#1d2a42}.studio-v3-premium-design-copy small{font-size:9px}.studio-v3-premium-design-copy em{min-height:0;color:#7f8998;font-size:10.5px;line-height:1.5}.studio-v3-design-category{font-size:9px!important}
-.studio-v3-design-selected-badge{position:absolute;z-index:4;top:10px;left:10px;display:grid;place-items:center;width:26px;height:26px;border:2px solid rgba(255,255,255,.92);border-radius:999px;background:#4974e5;color:#fff;font:900 12px/1 Inter,system-ui,sans-serif;box-shadow:0 5px 14px rgba(45,74,157,.28)}
-[dir="rtl"] .studio-v3-design-selected-badge{left:auto;right:10px}
-.studio-v3-premium-design-actions{display:flex;align-items:center;gap:7px;padding:0 11px 11px}
-.studio-v3-premium-design-actions button{height:34px;border:1px solid #e1e4e9;border-radius:9px;background:#fff;color:#677386;font:800 10px/1 Inter,system-ui,sans-serif;cursor:pointer;transition:.14s ease}.studio-v3-premium-design-actions button:hover{border-color:#bdc9eb;background:#f8faff;color:#315dd7}
-.studio-v3-design-favorite{flex:0 0 38px;font-size:18px!important;color:#9aa2af!important}.studio-v3-design-favorite.active{border-color:#f0c3cb!important;background:#fff6f7!important;color:#d85667!important}.studio-v3-design-preview-button{flex:1;display:flex;align-items:center;justify-content:center;gap:7px}.studio-v3-design-preview-button>span{font-size:14px}.studio-v3-design-preview-button:disabled{opacity:.45;cursor:not-allowed}
+.studio-v3-premium-design-card .studio-v3-premium-design-preview{height:158px;border-bottom:1px solid rgba(60,60,67,.08)}
+.studio-v3-premium-design-card .studio-v3-thumb-hero{top:15px;left:15px;right:15px}.studio-v3-premium-design-card .studio-v3-thumb-nav{left:15px;right:15px}.studio-v3-premium-design-card .studio-v3-thumb-items{left:15px;right:15px;bottom:13px}
+.studio-v3-premium-design-copy{gap:7px;padding:14px 15px 12px}.studio-v3-premium-design-copy strong{font-size:14px;font-weight:760;color:#1d1d1f;letter-spacing:-.015em}.studio-v3-premium-design-copy small{font-size:10px;color:#4974e5}.studio-v3-premium-design-copy em{min-height:0;color:#7a7a80;font-size:11.5px;line-height:1.45}.studio-v3-design-category{font-size:10px!important;color:#929298!important}
+.studio-v3-design-selected-badge{position:absolute;z-index:4;top:11px;left:11px;display:grid;place-items:center;width:30px;height:30px;border:2px solid rgba(255,255,255,.95);border-radius:999px;background:#4974e5;color:#fff;font:800 13px/1 Inter,-apple-system,BlinkMacSystemFont,sans-serif;box-shadow:0 6px 16px rgba(73,116,229,.28)}
+[dir="rtl"] .studio-v3-design-selected-badge{left:auto;right:11px}
+.studio-v3-premium-design-actions{display:flex;align-items:center;gap:8px;padding:0 12px 12px}.studio-v3-premium-design-actions button{height:38px;border:0;border-radius:11px;background:#f2f2f4;color:#55555a;font:700 10.5px/1 Inter,-apple-system,BlinkMacSystemFont,sans-serif;cursor:pointer;transition:background .15s ease,color .15s ease}.studio-v3-premium-design-actions button:hover{background:#e9eefc;color:#4974e5}.studio-v3-design-favorite{flex:0 0 42px;font-size:18px!important;color:#929298!important}.studio-v3-design-favorite.active{background:#fff1f3!important;color:#d85667!important}.studio-v3-design-preview-button{flex:1;display:flex;align-items:center;justify-content:center;gap:8px}.studio-v3-design-preview-button>span{font-size:15px}.studio-v3-design-preview-button:disabled{opacity:.4;cursor:not-allowed}
 
-/* Full-screen live preview. It uses the real renderer and does not apply a design until Use is clicked. */
-.studio-v3-design-preview-overlay{position:fixed;z-index:10050;inset:0;padding:18px;background:rgba(17,24,39,.58);backdrop-filter:blur(12px);display:grid;place-items:center}
-.studio-v3-design-preview-shell{width:min(1440px,100%);height:min(920px,calc(100vh - 36px));display:grid;grid-template-rows:auto minmax(0,1fr);overflow:hidden;border:1px solid rgba(255,255,255,.72);border-radius:22px;background:#f3f4f7;box-shadow:0 32px 90px rgba(10,17,30,.34)}
-.studio-v3-design-preview-toolbar{min-height:72px;display:grid;grid-template-columns:42px minmax(0,1fr) auto;align-items:center;gap:13px;padding:10px 14px;border-bottom:1px solid #dde1e7;background:#f7f5f2}
-.studio-v3-design-preview-close{width:40px;height:40px;border:1px solid #dfe2e7;border-radius:11px;background:#fff;color:#687386;font:500 24px/1 Inter,system-ui,sans-serif;cursor:pointer}.studio-v3-design-preview-close:hover{border-color:#c7d1ed;color:#315dd7}
-.studio-v3-design-preview-title{min-width:0;display:grid;gap:2px}.studio-v3-design-preview-title>span{color:#8992a0;font-size:9px;font-weight:850;text-transform:uppercase;letter-spacing:.09em}.studio-v3-design-preview-title strong{overflow:hidden;color:#182238;font-size:15px;letter-spacing:-.015em;text-overflow:ellipsis;white-space:nowrap}.studio-v3-design-preview-title small{color:#7d8795;font-size:10px}
-.studio-v3-design-preview-use{min-height:40px;padding:0 17px;border:0;border-radius:10px;background:#4974e5;color:#fff;font:850 11px/1 Inter,system-ui,sans-serif;cursor:pointer;box-shadow:0 7px 18px rgba(73,116,229,.22)}.studio-v3-design-preview-use:hover{background:#3f67d3}
-.studio-v3-design-preview-stage{min-height:0;overflow:auto;padding:24px;background:radial-gradient(circle at 50% 0,#ffffff 0,#f3f4f7 44%,#ebeef2 100%)}
-.studio-v3-design-preview-page{width:min(1180px,100%);min-height:100%;margin:0 auto;overflow:hidden;border-radius:16px;background:#fff;box-shadow:0 16px 55px rgba(23,35,58,.13)}
+/* Full-screen live preview */
+.studio-v3-design-preview-overlay{position:fixed;z-index:10050;inset:0;padding:20px;background:rgba(20,20,22,.54);backdrop-filter:blur(26px) saturate(.92);display:grid;place-items:center}
+.studio-v3-design-preview-shell{width:min(1440px,100%);height:min(920px,calc(100vh - 40px));display:grid;grid-template-rows:auto minmax(0,1fr);overflow:hidden;border:1px solid rgba(255,255,255,.5);border-radius:26px;background:#f5f5f7;box-shadow:0 40px 110px rgba(0,0,0,.34)}
+.studio-v3-design-preview-toolbar{min-height:74px;display:grid;grid-template-columns:44px minmax(0,1fr) auto;align-items:center;gap:14px;padding:11px 14px;border-bottom:1px solid rgba(60,60,67,.11);background:rgba(255,255,255,.88);backdrop-filter:blur(24px)}
+.studio-v3-design-preview-close{width:42px;height:42px;border:0;border-radius:12px;background:#ededf0;color:#55555a;font:400 24px/1 Inter,-apple-system,BlinkMacSystemFont,sans-serif;cursor:pointer}.studio-v3-design-preview-close:hover{background:#e4e4e8;color:#1d1d1f}
+.studio-v3-design-preview-title{min-width:0;display:grid;gap:2px}.studio-v3-design-preview-title>span{color:#8a8a8f;font-size:9.5px;font-weight:700}.studio-v3-design-preview-title strong{overflow:hidden;color:#1d1d1f;font-size:16px;font-weight:760;letter-spacing:-.02em;text-overflow:ellipsis;white-space:nowrap}.studio-v3-design-preview-title small{color:#7a7a80;font-size:10.5px}
+.studio-v3-design-preview-use{min-height:42px;padding:0 18px;border:0;border-radius:12px;background:#4974e5;color:#fff;font:760 11px/1 Inter,-apple-system,BlinkMacSystemFont,sans-serif;cursor:pointer;box-shadow:0 8px 20px rgba(73,116,229,.2)}.studio-v3-design-preview-use:hover{background:#3f67d3}
+.studio-v3-design-preview-stage{min-height:0;overflow:auto;padding:28px;background:linear-gradient(180deg,#eceef2,#e4e7ec)}
+.studio-v3-design-preview-page{width:min(1180px,100%);min-height:100%;margin:0 auto;overflow:hidden;border:1px solid rgba(60,60,67,.12);border-radius:18px;background:#fff;box-shadow:0 22px 70px rgba(0,0,0,.15)}
 .studio-v3-design-preview-page>.bme-menu,.studio-v3-design-preview-page>.ep-page{min-height:100%}
 
 @media(max-width:700px){
   .studio-v3-design-preview-overlay{padding:0}
   .studio-v3-design-preview-shell{width:100%;height:100vh;border:0;border-radius:0}
-  .studio-v3-design-preview-toolbar{grid-template-columns:40px minmax(0,1fr);min-height:68px;padding:8px 10px}
-  .studio-v3-design-preview-use{grid-column:1/-1;width:100%;min-height:38px}
+  .studio-v3-design-preview-toolbar{grid-template-columns:42px minmax(0,1fr);min-height:70px;padding:9px 10px}
+  .studio-v3-design-preview-use{grid-column:1/-1;width:100%;min-height:40px}
   .studio-v3-design-preview-stage{padding:10px}
-  .studio-v3-design-preview-page{border-radius:12px}
+  .studio-v3-design-preview-page{border-radius:13px}
 }
