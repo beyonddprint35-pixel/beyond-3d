@@ -21,11 +21,11 @@
     transform-origin: right center;
   }
 
-  /* Hebrew keeps the approved mobile size, but mirrors Buddy
-     and anchors the enlarged image from the opposite side. */
+  /* Hebrew: keep the exact approved English size and vertical position,
+     mirror Buddy in place, and shift the enlarged image back into view. */
   .menu-home[dir="rtl"] .menu-home-buddy-mobile .buddy-mascot img {
-    transform: translate(-30px, 42px) scale(-2.7, 2.7);
-    transform-origin: left center;
+    transform: translate(68px, 42px) scale(-2.7, 2.7);
+    transform-origin: center center;
   }
 }
 
