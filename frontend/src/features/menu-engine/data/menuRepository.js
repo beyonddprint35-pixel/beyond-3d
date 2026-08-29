@@ -123,6 +123,8 @@ export function adaptSupabaseMenuToV3(site, rawGroups = [], rawItems = []) {
       if (!validGroupIds.has(item.group_id)) return null;
       const options = normalizePriceOptions(item.price_options);
       const score = item.image_quality_score == null ? null : Number(item.image_quality_score);
+      const focusX = item.image_focus_x == null ? 50 : Number(item.image_focus_x);
+      const focusY = item.image_focus_y == null ? 50 : Number(item.image_focus_y);
       return {
         id: item.id,
         group_id: item.group_id,
@@ -149,6 +151,8 @@ export function adaptSupabaseMenuToV3(site, rawGroups = [], rawItems = []) {
         image_processed_at: text(item.image_processed_at),
         image_width: item.image_width == null ? null : Number(item.image_width),
         image_height: item.image_height == null ? null : Number(item.image_height),
+        image_focus_x: Number.isFinite(focusX) ? Math.min(100, Math.max(0, focusX)) : 50,
+        image_focus_y: Number.isFinite(focusY) ? Math.min(100, Math.max(0, focusY)) : 50,
         visible: item.visible !== false,
         sort_order: Number(item.sort_order || 0),
       };
