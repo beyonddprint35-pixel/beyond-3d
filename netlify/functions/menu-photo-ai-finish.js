@@ -116,17 +116,14 @@ exports.handler = async event => {
   const imageUrl = safeImageUrl(body.imageUrl, auth.supabaseUrl);
   if (!imageUrl) return jsonResponse(400, { error:"A valid Beyond menu photo is required." });
 
-  const profileLabel = String(body.profileLabel || "Natural premium menu photography").slice(0, 120);
-  const profileDescription = String(body.profileDescription || "").slice(0, 260);
   const model = process.env.MENU_PHOTO_AI_MODEL || DEFAULT_MODEL;
-
   const instructions = [
     "You are Beyond's photographic finishing director for restaurant menu photos.",
-    "Analyze the supplied REAL dish photo and return ONLY conservative photographic adjustment parameters.",
+    "Analyze the supplied REAL dish photo once and return ONLY a neutral, reusable professional correction recipe.",
+    "This analysis must be independent of any menu template, theme, brand palette or layout so Beyond can safely reuse it across future designs without another AI call.",
     "The dish has an integrity lock: never propose adding, removing, replacing, repainting, reshaping, relighting with generated content, or changing ingredients, plating, portions, tableware, logos, text, people, or background objects.",
     "Only assess exposure, contrast, saturation, white-balance warmth/tint, shadow recovery, highlight recovery and subtle clarity.",
     "Keep adjustments restrained and realistic. Preserve believable food color and natural whites.",
-    `Target menu direction: ${profileLabel}. ${profileDescription}`,
     "If the photo already looks professionally balanced, stay close to neutral values.",
   ].join("\n");
 
@@ -170,6 +167,7 @@ exports.handler = async event => {
       recipe:sanitizeRecipe(parsed),
       safety:"dish-integrity-locked",
       model,
+      scope:"theme-independent",
     });
   } catch (error) {
     console.error("menu-photo-ai-finish", error);
