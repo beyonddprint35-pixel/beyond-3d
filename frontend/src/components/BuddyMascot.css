@@ -17,7 +17,7 @@
     max-width: none;
     object-fit: contain;
     object-position: center bottom;
-    transform: translateY(14px) scale(1.9);
+    transform: translate(6px, 10px) scale(2.7);
     transform-origin: right center;
   }
 }
