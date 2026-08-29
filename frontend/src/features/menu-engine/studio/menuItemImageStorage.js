@@ -1,6 +1,7 @@
 import { supabase } from "../../../lib/supabaseClient";
 import { prepareBeyondMenuPhoto, prepareBeyondThemePhoto } from "./menuPhotoTuning";
 import { detectMenuPhotoFocus } from "./menuPhotoFocus";
+import { requestMenuPhotoAiRecipe } from "./menuPhotoAiRecipe";
 
 export const MENU_ITEM_IMAGE_BUCKET = "menu-item-images";
 export const MENU_PHOTO_AUTH_REQUIRED = "BEYOND_MENU_PHOTO_AUTH_REQUIRED";
@@ -85,6 +86,7 @@ export async function uploadMenuItemImage({ file, siteId, slug, itemId, themePro
       theme,
       focus,
       analysis:prepared.analysis,
+      finish:prepared.finish,
       profile:prepared.profile,
       themeProfile:prepared.themeProfile,
       processedAt:prepared.processedAt,
@@ -101,12 +103,14 @@ export async function retuneMenuItemImage({ sourceUrl, siteId, slug, itemId, the
   if (!sourceUrl) throw new Error("Upload an original photo before matching it to the menu theme.");
   const user = await currentUser();
 
+  const aiRecipePromise = requestMenuPhotoAiRecipe({ sourceUrl, themeProfile }).catch(() => null);
   const response = await fetch(sourceUrl, { mode:"cors", cache:"no-store" });
   if (!response.ok) throw new Error("Beyond could not reopen the original photo for theme matching.");
   const sourceBlob = await response.blob();
   if (!sourceBlob.type.startsWith("image/")) throw new Error("The stored item photo is not a supported image.");
 
-  const prepared = await prepareBeyondThemePhoto(sourceBlob, themeProfile);
+  const aiRecipe = await aiRecipePromise;
+  const prepared = await prepareBeyondThemePhoto(sourceBlob, themeProfile, { aiRecipe });
   const base = uploadBase({ userId:user.id, siteId, slug, itemId });
   const themePath = `${base}/theme-${safeSegment(prepared.themeProfile, "match")}.${prepared.theme.extension}`;
   const theme = await uploadVariant(themePath, prepared.theme);
@@ -117,6 +121,8 @@ export async function retuneMenuItemImage({ sourceUrl, siteId, slug, itemId, the
 
   return {
     theme,
+    analysis:prepared.analysis,
+    finish:prepared.finish,
     themeProfile:prepared.themeProfile,
     processedAt:prepared.processedAt,
   };
