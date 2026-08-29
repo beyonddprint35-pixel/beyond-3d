@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import RestaurantAccessibility from "../../../components/RestaurantAccessibility";
 import { normalizeMenuDesign } from "../domain/designSchema";
 import { BADGE_LABELS, BADGE_SYMBOLS, normalizeItemMetadata } from "../domain/itemMetadata";
@@ -9,6 +9,7 @@ import "./menuHeroMedia.css";
 import "./menuHeritageClassic.css";
 import "./menuLayoutFamilies.css";
 import "./menuPresentationFamilies.css";
+import "./menuPhotoRegulation.css";
 
 const DEFAULT_CURRENCY_SYMBOL = "₪";
 const LANGUAGE_LABELS = { en:"English", he:"עברית", ar:"العربية" };
@@ -31,7 +32,39 @@ function heritageVariables(design){return{"--ep-bg":design.theme.background,"--e
 function Price({item,currencySymbol,language}){const options=Array.isArray(item.price_options)?item.price_options:[];if(options.length)return <div className="bme-price-options">{options.map((option,index)=><span key={`${option.price}-${index}`} className="bme-price-option">{optionLabel(option,language)?<small>{optionLabel(option,language)}</small>:null}<strong>{formatPrice(option.price,currencySymbol)}</strong></span>)}</div>;return item.price?<strong className="bme-price">{formatPrice(item.price,currencySymbol)}</strong>:null;}
 function ItemBadges({item,language,design}){const metadata=normalizeItemMetadata(item.metadata);const keys=[...metadata.merchandising,...metadata.dietary,...metadata.allergens];if(metadata.spice!=="none")keys.push(metadata.spice);if(!keys.length)return null;return <div className="bme-item-badges">{keys.map(key=><span key={key} className={`bme-item-badge bme-badge-${key}`}>{design.badges.showSymbols?<span className="bme-item-badge-symbol" aria-hidden="true">{BADGE_SYMBOLS[key]||"•"}</span>:null}<span>{BADGE_LABELS[key]?.[language]||BADGE_LABELS[key]?.en||key}</span></span>)}</div>;}
 function ClassicItem({item,language,design,currencySymbol}){return <article className={`bme-classic-item bme-price-${design.layout.pricePosition}`}><div className="bme-item-copy"><h3>{chooseText(language,item.name)}</h3>{chooseText(language,item.description)?<p>{chooseText(language,item.description)}</p>:null}<ItemBadges item={item} language={language} design={design}/></div><Price item={item} currencySymbol={currencySymbol} language={language}/></article>;}
-function VisualItem({item,language,design,currencySymbol}){const name=chooseText(language,item.name),description=chooseText(language,item.description),hasImage=Boolean(item.image_url);return <article className={`bme-visual-item bme-image-${design.layout.itemImagePosition} bme-price-${design.layout.pricePosition}`} data-image-ratio={design.layout.itemImageRatio}>{hasImage?<div className="bme-item-media"><img src={item.image_url} alt={name}/></div>:<div className="bme-item-media bme-item-media-placeholder" aria-hidden="true"><span>BEYOND</span></div>}<div className="bme-visual-copy"><div className="bme-item-copy"><h3>{name}</h3>{description?<p>{description}</p>:null}<ItemBadges item={item} language={language} design={design}/></div><Price item={item} currencySymbol={currencySymbol} language={language}/></div></article>;}
+function RegulatedItemPhoto({src,alt}){
+  const mediaRef=useRef(null);
+  const imageRef=useRef(null);
+  const [fit,setFit]=useState("cover");
+
+  useEffect(()=>{
+    const media=mediaRef.current;
+    const image=imageRef.current;
+    if(!media||!image)return undefined;
+    let frame=0;
+    const regulate=()=>{
+      if(frame)cancelAnimationFrame(frame);
+      frame=requestAnimationFrame(()=>{
+        if(!image.naturalWidth||!image.naturalHeight)return;
+        const box=media.getBoundingClientRect();
+        if(!box.width||!box.height)return;
+        const sourceRatio=image.naturalWidth/image.naturalHeight;
+        const frameRatio=box.width/box.height;
+        const visibleFraction=sourceRatio>frameRatio?frameRatio/sourceRatio:sourceRatio/frameRatio;
+        setFit(visibleFraction<.82?"protect":"cover");
+        media.dataset.photoSource=sourceRatio<.82?"portrait":sourceRatio>1.35?"landscape":"balanced";
+      });
+    };
+    image.addEventListener("load",regulate);
+    const observer=typeof ResizeObserver!=="undefined"?new ResizeObserver(regulate):null;
+    observer?.observe(media);
+    if(image.complete)regulate();
+    return ()=>{image.removeEventListener("load",regulate);observer?.disconnect();if(frame)cancelAnimationFrame(frame);};
+  },[src]);
+
+  return <div ref={mediaRef} className="bme-item-media" data-photo-fit={fit} style={{"--bme-photo-image":`url(${JSON.stringify(src)})`}}><img ref={imageRef} src={src} alt={alt}/></div>;
+}
+function VisualItem({item,language,design,currencySymbol}){const name=chooseText(language,item.name),description=chooseText(language,item.description),hasImage=Boolean(item.image_url);return <article className={`bme-visual-item bme-image-${design.layout.itemImagePosition} bme-price-${design.layout.pricePosition}`} data-image-ratio={design.layout.itemImageRatio}>{hasImage?<RegulatedItemPhoto src={item.image_url} alt={name}/>:<div className="bme-item-media bme-item-media-placeholder" aria-hidden="true"><span>BEYOND</span></div>}<div className="bme-visual-copy"><div className="bme-item-copy"><h3>{name}</h3>{description?<p>{description}</p>:null}<ItemBadges item={item} language={language} design={design}/></div><Price item={item} currencySymbol={currencySymbol} language={language}/></div></article>;}
 function HeroMedia({mode,logoUrl,imageUrl,restaurantName}){if(mode==="none")return null;if(mode==="image"&&imageUrl)return <div className="bme-hero-media bme-hero-media-image"><img src={imageUrl} alt="" aria-hidden="true"/></div>;if(!logoUrl)return null;return <div className="bme-hero-media bme-hero-media-watermark" aria-hidden="true"><div className="bme-watermark-pill"><img src={logoUrl} alt=""/><span>{restaurantName}</span></div></div>;}
 
 function HeritagePrice({item,currencySymbol}){
