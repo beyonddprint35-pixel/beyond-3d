@@ -2,6 +2,17 @@ import { supabase } from "../../../lib/supabaseClient";
 import { prepareBeyondMenuPhoto, prepareBeyondThemePhoto } from "./menuPhotoTuning";
 import { detectMenuPhotoFocus } from "./menuPhotoFocus";
 import { requestMenuPhotoAiRecipe } from "./menuPhotoAiRecipe";
+import {
+  MENU_PHOTO_ASSET_ANALYSIS_PROFILE,
+  createMenuPhotoAsset,
+  findMenuPhotoAsset,
+  findMenuPhotoVariant,
+  getMenuPhotoAsset,
+  hashMenuPhotoBlob,
+  invalidateMenuPhotoVariants,
+  saveMenuPhotoVariant,
+  updateMenuPhotoAsset,
+} from "./menuPhotoAssetCache";
 
 export const MENU_ITEM_IMAGE_BUCKET = "menu-item-images";
 export const MENU_PHOTO_AUTH_REQUIRED = "BEYOND_MENU_PHOTO_AUTH_REQUIRED";
@@ -53,11 +64,111 @@ async function currentUser() {
   return user;
 }
 
-function uploadBase({ userId, siteId, slug, itemId }) {
+function uploadBase({ userId, siteId, slug, itemId, imageHash="" }) {
   const menuSegment = safeSegment(siteId || slug, "menu");
   const itemSegment = safeSegment(itemId, "item");
+  const hashSegment = safeSegment(String(imageHash).slice(0, 16), "photo");
   const random = globalThis.crypto?.randomUUID?.() || Math.random().toString(36).slice(2);
-  return `${userId}/${menuSegment}/${itemSegment}/${Date.now()}-${random}`;
+  return `${userId}/${menuSegment}/${itemSegment}/${hashSegment}-${Date.now()}-${random}`;
+}
+
+function storedVariant(row) {
+  if (!row) return null;
+  return {
+    url:row.image_url,
+    path:row.image_path,
+    width:row.width,
+    height:row.height,
+    bytes:null,
+  };
+}
+
+function assetOriginal(asset) {
+  return asset ? {
+    url:asset.original_url,
+    path:asset.original_path,
+    width:asset.width,
+    height:asset.height,
+    bytes:null,
+  } : null;
+}
+
+function assetProcessed(asset) {
+  return asset ? {
+    url:asset.processed_url || asset.original_url,
+    path:asset.processed_path || asset.original_path,
+    width:asset.width,
+    height:asset.height,
+    bytes:null,
+  } : null;
+}
+
+function finishFromAsset(asset) {
+  if (!asset) return null;
+  return {
+    profile:asset.finish_profile || "dish-safe-pro-v1",
+    source:asset.finish_source || "local-vision",
+    safety:asset.finish_safety || "dish-integrity-locked",
+    confidence:Number.isFinite(Number(asset.finish_confidence)) ? Number(asset.finish_confidence) : 0,
+    model:asset.finish_model || "",
+    recipe:asset.finish_recipe || null,
+  };
+}
+
+function aiRecipeFromAsset(asset) {
+  const recipe = asset?.analysis?.aiRecipe;
+  return recipe && typeof recipe === "object" ? recipe : null;
+}
+
+function assetResult({ asset, variant=null, themeProfile=null, finish=null, cacheHit=false }) {
+  const original = assetOriginal(asset);
+  const processed = assetProcessed(asset);
+  const theme = storedVariant(variant);
+  return {
+    original,
+    processed,
+    theme,
+    focus:{ x:asset?.focus_x ?? 50, y:asset?.focus_y ?? 50, confidence:asset?.analysis?.focusConfidence ?? 0, method:asset?.analysis?.focusMethod || "cached" },
+    analysis:asset?.analysis || {},
+    finish:finish || finishFromAsset(asset),
+    profile:asset?.analysis?.processingProfile || "natural-auto-v2",
+    themeProfile:themeProfile?.id || variant?.theme_profile || "",
+    processedAt:variant?.processed_at || asset?.analyzed_at || asset?.updated_at || new Date().toISOString(),
+    asset,
+    imageHash:asset?.image_hash || "",
+    analysisProfile:asset?.analysis_profile || MENU_PHOTO_ASSET_ANALYSIS_PROFILE,
+    cacheHit,
+  };
+}
+
+async function sourceBlob(sourceUrl) {
+  const response = await fetch(sourceUrl, { mode:"cors", cache:"no-store" });
+  if (!response.ok) throw new Error("Beyond could not reopen the original photo.");
+  const blob = await response.blob();
+  if (!blob.type.startsWith("image/")) throw new Error("The stored item photo is not a supported image.");
+  return blob;
+}
+
+async function renderAndCacheTheme({ asset, source, user, siteId, slug, itemId, themeProfile }) {
+  if (!themeProfile?.id) return { variant:null, finish:finishFromAsset(asset) };
+  const existing = await findMenuPhotoVariant(asset.id, themeProfile.id);
+  if (existing) return { variant:existing, finish:finishFromAsset(asset), cacheHit:true };
+
+  const blob = source instanceof Blob ? source : await sourceBlob(asset.original_url);
+  const prepared = await prepareBeyondThemePhoto(blob, themeProfile, { aiRecipe:aiRecipeFromAsset(asset) });
+  const base = uploadBase({ userId:user.id, siteId, slug, itemId, imageHash:asset.image_hash });
+  const path = `${base}/theme-${safeSegment(prepared.themeProfile, "match")}.${prepared.theme.extension}`;
+  const uploaded = await uploadVariant(path, prepared.theme);
+  const variant = await saveMenuPhotoVariant({
+    assetId:asset.id,
+    themeProfile:prepared.themeProfile,
+    imageUrl:uploaded.url,
+    imagePath:uploaded.path,
+    width:uploaded.width,
+    height:uploaded.height,
+    processedAt:prepared.processedAt,
+  });
+  return { variant, finish:prepared.finish, cacheHit:false };
 }
 
 export async function uploadMenuItemImage({ file, siteId, slug, itemId, themeProfile=null }) {
@@ -66,7 +177,15 @@ export async function uploadMenuItemImage({ file, siteId, slug, itemId, themePro
     prepareBeyondMenuPhoto(file),
     detectMenuPhotoFocus(file),
   ]);
-  const base = uploadBase({ userId:user.id, siteId, slug, itemId });
+  const imageHash = await hashMenuPhotoBlob(prepared.original.blob);
+  const cached = await findMenuPhotoAsset({ siteId, imageHash });
+
+  if (cached) {
+    const themed = await renderAndCacheTheme({ asset:cached, source:file, user, siteId, slug, itemId, themeProfile });
+    return assetResult({ asset:cached, variant:themed.variant, themeProfile, finish:themed.finish, cacheHit:true });
+  }
+
+  const base = uploadBase({ userId:user.id, siteId, slug, itemId, imageHash });
   const originalPath = `${base}/original.${prepared.original.extension}`;
   const processedPath = `${base}/enhanced.${prepared.processed.extension}`;
   const uploadedPaths = [];
@@ -74,42 +193,73 @@ export async function uploadMenuItemImage({ file, siteId, slug, itemId, themePro
   try {
     const original = await uploadVariant(originalPath, prepared.original);
     uploadedPaths.push(original.path);
+    const processed = await uploadVariant(processedPath, prepared.processed);
+    uploadedPaths.push(processed.path);
 
-    const processedPromise = uploadVariant(processedPath, prepared.processed).then(uploaded => {
-      uploadedPaths.push(uploaded.path);
-      return uploaded;
-    });
-
-    const aiRecipe = themeProfile
-      ? await requestMenuPhotoAiRecipe({ sourceUrl:original.url, themeProfile }).catch(() => null)
-      : null;
+    // One AI call at most for this unique normalized photo. The recipe is neutral and reusable across every menu theme.
+    const aiRecipe = await requestMenuPhotoAiRecipe({ sourceUrl:original.url }).catch(() => null);
     const themePrepared = themeProfile
       ? await prepareBeyondThemePhoto(file, themeProfile, { aiRecipe })
       : null;
-    const themePath = themePrepared
-      ? `${base}/theme-${safeSegment(themePrepared.themeProfile, "match")}.${themePrepared.theme.extension}`
-      : "";
-    const themePromise = themePrepared
-      ? uploadVariant(themePath, themePrepared.theme).then(uploaded => {
-          uploadedPaths.push(uploaded.path);
-          return uploaded;
-        })
-      : Promise.resolve(null);
+    const finish = themePrepared?.finish || prepared.finish;
+    const now = themePrepared?.processedAt || prepared.processedAt || new Date().toISOString();
 
-    const [processed, theme] = await Promise.all([processedPromise, themePromise]);
-    const finished = themePrepared || prepared;
+    const asset = await createMenuPhotoAsset({
+      site_id:siteId,
+      owner_id:user.id,
+      image_hash:imageHash,
+      analysis_profile:MENU_PHOTO_ASSET_ANALYSIS_PROFILE,
+      original_url:original.url,
+      original_path:original.path,
+      processed_url:processed.url,
+      processed_path:processed.path,
+      width:original.width,
+      height:original.height,
+      quality_score:prepared.analysis.score,
+      quality_level:prepared.analysis.level,
+      quality_notes:prepared.analysis.notes,
+      analysis:{
+        ...prepared.analysis,
+        processingProfile:prepared.profile,
+        focusConfidence:Number(focus?.confidence || 0),
+        focusMethod:focus?.method || "",
+        aiRecipe:aiRecipe || null,
+      },
+      focus_x:Number(focus?.x ?? 50),
+      focus_y:Number(focus?.y ?? 50),
+      finish_profile:finish?.profile || "dish-safe-pro-v1",
+      finish_source:finish?.source || (aiRecipe ? "ai-vision+local-guardrails" : "local-vision"),
+      finish_safety:finish?.safety || "dish-integrity-locked",
+      finish_confidence:Number.isFinite(Number(finish?.confidence)) ? Number(finish.confidence) : null,
+      finish_model:finish?.model || aiRecipe?.model || "",
+      finish_recipe:finish?.recipe || null,
+      analyzed_at:now,
+    });
 
-    return {
-      original,
-      processed,
-      theme,
-      focus,
-      analysis:prepared.analysis,
-      finish:finished.finish,
-      profile:prepared.profile,
-      themeProfile:themePrepared?.themeProfile || "",
-      processedAt:themePrepared?.processedAt || prepared.processedAt,
-    };
+    // If another tab won the unique-hash race, reuse its canonical asset and remove duplicate uploads.
+    if (asset.original_path !== original.path) {
+      await supabase.storage.from(MENU_ITEM_IMAGE_BUCKET).remove(uploadedPaths).catch(() => null);
+      const themed = await renderAndCacheTheme({ asset, source:file, user, siteId, slug, itemId, themeProfile });
+      return assetResult({ asset, variant:themed.variant, themeProfile, finish:themed.finish, cacheHit:true });
+    }
+
+    let variant = null;
+    if (themePrepared) {
+      const themePath = `${base}/theme-${safeSegment(themePrepared.themeProfile, "match")}.${themePrepared.theme.extension}`;
+      const theme = await uploadVariant(themePath, themePrepared.theme);
+      uploadedPaths.push(theme.path);
+      variant = await saveMenuPhotoVariant({
+        assetId:asset.id,
+        themeProfile:themePrepared.themeProfile,
+        imageUrl:theme.url,
+        imagePath:theme.path,
+        width:theme.width,
+        height:theme.height,
+        processedAt:themePrepared.processedAt,
+      });
+    }
+
+    return assetResult({ asset, variant, themeProfile, finish, cacheHit:false });
   } catch (error) {
     if (uploadedPaths.length) {
       await supabase.storage.from(MENU_ITEM_IMAGE_BUCKET).remove(uploadedPaths).catch(() => null);
@@ -118,31 +268,140 @@ export async function uploadMenuItemImage({ file, siteId, slug, itemId, themePro
   }
 }
 
-export async function retuneMenuItemImage({ sourceUrl, siteId, slug, itemId, themeProfile, previousThemePath="" }) {
-  if (!sourceUrl) throw new Error("Upload an original photo before matching it to the menu theme.");
+async function adoptLegacyPhoto({ user, sourceUrl, sourcePath="", siteId, slug, itemId, themeProfile }) {
+  const blob = await sourceBlob(sourceUrl);
+  const [prepared, focus] = await Promise.all([
+    prepareBeyondMenuPhoto(blob),
+    detectMenuPhotoFocus(blob),
+  ]);
+  const imageHash = await hashMenuPhotoBlob(prepared.original.blob);
+  const existing = await findMenuPhotoAsset({ siteId, imageHash });
+  if (existing) return { asset:existing, blob };
+
+  const aiRecipe = await requestMenuPhotoAiRecipe({ sourceUrl }).catch(() => null);
+  const themed = themeProfile ? await prepareBeyondThemePhoto(blob, themeProfile, { aiRecipe }) : null;
+  const finish = themed?.finish || prepared.finish;
+  const asset = await createMenuPhotoAsset({
+    site_id:siteId,
+    owner_id:user.id,
+    image_hash:imageHash,
+    analysis_profile:MENU_PHOTO_ASSET_ANALYSIS_PROFILE,
+    original_url:sourceUrl,
+    original_path:sourcePath,
+    processed_url:sourceUrl,
+    processed_path:sourcePath,
+    width:prepared.original.width,
+    height:prepared.original.height,
+    quality_score:prepared.analysis.score,
+    quality_level:prepared.analysis.level,
+    quality_notes:prepared.analysis.notes,
+    analysis:{ ...prepared.analysis, processingProfile:prepared.profile, focusConfidence:Number(focus?.confidence || 0), focusMethod:focus?.method || "", aiRecipe:aiRecipe || null },
+    focus_x:Number(focus?.x ?? 50),
+    focus_y:Number(focus?.y ?? 50),
+    finish_profile:finish?.profile || "dish-safe-pro-v1",
+    finish_source:finish?.source || (aiRecipe ? "ai-vision+local-guardrails" : "local-vision"),
+    finish_safety:finish?.safety || "dish-integrity-locked",
+    finish_confidence:Number.isFinite(Number(finish?.confidence)) ? Number(finish.confidence) : null,
+    finish_model:finish?.model || aiRecipe?.model || "",
+    finish_recipe:finish?.recipe || null,
+    analyzed_at:themed?.processedAt || prepared.processedAt || new Date().toISOString(),
+  });
+  return { asset, blob };
+}
+
+export async function retuneMenuItemImage({ sourceUrl, sourcePath="", siteId, slug, itemId, themeProfile, photoAssetId="" }) {
+  if (!sourceUrl && !photoAssetId) throw new Error("Upload an original photo before matching it to the menu theme.");
   const user = await currentUser();
 
-  const aiRecipePromise = requestMenuPhotoAiRecipe({ sourceUrl, themeProfile }).catch(() => null);
-  const response = await fetch(sourceUrl, { mode:"cors", cache:"no-store" });
-  if (!response.ok) throw new Error("Beyond could not reopen the original photo for theme matching.");
-  const sourceBlob = await response.blob();
-  if (!sourceBlob.type.startsWith("image/")) throw new Error("The stored item photo is not a supported image.");
-
-  const aiRecipe = await aiRecipePromise;
-  const prepared = await prepareBeyondThemePhoto(sourceBlob, themeProfile, { aiRecipe });
-  const base = uploadBase({ userId:user.id, siteId, slug, itemId });
-  const themePath = `${base}/theme-${safeSegment(prepared.themeProfile, "match")}.${prepared.theme.extension}`;
-  const theme = await uploadVariant(themePath, prepared.theme);
-
-  if (previousThemePath && previousThemePath !== theme.path) {
-    await supabase.storage.from(MENU_ITEM_IMAGE_BUCKET).remove([previousThemePath]).catch(() => null);
+  let asset = photoAssetId ? await getMenuPhotoAsset(photoAssetId) : null;
+  let blob = null;
+  if (!asset) {
+    const adopted = await adoptLegacyPhoto({ user, sourceUrl, sourcePath, siteId, slug, itemId, themeProfile });
+    asset = adopted.asset;
+    blob = adopted.blob;
   }
 
+  const themed = await renderAndCacheTheme({ asset, source:blob, user, siteId, slug, itemId, themeProfile });
   return {
-    theme,
-    analysis:prepared.analysis,
-    finish:prepared.finish,
-    themeProfile:prepared.themeProfile,
-    processedAt:prepared.processedAt,
+    ...assetResult({ asset, variant:themed.variant, themeProfile, finish:themed.finish, cacheHit:Boolean(themed.cacheHit) }),
+    theme:storedVariant(themed.variant),
   };
+}
+
+export async function reanalyzeMenuItemImage({ sourceUrl, sourcePath="", siteId, slug, itemId, themeProfile, photoAssetId="" }) {
+  const user = await currentUser();
+  let asset = photoAssetId ? await getMenuPhotoAsset(photoAssetId) : null;
+  const canonicalUrl = asset?.original_url || sourceUrl;
+  if (!canonicalUrl) throw new Error("Upload a photo before reanalyzing it.");
+
+  const blob = await sourceBlob(canonicalUrl);
+  const [prepared, focus] = await Promise.all([
+    prepareBeyondMenuPhoto(blob),
+    detectMenuPhotoFocus(blob),
+  ]);
+  const imageHash = await hashMenuPhotoBlob(prepared.original.blob);
+  if (!asset) asset = await findMenuPhotoAsset({ siteId, imageHash });
+
+  // This is the only explicit path allowed to ask AI to analyze the same unique photo again.
+  const aiRecipe = await requestMenuPhotoAiRecipe({ sourceUrl:canonicalUrl }).catch(() => null);
+  const themePrepared = themeProfile ? await prepareBeyondThemePhoto(blob, themeProfile, { aiRecipe }) : null;
+  const finish = themePrepared?.finish || prepared.finish;
+  const now = themePrepared?.processedAt || prepared.processedAt || new Date().toISOString();
+
+  if (!asset) {
+    asset = await createMenuPhotoAsset({
+      site_id:siteId,
+      owner_id:user.id,
+      image_hash:imageHash,
+      analysis_profile:MENU_PHOTO_ASSET_ANALYSIS_PROFILE,
+      original_url:canonicalUrl,
+      original_path:sourcePath,
+      processed_url:canonicalUrl,
+      processed_path:sourcePath,
+      width:prepared.original.width,
+      height:prepared.original.height,
+      quality_score:prepared.analysis.score,
+      quality_level:prepared.analysis.level,
+      quality_notes:prepared.analysis.notes,
+      analysis:{ ...prepared.analysis, processingProfile:prepared.profile, focusConfidence:Number(focus?.confidence || 0), focusMethod:focus?.method || "", aiRecipe:aiRecipe || null },
+      focus_x:Number(focus?.x ?? 50),
+      focus_y:Number(focus?.y ?? 50),
+      finish_profile:finish?.profile || "dish-safe-pro-v1",
+      finish_source:finish?.source || (aiRecipe ? "ai-vision+local-guardrails" : "local-vision"),
+      finish_safety:finish?.safety || "dish-integrity-locked",
+      finish_confidence:Number.isFinite(Number(finish?.confidence)) ? Number(finish.confidence) : null,
+      finish_model:finish?.model || aiRecipe?.model || "",
+      finish_recipe:finish?.recipe || null,
+      analyzed_at:now,
+    });
+  } else {
+    const stalePaths = await invalidateMenuPhotoVariants(asset.id);
+    if (stalePaths.length) await supabase.storage.from(MENU_ITEM_IMAGE_BUCKET).remove(stalePaths).catch(() => null);
+    asset = await updateMenuPhotoAsset(asset.id, {
+      image_hash:imageHash,
+      quality_score:prepared.analysis.score,
+      quality_level:prepared.analysis.level,
+      quality_notes:prepared.analysis.notes,
+      analysis:{ ...prepared.analysis, processingProfile:prepared.profile, focusConfidence:Number(focus?.confidence || 0), focusMethod:focus?.method || "", aiRecipe:aiRecipe || null },
+      focus_x:Number(focus?.x ?? asset.focus_x ?? 50),
+      focus_y:Number(focus?.y ?? asset.focus_y ?? 50),
+      finish_profile:finish?.profile || "dish-safe-pro-v1",
+      finish_source:finish?.source || (aiRecipe ? "ai-vision+local-guardrails" : "local-vision"),
+      finish_safety:finish?.safety || "dish-integrity-locked",
+      finish_confidence:Number.isFinite(Number(finish?.confidence)) ? Number(finish.confidence) : null,
+      finish_model:finish?.model || aiRecipe?.model || "",
+      finish_recipe:finish?.recipe || null,
+      analyzed_at:now,
+    });
+  }
+
+  let variant = null;
+  if (themePrepared) {
+    const base = uploadBase({ userId:user.id, siteId, slug, itemId, imageHash });
+    const path = `${base}/theme-${safeSegment(themePrepared.themeProfile, "match")}.${themePrepared.theme.extension}`;
+    const uploaded = await uploadVariant(path, themePrepared.theme);
+    variant = await saveMenuPhotoVariant({ assetId:asset.id, themeProfile:themePrepared.themeProfile, imageUrl:uploaded.url, imagePath:uploaded.path, width:uploaded.width, height:uploaded.height, processedAt:themePrepared.processedAt });
+  }
+
+  return assetResult({ asset, variant, themeProfile, finish, cacheHit:false });
 }
