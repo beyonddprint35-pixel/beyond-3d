@@ -201,6 +201,9 @@ const PRESENTATION_PROFILES = Object.freeze({
   "blue-launcher": {
     layout: "Beyond Modular Launcher",
     presentation: "blue-launcher",
+    theme: {
+      background: "#f5f7ff",
+    },
     tags: ["beyond modular", "category app", "blue launcher"],
   },
   "chef-black-editorial": {
@@ -226,6 +229,10 @@ export function applyMenuDesignPresentationProfile(entry) {
     design: {
       ...entry.design,
       styleVariant: profile.styleVariant || entry.design?.styleVariant,
+      theme: {
+        ...entry.design?.theme,
+        ...(profile.theme || {}),
+      },
       layout: {
         ...entry.design?.layout,
         presentation: profile.presentation,
