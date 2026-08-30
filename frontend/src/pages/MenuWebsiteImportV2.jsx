@@ -141,10 +141,15 @@ export default function MenuWebsiteImportV2() {
       const normalizedUrl = normalizeWebsiteUrl(websiteUrl);
       setWebsiteUrl(normalizedUrl);
       setPhase("scanning");
-      // Website source extraction happens inside this service before the AI
-      // project is created, so an unreadable website does not consume a build.
-      const result = await importMenuWebsiteWithAi({ session, url: normalizedUrl, languages });
-      setPhase("structuring");
+      const result = await importMenuWebsiteWithAi({
+        session,
+        url: normalizedUrl,
+        languages,
+        onSourceReady: (source) => {
+          setSourceSummary(source);
+          setPhase("structuring");
+        },
+      });
       const adaptedMenu = adaptAiStructuredMenuToV3(result.menu, { projectId: result.project?.id });
       const profile = {
         ...storedProfile,
