@@ -97,13 +97,14 @@ export default function MenuContentStudioV2() {
     [storedDraft, requestedDesignId],
   );
 
+  const [contentLanguage, setContentLanguage] = useState(
+    () => storedDraft?.contentLanguage || storedDraft?.menu?.default_language || readStudioLanguage("en"),
+  );
   const [uiLanguage, setUiLanguage] = useState(() => {
     const requested = params.get("ui");
-    return ["en", "he", "ar"].includes(requested) ? requested : readStudioLanguage("en");
+    const fallback = ["en", "he", "ar"].includes(requested) ? requested : readStudioLanguage("en");
+    return storedDraft?.contentLanguage || storedDraft?.menu?.default_language || fallback;
   });
-  const [contentLanguage, setContentLanguage] = useState(
-    () => storedDraft?.contentLanguage || storedDraft?.menu?.default_language || "en",
-  );
   const [menu, setMenu] = useState(() => storedDraft?.menu || createBlankMenuV2());
   const [selection, setSelection] = useState(() => ({ type: "restaurant", id: "restaurant" }));
   const [saveState, setSaveState] = useState("saved");
@@ -145,7 +146,8 @@ export default function MenuContentStudioV2() {
 
   const saveLabel = saveState === "saving" ? t.saving : saveState === "error" ? t.saveError : t.saved;
 
-  function changeUiLanguage(language) {
+  function changeStudioLanguage(language) {
+    setContentLanguage(language);
     setUiLanguage(language);
     writeStudioLanguage(language);
   }
@@ -266,8 +268,7 @@ export default function MenuContentStudioV2() {
         </nav>
 
         <div className="menu-content-v2-top-actions">
-          <StudioLanguageMenu value={contentLanguage} onChange={setContentLanguage} label={t.contentLanguage} compact />
-          <StudioLanguageMenu value={uiLanguage} onChange={changeUiLanguage} label={t.interfaceLanguage} compact />
+          <StudioLanguageMenu value={contentLanguage} onChange={changeStudioLanguage} label={t.contentLanguage} compact />
           <div className="menu-content-v2-save"><span className={saveState === "saved" ? "ok" : ""} /><strong>{saveLabel}</strong></div>
         </div>
       </header>
