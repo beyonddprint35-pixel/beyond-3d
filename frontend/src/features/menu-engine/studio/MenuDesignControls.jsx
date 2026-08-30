@@ -19,7 +19,6 @@ import "./MenuDesignWorkspace.css";
 
 const FAVORITES_STORAGE_KEY = "beyond-menu-design-favorites-v1";
 const IMAGE_LAYOUT_TEMPLATES = new Set(["visual","gallery","tiles","split"]);
-const QUICK_GRID_PACKING_STYLE = Object.freeze({alignSelf:"start",alignContent:"start",gridAutoRows:"max-content",height:"fit-content"});
 const FEELING_DESIGNS = [
   { id:"blue-launcher", key:"modern", icon:"◫" },
   { id:"atelier-editorial", key:"elegant", icon:"Aa" },
@@ -259,27 +258,27 @@ export default function MenuDesignControls({design,baselineDesign,menu,language=
         <button type="button" onClick={()=>setWorkspaceMode("styles")}>{t.changeDesign}</button>
       </section>
 
-      <section className="studio-v3-design-v2-section" style={QUICK_GRID_PACKING_STYLE}>
+      <section className="studio-v3-design-v2-section">
         <div className="studio-v3-design-v2-section-head"><div><strong>{t.recommended}</strong><small>{t.recommendedHint}</small></div></div>
         <div className="studio-v3-feeling-grid">{recommendedDesigns.map(({feel,entry})=><button type="button" key={entry.id} className={activeDesignId===entry.id?"active":""} onClick={()=>chooseDesign(entry)}><DesignThumbnail entry={entry}/><span><i aria-hidden="true">{feel.icon}</i><strong>{t[feel.key]}</strong><small>{entry.name}</small></span></button>)}</div>
         <button type="button" className="studio-v3-design-v2-secondary-action" onClick={()=>setWorkspaceMode("styles")}>{t.browseAll}<span aria-hidden="true">→</span></button>
       </section>
 
-      <section className="studio-v3-design-v2-section" style={QUICK_GRID_PACKING_STYLE}>
+      <section className="studio-v3-design-v2-section">
         <div className="studio-v3-design-v2-section-head"><div><strong>{t.makeYours}</strong><small>{t.makeYoursHint}</small></div></div>
 
-        <div className="studio-v3-quick-control-card" style={QUICK_GRID_PACKING_STYLE}>
+        <div className="studio-v3-quick-control-card">
           <div className="studio-v3-quick-control-title"><span className="dot colors" aria-hidden="true"/><div><strong>{t.colors}</strong><small>{activePaletteKey?MENU_COLOR_PRESETS[activePaletteKey]?.label:t.modified}</small></div><button type="button" onClick={()=>openFocus("colors")}>•••</button></div>
           <div className="studio-v3-quick-palette-row">{Object.entries(MENU_COLOR_PRESETS).map(([key,preset])=><button type="button" key={key} className={activePaletteKey===key?"active":""} onClick={()=>patchDesign(current=>applyMenuColorPreset(current,key))} title={preset.label}><span>{[preset.theme.background,preset.theme.accent,preset.theme.text].map((color,index)=><i key={`${color}-${index}`} style={{background:color}}/>)}</span><small>{preset.label}</small></button>)}</div>
         </div>
 
-        <div className="studio-v3-quick-control-card" style={QUICK_GRID_PACKING_STYLE}>
+        <div className="studio-v3-quick-control-card">
           <div className="studio-v3-quick-control-title"><span className="dot type" aria-hidden="true">Aa</span><div><strong>{t.typography}</strong><small>{design.typography.headingFont} + {design.typography.bodyFont}</small></div><button type="button" onClick={()=>openFocus("type")}>•••</button></div>
           <div className="studio-v3-quick-type-grid">{Object.keys(TYPE_PRESETS).map(key=><button type="button" key={key} onClick={()=>applyTypePreset(key)}><b style={{fontFamily:TYPE_PRESETS[key].headingFont}}>Aa</b><span>{t[key]}</span></button>)}</div>
         </div>
 
-        <div className="studio-v3-quick-control-card" style={QUICK_GRID_PACKING_STYLE}>
-          <div className="studio-v3-quick-control-title"><span className="dot hero" aria-hidden="true">▣</span><div><strong>{t.hero}</strong><small>{t.heroHint}</small></div><button type="button" onClick={()=>openFocus("hero")}>•••</button></div>
+        <div className="studio-v3-quick-control-card">
+          <div className="studio-v3-quick-control-title"><span className="dot hero-media-control" aria-hidden="true">▣</span><div><strong>{t.hero}</strong><small>{t.heroHint}</small></div><button type="button" onClick={()=>openFocus("hero")}>•••</button></div>
           <div className="studio-v3-quick-hero-grid">
             <button type="button" onClick={restoreTemplateHero}><i aria-hidden="true">✦</i><span>{t.templateHero}</span></button>
             <button type="button" className={heroMode==="watermark"?"active":""} onClick={()=>patchBrand("heroMediaMode","watermark")}><i aria-hidden="true">◎</i><span>{t.logo}</span></button>
@@ -289,7 +288,7 @@ export default function MenuDesignControls({design,baselineDesign,menu,language=
           {heroMode==="image"?<div className="studio-v3-quick-hero-upload">{heroImage?<img src={heroImage} alt=""/>:null}<div><small>{t.photoHint}</small><label><input type="file" accept="image/png,image/jpeg,image/webp" onChange={e=>uploadImage(e.target.files?.[0],"heroImageUrl")}/><span>{heroImage?t.replaceHero:t.uploadHero}</span></label>{heroImage?<button type="button" onClick={()=>patchBrand("heroImageUrl","")}>{t.removeHero}</button>:null}</div></div>:null}
         </div>
 
-        <div className="studio-v3-quick-control-card" style={QUICK_GRID_PACKING_STYLE}>
+        <div className="studio-v3-quick-control-card">
           <div className="studio-v3-quick-control-title"><span className="dot spacing" aria-hidden="true">↕</span><div><strong>{t.density}</strong><small>{t[design.layout.density==="comfortable"?"balanced":design.layout.density]}</small></div><button type="button" onClick={()=>openFocus("items")}>•••</button></div>
           <div className="studio-v3-quick-density-grid">{[["compact",t.compact],["comfortable",t.balanced],["spacious",t.spacious]].map(([value,label])=><button type="button" key={value} className={design.layout.density===value?"active":""} onClick={()=>patchLayout("density",value)}><i className={value} aria-hidden="true"/><span>{label}</span></button>)}</div>
         </div>
