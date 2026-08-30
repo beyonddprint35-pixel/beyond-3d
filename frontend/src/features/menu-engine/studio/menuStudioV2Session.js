@@ -1,0 +1,92 @@
+import { DEFAULT_MENU_DESIGN } from "../domain/designSchema";
+import { PREMIUM_MENU_DESIGNS, applyPremiumMenuDesign } from "../domain/menuDesignLibrary";
+
+export const MENU_STUDIO_V2_DRAFT_KEY = "beyond-menu-content-studio-v2";
+export const MENU_CREATE_V2_FLOW_KEY = "beyond-menu-create-profile-v2";
+export const MENU_CREATE_V2_DESIGN_KEY = "beyond-menu-recommended-design-v2";
+
+export function makeLocalizedText(en = "", he = "", ar = "") {
+  return { en, he, ar };
+}
+
+export function createBlankMenuV2() {
+  return {
+    restaurant_name: "My Restaurant",
+    restaurant_subtitle: makeLocalizedText("Restaurant menu", "תפריט מסעדה", "قائمة المطعم"),
+    hero_eyebrow: makeLocalizedText("Welcome", "ברוכים הבאים", "أهلاً وسهلاً"),
+    hero_title: makeLocalizedText("Made for your table", "נוצר עבור השולחן שלכם", "صُممت لطاولتكم"),
+    languages: ["en", "he", "ar"],
+    default_language: "en",
+    currency_symbol: "₪",
+    groups: [
+      {
+        id: "group-main",
+        name: makeLocalizedText("Main menu", "תפריט ראשי", "القائمة الرئيسية"),
+        sort_order: 0,
+        visible: true,
+      },
+    ],
+    items: [
+      {
+        id: "item-example",
+        group_id: "group-main",
+        name: makeLocalizedText("Your first item", "הפריט הראשון שלכם", "أول صنف لديكم"),
+        description: makeLocalizedText(
+          "Click this item in Content Studio to edit it.",
+          "לחצו על הפריט כדי לערוך אותו.",
+          "اضغطوا على هذا الصنف في استوديو المحتوى لتعديله.",
+        ),
+        price: "42",
+        visible: true,
+        sort_order: 0,
+        image_url: "",
+      },
+    ],
+  };
+}
+
+export function readMenuStudioV2Draft() {
+  if (typeof window === "undefined") return null;
+  try {
+    const stored = JSON.parse(window.sessionStorage.getItem(MENU_STUDIO_V2_DRAFT_KEY) || "null");
+    if (stored?.menu?.groups && stored?.menu?.items) return stored;
+  } catch {
+    // Ignore malformed development drafts.
+  }
+  return null;
+}
+
+export function writeMenuStudioV2Draft(draft) {
+  if (typeof window === "undefined") return false;
+  try {
+    window.sessionStorage.setItem(MENU_STUDIO_V2_DRAFT_KEY, JSON.stringify({ ...draft, savedAt: new Date().toISOString() }));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function readMenuCreateV2Profile() {
+  if (typeof window === "undefined") return null;
+  try {
+    return JSON.parse(window.sessionStorage.getItem(MENU_CREATE_V2_FLOW_KEY) || "null");
+  } catch {
+    return null;
+  }
+}
+
+export function resolveMenuStudioV2Design(draft, requestedDesignId = "") {
+  const designId = requestedDesignId || draft?.designId || (() => {
+    if (typeof window === "undefined") return "";
+    try { return window.sessionStorage.getItem(MENU_CREATE_V2_DESIGN_KEY) || ""; } catch { return ""; }
+  })();
+  const entry = PREMIUM_MENU_DESIGNS.find((item) => item.id === designId)
+    || PREMIUM_MENU_DESIGNS.find((item) => item.id === "heritage-original")
+    || PREMIUM_MENU_DESIGNS[0];
+  return {
+    designId: entry?.id || designId,
+    entry,
+    design: draft?.design || applyPremiumMenuDesign(DEFAULT_MENU_DESIGN, entry?.id),
+    baselineDesign: applyPremiumMenuDesign(DEFAULT_MENU_DESIGN, entry?.id),
+  };
+}
