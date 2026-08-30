@@ -1,5 +1,28 @@
 const SUPPORTED_LANGUAGES = ["en", "he", "ar"];
 
+const PRICE_TYPE_PRESETS = {
+  draft: [
+    { label_key: "one_third", label_en: "1/3", label_he: "1/3", label_ar: "1/3" },
+    { label_key: "one_half", label_en: "1/2", label_he: "1/2", label_ar: "1/2" },
+  ],
+  smallLarge: [
+    { label_key: "small", label_en: "Small", label_he: "קטן", label_ar: "صغير" },
+    { label_key: "large", label_en: "Large", label_he: "גדול", label_ar: "كبير" },
+  ],
+  shotGlass: [
+    { label_key: "shot", label_en: "Shot", label_he: "שוט", label_ar: "شوت" },
+    { label_key: "glass", label_en: "Glass", label_he: "כוס", label_ar: "كأس" },
+  ],
+  glassBottle: [
+    { label_key: "glass", label_en: "Glass", label_he: "כוס", label_ar: "كأس" },
+    { label_key: "bottle", label_en: "Bottle", label_he: "בקבוק", label_ar: "زجاجة" },
+  ],
+  generic: [
+    { label_key: "option_1", label_en: "Option 1", label_he: "אפשרות 1", label_ar: "الخيار 1" },
+    { label_key: "option_2", label_en: "Option 2", label_he: "אפשרות 2", label_ar: "الخيار 2" },
+  ],
+};
+
 function text(value) {
   return value == null ? "" : String(value).trim();
 }
@@ -19,17 +42,85 @@ function cleanPrice(value) {
     .trim();
 }
 
-function normalizePriceOptions(value) {
-  if (!Array.isArray(value)) return [];
-  return value
-    .map((option) => ({
-      label: text(option?.label_en || option?.label_he || option?.label_ar || option?.label || option?.label_key),
-      label_en: text(option?.label_en),
-      label_he: text(option?.label_he),
-      label_ar: text(option?.label_ar),
-      price: cleanPrice(option?.price),
-    }))
-    .filter((option) => option.price || option.label || option.label_en || option.label_he || option.label_ar);
+function splitCombinedPrice(value) {
+  const clean = cleanPrice(value);
+  const match = clean.match(/^([0-9]+(?:[.,][0-9]+)?)\s*\/\s*([0-9]+(?:[.,][0-9]+)?)$/);
+  return match ? [match[1], match[2]] : [];
+}
+
+function groupSearchText(group) {
+  const name = group?.name && typeof group.name === "object" ? group.name : {};
+  return [name.en, name.he, name.ar, group?.group_key]
+    .map((value) => text(value).toLowerCase())
+    .filter(Boolean)
+    .join(" | ");
+}
+
+function inferPairPreset(group) {
+  const value = groupSearchText(group);
+  if (/draft beer|draught beer|beer on tap|בירה מהחבית|بيرة.*برميل|بيرة.*صنبور/.test(value)) return PRICE_TYPE_PRESETS.draft;
+  if (/hot drinks|coffee|משקאות חמים|קפה|مشروبات ساخنة|قهوة/.test(value)) return PRICE_TYPE_PRESETS.smallLarge;
+  if (/wine|יין|نبيذ/.test(value)) return PRICE_TYPE_PRESETS.glassBottle;
+  if (/whisk|וויסקי|ويسكي|gin|ג['׳]?ין|جين|vodka|וודקה|فودكا|liquor|liqueur|ליקר|ليكير|cognac|קוניאק|كونياك|rum|רום|روم|aperitif|אפריטיף|أبيريتيف|arak|ערק|عرق|anise|אניס|يانسون|tequila|טקילה|تيكيلا|brandy|ברנדי|براندي|drinks to mix|משקאות לערבוב|مشروبات للخلط/.test(value)) return PRICE_TYPE_PRESETS.shotGlass;
+  return PRICE_TYPE_PRESETS.generic;
+}
+
+function presetWithPrice(preset, price) {
+  return {
+    ...preset,
+    label: preset.label_en,
+    price: cleanPrice(price),
+  };
+}
+
+function hasOptionLabel(option) {
+  return Boolean(text(option?.label) || text(option?.label_en) || text(option?.label_he) || text(option?.label_ar));
+}
+
+function normalizeOption(option) {
+  return {
+    label: text(option?.label_en || option?.label_he || option?.label_ar || option?.label || option?.label_key),
+    label_key: text(option?.label_key),
+    label_en: text(option?.label_en),
+    label_he: text(option?.label_he),
+    label_ar: text(option?.label_ar),
+    price: cleanPrice(option?.price),
+  };
+}
+
+function normalizeItemPricing(item, group) {
+  let options = Array.isArray(item?.price_options)
+    ? item.price_options.map(normalizeOption).filter((option) => option.price || hasOptionLabel(option))
+    : [];
+
+  if (options.length === 1) {
+    const combined = splitCombinedPrice(options[0].price);
+    if (combined.length === 2) {
+      const preset = inferPairPreset(group);
+      options = combined.map((price, index) => presetWithPrice(preset[index], price));
+    }
+  }
+
+  if (!options.length) {
+    const combined = splitCombinedPrice(item?.price);
+    if (combined.length === 2) {
+      const preset = inferPairPreset(group);
+      options = combined.map((price, index) => presetWithPrice(preset[index], price));
+    }
+  }
+
+  if (options.length === 2) {
+    const preset = inferPairPreset(group);
+    options = options.map((option, index) => {
+      if (hasOptionLabel(option)) return option;
+      return { ...option, ...presetWithPrice(preset[index], option.price) };
+    });
+  }
+
+  return {
+    price: options.length ? "" : cleanPrice(item?.price),
+    price_options: options,
+  };
 }
 
 function resolveLanguages(raw) {
@@ -47,6 +138,19 @@ function fallbackName(value, index, prefix) {
   return next;
 }
 
+export function normalizeV3MenuPriceOptions(menu = {}) {
+  const groups = Array.isArray(menu?.groups) ? menu.groups : [];
+  const groupMap = new Map(groups.map((group) => [group.id, group]));
+  const items = Array.isArray(menu?.items) ? menu.items : [];
+  return {
+    ...menu,
+    items: items.map((item) => ({
+      ...item,
+      ...normalizeItemPricing(item, groupMap.get(item.group_id)),
+    })),
+  };
+}
+
 export function adaptAiStructuredMenuToV3(rawMenu = {}, { projectId = "" } = {}) {
   const sections = Array.isArray(rawMenu?.sections) ? rawMenu.sections : [];
   const languages = resolveLanguages(rawMenu);
@@ -59,25 +163,25 @@ export function adaptAiStructuredMenuToV3(rawMenu = {}, { projectId = "" } = {})
 
   sections.forEach((section, sectionIndex) => {
     const groupId = `ai-group-${sectionIndex + 1}`;
-    groups.push({
+    const group = {
       id: groupId,
       parent_id: null,
       group_key: "",
       name: fallbackName(localized(section, "name"), sectionIndex, "Category"),
       visible: true,
       sort_order: sectionIndex,
-    });
+    };
+    groups.push(group);
 
     const sectionItems = Array.isArray(section?.items) ? section.items : [];
     sectionItems.forEach((item, itemIndex) => {
-      const options = normalizePriceOptions(item?.price_options);
+      const pricing = normalizeItemPricing(item, group);
       items.push({
         id: `ai-item-${sectionIndex + 1}-${itemIndex + 1}`,
         group_id: groupId,
         name: fallbackName(localized(item, "name"), itemIndex, "Item"),
         description: localized(item, "description"),
-        price: options.length ? "" : cleanPrice(item?.price),
-        price_options: options,
+        ...pricing,
         image_url: "",
         image_path: "",
         visible: true,
@@ -108,7 +212,7 @@ export function adaptAiStructuredMenuToV3(rawMenu = {}, { projectId = "" } = {})
   const branding = rawMenu?.branding && typeof rawMenu.branding === "object" ? rawMenu.branding : {};
   const restaurantName = text(rawMenu?.restaurant_name || branding?.display_name) || "My Restaurant";
 
-  return {
+  return normalizeV3MenuPriceOptions({
     source_project_id: projectId || "",
     restaurant_name: restaurantName,
     logo_url: text(branding?.logo_url),
@@ -133,5 +237,5 @@ export function adaptAiStructuredMenuToV3(rawMenu = {}, { projectId = "" } = {})
       projectId: projectId || "",
       warnings: Array.isArray(rawMenu?.warnings) ? rawMenu.warnings : [],
     },
-  };
+  });
 }
