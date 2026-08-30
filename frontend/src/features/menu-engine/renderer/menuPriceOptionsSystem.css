@@ -1,0 +1,90 @@
+/*
+  Systemic multi-price rendering.
+  Every renderer consumes the complete price_options[] array. Price groups
+  wrap into a compact two-column grid instead of overflowing/clipping after
+  the first pair.
+*/
+
+.bme-price-options {
+  max-width:100%;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(42px,max-content));
+  align-items:start;
+  justify-content:end;
+  gap:7px 10px;
+  direction:ltr;
+  unicode-bidi:isolate;
+}
+
+.bme-price-option {
+  min-width:0;
+  display:grid;
+  justify-items:center;
+  gap:2px;
+}
+
+.bme-price-option small {
+  max-width:76px;
+  overflow:hidden;
+  color:var(--bme-muted);
+  font-size:9px;
+  line-height:1.15;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.bme-price-below>.bme-price-options,
+.bme-price-bottom>.bme-price-options {
+  justify-content:start;
+}
+
+/* Heritage uses the same unlimited price model while preserving its shell. */
+.bme-heritage-exact .ep-price-options {
+  max-width:148px;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(52px,1fr));
+  gap:7px 8px;
+  direction:ltr;
+  unicode-bidi:isolate;
+}
+
+.bme-heritage-exact .ep-price-option {
+  min-width:0;
+  display:grid;
+  justify-items:center;
+  gap:2px;
+}
+
+.bme-heritage-exact .ep-price-option small {
+  width:100%;
+  overflow:hidden;
+  color:#7b756e;
+  font-family:Inter,Arial,sans-serif;
+  font-size:8px;
+  font-weight:700;
+  line-height:1.15;
+  text-align:center;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.bme-heritage-exact .ep-price-option strong {
+  color:#2b2b2b;
+  font-family:"Playfair Display",Georgia,serif;
+  font-size:16px;
+  text-align:center;
+  white-space:nowrap;
+}
+
+/* More price rows make an item taller naturally instead of clipping. */
+.bme-heritage-exact .ep-item-row:has(.ep-price-options) {
+  min-height:76px;
+  align-items:center;
+}
+
+@media(max-width:420px){
+  .bme-price-options{gap:6px 8px;grid-template-columns:repeat(2,minmax(38px,max-content))}
+  .bme-price-option small{max-width:64px;font-size:8px}
+  .bme-heritage-exact .ep-price-options{max-width:132px;grid-template-columns:repeat(2,minmax(48px,1fr));gap:6px}
+  .bme-heritage-exact .ep-price-option strong{font-size:15px}
+}
