@@ -15,6 +15,7 @@ import {
 import beyondLogo from "../assets/beyond-logo-transparent.png";
 import StudioLanguageMenu from "../components/StudioLanguageMenu";
 import { buildMenuStudioReadiness } from "../features/menu-engine/studio/menuStudioV2Readiness";
+import { publishMenuStudioDraft } from "../features/menu-engine/studio/menuStudioV2PublishService";
 import {
   createBlankMenuV2,
   readMenuCreateV2Profile,
@@ -37,9 +38,10 @@ const UI = {
     address:"Public menu address", addressHint:"This will be the URL used by your QR and NFC touchpoints.", slug:"Menu address", defaultLanguage:"Default customer language",
     customerLanguages:"Customer menu languages", customerLanguagesHint:"Choose which languages guests can switch between on the live menu.", launch:"Launch readiness", contentReady:"Menu content", designReady:"Design", addressReady:"Public address", languageReady:"Languages", translationsReady:"Language content",
     ready:"Ready", needsAttention:"Needs attention", visibleItems:"visible items", categories:"categories", selectedDesign:"Selected design", validAddress:"Valid menu URL", chooseLanguage:"At least one customer language", completeTranslations:"All enabled languages complete",
-    qr:"QR & NFC", qrHint:"After publishing, this address becomes the source for your QR code and NFC stands.", secure:"Publishing safety", secureHint:"Draft changes remain private until the live activation step succeeds.",
-    saveSetup:"Save publish setup", saved:"Publish setup saved", liveDisabled:"Live activation is disabled in this development preview.", liveDisabledHint:"You can finish and save the complete publish setup here. The live action will only be enabled when this remodeled Builder is ready for production.", publishLive:"Publish live",
-    publicUrl:"Public URL", openPreview:"Open Preview", allReady:"Your menu passes the Studio readiness checks.", notReady:"Complete the highlighted items before publishing.",
+    qr:"QR & NFC", qrHint:"After publishing, this address becomes the source for your QR code and NFC stands.", secure:"Publishing safety", secureHint:"Draft changes remain private until you explicitly publish a new live version.",
+    saveSetup:"Save publish setup", saved:"Publish setup saved", safePublish:"Safe live publishing", safePublishHint:"Publishing creates a locked live version. Future Studio edits stay private until you publish again.", publishLive:"Publish live", publishing:"Publishing…", publishAgain:"Publish new version",
+    publicUrl:"Public URL", openPreview:"Open Preview", openLive:"Open live menu", allReady:"Your menu passes the Studio readiness checks.", notReady:"Complete the highlighted items before publishing.",
+    published:"Menu is live", publishedHint:"Guests are seeing the locked version below.", version:"Version", publishError:"Could not publish this menu.",
   },
   he: {
     workspace:"סביבת עבודת התפריט", interfaceLanguage:"שפת הממשק", content:"תוכן", design:"עיצוב", preview:"תצוגה מקדימה", publish:"פרסום",
@@ -47,9 +49,10 @@ const UI = {
     address:"כתובת התפריט הציבורית", addressHint:"זו תהיה הכתובת של קוד ה-QR ושל נקודות ה-NFC.", slug:"כתובת התפריט", defaultLanguage:"שפת ברירת המחדל ללקוח",
     customerLanguages:"שפות תפריט ללקוחות", customerLanguagesHint:"בחרו בין אילו שפות האורחים יוכלו לעבור בתפריט החי.", launch:"מוכנות להשקה", contentReady:"תוכן התפריט", designReady:"עיצוב", addressReady:"כתובת ציבורית", languageReady:"שפות", translationsReady:"תוכן השפות",
     ready:"מוכן", needsAttention:"דורש תשומת לב", visibleItems:"פריטים גלויים", categories:"קטגוריות", selectedDesign:"עיצוב נבחר", validAddress:"כתובת תפריט תקינה", chooseLanguage:"לפחות שפת לקוח אחת", completeTranslations:"כל השפות הפעילות מלאות",
-    qr:"QR ו-NFC", qrHint:"לאחר הפרסום הכתובת הזו תהיה המקור לקוד ה-QR ולעמדות ה-NFC.", secure:"בטיחות בפרסום", secureHint:"השינויים בטיוטה נשארים פרטיים עד שהפעלת התפריט החי מסתיימת בהצלחה.",
-    saveSetup:"שמירת הגדרות פרסום", saved:"הגדרות הפרסום נשמרו", liveDisabled:"ההפעלה החיה כבויה בתצוגת הפיתוח הזו.", liveDisabledHint:"אפשר להשלים ולשמור כאן את כל הגדרות הפרסום. הפעולה החיה תופעל רק כשה-Builder המחודש יהיה מוכן לפרודקשן.", publishLive:"פרסום חי",
-    publicUrl:"כתובת ציבורית", openPreview:"פתיחת תצוגה", allReady:"התפריט עובר את בדיקות המוכנות של Studio.", notReady:"השלימו את הפריטים המסומנים לפני הפרסום.",
+    qr:"QR ו-NFC", qrHint:"לאחר הפרסום הכתובת הזו תהיה המקור לקוד ה-QR ולעמדות ה-NFC.", secure:"בטיחות בפרסום", secureHint:"שינויים בטיוטה נשארים פרטיים עד שאתם מפרסמים במפורש גרסה חיה חדשה.",
+    saveSetup:"שמירת הגדרות פרסום", saved:"הגדרות הפרסום נשמרו", safePublish:"פרסום חי בטוח", safePublishHint:"הפרסום יוצר גרסה חיה נעולה. שינויים עתידיים ב-Studio נשארים פרטיים עד לפרסום מחדש.", publishLive:"פרסום חי", publishing:"מפרסם…", publishAgain:"פרסום גרסה חדשה",
+    publicUrl:"כתובת ציבורית", openPreview:"פתיחת תצוגה", openLive:"פתיחת התפריט החי", allReady:"התפריט עובר את בדיקות המוכנות של Studio.", notReady:"השלימו את הפריטים המסומנים לפני הפרסום.",
+    published:"התפריט חי", publishedHint:"האורחים רואים את הגרסה הנעולה שמופיעה למטה.", version:"גרסה", publishError:"לא ניתן לפרסם את התפריט.",
   },
   ar: {
     workspace:"مساحة عمل القائمة", interfaceLanguage:"لغة الواجهة", content:"المحتوى", design:"التصميم", preview:"المعاينة", publish:"النشر",
@@ -57,9 +60,10 @@ const UI = {
     address:"عنوان القائمة العام", addressHint:"سيكون هذا الرابط المستخدم في رمز QR ونقاط NFC.", slug:"عنوان القائمة", defaultLanguage:"لغة الزبون الافتراضية",
     customerLanguages:"لغات قائمة الزبائن", customerLanguagesHint:"اختاروا اللغات التي يستطيع الضيوف التبديل بينها في القائمة الحية.", launch:"جاهزية الإطلاق", contentReady:"محتوى القائمة", designReady:"التصميم", addressReady:"العنوان العام", languageReady:"اللغات", translationsReady:"محتوى اللغات",
     ready:"جاهز", needsAttention:"يحتاج انتباهاً", visibleItems:"عناصر ظاهرة", categories:"فئات", selectedDesign:"التصميم المختار", validAddress:"رابط قائمة صالح", chooseLanguage:"لغة زبائن واحدة على الأقل", completeTranslations:"كل اللغات المفعلة مكتملة",
-    qr:"QR وNFC", qrHint:"بعد النشر يصبح هذا الرابط المصدر لرمز QR ولمجسمات NFC.", secure:"أمان النشر", secureHint:"تبقى تغييرات المسودة خاصة حتى تنجح خطوة تفعيل القائمة الحية.",
-    saveSetup:"حفظ إعدادات النشر", saved:"تم حفظ إعدادات النشر", liveDisabled:"التفعيل الحي معطل في معاينة التطوير هذه.", liveDisabledHint:"يمكن إكمال وحفظ إعدادات النشر كاملة هنا. سيتم تفعيل النشر الحي فقط عندما يصبح الـBuilder الجديد جاهزاً للإنتاج.", publishLive:"نشر مباشر",
-    publicUrl:"الرابط العام", openPreview:"فتح المعاينة", allReady:"القائمة تجتاز فحوصات الجاهزية في Studio.", notReady:"أكملوا العناصر المحددة قبل النشر.",
+    qr:"QR وNFC", qrHint:"بعد النشر يصبح هذا الرابط المصدر لرمز QR ولمجسمات NFC.", secure:"أمان النشر", secureHint:"تبقى تعديلات المسودة خاصة حتى تنشروا نسخة مباشرة جديدة بشكل صريح.",
+    saveSetup:"حفظ إعدادات النشر", saved:"تم حفظ إعدادات النشر", safePublish:"نشر مباشر آمن", safePublishHint:"ينشئ النشر نسخة مباشرة مقفلة. تبقى تعديلات Studio اللاحقة خاصة حتى تنشروا من جديد.", publishLive:"نشر مباشر", publishing:"جارٍ النشر…", publishAgain:"نشر نسخة جديدة",
+    publicUrl:"الرابط العام", openPreview:"فتح المعاينة", openLive:"فتح القائمة المباشرة", allReady:"القائمة تجتاز فحوصات الجاهزية في Studio.", notReady:"أكملوا العناصر المحددة قبل النشر.",
+    published:"القائمة مباشرة", publishedHint:"يشاهد الضيوف النسخة المقفلة الموضحة أدناه.", version:"النسخة", publishError:"تعذر نشر هذه القائمة.",
   },
 };
 
@@ -82,6 +86,20 @@ export default function MenuPublishStudioV2() {
   const [enabledLanguages, setEnabledLanguages] = useState(() => storedDraft?.publication?.languages || menu.languages || ["en", "he", "ar"]);
   const [defaultLanguage, setDefaultLanguage] = useState(() => storedDraft?.publication?.defaultLanguage || menu.default_language || enabledLanguages[0] || "en");
   const [savedState, setSavedState] = useState(false);
+  const [publishState, setPublishState] = useState(() => {
+    const publication = storedDraft?.publication || {};
+    if (!publication.publishedVersionId) return { status:"idle", result:null, error:"" };
+    return {
+      status:"published",
+      result:{
+        versionId:publication.publishedVersionId,
+        versionNumber:publication.publishedVersionNumber,
+        publishedAt:publication.publishedAt,
+        slug:publication.publishedSlug || publication.slug,
+      },
+      error:"",
+    };
+  });
 
   const t = UI[uiLanguage] || UI.en;
   const rtl = studioLanguageDirection(uiLanguage) === "rtl";
@@ -99,6 +117,8 @@ export default function MenuPublishStudioV2() {
     { key:"translations", label:t.translationsReady, ok:studioReadiness.checks.translations, detail:studioReadiness.checks.translations ? t.completeTranslations : `${studioReadiness.translationBlockers} ${t.needsAttention}` },
   ];
   const ready = checks.every((check) => check.ok);
+  const isPublishing = publishState.status === "publishing";
+  const publishedResult = publishState.result;
 
   useEffect(() => {
     if (!enabledLanguages.includes(defaultLanguage) && enabledLanguages.length) setDefaultLanguage(enabledLanguages[0]);
@@ -119,10 +139,17 @@ export default function MenuPublishStudioV2() {
     });
   }
 
-  function savePublishSetup() {
+  function buildPublishDraft() {
     const nextMenu = { ...menu, slug: normalizedSlug, languages: enabledLanguages, default_language: defaultLanguage };
-    setMenu(nextMenu);
-    const ok = writeMenuStudioV2Draft({
+    const priorPublication = storedDraft?.publication || {};
+    const liveMetadata = publishedResult ? {
+      publishedVersionId: publishedResult.versionId,
+      publishedVersionNumber: publishedResult.versionNumber,
+      publishedAt: publishedResult.publishedAt,
+      publishedSlug: publishedResult.slug,
+      isLive: true,
+    } : {};
+    return {
       ...(storedDraft || {}),
       menu: nextMenu,
       design,
@@ -130,6 +157,8 @@ export default function MenuPublishStudioV2() {
       profile,
       contentLanguage: storedDraft?.contentLanguage || defaultLanguage,
       publication: {
+        ...priorPublication,
+        ...liveMetadata,
         slug: normalizedSlug,
         languages: enabledLanguages,
         defaultLanguage,
@@ -137,9 +166,47 @@ export default function MenuPublishStudioV2() {
         publicUrl,
         savedAt: new Date().toISOString(),
       },
-    });
+    };
+  }
+
+  function savePublishSetup() {
+    const nextDraft = buildPublishDraft();
+    setMenu(nextDraft.menu);
+    const ok = writeMenuStudioV2Draft(nextDraft);
     setSavedState(ok);
     window.setTimeout(() => setSavedState(false), 2200);
+  }
+
+  async function publishLiveMenu() {
+    if (!ready || !normalizedSlug || isPublishing) return;
+    const nextDraft = buildPublishDraft();
+    setMenu(nextDraft.menu);
+    writeMenuStudioV2Draft(nextDraft);
+    setPublishState({ status:"publishing", result:publishedResult, error:"" });
+    try {
+      const result = await publishMenuStudioDraft({ draft:nextDraft, slug:normalizedSlug });
+      const publishedDraft = {
+        ...nextDraft,
+        publication: {
+          ...nextDraft.publication,
+          publishedVersionId: result.versionId,
+          publishedVersionNumber: result.versionNumber,
+          publishedAt: result.publishedAt,
+          publishedSlug: result.slug,
+          isLive: true,
+        },
+      };
+      writeMenuStudioV2Draft(publishedDraft);
+      setPublishState({ status:"published", result, error:"" });
+    } catch (error) {
+      setPublishState({ status:"error", result:publishedResult, error:error?.message || t.publishError });
+    }
+  }
+
+  function openLiveMenu() {
+    const liveSlug = publishedResult?.slug || normalizedSlug;
+    if (!liveSlug) return;
+    window.location.assign(`/dev/menu-public-v3/${liveSlug}`);
   }
 
   return (
@@ -213,10 +280,17 @@ export default function MenuPublishStudioV2() {
           </section>
 
           <section className="menu-publish-v2-action-card">
-            <div className="menu-publish-v2-dev-status"><CircleAlert size={17} /><span><strong>{t.liveDisabled}</strong><small>{t.liveDisabledHint}</small></span></div>
-            <button type="button" className="save" onClick={savePublishSetup}>{savedState ? <Check size={14} /> : null}{savedState ? t.saved : t.saveSetup}</button>
-            <button type="button" className="live" disabled><Rocket size={14} /> {t.publishLive}</button>
-            <button type="button" className="preview-link" onClick={() => window.location.assign("/dev/menu-preview-v2")}>{t.openPreview}</button>
+            <div className={`menu-publish-v2-dev-status ${publishedResult ? "success" : ""}`}>
+              {publishedResult ? <CheckCircle2 size={17} /> : <ShieldCheck size={17} />}
+              <span>
+                <strong>{publishedResult ? `${t.published} · ${t.version} ${publishedResult.versionNumber}` : t.safePublish}</strong>
+                <small>{publishedResult ? t.publishedHint : t.safePublishHint}</small>
+              </span>
+            </div>
+            {publishState.error ? <div className="menu-publish-v2-publish-error"><CircleAlert size={14} /> <span>{publishState.error}</span></div> : null}
+            <button type="button" className="save" onClick={savePublishSetup} disabled={isPublishing}>{savedState ? <Check size={14} /> : null}{savedState ? t.saved : t.saveSetup}</button>
+            <button type="button" className="live" disabled={!ready || !normalizedSlug || isPublishing} onClick={publishLiveMenu}><Rocket size={14} /> {isPublishing ? t.publishing : publishedResult ? t.publishAgain : t.publishLive}</button>
+            <button type="button" className="preview-link" onClick={publishedResult ? openLiveMenu : () => window.location.assign("/dev/menu-preview-v2")}>{publishedResult ? t.openLive : t.openPreview}</button>
           </section>
         </aside>
       </div>
