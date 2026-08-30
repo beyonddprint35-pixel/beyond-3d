@@ -15,7 +15,7 @@ import beyondLogo from "../assets/beyond-logo-transparent.png";
 import MenuContentImageEditor from "../components/MenuContentImageEditor";
 import MenuContentPriceEditor from "../components/MenuContentPriceEditor";
 import StudioLanguageMenu from "../components/StudioLanguageMenu";
-import MenuRenderer from "../features/menu-engine/renderer/MenuRenderer";
+import MenuStudioMobilePreview from "../features/menu-engine/studio/MenuStudioMobilePreview";
 import {
   createBlankMenuV2,
   makeLocalizedText,
@@ -343,13 +343,17 @@ export default function MenuContentStudioV2() {
           <div className="menu-content-v2-canvas-toolbar">
             <div><span className="live" /><strong>{t.livePreview}</strong><small>{t.previewHint}</small></div>
             <div className="menu-content-v2-design-chip"><Sparkles size={13} /><span>{selectedDesignEntry?.name || t.selectedDesign}</span></div>
-            <div className="menu-content-v2-device"><Smartphone size={13} /> {t.mobile} <span>390 × 780</span></div>
+            <div className="menu-content-v2-device"><Smartphone size={13} /> {t.mobile} <span>390 × 844</span></div>
           </div>
 
           <div className="menu-content-v2-canvas">
-            <div className="menu-content-v2-phone" dir={contentDir}>
-              <MenuRenderer key={contentLanguage} menu={{ ...menu, default_language: contentLanguage }} design={design} initialLanguage={contentLanguage} />
-            </div>
+            <MenuStudioMobilePreview
+              menu={menu}
+              design={design}
+              language={contentLanguage}
+              minScale={0.34}
+              maxScale={0.9}
+            />
           </div>
         </section>
 
