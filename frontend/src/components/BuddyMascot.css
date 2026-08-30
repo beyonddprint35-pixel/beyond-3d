@@ -21,21 +21,53 @@
     transform-origin: right center;
   }
 
-  /* Hebrew: keep the exact approved English size and vertical position,
-     mirror Buddy in place, and shift the enlarged image back into view. */
-  .menu-home[dir="rtl"] .menu-home-buddy-mobile .buddy-mascot img {
-    transform: translate(68px, 42px) scale(-2.7, 2.7);
-    transform-origin: center center;
+  /* Hebrew keeps the approved English Buddy size, but mirrors it. */
+  html body .menu-home[dir="rtl"] .menu-home-buddy-mobile .buddy-mascot img {
+    transform: translate(68px, 42px) scale(-2.7, 2.7) !important;
+    transform-origin: center center !important;
   }
-}
 
-/* Language direction must not reorder or relocate the hero CTAs.
-   Keep the action layout identical to English, while Hebrew text
-   inside each button still reads RTL. */
-.menu-home[dir="rtl"] .menu-home-hero-actions {
-  direction: ltr;
-}
+  /*
+    Hebrew text gets a responsive protected zone for Buddy.
+    This prevents the mascot from ever covering the headline or copy,
+    regardless of wrapping or phone width.
+  */
+  html body .menu-home[dir="rtl"] .menu-home-hero-copy > h1,
+  html body .menu-home[dir="rtl"] .menu-home-hero-copy > p {
+    box-sizing: border-box !important;
+    padding-left: clamp(165px, 49vw, 205px) !important;
+    padding-right: 0 !important;
+  }
 
-.menu-home[dir="rtl"] .menu-home-hero-actions > button {
-  direction: rtl;
+  /*
+    Match the vertical text footprint of the approved English mobile hero.
+    The CTA row therefore starts at the same place when language changes.
+  */
+  html body .menu-home[dir="rtl"] .menu-home-hero-copy > h1 {
+    min-height: 205px !important;
+  }
+
+  html body .menu-home[dir="rtl"] .menu-home-hero-copy > p {
+    min-height: 132px !important;
+  }
+
+  /* Keep CTA geometry identical to English. */
+  html body .menu-home[dir="rtl"] .menu-home-hero-actions {
+    direction: ltr !important;
+    width: 100% !important;
+    margin-top: 32px !important;
+  }
+
+  html body .menu-home[dir="rtl"] .menu-home-hero-actions > button {
+    width: 100% !important;
+    direction: ltr !important;
+  }
+
+  html body .menu-home[dir="rtl"] .menu-home-hero-actions > button:first-child {
+    order: 1 !important;
+  }
+
+  html body .menu-home[dir="rtl"] .menu-home-hero-actions > button:last-child {
+    order: 2 !important;
+  }
 }
