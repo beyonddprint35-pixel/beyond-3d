@@ -1,6 +1,7 @@
 import { DEFAULT_MENU_DESIGN } from "../domain/designSchema";
 import { PREMIUM_MENU_DESIGNS, applyPremiumMenuDesign } from "../domain/menuDesignLibrary";
 import { normalizeV3MenuPriceOptions } from "../data/aiMenuImportAdapter";
+import { queueMenuStudioProjectSave } from "./menuStudioV2Persistence";
 
 export const MENU_STUDIO_V2_DRAFT_KEY = "beyond-menu-content-studio-v2";
 export const MENU_CREATE_V2_FLOW_KEY = "beyond-menu-create-profile-v2";
@@ -66,7 +67,9 @@ export function writeMenuStudioV2Draft(draft) {
     const normalizedDraft = draft?.menu
       ? { ...draft, menu: normalizeV3MenuPriceOptions(draft.menu) }
       : draft;
-    window.sessionStorage.setItem(MENU_STUDIO_V2_DRAFT_KEY, JSON.stringify({ ...normalizedDraft, savedAt: new Date().toISOString() }));
+    const savedDraft = { ...normalizedDraft, savedAt: new Date().toISOString() };
+    window.sessionStorage.setItem(MENU_STUDIO_V2_DRAFT_KEY, JSON.stringify(savedDraft));
+    queueMenuStudioProjectSave(savedDraft);
     return true;
   } catch {
     return false;
