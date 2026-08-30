@@ -98,33 +98,47 @@ function anyLocalized(row, base) {
   return SUPPORTED_LANGUAGES.some((code) => text(row?.[`${base}_${code}`]));
 }
 
+function hasAlphabeticText(value) {
+  return /[A-Za-z\u0590-\u05ff\u0600-\u06ff]/.test(text(value));
+}
+
+function requestedTranslationMissing(row, base, code) {
+  const value = text(row?.[`${base}_${code}`]);
+  if (!value) return true;
+  if (!hasAlphabeticText(value)) return false;
+  if (code === "ar") return !/[\u0600-\u06ff]/.test(value);
+  if (code === "he") return !/[\u0590-\u05ff]/.test(value);
+  if (code === "en") return !/[A-Za-z]/.test(value);
+  return false;
+}
+
 function missingRequestedTranslations(menu, languages) {
   const missing = [];
   const sections = Array.isArray(menu?.sections) ? menu.sections : [];
   sections.forEach((section, sectionIndex) => {
     if (anyLocalized(section, "name")) {
       languages.forEach((code) => {
-        if (!text(section?.[`name_${code}`])) missing.push(`section ${sectionIndex + 1} name_${code}`);
+        if (requestedTranslationMissing(section, "name", code)) missing.push(`section ${sectionIndex + 1} name_${code}`);
       });
     }
     const items = Array.isArray(section?.items) ? section.items : [];
     items.forEach((item, itemIndex) => {
       if (anyLocalized(item, "name")) {
         languages.forEach((code) => {
-          if (!text(item?.[`name_${code}`])) missing.push(`section ${sectionIndex + 1} item ${itemIndex + 1} name_${code}`);
+          if (requestedTranslationMissing(item, "name", code)) missing.push(`section ${sectionIndex + 1} item ${itemIndex + 1} name_${code}`);
         });
       }
       for (const base of ["description", "origin"]) {
         if (!anyLocalized(item, base)) continue;
         languages.forEach((code) => {
-          if (!text(item?.[`${base}_${code}`])) missing.push(`section ${sectionIndex + 1} item ${itemIndex + 1} ${base}_${code}`);
+          if (requestedTranslationMissing(item, base, code)) missing.push(`section ${sectionIndex + 1} item ${itemIndex + 1} ${base}_${code}`);
         });
       }
       const options = Array.isArray(item?.price_options) ? item.price_options : [];
       options.forEach((option, optionIndex) => {
         if (!anyLocalized(option, "label")) return;
         languages.forEach((code) => {
-          if (!text(option?.[`label_${code}`])) missing.push(`section ${sectionIndex + 1} item ${itemIndex + 1} option ${optionIndex + 1} label_${code}`);
+          if (requestedTranslationMissing(option, "label", code)) missing.push(`section ${sectionIndex + 1} item ${itemIndex + 1} option ${optionIndex + 1} label_${code}`);
         });
       });
     });
@@ -171,8 +185,10 @@ function completionPrompt(menu, languages) {
     `- If a description exists in any language, provide a faithful natural translation in EVERY requested language. If it is genuinely absent in all languages, keep it empty.\n` +
     `- If origin information exists in any language, provide it in EVERY requested language. Otherwise keep it empty.\n` +
     `- If a price-option label exists in any language, provide that label in EVERY requested language.\n` +
-    `- Arabic must be natural Arabic text, not English/Hebrew copied into the Arabic field, except genuine brand/product names that are conventionally kept or transliterated.\n` +
-    `- Hebrew must be natural Hebrew text and English must be natural English text.\n` +
+    `- Arabic fields containing words must contain natural Arabic script. Do not leave English or Hebrew text in Arabic fields. Transliterate brand/product names into Arabic when necessary.\n` +
+    `- Hebrew fields containing words must contain natural Hebrew script. Transliterate brand/product names when necessary.\n` +
+    `- English fields containing words must contain natural English/Latin text.\n` +
+    `- Numeric-only labels such as 1/3 or 1/2 may remain numeric in every language.\n` +
     `- Do not embellish recipes or invent missing ingredients.\n` +
     `- Keep requested_languages exactly as supplied.\n\n` +
     `MENU JSON TO REPAIR:\n${JSON.stringify(menu)}`;
@@ -222,7 +238,7 @@ async function completeTranslations(openAiKey, menu, languages) {
         reasoning: { effort: "none" },
         max_output_tokens: MAX_OUTPUT_TOKENS,
         input: [{ role: "user", content: [{ type: "input_text", text: completionPrompt(menu, languages) }] }],
-        text: { format: { type: "json_schema", name: "beyond_menu_translation_completion_v1", strict: true, schema: MENU_SCHEMA } },
+        text: { format: { type: "json_schema", name: "beyond_menu_translation_completion_v2", strict: true, schema: MENU_SCHEMA } },
       }),
     });
     const data = await response.json();
