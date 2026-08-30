@@ -31,6 +31,7 @@ import {
 import { MENU_CONTENT_STUDIO_UI } from "./menuContentStudioV2Copy";
 import "./MenuContentStudioV2.css";
 import "./MenuContentStudioV2Multilingual.css";
+import "./MenuContentStudioV2PriceOptions.css";
 
 function textValue(value, language = "en") {
   if (value && typeof value === "object") return value[language] || value.en || value.he || value.ar || "";
@@ -40,6 +41,30 @@ function textValue(value, language = "en") {
 function nextSortOrder(list) {
   if (!list.length) return 0;
   return Math.max(...list.map((entry) => Number(entry.sort_order || 0))) + 1;
+}
+
+function itemPriceOptions(item) {
+  return Array.isArray(item?.price_options) ? item.price_options : [];
+}
+
+function priceSummary(item, currencySymbol = "₪") {
+  const optionPrices = itemPriceOptions(item)
+    .map((option) => String(option?.price || "").trim())
+    .filter(Boolean);
+  if (optionPrices.length) return optionPrices.map((price) => `${currencySymbol}${price}`).join(" / ");
+  const singlePrice = String(item?.price || "").trim();
+  return singlePrice ? `${currencySymbol}${singlePrice}` : "";
+}
+
+function optionLabel(option, language = "en") {
+  return String(
+    option?.[`label_${language}`]
+      || option?.label
+      || option?.label_en
+      || option?.label_he
+      || option?.label_ar
+      || "",
+  );
 }
 
 export default function MenuContentStudioV2() {
@@ -70,6 +95,7 @@ export default function MenuContentStudioV2() {
   const ForwardIcon = rtl ? ArrowLeft : ArrowRight;
   const design = resolvedDesign.design;
   const selectedDesignEntry = resolvedDesign.entry;
+  const currencySymbol = menu.currency_symbol || "₪";
 
   const visibleGroups = useMemo(
     () => [...(menu.groups || [])].sort((a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0)),
@@ -98,6 +124,7 @@ export default function MenuContentStudioV2() {
   const selectedItem = selection.type === "item"
     ? menu.items.find((item) => item.id === selection.id)
     : null;
+  const selectedPriceOptions = itemPriceOptions(selectedItem);
 
   const saveLabel = saveState === "saving" ? t.saving : saveState === "error" ? t.saveError : t.saved;
 
@@ -126,6 +153,40 @@ export default function MenuContentStudioV2() {
     }));
   }
 
+  function updatePriceOption(itemId, optionIndex, patch) {
+    setMenu((current) => ({
+      ...current,
+      items: current.items.map((entry) => {
+        if (entry.id !== itemId) return entry;
+        const options = itemPriceOptions(entry).map((option, index) => index === optionIndex
+          ? { ...option, ...patch }
+          : option);
+        return { ...entry, price_options: options };
+      }),
+    }));
+  }
+
+  function updatePriceOptionLabel(itemId, optionIndex, language, value) {
+    setMenu((current) => ({
+      ...current,
+      items: current.items.map((entry) => {
+        if (entry.id !== itemId) return entry;
+        const options = itemPriceOptions(entry).map((option, index) => {
+          if (index !== optionIndex) return option;
+          const localizedKey = `label_${language}`;
+          const previousLocalized = String(option?.[localizedKey] || "");
+          const shouldSyncFallback = !option?.label || option.label === previousLocalized;
+          return {
+            ...option,
+            [localizedKey]: value,
+            ...(shouldSyncFallback ? { label: value } : {}),
+          };
+        });
+        return { ...entry, price_options: options };
+      }),
+    }));
+  }
+
   function addCategory() {
     const id = `group-${Date.now()}`;
     const group = {
@@ -147,6 +208,7 @@ export default function MenuContentStudioV2() {
       name: makeLocalizedText("New item", "פריט חדש", "صنف جديد"),
       description: makeLocalizedText("Add a short description", "הוסיפו תיאור קצר", "أضيفوا وصفاً قصيراً"),
       price: "",
+      price_options: [],
       image_url: "",
       visible: true,
       sort_order: nextSortOrder(groupItems),
@@ -227,12 +289,15 @@ export default function MenuContentStudioV2() {
                   </button>
 
                   <div className="menu-content-v2-items">
-                    {items.map((item) => (
-                      <button type="button" key={item.id} className={selection.type === "item" && selection.id === item.id ? "active" : ""} onClick={() => setSelection({ type: "item", id: item.id })}>
-                        <GripVertical size={11} />
-                        <span><strong dir={contentDir}>{textValue(item.name, contentLanguage)}</strong><small>{item.price ? `₪${item.price}` : t.noPrice}</small></span>
-                      </button>
-                    ))}
+                    {items.map((item) => {
+                      const summary = priceSummary(item, currencySymbol);
+                      return (
+                        <button type="button" key={item.id} className={selection.type === "item" && selection.id === item.id ? "active" : ""} onClick={() => setSelection({ type: "item", id: item.id })}>
+                          <GripVertical size={11} />
+                          <span><strong dir={contentDir}>{textValue(item.name, contentLanguage)}</strong><small>{summary || t.noPrice}</small></span>
+                        </button>
+                      );
+                    })}
                     <button type="button" className="menu-content-v2-add-item" onClick={() => addItem(group.id)}><Plus size={12} /> {t.addItem}</button>
                   </div>
                 </section>
@@ -282,7 +347,21 @@ export default function MenuContentStudioV2() {
               <div className="menu-content-v2-inspector-head"><span>{t.itemEyebrow}</span><h2 dir={contentDir}>{textValue(selectedItem.name, contentLanguage)}</h2><p>{t.itemHelp}</p></div>
               <div className="menu-content-v2-field"><label>{t.itemName}</label><input dir={contentDir} value={textValue(selectedItem.name, contentLanguage)} onChange={(event) => updateLocalized("items", selectedItem.id, "name", contentLanguage, event.target.value)} /></div>
               <div className="menu-content-v2-field"><label>{t.description}</label><textarea dir={contentDir} value={textValue(selectedItem.description, contentLanguage)} onChange={(event) => updateLocalized("items", selectedItem.id, "description", contentLanguage, event.target.value)} /></div>
-              <div className="menu-content-v2-field"><label>{t.price}</label><div className="menu-content-v2-price"><span>₪</span><input inputMode="decimal" dir="ltr" value={selectedItem.price || ""} onChange={(event) => updateEntry("items", selectedItem.id, { price: event.target.value })} placeholder="0" /></div></div>
+
+              {selectedPriceOptions.length ? (
+                <div className="menu-content-v2-price-options">
+                  <header><strong>{t.priceOptions}</strong><small>{t.multiPriceHelp}</small></header>
+                  {selectedPriceOptions.map((option, optionIndex) => (
+                    <div className="menu-content-v2-price-option" key={`${selectedItem.id}-price-${optionIndex}`}>
+                      <label>{t.optionLabel}<input dir={contentDir} value={optionLabel(option, contentLanguage)} onChange={(event) => updatePriceOptionLabel(selectedItem.id, optionIndex, contentLanguage, event.target.value)} /></label>
+                      <label className="menu-content-v2-price-option-price">{t.optionPrice}<span>{currencySymbol}</span><input inputMode="decimal" dir="ltr" value={option.price || ""} onChange={(event) => updatePriceOption(selectedItem.id, optionIndex, { price: event.target.value })} /></label>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="menu-content-v2-field"><label>{t.price}</label><div className="menu-content-v2-price"><span>{currencySymbol}</span><input inputMode="decimal" dir="ltr" value={selectedItem.price || ""} onChange={(event) => updateEntry("items", selectedItem.id, { price: event.target.value })} placeholder="0" /></div></div>
+              )}
+
               <div className="menu-content-v2-field"><label>{t.imageUrl} <small>{t.tempDev}</small></label><div className="menu-content-v2-image-input"><ImagePlus size={15} /><input dir="ltr" value={selectedItem.image_url || ""} onChange={(event) => updateEntry("items", selectedItem.id, { image_url: event.target.value })} placeholder="https://..." /></div></div>
               <label className="menu-content-v2-toggle"><input type="checkbox" checked={selectedItem.visible !== false} onChange={(event) => updateEntry("items", selectedItem.id, { visible: event.target.checked })} /><span /><div><strong>{t.visible}</strong><small>{t.visibleItem}</small></div></label>
               <button type="button" className="menu-content-v2-danger" onClick={() => deleteItem(selectedItem.id)}><Trash2 size={14} /> {t.deleteItem}</button>
