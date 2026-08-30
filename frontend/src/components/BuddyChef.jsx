@@ -1,7 +1,7 @@
 import "./BuddyChef.css";
 
-const TACOS_BUDDY_IMAGE =
-  "/images/tacos-buddy-phone.webp";
+const PIZZA_BUDDY_IMAGE =
+  "/images/pizza-buddy-laptop.webp";
 
 export default function BuddyChef() {
   return (
@@ -10,7 +10,7 @@ export default function BuddyChef() {
       aria-hidden="true"
     >
       <img
-        src={TACOS_BUDDY_IMAGE}
+        src={PIZZA_BUDDY_IMAGE}
         alt=""
         draggable="false"
         decoding="async"
