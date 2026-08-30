@@ -22,6 +22,8 @@ import MenuContentStudioV2Entry from "./pages/MenuContentStudioV2Entry";
 import MenuDesignStudioV2 from "./pages/MenuDesignStudioV2";
 import MenuPreviewStudioV2 from "./pages/MenuPreviewStudioV2";
 import MenuPublishStudioV2 from "./pages/MenuPublishStudioV2";
+import MenuMyMenusV2 from "./pages/MenuMyMenusV2";
+import MenuStudioV2PersistenceBoundary from "./features/menu-engine/studio/MenuStudioV2PersistenceBoundary";
 import CustomerShowcasePortal from "./components/CustomerShowcasePortal";
 
 import "./components/MyAccountAdminShortcut.js";
@@ -51,6 +53,10 @@ import "./pages/MenuHomeMobilePhoneFrameFix.css";
 import "./pages/MenuStudioV2TypeSystem.css";
 import "./pages/MenuContentStudioV2Drag.css";
 
+function PersistentStudio({ children }) {
+  return <MenuStudioV2PersistenceBoundary>{children}</MenuStudioV2PersistenceBoundary>;
+}
+
 function App() {
   return (
     <BrowserRouter>
@@ -66,12 +72,13 @@ function App() {
             <Route path="/dev/menu-studio-v3-real" element={<MenuStudioV3RealData />} />
             <Route path="/dev/menu-studio-v3-draft" element={<MenuStudioV3Draft />} />
             <Route path="/dev/menu-public-v3/:slug" element={<MenuPublicV3Dev />} />
+            <Route path="/dev/my-menus-v2" element={<MenuMyMenusV2 />} />
             <Route path="/dev/menu-create-v2" element={<MenuCreateV2 />} />
             <Route path="/dev/menu-import-v2" element={<MenuImportStudioV2 />} />
-            <Route path="/dev/menu-content-v2" element={<MenuContentStudioV2Entry />} />
-            <Route path="/dev/menu-design-v2" element={<MenuDesignStudioV2 />} />
-            <Route path="/dev/menu-preview-v2" element={<MenuPreviewStudioV2 />} />
-            <Route path="/dev/menu-publish-v2" element={<MenuPublishStudioV2 />} />
+            <Route path="/dev/menu-content-v2" element={<PersistentStudio><MenuContentStudioV2Entry /></PersistentStudio>} />
+            <Route path="/dev/menu-design-v2" element={<PersistentStudio><MenuDesignStudioV2 /></PersistentStudio>} />
+            <Route path="/dev/menu-preview-v2" element={<PersistentStudio><MenuPreviewStudioV2 /></PersistentStudio>} />
+            <Route path="/dev/menu-publish-v2" element={<PersistentStudio><MenuPublishStudioV2 /></PersistentStudio>} />
           </>
         ) : null}
         <Route path="/admin" element={<Admin />} />
