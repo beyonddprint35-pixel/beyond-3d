@@ -15,6 +15,7 @@ const FIXED_PRICE_PRESENTATIONS = new Set([
   "smokehouse-story",
   "dessert-magazine",
   "tapas-collage",
+  "street-poster",
 ]);
 
 export function getMenuLayoutCapabilities(design = {}) {
