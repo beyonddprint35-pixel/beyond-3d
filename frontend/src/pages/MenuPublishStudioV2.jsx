@@ -14,6 +14,7 @@ import {
 
 import beyondLogo from "../assets/beyond-logo-transparent.png";
 import StudioLanguageMenu from "../components/StudioLanguageMenu";
+import { buildMenuStudioReadiness } from "../features/menu-engine/studio/menuStudioV2Readiness";
 import {
   createBlankMenuV2,
   readMenuCreateV2Profile,
@@ -25,40 +26,40 @@ import {
   readStudioLanguage,
   studioLanguageDirection,
   writeStudioLanguage,
+  STUDIO_LANGUAGES,
 } from "../features/menu-engine/studio/studioLanguage";
-import { STUDIO_LANGUAGES } from "../features/menu-engine/studio/studioLanguage";
 import "./MenuPublishStudioV2.css";
 
 const UI = {
   en: {
     workspace:"Menu workspace", interfaceLanguage:"Interface language", content:"Content", design:"Design", preview:"Preview", publish:"Publish",
-    backPreview:"Back to Preview", eyebrow:"PUBLISH", title:"Everything ready for your guests", hint:"Choose the public address, customer languages and launch settings. Nothing goes live until the final publishing connection is enabled.",
+    backPreview:"Back to Preview", eyebrow:"PUBLISH", title:"Everything ready for your guests", hint:"Choose the public address, customer languages and final launch settings for this menu.",
     address:"Public menu address", addressHint:"This will be the URL used by your QR and NFC touchpoints.", slug:"Menu address", defaultLanguage:"Default customer language",
-    customerLanguages:"Customer menu languages", customerLanguagesHint:"Choose which languages guests can switch between on the live menu.", launch:"Launch readiness", contentReady:"Menu content", designReady:"Design", addressReady:"Public address", languageReady:"Languages",
-    ready:"Ready", needsAttention:"Needs attention", visibleItems:"visible items", categories:"categories", selectedDesign:"Selected design", validAddress:"Valid menu URL", chooseLanguage:"At least one customer language",
+    customerLanguages:"Customer menu languages", customerLanguagesHint:"Choose which languages guests can switch between on the live menu.", launch:"Launch readiness", contentReady:"Menu content", designReady:"Design", addressReady:"Public address", languageReady:"Languages", translationsReady:"Language content",
+    ready:"Ready", needsAttention:"Needs attention", visibleItems:"visible items", categories:"categories", selectedDesign:"Selected design", validAddress:"Valid menu URL", chooseLanguage:"At least one customer language", completeTranslations:"All enabled languages complete",
     qr:"QR & NFC", qrHint:"After publishing, this address becomes the source for your QR code and NFC stands.", secure:"Publishing safety", secureHint:"Draft changes remain private until the live activation step succeeds.",
-    saveSetup:"Save publish setup", saved:"Publish setup saved", liveDisabled:"Live publishing is not connected for this new guided draft yet.", liveDisabledHint:"The repository already has the publish contract/artifact model; the final backend activation will be connected before this replaces the production Builder.", publishLive:"Publish live",
-    publicUrl:"Public URL", openPreview:"Open Preview", allReady:"Your draft passes the Studio readiness checks.", notReady:"Complete the highlighted items before publishing.",
+    saveSetup:"Save publish setup", saved:"Publish setup saved", liveDisabled:"Live activation is disabled in this development preview.", liveDisabledHint:"You can finish and save the complete publish setup here. The live action will only be enabled when this remodeled Builder is ready for production.", publishLive:"Publish live",
+    publicUrl:"Public URL", openPreview:"Open Preview", allReady:"Your menu passes the Studio readiness checks.", notReady:"Complete the highlighted items before publishing.",
   },
   he: {
     workspace:"סביבת עבודת התפריט", interfaceLanguage:"שפת הממשק", content:"תוכן", design:"עיצוב", preview:"תצוגה מקדימה", publish:"פרסום",
-    backPreview:"חזרה לתצוגה", eyebrow:"פרסום", title:"הכול מוכן לאורחים שלכם", hint:"בחרו כתובת ציבורית, שפות לקוח והגדרות השקה. שום דבר לא עולה לאוויר עד שחיבור הפרסום הסופי פעיל.",
+    backPreview:"חזרה לתצוגה", eyebrow:"פרסום", title:"הכול מוכן לאורחים שלכם", hint:"בחרו כתובת ציבורית, שפות לקוח והגדרות השקה סופיות לתפריט.",
     address:"כתובת התפריט הציבורית", addressHint:"זו תהיה הכתובת של קוד ה-QR ושל נקודות ה-NFC.", slug:"כתובת התפריט", defaultLanguage:"שפת ברירת המחדל ללקוח",
-    customerLanguages:"שפות תפריט ללקוחות", customerLanguagesHint:"בחרו בין אילו שפות האורחים יוכלו לעבור בתפריט החי.", launch:"מוכנות להשקה", contentReady:"תוכן התפריט", designReady:"עיצוב", addressReady:"כתובת ציבורית", languageReady:"שפות",
-    ready:"מוכן", needsAttention:"דורש תשומת לב", visibleItems:"פריטים גלויים", categories:"קטגוריות", selectedDesign:"עיצוב נבחר", validAddress:"כתובת תפריט תקינה", chooseLanguage:"לפחות שפת לקוח אחת",
+    customerLanguages:"שפות תפריט ללקוחות", customerLanguagesHint:"בחרו בין אילו שפות האורחים יוכלו לעבור בתפריט החי.", launch:"מוכנות להשקה", contentReady:"תוכן התפריט", designReady:"עיצוב", addressReady:"כתובת ציבורית", languageReady:"שפות", translationsReady:"תוכן השפות",
+    ready:"מוכן", needsAttention:"דורש תשומת לב", visibleItems:"פריטים גלויים", categories:"קטגוריות", selectedDesign:"עיצוב נבחר", validAddress:"כתובת תפריט תקינה", chooseLanguage:"לפחות שפת לקוח אחת", completeTranslations:"כל השפות הפעילות מלאות",
     qr:"QR ו-NFC", qrHint:"לאחר הפרסום הכתובת הזו תהיה המקור לקוד ה-QR ולעמדות ה-NFC.", secure:"בטיחות בפרסום", secureHint:"השינויים בטיוטה נשארים פרטיים עד שהפעלת התפריט החי מסתיימת בהצלחה.",
-    saveSetup:"שמירת הגדרות פרסום", saved:"הגדרות הפרסום נשמרו", liveDisabled:"הפרסום החי עדיין לא מחובר לטיוטה המודרכת החדשה.", liveDisabledHint:"במאגר כבר קיימים חוזה פרסום ומודל artifact; את חיבור ההפעלה הסופי נחבר לפני שהמערכת הזו תחליף את ה-Builder בפרודקשן.", publishLive:"פרסום חי",
-    publicUrl:"כתובת ציבורית", openPreview:"פתיחת תצוגה", allReady:"הטיוטה עוברת את בדיקות המוכנות של Studio.", notReady:"השלימו את הפריטים המסומנים לפני הפרסום.",
+    saveSetup:"שמירת הגדרות פרסום", saved:"הגדרות הפרסום נשמרו", liveDisabled:"ההפעלה החיה כבויה בתצוגת הפיתוח הזו.", liveDisabledHint:"אפשר להשלים ולשמור כאן את כל הגדרות הפרסום. הפעולה החיה תופעל רק כשה-Builder המחודש יהיה מוכן לפרודקשן.", publishLive:"פרסום חי",
+    publicUrl:"כתובת ציבורית", openPreview:"פתיחת תצוגה", allReady:"התפריט עובר את בדיקות המוכנות של Studio.", notReady:"השלימו את הפריטים המסומנים לפני הפרסום.",
   },
   ar: {
     workspace:"مساحة عمل القائمة", interfaceLanguage:"لغة الواجهة", content:"المحتوى", design:"التصميم", preview:"المعاينة", publish:"النشر",
-    backPreview:"العودة إلى المعاينة", eyebrow:"النشر", title:"كل شيء جاهز لضيوفكم", hint:"اختاروا العنوان العام ولغات الزبائن وإعدادات الإطلاق. لن يتم نشر شيء حتى يتم تفعيل اتصال النشر النهائي.",
+    backPreview:"العودة إلى المعاينة", eyebrow:"النشر", title:"كل شيء جاهز لضيوفكم", hint:"اختاروا العنوان العام ولغات الزبائن وإعدادات الإطلاق النهائية لهذه القائمة.",
     address:"عنوان القائمة العام", addressHint:"سيكون هذا الرابط المستخدم في رمز QR ونقاط NFC.", slug:"عنوان القائمة", defaultLanguage:"لغة الزبون الافتراضية",
-    customerLanguages:"لغات قائمة الزبائن", customerLanguagesHint:"اختاروا اللغات التي يستطيع الضيوف التبديل بينها في القائمة الحية.", launch:"جاهزية الإطلاق", contentReady:"محتوى القائمة", designReady:"التصميم", addressReady:"العنوان العام", languageReady:"اللغات",
-    ready:"جاهز", needsAttention:"يحتاج انتباهاً", visibleItems:"عناصر ظاهرة", categories:"فئات", selectedDesign:"التصميم المختار", validAddress:"رابط قائمة صالح", chooseLanguage:"لغة زبائن واحدة على الأقل",
+    customerLanguages:"لغات قائمة الزبائن", customerLanguagesHint:"اختاروا اللغات التي يستطيع الضيوف التبديل بينها في القائمة الحية.", launch:"جاهزية الإطلاق", contentReady:"محتوى القائمة", designReady:"التصميم", addressReady:"العنوان العام", languageReady:"اللغات", translationsReady:"محتوى اللغات",
+    ready:"جاهز", needsAttention:"يحتاج انتباهاً", visibleItems:"عناصر ظاهرة", categories:"فئات", selectedDesign:"التصميم المختار", validAddress:"رابط قائمة صالح", chooseLanguage:"لغة زبائن واحدة على الأقل", completeTranslations:"كل اللغات المفعلة مكتملة",
     qr:"QR وNFC", qrHint:"بعد النشر يصبح هذا الرابط المصدر لرمز QR ولمجسمات NFC.", secure:"أمان النشر", secureHint:"تبقى تغييرات المسودة خاصة حتى تنجح خطوة تفعيل القائمة الحية.",
-    saveSetup:"حفظ إعدادات النشر", saved:"تم حفظ إعدادات النشر", liveDisabled:"النشر الحي غير موصول بعد بهذه المسودة الجديدة.", liveDisabledHint:"يوجد بالفعل في المستودع نموذج عقد النشر والـ artifact؛ سيتم توصيل التفعيل النهائي قبل أن يحل هذا المسار محل Builder في الإنتاج.", publishLive:"نشر مباشر",
-    publicUrl:"الرابط العام", openPreview:"فتح المعاينة", allReady:"المسودة تجتاز فحوصات الجاهزية في Studio.", notReady:"أكملوا العناصر المحددة قبل النشر.",
+    saveSetup:"حفظ إعدادات النشر", saved:"تم حفظ إعدادات النشر", liveDisabled:"التفعيل الحي معطل في معاينة التطوير هذه.", liveDisabledHint:"يمكن إكمال وحفظ إعدادات النشر كاملة هنا. سيتم تفعيل النشر الحي فقط عندما يصبح الـBuilder الجديد جاهزاً للإنتاج.", publishLive:"نشر مباشر",
+    publicUrl:"الرابط العام", openPreview:"فتح المعاينة", allReady:"القائمة تجتاز فحوصات الجاهزية في Studio.", notReady:"أكملوا العناصر المحددة قبل النشر.",
   },
 };
 
@@ -85,16 +86,17 @@ export default function MenuPublishStudioV2() {
   const t = UI[uiLanguage] || UI.en;
   const rtl = studioLanguageDirection(uiLanguage) === "rtl";
   const BackIcon = rtl ? ArrowRight : ArrowLeft;
-  const visibleItems = (menu.items || []).filter((item) => item.visible !== false).length;
-  const visibleGroups = (menu.groups || []).filter((group) => group.visible !== false).length;
   const normalizedSlug = safeSlug(slug);
   const publicUrl = `https://www.b3yondworld.com/menu/${normalizedSlug || "your-menu"}`;
+  const readinessMenu = useMemo(() => ({ ...menu, languages: enabledLanguages, default_language: defaultLanguage }), [menu, enabledLanguages, defaultLanguage]);
+  const studioReadiness = useMemo(() => buildMenuStudioReadiness({ menu: readinessMenu, design, languages: enabledLanguages }), [readinessMenu, design, enabledLanguages]);
 
   const checks = [
-    { key:"content", label:t.contentReady, ok:Boolean(menu.restaurant_name?.trim()) && visibleGroups > 0 && visibleItems > 0, detail:`${visibleGroups} ${t.categories} · ${visibleItems} ${t.visibleItems}` },
-    { key:"design", label:t.designReady, ok:Boolean(design), detail:resolved.entry?.name || t.selectedDesign },
+    { key:"content", label:t.contentReady, ok:studioReadiness.checks.content, detail:`${studioReadiness.visibleGroups} ${t.categories} · ${studioReadiness.visibleItems} ${t.visibleItems}` },
+    { key:"design", label:t.designReady, ok:studioReadiness.checks.design, detail:resolved.entry?.name || t.selectedDesign },
     { key:"address", label:t.addressReady, ok:Boolean(normalizedSlug), detail:normalizedSlug ? t.validAddress : t.needsAttention },
-    { key:"languages", label:t.languageReady, ok:enabledLanguages.length > 0 && enabledLanguages.includes(defaultLanguage), detail:enabledLanguages.length ? `${enabledLanguages.length} · ${t.chooseLanguage}` : t.chooseLanguage },
+    { key:"languages", label:t.languageReady, ok:studioReadiness.checks.languages, detail:enabledLanguages.length ? `${enabledLanguages.length} · ${t.chooseLanguage}` : t.chooseLanguage },
+    { key:"translations", label:t.translationsReady, ok:studioReadiness.checks.translations, detail:studioReadiness.checks.translations ? t.completeTranslations : `${studioReadiness.translationBlockers} ${t.needsAttention}` },
   ];
   const ready = checks.every((check) => check.ok);
 
@@ -191,7 +193,7 @@ export default function MenuPublishStudioV2() {
                 </button>;
               })}
             </div>
-            <div className="menu-publish-v2-default-language"><span>{t.defaultLanguage}</span><StudioLanguageMenu value={defaultLanguage} onChange={setDefaultLanguage} label={t.defaultLanguage} /></div>
+            <div className="menu-publish-v2-default-language"><span>{t.defaultLanguage}</span><StudioLanguageMenu value={defaultLanguage} onChange={setDefaultLanguage} label={t.defaultLanguage} allowedLanguages={enabledLanguages} /></div>
           </article>
 
           <article className="menu-publish-v2-card duo">
