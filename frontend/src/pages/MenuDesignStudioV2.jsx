@@ -22,19 +22,19 @@ import "./MenuDesignStudioV2.css";
 
 const UI = {
   en: {
-    interfaceLanguage:"Interface language", contentLanguage:"Menu content", backContent:"Back to Content", workspace:"Menu workspace",
+    interfaceLanguage:"Language", contentLanguage:"Language", backContent:"Back to Content", workspace:"Menu workspace",
     content:"Content", design:"Design", preview:"Preview", publish:"Publish", saved:"Saved locally", saving:"Saving…", saveError:"Could not save",
     eyebrow:"DESIGN STUDIO", title:"Shape the customer experience", hint:"Choose a real menu design, then refine the brand, colors, type, layout and details while the live menu updates instantly.",
     live:"LIVE DESIGN", continuePreview:"Continue to Preview", draftKept:"The same guided menu draft is being edited here.",
   },
   he: {
-    interfaceLanguage:"שפת הממשק", contentLanguage:"שפת תוכן התפריט", backContent:"חזרה לתוכן", workspace:"סביבת עבודת התפריט",
+    interfaceLanguage:"שפה", contentLanguage:"שפה", backContent:"חזרה לתוכן", workspace:"סביבת עבודת התפריט",
     content:"תוכן", design:"עיצוב", preview:"תצוגה מקדימה", publish:"פרסום", saved:"נשמר מקומית", saving:"שומר…", saveError:"לא ניתן לשמור",
     eyebrow:"סטודיו לעיצוב", title:"עצבו את חוויית הלקוח", hint:"בחרו עיצוב תפריט אמיתי ואז דייקו מותג, צבעים, טיפוגרפיה, פריסה ופרטים בזמן שהתפריט החי מתעדכן מיד.",
     live:"עיצוב חי", continuePreview:"המשך לתצוגה מקדימה", draftKept:"אותה טיוטת תפריט מודרכת נערכת גם כאן.",
   },
   ar: {
-    interfaceLanguage:"لغة الواجهة", contentLanguage:"لغة محتوى القائمة", backContent:"العودة إلى المحتوى", workspace:"مساحة عمل القائمة",
+    interfaceLanguage:"اللغة", contentLanguage:"اللغة", backContent:"العودة إلى المحتوى", workspace:"مساحة عمل القائمة",
     content:"المحتوى", design:"التصميم", preview:"المعاينة", publish:"النشر", saved:"تم الحفظ محلياً", saving:"جارٍ الحفظ…", saveError:"تعذر الحفظ",
     eyebrow:"استوديو التصميم", title:"صمموا تجربة الزبون", hint:"اختاروا تصميماً حقيقياً للقائمة ثم اضبطوا الهوية والألوان والخطوط والتخطيط والتفاصيل بينما تتحدث القائمة مباشرة.",
     live:"تصميم مباشر", continuePreview:"المتابعة إلى المعاينة", draftKept:"يتم تعديل نفس مسودة القائمة الموجهة هنا.",
@@ -47,8 +47,8 @@ export default function MenuDesignStudioV2() {
   const resolved = useMemo(() => resolveMenuStudioV2Design(storedDraft), [storedDraft]);
   const [menu] = useState(() => storedDraft?.menu || createBlankMenuV2());
   const [design, setDesign] = useState(() => normalizeMenuDesign(resolved.design));
-  const [contentLanguage, setContentLanguage] = useState(() => storedDraft?.contentLanguage || menu.default_language || "en");
-  const [uiLanguage, setUiLanguage] = useState(() => readStudioLanguage("en"));
+  const [contentLanguage, setContentLanguage] = useState(() => storedDraft?.contentLanguage || readStudioLanguage(menu.default_language || "en"));
+  const [uiLanguage, setUiLanguage] = useState(() => storedDraft?.contentLanguage || readStudioLanguage(menu.default_language || "en"));
   const [panel, setPanel] = useState("brand");
   const [saveState, setSaveState] = useState("saved");
 
@@ -75,7 +75,8 @@ export default function MenuDesignStudioV2() {
 
   const saveLabel = saveState === "saving" ? t.saving : saveState === "error" ? t.saveError : t.saved;
 
-  function changeUiLanguage(language) {
+  function changeStudioLanguage(language) {
+    setContentLanguage(language);
     setUiLanguage(language);
     writeStudioLanguage(language);
   }
@@ -103,8 +104,7 @@ export default function MenuDesignStudioV2() {
         </nav>
 
         <div className="menu-design-v2-top-actions">
-          <StudioLanguageMenu value={contentLanguage} onChange={setContentLanguage} label={t.contentLanguage} compact />
-          <StudioLanguageMenu value={uiLanguage} onChange={changeUiLanguage} label={t.interfaceLanguage} compact />
+          <StudioLanguageMenu value={contentLanguage} onChange={changeStudioLanguage} label={t.contentLanguage} compact />
           <div className="menu-design-v2-save"><span className={saveState === "saved" ? "ok" : ""} /><strong>{saveLabel}</strong></div>
         </div>
       </header>
