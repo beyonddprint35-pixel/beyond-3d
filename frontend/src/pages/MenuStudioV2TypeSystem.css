@@ -73,10 +73,12 @@
 .menu-import-v2 .menu-import-v2-allowance span{font-size:var(--studio-v2-type-small)}
 .menu-import-v2 .menu-import-v2-error{font-size:var(--studio-v2-type-small)}
 .menu-import-v2 .menu-import-v2-build{font-size:var(--studio-v2-type-control)}
-.menu-import-v2 .menu-import-v2-recovery-copy strong{font-size:var(--studio-v2-type-control)}
-.menu-import-v2 .menu-import-v2-recovery-copy p,
-.menu-import-v2 .menu-import-v2-recovery-action,
-.menu-import-v2 .menu-import-v2-error details{font-size:var(--studio-v2-type-small)}
+.menu-import-v2 .menu-import-v2-recovery-head strong{font-size:var(--studio-v2-type-control)}
+.menu-import-v2 .menu-import-v2-recovery-head small{font-size:var(--studio-v2-type-small)}
+.menu-import-v2 .menu-import-v2-recovery-actions button{font-size:var(--studio-v2-type-small)}
+.menu-import-v2 .menu-import-v2-recovery details,
+.menu-import-v2 .menu-import-v2-recovery summary,
+.menu-import-v2 .menu-import-v2-recovery details p{font-size:var(--studio-v2-type-small)}
 
 /* Content Studio UI only — intentionally excludes the customer phone renderer. */
 .menu-content-v2 .menu-content-v2-brand strong{font-size:15px}
