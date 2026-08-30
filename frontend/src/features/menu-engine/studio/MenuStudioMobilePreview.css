@@ -48,6 +48,8 @@
 .menu-studio-mobile-preview-hardware::before{top:146px;height:64px;box-shadow:0 82px 0 #22242a}
 .menu-studio-mobile-preview-hardware::after{right:-4px;left:auto;top:188px;height:91px;border-radius:0 2px 2px 0}
 
+/* The physical phone screen owns the hardware safe areas. Menu designs are
+   rendered only inside the safe website viewport below the Dynamic Island. */
 .menu-studio-mobile-preview-screen{
   position:relative;
   width:var(--studio-mobile-screen-width);
@@ -62,21 +64,24 @@
 }
 
 .menu-studio-mobile-preview-scroll{
-  position:relative;
-  width:100%;
-  height:100%;
+  position:absolute;
+  top:54px;
+  right:0;
+  bottom:26px;
+  left:0;
   min-width:0;
   min-height:0;
   overflow-x:hidden;
   overflow-y:auto;
   background:#fff;
+  border-radius:0 0 35px 35px;
   overscroll-behavior:contain;
   touch-action:pan-y;
   -webkit-overflow-scrolling:touch;
   scrollbar-width:thin;
   scrollbar-color:rgba(92,102,118,.28) transparent;
-  /* Establish a containing block for fixed menu overlays such as the
-     accessibility launcher, keeping them inside the phone viewport. */
+  /* Fixed overlays from the customer menu are contained by this simulated
+     viewport instead of escaping to the browser window. */
   transform:translateZ(0);
 }
 .menu-studio-mobile-preview-scroll::-webkit-scrollbar{width:5px}
@@ -96,18 +101,8 @@
   min-height:100%;
 }
 
-/* Mobile safe area. The real menu header owns the space, so every design
-   keeps its own background while its brand/language controls sit below the
-   Dynamic Island instead of underneath it. */
-.menu-studio-mobile-preview-scroll .bme-header{
-  min-height:116px;
-  padding-top:44px;
-}
-.menu-studio-mobile-preview-scroll .bme-heritage-exact .ep-header{
-  padding-top:54px;
-}
-
-/* Keep three languages compact inside the 390px customer viewport. */
+/* Keep three customer languages compact, but do not move individual menu
+   headers for phone hardware. The viewport safe area above handles that. */
 .menu-studio-mobile-preview-scroll .bme-languages{
   gap:3px;
 }
@@ -119,12 +114,15 @@
 }
 .menu-studio-mobile-preview-scroll .bme-heritage-exact .ep-lang-pill{
   flex:0 0 auto;
+  max-width:190px;
   padding:2px;
 }
 .menu-studio-mobile-preview-scroll .bme-heritage-exact .ep-lang-pill button{
+  min-width:0;
   min-height:34px;
   padding:0 9px;
   font-size:10px;
+  white-space:nowrap;
 }
 
 .menu-studio-mobile-preview-island{
@@ -166,12 +164,11 @@
   pointer-events:none;
 }
 
-/* The restaurant accessibility component normally targets the browser
-   viewport. Inside Studio, the transformed scroll viewport becomes its
-   containing block so the real launcher and dialogs remain inside the phone. */
+/* Keep the actual customer accessibility controls inside the simulated
+   viewport and clear of the home indicator. */
 .menu-studio-mobile-preview-scroll .restaurant-a11y-toggle{
   left:14px;
-  bottom:18px;
+  bottom:14px;
   z-index:70;
   width:46px;
   height:46px;
@@ -183,10 +180,10 @@
 }
 .menu-studio-mobile-preview-scroll .restaurant-a11y-panel{
   left:12px;
-  bottom:74px;
+  bottom:70px;
   z-index:71;
   width:calc(100% - 24px);
-  max-height:calc(100% - 94px);
+  max-height:calc(100% - 88px);
   border-radius:18px;
 }
 .menu-studio-mobile-preview-scroll .restaurant-a11y-statement-backdrop{
@@ -198,10 +195,11 @@
   max-height:100%;
   border-radius:18px;
 }
+
+/* Keyboard skip navigation is useful on the real public menu, but showing a
+   browser-focused skip chip over a visual device mockup is misleading. */
 .menu-studio-mobile-preview-scroll .restaurant-skip-link{
-  top:48px;
-  left:12px;
-  z-index:73;
+  display:none !important;
 }
 
 @media(max-width:850px){
