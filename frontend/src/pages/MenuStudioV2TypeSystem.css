@@ -1,0 +1,147 @@
+:root{
+  --studio-v2-type-meta:11px;
+  --studio-v2-type-small:12px;
+  --studio-v2-type-control:13px;
+  --studio-v2-type-body:14px;
+  --studio-v2-type-section:16px;
+}
+
+/* Shared language list */
+.studio-language-menu .studio-language-menu-trigger-copy small{font-size:var(--studio-v2-type-meta)}
+.studio-language-menu .studio-language-menu-trigger-copy strong{font-size:var(--studio-v2-type-control)}
+.studio-language-menu .studio-language-menu-code{font-size:var(--studio-v2-type-meta)}
+.studio-language-menu .studio-language-menu-option-copy strong{font-size:var(--studio-v2-type-control)}
+.studio-language-menu .studio-language-menu-option-copy small,
+.studio-language-menu .studio-language-menu-list>button>span:last-child{font-size:var(--studio-v2-type-meta)}
+.studio-language-menu.is-compact .studio-language-menu-trigger-copy strong{font-size:var(--studio-v2-type-small)}
+
+/* Create / onboarding */
+.menu-create-v2 .menu-create-v2-brand strong{font-size:14px}
+.menu-create-v2 .menu-create-v2-brand small{font-size:11px}
+.menu-create-v2 .menu-create-v2-exit,
+.menu-create-v2 .menu-create-v2-back{font-size:var(--studio-v2-type-control)}
+.menu-create-v2 .menu-create-v2-progress{font-size:var(--studio-v2-type-small)}
+.menu-create-v2 .menu-create-v2-heading>span,
+.menu-create-v2 .menu-create-v2-kicker,
+.menu-create-v2 .menu-create-v2-question-heading>span{font-size:var(--studio-v2-type-meta)}
+.menu-create-v2 .menu-create-v2-heading p,
+.menu-create-v2 .menu-create-v2-narrow>p,
+.menu-create-v2 .menu-create-v2-question-heading p{font-size:15px}
+.menu-create-v2 .menu-create-v2-start-card>span{font-size:var(--studio-v2-type-meta)}
+.menu-create-v2 .menu-create-v2-start-card h2{font-size:22px}
+.menu-create-v2 .menu-create-v2-start-card p{font-size:var(--studio-v2-type-body)}
+.menu-create-v2 .menu-create-v2-start-card>strong{font-size:var(--studio-v2-type-control)}
+.menu-create-v2 .menu-create-v2-continuity{font-size:var(--studio-v2-type-small)}
+.menu-create-v2 .menu-create-v2-url-field>span,
+.menu-create-v2 .menu-create-v2-concierge label>span{font-size:var(--studio-v2-type-small)}
+.menu-create-v2 .menu-create-v2-url-field input{font-size:var(--studio-v2-type-body)}
+.menu-create-v2 .menu-create-v2-field-error,
+.menu-create-v2 .menu-create-v2-dev-note{font-size:var(--studio-v2-type-small)}
+.menu-create-v2 .menu-create-v2-primary{font-size:var(--studio-v2-type-control)}
+.menu-create-v2 .menu-create-v2-answer-grid>button>strong{font-size:var(--studio-v2-type-section)}
+.menu-create-v2 .menu-create-v2-answer-grid>button>p{font-size:var(--studio-v2-type-control)}
+.menu-create-v2 .menu-create-v2-question-foot{font-size:var(--studio-v2-type-meta)}
+.menu-create-v2 .menu-create-v2-fit,
+.menu-create-v2 .menu-create-v2-best-badge,
+.menu-create-v2 .menu-create-v2-design-copy>span{font-size:var(--studio-v2-type-meta)}
+.menu-create-v2 .menu-create-v2-design-copy p{font-size:var(--studio-v2-type-control)}
+.menu-create-v2 .menu-create-v2-design-copy button{font-size:var(--studio-v2-type-control)}
+.menu-create-v2 .menu-create-v2-secondary-link{font-size:var(--studio-v2-type-small)}
+
+/* Content Studio UI only — intentionally excludes the customer phone renderer. */
+.menu-content-v2 .menu-content-v2-brand strong{font-size:14px}
+.menu-content-v2 .menu-content-v2-brand small{font-size:11px}
+.menu-content-v2 .menu-content-v2-product-nav button{font-size:var(--studio-v2-type-small)}
+.menu-content-v2 .menu-content-v2-save{font-size:var(--studio-v2-type-meta)}
+.menu-content-v2 .menu-content-v2-panel-head span{font-size:var(--studio-v2-type-meta)}
+.menu-content-v2 .menu-content-v2-panel-head strong{font-size:14px}
+.menu-content-v2 .menu-content-v2-tree .menu-content-v2-restaurant-row strong,
+.menu-content-v2 .menu-content-v2-tree .menu-content-v2-category-row strong,
+.menu-content-v2 .menu-content-v2-tree .menu-content-v2-items strong{font-size:var(--studio-v2-type-small)}
+.menu-content-v2 .menu-content-v2-tree .menu-content-v2-restaurant-row small,
+.menu-content-v2 .menu-content-v2-tree .menu-content-v2-category-row small,
+.menu-content-v2 .menu-content-v2-tree .menu-content-v2-items small{font-size:var(--studio-v2-type-meta)}
+.menu-content-v2 .menu-content-v2-tree-label{font-size:10px}
+.menu-content-v2 .menu-content-v2-tree-label small{font-size:10px}
+.menu-content-v2 .menu-content-v2-items>button.menu-content-v2-add-item,
+.menu-content-v2 .menu-content-v2-add-category{font-size:var(--studio-v2-type-small)}
+.menu-content-v2 .menu-content-v2-canvas-toolbar strong{font-size:var(--studio-v2-type-small)}
+.menu-content-v2 .menu-content-v2-canvas-toolbar small,
+.menu-content-v2 .menu-content-v2-design-chip,
+.menu-content-v2 .menu-content-v2-device{font-size:var(--studio-v2-type-meta)}
+.menu-content-v2 .menu-content-v2-inspector-head>span{font-size:var(--studio-v2-type-meta)}
+.menu-content-v2 .menu-content-v2-inspector-head h2{font-size:20px}
+.menu-content-v2 .menu-content-v2-inspector-head p{font-size:var(--studio-v2-type-small)}
+.menu-content-v2 .menu-content-v2-field>label{font-size:var(--studio-v2-type-small)}
+.menu-content-v2 .menu-content-v2-field>label small{font-size:var(--studio-v2-type-meta)}
+.menu-content-v2 .menu-content-v2-field>input,
+.menu-content-v2 .menu-content-v2-field>textarea,
+.menu-content-v2 .menu-content-v2-price input,
+.menu-content-v2 .menu-content-v2-image-input input{font-size:var(--studio-v2-type-control)}
+.menu-content-v2 .menu-content-v2-toggle strong,
+.menu-content-v2 .menu-content-v2-info-card strong,
+.menu-content-v2 .menu-content-v2-inspector-next strong{font-size:var(--studio-v2-type-small)}
+.menu-content-v2 .menu-content-v2-toggle small,
+.menu-content-v2 .menu-content-v2-info-card p,
+.menu-content-v2 .menu-content-v2-inspector-next small{font-size:var(--studio-v2-type-meta)}
+.menu-content-v2 .menu-content-v2-inspector-add,
+.menu-content-v2 .menu-content-v2-danger,
+.menu-content-v2 .menu-content-v2-inspector-next>button{font-size:var(--studio-v2-type-small)}
+
+/* Design Studio shell + inspector. */
+.menu-design-v2 .menu-design-v2-brand strong{font-size:14px}
+.menu-design-v2 .menu-design-v2-brand small{font-size:11px}
+.menu-design-v2 .menu-design-v2-product-nav button{font-size:var(--studio-v2-type-small)}
+.menu-design-v2 .menu-design-v2-save strong{font-size:var(--studio-v2-type-meta)}
+.menu-design-v2 .menu-design-v2-intro>div:first-child>span{font-size:var(--studio-v2-type-meta)}
+.menu-design-v2 .menu-design-v2-intro p{font-size:var(--studio-v2-type-body)}
+.menu-design-v2 .menu-design-v2-intro-status strong{font-size:var(--studio-v2-type-small)}
+.menu-design-v2 .menu-design-v2-intro-status small{font-size:var(--studio-v2-type-meta)}
+.menu-design-v2 .menu-design-v2-next{font-size:var(--studio-v2-type-small)}
+.menu-design-v2 .menu-design-v2-next button{font-size:var(--studio-v2-type-control)}
+.menu-design-v2 .menu-design-v2-controls .studio-v3-design-pro-controls small{font-size:11px}
+.menu-design-v2 .menu-design-v2-controls .studio-v3-design-pro-controls button{font-size:12px}
+.menu-design-v2 .menu-design-v2-controls .studio-v3-design-pro-controls input,
+.menu-design-v2 .menu-design-v2-controls .studio-v3-design-pro-controls select{font-size:13px}
+
+/* Preview chrome — not the menu itself inside the device. */
+.menu-preview-v2 .menu-preview-v2-brand strong{font-size:14px}
+.menu-preview-v2 .menu-preview-v2-brand small{font-size:11px}
+.menu-preview-v2 .menu-preview-v2-product-nav button{font-size:var(--studio-v2-type-small)}
+.menu-preview-v2 .menu-preview-v2-intro-copy>span{font-size:var(--studio-v2-type-meta)}
+.menu-preview-v2 .menu-preview-v2-summary strong{font-size:var(--studio-v2-type-control)}
+.menu-preview-v2 .menu-preview-v2-summary small{font-size:var(--studio-v2-type-meta)}
+.menu-preview-v2 .menu-preview-v2-summary dt{font-size:var(--studio-v2-type-meta)}
+.menu-preview-v2 .menu-preview-v2-summary dd{font-size:var(--studio-v2-type-small)}
+.menu-preview-v2 .menu-preview-v2-footer button{font-size:var(--studio-v2-type-control)}
+.menu-preview-v2 .studio-v3-preview-v2-header button,
+.menu-preview-v2 .studio-v3-preview-v2-device-meta{font-size:var(--studio-v2-type-small)}
+
+/* Publish */
+.menu-publish-v2 .menu-publish-v2-brand strong{font-size:14px}
+.menu-publish-v2 .menu-publish-v2-brand small{font-size:11px}
+.menu-publish-v2 .menu-publish-v2-product-nav button{font-size:var(--studio-v2-type-small)}
+.menu-publish-v2 .menu-publish-v2-hero>div:first-child>span{font-size:var(--studio-v2-type-meta)}
+.menu-publish-v2 .menu-publish-v2-readiness strong{font-size:var(--studio-v2-type-control)}
+.menu-publish-v2 .menu-publish-v2-readiness small{font-size:var(--studio-v2-type-meta)}
+.menu-publish-v2 .menu-publish-v2-card>header span{font-size:var(--studio-v2-type-section)}
+.menu-publish-v2 .menu-publish-v2-card>header p{font-size:var(--studio-v2-type-control)}
+.menu-publish-v2 .menu-publish-v2-slug>span,
+.menu-publish-v2 .menu-publish-v2-default-language>span{font-size:var(--studio-v2-type-small)}
+.menu-publish-v2 .menu-publish-v2-slug strong,
+.menu-publish-v2 .menu-publish-v2-slug input{font-size:var(--studio-v2-type-control)}
+.menu-publish-v2 .menu-publish-v2-url-preview small{font-size:var(--studio-v2-type-meta)}
+.menu-publish-v2 .menu-publish-v2-url-preview strong{font-size:var(--studio-v2-type-small)}
+.menu-publish-v2 .menu-publish-v2-language-list .copy strong{font-size:var(--studio-v2-type-control)}
+.menu-publish-v2 .menu-publish-v2-language-list .copy small,
+.menu-publish-v2 .menu-publish-v2-language-list b{font-size:var(--studio-v2-type-meta)}
+.menu-publish-v2 .menu-publish-v2-card.duo strong,
+.menu-publish-v2 .menu-publish-v2-side-title span,
+.menu-publish-v2 .menu-publish-v2-checklist strong,
+.menu-publish-v2 .menu-publish-v2-dev-status strong{font-size:var(--studio-v2-type-control)}
+.menu-publish-v2 .menu-publish-v2-card.duo small,
+.menu-publish-v2 .menu-publish-v2-checklist small,
+.menu-publish-v2 .menu-publish-v2-checklist em,
+.menu-publish-v2 .menu-publish-v2-dev-status small{font-size:var(--studio-v2-type-meta)}
+.menu-publish-v2 .menu-publish-v2-side-title strong{font-size:var(--studio-v2-type-meta)}
+.menu-publish-v2 .menu-publish-v2-action-card button{font-size:var(--studio-v2-type-control)}
