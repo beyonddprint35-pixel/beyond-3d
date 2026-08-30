@@ -1,0 +1,28 @@
+.menu-create-v2-top-actions{justify-self:end;display:flex;align-items:center;gap:8px}
+.menu-create-v2[dir="rtl"] .menu-create-v2-brand>span{text-align:right}
+.menu-create-v2[dir="rtl"] .menu-create-v2-start-card,
+.menu-create-v2[dir="rtl"] .menu-create-v2-answer-grid>button,
+.menu-create-v2[dir="rtl"] .menu-create-v2-url-field,
+.menu-create-v2[dir="rtl"] .menu-create-v2-dev-note,
+.menu-create-v2[dir="rtl"] .menu-create-v2-design-copy,
+.menu-create-v2[dir="rtl"] .menu-create-v2-concierge form{text-align:right}
+.menu-create-v2[dir="rtl"] .menu-create-v2-start-card,
+.menu-create-v2[dir="rtl"] .menu-create-v2-answer-grid>button{align-items:flex-start}
+.menu-create-v2[dir="rtl"] .menu-create-v2-start-card::after{right:auto;left:-52px}
+.menu-create-v2[dir="rtl"] .menu-create-v2-fit{right:auto;left:15px}
+.menu-create-v2[dir="rtl"] .menu-create-v2-best-badge{left:auto;right:15px}
+.menu-create-v2[dir="rtl"] .menu-create-v2-field-error{text-align:right}
+.menu-create-v2[dir="rtl"] .menu-create-v2-url-field input[dir="ltr"],
+.menu-create-v2[dir="rtl"] input[dir="ltr"]{text-align:left}
+.menu-create-v2[dir="rtl"] .menu-create-v2-question-foot{flex-direction:row-reverse}
+
+@media(max-width:860px){
+  .menu-create-v2-topbar{grid-template-columns:1fr auto}
+  .menu-create-v2-progress{grid-column:1/-1;grid-row:2;justify-self:center;padding-bottom:9px}
+  .menu-create-v2-top-actions{grid-column:2;grid-row:1}
+}
+
+@media(max-width:560px){
+  .menu-create-v2-top-actions{gap:5px}
+  .menu-create-v2-exit{min-width:52px;padding:0 10px}
+}
