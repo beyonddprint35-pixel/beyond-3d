@@ -5,7 +5,6 @@ import {
   Check,
   ChevronRight,
   GripVertical,
-  ImagePlus,
   Plus,
   Smartphone,
   Sparkles,
@@ -13,6 +12,7 @@ import {
 } from "lucide-react";
 
 import beyondLogo from "../assets/beyond-logo-transparent.png";
+import MenuContentImageEditor from "../components/MenuContentImageEditor";
 import MenuContentPriceEditor from "../components/MenuContentPriceEditor";
 import StudioLanguageMenu from "../components/StudioLanguageMenu";
 import MenuRenderer from "../features/menu-engine/renderer/MenuRenderer";
@@ -33,6 +33,7 @@ import { MENU_CONTENT_STUDIO_UI } from "./menuContentStudioV2Copy";
 import "./MenuContentStudioV2.css";
 import "./MenuContentStudioV2Multilingual.css";
 import "./MenuContentStudioV2PriceOptions.css";
+import "./MenuContentStudioV2ImageEditor.css";
 
 function textValue(value, language = "en") {
   if (value && typeof value === "object") return value[language] || value.en || value.he || value.ar || "";
@@ -180,6 +181,7 @@ export default function MenuContentStudioV2() {
       price: "",
       price_options: [],
       image_url: "",
+      image_path: "",
       visible: true,
       sort_order: nextSortOrder(groupItems),
     };
@@ -327,7 +329,13 @@ export default function MenuContentStudioV2() {
                 onChange={(patch) => updateEntry("items", selectedItem.id, patch)}
               />
 
-              <div className="menu-content-v2-field"><label>{t.imageUrl} <small>{t.tempDev}</small></label><div className="menu-content-v2-image-input"><ImagePlus size={15} /><input dir="ltr" value={selectedItem.image_url || ""} onChange={(event) => updateEntry("items", selectedItem.id, { image_url: event.target.value })} placeholder="https://..." /></div></div>
+              <MenuContentImageEditor
+                item={selectedItem}
+                projectId={menu.source_project_id || profile?.importedProjectId || "draft"}
+                t={t}
+                onChange={(patch) => updateEntry("items", selectedItem.id, patch)}
+              />
+
               <label className="menu-content-v2-toggle"><input type="checkbox" checked={selectedItem.visible !== false} onChange={(event) => updateEntry("items", selectedItem.id, { visible: event.target.checked })} /><span /><div><strong>{t.visible}</strong><small>{t.visibleItem}</small></div></label>
               <button type="button" className="menu-content-v2-danger" onClick={() => deleteItem(selectedItem.id)}><Trash2 size={14} /> {t.deleteItem}</button>
             </>
