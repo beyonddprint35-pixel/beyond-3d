@@ -14,6 +14,11 @@ function remember(slug, payload) {
   return payload;
 }
 
+function forget(slug) {
+  MEMORY_CACHE.delete(slug);
+  try { window.localStorage.removeItem(cacheKey(slug)); } catch { /* cache cleanup is best effort */ }
+}
+
 function remembered(slug) {
   if (MEMORY_CACHE.has(slug)) return MEMORY_CACHE.get(slug);
   try {
@@ -35,10 +40,16 @@ function validPayload(payload) {
   );
 }
 
+function notFoundError(message = "Menu not found.") {
+  const error = new Error(message);
+  error.code = "MENU_NOT_FOUND";
+  return error;
+}
+
 async function readFromSupabase(slug) {
   const { data, error } = await supabase.rpc("get_published_menu_v3_by_slug", { p_slug: slug });
   if (error) throw error;
-  if (!data) throw new Error("Menu not found.");
+  if (!data) throw notFoundError();
   return data;
 }
 
@@ -46,6 +57,7 @@ async function readFromNetlify(slug) {
   const response = await fetch(`/.netlify/functions/published-menu?slug=${encodeURIComponent(slug)}`, {
     headers: { Accept: "application/json" },
   });
+  if (response.status === 404) throw notFoundError();
   if (!response.ok) throw new Error(`Menu request failed (${response.status}).`);
   return response.json();
 }
@@ -73,9 +85,16 @@ export async function loadResilientPublishedMenu(slug) {
     // directly while developing so the immutable live snapshot is testable locally.
     const payload = import.meta.env.DEV
       ? await readFromSupabase(normalizedSlug)
-      : await readFromNetlify(normalizedSlug).catch(() => readFromSupabase(normalizedSlug));
+      : await readFromNetlify(normalizedSlug).catch((netlifyError) => {
+          if (netlifyError?.code === "MENU_NOT_FOUND") throw netlifyError;
+          return readFromSupabase(normalizedSlug);
+        });
     return remember(normalizedSlug, normalizedPublishedPayload(payload));
   } catch (error) {
+    if (error?.code === "MENU_NOT_FOUND") {
+      forget(normalizedSlug);
+      throw error;
+    }
     const fallback = remembered(normalizedSlug);
     if (fallback) {
       return {
