@@ -67,7 +67,7 @@ function inferPairPreset(group) {
   if (/draft beer|draught beer|beer on tap|בירה מהחבית|بيرة.*برميل|بيرة.*صنبور/.test(value)) return PRICE_TYPE_PRESETS.draft;
   if (/hot drinks|coffee|משקאות חמים|קפה|مشروبات ساخنة|قهوة/.test(value)) return PRICE_TYPE_PRESETS.smallLarge;
   if (/wine|יין|نبيذ/.test(value)) return PRICE_TYPE_PRESETS.glassBottle;
-  if (/whisk|וויסקי|ويسكي|gin|ג['׳]?ין|جين|vodka|וודקה|فودكا|liquor|liqueur|ליקר|ليكير|cognac|קוניאק|كونياك|rum|רום|روم|aperitif|אפריטיף|أبيريتيف|arak|ערק|عرق|anise|אניס|يانسون|tequila|טקילה|تيكيلا|brandy|ברנדי|برانדי|drinks to mix|משקאות לערבוב|مشروبات للخلط/.test(value)) return PRICE_TYPE_PRESETS.shotGlass;
+  if (/whisk|וויסקי|ويسكي|gin|ג['׳]?ין|جين|vodka|וודקה|فودكا|liquor|liqueur|ליקר|ليكير|cognac|קוניאק|كونياك|rum|רום|روم|aperitif|אפריטיף|أبيريتيف|arak|ערק|عرق|anise|אניס|يانسون|tequila|טקילה|تيكيلا|brandy|ברנדי|براندي|drinks to mix|משקאות לערבוב|مشروبات للخلط/.test(value)) return PRICE_TYPE_PRESETS.shotGlass;
   return PRICE_TYPE_PRESETS.generic;
 }
 
@@ -116,6 +116,28 @@ function optionMatchesPreset(option, presetEntry) {
   return optionLabels.some((optionLabel) => presetLabels.some((presetLabel) => optionLabel === presetLabel || optionLabel.includes(presetLabel)));
 }
 
+function optionServingQuantity(option) {
+  const label = [option?.label, option?.label_en, option?.label_he, option?.label_ar]
+    .map((value) => text(value).toLowerCase())
+    .filter(Boolean)
+    .join(" ")
+    .replace(/⅓/g, "1/3")
+    .replace(/½/g, "1/2");
+
+  if (/\b1\s*\/\s*3\b/.test(label)) return 1 / 3;
+  if (/\b1\s*\/\s*2\b/.test(label)) return 1 / 2;
+
+  const unitMatch = label.match(/(\d+(?:[.,]\d+)?)\s*(ml|cl|l|oz)\b/i);
+  if (!unitMatch) return Number.NaN;
+  const amount = Number(unitMatch[1].replace(",", "."));
+  const unit = unitMatch[2].toLowerCase();
+  if (!Number.isFinite(amount)) return Number.NaN;
+  if (unit === "l") return amount * 1000;
+  if (unit === "cl") return amount * 10;
+  if (unit === "oz") return amount * 29.5735;
+  return amount;
+}
+
 function enforceLogicalPairPrices(options, preset) {
   if (options.length !== 2 || !isQuantityPreset(preset)) return options;
 
@@ -133,10 +155,16 @@ function enforceLogicalPairPrices(options, preset) {
     smallIndex = 1;
     largeIndex = 0;
   } else if (!(firstSmall && secondLarge)) {
-    // When labels were inferred from the group, adapter order is the semantic
-    // order: smaller serving first, larger serving second.
-    smallIndex = 0;
-    largeIndex = 1;
+    const firstQuantity = optionServingQuantity(options[0]);
+    const secondQuantity = optionServingQuantity(options[1]);
+    if (Number.isFinite(firstQuantity) && Number.isFinite(secondQuantity) && firstQuantity !== secondQuantity) {
+      smallIndex = firstQuantity < secondQuantity ? 0 : 1;
+      largeIndex = smallIndex === 0 ? 1 : 0;
+    } else if (hasOptionLabel(options[0]) && hasOptionLabel(options[1])) {
+      // Explicit labels we do not understand are source truth. Do not silently
+      // move prices between them.
+      return options;
+    }
   }
 
   if (numericPrice(options[smallIndex].price) <= numericPrice(options[largeIndex].price)) return options;
