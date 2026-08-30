@@ -49,6 +49,7 @@ import "./components/DigitalMenuFitSmartGuard.js";
 import "./components/DigitalMenuFitSmartGuard.css";
 import "./pages/MenuHomeMobilePhoneFrameFix.css";
 import "./pages/MenuStudioV2TypeSystem.css";
+import "./pages/MenuContentStudioV2Drag.css";
 
 function App() {
   return (
