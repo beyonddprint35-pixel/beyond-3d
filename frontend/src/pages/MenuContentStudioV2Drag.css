@@ -1,0 +1,5 @@
+.menu-content-v2-category-row[draggable="true"],.menu-content-v2-items>button[draggable="true"]{cursor:grab}
+.menu-content-v2-category-row[draggable="true"]:active,.menu-content-v2-items>button[draggable="true"]:active{cursor:grabbing}
+.menu-content-v2-category-block.dragging,.menu-content-v2-items>button.dragging{opacity:.42}
+.menu-content-v2-category-block.dragging{background:rgba(73,116,229,.025)}
+.menu-content-v2-category-row[draggable="true"]:hover svg:first-child,.menu-content-v2-items>button[draggable="true"]:hover>svg:first-child{color:#4974e5}
