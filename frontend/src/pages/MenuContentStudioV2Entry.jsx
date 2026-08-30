@@ -2,12 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 
 import MenuContentStudioV2 from "./MenuContentStudioV2";
 import MenuWebsiteImportV2 from "./MenuWebsiteImportV2";
-import { mergeAiTranslationRepairIntoV3 } from "../features/menu-engine/data/aiMenuImportAdapter";
+import { normalizeV3MenuPriceOptions } from "../features/menu-engine/data/aiMenuImportAdapter";
+import { getMenuImportSession } from "../features/menu-engine/data/menuAiImportService";
 import {
-  findMissingRequestedMenuTranslations,
-  getMenuImportSession,
-} from "../features/menu-engine/data/menuAiImportService";
-import { repairImportedDraftTranslations } from "../features/menu-engine/data/menuImportedDraftRepairService";
+  collectV3TranslationRepairFields,
+  repairV3MenuTranslations,
+} from "../features/menu-engine/data/menuV3TranslationRepairService";
 import {
   readMenuStudioV2Draft,
   writeMenuStudioV2Draft,
@@ -35,53 +35,44 @@ export default function MenuContentStudioV2Entry() {
 
     async function prepareDraft() {
       const draft = initialDraft;
-      const rawMenu = draft?.importProject?.structured_menu;
-      const projectId = draft?.importProject?.id
-        || draft?.profile?.importedProjectId
-        || draft?.menu?.source_project_id
-        || "";
-      const languages = Array.isArray(rawMenu?.requested_languages) && rawMenu.requested_languages.length
-        ? rawMenu.requested_languages
-        : Array.isArray(draft?.menu?.languages)
-          ? draft.menu.languages
-          : [];
-
-      if (!draft || !rawMenu || !projectId || !findMissingRequestedMenuTranslations(rawMenu, languages).length) {
+      if (!draft?.menu) {
         if (active) setReady(true);
         return;
       }
 
+      const projectId = draft?.importProject?.id
+        || draft?.profile?.importedProjectId
+        || draft?.menu?.source_project_id
+        || "";
+
+      // Imported price semantics are normalized every time Studio opens. This
+      // also upgrades older drafts when the normalizer learns new serving-size
+      // vocabulary (for example שליש/חצי and ثلث/نصف for draft beer).
+      let repairedMenu = normalizeV3MenuPriceOptions(draft.menu);
+
       try {
-        const session = await getMenuImportSession();
-        if (!session || !active) {
-          if (active) setReady(true);
-          return;
+        const fields = collectV3TranslationRepairFields(repairedMenu);
+        if (projectId && fields.length) {
+          const session = await getMenuImportSession();
+          if (session && active) {
+            const repair = await repairV3MenuTranslations({
+              session,
+              projectId,
+              menu: repairedMenu,
+            });
+            if (repair?.menu) repairedMenu = normalizeV3MenuPriceOptions(repair.menu);
+          }
         }
-
-        const repair = await repairImportedDraftTranslations({
-          session,
-          projectId,
-          menu: rawMenu,
-          languages,
-        });
-        if (!active) return;
-
-        if (repair?.menu) {
-          const repairedMenu = mergeAiTranslationRepairIntoV3(draft.menu, repair.menu);
+      } catch (error) {
+        console.warn("Could not complete V3 menu translations before opening Studio.", error);
+      } finally {
+        if (active) {
           writeMenuStudioV2Draft({
             ...draft,
             menu: repairedMenu,
-            importProject: {
-              ...(draft.importProject || {}),
-              id: projectId,
-              structured_menu: repair.menu,
-            },
           });
+          setReady(true);
         }
-      } catch (error) {
-        console.warn("Could not complete imported menu translations before opening Studio.", error);
-      } finally {
-        if (active) setReady(true);
       }
     }
 
