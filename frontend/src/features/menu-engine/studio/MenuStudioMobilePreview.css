@@ -165,18 +165,28 @@
 }
 
 /* Keep the actual customer accessibility controls inside the simulated
-   viewport and clear of the home indicator. */
+   viewport and clear of the home indicator. The launcher intentionally stays
+   black and white regardless of the selected menu theme. */
 .menu-studio-mobile-preview-scroll .restaurant-a11y-toggle{
   left:14px;
   bottom:14px;
   z-index:70;
   width:46px;
   height:46px;
-  border-width:2px;
+  border:2px solid #fff !important;
+  color:#fff !important;
+  background:#111 !important;
+  box-shadow:0 8px 22px rgba(0,0,0,.28) !important;
 }
 .menu-studio-mobile-preview-scroll .restaurant-a11y-toggle svg{
   width:28px;
   height:28px;
+  color:#fff !important;
+  stroke:#fff !important;
+}
+.menu-studio-mobile-preview-scroll .restaurant-a11y-toggle .restaurant-a11y-head{
+  fill:#fff !important;
+  stroke:none !important;
 }
 .menu-studio-mobile-preview-scroll .restaurant-a11y-panel{
   left:12px;
