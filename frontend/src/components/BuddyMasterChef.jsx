@@ -1,16 +1,17 @@
 import "./BuddyMasterChef.css";
 
-const TACOS_BUDDY_IMAGE =
-  "/images/tacos-buddy-phone.webp";
+const FINAL_CTA_TACOS_BUDDY_IMAGE =
+  "/images/tacos-buddy-phone.webp?v=final-cta-tacos";
 
 export default function BuddyMasterChef() {
   return (
     <div
       className="buddy-master-chef"
+      data-buddy="tacos"
       aria-hidden="true"
     >
       <img
-        src={TACOS_BUDDY_IMAGE}
+        src={FINAL_CTA_TACOS_BUDDY_IMAGE}
         alt=""
         draggable="false"
         decoding="async"
