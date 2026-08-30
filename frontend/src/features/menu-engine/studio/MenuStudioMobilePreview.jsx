@@ -71,11 +71,13 @@ export default function MenuStudioMobilePreview({
               dir={isRtl(language) ? "rtl" : "ltr"}
               lang={language}
             >
-              <MenuRenderer
-                menu={{ ...menu, default_language: language }}
-                design={design}
-                initialLanguage={language}
-              />
+              <div className="menu-studio-mobile-preview-scroll">
+                <MenuRenderer
+                  menu={{ ...menu, default_language: language }}
+                  design={design}
+                  initialLanguage={language}
+                />
+              </div>
             </div>
             <span className="menu-studio-mobile-preview-home" aria-hidden="true" />
           </div>
