@@ -33,9 +33,88 @@
   white-space:nowrap;
 }
 
-.bme-price-below>.bme-price-options,
-.bme-price-bottom>.bme-price-options {
-  justify-content:start;
+/* =========================================================
+   PRICE POSITION CONTRACT
+
+   Inline  = price sits beside the item copy.
+   Below   = price sits immediately below the item copy.
+   Bottom  = price gets its own full-width bottom row, separated from copy.
+
+   These selectors live in the final renderer stylesheet so templates cannot
+   accidentally make Below and Bottom look identical.
+   ========================================================= */
+
+.bme-classic-item.bme-price-inline {
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:start;
+}
+
+.bme-classic-item.bme-price-below,
+.bme-classic-item.bme-price-bottom {
+  grid-template-columns:minmax(0,1fr);
+}
+
+.bme-classic-item.bme-price-below > .bme-price,
+.bme-classic-item.bme-price-below > .bme-price-options {
+  justify-self:start;
+  margin-top:8px;
+}
+
+.bme-classic-item.bme-price-bottom > .bme-price,
+.bme-classic-item.bme-price-bottom > .bme-price-options {
+  width:100%;
+  justify-self:stretch;
+  margin-top:14px;
+  padding-top:10px;
+  border-top:1px solid var(--bme-line);
+}
+
+.bme-classic-item.bme-price-bottom > .bme-price {
+  display:block;
+  text-align:end;
+}
+
+.bme-classic-item.bme-price-bottom > .bme-price-options {
+  justify-content:end;
+}
+
+/* Visual/card templates carry the position class on the item itself. Apply
+   the contract to the internal copy grid so position controls work there too. */
+.bme-visual-item.bme-price-inline .bme-visual-copy {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:end;
+}
+
+.bme-visual-item.bme-price-below .bme-visual-copy,
+.bme-visual-item.bme-price-bottom .bme-visual-copy {
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  align-items:start;
+}
+
+.bme-visual-item.bme-price-below .bme-price,
+.bme-visual-item.bme-price-below .bme-price-options {
+  justify-self:start;
+  margin-top:8px;
+}
+
+.bme-visual-item.bme-price-bottom .bme-price,
+.bme-visual-item.bme-price-bottom .bme-price-options {
+  width:100%;
+  justify-self:stretch;
+  margin-top:14px;
+  padding-top:10px;
+  border-top:1px solid var(--bme-line);
+}
+
+.bme-visual-item.bme-price-bottom .bme-price {
+  display:block;
+  text-align:end;
+}
+
+.bme-visual-item.bme-price-bottom .bme-price-options {
+  justify-content:end;
 }
 
 /* Heritage uses the same unlimited price model while preserving its shell. */
