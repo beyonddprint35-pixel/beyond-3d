@@ -49,8 +49,9 @@ export async function extractMenuWebsiteSource({ session, url }) {
   return { ...data, sourceUrl: data.sourceUrl || normalizedUrl };
 }
 
-export async function importMenuWebsiteWithAi({ session, url, languages }) {
+export async function importMenuWebsiteWithAi({ session, url, languages, onSourceReady }) {
   const source = await extractMenuWebsiteSource({ session, url });
+  if (typeof onSourceReady === "function") onSourceReady(source);
   const result = await importMenuWithAi({
     session,
     files: [],
