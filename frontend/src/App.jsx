@@ -17,6 +17,7 @@ import MenuStudioV3RealData from "./pages/MenuStudioV3RealData";
 import MenuStudioV3Draft from "./pages/MenuStudioV3Draft";
 import MenuPublicV3Dev from "./pages/MenuPublicV3Dev";
 import MenuCreateV2 from "./pages/MenuCreateV2";
+import MenuImportStudioV2 from "./pages/MenuImportStudioV2";
 import MenuContentStudioV2 from "./pages/MenuContentStudioV2";
 import MenuDesignStudioV2 from "./pages/MenuDesignStudioV2";
 import MenuPreviewStudioV2 from "./pages/MenuPreviewStudioV2";
@@ -64,6 +65,7 @@ function App() {
             <Route path="/dev/menu-studio-v3-draft" element={<MenuStudioV3Draft />} />
             <Route path="/dev/menu-public-v3/:slug" element={<MenuPublicV3Dev />} />
             <Route path="/dev/menu-create-v2" element={<MenuCreateV2 />} />
+            <Route path="/dev/menu-import-v2" element={<MenuImportStudioV2 />} />
             <Route path="/dev/menu-content-v2" element={<MenuContentStudioV2 />} />
             <Route path="/dev/menu-design-v2" element={<MenuDesignStudioV2 />} />
             <Route path="/dev/menu-preview-v2" element={<MenuPreviewStudioV2 />} />
