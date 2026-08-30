@@ -1,5 +1,6 @@
 import { DEFAULT_MENU_DESIGN } from "../domain/designSchema";
 import { PREMIUM_MENU_DESIGNS, applyPremiumMenuDesign } from "../domain/menuDesignLibrary";
+import { normalizeV3MenuPriceOptions } from "../data/aiMenuImportAdapter";
 
 export const MENU_STUDIO_V2_DRAFT_KEY = "beyond-menu-content-studio-v2";
 export const MENU_CREATE_V2_FLOW_KEY = "beyond-menu-create-profile-v2";
@@ -37,6 +38,7 @@ export function createBlankMenuV2() {
           "اضغطوا على هذا الصنف في استوديو المحتوى لتعديله.",
         ),
         price: "42",
+        price_options: [],
         visible: true,
         sort_order: 0,
         image_url: "",
@@ -49,7 +51,9 @@ export function readMenuStudioV2Draft() {
   if (typeof window === "undefined") return null;
   try {
     const stored = JSON.parse(window.sessionStorage.getItem(MENU_STUDIO_V2_DRAFT_KEY) || "null");
-    if (stored?.menu?.groups && stored?.menu?.items) return stored;
+    if (stored?.menu?.groups && stored?.menu?.items) {
+      return { ...stored, menu: normalizeV3MenuPriceOptions(stored.menu) };
+    }
   } catch {
     // Ignore malformed development drafts.
   }
@@ -59,7 +63,10 @@ export function readMenuStudioV2Draft() {
 export function writeMenuStudioV2Draft(draft) {
   if (typeof window === "undefined") return false;
   try {
-    window.sessionStorage.setItem(MENU_STUDIO_V2_DRAFT_KEY, JSON.stringify({ ...draft, savedAt: new Date().toISOString() }));
+    const normalizedDraft = draft?.menu
+      ? { ...draft, menu: normalizeV3MenuPriceOptions(draft.menu) }
+      : draft;
+    window.sessionStorage.setItem(MENU_STUDIO_V2_DRAFT_KEY, JSON.stringify({ ...normalizedDraft, savedAt: new Date().toISOString() }));
     return true;
   } catch {
     return false;
