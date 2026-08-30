@@ -19,6 +19,7 @@ import "./MenuDesignWorkspace.css";
 
 const FAVORITES_STORAGE_KEY = "beyond-menu-design-favorites-v1";
 const IMAGE_LAYOUT_TEMPLATES = new Set(["visual","gallery","tiles","split"]);
+const QUICK_GRID_PACKING_STYLE = Object.freeze({alignSelf:"start",alignContent:"start",gridAutoRows:"max-content",height:"fit-content"});
 const FEELING_DESIGNS = [
   { id:"blue-launcher", key:"modern", icon:"◫" },
   { id:"atelier-editorial", key:"elegant", icon:"Aa" },
@@ -38,7 +39,7 @@ const COPY = {
   en:{
     design:"Design",quick:"Quick style",styles:"Designs",advanced:"Advanced",quickHint:"Make it yours without learning design tools",stylesHint:"Browse every design direction",advancedHint:"Precise controls when you need them",template:"Template",modified:"Modified",undo:"Undo",redo:"Redo",
     recommended:"Recommended directions",recommendedHint:"Start with a feeling. You can fine-tune it afterwards.",makeYours:"Make it yours",makeYoursHint:"The controls below cover the changes most restaurants actually need.",browseAll:"Browse all designs",openAdvanced:"Advanced controls",current:"Current design",changeDesign:"Change design",
-    colors:"Colors",typography:"Typography",hero:"Hero & header",density:"Spacing",compact:"Compact",balanced:"Balanced",spacious:"Spacious",logo:"Logo",photo:"Photo",clean:"Clean",templateHero:"Template",heroHint:"Use a dedicated hero photo, your logo, or keep the header clean.",photoHint:"Hero photos are separate from menu item photos.",uploadHero:"Upload hero image",replaceHero:"Replace hero image",removeHero:"Remove hero image",
+    colors:"Colors",typography:"Typography",hero:"Hero & header",density:"Spacing",compact:"Compact",balanced:"Balanced",spacious:"Spacious",logo:"Logo",photo:"Photo",clean:"Clean",templateHero:"Template",heroHint:"Use a dedicated hero photo, your logo, or remove the hero for a clean header.",photoHint:"Hero photos are separate from menu item photos.",uploadHero:"Upload hero image",replaceHero:"Replace hero image",removeHero:"Remove hero image",
     modern:"Modern",elegant:"Elegant",bold:"Bold",editorial:"Editorial",dark:"Dark",playful:"Playful",friendly:"Friendly",
     clickPreview:"Click anything in the live preview to edit it",editing:"Editing",brand:"Brand",categories:"Categories",items:"Menu items",badges:"Badges",colorsPanel:"Colors",typePanel:"Type",layout:"Layout",backQuick:"Back to quick style",
     library:"All menu designs",libraryHint:"Explore the complete library when you want a very specific direction.",search:"Search designs",favorites:"Favorites",restore:"Restore original design",restoreHint:"Return to the design this menu started with",preview:"Preview",useDesign:"Use this design",selected:"Selected",closePreview:"Close preview",designPreview:"Design preview",noMatches:"No designs match these filters.",
@@ -48,7 +49,7 @@ const COPY = {
   he:{
     design:"עיצוב",quick:"עיצוב מהיר",styles:"עיצובים",advanced:"מתקדם",quickHint:"התאימו את התפריט בלי ללמוד כלי עיצוב",stylesHint:"עיינו בכל כיווני העיצוב",advancedHint:"שליטה מדויקת כשצריך",template:"תבנית",modified:"שונה",undo:"בטל",redo:"בצע שוב",
     recommended:"כיוונים מומלצים",recommendedHint:"התחילו מתחושה. אחר כך אפשר לדייק כל פרט.",makeYours:"הפכו אותו לשלכם",makeYoursHint:"אלה השינויים שרוב המסעדות באמת צריכות.",browseAll:"כל העיצובים",openAdvanced:"בקרות מתקדמות",current:"העיצוב הנוכחי",changeDesign:"החלפת עיצוב",
-    colors:"צבעים",typography:"טיפוגרפיה",hero:"Hero וכותרת",density:"מרווחים",compact:"צפוף",balanced:"מאוזן",spacious:"מרווח",logo:"לוגו",photo:"תמונה",clean:"נקי",templateHero:"תבנית",heroHint:"בחרו תמונת Hero ייעודית, לוגו או כותרת נקייה.",photoHint:"תמונת Hero נפרדת מתמונות המנות.",uploadHero:"העלאת תמונת Hero",replaceHero:"החלפת תמונת Hero",removeHero:"הסרת תמונת Hero",
+    colors:"צבעים",typography:"טיפוגרפיה",hero:"Hero וכותרת",density:"מרווחים",compact:"צפוף",balanced:"מאוזן",spacious:"מרווח",logo:"לוגו",photo:"תמונה",clean:"נקי",templateHero:"תבנית",heroHint:"בחרו תמונת Hero, לוגו, או הסירו את אזור ה-Hero לכותרת נקייה.",photoHint:"תמונת Hero נפרדת מתמונות המנות.",uploadHero:"העלאת תמונת Hero",replaceHero:"החלפת תמונת Hero",removeHero:"הסרת תמונת Hero",
     modern:"מודרני",elegant:"אלגנטי",bold:"נועז",editorial:"מערכתי",dark:"כהה",playful:"שובב",friendly:"ידידותי",
     clickPreview:"לחצו על כל חלק בתצוגה החיה כדי לערוך אותו",editing:"עריכה",brand:"מותג",categories:"קטגוריות",items:"פריטי תפריט",badges:"תגיות",colorsPanel:"צבעים",typePanel:"טיפוגרפיה",layout:"פריסה",backQuick:"חזרה לעיצוב מהיר",
     library:"כל עיצובי התפריט",libraryHint:"עיינו בספרייה המלאה כשאתם רוצים כיוון מאוד מסוים.",search:"חיפוש עיצובים",favorites:"מועדפים",restore:"שחזור העיצוב המקורי",restoreHint:"חזרה לעיצוב שממנו התפריט התחיל",preview:"תצוגה מלאה",useDesign:"השתמש בעיצוב",selected:"נבחר",closePreview:"סגור תצוגה",designPreview:"תצוגת עיצוב",noMatches:"לא נמצאו עיצובים מתאימים.",
@@ -58,7 +59,7 @@ const COPY = {
   ar:{
     design:"التصميم",quick:"تنسيق سريع",styles:"التصاميم",advanced:"متقدم",quickHint:"خصص قائمتك بدون تعلم أدوات التصميم",stylesHint:"استعرض جميع اتجاهات التصميم",advancedHint:"تحكم دقيق عند الحاجة",template:"قالب",modified:"معدل",undo:"تراجع",redo:"إعادة",
     recommended:"اتجاهات مقترحة",recommendedHint:"ابدأ بالإحساس ثم عدّل التفاصيل لاحقاً.",makeYours:"اجعله خاصاً بك",makeYoursHint:"هذه هي التغييرات التي تحتاجها معظم المطاعم فعلاً.",browseAll:"كل التصاميم",openAdvanced:"أدوات متقدمة",current:"التصميم الحالي",changeDesign:"تغيير التصميم",
-    colors:"الألوان",typography:"الخطوط",hero:"الواجهة والعنوان",density:"المسافات",compact:"مضغوط",balanced:"متوازن",spacious:"واسع",logo:"الشعار",photo:"صورة",clean:"نظيف",templateHero:"القالب",heroHint:"استخدم صورة واجهة مستقلة أو الشعار أو واجهة نظيفة.",photoHint:"صورة الواجهة منفصلة عن صور عناصر القائمة.",uploadHero:"رفع صورة الواجهة",replaceHero:"استبدال صورة الواجهة",removeHero:"إزالة صورة الواجهة",
+    colors:"الألوان",typography:"الخطوط",hero:"الواجهة والعنوان",density:"المسافات",compact:"مضغوط",balanced:"متوازن",spacious:"واسع",logo:"الشعار",photo:"صورة",clean:"نظيف",templateHero:"القالب",heroHint:"استخدم صورة واجهة أو الشعار أو أزل قسم الواجهة لعنوان نظيف.",photoHint:"صورة الواجهة منفصلة عن صور عناصر القائمة.",uploadHero:"رفع صورة الواجهة",replaceHero:"استبدال صورة الواجهة",removeHero:"إزالة صورة الواجهة",
     modern:"حديث",elegant:"أنيق",bold:"جريء",editorial:"تحريري",dark:"داكن",playful:"مرح",friendly:"ودود",
     clickPreview:"انقر على أي جزء من المعاينة لتعديله",editing:"تعديل",brand:"العلامة",categories:"الفئات",items:"عناصر القائمة",badges:"الشارات",colorsPanel:"الألوان",typePanel:"الخطوط",layout:"التخطيط",backQuick:"العودة للتنسيق السريع",
     library:"كل تصاميم القائمة",libraryHint:"استعرض المكتبة الكاملة عندما تريد اتجاهاً محدداً جداً.",search:"البحث في التصاميم",favorites:"المفضلة",restore:"استعادة التصميم الأصلي",restoreHint:"العودة إلى التصميم الذي بدأت به القائمة",preview:"معاينة",useDesign:"استخدم التصميم",selected:"محدد",closePreview:"إغلاق",designPreview:"معاينة التصميم",noMatches:"لا توجد تصاميم مطابقة.",
@@ -258,26 +259,26 @@ export default function MenuDesignControls({design,baselineDesign,menu,language=
         <button type="button" onClick={()=>setWorkspaceMode("styles")}>{t.changeDesign}</button>
       </section>
 
-      <section className="studio-v3-design-v2-section">
+      <section className="studio-v3-design-v2-section" style={QUICK_GRID_PACKING_STYLE}>
         <div className="studio-v3-design-v2-section-head"><div><strong>{t.recommended}</strong><small>{t.recommendedHint}</small></div></div>
         <div className="studio-v3-feeling-grid">{recommendedDesigns.map(({feel,entry})=><button type="button" key={entry.id} className={activeDesignId===entry.id?"active":""} onClick={()=>chooseDesign(entry)}><DesignThumbnail entry={entry}/><span><i aria-hidden="true">{feel.icon}</i><strong>{t[feel.key]}</strong><small>{entry.name}</small></span></button>)}</div>
         <button type="button" className="studio-v3-design-v2-secondary-action" onClick={()=>setWorkspaceMode("styles")}>{t.browseAll}<span aria-hidden="true">→</span></button>
       </section>
 
-      <section className="studio-v3-design-v2-section">
+      <section className="studio-v3-design-v2-section" style={QUICK_GRID_PACKING_STYLE}>
         <div className="studio-v3-design-v2-section-head"><div><strong>{t.makeYours}</strong><small>{t.makeYoursHint}</small></div></div>
 
-        <div className="studio-v3-quick-control-card">
+        <div className="studio-v3-quick-control-card" style={QUICK_GRID_PACKING_STYLE}>
           <div className="studio-v3-quick-control-title"><span className="dot colors" aria-hidden="true"/><div><strong>{t.colors}</strong><small>{activePaletteKey?MENU_COLOR_PRESETS[activePaletteKey]?.label:t.modified}</small></div><button type="button" onClick={()=>openFocus("colors")}>•••</button></div>
           <div className="studio-v3-quick-palette-row">{Object.entries(MENU_COLOR_PRESETS).map(([key,preset])=><button type="button" key={key} className={activePaletteKey===key?"active":""} onClick={()=>patchDesign(current=>applyMenuColorPreset(current,key))} title={preset.label}><span>{[preset.theme.background,preset.theme.accent,preset.theme.text].map((color,index)=><i key={`${color}-${index}`} style={{background:color}}/>)}</span><small>{preset.label}</small></button>)}</div>
         </div>
 
-        <div className="studio-v3-quick-control-card">
+        <div className="studio-v3-quick-control-card" style={QUICK_GRID_PACKING_STYLE}>
           <div className="studio-v3-quick-control-title"><span className="dot type" aria-hidden="true">Aa</span><div><strong>{t.typography}</strong><small>{design.typography.headingFont} + {design.typography.bodyFont}</small></div><button type="button" onClick={()=>openFocus("type")}>•••</button></div>
           <div className="studio-v3-quick-type-grid">{Object.keys(TYPE_PRESETS).map(key=><button type="button" key={key} onClick={()=>applyTypePreset(key)}><b style={{fontFamily:TYPE_PRESETS[key].headingFont}}>Aa</b><span>{t[key]}</span></button>)}</div>
         </div>
 
-        <div className="studio-v3-quick-control-card">
+        <div className="studio-v3-quick-control-card" style={QUICK_GRID_PACKING_STYLE}>
           <div className="studio-v3-quick-control-title"><span className="dot hero" aria-hidden="true">▣</span><div><strong>{t.hero}</strong><small>{t.heroHint}</small></div><button type="button" onClick={()=>openFocus("hero")}>•••</button></div>
           <div className="studio-v3-quick-hero-grid">
             <button type="button" onClick={restoreTemplateHero}><i aria-hidden="true">✦</i><span>{t.templateHero}</span></button>
@@ -288,7 +289,7 @@ export default function MenuDesignControls({design,baselineDesign,menu,language=
           {heroMode==="image"?<div className="studio-v3-quick-hero-upload">{heroImage?<img src={heroImage} alt=""/>:null}<div><small>{t.photoHint}</small><label><input type="file" accept="image/png,image/jpeg,image/webp" onChange={e=>uploadImage(e.target.files?.[0],"heroImageUrl")}/><span>{heroImage?t.replaceHero:t.uploadHero}</span></label>{heroImage?<button type="button" onClick={()=>patchBrand("heroImageUrl","")}>{t.removeHero}</button>:null}</div></div>:null}
         </div>
 
-        <div className="studio-v3-quick-control-card">
+        <div className="studio-v3-quick-control-card" style={QUICK_GRID_PACKING_STYLE}>
           <div className="studio-v3-quick-control-title"><span className="dot spacing" aria-hidden="true">↕</span><div><strong>{t.density}</strong><small>{t[design.layout.density==="comfortable"?"balanced":design.layout.density]}</small></div><button type="button" onClick={()=>openFocus("items")}>•••</button></div>
           <div className="studio-v3-quick-density-grid">{[["compact",t.compact],["comfortable",t.balanced],["spacious",t.spacious]].map(([value,label])=><button type="button" key={value} className={design.layout.density===value?"active":""} onClick={()=>patchLayout("density",value)}><i className={value} aria-hidden="true"/><span>{label}</span></button>)}</div>
         </div>
