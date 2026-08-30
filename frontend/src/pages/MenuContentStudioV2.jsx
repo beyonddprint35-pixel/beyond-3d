@@ -47,15 +47,6 @@ function itemPriceOptions(item) {
   return Array.isArray(item?.price_options) ? item.price_options : [];
 }
 
-function priceSummary(item, currencySymbol = "₪") {
-  const optionPrices = itemPriceOptions(item)
-    .map((option) => String(option?.price || "").trim())
-    .filter(Boolean);
-  if (optionPrices.length) return optionPrices.map((price) => `${currencySymbol}${price}`).join(" / ");
-  const singlePrice = String(item?.price || "").trim();
-  return singlePrice ? `${currencySymbol}${singlePrice}` : "";
-}
-
 function optionLabel(option, language = "en") {
   return String(
     option?.[`label_${language}`]
@@ -65,6 +56,19 @@ function optionLabel(option, language = "en") {
       || option?.label_ar
       || "",
   );
+}
+
+function priceSummary(item, currencySymbol = "₪", language = "en") {
+  const options = itemPriceOptions(item)
+    .map((option) => ({ label: optionLabel(option, language), price: String(option?.price || "").trim() }))
+    .filter((option) => option.price);
+  if (options.length) {
+    return options
+      .map((option) => `${option.label ? `${option.label} ` : ""}${currencySymbol}${option.price}`)
+      .join(" · ");
+  }
+  const singlePrice = String(item?.price || "").trim();
+  return singlePrice ? `${currencySymbol}${singlePrice}` : "";
 }
 
 export default function MenuContentStudioV2() {
@@ -290,7 +294,7 @@ export default function MenuContentStudioV2() {
 
                   <div className="menu-content-v2-items">
                     {items.map((item) => {
-                      const summary = priceSummary(item, currencySymbol);
+                      const summary = priceSummary(item, currencySymbol, contentLanguage);
                       return (
                         <button type="button" key={item.id} className={selection.type === "item" && selection.id === item.id ? "active" : ""} onClick={() => setSelection({ type: "item", id: item.id })}>
                           <GripVertical size={11} />
