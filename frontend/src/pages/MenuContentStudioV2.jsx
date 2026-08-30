@@ -80,6 +80,7 @@ export default function MenuContentStudioV2() {
     setSaveState("saving");
     const timer = window.setTimeout(() => {
       const ok = writeMenuStudioV2Draft({
+        ...(storedDraft || {}),
         menu,
         design,
         designId: resolvedDesign.designId,
@@ -89,7 +90,7 @@ export default function MenuContentStudioV2() {
       setSaveState(ok ? "saved" : "error");
     }, 350);
     return () => window.clearTimeout(timer);
-  }, [menu, design, resolvedDesign.designId, profile, contentLanguage]);
+  }, [menu, design, resolvedDesign.designId, profile, contentLanguage, storedDraft]);
 
   const selectedCategory = selection.type === "category"
     ? menu.groups.find((group) => group.id === selection.id)
@@ -186,8 +187,8 @@ export default function MenuContentStudioV2() {
         <nav className="menu-content-v2-product-nav" aria-label={t.workspace}>
           <button type="button" className="active">{t.content}</button>
           <button type="button" onClick={() => window.location.assign("/dev/menu-design-v2")}>{t.design}</button>
-          <button type="button" onClick={() => document.querySelector(".menu-content-v2-preview")?.scrollIntoView({ behavior: "smooth" })}>{t.preview}</button>
-          <button type="button" disabled>{t.publish}</button>
+          <button type="button" onClick={() => window.location.assign("/dev/menu-preview-v2")}>{t.preview}</button>
+          <button type="button" onClick={() => window.location.assign("/dev/menu-publish-v2")}>{t.publish}</button>
         </nav>
 
         <div className="menu-content-v2-top-actions">
