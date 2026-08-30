@@ -61,16 +61,17 @@ export default function MenuDesignStudioV2() {
     setSaveState("saving");
     const timer = window.setTimeout(() => {
       const ok = writeMenuStudioV2Draft({
+        ...(storedDraft || {}),
         menu,
         design,
-        designId: resolved.designId,
+        designId: storedDraft?.designId || resolved.designId,
         profile,
         contentLanguage,
       });
       setSaveState(ok ? "saved" : "error");
     }, 350);
     return () => window.clearTimeout(timer);
-  }, [menu, design, resolved.designId, profile, contentLanguage]);
+  }, [menu, design, resolved.designId, profile, contentLanguage, storedDraft]);
 
   const saveLabel = saveState === "saving" ? t.saving : saveState === "error" ? t.saveError : t.saved;
 
@@ -97,8 +98,8 @@ export default function MenuDesignStudioV2() {
         <nav className="menu-design-v2-product-nav" aria-label={t.workspace}>
           <button type="button" onClick={() => window.location.assign("/dev/menu-content-v2")}>{t.content}</button>
           <button type="button" className="active">{t.design}</button>
-          <button type="button" onClick={() => document.querySelector(".menu-design-v2-canvas")?.scrollIntoView({ behavior: "smooth" })}>{t.preview}</button>
-          <button type="button" disabled>{t.publish}</button>
+          <button type="button" onClick={() => window.location.assign("/dev/menu-preview-v2")}>{t.preview}</button>
+          <button type="button" onClick={() => window.location.assign("/dev/menu-publish-v2")}>{t.publish}</button>
         </nav>
 
         <div className="menu-design-v2-top-actions">
@@ -136,7 +137,7 @@ export default function MenuDesignStudioV2() {
           />
           <div className="menu-design-v2-next">
             <span>{t.draftKept}</span>
-            <button type="button" disabled>{t.continuePreview} <ForwardIcon size={14} /></button>
+            <button type="button" onClick={() => window.location.assign("/dev/menu-preview-v2")}>{t.continuePreview} <ForwardIcon size={14} /></button>
           </div>
         </section>
       </div>
