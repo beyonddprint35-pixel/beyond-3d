@@ -16,6 +16,8 @@ import MenuStudioV3Dev from "./pages/MenuStudioV3Dev";
 import MenuStudioV3RealData from "./pages/MenuStudioV3RealData";
 import MenuStudioV3Draft from "./pages/MenuStudioV3Draft";
 import MenuPublicV3Dev from "./pages/MenuPublicV3Dev";
+import MenuCreateV2 from "./pages/MenuCreateV2";
+import MenuContentStudioV2 from "./pages/MenuContentStudioV2";
 import CustomerShowcasePortal from "./components/CustomerShowcasePortal";
 
 import "./components/MyAccountAdminShortcut.js";
@@ -58,6 +60,8 @@ function App() {
             <Route path="/dev/menu-studio-v3-real" element={<MenuStudioV3RealData />} />
             <Route path="/dev/menu-studio-v3-draft" element={<MenuStudioV3Draft />} />
             <Route path="/dev/menu-public-v3/:slug" element={<MenuPublicV3Dev />} />
+            <Route path="/dev/menu-create-v2" element={<MenuCreateV2 />} />
+            <Route path="/dev/menu-content-v2" element={<MenuContentStudioV2 />} />
           </>
         ) : null}
         <Route path="/admin" element={<Admin />} />
