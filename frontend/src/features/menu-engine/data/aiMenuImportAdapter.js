@@ -42,6 +42,12 @@ function cleanPrice(value) {
     .trim();
 }
 
+function numericPrice(value) {
+  const normalized = cleanPrice(value).replace(/,/g, ".");
+  const match = normalized.match(/-?\d+(?:\.\d+)?/);
+  return match ? Number(match[0]) : Number.NaN;
+}
+
 function splitCombinedPrice(value) {
   const clean = cleanPrice(value);
   const match = clean.match(/^([0-9]+(?:[.,][0-9]+)?)\s*\/\s*([0-9]+(?:[.,][0-9]+)?)$/);
@@ -61,8 +67,12 @@ function inferPairPreset(group) {
   if (/draft beer|draught beer|beer on tap|בירה מהחבית|بيرة.*برميل|بيرة.*صنبور/.test(value)) return PRICE_TYPE_PRESETS.draft;
   if (/hot drinks|coffee|משקאות חמים|קפה|مشروبات ساخنة|قهوة/.test(value)) return PRICE_TYPE_PRESETS.smallLarge;
   if (/wine|יין|نبيذ/.test(value)) return PRICE_TYPE_PRESETS.glassBottle;
-  if (/whisk|וויסקי|ويسكي|gin|ג['׳]?ין|جين|vodka|וודקה|فودكا|liquor|liqueur|ליקר|ليكير|cognac|קוניאק|كونياك|rum|רום|روم|aperitif|אפריטיף|أبيريتيف|arak|ערק|عرق|anise|אניס|يانسون|tequila|טקילה|تيكيلا|brandy|ברנדי|براندي|drinks to mix|משקאות לערבוב|مشروبات للخلط/.test(value)) return PRICE_TYPE_PRESETS.shotGlass;
+  if (/whisk|וויסקי|ويسكي|gin|ג['׳]?ין|جين|vodka|וודקה|فودكا|liquor|liqueur|ליקר|ليكير|cognac|קוניאק|كونياك|rum|רום|روم|aperitif|אפריטיף|أبيريتيف|arak|ערק|عرق|anise|אניס|يانسون|tequila|טקילה|تيكيلا|brandy|ברנדי|برانדי|drinks to mix|משקאות לערבוב|مشروبات للخلط/.test(value)) return PRICE_TYPE_PRESETS.shotGlass;
   return PRICE_TYPE_PRESETS.generic;
+}
+
+function isQuantityPreset(preset) {
+  return preset !== PRICE_TYPE_PRESETS.generic;
 }
 
 function presetWithPrice(preset, price) {
@@ -88,6 +98,63 @@ function normalizeOption(option) {
   };
 }
 
+function comparableLabel(value) {
+  return text(value)
+    .toLowerCase()
+    .replace(/[\s_-]+/g, "")
+    .replace(/⅓/g, "1/3")
+    .replace(/½/g, "1/2");
+}
+
+function optionMatchesPreset(option, presetEntry) {
+  const optionLabels = [option?.label_key, option?.label, option?.label_en, option?.label_he, option?.label_ar]
+    .map(comparableLabel)
+    .filter(Boolean);
+  const presetLabels = [presetEntry?.label_key, presetEntry?.label_en, presetEntry?.label_he, presetEntry?.label_ar]
+    .map(comparableLabel)
+    .filter(Boolean);
+  return optionLabels.some((optionLabel) => presetLabels.some((presetLabel) => optionLabel === presetLabel || optionLabel.includes(presetLabel)));
+}
+
+function enforceLogicalPairPrices(options, preset) {
+  if (options.length !== 2 || !isQuantityPreset(preset)) return options;
+
+  const prices = options.map((option) => numericPrice(option.price));
+  if (prices.some((value) => !Number.isFinite(value)) || prices[0] === prices[1]) return options;
+
+  let smallIndex = 0;
+  let largeIndex = 1;
+  const firstSmall = optionMatchesPreset(options[0], preset[0]);
+  const firstLarge = optionMatchesPreset(options[0], preset[1]);
+  const secondSmall = optionMatchesPreset(options[1], preset[0]);
+  const secondLarge = optionMatchesPreset(options[1], preset[1]);
+
+  if (firstLarge && secondSmall) {
+    smallIndex = 1;
+    largeIndex = 0;
+  } else if (!(firstSmall && secondLarge)) {
+    // When labels were inferred from the group, adapter order is the semantic
+    // order: smaller serving first, larger serving second.
+    smallIndex = 0;
+    largeIndex = 1;
+  }
+
+  if (numericPrice(options[smallIndex].price) <= numericPrice(options[largeIndex].price)) return options;
+
+  const next = options.map((option) => ({ ...option }));
+  const smallerServingPrice = next[smallIndex].price;
+  next[smallIndex].price = next[largeIndex].price;
+  next[largeIndex].price = smallerServingPrice;
+  return next;
+}
+
+function orderedPairPrices(prices, preset) {
+  if (!isQuantityPreset(preset) || prices.length !== 2) return prices;
+  const numeric = prices.map(numericPrice);
+  if (numeric.some((value) => !Number.isFinite(value))) return prices;
+  return numeric[0] <= numeric[1] ? prices : [prices[1], prices[0]];
+}
+
 function normalizeItemPricing(item, group) {
   let options = Array.isArray(item?.price_options)
     ? item.price_options.map(normalizeOption).filter((option) => option.price || hasOptionLabel(option))
@@ -97,7 +164,7 @@ function normalizeItemPricing(item, group) {
     const combined = splitCombinedPrice(options[0].price);
     if (combined.length === 2) {
       const preset = inferPairPreset(group);
-      options = combined.map((price, index) => presetWithPrice(preset[index], price));
+      options = orderedPairPrices(combined, preset).map((price, index) => presetWithPrice(preset[index], price));
     }
   }
 
@@ -105,7 +172,7 @@ function normalizeItemPricing(item, group) {
     const combined = splitCombinedPrice(item?.price);
     if (combined.length === 2) {
       const preset = inferPairPreset(group);
-      options = combined.map((price, index) => presetWithPrice(preset[index], price));
+      options = orderedPairPrices(combined, preset).map((price, index) => presetWithPrice(preset[index], price));
     }
   }
 
@@ -115,6 +182,7 @@ function normalizeItemPricing(item, group) {
       if (hasOptionLabel(option)) return option;
       return { ...option, ...presetWithPrice(preset[index], option.price) };
     });
+    options = enforceLogicalPairPrices(options, preset);
   }
 
   return {
