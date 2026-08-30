@@ -98,7 +98,7 @@ function readFavorites(){
 
 export default function MenuDesignControls({design,baselineDesign,menu,language="en",panel,setPanel,patchDesign}){
   const t=COPY[language]||COPY.en;
-  const [workspaceMode,setWorkspaceMode]=useState("quick");
+  const [workspaceMode,setWorkspaceMode]=useState("styles");
   const [query,setQuery]=useState("");
   const [filters,setFilters]=useState({browse:"all",type:"all",layout:"all",tone:"all"});
   const [previewEntry,setPreviewEntry]=useState(null);
@@ -211,9 +211,8 @@ export default function MenuDesignControls({design,baselineDesign,menu,language=
     reader.onload=()=>patchBrand(key,String(reader.result||""));
     reader.readAsDataURL(file);
   }
-  function chooseDesign(entry,{openQuick=true}={}){
+  function chooseDesign(entry){
     patchDesign(current=>applyPremiumMenuDesign(current,entry.id));
-    if(openQuick)setWorkspaceMode("quick");
   }
   function toggleFavorite(entryId){setFavorites(current=>current.includes(entryId)?current.filter(id=>id!==entryId):[...current,entryId]);}
   function usePreviewDesign(){if(!previewEntry)return;chooseDesign(previewEntry);setPreviewEntry(null);}
@@ -249,7 +248,7 @@ export default function MenuDesignControls({design,baselineDesign,menu,language=
     </div>
 
     <div className="studio-v3-design-v2-nav" role="tablist" aria-label={t.design}>
-      {[["quick","✦",t.quick,t.quickHint],["styles","▦",t.styles,t.stylesHint],["advanced","⌘",t.advanced,t.advancedHint]].map(([key,icon,title,hint])=><button type="button" key={key} role="tab" aria-selected={workspaceMode===key} className={workspaceMode===key?"active":""} onClick={()=>setWorkspaceMode(key)}><i aria-hidden="true">{icon}</i><span><strong>{title}</strong><small>{hint}</small></span></button>)}
+      {[["styles","▦",t.styles,t.stylesHint],["quick","✦",t.quick,t.quickHint],["advanced","⌘",t.advanced,t.advancedHint]].map(([key,icon,title,hint])=><button type="button" key={key} role="tab" aria-selected={workspaceMode===key} className={workspaceMode===key?"active":""} onClick={()=>setWorkspaceMode(key)}><i aria-hidden="true">{icon}</i><span><strong>{title}</strong><small>{hint}</small></span></button>)}
     </div>
 
     {workspaceMode==="quick"?<div className="studio-v3-design-quick-workspace">
