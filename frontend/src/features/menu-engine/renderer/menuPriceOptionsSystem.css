@@ -117,6 +117,83 @@
   justify-content:end;
 }
 
+/* =========================================================
+   STREET BOLD / STREET POSTER MULTI-PRICE
+
+   The signature floating price badge works well for one or two prices. Three
+   or more prices need a dedicated rail so labels and values stay readable and
+   preserve the poster-like visual hierarchy instead of being squeezed into a
+   single capsule.
+   ========================================================= */
+
+.bme-presentation-street-poster .bme-price-options:has(.bme-price-option:nth-child(3)) {
+  position:static;
+  inset:auto;
+  width:100%;
+  max-width:none;
+  justify-self:stretch;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  align-items:stretch;
+  justify-content:stretch;
+  gap:0;
+  margin-top:10px;
+  padding:0;
+  overflow:hidden;
+  border:2px solid var(--bme-text);
+  border-radius:12px;
+  background:var(--bme-text);
+  color:#fff;
+  box-shadow:4px 4px 0 var(--bme-accent);
+}
+
+.bme-presentation-street-poster .bme-price-options:has(.bme-price-option:nth-child(4)) {
+  grid-template-columns:repeat(2,minmax(0,1fr));
+}
+
+.bme-presentation-street-poster .bme-price-options:has(.bme-price-option:nth-child(3)) .bme-price-option {
+  min-width:0;
+  min-height:48px;
+  align-content:center;
+  justify-items:center;
+  gap:3px;
+  padding:7px 5px 8px;
+  border-inline-start:1px solid rgba(255,255,255,.2);
+}
+
+.bme-presentation-street-poster .bme-price-options:has(.bme-price-option:nth-child(3)) .bme-price-option:first-child {
+  border-inline-start:0;
+}
+
+.bme-presentation-street-poster .bme-price-options:has(.bme-price-option:nth-child(4)) .bme-price-option:nth-child(odd) {
+  border-inline-start:0;
+}
+
+.bme-presentation-street-poster .bme-price-options:has(.bme-price-option:nth-child(4)) .bme-price-option:nth-child(n+3) {
+  border-top:1px solid rgba(255,255,255,.2);
+}
+
+.bme-presentation-street-poster .bme-price-options:has(.bme-price-option:nth-child(3)) .bme-price-option small {
+  max-width:100%;
+  color:rgba(255,255,255,.72);
+  font-size:8px;
+  font-weight:800;
+  line-height:1;
+  letter-spacing:.06em;
+  text-align:center;
+  text-transform:uppercase;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.bme-presentation-street-poster .bme-price-options:has(.bme-price-option:nth-child(3)) .bme-price-option strong {
+  color:var(--bme-accent);
+  font-size:max(13px,var(--bme-price-size));
+  font-weight:900;
+  line-height:1;
+  text-align:center;
+}
+
 /* Heritage uses the same unlimited price model while preserving its shell. */
 .bme-heritage-exact .ep-price-options {
   max-width:148px;
@@ -164,6 +241,8 @@
 @media(max-width:420px){
   .bme-price-options{gap:6px 8px;grid-template-columns:repeat(2,minmax(38px,max-content))}
   .bme-price-option small{max-width:64px;font-size:8px}
+  .bme-presentation-street-poster .bme-price-options:has(.bme-price-option:nth-child(3)){grid-template-columns:repeat(3,minmax(0,1fr));gap:0}
+  .bme-presentation-street-poster .bme-price-options:has(.bme-price-option:nth-child(4)){grid-template-columns:repeat(2,minmax(0,1fr))}
   .bme-heritage-exact .ep-price-options{max-width:132px;grid-template-columns:repeat(2,minmax(48px,1fr));gap:6px}
   .bme-heritage-exact .ep-price-option strong{font-size:15px}
 }
