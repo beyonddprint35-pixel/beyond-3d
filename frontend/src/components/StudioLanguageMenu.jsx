@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Check, ChevronDown, Languages } from "lucide-react";
 
 import { STUDIO_LANGUAGES, studioLanguageMeta } from "../features/menu-engine/studio/studioLanguage";
@@ -10,10 +10,17 @@ export default function StudioLanguageMenu({
   label = "Language",
   compact = false,
   className = "",
+  allowedLanguages = null,
 }) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
-  const active = studioLanguageMeta(value);
+  const options = useMemo(() => {
+    if (!Array.isArray(allowedLanguages) || !allowedLanguages.length) return STUDIO_LANGUAGES;
+    const allowed = new Set(allowedLanguages);
+    const filtered = STUDIO_LANGUAGES.filter((language) => allowed.has(language.code));
+    return filtered.length ? filtered : STUDIO_LANGUAGES;
+  }, [allowedLanguages]);
+  const active = options.find((language) => language.code === value) || studioLanguageMeta(value) || options[0];
 
   useEffect(() => {
     if (!open) return undefined;
@@ -51,7 +58,7 @@ export default function StudioLanguageMenu({
 
       {open ? (
         <div className="studio-language-menu-list" role="listbox" aria-label={label}>
-          {STUDIO_LANGUAGES.map((language) => {
+          {options.map((language) => {
             const selected = language.code === value;
             return (
               <button
