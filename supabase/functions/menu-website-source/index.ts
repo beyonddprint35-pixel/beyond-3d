@@ -53,16 +53,12 @@ async function assertPublicUrl(url: URL) {
     throw new Error("Local or private website addresses are not supported.");
   }
 
-  // Resolve public hostnames when the Edge runtime exposes DNS resolution. This
-  // prevents public DNS names from being used as a bridge to private networks.
   if (!host.includes(":") && !/^\d+(?:\.\d+){3}$/.test(host) && typeof Deno.resolveDns === "function") {
     try {
       const addresses = await Deno.resolveDns(host, "A");
       if (addresses.some(isPrivateIpv4)) throw new Error("Local or private website addresses are not supported.");
     } catch (error) {
       if (String(error).includes("private website")) throw error;
-      // Some Edge regions do not expose DNS resolution. URL-level checks above
-      // still block literals and known local hostnames; fetch remains sandboxed.
     }
   }
 }
@@ -212,7 +208,9 @@ Deno.serve(async (req: Request) => {
 
     const text = chunks.join("\n\n---\n\n").slice(0, MAX_SOURCE_CHARS).trim();
     const priceSignals = (text.match(/(?:₪|\$|€|£|\b(?:ILS|NIS|USD|EUR|GBP)\b)\s*\d|\d[\d.,]*\s*(?:₪|\$|€|£)/gi) || []).length;
-    if (text.length < 300 || priceSignals === 0) {
+    const lowered = text.toLowerCase();
+    const menuSignals = MENU_TERMS.reduce((count, term) => count + (lowered.includes(term.toLowerCase()) ? 1 : 0), 0);
+    if (text.length < 300 || (priceSignals === 0 && menuSignals === 0)) {
       return json({
         ok: false,
         error: "We reached the website, but could not find enough readable menu content. Try a direct menu page URL or continue manually.",
@@ -227,6 +225,7 @@ Deno.serve(async (req: Request) => {
       text,
       characters: text.length,
       priceSignals,
+      menuSignals,
       pages: pages.map(({ url, title }) => ({ url, title })),
     });
   } catch (error) {
