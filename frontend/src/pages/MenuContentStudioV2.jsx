@@ -45,6 +45,20 @@ function nextSortOrder(list) {
   return Math.max(...list.map((entry) => Number(entry.sort_order || 0))) + 1;
 }
 
+function ordered(list) {
+  return [...list].sort((a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0));
+}
+
+function reorderById(list, sourceId, targetId) {
+  const next = ordered(list);
+  const sourceIndex = next.findIndex((entry) => entry.id === sourceId);
+  const targetIndex = next.findIndex((entry) => entry.id === targetId);
+  if (sourceIndex < 0 || targetIndex < 0 || sourceIndex === targetIndex) return next;
+  const [moved] = next.splice(sourceIndex, 1);
+  next.splice(targetIndex, 0, moved);
+  return next.map((entry, index) => ({ ...entry, sort_order: index }));
+}
+
 function itemPriceOptions(item) {
   return Array.isArray(item?.price_options) ? item.price_options : [];
 }
@@ -93,6 +107,7 @@ export default function MenuContentStudioV2() {
   const [menu, setMenu] = useState(() => storedDraft?.menu || createBlankMenuV2());
   const [selection, setSelection] = useState(() => ({ type: "restaurant", id: "restaurant" }));
   const [saveState, setSaveState] = useState("saved");
+  const [dragging, setDragging] = useState(null);
 
   const t = MENU_CONTENT_STUDIO_UI[uiLanguage] || MENU_CONTENT_STUDIO_UI.en;
   const rtl = studioLanguageDirection(uiLanguage) === "rtl";
@@ -103,10 +118,7 @@ export default function MenuContentStudioV2() {
   const selectedDesignEntry = resolvedDesign.entry;
   const currencySymbol = menu.currency_symbol || "₪";
 
-  const visibleGroups = useMemo(
-    () => [...(menu.groups || [])].sort((a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0)),
-    [menu.groups],
-  );
+  const visibleGroups = useMemo(() => ordered(menu.groups || []), [menu.groups]);
 
   useEffect(() => {
     setSaveState("saving");
@@ -156,6 +168,34 @@ export default function MenuContentStudioV2() {
       ...current,
       [target]: current[target].map((entry) => entry.id === id ? { ...entry, ...patch } : entry),
     }));
+  }
+
+  function beginDrag(event, payload) {
+    setDragging(payload);
+    event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.setData("text/plain", `${payload.type}:${payload.id}`);
+  }
+
+  function dropCategory(event, targetId) {
+    event.preventDefault();
+    if (dragging?.type !== "category" || dragging.id === targetId) return;
+    setMenu((current) => ({ ...current, groups: reorderById(current.groups || [], dragging.id, targetId) }));
+    setDragging(null);
+  }
+
+  function dropItem(event, targetItem) {
+    event.preventDefault();
+    if (dragging?.type !== "item" || dragging.groupId !== targetItem.group_id || dragging.id === targetItem.id) return;
+    setMenu((current) => {
+      const sameGroup = current.items.filter((item) => item.group_id === targetItem.group_id);
+      const reordered = reorderById(sameGroup, dragging.id, targetItem.id);
+      const reorderedMap = new Map(reordered.map((item) => [item.id, item]));
+      return {
+        ...current,
+        items: current.items.map((item) => item.group_id === targetItem.group_id ? reorderedMap.get(item.id) || item : item),
+      };
+    });
+    setDragging(null);
   }
 
   function addCategory() {
@@ -249,12 +289,20 @@ export default function MenuContentStudioV2() {
 
           <div className="menu-content-v2-categories">
             {visibleGroups.map((group) => {
-              const items = menu.items
-                .filter((item) => item.group_id === group.id)
-                .sort((a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0));
+              const items = ordered(menu.items.filter((item) => item.group_id === group.id));
+              const groupDragging = dragging?.type === "category" && dragging.id === group.id;
               return (
-                <section key={group.id} className="menu-content-v2-category-block">
-                  <button type="button" className={`menu-content-v2-category-row ${selection.type === "category" && selection.id === group.id ? "active" : ""}`} onClick={() => setSelection({ type: "category", id: group.id })}>
+                <section key={group.id} className={`menu-content-v2-category-block ${groupDragging ? "dragging" : ""}`}>
+                  <button
+                    type="button"
+                    draggable
+                    className={`menu-content-v2-category-row ${selection.type === "category" && selection.id === group.id ? "active" : ""}`}
+                    onClick={() => setSelection({ type: "category", id: group.id })}
+                    onDragStart={(event) => beginDrag(event, { type: "category", id: group.id })}
+                    onDragOver={(event) => dragging?.type === "category" && event.preventDefault()}
+                    onDrop={(event) => dropCategory(event, group.id)}
+                    onDragEnd={() => setDragging(null)}
+                  >
                     <GripVertical size={13} />
                     <span><strong dir={contentDir}>{textValue(group.name, contentLanguage)}</strong><small>{t.items(items.length)}</small></span>
                     <ChevronRight size={13} />
@@ -263,8 +311,19 @@ export default function MenuContentStudioV2() {
                   <div className="menu-content-v2-items">
                     {items.map((item) => {
                       const summary = priceSummary(item, currencySymbol, contentLanguage);
+                      const itemDragging = dragging?.type === "item" && dragging.id === item.id;
                       return (
-                        <button type="button" key={item.id} className={selection.type === "item" && selection.id === item.id ? "active" : ""} onClick={() => setSelection({ type: "item", id: item.id })}>
+                        <button
+                          type="button"
+                          draggable
+                          key={item.id}
+                          className={`${selection.type === "item" && selection.id === item.id ? "active" : ""} ${itemDragging ? "dragging" : ""}`.trim()}
+                          onClick={() => setSelection({ type: "item", id: item.id })}
+                          onDragStart={(event) => beginDrag(event, { type: "item", id: item.id, groupId: group.id })}
+                          onDragOver={(event) => dragging?.type === "item" && dragging.groupId === group.id && event.preventDefault()}
+                          onDrop={(event) => dropItem(event, item)}
+                          onDragEnd={() => setDragging(null)}
+                        >
                           <GripVertical size={11} />
                           <span><strong dir={contentDir}>{textValue(item.name, contentLanguage)}</strong><small>{summary || t.noPrice}</small></span>
                         </button>
