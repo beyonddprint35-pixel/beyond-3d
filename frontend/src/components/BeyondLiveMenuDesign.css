@@ -1,10 +1,9 @@
 /* ==========================================================
    BEYOND — LIVE MENU DESIGN
 
-   Activated customers can reopen Menu Studio and design the
-   published customer menu. These rules intentionally sit on top
-   of the legacy public-menu renderer so categories, subcategories,
-   special prices and owner editing stay compatible.
+   Canonical workspace for the activated Menu Studio Design tab.
+   The Studio chrome uses the Beyond Porcelain + blue system while
+   the customer-menu rules below remain isolated to live menus.
    ========================================================== */
 
 .bm-owner-site-actions .bm-owner-live-design-trigger {
@@ -16,13 +15,58 @@
 }
 
 .bm-owner-site-actions .bm-owner-live-design-trigger.active {
-  border-color: rgba(76, 126, 238, .55) !important;
+  border-color: #4974e5 !important;
   color: #fff !important;
-  background: linear-gradient(110deg, #326fdf, #5b61ef) !important;
+  background: linear-gradient(180deg, #5a82ea 0%, #4974e5 100%) !important;
+  box-shadow: 0 6px 16px rgba(73, 116, 229, .20) !important;
 }
 
 /* ==========================================================
-   DESIGN WORKSPACE
+   WORKSPACE TOKENS
+   ========================================================== */
+
+.beyond-live-design-workspace {
+  --beyond-studio-bg: #f7f5f2;
+  --beyond-studio-surface: #fff;
+  --beyond-studio-surface-soft: #f2f0ed;
+  --beyond-studio-surface-muted: #ebe8e3;
+  --beyond-studio-canvas: #ece9e4;
+  --beyond-studio-text: #17191d;
+  --beyond-studio-muted: #73777f;
+  --beyond-studio-muted-strong: #555b65;
+  --beyond-studio-border: rgba(30, 35, 45, .10);
+  --beyond-studio-border-strong: rgba(30, 35, 45, .16);
+  --beyond-studio-blue: #4974e5;
+  --beyond-studio-blue-hover: #3d67d8;
+  --beyond-studio-blue-soft: rgba(73, 116, 229, .10);
+  --beyond-studio-blue-faint: rgba(73, 116, 229, .055);
+  --beyond-studio-danger: #c84f5b;
+  --beyond-studio-shadow: 0 26px 70px rgba(24, 30, 42, .14);
+  --beyond-studio-shadow-soft: 0 10px 28px rgba(24, 30, 42, .075);
+
+  color: var(--beyond-studio-text);
+  background: var(--beyond-studio-bg);
+}
+
+.beyond-live-design-workspace.theme-dark {
+  --beyond-studio-bg: #111318;
+  --beyond-studio-surface: #191c22;
+  --beyond-studio-surface-soft: #20242b;
+  --beyond-studio-surface-muted: #272c34;
+  --beyond-studio-canvas: #0d0f13;
+  --beyond-studio-text: #f2f4f7;
+  --beyond-studio-muted: #979da8;
+  --beyond-studio-muted-strong: #bac0ca;
+  --beyond-studio-border: rgba(255, 255, 255, .085);
+  --beyond-studio-border-strong: rgba(255, 255, 255, .14);
+  --beyond-studio-blue-soft: rgba(73, 116, 229, .17);
+  --beyond-studio-blue-faint: rgba(73, 116, 229, .09);
+  --beyond-studio-shadow: 0 32px 86px rgba(0, 0, 0, .45);
+  --beyond-studio-shadow-soft: 0 14px 34px rgba(0, 0, 0, .22);
+}
+
+/* ==========================================================
+   OVERLAY + APP FRAME
    ========================================================== */
 
 .beyond-live-design-overlay {
@@ -31,38 +75,38 @@
   z-index: 1200;
   display: grid;
   place-items: center;
-  padding: 20px;
+  padding: 18px;
   box-sizing: border-box;
   overflow: hidden;
-  background: rgba(1, 7, 12, .64);
-  backdrop-filter: blur(20px) brightness(.58) saturate(.82);
-  -webkit-backdrop-filter: blur(20px) brightness(.58) saturate(.82);
+  background: rgba(17, 20, 27, .48);
+  backdrop-filter: blur(18px) saturate(.82);
+  -webkit-backdrop-filter: blur(18px) saturate(.82);
 }
 
 .beyond-live-design-workspace {
-  width: min(1180px, calc(100vw - 40px));
-  height: min(900px, calc(100dvh - 40px));
+  width: min(1420px, calc(100vw - 36px));
+  height: min(940px, calc(100dvh - 36px));
   min-height: 620px;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   overflow: hidden;
-  border: 1px solid rgba(116, 164, 206, .2);
-  border-radius: 28px;
-  color: var(--mb-text, #eef5fb);
-  background: var(--mb-bg, #07111d);
-  box-shadow: 0 36px 100px rgba(0, 0, 0, .52);
+  border: 1px solid var(--beyond-studio-border);
+  border-radius: 26px;
+  box-shadow: var(--beyond-studio-shadow);
 }
 
 .beyond-live-design-head {
-  min-height: 88px;
-  padding: 16px 20px;
+  min-height: 82px;
+  padding: 15px 18px 15px 22px;
   box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
-  border-bottom: 1px solid var(--mb-border, rgba(120, 164, 202, .17));
-  background: var(--mb-surface, #0b1926);
+  gap: 22px;
+  border-bottom: 1px solid var(--beyond-studio-border);
+  background: color-mix(in srgb, var(--beyond-studio-surface) 94%, transparent);
+  backdrop-filter: blur(22px) saturate(120%);
+  -webkit-backdrop-filter: blur(22px) saturate(120%);
 }
 
 .beyond-live-design-head > div:first-child {
@@ -71,23 +115,24 @@
 
 .beyond-live-design-head span {
   display: block;
-  color: var(--mb-blue, #4b82ed);
+  color: var(--beyond-studio-blue);
   font-size: 9px;
-  font-weight: 850;
-  letter-spacing: .16em;
+  font-weight: 800;
+  letter-spacing: .15em;
 }
 
 .beyond-live-design-head h2 {
   margin: 4px 0 2px;
-  color: var(--mb-text, #eff6fb);
-  font-size: 24px;
+  color: var(--beyond-studio-text);
+  font-size: 23px;
   line-height: 1.08;
-  letter-spacing: -.03em;
+  font-weight: 700;
+  letter-spacing: -.035em;
 }
 
 .beyond-live-design-head p {
   margin: 0;
-  color: var(--mb-muted, #7f98aa);
+  color: var(--beyond-studio-muted);
   font-size: 11.5px;
   line-height: 1.45;
 }
@@ -96,36 +141,58 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 9px;
+  gap: 8px;
   flex-shrink: 0;
 }
 
 .beyond-live-design-head-actions small {
-  max-width: 150px;
+  max-width: 155px;
   overflow: hidden;
-  color: var(--mb-muted, #7894a8);
+  color: var(--beyond-studio-muted);
   font-size: 10px;
-  font-weight: 650;
+  font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.beyond-live-design-head-actions small::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  margin-inline-end: 6px;
+  display: inline-block;
+  border-radius: 50%;
+  background: #39a873;
+  box-shadow: 0 0 0 3px rgba(57, 168, 115, .10);
+}
+
 .beyond-live-design-head-actions small.error {
-  color: #e48d96;
+  color: var(--beyond-studio-danger);
+}
+
+.beyond-live-design-head-actions small.error::before {
+  background: var(--beyond-studio-danger);
+  box-shadow: 0 0 0 3px rgba(200, 79, 91, .10);
+}
+
+.beyond-live-design-head-actions a,
+.beyond-live-design-close {
+  border: 1px solid var(--beyond-studio-border-strong);
+  color: var(--beyond-studio-muted-strong);
+  background: var(--beyond-studio-surface-soft);
+  box-shadow: 0 1px 2px rgba(20, 24, 32, .03);
+  transition: transform .14s ease, border-color .14s ease, background .14s ease, color .14s ease;
 }
 
 .beyond-live-design-head-actions a {
   min-height: 38px;
-  padding: 0 13px;
+  padding: 0 14px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--mb-border, rgba(110, 157, 196, .2));
-  border-radius: 999px;
-  color: var(--mb-text, #edf5fa);
-  background: var(--mb-surface-soft, #0b1b29);
+  border-radius: 11px;
   font-size: 10.5px;
-  font-weight: 750;
+  font-weight: 650;
   text-decoration: none;
 }
 
@@ -136,37 +203,47 @@
   padding: 0;
   display: grid;
   place-items: center;
-  border: 1px solid var(--mb-border, rgba(110, 157, 196, .2));
-  border-radius: 50%;
-  color: var(--mb-text, #edf5fa);
-  background: var(--mb-surface-soft, #0b1b29);
+  border-radius: 11px;
   cursor: pointer;
 }
+
+.beyond-live-design-head-actions a:hover,
+.beyond-live-design-close:hover {
+  color: var(--beyond-studio-blue);
+  border-color: rgba(73, 116, 229, .30);
+  background: var(--beyond-studio-blue-faint);
+  transform: translateY(-1px);
+}
+
+/* ==========================================================
+   INSPECTOR + CANVAS
+   ========================================================== */
 
 .beyond-live-design-body {
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(350px, 430px) minmax(0, 1fr);
-  gap: 18px;
-  padding: 16px;
+  grid-template-columns: minmax(350px, 390px) minmax(0, 1fr);
+  gap: 12px;
+  padding: 12px;
   box-sizing: border-box;
+  background: var(--beyond-studio-bg);
 }
 
 .beyond-live-design-editor {
   min-width: 0;
   min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  border: 1px solid var(--mb-border, rgba(110, 157, 196, .16));
-  border-radius: 20px;
-  background: var(--mb-surface, #0b1825);
-  scrollbar-width: thin;
+  overflow: hidden;
+  border: 1px solid var(--beyond-studio-border);
+  border-radius: 18px;
+  background: var(--beyond-studio-surface);
+  box-shadow: 0 1px 2px rgba(20, 24, 32, .025);
 }
 
 .beyond-live-design-editor .menu-brand-editor {
   width: 100%;
   max-width: none;
-  min-height: 100%;
+  height: 100%;
+  min-height: 0;
   margin: 0;
   border: 0;
   border-radius: 0;
@@ -174,85 +251,124 @@
 }
 
 .beyond-live-design-editor .menu-brand-editor-body {
-  overflow: visible;
-}
-
-.beyond-live-design-editor .menu-brand-tabs button {
-  font-size: 11px;
-}
-
-.beyond-live-design-editor .menu-layout-copy strong,
-.beyond-live-design-editor .menu-brand-section-intro strong,
-.beyond-live-design-editor .menu-brand-fit-copy strong {
-  font-size: 12px;
-}
-
-.beyond-live-design-editor .menu-layout-copy small,
-.beyond-live-design-editor .menu-brand-section-intro span,
-.beyond-live-design-editor .menu-brand-fit-copy small {
-  font-size: 9.5px;
+  min-height: 0;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 28px;
 }
 
 .beyond-live-design-preview-column {
+  position: relative;
   min-width: 0;
   min-height: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  gap: 8px;
+  gap: 0;
   overflow: hidden;
-  border: 1px solid var(--mb-border, rgba(110, 157, 196, .16));
-  border-radius: 20px;
+  border: 1px solid var(--beyond-studio-border);
+  border-radius: 18px;
   background:
-    radial-gradient(circle at 50% 30%, rgba(65, 111, 210, .11), transparent 40%),
-    #02070c;
+    radial-gradient(circle at 1px 1px, rgba(78, 85, 98, .12) 1px, transparent 1.15px) 0 0 / 18px 18px,
+    var(--beyond-studio-canvas);
+}
+
+.theme-dark .beyond-live-design-preview-column {
+  background:
+    radial-gradient(circle at 1px 1px, rgba(255, 255, 255, .075) 1px, transparent 1.15px) 0 0 / 18px 18px,
+    var(--beyond-studio-canvas);
 }
 
 .beyond-live-design-preview-label {
+  position: relative;
+  z-index: 2;
   width: 100%;
-  min-height: 44px;
+  min-height: 45px;
   padding: 0 14px;
   box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  border-bottom: 1px solid rgba(110, 157, 196, .12);
-  color: #718ca0;
-  background: rgba(6, 18, 27, .9);
+  border-bottom: 1px solid var(--beyond-studio-border);
+  color: var(--beyond-studio-muted);
+  background: color-mix(in srgb, var(--beyond-studio-surface) 94%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   font-size: 9px;
 }
 
 .beyond-live-design-preview-label span {
-  color: #4e89c9;
-  font-weight: 850;
-  letter-spacing: .14em;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--beyond-studio-blue);
+  font-weight: 800;
+  letter-spacing: .13em;
+}
+
+.beyond-live-design-preview-label span::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #42ad79;
+  box-shadow: 0 0 0 3px rgba(66, 173, 121, .10);
 }
 
 .beyond-live-design-preview-label strong {
+  max-width: 52%;
   overflow: hidden;
+  color: var(--beyond-studio-muted-strong);
+  font-size: 9.5px;
+  font-weight: 550;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .beyond-live-design-phone {
-  width: 390px;
-  max-width: calc(100% - 18px);
-  height: min(844px, calc(100% - 58px));
-  min-height: 520px;
+  width: min(500px, calc(100% - 36px));
+  max-width: 500px;
+  height: auto;
+  min-height: 0;
+  flex: 1 1 auto;
+  margin: 18px 0;
   overflow: hidden;
-  border: 7px solid #18232b;
-  border-radius: 36px;
+  border: 7px solid #20232a;
+  border-radius: 34px;
   background: #fff;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, .46);
+  box-shadow:
+    0 24px 55px rgba(28, 32, 40, .18),
+    0 4px 12px rgba(28, 32, 40, .10),
+    inset 0 0 0 1px rgba(255, 255, 255, .12);
+}
+
+.theme-dark .beyond-live-design-phone {
+  border-color: #30343c;
+  box-shadow:
+    0 28px 65px rgba(0, 0, 0, .42),
+    0 4px 14px rgba(0, 0, 0, .24),
+    inset 0 0 0 1px rgba(255, 255, 255, .06);
 }
 
 .beyond-live-design-preview {
   width: 100%;
   height: 100%;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
   overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.beyond-live-design-preview > .ep-page,
+.beyond-live-design-preview .ep-app {
+  width: 100% !important;
+  min-width: 0 !important;
+  transform: none !important;
 }
 
 .beyond-live-design-preview > .ep-page {
@@ -263,16 +379,8 @@
    LIVE CUSTOMER MENU — SHARED DESIGN TOKENS
    ========================================================== */
 
-
-
-
 .ep-page.ep-live-designed,
-.beyond-live-design-preview .ep-page {
-  background: var(--bld-bg) !important;
-  color: var(--bld-text) !important;
-  font-family: var(--bld-body-font) !important;
-}
-
+.beyond-live-design-preview .ep-page,
 .ep-live-designed .ep-app,
 .beyond-live-design-preview .ep-app {
   background: var(--bld-bg) !important;
@@ -290,20 +398,12 @@
 .ep-live-designed .ep-brand-title,
 .beyond-live-design-preview .ep-brand-title {
   color: var(--bld-text) !important;
-  font-family: var(--bld-body-font) !important;
+  font-family: var(--bld-heading-font) !important;
   font-size: var(--bld-brand-size) !important;
 }
 
-.ep-live-designed .ep-brand-sub,
-.beyond-live-design-preview .ep-brand-sub,
-.ep-live-designed .ep-section-count,
-.beyond-live-design-preview .ep-section-count,
-.ep-live-designed .ep-item-description,
-.beyond-live-design-preview .ep-item-description,
-.ep-live-designed .ep-wine-origin,
-.beyond-live-design-preview .ep-wine-origin,
-.ep-live-designed .ep-footer,
-.beyond-live-design-preview .ep-footer {
+.ep-live-designed :is(.ep-brand-sub, .ep-section-count, .ep-item-description, .ep-wine-origin, .ep-footer),
+.beyond-live-design-preview :is(.ep-brand-sub, .ep-section-count, .ep-item-description, .ep-wine-origin, .ep-footer) {
   color: var(--bld-muted) !important;
   font-family: var(--bld-body-font) !important;
   font-size: var(--bld-secondary-size) !important;
@@ -324,16 +424,12 @@
 .ep-live-designed .ep-hero-title,
 .beyond-live-design-preview .ep-hero-title {
   color: var(--bld-text) !important;
-  font-family: var(--bld-body-font) !important;
+  font-family: var(--bld-heading-font) !important;
   font-size: var(--bld-hero-size) !important;
 }
 
-.ep-live-designed .ep-tabs-wrap,
-.beyond-live-design-preview .ep-tabs-wrap,
-.ep-live-designed .ep-section-head,
-.beyond-live-design-preview .ep-section-head,
-.ep-live-designed .ep-footer,
-.beyond-live-design-preview .ep-footer {
+.ep-live-designed :is(.ep-tabs-wrap, .ep-section-head, .ep-footer),
+.beyond-live-design-preview :is(.ep-tabs-wrap, .ep-section-head, .ep-footer) {
   border-color: var(--bld-line) !important;
   background: var(--bld-bg) !important;
 }
@@ -357,7 +453,7 @@
 .ep-live-designed .ep-section-head h2,
 .beyond-live-design-preview .ep-section-head h2 {
   color: var(--bld-text) !important;
-  font-family: var(--bld-body-font) !important;
+  font-family: var(--bld-heading-font) !important;
   font-size: var(--bld-section-size) !important;
 }
 
@@ -376,7 +472,7 @@
 .ep-live-designed .ep-item-name,
 .beyond-live-design-preview .ep-item-name {
   color: var(--bld-text) !important;
-  font-family: var(--bld-body-font) !important;
+  font-family: var(--bld-heading-font) !important;
   font-size: var(--bld-item-size) !important;
 }
 
@@ -388,9 +484,8 @@
 .ep-live-designed :is(.ep-item-price, .ep-item-prices, .ep-dual-price strong, .ep-wine-prices strong),
 .beyond-live-design-preview :is(.ep-item-price, .ep-item-prices, .ep-dual-price strong, .ep-wine-prices strong) {
   color: var(--bld-text) !important;
-  font-family: 'Playfair Display', Georgia, serif !important;
+  font-family: var(--bld-number-font) !important;
   font-size: var(--bld-price-size) !important;
-  font-weight: 700 !important;
   font-weight: 700 !important;
 }
 
@@ -401,37 +496,33 @@
   background: color-mix(in srgb, var(--bld-paper) 82%, var(--bld-bg)) !important;
 }
 
-/* Subcategory headings keep the original customer-menu appearance.
-   Menu Studio may change their colors/font, but never turn them into cards. */
 .ep-live-designed .ep-item-category,
 .beyond-live-design-preview .ep-item-category {
   border-color: var(--bld-line) !important;
+  border-radius: 0 !important;
   color: var(--bld-muted) !important;
   background: transparent !important;
   box-shadow: none !important;
-  border-radius: 0 !important;
+  font-family: var(--bld-body-font) !important;
 }
 
 .ep-live-designed .ep-accessibility-statement-link,
 .beyond-live-design-preview .ep-accessibility-statement-link {
   color: var(--bld-accent) !important;
+  font-family: var(--bld-body-font) !important;
 }
 
 /* ==========================================================
-   LAYOUT — CLASSIC
+   CUSTOMER MENU LAYOUT PRESETS
    ========================================================== */
 
 .ep-live-layout-classic :is(.ep-item-row, .ep-wine-row),
 .beyond-live-design-preview.ep-live-layout-classic :is(.ep-item-row, .ep-wine-row) {
-  border: 1px solid var(--bld-line) !important;
-  border-radius: 16px !important;
   margin: 0 10px 9px !important;
   padding-inline: 14px !important;
+  border: 1px solid var(--bld-line) !important;
+  border-radius: 16px !important;
 }
-
-/* ==========================================================
-   LAYOUT — COMPACT
-   ========================================================== */
 
 .ep-live-layout-compact .ep-hero,
 .beyond-live-design-preview.ep-live-layout-compact .ep-hero {
@@ -451,10 +542,6 @@
   border: 1px solid var(--bld-line) !important;
   border-radius: 11px !important;
 }
-
-/* ==========================================================
-   LAYOUT — CARDS
-   ========================================================== */
 
 .ep-live-layout-cards .ep-menu-list,
 .beyond-live-design-preview.ep-live-layout-cards .ep-menu-list {
@@ -485,10 +572,6 @@
   grid-column: 1 / -1 !important;
 }
 
-/* ==========================================================
-   LAYOUT — EDITORIAL
-   ========================================================== */
-
 .ep-live-layout-editorial .ep-hero,
 .beyond-live-design-preview.ep-live-layout-editorial .ep-hero {
   border-radius: 0 !important;
@@ -508,10 +591,6 @@
   box-shadow: none !important;
 }
 
-/* ==========================================================
-   LAYOUT — MINIMAL
-   ========================================================== */
-
 .ep-live-layout-minimal .ep-hero,
 .beyond-live-design-preview.ep-live-layout-minimal .ep-hero,
 .ep-live-layout-minimal :is(.ep-item-row, .ep-wine-row),
@@ -527,10 +606,6 @@
   border: 0 !important;
   border-bottom: 1px solid color-mix(in srgb, var(--bld-line) 66%, transparent) !important;
 }
-
-/* ==========================================================
-   LAYOUT — BOLD
-   ========================================================== */
 
 .ep-live-layout-bold .ep-hero,
 .beyond-live-design-preview.ep-live-layout-bold .ep-hero {
@@ -551,11 +626,7 @@
 }
 
 /* ==========================================================
-   SAFE LIVE FIT-TO-VIEW
-
-   Only the portal helper adds ep-live-fit-active, and only for a
-   simple category with <=3 visible rows and no special headings.
-   Width and column count are never modified by Fit to View.
+   SAFE FIT TO VIEW
    ========================================================== */
 
 @media (max-width: 560px) {
@@ -580,7 +651,37 @@
 }
 
 /* ==========================================================
-   MOBILE LIVE DESIGN WORKSPACE
+   SHORT SCREENS
+   ========================================================== */
+
+@media (max-height: 760px) and (min-width: 761px) {
+  .beyond-live-design-overlay {
+    padding: 10px;
+  }
+
+  .beyond-live-design-workspace {
+    width: min(1420px, calc(100vw - 20px));
+    height: calc(100dvh - 20px);
+    min-height: 0;
+  }
+
+  .beyond-live-design-head {
+    min-height: 68px;
+    padding-block: 10px;
+  }
+
+  .beyond-live-design-body {
+    padding: 9px;
+    gap: 9px;
+  }
+
+  .beyond-live-design-phone {
+    margin-block: 10px;
+  }
+}
+
+/* ==========================================================
+   MOBILE DESIGN WORKSPACE
    ========================================================== */
 
 @media (max-width: 760px) {
@@ -602,8 +703,8 @@
   }
 
   .beyond-live-design-head {
-    min-height: 70px;
-    padding: max(10px, env(safe-area-inset-top)) 11px 9px;
+    min-height: 64px;
+    padding: max(9px, env(safe-area-inset-top)) 10px 8px 13px;
     gap: 8px;
   }
 
@@ -612,16 +713,13 @@
   }
 
   .beyond-live-design-head p,
-  .beyond-live-design-head > div:first-child > span {
+  .beyond-live-design-head > div:first-child > span,
+  .beyond-live-design-head-actions small {
     display: none;
   }
 
   .beyond-live-design-head-actions {
     gap: 5px;
-  }
-
-  .beyond-live-design-head-actions small {
-    display: none;
   }
 
   .beyond-live-design-head-actions a {
@@ -632,25 +730,27 @@
 
   .beyond-live-design-body {
     grid-template-columns: 1fr;
-    grid-template-rows: minmax(250px, 42dvh) minmax(0, 1fr);
-    gap: 8px;
-    padding: 8px;
+    grid-template-rows: minmax(245px, 40dvh) minmax(0, 1fr);
+    gap: 7px;
+    padding: 7px;
   }
 
   .beyond-live-design-preview-column {
     grid-row: 1;
-    border-radius: 16px;
+    border-radius: 15px;
   }
 
   .beyond-live-design-preview-label {
-    min-height: 34px;
+    min-height: 35px;
+    padding-inline: 10px;
   }
 
   .beyond-live-design-phone {
     width: 100%;
     max-width: none;
-    height: calc(100% - 42px);
+    height: calc(100% - 35px);
     min-height: 0;
+    margin: 0;
     border: 0;
     border-radius: 0 0 14px 14px;
     box-shadow: none;
@@ -658,29 +758,16 @@
 
   .beyond-live-design-editor {
     grid-row: 2;
-    border-radius: 16px;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .beyond-live-design-editor .menu-brand-tabs {
-    flex-wrap: wrap !important;
-    overflow: visible !important;
-  }
-
-  .beyond-live-design-editor .menu-brand-tabs button {
-    flex: 1 1 calc(33.333% - 4px) !important;
-    min-width: 0 !important;
-    min-height: 42px !important;
-    font-size: 11px !important;
+    border-radius: 15px;
   }
 
   .beyond-live-design-editor .menu-brand-layout-grid {
-    grid-template-columns: 1fr !important;
+    grid-template-columns: 1fr;
   }
 
   .beyond-live-design-editor :is(input, select, textarea) {
-    max-width: 100% !important;
-    box-sizing: border-box !important;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .beyond-live-design-editor input,
@@ -688,328 +775,3 @@
     font-size: 16px !important;
   }
 }
-
-/* ==========================================================
-   CUSTOMER MENU — CANONICAL TYPOGRAPHY GROUPS
-
-   HEADINGS:
-   Restaurant name, hero title, section titles, item names.
-
-   BODY:
-   Categories, descriptions, labels, secondary text, footer.
-
-   NUMBERS:
-   Every price and numeric price heading such as 1/3 + 1/2.
-   ========================================================== */
-
-/* HEADINGS */
-.ep-live-designed :is(
-  .ep-brand-title,
-  .ep-hero-title,
-  .ep-section-head h2,
-  .ep-item-name
-),
-.beyond-live-design-preview :is(
-  .ep-brand-title,
-  .ep-hero-title,
-  .ep-section-head h2,
-  .ep-item-name
-) {
-  font-family: var(--bld-heading-font) !important;
-}
-
-/* BODY */
-.ep-live-designed :is(
-  .ep-brand-sub,
-  .ep-hero-kicker,
-  .ep-tabs button,
-  .ep-section-count,
-  .ep-item-description,
-  .ep-wine-origin,
-  .ep-item-category,
-  .ep-mixers-box,
-  .ep-footer,
-  .ep-accessibility-statement-link
-),
-.beyond-live-design-preview :is(
-  .ep-brand-sub,
-  .ep-hero-kicker,
-  .ep-tabs button,
-  .ep-section-count,
-  .ep-item-description,
-  .ep-wine-origin,
-  .ep-item-category,
-  .ep-mixers-box,
-  .ep-footer,
-  .ep-accessibility-statement-link
-) {
-  font-family: var(--bld-body-font) !important;
-}
-
-/* NUMBERS */
-.ep-live-designed :is(
-  .ep-item-price,
-  .ep-item-prices,
-  .ep-dual-price strong,
-  .ep-wine-prices strong,
-  .ep-dual-header,
-  .ep-dual-header *
-),
-.beyond-live-design-preview :is(
-  .ep-item-price,
-  .ep-item-prices,
-  .ep-dual-price strong,
-  .ep-wine-prices strong,
-  .ep-dual-header,
-  .ep-dual-header *
-) {
-  font-family: var(--bld-number-font) !important;
-}
-
-/* CUSTOMER_MENU_CANONICAL_TYPE_START */
-
-/*
-  ONE shared typography contract.
-
-  Every customer chooses the three fonts independently,
-  but element classification is identical for every menu.
-*/
-
-/* HEADINGS */
-.ep-live-designed :is(
-  .ep-brand-title,
-  .ep-hero-title,
-  .ep-section-head h2,
-  .ep-item-name
-),
-.beyond-live-design-preview :is(
-  .ep-brand-title,
-  .ep-hero-title,
-  .ep-section-head h2,
-  .ep-item-name
-) {
-  font-family:
-    var(--bld-heading-font) !important;
-}
-
-
-/* BODY */
-.ep-live-designed :is(
-  .ep-brand-sub,
-  .ep-hero-kicker,
-  .ep-tabs button,
-  .ep-section-count,
-  .ep-item-category,
-  .ep-item-description,
-  .ep-wine-origin,
-  .ep-mixers-box,
-  .ep-footer,
-  .ep-accessibility-statement-link
-),
-.beyond-live-design-preview :is(
-  .ep-brand-sub,
-  .ep-hero-kicker,
-  .ep-tabs button,
-  .ep-section-count,
-  .ep-item-category,
-  .ep-item-description,
-  .ep-wine-origin,
-  .ep-mixers-box,
-  .ep-footer,
-  .ep-accessibility-statement-link
-) {
-  font-family:
-    var(--bld-body-font) !important;
-}
-
-
-/* NUMBERS */
-.ep-live-designed :is(
-  .ep-item-price,
-  .ep-item-prices,
-  .ep-dual-price strong,
-  .ep-wine-prices strong,
-  .ep-dual-header,
-  .ep-dual-header *
-),
-.beyond-live-design-preview :is(
-  .ep-item-price,
-  .ep-item-prices,
-  .ep-dual-price strong,
-  .ep-wine-prices strong,
-  .ep-dual-header,
-  .ep-dual-header *
-) {
-  font-family:
-    var(--bld-number-font) !important;
-}
-
-/* CUSTOMER_MENU_CANONICAL_TYPE_END */
-
-/* BEYOND_LIVE_DESIGN_USABILITY_FIX_START */
-
-/* ==========================================================
-   DESIGN EDITOR SCROLLING
-
-   The editor itself stays fixed inside the workspace.
-   Only its content panel scrolls.
-   ========================================================== */
-
-.beyond-live-design-editor {
-  min-height: 0 !important;
-  overflow: hidden !important;
-}
-
-.beyond-live-design-editor .menu-brand-editor {
-  height: 100% !important;
-  min-height: 0 !important;
-  overflow: hidden !important;
-}
-
-.beyond-live-design-editor .menu-brand-editor-body {
-  min-height: 0 !important;
-  flex: 1 1 auto !important;
-
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-
-  padding-bottom: 28px !important;
-}
-
-
-/* ==========================================================
-   LIVE PREVIEW
-
-   Use approximately the same width as the real public menu
-   instead of squeezing it into the old 390px phone frame.
-   ========================================================== */
-
-.beyond-live-design-preview-column {
-  min-width: 0 !important;
-  min-height: 0 !important;
-  overflow: hidden !important;
-}
-
-.beyond-live-design-phone {
-  width: min(500px, calc(100% - 24px)) !important;
-  max-width: 500px !important;
-
-  height: auto !important;
-  min-height: 0 !important;
-
-  flex: 1 1 auto !important;
-
-  margin-bottom: 12px;
-
-  overflow: hidden !important;
-
-  border-width: 5px !important;
-  border-radius: 28px !important;
-}
-
-.beyond-live-design-preview {
-  width: 100% !important;
-  height: 100% !important;
-
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-}
-
-
-/*
-  Do not scale or compress the actual customer menu.
-  Preview shows the menu at its natural responsive width.
-*/
-.beyond-live-design-preview > .ep-page {
-  width: 100% !important;
-  min-width: 0 !important;
-  min-height: 100% !important;
-}
-
-.beyond-live-design-preview .ep-app {
-  width: 100% !important;
-  min-width: 0 !important;
-  transform: none !important;
-}
-
-
-/* ==========================================================
-   SHORTER SCREENS
-
-   Never let the modal become taller than the browser.
-   ========================================================== */
-
-@media (max-height: 760px) {
-  .beyond-live-design-overlay {
-    padding: 10px !important;
-  }
-
-  .beyond-live-design-workspace {
-    width: min(1240px, calc(100vw - 20px)) !important;
-    height: calc(100dvh - 20px) !important;
-    min-height: 0 !important;
-  }
-
-  .beyond-live-design-head {
-    min-height: 68px !important;
-    padding-block: 10px !important;
-  }
-
-  .beyond-live-design-body {
-    min-height: 0 !important;
-    padding: 10px !important;
-  }
-}
-
-/* BEYOND_LIVE_DESIGN_USABILITY_FIX_END */
-
-/* ==========================================================
-   MENU STUDIO TAB CLIPPING FIX
-   ========================================================== */
-
-.beyond-live-design-editor .menu-brand-tabs {
-  min-height: 48px !important;
-  padding: 6px 8px !important;
-
-  align-items: center !important;
-
-  border-bottom:
-    1px solid var(--mb-border, rgba(110,157,196,.12)) !important;
-}
-
-.beyond-live-design-editor .menu-brand-tabs button {
-  min-height: 34px !important;
-
-  box-sizing: border-box !important;
-
-  margin: 0 !important;
-
-  position: relative !important;
-  top: 0 !important;
-
-  transform: none !important;
-
-  border:
-    2px solid transparent !important;
-
-  border-radius: 9px !important;
-}
-
-.beyond-live-design-editor .menu-brand-tabs button.active {
-  border-color:
-    var(--mb-blue, #348df0) !important;
-
-  background:
-    var(--mb-blue-soft, rgba(52,141,240,.08)) !important;
-
-  box-shadow: none !important;
-
-  transform: none !important;
-}
-
