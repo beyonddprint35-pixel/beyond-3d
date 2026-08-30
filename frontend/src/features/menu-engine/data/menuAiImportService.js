@@ -10,6 +10,8 @@ export const MENU_IMPORT_SUPPORTED_TYPES = new Set([
   "image/webp",
 ]);
 
+const MENU_TRANSLATION_LANGUAGES = ["en", "he", "ar"];
+
 export function totalImportBytes(files = []) {
   return files.reduce((sum, file) => sum + Number(file?.size || 0), 0);
 }
@@ -61,6 +63,70 @@ async function parseFunctionError(functionError) {
   const error = new Error(message);
   error.details = details;
   return error;
+}
+
+function fieldText(value) {
+  return value == null ? "" : String(value).trim();
+}
+
+function hasAnyLocalizedField(row, base) {
+  return MENU_TRANSLATION_LANGUAGES.some((code) => fieldText(row?.[`${base}_${code}`]));
+}
+
+export function findMissingRequestedMenuTranslations(menu, languages = []) {
+  const requested = [...new Set(languages.filter((code) => MENU_TRANSLATION_LANGUAGES.includes(code)))];
+  if (!requested.length) return [];
+
+  const missing = [];
+  const sections = Array.isArray(menu?.sections) ? menu.sections : [];
+  sections.forEach((section, sectionIndex) => {
+    if (hasAnyLocalizedField(section, "name")) {
+      requested.forEach((code) => {
+        if (!fieldText(section?.[`name_${code}`])) missing.push(`section:${sectionIndex}:name_${code}`);
+      });
+    }
+
+    const items = Array.isArray(section?.items) ? section.items : [];
+    items.forEach((item, itemIndex) => {
+      if (hasAnyLocalizedField(item, "name")) {
+        requested.forEach((code) => {
+          if (!fieldText(item?.[`name_${code}`])) missing.push(`item:${sectionIndex}:${itemIndex}:name_${code}`);
+        });
+      }
+
+      for (const base of ["description", "origin"]) {
+        if (!hasAnyLocalizedField(item, base)) continue;
+        requested.forEach((code) => {
+          if (!fieldText(item?.[`${base}_${code}`])) missing.push(`item:${sectionIndex}:${itemIndex}:${base}_${code}`);
+        });
+      }
+
+      const options = Array.isArray(item?.price_options) ? item.price_options : [];
+      options.forEach((option, optionIndex) => {
+        if (!hasAnyLocalizedField(option, "label")) return;
+        requested.forEach((code) => {
+          if (!fieldText(option?.[`label_${code}`])) missing.push(`option:${sectionIndex}:${itemIndex}:${optionIndex}:label_${code}`);
+        });
+      });
+    });
+  });
+  return missing;
+}
+
+async function completeMissingMenuTranslations({ session, projectId, menu, languages }) {
+  const missing = findMissingRequestedMenuTranslations(menu, languages);
+  if (!missing.length) return { menu, repaired: false, missingBefore: 0, aiCost: null };
+
+  const { data, error } = await supabase.functions.invoke("menu-ai-translation-complete", {
+    body: { projectId, menu, languages },
+    headers: { Authorization: `Bearer ${session.access_token}` },
+  });
+  if (error) throw await parseFunctionError(error);
+  if (!data?.ok || !data?.menu) throw new Error(data?.error || "Could not complete all requested menu translations.");
+
+  const remaining = findMissingRequestedMenuTranslations(data.menu, languages);
+  if (remaining.length) throw new Error(`Could not complete ${remaining.length} requested menu translations.`);
+  return { menu: data.menu, repaired: Boolean(data.repaired), missingBefore: missing.length, aiCost: data.aiCost || null };
 }
 
 export async function getMenuAiAllowance() {
@@ -130,10 +196,23 @@ export async function importMenuWithAi({ session, files = [], text = "", languag
   if (functionError) throw await parseFunctionError(functionError);
   if (!data?.ok || !data?.menu) throw new Error(data?.error || "Could not build this menu.");
 
-  return {
-    project: { ...project, name: data.menu?.restaurant_name || project.name, structured_menu: data.menu, status: "ready" },
+  const translation = await completeMissingMenuTranslations({
+    session,
+    projectId: project.id,
     menu: data.menu,
+    languages,
+  });
+  const completedMenu = translation.menu;
+
+  return {
+    project: { ...project, name: completedMenu?.restaurant_name || project.name, structured_menu: completedMenu, status: "ready" },
+    menu: completedMenu,
     allowance: data.unlimited ? allowance : { ...allowance, remaining_attempts: data.remainingAttempts },
     aiCost: data.aiCost || null,
+    translationRepair: translation.repaired ? {
+      repaired: true,
+      missingBefore: translation.missingBefore,
+      aiCost: translation.aiCost,
+    } : null,
   };
 }
