@@ -22,7 +22,7 @@ import "./MenuPreviewStudioV2.css";
 
 const UI = {
   en: {
-    workspace:"Menu workspace", interfaceLanguage:"Interface language", contentLanguage:"Preview language",
+    workspace:"Menu workspace", interfaceLanguage:"Language", contentLanguage:"Language",
     content:"Content", design:"Design", preview:"Preview", publish:"Publish", backDesign:"Back to Design",
     eyebrow:"CUSTOMER PREVIEW", title:"Review the experience before it goes live", hint:"Check every customer language and device using the exact menu draft your guests will receive.",
     ready:"Ready for final publish setup", attention:"Review before publishing", designLabel:"Design", items:"visible items", languages:"menu languages",
@@ -31,7 +31,7 @@ const UI = {
     emptyCategories:"empty visible categories", allClear:"All enabled languages have complete category and item names.", qualityNotes:"quality notes", issues:"blocking issues",
   },
   he: {
-    workspace:"סביבת עבודת התפריט", interfaceLanguage:"שפת הממשק", contentLanguage:"שפת התצוגה",
+    workspace:"סביבת עבודת התפריט", interfaceLanguage:"שפה", contentLanguage:"שפה",
     content:"תוכן", design:"עיצוב", preview:"תצוגה מקדימה", publish:"פרסום", backDesign:"חזרה לעיצוב",
     eyebrow:"תצוגת לקוח", title:"בדקו את החוויה לפני שהיא עולה לאוויר", hint:"בדקו כל שפת לקוח וכל מכשיר באמצעות טיוטת התפריט המדויקת שהאורחים יקבלו.",
     ready:"מוכן להגדרות הפרסום הסופיות", attention:"כדאי לבדוק לפני הפרסום", designLabel:"עיצוב", items:"פריטים גלויים", languages:"שפות תפריט",
@@ -40,7 +40,7 @@ const UI = {
     emptyCategories:"קטגוריות גלויות ריקות", allClear:"לכל השפות הפעילות יש שמות מלאים לקטגוריות ולפריטים.", qualityNotes:"הערות איכות", issues:"בעיות חוסמות",
   },
   ar: {
-    workspace:"مساحة عمل القائمة", interfaceLanguage:"لغة الواجهة", contentLanguage:"لغة المعاينة",
+    workspace:"مساحة عمل القائمة", interfaceLanguage:"اللغة", contentLanguage:"اللغة",
     content:"المحتوى", design:"التصميم", preview:"المعاينة", publish:"النشر", backDesign:"العودة إلى التصميم",
     eyebrow:"معاينة الزبون", title:"راجعوا التجربة قبل نشرها", hint:"تحققوا من كل لغة للزبائن ومن كل جهاز باستخدام نفس مسودة القائمة التي سيشاهدها الضيوف.",
     ready:"جاهزة لإعداد النشر النهائي", attention:"راجع قبل النشر", designLabel:"التصميم", items:"عناصر ظاهرة", languages:"لغات القائمة",
@@ -58,10 +58,13 @@ export default function MenuPreviewStudioV2() {
   const [design] = useState(() => resolved.design);
   const menuLanguages = menu.languages?.length ? menu.languages : [menu.default_language || "en"];
   const [contentLanguage, setContentLanguage] = useState(() => {
-    const saved = storedDraft?.contentLanguage || menu.default_language || menuLanguages[0] || "en";
+    const saved = storedDraft?.contentLanguage || readStudioLanguage(menu.default_language || menuLanguages[0] || "en");
     return menuLanguages.includes(saved) ? saved : menuLanguages[0] || "en";
   });
-  const [uiLanguage, setUiLanguage] = useState(() => readStudioLanguage("en"));
+  const [uiLanguage, setUiLanguage] = useState(() => {
+    const saved = storedDraft?.contentLanguage || readStudioLanguage(menu.default_language || menuLanguages[0] || "en");
+    return menuLanguages.includes(saved) ? saved : menuLanguages[0] || "en";
+  });
 
   const t = UI[uiLanguage] || UI.en;
   const rtl = studioLanguageDirection(uiLanguage) === "rtl";
@@ -80,7 +83,8 @@ export default function MenuPreviewStudioV2() {
     });
   }, [contentLanguage, design, menu, profile, resolved.designId, storedDraft]);
 
-  function changeUiLanguage(language) {
+  function changeStudioLanguage(language) {
+    setContentLanguage(language);
     setUiLanguage(language);
     writeStudioLanguage(language);
   }
@@ -104,8 +108,7 @@ export default function MenuPreviewStudioV2() {
         </nav>
 
         <div className="menu-preview-v2-top-actions">
-          <StudioLanguageMenu value={contentLanguage} onChange={setContentLanguage} label={t.contentLanguage} compact allowedLanguages={menuLanguages} />
-          <StudioLanguageMenu value={uiLanguage} onChange={changeUiLanguage} label={t.interfaceLanguage} compact />
+          <StudioLanguageMenu value={contentLanguage} onChange={changeStudioLanguage} label={t.contentLanguage} compact allowedLanguages={menuLanguages} />
         </div>
       </header>
 
@@ -132,7 +135,7 @@ export default function MenuPreviewStudioV2() {
             const meta = studioLanguageMeta(code);
             const state = readiness.byLanguage[code] || { blockers: 0, warnings: 0 };
             const clean = state.blockers === 0;
-            return <button type="button" key={code} className={`${contentLanguage === code ? "active" : ""} ${clean ? "clean" : "problem"}`} onClick={() => setContentLanguage(code)}>
+            return <button type="button" key={code} className={`${contentLanguage === code ? "active" : ""} ${clean ? "clean" : "problem"}`} onClick={() => changeStudioLanguage(code)}>
               <span className="menu-preview-v2-language-state">{clean ? <CheckCircle2 size={15} /> : <CircleAlert size={15} />}</span>
               <span className="menu-preview-v2-language-copy"><strong>{meta.nativeLabel}</strong><small>{clean ? t.clean : `${state.blockers} ${t.blocker}`}{state.warnings ? ` · ${state.warnings} ${t.warning}` : ""}</small></span>
               <b>{meta.short}</b>
@@ -152,7 +155,7 @@ export default function MenuPreviewStudioV2() {
 
       <footer className="menu-preview-v2-footer">
         <button type="button" className="secondary" onClick={() => window.location.assign("/dev/menu-design-v2")}><BackIcon size={14} /> {t.backDesign}</button>
-        <button type="button" className="primary" onClick={() => window.location.assign("/dev/menu-publish-v2")}>{t.continuePublish} <Rocket size={14} /><ForwardIcon size={14} /></button>
+        <button type="button" className="primary" onClick={() => window.location.assign("/dev/menu-publish-v2")}>{t.continuePublish} <Rocket size={14}/><ForwardIcon size={14}/></button>
       </footer>
     </main>
   );
