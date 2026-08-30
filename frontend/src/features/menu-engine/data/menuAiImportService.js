@@ -108,41 +108,32 @@ export async function importMenuWithAi({ session, files = [], text = "", languag
 
   if (createError) throw createError;
 
-  try {
-    const payloadFiles = await Promise.all(files.map(fileToPayload));
-    const imageOnly = files.length > 0
-      && files.every((file) => file.type?.startsWith("image/"))
-      && !String(text || "").trim();
-    const functionName = imageOnly ? "menu-ai-extract-smart-test" : "menu-ai-extract";
+  const payloadFiles = await Promise.all(files.map(fileToPayload));
+  const imageOnly = files.length > 0
+    && files.every((file) => file.type?.startsWith("image/"))
+    && !String(text || "").trim();
+  const functionName = imageOnly ? "menu-ai-extract-smart-test" : "menu-ai-extract";
 
-    const { data, error: functionError } = await supabase.functions.invoke(functionName, {
-      body: {
-        projectId: project.id,
-        text: String(text || "").trim(),
-        files: payloadFiles,
-        languages,
-        expectedItemCount: 0,
-        recoveryProjectId: null,
-        smartRetry: false,
-      },
-      headers: { Authorization: `Bearer ${session.access_token}` },
-    });
+  const { data, error: functionError } = await supabase.functions.invoke(functionName, {
+    body: {
+      projectId: project.id,
+      text: String(text || "").trim(),
+      files: payloadFiles,
+      languages,
+      expectedItemCount: 0,
+      recoveryProjectId: null,
+      smartRetry: false,
+    },
+    headers: { Authorization: `Bearer ${session.access_token}` },
+  });
 
-    if (functionError) throw await parseFunctionError(functionError);
-    if (!data?.ok || !data?.menu) throw new Error(data?.error || "Could not build this menu.");
+  if (functionError) throw await parseFunctionError(functionError);
+  if (!data?.ok || !data?.menu) throw new Error(data?.error || "Could not build this menu.");
 
-    return {
-      project: { ...project, name: data.menu?.restaurant_name || project.name, structured_menu: data.menu, status: "ready" },
-      menu: data.menu,
-      allowance: data.unlimited ? allowance : { ...allowance, remaining_attempts: data.remainingAttempts },
-      aiCost: data.aiCost || null,
-    };
-  } catch (error) {
-    try {
-      await supabase.from("menu_projects").update({ status: "failed" }).eq("id", project.id).eq("owner_user_id", session.user.id);
-    } catch {
-      // Failure bookkeeping should never mask the original import error.
-    }
-    throw error;
-  }
+  return {
+    project: { ...project, name: data.menu?.restaurant_name || project.name, structured_menu: data.menu, status: "ready" },
+    menu: data.menu,
+    allowance: data.unlimited ? allowance : { ...allowance, remaining_attempts: data.remainingAttempts },
+    aiCost: data.aiCost || null,
+  };
 }
