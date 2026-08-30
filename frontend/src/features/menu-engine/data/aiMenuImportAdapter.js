@@ -23,6 +23,16 @@ const PRICE_TYPE_PRESETS = {
   ],
 };
 
+const PRICE_LABEL_SYNONYMS = Object.freeze({
+  one_third: ["1/3", "third", "שליש", "ثلث"],
+  one_half: ["1/2", "half", "חצי", "نصف"],
+  small: ["small", "קטן", "صغير"],
+  large: ["large", "גדול", "كبير"],
+  shot: ["shot", "שוט", "شوت", "جرعة"],
+  glass: ["glass", "כוס", "كأس"],
+  bottle: ["bottle", "בקבוק", "زجاجة"],
+});
+
 function text(value) {
   return value == null ? "" : String(value).trim();
 }
@@ -33,6 +43,15 @@ function localized(row, base) {
     he: text(row?.[`${base}_he`] ?? row?.[base]),
     ar: text(row?.[`${base}_ar`] ?? row?.[base]),
   };
+}
+
+function mergeLocalized(existing = {}, incoming = {}) {
+  const next = { ...(existing && typeof existing === "object" ? existing : {}) };
+  SUPPORTED_LANGUAGES.forEach((code) => {
+    const value = text(incoming?.[code]);
+    if (value) next[code] = value;
+  });
+  return next;
 }
 
 function cleanPrice(value) {
@@ -64,7 +83,7 @@ function groupSearchText(group) {
 
 function inferPairPreset(group) {
   const value = groupSearchText(group);
-  if (/draft beer|draught beer|beer on tap|בירה מהחבית|بيرة.*برميل|بيرة.*صنبور/.test(value)) return PRICE_TYPE_PRESETS.draft;
+  if (/draft beers?|draught beers?|beers? on tap|ביר(?:ה|ות)\s*מהחבית|בירות?\s*חבית|بيرة.*(?:برميل|صنبور|حنفية)|بيرة\s*مسودة/.test(value)) return PRICE_TYPE_PRESETS.draft;
   if (/hot drinks|coffee|משקאות חמים|קפה|مشروبات ساخنة|قهوة/.test(value)) return PRICE_TYPE_PRESETS.smallLarge;
   if (/wine|יין|نبيذ/.test(value)) return PRICE_TYPE_PRESETS.glassBottle;
   if (/whisk|וויסקי|ويسكي|gin|ג['׳]?ין|جين|vodka|וודקה|فودكا|liquor|liqueur|ליקר|ليكير|cognac|קוניאק|كونياك|rum|רום|روم|aperitif|אפריטיף|أبيريتيف|arak|ערק|عرق|anise|אניס|يانسون|tequila|טקילה|تيكيلا|brandy|ברנדי|براندي|drinks to mix|משקאות לערבוב|مشروبات للخلط/.test(value)) return PRICE_TYPE_PRESETS.shotGlass;
@@ -106,13 +125,21 @@ function comparableLabel(value) {
     .replace(/½/g, "1/2");
 }
 
+function presetSemanticLabels(presetEntry) {
+  return [
+    presetEntry?.label_key,
+    presetEntry?.label_en,
+    presetEntry?.label_he,
+    presetEntry?.label_ar,
+    ...(PRICE_LABEL_SYNONYMS[presetEntry?.label_key] || []),
+  ].map(comparableLabel).filter(Boolean);
+}
+
 function optionMatchesPreset(option, presetEntry) {
   const optionLabels = [option?.label_key, option?.label, option?.label_en, option?.label_he, option?.label_ar]
     .map(comparableLabel)
     .filter(Boolean);
-  const presetLabels = [presetEntry?.label_key, presetEntry?.label_en, presetEntry?.label_he, presetEntry?.label_ar]
-    .map(comparableLabel)
-    .filter(Boolean);
+  const presetLabels = presetSemanticLabels(presetEntry);
   return optionLabels.some((optionLabel) => presetLabels.some((presetLabel) => optionLabel === presetLabel || optionLabel.includes(presetLabel)));
 }
 
@@ -124,8 +151,8 @@ function optionServingQuantity(option) {
     .replace(/⅓/g, "1/3")
     .replace(/½/g, "1/2");
 
-  if (/\b1\s*\/\s*3\b/.test(label)) return 1 / 3;
-  if (/\b1\s*\/\s*2\b/.test(label)) return 1 / 2;
+  if (/\b1\s*\/\s*3\b|\bthird\b|שליש|ثلث/.test(label)) return 1 / 3;
+  if (/\b1\s*\/\s*2\b|\bhalf\b|חצי|نصف/.test(label)) return 1 / 2;
 
   const unitMatch = label.match(/(\d+(?:[.,]\d+)?)\s*(ml|cl|l|oz)\b/i);
   if (!unitMatch) return Number.NaN;
@@ -333,5 +360,50 @@ export function adaptAiStructuredMenuToV3(rawMenu = {}, { projectId = "" } = {})
       projectId: projectId || "",
       warnings: Array.isArray(rawMenu?.warnings) ? rawMenu.warnings : [],
     },
+  });
+}
+
+export function mergeAiTranslationRepairIntoV3(menu = {}, repairedRawMenu = {}) {
+  const sections = Array.isArray(repairedRawMenu?.sections) ? repairedRawMenu.sections : [];
+  const groups = Array.isArray(menu?.groups) ? menu.groups.map((group) => ({ ...group })) : [];
+  const items = Array.isArray(menu?.items) ? menu.items.map((item) => ({ ...item })) : [];
+  const groupMap = new Map(groups.map((group) => [group.id, group]));
+  const itemMap = new Map(items.map((item) => [item.id, item]));
+
+  sections.forEach((section, sectionIndex) => {
+    const groupId = `ai-group-${sectionIndex + 1}`;
+    const group = groupMap.get(groupId);
+    if (group) group.name = mergeLocalized(group.name, localized(section, "name"));
+
+    const sectionItems = Array.isArray(section?.items) ? section.items : [];
+    sectionItems.forEach((rawItem, itemIndex) => {
+      const itemId = `ai-item-${sectionIndex + 1}-${itemIndex + 1}`;
+      const item = itemMap.get(itemId);
+      if (!item) return;
+      item.name = mergeLocalized(item.name, localized(rawItem, "name"));
+      item.description = mergeLocalized(item.description, localized(rawItem, "description"));
+
+      const rawOptions = Array.isArray(rawItem?.price_options) ? rawItem.price_options : [];
+      const existingOptions = Array.isArray(item?.price_options) ? item.price_options : [];
+      if (rawOptions.length === existingOptions.length) {
+        item.price_options = existingOptions.map((option, optionIndex) => {
+          const rawOption = rawOptions[optionIndex] || {};
+          return {
+            ...option,
+            label_en: text(rawOption.label_en) || option.label_en || "",
+            label_he: text(rawOption.label_he) || option.label_he || "",
+            label_ar: text(rawOption.label_ar) || option.label_ar || "",
+          };
+        });
+      }
+    });
+  });
+
+  const languages = resolveLanguages(repairedRawMenu);
+  return normalizeV3MenuPriceOptions({
+    ...menu,
+    languages: languages.length ? languages : menu.languages,
+    groups,
+    items,
   });
 }
