@@ -73,6 +73,20 @@ function hasAnyLocalizedField(row, base) {
   return MENU_TRANSLATION_LANGUAGES.some((code) => fieldText(row?.[`${base}_${code}`]));
 }
 
+function hasAlphabeticText(value) {
+  return /[A-Za-z\u0590-\u05ff\u0600-\u06ff]/.test(fieldText(value));
+}
+
+function requestedTranslationMissing(row, base, code) {
+  const value = fieldText(row?.[`${base}_${code}`]);
+  if (!value) return true;
+  if (!hasAlphabeticText(value)) return false;
+  if (code === "ar") return !/[\u0600-\u06ff]/.test(value);
+  if (code === "he") return !/[\u0590-\u05ff]/.test(value);
+  if (code === "en") return !/[A-Za-z]/.test(value);
+  return false;
+}
+
 export function findMissingRequestedMenuTranslations(menu, languages = []) {
   const requested = [...new Set(languages.filter((code) => MENU_TRANSLATION_LANGUAGES.includes(code)))];
   if (!requested.length) return [];
@@ -82,7 +96,7 @@ export function findMissingRequestedMenuTranslations(menu, languages = []) {
   sections.forEach((section, sectionIndex) => {
     if (hasAnyLocalizedField(section, "name")) {
       requested.forEach((code) => {
-        if (!fieldText(section?.[`name_${code}`])) missing.push(`section:${sectionIndex}:name_${code}`);
+        if (requestedTranslationMissing(section, "name", code)) missing.push(`section:${sectionIndex}:name_${code}`);
       });
     }
 
@@ -90,14 +104,14 @@ export function findMissingRequestedMenuTranslations(menu, languages = []) {
     items.forEach((item, itemIndex) => {
       if (hasAnyLocalizedField(item, "name")) {
         requested.forEach((code) => {
-          if (!fieldText(item?.[`name_${code}`])) missing.push(`item:${sectionIndex}:${itemIndex}:name_${code}`);
+          if (requestedTranslationMissing(item, "name", code)) missing.push(`item:${sectionIndex}:${itemIndex}:name_${code}`);
         });
       }
 
       for (const base of ["description", "origin"]) {
         if (!hasAnyLocalizedField(item, base)) continue;
         requested.forEach((code) => {
-          if (!fieldText(item?.[`${base}_${code}`])) missing.push(`item:${sectionIndex}:${itemIndex}:${base}_${code}`);
+          if (requestedTranslationMissing(item, base, code)) missing.push(`item:${sectionIndex}:${itemIndex}:${base}_${code}`);
         });
       }
 
@@ -105,7 +119,7 @@ export function findMissingRequestedMenuTranslations(menu, languages = []) {
       options.forEach((option, optionIndex) => {
         if (!hasAnyLocalizedField(option, "label")) return;
         requested.forEach((code) => {
-          if (!fieldText(option?.[`label_${code}`])) missing.push(`option:${sectionIndex}:${itemIndex}:${optionIndex}:label_${code}`);
+          if (requestedTranslationMissing(option, "label", code)) missing.push(`option:${sectionIndex}:${itemIndex}:${optionIndex}:label_${code}`);
         });
       });
     });
