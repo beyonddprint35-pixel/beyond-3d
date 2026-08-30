@@ -27,8 +27,13 @@
   --design-shadow:0 12px 34px rgba(0,0,0,.055),0 1px 2px rgba(0,0,0,.025);
   --design-shadow-hover:0 18px 42px rgba(0,0,0,.09),0 2px 6px rgba(0,0,0,.035);
   display:grid;
+  grid-auto-rows:max-content;
+  align-content:start;
+  align-self:start;
   gap:14px;
   min-width:0;
+  min-height:0;
+  height:auto;
   margin:0;
   color:var(--design-ink);
   font-family:Inter,-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif;
@@ -185,13 +190,25 @@
 .studio-v3-design-v2-nav strong{display:block;font-size:11.5px;font-weight:780;letter-spacing:-.01em}
 .studio-v3-design-v2-nav small{display:none}
 
-.studio-v3-design-quick-workspace,.studio-v3-template-workspace,.studio-v3-customize-workspace{display:grid;gap:14px;min-width:0}
+.studio-v3-design-quick-workspace,
+.studio-v3-template-workspace,
+.studio-v3-customize-workspace{
+  display:grid;
+  grid-auto-rows:max-content;
+  align-content:start;
+  align-self:start;
+  gap:14px;
+  min-width:0;
+  min-height:0;
+  height:auto;
+}
 
 /* ---------- Current design ---------- */
 .studio-v3-design-v2-current{
   display:grid;
   grid-template-columns:64px minmax(0,1fr) auto;
   align-items:center;
+  align-content:start;
   gap:12px;
   padding:12px;
   border:1px solid var(--design-line);
@@ -229,6 +246,8 @@
 /* ---------- Shared elevated sections ---------- */
 .studio-v3-design-v2-section{
   display:grid;
+  grid-auto-rows:max-content;
+  align-content:start;
   gap:14px;
   padding:17px;
   border:1px solid var(--design-line);
@@ -286,6 +305,8 @@
 /* ---------- Quick controls ---------- */
 .studio-v3-quick-control-card{
   display:grid;
+  grid-auto-rows:max-content;
+  align-content:start;
   gap:13px;
   padding:14px;
   border:0;
@@ -415,7 +436,7 @@
 .studio-v3-quick-density-grid span{font-size:10.5px;font-weight:720}
 
 /* ---------- Complete design library ---------- */
-.studio-v3-design-library{display:grid;gap:13px;padding:17px;border:1px solid var(--design-line);border-radius:20px;background:#fff}
+.studio-v3-design-library{display:grid;grid-auto-rows:max-content;align-content:start;gap:13px;padding:17px;border:1px solid var(--design-line);border-radius:20px;background:#fff}
 .studio-v3-design-library-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
 .studio-v3-design-library-head strong{display:block;color:var(--design-ink);font-size:16px;font-weight:780;letter-spacing:-.025em}
 .studio-v3-design-library-head p{margin:5px 0 0;color:var(--design-muted);font-size:11.5px;line-height:1.45}
