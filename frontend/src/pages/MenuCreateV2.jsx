@@ -73,6 +73,11 @@ const PROFILE_TAGS = {
   },
 };
 
+function readStoredFlow() {
+  try { return JSON.parse(window.sessionStorage.getItem(MENU_CREATE_V2_FLOW_KEY) || "null") || {}; }
+  catch { return {}; }
+}
+
 function searchableDesignText(entry) {
   return [entry.name, entry.category, entry.layout, entry.description, ...(entry.tags || [])]
     .join(" ")
@@ -83,7 +88,6 @@ function scoreDesign(entry, answers) {
   const haystack = searchableDesignText(entry);
   let score = 50;
   let matches = 0;
-
   Object.entries(PROFILE_TAGS).forEach(([question, optionMap]) => {
     const selected = answers[question];
     if (!selected) return;
@@ -94,7 +98,6 @@ function scoreDesign(entry, answers) {
       }
     });
   });
-
   if (answers.branding === "none" && /friendly|modern|minimal|classic/.test(haystack)) score += 2;
   if (answers.branding === "full" && /minimal|editorial|gallery|split/.test(haystack)) score += 2;
   return { score: Math.min(98, Math.max(62, score)), matches };
@@ -135,22 +138,26 @@ function Progress({ screen, questionIndex, t }) {
   const fitLabel = screen === "questions" ? `${questionIndex + 1} / ${MENU_CREATE_QUESTIONS.length}` : t.fit;
   return (
     <div className="menu-create-v2-progress" aria-label={t.progress}>
-      <span className="done"><Check size={12} /> {t.start}</span>
-      <i />
-      <span className={fitActive ? "active" : ""}>{fitLabel}</span>
-      <i />
+      <span className="done"><Check size={12} /> {t.start}</span><i />
+      <span className={fitActive ? "active" : ""}>{fitLabel}</span><i />
       <span className={designsActive ? "active" : ""}>{t.designs}</span>
     </div>
   );
 }
 
 export default function MenuCreateV2() {
-  const [uiLanguage, setUiLanguage] = useState(() => readStudioLanguage("en"));
-  const [screen, setScreen] = useState("start");
-  const [mode, setMode] = useState("");
+  const params = useMemo(() => new URLSearchParams(window.location.search), []);
+  const storedFlow = useMemo(readStoredFlow, []);
+  const requestedUi = params.get("ui");
+  const resumeFit = params.get("resume") === "fit";
+  const requestedMode = params.get("mode") || storedFlow.mode || "";
+
+  const [uiLanguage, setUiLanguage] = useState(() => ["en", "he", "ar"].includes(requestedUi) ? requestedUi : readStudioLanguage("en"));
+  const [screen, setScreen] = useState(() => resumeFit ? "questions" : "start");
+  const [mode, setMode] = useState(requestedMode);
   const [questionIndex, setQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState({});
-  const [websiteUrl, setWebsiteUrl] = useState("");
+  const [answers, setAnswers] = useState(() => storedFlow.answers || {});
+  const [websiteUrl, setWebsiteUrl] = useState(() => storedFlow.websiteUrl || "");
   const [websiteError, setWebsiteError] = useState("");
   const [concierge, setConcierge] = useState({ restaurant: "", website: "", notes: "" });
   const [requestPrepared, setRequestPrepared] = useState(false);
@@ -173,7 +180,7 @@ export default function MenuCreateV2() {
   }
 
   function persistFlow(nextMode = mode, extra = {}) {
-    const payload = { mode: nextMode, answers, websiteUrl, uiLanguage, createdAt: new Date().toISOString(), ...extra };
+    const payload = { ...readStoredFlow(), mode: nextMode, answers, websiteUrl, uiLanguage, createdAt: new Date().toISOString(), ...extra };
     try { window.sessionStorage.setItem(MENU_CREATE_V2_FLOW_KEY, JSON.stringify(payload)); } catch { /* non-blocking */ }
   }
 
@@ -181,7 +188,7 @@ export default function MenuCreateV2() {
     setMode(nextMode);
     if (nextMode === "upload") {
       persistFlow(nextMode);
-      window.location.assign(`/menu-builder?guided=1&source=upload&ui=${uiLanguage}`);
+      window.location.assign(`/dev/menu-import-v2?ui=${uiLanguage}`);
       return;
     }
     if (nextMode === "website") { setScreen("website"); return; }
@@ -211,7 +218,7 @@ export default function MenuCreateV2() {
       return;
     }
     try {
-      window.sessionStorage.setItem(MENU_CREATE_V2_FLOW_KEY, JSON.stringify({ mode, answers: nextAnswers, websiteUrl, uiLanguage, createdAt: new Date().toISOString() }));
+      window.sessionStorage.setItem(MENU_CREATE_V2_FLOW_KEY, JSON.stringify({ ...readStoredFlow(), mode, answers: nextAnswers, websiteUrl, uiLanguage, createdAt: new Date().toISOString() }));
     } catch { /* non-blocking */ }
     setScreen("recommendations");
   }
@@ -219,6 +226,7 @@ export default function MenuCreateV2() {
   function goBack() {
     if (screen === "start") { window.location.assign("/"); return; }
     if (screen === "questions" && questionIndex > 0) { setQuestionIndex((current) => current - 1); return; }
+    if (screen === "questions" && resumeFit && mode === "upload") { window.location.assign(`/dev/menu-import-v2?ui=${uiLanguage}`); return; }
     if (screen === "recommendations") {
       setQuestionIndex(MENU_CREATE_QUESTIONS.length - 1);
       setScreen("questions");
@@ -230,9 +238,9 @@ export default function MenuCreateV2() {
   function selectDesign(entry) {
     persistFlow(mode, { recommendedDesignId: entry.id, recommendedDesignName: entry.name });
     try { window.sessionStorage.setItem(MENU_CREATE_V2_DESIGN_KEY, entry.id); } catch { /* non-blocking */ }
-    const params = new URLSearchParams({ guided: "1", mode: mode || "manual", design: entry.id, ui: uiLanguage });
-    if (websiteUrl.trim()) params.set("website", websiteUrl.trim());
-    window.location.assign(`/dev/menu-content-v2?${params.toString()}`);
+    const paramsOut = new URLSearchParams({ guided: "1", mode: mode || "manual", design: entry.id, ui: uiLanguage });
+    if (websiteUrl.trim()) paramsOut.set("website", websiteUrl.trim());
+    window.location.assign(`/dev/menu-content-v2?${paramsOut.toString()}`);
   }
 
   function prepareConciergeRequest(event) {
@@ -317,7 +325,7 @@ export default function MenuCreateV2() {
                 </article>
               ))}
             </div>
-            <button type="button" className="menu-create-v2-secondary-link" onClick={() => window.location.assign(`/dev/menu-content-v2?guided=1&mode=manual&ui=${uiLanguage}`)}>{t.skip}</button>
+            <button type="button" className="menu-create-v2-secondary-link" onClick={() => window.location.assign(`/dev/menu-content-v2?guided=1&mode=${mode || "manual"}&ui=${uiLanguage}`)}>{t.skip}</button>
           </section>
         ) : null}
 
