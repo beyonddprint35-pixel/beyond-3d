@@ -1,11 +1,14 @@
 const NAV_SELECTOR = ".menu-home-nav";
+const WORKSPACE_ACTIONS_SELECTOR = ".menu-home-nav-actions";
+const WORKSPACE_STUDIO_CLASS = "menu-home-new-studio-button";
+const WORKSPACE_MENUS_CLASS = "menu-home-my-menus-button";
 
 const NAV_ITEMS = [
   { label: "BEYOND Menu", type: "section", target: "#product" },
   { label: "BEYOND How it works", type: "section", target: "#how-it-works" },
   { label: "BEYOND QR &NFC Stands", type: "section", target: "#qr-nfc" },
   { label: "BEYOND Live Demo", type: "demo" },
-  { label: "BEYOND Menu studio", type: "section", target: "#menu-studio" },
+  { label: "BEYOND Menu studio", type: "link", target: "/menu-builder" },
   { label: "BEYOND Pricing", type: "section", target: "#pricing" },
   { label: "BEYOND 3D Printing", type: "link", target: "/3DPRINTING" },
 ];
@@ -131,19 +134,91 @@ function makeLink(item) {
   return link;
 }
 
+function goToWorkspace(path) {
+  window.location.assign(path);
+}
+
+function configureStudioButton(button) {
+  if (!(button instanceof HTMLButtonElement)) return;
+  button.dataset.beyondNewStudio = "true";
+  button.setAttribute("aria-label", "Open Menu Studio");
+
+  if (button.dataset.beyondWorkspaceBound === "true") return;
+  button.dataset.beyondWorkspaceBound = "true";
+  button.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    goToWorkspace("/menu-builder");
+  }, true);
+}
+
+function createWorkspaceButton({ className, fullLabel, shortLabel, path, ariaLabel }) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = `menu-home-studio-button ${className}`;
+  button.setAttribute("aria-label", ariaLabel);
+  button.innerHTML = `<span class="menu-home-studio-full">${fullLabel}</span><span class="menu-home-studio-short">${shortLabel}</span>`;
+  button.addEventListener("click", () => goToWorkspace(path));
+  return button;
+}
+
+function syncWorkspaceActions() {
+  if (window.location.pathname !== "/") return;
+
+  const actions = document.querySelector(WORKSPACE_ACTIONS_SELECTOR);
+  if (!(actions instanceof HTMLElement)) return;
+
+  const accountButton = actions.querySelector(".menu-home-account");
+  const signedIn = accountButton instanceof HTMLElement;
+  let studioButton = actions.querySelector(".menu-home-studio-button:not(.menu-home-my-menus-button)");
+
+  if (!signedIn) {
+    actions.querySelector(`.${WORKSPACE_MENUS_CLASS}`)?.remove();
+    if (studioButton?.classList.contains(WORKSPACE_STUDIO_CLASS)) studioButton.remove();
+    return;
+  }
+
+  if (!(studioButton instanceof HTMLButtonElement)) {
+    studioButton = createWorkspaceButton({
+      className: WORKSPACE_STUDIO_CLASS,
+      fullLabel: "Menu Studio",
+      shortLabel: "Studio",
+      path: "/menu-builder",
+      ariaLabel: "Open Menu Studio",
+    });
+    actions.insertBefore(studioButton, accountButton);
+  }
+  configureStudioButton(studioButton);
+
+  let myMenusButton = actions.querySelector(`.${WORKSPACE_MENUS_CLASS}`);
+  if (!(myMenusButton instanceof HTMLButtonElement)) {
+    myMenusButton = createWorkspaceButton({
+      className: WORKSPACE_MENUS_CLASS,
+      fullLabel: "My Menus",
+      shortLabel: "Menus",
+      path: "/my-menus",
+      ariaLabel: "Open My Menus",
+    });
+    actions.insertBefore(myMenusButton, studioButton);
+  }
+}
+
 function buildHomepageNavigation() {
   if (window.location.pathname !== "/") return;
 
   ensureSectionIds();
 
   const nav = document.querySelector(NAV_SELECTOR);
-  if (!(nav instanceof HTMLElement) || currentStructureIsCorrect(nav)) return;
+  if (nav instanceof HTMLElement && !currentStructureIsCorrect(nav)) {
+    nav.querySelectorAll(":scope > button, :scope > a").forEach((node) => node.remove());
 
-  nav.querySelectorAll(":scope > button, :scope > a").forEach((node) => node.remove());
+    NAV_ITEMS.forEach((item) => {
+      nav.appendChild(item.type === "link" ? makeLink(item) : makeButton(item));
+    });
+  }
 
-  NAV_ITEMS.forEach((item) => {
-    nav.appendChild(item.type === "link" ? makeLink(item) : makeButton(item));
-  });
+  syncWorkspaceActions();
 }
 
 let queued = false;
