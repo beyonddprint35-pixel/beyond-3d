@@ -24,6 +24,7 @@ import {
 } from "../features/menu-engine/studio/menuStudioV2Persistence";
 import {
   loadMenuStudioCurrentVersions,
+  loadMenuStudioLatestVersions,
   menuStudioHasUnpublishedChanges,
 } from "../features/menu-engine/studio/menuStudioV2PublishService";
 import {
@@ -126,10 +127,14 @@ export default function MenuMyMenusV2() {
       if (publicationError) throw publicationError;
       const publicationMap = new Map((publicationRows || []).map((row) => [row.id, row]));
       const combined = rows.map((project) => ({ ...project, ...(publicationMap.get(project.id) || {}) }));
-      const versionMap = await loadMenuStudioCurrentVersions(combined);
+      const [currentVersionMap, latestVersionMap] = await Promise.all([
+        loadMenuStudioCurrentVersions(combined),
+        loadMenuStudioLatestVersions(combined),
+      ]);
       setProjects(combined.map((project) => ({
         ...project,
-        currentPublishedVersion: project.published_version_id ? versionMap.get(project.published_version_id) || null : null,
+        currentPublishedVersion: project.published_version_id ? currentVersionMap.get(project.published_version_id) || null : null,
+        latestPublishedVersion: latestVersionMap.get(project.id) || null,
       })));
     } catch (error) {
       console.warn("Could not load persistent menus.", error);
@@ -181,7 +186,7 @@ export default function MenuMyMenusV2() {
 
   const renderedProjects = useMemo(() => projects.map((project) => {
     const metrics = projectMetrics(project);
-    const hasHistory = Boolean(project.currentPublishedVersion || project.published_at);
+    const hasHistory = Boolean(project.latestPublishedVersion);
     const live = Boolean(project.published_version_id && project.published_slug);
     const pending = live && menuStudioHasUnpublishedChanges(project, project.currentPublishedVersion);
     const lifecycle = pending ? "pending" : live ? "live" : hasHistory ? "offline" : "draft";
@@ -217,13 +222,14 @@ export default function MenuMyMenusV2() {
         const statusLabel = lifecycle === "pending" ? t.pending : lifecycle === "live" ? t.live : lifecycle === "offline" ? t.offline : t.draft;
         const statusHint = lifecycle === "pending" ? t.pendingHint : lifecycle === "live" ? t.liveHint : lifecycle === "offline" ? t.offlineHint : t.draftHint;
         const StatusIcon = lifecycle === "pending" ? CircleAlert : lifecycle === "live" ? Radio : FileClock;
+        const displayVersion = project.currentPublishedVersion || project.latestPublishedVersion;
         return <article key={project.id} className={`menu-my-menus-v2-card lifecycle-${lifecycle}`}>
           <div className="menu-my-menus-v2-card-top">
             <span className={`status ${lifecycle}`}><StatusIcon size={11} /> {statusLabel}</span>
             <small>{t.updated} {formatDate(project.updated_at, uiLanguage)}</small>
           </div>
           <div className="menu-my-menus-v2-card-title"><span className="icon"><Smartphone size={18} /></span><div><h2>{project.name}</h2><p>{designEntry?.name || t.design}</p></div></div>
-          <div className="menu-my-menus-v2-lifecycle-hint">{statusHint}{project.currentPublishedVersion ? <span> · {t.version} {project.currentPublishedVersion.version_number}</span> : null}</div>
+          <div className="menu-my-menus-v2-lifecycle-hint">{statusHint}{displayVersion ? <span> · {t.version} {displayVersion.version_number}</span> : null}</div>
           {project.published_slug ? <div className="menu-my-menus-v2-live-path"><span>{t.liveAddress}</span><strong>/menu/{project.published_slug}</strong></div> : null}
           <div className="menu-my-menus-v2-metrics">
             <span><strong>{metrics.categories}</strong><small>{t.categories}</small></span>
@@ -235,7 +241,7 @@ export default function MenuMyMenusV2() {
             <button type="button" className="resume" disabled={busy} onClick={() => window.location.assign(`/dev/menu-content-v2?project=${project.id}`)}>{t.resume} <ArrowRight size={14} /></button>
             <button type="button" disabled={busy} onClick={() => window.location.assign(`/dev/menu-preview-v2?project=${project.id}`)}>{t.preview}</button>
             {project.published_slug ? <button type="button" className="view-live" disabled={busy} onClick={() => window.location.assign(localLivePath(project.published_slug))}><ExternalLink size={13} /> {t.viewLive}</button> : null}
-            {(project.published_version_id || project.published_at) ? <button type="button" className={lifecycle === "pending" ? "manage attention" : "manage"} disabled={busy} onClick={() => window.location.assign(`/my-menus/${project.id}`)}><Settings2 size={13} /> {t.manage}</button> : null}
+            {project.latestPublishedVersion ? <button type="button" className={lifecycle === "pending" ? "manage attention" : "manage"} disabled={busy} onClick={() => window.location.assign(`/my-menus/${project.id}`)}><Settings2 size={13} /> {t.manage}</button> : null}
             <button type="button" disabled={busy} onClick={() => duplicate(project)}><Copy size={13} /> {t.duplicate}</button>
             <button type="button" disabled={busy} onClick={() => archive(project)}><Archive size={13} /> {t.archive}</button>
           </div>
