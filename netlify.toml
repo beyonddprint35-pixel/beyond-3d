@@ -7,12 +7,8 @@
 [build.environment]
   NODE_VERSION = "22"
 
-# BEYOND_MENU_PLATFORM_PHASE1
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
+# React SPA fallback. This keeps direct visits and refreshes working for
+# /menu-builder, /menu-studio/*, /my-menus/* and /menu/*.
 [[redirects]]
   from = "/*"
   to = "/index.html"
