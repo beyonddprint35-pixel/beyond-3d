@@ -108,4 +108,20 @@ export async function loadMenuStudioCurrentVersions(projects = []) {
   return new Map((data || []).map((version) => [version.id, version]));
 }
 
+export async function loadMenuStudioLatestVersions(projects = []) {
+  const projectIds = [...new Set(projects.map((project) => project?.id).filter(Boolean))];
+  if (!projectIds.length) return new Map();
+  const { data, error } = await supabase
+    .from("menu_publication_versions")
+    .select(VERSION_COLUMNS)
+    .in("project_id", projectIds)
+    .order("version_number", { ascending: false });
+  if (error) throw error;
+  const latestByProject = new Map();
+  (data || []).forEach((version) => {
+    if (!latestByProject.has(version.project_id)) latestByProject.set(version.project_id, version);
+  });
+  return latestByProject;
+}
+
 export { cleanSlug as normalizeMenuStudioPublishSlug };
