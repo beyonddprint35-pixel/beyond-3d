@@ -8,7 +8,7 @@ const NAV_ITEMS = [
   { label: "BEYOND How it works", type: "section", target: "#how-it-works" },
   { label: "BEYOND QR &NFC Stands", type: "section", target: "#qr-nfc" },
   { label: "BEYOND Live Demo", type: "demo" },
-  { label: "BEYOND Menu studio", type: "link", target: "/menu-builder" },
+  { label: "BEYOND Menu studio", type: "link", target: "/my-menus" },
   { label: "BEYOND Pricing", type: "section", target: "#pricing" },
   { label: "BEYOND 3D Printing", type: "link", target: "/3DPRINTING" },
 ];
@@ -134,32 +134,32 @@ function makeLink(item) {
   return link;
 }
 
-function goToWorkspace(path) {
-  window.location.assign(path);
+function goToMenuStudioGateway() {
+  window.location.assign("/my-menus");
 }
 
 function configureStudioButton(button) {
   if (!(button instanceof HTMLButtonElement)) return;
+
   button.dataset.beyondNewStudio = "true";
   button.setAttribute("aria-label", "Open Menu Studio");
+  button.innerHTML = '<span class="menu-home-studio-full">Menu Studio</span><span class="menu-home-studio-short">Studio</span>';
 
-  if (button.dataset.beyondWorkspaceBound === "true") return;
-  button.dataset.beyondWorkspaceBound = "true";
+  if (button.dataset.beyondMenuStudioGatewayBound === "true") return;
+  button.dataset.beyondMenuStudioGatewayBound = "true";
   button.addEventListener("click", (event) => {
     event.preventDefault();
     event.stopPropagation();
     event.stopImmediatePropagation();
-    goToWorkspace("/menu-builder");
+    goToMenuStudioGateway();
   }, true);
 }
 
-function createWorkspaceButton({ className, fullLabel, shortLabel, path, ariaLabel }) {
+function createStudioButton() {
   const button = document.createElement("button");
   button.type = "button";
-  button.className = `menu-home-studio-button ${className}`;
-  button.setAttribute("aria-label", ariaLabel);
-  button.innerHTML = `<span class="menu-home-studio-full">${fullLabel}</span><span class="menu-home-studio-short">${shortLabel}</span>`;
-  button.addEventListener("click", () => goToWorkspace(path));
+  button.className = `menu-home-studio-button ${WORKSPACE_STUDIO_CLASS}`;
+  configureStudioButton(button);
   return button;
 }
 
@@ -171,37 +171,42 @@ function syncWorkspaceActions() {
 
   const accountButton = actions.querySelector(".menu-home-account");
   const signedIn = accountButton instanceof HTMLElement;
-  let studioButton = actions.querySelector(".menu-home-studio-button:not(.menu-home-my-menus-button)");
+
+  // The homepage has one workspace gateway only. My Menus is the first screen
+  // inside Menu Studio, so a second My Menus action would be redundant.
+  actions.querySelectorAll(`.${WORKSPACE_MENUS_CLASS}`).forEach((button) => button.remove());
+
+  let studioButtons = Array.from(
+    actions.querySelectorAll(".menu-home-studio-button:not(.menu-home-my-menus-button)")
+  ).filter((button) => button instanceof HTMLButtonElement);
 
   if (!signedIn) {
-    actions.querySelector(`.${WORKSPACE_MENUS_CLASS}`)?.remove();
-    if (studioButton?.classList.contains(WORKSPACE_STUDIO_CLASS)) studioButton.remove();
+    studioButtons
+      .filter((button) => button.classList.contains(WORKSPACE_STUDIO_CLASS))
+      .forEach((button) => button.remove());
     return;
   }
 
+  let studioButton = studioButtons.find(
+    (button) => !button.classList.contains(WORKSPACE_STUDIO_CLASS)
+  ) || studioButtons[0];
+
   if (!(studioButton instanceof HTMLButtonElement)) {
-    studioButton = createWorkspaceButton({
-      className: WORKSPACE_STUDIO_CLASS,
-      fullLabel: "Menu Studio",
-      shortLabel: "Studio",
-      path: "/menu-builder",
-      ariaLabel: "Open Menu Studio",
-    });
+    studioButton = createStudioButton();
     actions.insertBefore(studioButton, accountButton);
   }
-  configureStudioButton(studioButton);
 
-  let myMenusButton = actions.querySelector(`.${WORKSPACE_MENUS_CLASS}`);
-  if (!(myMenusButton instanceof HTMLButtonElement)) {
-    myMenusButton = createWorkspaceButton({
-      className: WORKSPACE_MENUS_CLASS,
-      fullLabel: "My Menus",
-      shortLabel: "Menus",
-      path: "/my-menus",
-      ariaLabel: "Open My Menus",
-    });
-    actions.insertBefore(myMenusButton, studioButton);
-  }
+  // React can add the legacy button after this observer has already created one.
+  // Keep a single canonical Menu Studio button and remove every duplicate.
+  studioButtons = Array.from(
+    actions.querySelectorAll(".menu-home-studio-button:not(.menu-home-my-menus-button)")
+  ).filter((button) => button instanceof HTMLButtonElement);
+
+  studioButtons.forEach((button) => {
+    if (button !== studioButton) button.remove();
+  });
+
+  configureStudioButton(studioButton);
 }
 
 function buildHomepageNavigation() {
