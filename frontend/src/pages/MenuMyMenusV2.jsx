@@ -41,7 +41,7 @@ const UI = {
     eyebrow:"MY MENUS", title:"Every menu, one workspace", hint:"Manage drafts, live menus and unpublished changes from one persistent workspace.",
     create:"Create new menu", interfaceLanguage:"Language", loading:"Loading your menus…", signIn:"Sign in to see your menus", signInHint:"Persistent menus are private to your BEYOND account.", home:"Return home",
     empty:"No saved menus yet", emptyHint:"Create your first menu and BEYOND will keep it synced to your account automatically.",
-    draft:"Draft", live:"Live", pending:"Changes pending", offline:"Offline", resume:"Continue editing", preview:"Draft preview", viewLive:"Open live", manage:"Manage", duplicate:"Duplicate", archive:"Archive", confirmArchive:"Archive this menu? If it is currently live, the public version will remain online until you unpublish it from Manage.",
+    draft:"Draft", live:"Live", pending:"Changes pending", offline:"Offline", resume:"Continue editing", preview:"Draft preview", viewLive:"Open live", manage:"Manage", duplicate:"Duplicate", archive:"Archive", confirmArchive:"Archive this menu? It will be removed from My Menus while its publication history stays stored.",
     items:"items", categories:"categories", languages:"languages", updated:"Updated", design:"Design", duplicated:"Menu duplicated", failed:"Could not update this menu.", liveAddress:"Live address", version:"Version",
     draftHint:"Not published yet", liveHint:"Guests see this draft", pendingHint:"Draft differs from live", offlineHint:"Previously published",
   },
@@ -49,7 +49,7 @@ const UI = {
     eyebrow:"התפריטים שלי", title:"כל התפריטים במקום אחד", hint:"נהלו טיוטות, תפריטים חיים ושינויים שטרם פורסמו מאזור עבודה אחד שנשמר בחשבון.",
     create:"יצירת תפריט חדש", interfaceLanguage:"שפה", loading:"טוען את התפריטים…", signIn:"התחברו כדי לראות את התפריטים", signInHint:"התפריטים השמורים פרטיים לחשבון BEYOND שלכם.", home:"חזרה לבית",
     empty:"עדיין אין תפריטים שמורים", emptyHint:"צרו את התפריט הראשון ו-BEYOND ישמור אותו אוטומטית בחשבון.",
-    draft:"טיוטה", live:"חי", pending:"שינויים ממתינים", offline:"לא באוויר", resume:"המשך עריכה", preview:"תצוגת טיוטה", viewLive:"פתיחת החי", manage:"ניהול", duplicate:"שכפול", archive:"ארכיון", confirmArchive:"להעביר את התפריט לארכיון? אם הוא חי, הגרסה הציבורית תישאר באוויר עד שתורידו אותה דרך ניהול.",
+    draft:"טיוטה", live:"חי", pending:"שינויים ממתינים", offline:"לא באוויר", resume:"המשך עריכה", preview:"תצוגת טיוטה", viewLive:"פתיחת החי", manage:"ניהול", duplicate:"שכפול", archive:"ארכיון", confirmArchive:"להעביר את התפריט לארכיון? הוא יוסר מהתפריטים שלי והיסטוריית הפרסום תישמר.",
     items:"פריטים", categories:"קטגוריות", languages:"שפות", updated:"עודכן", design:"עיצוב", duplicated:"התפריט שוכפל", failed:"לא ניתן לעדכן את התפריט.", liveAddress:"כתובת חיה", version:"גרסה",
     draftHint:"עדיין לא פורסם", liveHint:"האורחים רואים את הטיוטה הזו", pendingHint:"הטיוטה שונה מהגרסה החיה", offlineHint:"פורסם בעבר",
   },
@@ -57,7 +57,7 @@ const UI = {
     eyebrow:"قوائمي", title:"كل القوائم في مساحة واحدة", hint:"أديروا المسودات والقوائم المباشرة والتغييرات غير المنشورة من مساحة محفوظة واحدة.",
     create:"إنشاء قائمة جديدة", interfaceLanguage:"اللغة", loading:"جارٍ تحميل القوائم…", signIn:"سجلوا الدخول لرؤية قوائمكم", signInHint:"القوائم المحفوظة خاصة بحساب BEYOND الخاص بكم.", home:"العودة للرئيسية",
     empty:"لا توجد قوائم محفوظة بعد", emptyHint:"أنشئوا أول قائمة وسيحفظها BEYOND تلقائياً في حسابكم.",
-    draft:"مسودة", live:"مباشرة", pending:"تغييرات معلقة", offline:"غير منشورة", resume:"متابعة التحرير", preview:"معاينة المسودة", viewLive:"فتح المباشرة", manage:"إدارة", duplicate:"نسخ", archive:"أرشفة", confirmArchive:"أرشفة هذه القائمة؟ إذا كانت مباشرة، ستبقى النسخة العامة متاحة حتى تقوموا بإلغاء نشرها من صفحة الإدارة.",
+    draft:"مسودة", live:"مباشرة", pending:"تغييرات معلقة", offline:"غير منشورة", resume:"متابعة التحرير", preview:"معاينة المسودة", viewLive:"فتح المباشرة", manage:"إدارة", duplicate:"نسخ", archive:"أرشفة", confirmArchive:"أرشفة هذه القائمة؟ ستُزال من قوائمي مع الاحتفاظ بسجل النشر.",
     items:"عناصر", categories:"فئات", languages:"لغات", updated:"تم التحديث", design:"التصميم", duplicated:"تم نسخ القائمة", failed:"تعذر تحديث هذه القائمة.", liveAddress:"العنوان المباشر", version:"نسخة",
     draftHint:"لم يتم نشرها بعد", liveHint:"الضيوف يرون هذه المسودة", pendingHint:"المسودة تختلف عن المباشرة", offlineHint:"نُشرت سابقاً",
   },
@@ -243,7 +243,7 @@ export default function MenuMyMenusV2() {
             {project.published_slug ? <button type="button" className="view-live" disabled={busy} onClick={() => window.location.assign(localLivePath(project.published_slug))}><ExternalLink size={13} /> {t.viewLive}</button> : null}
             {project.latestPublishedVersion ? <button type="button" className={lifecycle === "pending" ? "manage attention" : "manage"} disabled={busy} onClick={() => window.location.assign(`/my-menus/${project.id}`)}><Settings2 size={13} /> {t.manage}</button> : null}
             <button type="button" disabled={busy} onClick={() => duplicate(project)}><Copy size={13} /> {t.duplicate}</button>
-            <button type="button" disabled={busy} onClick={() => archive(project)}><Archive size={13} /> {t.archive}</button>
+            {(lifecycle === "draft" || lifecycle === "offline") ? <button type="button" disabled={busy} onClick={() => archive(project)}><Archive size={13} /> {t.archive}</button> : null}
           </div>
         </article>;
       })}
