@@ -4,6 +4,8 @@ import {
   saveMenuStudioProject,
 } from "./menuStudioV2Persistence";
 
+const VERSION_COLUMNS = "id,project_id,version_number,slug,menu_snapshot,design_snapshot,publication_snapshot,published_at";
+
 function cleanSlug(value = "") {
   return String(value || "")
     .trim()
@@ -17,6 +19,30 @@ function rpcMessage(error, fallback) {
   if (/already in use|duplicate key|23505/i.test(raw)) return "This menu address is already in use.";
   if (/Authentication required|JWT|not authenticated/i.test(raw)) return "Sign in is required to publish this menu.";
   return raw || fallback;
+}
+
+function canonicalJson(value) {
+  if (Array.isArray(value)) return value.map(canonicalJson);
+  if (!value || typeof value !== "object") return value;
+  return Object.keys(value)
+    .sort()
+    .reduce((result, key) => {
+      const next = value[key];
+      if (next !== undefined) result[key] = canonicalJson(next);
+      return result;
+    }, {});
+}
+
+function sameJson(left, right) {
+  return JSON.stringify(canonicalJson(left ?? null)) === JSON.stringify(canonicalJson(right ?? null));
+}
+
+export function menuStudioHasUnpublishedChanges(project, publishedVersion) {
+  if (!project?.published_version_id) return false;
+  if (!publishedVersion || publishedVersion.id !== project.published_version_id) return true;
+  const state = project?.studio_state || {};
+  return !sameJson(state.menu, publishedVersion.menu_snapshot)
+    || !sameJson(state.design, publishedVersion.design_snapshot);
 }
 
 export async function publishMenuStudioDraft({ draft, slug }) {
@@ -58,6 +84,28 @@ export async function readMenuStudioPublishState(projectId) {
     .single();
   if (error) throw error;
   return data;
+}
+
+export async function listMenuStudioPublicationVersions(projectId) {
+  if (!projectId) return [];
+  const { data, error } = await supabase
+    .from("menu_publication_versions")
+    .select(VERSION_COLUMNS)
+    .eq("project_id", projectId)
+    .order("version_number", { ascending: false });
+  if (error) throw error;
+  return data || [];
+}
+
+export async function loadMenuStudioCurrentVersions(projects = []) {
+  const versionIds = [...new Set(projects.map((project) => project?.published_version_id).filter(Boolean))];
+  if (!versionIds.length) return new Map();
+  const { data, error } = await supabase
+    .from("menu_publication_versions")
+    .select(VERSION_COLUMNS)
+    .in("id", versionIds);
+  if (error) throw error;
+  return new Map((data || []).map((version) => [version.id, version]));
 }
 
 export { cleanSlug as normalizeMenuStudioPublishSlug };
