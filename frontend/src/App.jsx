@@ -60,6 +60,7 @@ import "./pages/MenuHomeMobilePhoneFrameFix.css";
 import "./pages/MenuStudioV2TypeSystem.css";
 import "./pages/MenuContentStudioV2Drag.css";
 import "./pages/MenuStudioHomeTheme.css";
+import "./pages/MenuStudioHomeThemeComponents.css";
 
 function PersistentStudio({ children }) {
   return <MenuStudioV2PersistenceBoundary>{children}</MenuStudioV2PersistenceBoundary>;
