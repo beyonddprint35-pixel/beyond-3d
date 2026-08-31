@@ -1,0 +1,984 @@
+@import "../styles/typography.css";
+
+/* =========================================================
+   BEYOND MENU STUDIO — HOME VISUAL SYSTEM
+   Shared application chrome for Create / Import / Content /
+   Design / Preview / Publish / My Menus / Manage.
+
+   Restaurant menu renderers are intentionally NOT themed here.
+========================================================= */
+
+:root {
+  --beyond-studio-bg: #02050a;
+  --beyond-studio-surface: #070b12;
+  --beyond-studio-surface-2: #0b111b;
+  --beyond-studio-surface-3: #101725;
+  --beyond-studio-canvas: #080d14;
+  --beyond-studio-text: #f5f8ff;
+  --beyond-studio-muted: #7d8fa9;
+  --beyond-studio-faint: #53667f;
+  --beyond-studio-line: rgba(255, 255, 255, 0.075);
+  --beyond-studio-line-strong: rgba(132, 184, 255, 0.22);
+  --beyond-studio-blue: #2778ff;
+  --beyond-studio-blue-light: #84b8ff;
+  --beyond-studio-blue-soft: rgba(39, 120, 255, 0.11);
+  --beyond-studio-green: #48b984;
+  --beyond-studio-amber: #d7a45d;
+  --beyond-studio-red: #d97783;
+  --beyond-studio-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+}
+
+/* Keep the Studio theme consistent even when the homepage has not mounted yet. */
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+:is(
+  .menu-create-v2,
+  .menu-import-v2,
+  .menu-website-import-v2,
+  .menu-content-v2,
+  .menu-design-v2,
+  .menu-preview-v2,
+  .menu-publish-v2,
+  .menu-my-menus-v2,
+  .menu-manage-v2
+) {
+  color: var(--beyond-studio-text) !important;
+  background:
+    radial-gradient(circle at 82% 0%, rgba(39, 120, 255, 0.13), transparent 27%),
+    radial-gradient(circle at 12% 32%, rgba(40, 92, 175, 0.05), transparent 24%),
+    var(--beyond-studio-bg) !important;
+  font-family: var(--font-body-family) !important;
+}
+
+/* Page-local tokens now resolve to the same BEYOND system. */
+.menu-create-v2 {
+  --mc-bg: var(--beyond-studio-bg);
+  --mc-paper: var(--beyond-studio-surface);
+  --mc-soft: var(--beyond-studio-surface-2);
+  --mc-softer: var(--beyond-studio-surface-2);
+  --mc-text: var(--beyond-studio-text);
+  --mc-muted: var(--beyond-studio-muted);
+  --mc-faint: var(--beyond-studio-faint);
+  --mc-line: var(--beyond-studio-line);
+  --mc-line-strong: var(--beyond-studio-line-strong);
+  --mc-blue: var(--beyond-studio-blue);
+  --mc-blue-soft: var(--beyond-studio-blue-soft);
+  --mc-green: var(--beyond-studio-green);
+  --mc-shadow: var(--beyond-studio-shadow);
+}
+
+.menu-import-v2 {
+  --mi-bg: var(--beyond-studio-bg);
+  --mi-paper: var(--beyond-studio-surface);
+  --mi-soft: var(--beyond-studio-surface-2);
+  --mi-text: var(--beyond-studio-text);
+  --mi-muted: var(--beyond-studio-muted);
+  --mi-line: var(--beyond-studio-line);
+  --mi-blue: var(--beyond-studio-blue);
+  --mi-green: var(--beyond-studio-green);
+}
+
+.menu-website-import-v2 {
+  --studio-blue: var(--beyond-studio-blue);
+  --studio-ink: var(--beyond-studio-text);
+  --studio-muted: var(--beyond-studio-muted);
+  --studio-line: var(--beyond-studio-line);
+  --studio-soft: var(--beyond-studio-surface-2);
+}
+
+.menu-content-v2 {
+  --mcv2-bg: var(--beyond-studio-bg);
+  --mcv2-paper: var(--beyond-studio-surface);
+  --mcv2-soft: var(--beyond-studio-surface-2);
+  --mcv2-canvas: var(--beyond-studio-canvas);
+  --mcv2-text: var(--beyond-studio-text);
+  --mcv2-muted: var(--beyond-studio-muted);
+  --mcv2-faint: var(--beyond-studio-faint);
+  --mcv2-line: var(--beyond-studio-line);
+  --mcv2-line-strong: var(--beyond-studio-line-strong);
+  --mcv2-blue: var(--beyond-studio-blue);
+  --mcv2-blue-soft: var(--beyond-studio-blue-soft);
+  --mcv2-green: var(--beyond-studio-green);
+}
+
+.menu-design-v2 {
+  --md-bg: var(--beyond-studio-bg);
+  --md-paper: var(--beyond-studio-surface);
+  --md-soft: var(--beyond-studio-surface-2);
+  --md-text: var(--beyond-studio-text);
+  --md-muted: var(--beyond-studio-muted);
+  --md-line: var(--beyond-studio-line);
+  --md-blue: var(--beyond-studio-blue);
+}
+
+.menu-preview-v2 {
+  --mp-bg: var(--beyond-studio-bg);
+  --mp-paper: var(--beyond-studio-surface);
+  --mp-text: var(--beyond-studio-text);
+  --mp-muted: var(--beyond-studio-muted);
+  --mp-line: var(--beyond-studio-line);
+  --mp-blue: var(--beyond-studio-blue);
+}
+
+.menu-publish-v2 {
+  --mpu-bg: var(--beyond-studio-bg);
+  --mpu-paper: var(--beyond-studio-surface);
+  --mpu-soft: var(--beyond-studio-surface-2);
+  --mpu-text: var(--beyond-studio-text);
+  --mpu-muted: var(--beyond-studio-muted);
+  --mpu-line: var(--beyond-studio-line);
+  --mpu-blue: var(--beyond-studio-blue);
+  --mpu-green: var(--beyond-studio-green);
+  --mpu-amber: var(--beyond-studio-amber);
+}
+
+.menu-my-menus-v2 {
+  --bg: var(--beyond-studio-bg);
+  --paper: var(--beyond-studio-surface);
+  --text: var(--beyond-studio-text);
+  --muted: var(--beyond-studio-muted);
+  --line: var(--beyond-studio-line);
+  --blue: var(--beyond-studio-blue);
+}
+
+.menu-manage-v2 {
+  --mm-bg: var(--beyond-studio-bg);
+  --mm-paper: var(--beyond-studio-surface);
+  --mm-soft: var(--beyond-studio-surface-2);
+  --mm-text: var(--beyond-studio-text);
+  --mm-muted: var(--beyond-studio-muted);
+  --mm-line: var(--beyond-studio-line);
+  --mm-blue: var(--beyond-studio-blue);
+  --mm-green: var(--beyond-studio-green);
+  --mm-amber: var(--beyond-studio-amber);
+  --mm-red: var(--beyond-studio-red);
+}
+
+/* =========================================================
+   SHARED TOP BAR + HOME BRAND LOCKUP
+========================================================= */
+
+:is(
+  .menu-create-v2-topbar,
+  .menu-import-v2-topbar,
+  .menu-website-import-v2-topbar,
+  .menu-content-v2-topbar,
+  .menu-design-v2-topbar,
+  .menu-preview-v2-topbar,
+  .menu-publish-v2-topbar,
+  .menu-my-menus-v2-topbar,
+  .menu-manage-v2-topbar
+) {
+  min-height: 78px !important;
+  border-bottom: 1px solid var(--beyond-studio-line) !important;
+  background: rgba(2, 5, 10, 0.88) !important;
+  box-shadow: none !important;
+  backdrop-filter: blur(20px) saturate(125%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(125%) !important;
+}
+
+:is(
+  .menu-create-v2-brand,
+  .menu-import-v2-brand,
+  .menu-website-import-v2-brand,
+  .menu-content-v2-brand,
+  .menu-design-v2-brand,
+  .menu-preview-v2-brand,
+  .menu-publish-v2-brand,
+  .menu-my-menus-v2-brand,
+  .menu-manage-v2-brand
+) {
+  gap: 12px !important;
+  color: var(--beyond-studio-text) !important;
+  text-decoration: none !important;
+}
+
+:is(
+  .menu-create-v2-brand,
+  .menu-import-v2-brand,
+  .menu-website-import-v2-brand,
+  .menu-content-v2-brand,
+  .menu-design-v2-brand,
+  .menu-preview-v2-brand,
+  .menu-publish-v2-brand,
+  .menu-my-menus-v2-brand,
+  .menu-manage-v2-brand
+) img {
+  width: 42px !important;
+  height: 42px !important;
+  flex: 0 0 42px !important;
+  object-fit: contain !important;
+}
+
+:is(
+  .menu-create-v2-brand,
+  .menu-import-v2-brand,
+  .menu-website-import-v2-brand,
+  .menu-content-v2-brand,
+  .menu-design-v2-brand,
+  .menu-preview-v2-brand,
+  .menu-publish-v2-brand,
+  .menu-my-menus-v2-brand,
+  .menu-manage-v2-brand
+) > span {
+  display: block !important;
+  line-height: 1 !important;
+}
+
+/* Visually use the exact homepage wordmark treatment, regardless of legacy copy. */
+:is(
+  .menu-create-v2-brand,
+  .menu-import-v2-brand,
+  .menu-website-import-v2-brand,
+  .menu-content-v2-brand,
+  .menu-design-v2-brand,
+  .menu-preview-v2-brand,
+  .menu-publish-v2-brand,
+  .menu-my-menus-v2-brand,
+  .menu-manage-v2-brand
+) strong {
+  display: block !important;
+  width: max-content;
+  font-size: 0 !important;
+  font-weight: 700 !important;
+  font-family: var(--font-display-family) !important;
+  letter-spacing: 0 !important;
+  color: var(--beyond-studio-text) !important;
+}
+
+:is(
+  .menu-create-v2-brand,
+  .menu-import-v2-brand,
+  .menu-website-import-v2-brand,
+  .menu-content-v2-brand,
+  .menu-design-v2-brand,
+  .menu-preview-v2-brand,
+  .menu-publish-v2-brand,
+  .menu-my-menus-v2-brand,
+  .menu-manage-v2-brand
+) strong::after {
+  content: "BEYOND";
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 9px;
+  white-space: nowrap;
+}
+
+:is(
+  .menu-create-v2-brand,
+  .menu-import-v2-brand,
+  .menu-website-import-v2-brand,
+  .menu-content-v2-brand,
+  .menu-design-v2-brand,
+  .menu-preview-v2-brand,
+  .menu-publish-v2-brand,
+  .menu-my-menus-v2-brand,
+  .menu-manage-v2-brand
+) small {
+  display: none !important;
+}
+
+:is(
+  .menu-content-v2-back,
+  .menu-design-v2-back,
+  .menu-preview-v2-back,
+  .menu-publish-v2-back,
+  .menu-import-v2-back
+) {
+  color: var(--beyond-studio-muted) !important;
+  border-color: var(--beyond-studio-line) !important;
+  background: rgba(255, 255, 255, 0.025) !important;
+}
+
+:is(
+  .menu-content-v2-back,
+  .menu-design-v2-back,
+  .menu-preview-v2-back,
+  .menu-publish-v2-back,
+  .menu-import-v2-back
+):hover {
+  color: var(--beyond-studio-text) !important;
+  border-color: var(--beyond-studio-line-strong) !important;
+  background: var(--beyond-studio-blue-soft) !important;
+}
+
+/* =========================================================
+   TYPOGRAPHY — SAME DISPLAY/BODY DIVISION AS HOME
+========================================================= */
+
+:is(
+  .menu-create-v2-heading h1,
+  .menu-create-v2-narrow h1,
+  .menu-create-v2-question-heading h1,
+  .menu-import-v2-heading h1,
+  .menu-website-import-v2-heading h1,
+  .menu-design-v2-intro h1,
+  .menu-preview-v2-intro h1,
+  .menu-publish-v2-hero h1,
+  .menu-my-menus-v2-hero h1,
+  .menu-manage-v2-hero h1
+) {
+  color: var(--beyond-studio-text) !important;
+  font-family: var(--font-display-family) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.055em !important;
+}
+
+:is(
+  .menu-create-v2-heading > span,
+  .menu-create-v2-kicker,
+  .menu-create-v2-question-heading > span,
+  .menu-import-v2-heading > span,
+  .menu-website-import-v2-heading > span,
+  .menu-design-v2-intro > div:first-child > span,
+  .menu-preview-v2-intro-copy > span,
+  .menu-publish-v2-hero > div:first-child > span,
+  .menu-my-menus-v2-hero > div > span,
+  .menu-manage-v2-hero .eyebrow
+) {
+  color: var(--beyond-studio-blue-light) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.18em !important;
+}
+
+/* =========================================================
+   SHARED NAV PILLS + LANGUAGE CONTROL
+========================================================= */
+
+:is(
+  .menu-content-v2-product-nav,
+  .menu-design-v2-product-nav,
+  .menu-preview-v2-product-nav,
+  .menu-publish-v2-product-nav
+) {
+  border-color: var(--beyond-studio-line) !important;
+  background: rgba(255, 255, 255, 0.025) !important;
+  box-shadow: none !important;
+}
+
+:is(
+  .menu-content-v2-product-nav,
+  .menu-design-v2-product-nav,
+  .menu-preview-v2-product-nav,
+  .menu-publish-v2-product-nav
+) button {
+  color: var(--beyond-studio-muted) !important;
+}
+
+:is(
+  .menu-content-v2-product-nav,
+  .menu-design-v2-product-nav,
+  .menu-preview-v2-product-nav,
+  .menu-publish-v2-product-nav
+) button.active {
+  color: #fff !important;
+  background: linear-gradient(135deg, #1b67ff, #428cff) !important;
+  box-shadow: 0 8px 24px rgba(31, 105, 255, 0.2) !important;
+}
+
+.studio-language-menu .studio-language-menu-trigger {
+  color: var(--beyond-studio-text) !important;
+  border-color: var(--beyond-studio-line) !important;
+  background: rgba(255, 255, 255, 0.025) !important;
+  box-shadow: none !important;
+}
+
+.studio-language-menu .studio-language-menu-trigger:hover {
+  border-color: var(--beyond-studio-line-strong) !important;
+  background: var(--beyond-studio-blue-soft) !important;
+}
+
+.studio-language-menu .studio-language-menu-popover,
+.studio-language-menu .studio-language-menu-list {
+  color: var(--beyond-studio-text) !important;
+  border-color: var(--beyond-studio-line) !important;
+  background: rgba(7, 11, 18, 0.98) !important;
+  box-shadow: var(--beyond-studio-shadow) !important;
+}
+
+.studio-language-menu .studio-language-menu-list > button {
+  color: var(--beyond-studio-text) !important;
+  background: transparent !important;
+}
+
+.studio-language-menu .studio-language-menu-list > button:hover,
+.studio-language-menu .studio-language-menu-list > button.active {
+  background: var(--beyond-studio-blue-soft) !important;
+}
+
+/* =========================================================
+   CREATE + IMPORT
+========================================================= */
+
+.menu-create-v2-topbar,
+.menu-import-v2-topbar,
+.menu-website-import-v2-topbar {
+  color: var(--beyond-studio-text) !important;
+}
+
+.menu-create-v2-exit,
+.menu-create-v2-back,
+.menu-website-import-v2-back {
+  color: var(--beyond-studio-muted) !important;
+  border-color: var(--beyond-studio-line) !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+.menu-create-v2-exit:hover,
+.menu-create-v2-back:hover,
+.menu-website-import-v2-back:hover {
+  color: var(--beyond-studio-text) !important;
+  background: var(--beyond-studio-blue-soft) !important;
+}
+
+.menu-create-v2-progress span.active {
+  color: var(--beyond-studio-blue-light) !important;
+  background: var(--beyond-studio-blue-soft) !important;
+}
+
+.menu-create-v2-progress > i {
+  background: var(--beyond-studio-line) !important;
+}
+
+:is(
+  .menu-create-v2-start-card,
+  .menu-create-v2-answer-grid > button,
+  .menu-create-v2-narrow,
+  .menu-create-v2-design-grid > article,
+  .menu-import-v2-card,
+  .menu-import-v2-auth-card,
+  .menu-website-import-v2-card,
+  .menu-website-import-v2-auth-card
+) {
+  color: var(--beyond-studio-text) !important;
+  border-color: var(--beyond-studio-line) !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.018)) !important;
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.14) !important;
+}
+
+.menu-create-v2-start-card.mode-concierge {
+  background: linear-gradient(155deg, rgba(39,120,255,.09), rgba(255,255,255,.02)) !important;
+}
+
+.menu-create-v2-start-card:hover,
+.menu-create-v2-answer-grid > button:hover,
+.menu-create-v2-answer-grid > button.selected {
+  border-color: rgba(132, 184, 255, 0.36) !important;
+  background: linear-gradient(180deg, rgba(39,120,255,.085), rgba(255,255,255,.025)) !important;
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.23) !important;
+}
+
+.menu-create-v2-start-icon,
+.menu-create-v2-step-icon,
+.menu-publish-v2-card > header .icon {
+  color: var(--beyond-studio-blue-light) !important;
+  border-color: var(--beyond-studio-line) !important;
+  background: var(--beyond-studio-blue-soft) !important;
+}
+
+.menu-create-v2-continuity,
+.menu-create-v2-dev-note,
+.menu-import-v2-private,
+.menu-import-v2-allowance,
+.menu-website-import-v2-private,
+.menu-website-import-v2-allowance {
+  border-color: var(--beyond-studio-line) !important;
+  background: rgba(39, 120, 255, 0.055) !important;
+}
+
+:is(
+  .menu-create-v2-url-field > div,
+  .menu-import-v2-card.text-card textarea,
+  .menu-import-v2-files > div,
+  .menu-import-v2-language-list button,
+  .menu-website-import-v2-field input,
+  .menu-website-import-v2-languages button
+) {
+  color: var(--beyond-studio-text) !important;
+  border-color: var(--beyond-studio-line) !important;
+  background: var(--beyond-studio-surface-2) !important;
+}
+
+:is(
+  .menu-import-v2-language-list button.active,
+  .menu-website-import-v2-languages button.active
+) {
+  border-color: rgba(132, 184, 255, 0.34) !important;
+  background: var(--beyond-studio-blue-soft) !important;
+}
+
+.menu-import-v2-dropzone {
+  color: var(--beyond-studio-blue-light) !important;
+  border-color: rgba(132, 184, 255, 0.22) !important;
+  background: rgba(39, 120, 255, 0.045) !important;
+}
+
+:is(
+  .menu-create-v2-primary,
+  .menu-import-v2-build,
+  .menu-website-import-v2-primary
+) {
+  color: #fff !important;
+  background: linear-gradient(135deg, #1b67ff, #428cff) !important;
+  box-shadow: 0 15px 42px rgba(31, 105, 255, 0.22) !important;
+  border-radius: 999px !important;
+}
+
+/* =========================================================
+   CONTENT STUDIO
+========================================================= */
+
+.menu-content-v2-tree,
+.menu-content-v2-inspector {
+  color: var(--beyond-studio-text) !important;
+  background: var(--beyond-studio-surface) !important;
+}
+
+.menu-content-v2-tree {
+  border-right-color: var(--beyond-studio-line) !important;
+}
+
+.menu-content-v2-inspector {
+  border-left-color: var(--beyond-studio-line) !important;
+}
+
+.menu-content-v2-panel-head,
+.menu-content-v2-inspector-head {
+  border-color: var(--beyond-studio-line) !important;
+}
+
+.menu-content-v2-restaurant-row,
+.menu-content-v2-category-row {
+  color: var(--beyond-studio-muted) !important;
+  border-color: var(--beyond-studio-line) !important;
+  background: transparent !important;
+}
+
+.menu-content-v2-restaurant-row:hover,
+.menu-content-v2-category-row:hover,
+.menu-content-v2-items > button:hover {
+  background: rgba(255, 255, 255, 0.028) !important;
+}
+
+.menu-content-v2-restaurant-row.active,
+.menu-content-v2-category-row.active,
+.menu-content-v2-items > button.active {
+  color: var(--beyond-studio-blue-light) !important;
+  background: var(--beyond-studio-blue-soft) !important;
+}
+
+.menu-content-v2-category-block {
+  border-color: var(--beyond-studio-line) !important;
+}
+
+.menu-content-v2-tree-label small {
+  color: var(--beyond-studio-muted) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+.menu-content-v2-add-category,
+.menu-content-v2-panel-head button,
+.menu-content-v2-inspector-add {
+  color: var(--beyond-studio-blue-light) !important;
+  border-color: rgba(132, 184, 255, 0.18) !important;
+  background: var(--beyond-studio-blue-soft) !important;
+}
+
+.menu-content-v2-preview {
+  background: var(--beyond-studio-canvas) !important;
+}
+
+.menu-content-v2-canvas-toolbar {
+  color: var(--beyond-studio-text) !important;
+  border-bottom-color: var(--beyond-studio-line) !important;
+  background: rgba(7, 11, 18, 0.94) !important;
+}
+
+.menu-content-v2-design-chip,
+.menu-content-v2-device {
+  border-color: var(--beyond-studio-line) !important;
+  background: rgba(255,255,255,.025) !important;
+}
+
+.menu-content-v2-canvas {
+  background:
+    radial-gradient(circle at 1px 1px, rgba(132,184,255,.11) 1px, transparent 1.15px) 0 0/22px 22px,
+    radial-gradient(circle at 50% 50%, rgba(39,120,255,.08), transparent 36%),
+    var(--beyond-studio-canvas) !important;
+}
+
+:is(
+  .menu-content-v2-field > input,
+  .menu-content-v2-field > textarea,
+  .menu-content-v2-price,
+  .menu-content-v2-image-input
+) {
+  color: var(--beyond-studio-text) !important;
+  border-color: var(--beyond-studio-line) !important;
+  background: var(--beyond-studio-surface-2) !important;
+}
+
+:is(
+  .menu-content-v2-field > input,
+  .menu-content-v2-field > textarea,
+  .menu-content-v2-price,
+  .menu-content-v2-image-input
+):focus,
+.menu-content-v2-price:focus-within,
+.menu-content-v2-image-input:focus-within {
+  border-color: rgba(132,184,255,.48) !important;
+  background: var(--beyond-studio-surface-3) !important;
+  box-shadow: 0 0 0 3px rgba(39,120,255,.1) !important;
+}
+
+.menu-content-v2-toggle,
+.menu-content-v2-info-card,
+.menu-content-v2-inspector-next {
+  border-color: var(--beyond-studio-line) !important;
+}
+
+.menu-content-v2-info-card {
+  color: var(--beyond-studio-blue-light) !important;
+  background: var(--beyond-studio-blue-soft) !important;
+}
+
+.menu-content-v2-inspector-next > button {
+  color: #fff !important;
+  background: linear-gradient(135deg, #1b67ff, #428cff) !important;
+  border-radius: 999px !important;
+}
+
+/* =========================================================
+   DESIGN STUDIO
+========================================================= */
+
+.menu-design-v2-intro {
+  border-color: var(--beyond-studio-line) !important;
+  background: rgba(255,255,255,.018) !important;
+}
+
+.menu-design-v2-intro-status,
+.menu-design-v2-save {
+  color: var(--beyond-studio-text) !important;
+  border-color: var(--beyond-studio-line) !important;
+  background: rgba(255,255,255,.025) !important;
+}
+
+.menu-design-v2-controls {
+  color: var(--beyond-studio-text) !important;
+  border-color: var(--beyond-studio-line) !important;
+  background: var(--beyond-studio-surface) !important;
+}
+
+.menu-design-v2-controls .studio-v3-design-pro-controls {
+  color: var(--beyond-studio-text) !important;
+  background: var(--beyond-studio-surface) !important;
+}
+
+.menu-design-v2-controls .studio-v3-design-pro-controls :is(input, select, textarea) {
+  color: var(--beyond-studio-text) !important;
+  border-color: var(--beyond-studio-line) !important;
+  background: var(--beyond-studio-surface-2) !important;
+}
+
+.menu-design-v2-canvas {
+  background:
+    radial-gradient(circle at 50% 44%, rgba(39,120,255,.09), transparent 34%),
+    var(--beyond-studio-canvas) !important;
+}
+
+.menu-design-v2-next {
+  border-color: var(--beyond-studio-line) !important;
+}
+
+.menu-design-v2-next button {
+  color: #fff !important;
+  background: linear-gradient(135deg, #1b67ff, #428cff) !important;
+  border-radius: 999px !important;
+}
+
+/* =========================================================
+   PREVIEW + PUBLISH
+========================================================= */
+
+.menu-preview-v2-summary,
+.menu-preview-v2-language-review,
+.menu-publish-v2-readiness,
+.menu-publish-v2-card,
+.menu-publish-v2-checklist,
+.menu-publish-v2-action-card {
+  color: var(--beyond-studio-text) !important;
+  border-color: var(--beyond-studio-line) !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.018)) !important;
+  box-shadow: 0 16px 50px rgba(0,0,0,.14) !important;
+}
+
+.menu-preview-v2-language-cards > button,
+.menu-publish-v2-language-list button {
+  color: var(--beyond-studio-text) !important;
+  border-color: var(--beyond-studio-line) !important;
+  background: var(--beyond-studio-surface-2) !important;
+}
+
+.menu-preview-v2-language-cards > button.active,
+.menu-publish-v2-language-list button.active {
+  border-color: rgba(132,184,255,.42) !important;
+  background: var(--beyond-studio-blue-soft) !important;
+}
+
+.menu-preview-v2-stage-wrap {
+  border-color: var(--beyond-studio-line) !important;
+  background: var(--beyond-studio-canvas) !important;
+  box-shadow: var(--beyond-studio-shadow) !important;
+}
+
+.menu-preview-v2-footer .secondary {
+  color: var(--beyond-studio-text) !important;
+  border-color: var(--beyond-studio-line) !important;
+  background: rgba(255,255,255,.025) !important;
+}
+
+.menu-preview-v2-footer .primary,
+.menu-publish-v2-action-card button.primary,
+.menu-publish-v2-action-card button:not(.secondary) {
+  color: #fff !important;
+  background: linear-gradient(135deg, #1b67ff, #428cff) !important;
+  border-radius: 999px !important;
+  box-shadow: 0 15px 42px rgba(31,105,255,.2) !important;
+}
+
+.menu-publish-v2-slug > div,
+.menu-publish-v2-url-preview,
+.menu-publish-v2-card.duo,
+.menu-publish-v2-default-language select {
+  color: var(--beyond-studio-text) !important;
+  border-color: var(--beyond-studio-line) !important;
+  background: var(--beyond-studio-surface-2) !important;
+}
+
+.menu-publish-v2-readiness.ready {
+  color: var(--beyond-studio-green) !important;
+  border-color: rgba(72,185,132,.22) !important;
+  background: rgba(72,185,132,.055) !important;
+}
+
+/* =========================================================
+   MY MENUS + MANAGEMENT
+========================================================= */
+
+.menu-my-menus-v2-card,
+.menu-my-menus-v2-state.card,
+.menu-manage-v2-card,
+.menu-manage-v2-summary,
+.menu-manage-v2-status {
+  color: var(--beyond-studio-text) !important;
+  border-color: var(--beyond-studio-line) !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.018)) !important;
+  box-shadow: 0 16px 50px rgba(0,0,0,.14) !important;
+}
+
+.menu-my-menus-v2-card-title .icon {
+  color: var(--beyond-studio-blue-light) !important;
+  background: var(--beyond-studio-blue-soft) !important;
+}
+
+.menu-my-menus-v2-live-path,
+.menu-manage-v2-destination-row,
+.menu-manage-v2-public-url,
+.menu-manage-v2-safety {
+  border-color: var(--beyond-studio-line) !important;
+  background: rgba(39,120,255,.055) !important;
+}
+
+.menu-my-menus-v2-language-row span,
+.menu-manage-v2-history .version-number {
+  color: var(--beyond-studio-text) !important;
+  border-color: var(--beyond-studio-line) !important;
+  background: rgba(255,255,255,.025) !important;
+}
+
+.menu-my-menus-v2-card-actions button,
+.menu-manage-v2-workspace-actions button,
+.menu-manage-v2-live-actions button,
+.menu-manage-v2 .destination-card > button,
+.menu-manage-v2 .danger-card > button,
+.menu-manage-v2.centered button {
+  color: var(--beyond-studio-text) !important;
+  border-color: var(--beyond-studio-line) !important;
+  background: rgba(255,255,255,.025) !important;
+}
+
+.menu-my-menus-v2-card-actions button.resume,
+.menu-manage-v2-workspace-actions button.primary,
+.menu-manage-v2-live-actions button.primary,
+.menu-my-menus-v2-actions > .primary,
+.menu-my-menus-v2-state .primary {
+  color: #fff !important;
+  border-color: transparent !important;
+  background: linear-gradient(135deg, #1b67ff, #428cff) !important;
+  border-radius: 999px !important;
+  box-shadow: 0 15px 42px rgba(31,105,255,.18) !important;
+}
+
+.menu-my-menus-v2-card .status.live,
+.menu-manage-v2-status.live {
+  color: #6dd7a1 !important;
+  background: rgba(72,185,132,.09) !important;
+}
+
+.menu-my-menus-v2-card .status.pending,
+.menu-manage-v2-status.pending {
+  color: #e5b46f !important;
+  background: rgba(215,164,93,.09) !important;
+}
+
+.menu-my-menus-v2-card .status.draft,
+.menu-my-menus-v2-card .status.offline {
+  color: var(--beyond-studio-muted) !important;
+  background: rgba(255,255,255,.04) !important;
+}
+
+.menu-manage-v2-history > div {
+  border-color: var(--beyond-studio-line) !important;
+}
+
+.menu-manage-v2 .danger-card {
+  border-color: rgba(217,119,131,.18) !important;
+  background: rgba(217,119,131,.035) !important;
+}
+
+.menu-manage-v2-notice,
+.menu-my-menus-v2-notice {
+  color: var(--beyond-studio-text) !important;
+  border-color: var(--beyond-studio-line) !important;
+  background: rgba(7,11,18,.96) !important;
+  box-shadow: var(--beyond-studio-shadow) !important;
+}
+
+/* =========================================================
+   LIGHT MODE — SAME PALETTE AS HOMEPAGE LIGHT THEME
+========================================================= */
+
+html[data-beyond-theme="light"] {
+  --beyond-studio-bg: #f7f9fc;
+  --beyond-studio-surface: #ffffff;
+  --beyond-studio-surface-2: #f3f6fa;
+  --beyond-studio-surface-3: #ffffff;
+  --beyond-studio-canvas: #eef3f8;
+  --beyond-studio-text: #111a28;
+  --beyond-studio-muted: #64758a;
+  --beyond-studio-faint: #8797aa;
+  --beyond-studio-line: rgba(20, 39, 65, 0.11);
+  --beyond-studio-line-strong: rgba(45, 112, 217, 0.28);
+  --beyond-studio-blue: #2778ff;
+  --beyond-studio-blue-light: #326fca;
+  --beyond-studio-blue-soft: rgba(39, 120, 255, 0.08);
+  --beyond-studio-shadow: 0 24px 70px rgba(30, 52, 80, 0.09);
+}
+
+html[data-beyond-theme="light"] :is(
+  .menu-create-v2,
+  .menu-import-v2,
+  .menu-website-import-v2,
+  .menu-content-v2,
+  .menu-design-v2,
+  .menu-preview-v2,
+  .menu-publish-v2,
+  .menu-my-menus-v2,
+  .menu-manage-v2
+) {
+  background:
+    radial-gradient(circle at 78% 7%, rgba(45,116,230,.09), transparent 27%),
+    radial-gradient(circle at 14% 34%, rgba(66,119,187,.045), transparent 25%),
+    var(--beyond-studio-bg) !important;
+}
+
+html[data-beyond-theme="light"] :is(
+  .menu-create-v2-topbar,
+  .menu-import-v2-topbar,
+  .menu-website-import-v2-topbar,
+  .menu-content-v2-topbar,
+  .menu-design-v2-topbar,
+  .menu-preview-v2-topbar,
+  .menu-publish-v2-topbar,
+  .menu-my-menus-v2-topbar,
+  .menu-manage-v2-topbar
+) {
+  background: rgba(247,249,252,.9) !important;
+}
+
+html[data-beyond-theme="light"] :is(
+  .menu-create-v2-brand,
+  .menu-import-v2-brand,
+  .menu-website-import-v2-brand,
+  .menu-content-v2-brand,
+  .menu-design-v2-brand,
+  .menu-preview-v2-brand,
+  .menu-publish-v2-brand,
+  .menu-my-menus-v2-brand,
+  .menu-manage-v2-brand
+) img {
+  filter: brightness(0) saturate(100%);
+}
+
+html[data-beyond-theme="light"] :is(
+  .menu-create-v2-start-card,
+  .menu-create-v2-answer-grid > button,
+  .menu-create-v2-narrow,
+  .menu-create-v2-design-grid > article,
+  .menu-import-v2-card,
+  .menu-import-v2-auth-card,
+  .menu-website-import-v2-card,
+  .menu-website-import-v2-auth-card,
+  .menu-preview-v2-summary,
+  .menu-preview-v2-language-review,
+  .menu-publish-v2-readiness,
+  .menu-publish-v2-card,
+  .menu-publish-v2-checklist,
+  .menu-publish-v2-action-card,
+  .menu-my-menus-v2-card,
+  .menu-my-menus-v2-state.card,
+  .menu-manage-v2-card,
+  .menu-manage-v2-summary,
+  .menu-manage-v2-status
+) {
+  background: rgba(255,255,255,.88) !important;
+  box-shadow: 0 15px 45px rgba(26,49,77,.06) !important;
+}
+
+@media (max-width: 700px) {
+  :is(
+    .menu-create-v2-brand,
+    .menu-import-v2-brand,
+    .menu-website-import-v2-brand,
+    .menu-content-v2-brand,
+    .menu-design-v2-brand,
+    .menu-preview-v2-brand,
+    .menu-publish-v2-brand,
+    .menu-my-menus-v2-brand,
+    .menu-manage-v2-brand
+  ) img {
+    width: 36px !important;
+    height: 36px !important;
+    flex-basis: 36px !important;
+  }
+
+  :is(
+    .menu-create-v2-brand,
+    .menu-import-v2-brand,
+    .menu-website-import-v2-brand,
+    .menu-content-v2-brand,
+    .menu-design-v2-brand,
+    .menu-preview-v2-brand,
+    .menu-publish-v2-brand,
+    .menu-my-menus-v2-brand,
+    .menu-manage-v2-brand
+  ) strong::after {
+    font-size: 15px;
+    letter-spacing: 6px;
+  }
+}
