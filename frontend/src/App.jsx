@@ -83,7 +83,7 @@ function App() {
         {/* Production Menu experience. */}
         <Route path="/menu-builder" element={<MenuCreateV2 />} />
         <Route path="/menu-builder/import" element={<MenuImportStudioV2 />} />
-        <Route path="/menu-studio" element={<LegacyStudioRedirect to="/menu-builder" />} />
+        <Route path="/menu-studio" element={<LegacyStudioRedirect to="/my-menus" />} />
         <Route path="/menu-studio/content" element={<PersistentStudio><MenuContentStudioV2Entry /></PersistentStudio>} />
         <Route path="/menu-studio/design" element={<PersistentStudio><MenuDesignStudioV2 /></PersistentStudio>} />
         <Route path="/menu-studio/preview" element={<PersistentStudio><MenuPreviewStudioV2 /></PersistentStudio>} />
