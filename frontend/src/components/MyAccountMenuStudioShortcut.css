@@ -1,0 +1,33 @@
+.account-nav .account-menu-studio-shortcut {
+  border: 1px solid rgba(73, 116, 229, 0.18);
+  background: rgba(73, 116, 229, 0.055);
+  color: #8ba3b8;
+}
+
+.account-nav .account-menu-studio-shortcut:hover,
+.account-nav .account-menu-studio-shortcut:focus-visible {
+  border-color: rgba(73, 116, 229, 0.34);
+  background: rgba(73, 116, 229, 0.1);
+  color: #bfd0de;
+}
+
+.account-nav .account-menu-studio-shortcut > span {
+  min-width: 0;
+  margin-left: 0;
+  flex: 1;
+  color: inherit;
+  font-size: 9px;
+  text-align: left;
+}
+
+.account-menu-studio-arrow {
+  margin-left: auto;
+  opacity: 0.55;
+  transition: transform 160ms ease, opacity 160ms ease;
+}
+
+.account-nav .account-menu-studio-shortcut:hover .account-menu-studio-arrow,
+.account-nav .account-menu-studio-shortcut:focus-visible .account-menu-studio-arrow {
+  transform: translateX(2px);
+  opacity: 0.9;
+}
