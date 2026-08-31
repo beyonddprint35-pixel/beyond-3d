@@ -31,8 +31,9 @@ function remembered(slug) {
 }
 
 function validPayload(payload) {
+  const hasIdentity = Boolean(payload?.versionId || (payload?.legacy && payload?.siteId));
   return Boolean(
-    payload?.versionId &&
+    hasIdentity &&
     payload?.menu &&
     Array.isArray(payload.menu.groups) &&
     Array.isArray(payload.menu.items) &&
@@ -46,11 +47,22 @@ function notFoundError(message = "Menu not found.") {
   return error;
 }
 
-async function readFromSupabase(slug) {
-  const { data, error } = await supabase.rpc("get_published_menu_v3_by_slug", { p_slug: slug });
+async function rpc(name, slug) {
+  const { data, error } = await supabase.rpc(name, { p_slug: slug });
   if (error) throw error;
-  if (!data) throw notFoundError();
-  return data;
+  return data || null;
+}
+
+async function readFromSupabase(slug) {
+  // New immutable publication versions always win. Legacy live menus are read
+  // only when no V3 published snapshot owns the slug, preserving existing QR URLs.
+  const current = await rpc("get_published_menu_v3_by_slug", slug);
+  if (current) return current;
+
+  const legacy = await rpc("get_legacy_published_menu_v3_by_slug", slug);
+  if (legacy) return legacy;
+
+  throw notFoundError();
 }
 
 async function readFromNetlify(slug) {
@@ -64,15 +76,17 @@ async function readFromNetlify(slug) {
 
 function normalizedPublishedPayload(payload) {
   if (!validPayload(payload)) throw new Error("Published menu is incomplete.");
+  const legacy = Boolean(payload.legacy);
   return {
     menu: payload.menu,
     designSettings: normalizeMenuDesign(payload.design),
-    versionId: payload.versionId,
-    versionNumber: payload.versionNumber,
-    publishedAt: payload.publishedAt,
+    versionId: payload.versionId || (legacy ? `legacy:${payload.siteId}` : ""),
+    versionNumber: payload.versionNumber || null,
+    publishedAt: payload.publishedAt || null,
     publication: payload.publication || null,
     slug: payload.slug || "",
-    source: "published",
+    source: legacy ? "legacy-published" : "published",
+    legacy,
   };
 }
 
@@ -81,8 +95,8 @@ export async function loadResilientPublishedMenu(slug) {
   if (!normalizedSlug) throw new Error("A menu slug is required.");
 
   try {
-    // Vite/Codespaces does not run Netlify Functions. Read the same public RPC
-    // directly while developing so the immutable live snapshot is testable locally.
+    // Vite/Codespaces does not run Netlify Functions. Read the same public RPCs
+    // directly while developing so both immutable and legacy live menus are testable.
     const payload = import.meta.env.DEV
       ? await readFromSupabase(normalizedSlug)
       : await readFromNetlify(normalizedSlug).catch((netlifyError) => {
