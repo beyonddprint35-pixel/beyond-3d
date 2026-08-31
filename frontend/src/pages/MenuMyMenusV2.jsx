@@ -2,12 +2,15 @@ import { useEffect, useMemo, useState } from "react";
 import {
   Archive,
   ArrowRight,
+  CircleAlert,
   Copy,
   ExternalLink,
+  FileClock,
   FileText,
   LoaderCircle,
   Plus,
-  Power,
+  Radio,
+  Settings2,
   Smartphone,
 } from "lucide-react";
 
@@ -19,7 +22,10 @@ import {
   duplicateMenuStudioProject,
   listMenuStudioProjects,
 } from "../features/menu-engine/studio/menuStudioV2Persistence";
-import { unpublishMenuStudioProject } from "../features/menu-engine/studio/menuStudioV2PublishService";
+import {
+  loadMenuStudioCurrentVersions,
+  menuStudioHasUnpublishedChanges,
+} from "../features/menu-engine/studio/menuStudioV2PublishService";
 import {
   readStudioLanguage,
   studioLanguageDirection,
@@ -31,25 +37,28 @@ import "./MenuMyMenusV2.css";
 
 const UI = {
   en: {
-    eyebrow:"MY MENUS", title:"Every menu, one workspace", hint:"Resume editing, preview, duplicate or manage the live version of every persistent menu.",
+    eyebrow:"MY MENUS", title:"Every menu, one workspace", hint:"Manage drafts, live menus and unpublished changes from one persistent workspace.",
     create:"Create new menu", interfaceLanguage:"Language", loading:"Loading your menus…", signIn:"Sign in to see your menus", signInHint:"Persistent menus are private to your BEYOND account.", home:"Return home",
     empty:"No saved menus yet", emptyHint:"Create your first menu and BEYOND will keep it synced to your account automatically.",
-    draft:"Draft", live:"Live", resume:"Continue editing", preview:"Draft preview", viewLive:"Open live", duplicate:"Duplicate", archive:"Archive", unpublish:"Unpublish", confirmArchive:"Archive this menu? Its currently published version will stay live until you unpublish it.", confirmUnpublish:"Take this menu offline? Your draft and publication history will be kept.",
-    items:"items", categories:"categories", languages:"languages", updated:"Updated", design:"Design", duplicated:"Menu duplicated", unpublished:"Menu taken offline", failed:"Could not update this menu.", liveAddress:"Live address",
+    draft:"Draft", live:"Live", pending:"Changes pending", offline:"Offline", resume:"Continue editing", preview:"Draft preview", viewLive:"Open live", manage:"Manage", duplicate:"Duplicate", archive:"Archive", confirmArchive:"Archive this menu? If it is currently live, the public version will remain online until you unpublish it from Manage.",
+    items:"items", categories:"categories", languages:"languages", updated:"Updated", design:"Design", duplicated:"Menu duplicated", failed:"Could not update this menu.", liveAddress:"Live address", version:"Version",
+    draftHint:"Not published yet", liveHint:"Guests see this draft", pendingHint:"Draft differs from live", offlineHint:"Previously published",
   },
   he: {
-    eyebrow:"התפריטים שלי", title:"כל התפריטים במקום אחד", hint:"המשיכו לערוך, צפו בטיוטה, שכפלו או נהלו את הגרסה החיה של כל תפריט שנשמר בחשבון.",
+    eyebrow:"התפריטים שלי", title:"כל התפריטים במקום אחד", hint:"נהלו טיוטות, תפריטים חיים ושינויים שטרם פורסמו מאזור עבודה אחד שנשמר בחשבון.",
     create:"יצירת תפריט חדש", interfaceLanguage:"שפה", loading:"טוען את התפריטים…", signIn:"התחברו כדי לראות את התפריטים", signInHint:"התפריטים השמורים פרטיים לחשבון BEYOND שלכם.", home:"חזרה לבית",
     empty:"עדיין אין תפריטים שמורים", emptyHint:"צרו את התפריט הראשון ו-BEYOND ישמור אותו אוטומטית בחשבון.",
-    draft:"טיוטה", live:"חי", resume:"המשך עריכה", preview:"תצוגת טיוטה", viewLive:"פתיחת החי", duplicate:"שכפול", archive:"ארכיון", unpublish:"הורדה מהאוויר", confirmArchive:"להעביר את התפריט לארכיון? הגרסה שפורסמה תישאר חיה עד שתורידו אותה מהאוויר.", confirmUnpublish:"להוריד את התפריט מהאוויר? הטיוטה והיסטוריית הפרסום יישמרו.",
-    items:"פריטים", categories:"קטגוריות", languages:"שפות", updated:"עודכן", design:"עיצוב", duplicated:"התפריט שוכפל", unpublished:"התפריט הורד מהאוויר", failed:"לא ניתן לעדכן את התפריט.", liveAddress:"כתובת חיה",
+    draft:"טיוטה", live:"חי", pending:"שינויים ממתינים", offline:"לא באוויר", resume:"המשך עריכה", preview:"תצוגת טיוטה", viewLive:"פתיחת החי", manage:"ניהול", duplicate:"שכפול", archive:"ארכיון", confirmArchive:"להעביר את התפריט לארכיון? אם הוא חי, הגרסה הציבורית תישאר באוויר עד שתורידו אותה דרך ניהול.",
+    items:"פריטים", categories:"קטגוריות", languages:"שפות", updated:"עודכן", design:"עיצוב", duplicated:"התפריט שוכפל", failed:"לא ניתן לעדכן את התפריט.", liveAddress:"כתובת חיה", version:"גרסה",
+    draftHint:"עדיין לא פורסם", liveHint:"האורחים רואים את הטיוטה הזו", pendingHint:"הטיוטה שונה מהגרסה החיה", offlineHint:"פורסם בעבר",
   },
   ar: {
-    eyebrow:"قوائمي", title:"كل القوائم في مساحة واحدة", hint:"تابعوا التحرير أو معاينة المسودة أو النسخ أو إدارة النسخة المباشرة لكل قائمة محفوظة.",
+    eyebrow:"قوائمي", title:"كل القوائم في مساحة واحدة", hint:"أديروا المسودات والقوائم المباشرة والتغييرات غير المنشورة من مساحة محفوظة واحدة.",
     create:"إنشاء قائمة جديدة", interfaceLanguage:"اللغة", loading:"جارٍ تحميل القوائم…", signIn:"سجلوا الدخول لرؤية قوائمكم", signInHint:"القوائم المحفوظة خاصة بحساب BEYOND الخاص بكم.", home:"العودة للرئيسية",
     empty:"لا توجد قوائم محفوظة بعد", emptyHint:"أنشئوا أول قائمة وسيحفظها BEYOND تلقائياً في حسابكم.",
-    draft:"مسودة", live:"مباشرة", resume:"متابعة التحرير", preview:"معاينة المسودة", viewLive:"فتح المباشرة", duplicate:"نسخ", archive:"أرشفة", unpublish:"إلغاء النشر", confirmArchive:"أرشفة هذه القائمة؟ ستبقى النسخة المنشورة مباشرة حتى تقوموا بإلغاء نشرها.", confirmUnpublish:"إيقاف هذه القائمة؟ ستبقى المسودة وسجل النسخ المنشورة محفوظين.",
-    items:"عناصر", categories:"فئات", languages:"لغات", updated:"تم التحديث", design:"التصميم", duplicated:"تم نسخ القائمة", unpublished:"تم إيقاف القائمة", failed:"تعذر تحديث هذه القائمة.", liveAddress:"العنوان المباشر",
+    draft:"مسودة", live:"مباشرة", pending:"تغييرات معلقة", offline:"غير منشورة", resume:"متابعة التحرير", preview:"معاينة المسودة", viewLive:"فتح المباشرة", manage:"إدارة", duplicate:"نسخ", archive:"أرشفة", confirmArchive:"أرشفة هذه القائمة؟ إذا كانت مباشرة، ستبقى النسخة العامة متاحة حتى تقوموا بإلغاء نشرها من صفحة الإدارة.",
+    items:"عناصر", categories:"فئات", languages:"لغات", updated:"تم التحديث", design:"التصميم", duplicated:"تم نسخ القائمة", failed:"تعذر تحديث هذه القائمة.", liveAddress:"العنوان المباشر", version:"نسخة",
+    draftHint:"لم يتم نشرها بعد", liveHint:"الضيوف يرون هذه المسودة", pendingHint:"المسودة تختلف عن المباشرة", offlineHint:"نُشرت سابقاً",
   },
 };
 
@@ -75,6 +84,10 @@ function projectMetrics(project) {
     languages: Array.isArray(menu.languages) && menu.languages.length ? menu.languages : [menu.default_language || "en"],
     designId: project?.studio_state?.designId || "",
   };
+}
+
+function localLivePath(slug) {
+  return import.meta.env.DEV ? `/dev/menu-public-v3/${slug}` : `/menu/${slug}`;
 }
 
 export default function MenuMyMenusV2() {
@@ -112,7 +125,12 @@ export default function MenuMyMenusV2() {
         .in("id", rows.map((project) => project.id));
       if (publicationError) throw publicationError;
       const publicationMap = new Map((publicationRows || []).map((row) => [row.id, row]));
-      setProjects(rows.map((project) => ({ ...project, ...(publicationMap.get(project.id) || {}) })));
+      const combined = rows.map((project) => ({ ...project, ...(publicationMap.get(project.id) || {}) }));
+      const versionMap = await loadMenuStudioCurrentVersions(combined);
+      setProjects(combined.map((project) => ({
+        ...project,
+        currentPublishedVersion: project.published_version_id ? versionMap.get(project.published_version_id) || null : null,
+      })));
     } catch (error) {
       console.warn("Could not load persistent menus.", error);
       setNotice(t.failed);
@@ -161,23 +179,14 @@ export default function MenuMyMenusV2() {
     }
   }
 
-  async function unpublish(project) {
-    if (!window.confirm(t.confirmUnpublish)) return;
-    setBusyId(project.id);
-    setNotice("");
-    try {
-      await unpublishMenuStudioProject(project.id);
-      setNotice(t.unpublished);
-      await refresh();
-    } catch (error) {
-      console.warn("Could not unpublish menu.", error);
-      setNotice(error?.message || t.failed);
-    } finally {
-      setBusyId("");
-    }
-  }
-
-  const renderedProjects = useMemo(() => projects.map((project) => ({ project, metrics: projectMetrics(project) })), [projects]);
+  const renderedProjects = useMemo(() => projects.map((project) => {
+    const metrics = projectMetrics(project);
+    const hasHistory = Boolean(project.currentPublishedVersion || project.published_at);
+    const live = Boolean(project.published_version_id && project.published_slug);
+    const pending = live && menuStudioHasUnpublishedChanges(project, project.currentPublishedVersion);
+    const lifecycle = pending ? "pending" : live ? "live" : hasHistory ? "offline" : "draft";
+    return { project, metrics, lifecycle };
+  }), [projects]);
 
   return <main className="menu-my-menus-v2" dir={rtl ? "rtl" : "ltr"} lang={uiLanguage}>
     <header className="menu-my-menus-v2-topbar">
@@ -202,16 +211,19 @@ export default function MenuMyMenusV2() {
     {session && !loading && !renderedProjects.length ? <section className="menu-my-menus-v2-state card"><FileText size={25} /><h2>{t.empty}</h2><p>{t.emptyHint}</p><button type="button" className="primary" onClick={() => window.location.assign(`/dev/menu-create-v2?ui=${uiLanguage}`)}><Plus size={14} /> {t.create}</button></section> : null}
 
     {session && !loading && renderedProjects.length ? <section className="menu-my-menus-v2-grid">
-      {renderedProjects.map(({ project, metrics }) => {
+      {renderedProjects.map(({ project, metrics, lifecycle }) => {
         const designEntry = PREMIUM_MENU_DESIGNS.find((entry) => entry.id === metrics.designId);
-        const live = Boolean(project.published_version_id || project.activated_site_id || project.status === "activated");
         const busy = busyId === project.id;
-        return <article key={project.id} className="menu-my-menus-v2-card">
+        const statusLabel = lifecycle === "pending" ? t.pending : lifecycle === "live" ? t.live : lifecycle === "offline" ? t.offline : t.draft;
+        const statusHint = lifecycle === "pending" ? t.pendingHint : lifecycle === "live" ? t.liveHint : lifecycle === "offline" ? t.offlineHint : t.draftHint;
+        const StatusIcon = lifecycle === "pending" ? CircleAlert : lifecycle === "live" ? Radio : FileClock;
+        return <article key={project.id} className={`menu-my-menus-v2-card lifecycle-${lifecycle}`}>
           <div className="menu-my-menus-v2-card-top">
-            <span className={`status ${live ? "live" : "draft"}`}>{live ? t.live : t.draft}</span>
+            <span className={`status ${lifecycle}`}><StatusIcon size={11} /> {statusLabel}</span>
             <small>{t.updated} {formatDate(project.updated_at, uiLanguage)}</small>
           </div>
           <div className="menu-my-menus-v2-card-title"><span className="icon"><Smartphone size={18} /></span><div><h2>{project.name}</h2><p>{designEntry?.name || t.design}</p></div></div>
+          <div className="menu-my-menus-v2-lifecycle-hint">{statusHint}{project.currentPublishedVersion ? <span> · {t.version} {project.currentPublishedVersion.version_number}</span> : null}</div>
           {project.published_slug ? <div className="menu-my-menus-v2-live-path"><span>{t.liveAddress}</span><strong>/menu/{project.published_slug}</strong></div> : null}
           <div className="menu-my-menus-v2-metrics">
             <span><strong>{metrics.categories}</strong><small>{t.categories}</small></span>
@@ -222,9 +234,9 @@ export default function MenuMyMenusV2() {
           <div className="menu-my-menus-v2-card-actions">
             <button type="button" className="resume" disabled={busy} onClick={() => window.location.assign(`/dev/menu-content-v2?project=${project.id}`)}>{t.resume} <ArrowRight size={14} /></button>
             <button type="button" disabled={busy} onClick={() => window.location.assign(`/dev/menu-preview-v2?project=${project.id}`)}>{t.preview}</button>
-            {project.published_slug ? <button type="button" className="view-live" disabled={busy} onClick={() => window.location.assign(`/dev/menu-public-v3/${project.published_slug}`)}><ExternalLink size={13} /> {t.viewLive}</button> : null}
+            {project.published_slug ? <button type="button" className="view-live" disabled={busy} onClick={() => window.location.assign(localLivePath(project.published_slug))}><ExternalLink size={13} /> {t.viewLive}</button> : null}
+            {(project.published_version_id || project.published_at) ? <button type="button" className={lifecycle === "pending" ? "manage attention" : "manage"} disabled={busy} onClick={() => window.location.assign(`/my-menus/${project.id}`)}><Settings2 size={13} /> {t.manage}</button> : null}
             <button type="button" disabled={busy} onClick={() => duplicate(project)}><Copy size={13} /> {t.duplicate}</button>
-            {project.published_version_id ? <button type="button" className="unpublish" disabled={busy} onClick={() => unpublish(project)}><Power size={13} /> {t.unpublish}</button> : null}
             <button type="button" disabled={busy} onClick={() => archive(project)}><Archive size={13} /> {t.archive}</button>
           </div>
         </article>;
