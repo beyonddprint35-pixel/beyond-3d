@@ -23,11 +23,13 @@ import MenuDesignStudioV2 from "./pages/MenuDesignStudioV2";
 import MenuPreviewStudioV2 from "./pages/MenuPreviewStudioV2";
 import MenuPublishStudioV2 from "./pages/MenuPublishStudioV2";
 import MenuMyMenusV2 from "./pages/MenuMyMenusV2";
+import MenuManageV2 from "./pages/MenuManageV2";
 import MenuStudioV2PersistenceBoundary from "./features/menu-engine/studio/MenuStudioV2PersistenceBoundary";
 import CustomerShowcasePortal from "./components/CustomerShowcasePortal";
 
 import "./components/MyAccountAdminShortcut.js";
 import "./components/MyAccountAdminShortcut.css";
+import "./components/MyAccountMenuStudioShortcut.js";
 import "./components/MyAccountLightMode.css";
 import "./components/MyAccountMenuDraftDelete.js";
 import "./components/MyAccountMenuDraftDelete.css";
@@ -65,6 +67,8 @@ function App() {
         <Route path="/3DPRINTING" element={<ThreeDPrinting />} />
         <Route path="/menu-builder" element={<MenuBuilder />} />
         <Route path="/menu-mobile-preview" element={<MenuMobilePreviewPage />} />
+        <Route path="/my-menus" element={<MenuMyMenusV2 />} />
+        <Route path="/my-menus/:projectId" element={<MenuManageV2 />} />
         {import.meta.env.DEV ? (
           <>
             <Route path="/dev/menu-engine-v3" element={<MenuEngineV3Dev />} />
@@ -73,6 +77,7 @@ function App() {
             <Route path="/dev/menu-studio-v3-draft" element={<MenuStudioV3Draft />} />
             <Route path="/dev/menu-public-v3/:slug" element={<MenuPublicV3Dev />} />
             <Route path="/dev/my-menus-v2" element={<MenuMyMenusV2 />} />
+            <Route path="/dev/menu-manage-v2/:projectId" element={<MenuManageV2 />} />
             <Route path="/dev/menu-create-v2" element={<MenuCreateV2 />} />
             <Route path="/dev/menu-import-v2" element={<MenuImportStudioV2 />} />
             <Route path="/dev/menu-content-v2" element={<PersistentStudio><MenuContentStudioV2Entry /></PersistentStudio>} />
