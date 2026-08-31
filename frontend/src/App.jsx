@@ -30,6 +30,7 @@ import CustomerShowcasePortal from "./components/CustomerShowcasePortal";
 import "./components/MyAccountAdminShortcut.js";
 import "./components/MyAccountAdminShortcut.css";
 import "./components/MyAccountMenuStudioShortcut.js";
+import "./components/MyAccountMenuStudioShortcut.css";
 import "./components/MyAccountLightMode.css";
 import "./components/MyAccountMenuDraftDelete.js";
 import "./components/MyAccountMenuDraftDelete.css";
