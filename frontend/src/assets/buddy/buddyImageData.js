@@ -1,3 +1,4 @@
+// Bundle homepage mascot artwork with the app so production never depends on local-only image paths.
 import pizza0 from "./pizzaBuddyChunk0";
 import pizza1 from "./pizzaBuddyChunk1";
 import pizza2 from "./pizzaBuddyChunk2";
