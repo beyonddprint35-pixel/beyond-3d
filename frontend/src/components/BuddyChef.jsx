@@ -1,7 +1,5 @@
+import { PIZZA_BUDDY_IMAGE } from "../assets/buddy/buddyImageData";
 import "./BuddyChef.css";
-
-const PIZZA_BUDDY_IMAGE =
-  "/images/pizza-buddy-laptop.webp";
 
 export default function BuddyChef() {
   return (
