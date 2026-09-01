@@ -63,15 +63,36 @@ import "./pages/MenuStudioHomeTheme.css";
 import "./pages/MenuStudioHomeThemeComponents.css";
 import "./pages/MenuContentStudioV2Mobile.css";
 
-function PersistentStudio({ children }) {
-  return <MenuStudioV2PersistenceBoundary>{children}</MenuStudioV2PersistenceBoundary>;
-}
-
 function LegacyStudioRedirect({ to }) {
   const location = useLocation();
   const params = useParams();
   const base = typeof to === "function" ? to(params) : to;
   return <Navigate replace to={`${base}${location.search}${location.hash}`} />;
+}
+
+function MenuStudioV2Routes() {
+  const location = useLocation();
+  const stage = location.pathname.replace(/^\/menu-studio\/?/, "").split("/")[0];
+
+  if (!stage) {
+    return <Navigate replace to={`/my-menus${location.search}${location.hash}`} />;
+  }
+
+  let screen = null;
+  if (stage === "content") screen = <MenuContentStudioV2Entry />;
+  if (stage === "design") screen = <MenuDesignStudioV2 />;
+  if (stage === "preview") screen = <MenuPreviewStudioV2 />;
+  if (stage === "publish") screen = <MenuPublishStudioV2 />;
+
+  if (!screen) {
+    return <Navigate replace to={`/my-menus${location.search}${location.hash}`} />;
+  }
+
+  return (
+    <MenuStudioV2PersistenceBoundary>
+      {screen}
+    </MenuStudioV2PersistenceBoundary>
+  );
 }
 
 function App() {
@@ -84,11 +105,7 @@ function App() {
         {/* Production Menu experience. */}
         <Route path="/menu-builder" element={<MenuCreateV2 />} />
         <Route path="/menu-builder/import" element={<MenuImportStudioV2 />} />
-        <Route path="/menu-studio" element={<LegacyStudioRedirect to="/my-menus" />} />
-        <Route path="/menu-studio/content" element={<PersistentStudio><MenuContentStudioV2Entry /></PersistentStudio>} />
-        <Route path="/menu-studio/design" element={<PersistentStudio><MenuDesignStudioV2 /></PersistentStudio>} />
-        <Route path="/menu-studio/preview" element={<PersistentStudio><MenuPreviewStudioV2 /></PersistentStudio>} />
-        <Route path="/menu-studio/publish" element={<PersistentStudio><MenuPublishStudioV2 /></PersistentStudio>} />
+        <Route path="/menu-studio/*" element={<MenuStudioV2Routes />} />
         <Route path="/my-menus" element={<MenuMyMenusV2 />} />
         <Route path="/my-menus/:projectId" element={<MenuManageV2 />} />
         <Route path="/menu/:slug" element={<MenuPublicV3Dev />} />
