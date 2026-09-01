@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
   ArrowRight,
@@ -75,7 +76,12 @@ function defaultSlug(name = "") {
   return safeSlug(name) || "my-menu";
 }
 
+function studioRoute(path) {
+  return `${path}${window.location.search || ""}`;
+}
+
 export default function MenuPublishStudioV2() {
+  const navigate = useNavigate();
   const storedDraft = useMemo(readMenuStudioV2Draft, []);
   const profile = useMemo(readMenuCreateV2Profile, []);
   const resolved = useMemo(() => resolveMenuStudioV2Design(storedDraft), [storedDraft]);
@@ -206,24 +212,24 @@ export default function MenuPublishStudioV2() {
   function openLiveMenu() {
     const liveSlug = publishedResult?.slug || normalizedSlug;
     if (!liveSlug) return;
-    window.location.assign(`/dev/menu-public-v3/${liveSlug}`);
+    navigate(`/menu/${liveSlug}`);
   }
 
   return (
     <main className="menu-publish-v2" dir={rtl ? "rtl" : "ltr"} lang={uiLanguage}>
       <header className="menu-publish-v2-topbar">
         <div className="menu-publish-v2-brand-wrap">
-          <button type="button" className="menu-publish-v2-back" onClick={() => window.location.assign("/dev/menu-preview-v2")} title={t.backPreview}><BackIcon size={16} /></button>
-          <button type="button" className="menu-publish-v2-brand" onClick={() => window.location.assign("/dev/menu-content-v2")}>
+          <button type="button" className="menu-publish-v2-back" onClick={() => navigate(studioRoute("/menu-studio/preview"))} title={t.backPreview}><BackIcon size={16} /></button>
+          <button type="button" className="menu-publish-v2-brand" onClick={() => navigate(studioRoute("/menu-studio/content"))}>
             <img src={beyondLogo} alt="" />
             <span><strong>Beyond Menu Studio</strong><small>{menu.restaurant_name}</small></span>
           </button>
         </div>
 
         <nav className="menu-publish-v2-product-nav" aria-label={t.workspace}>
-          <button type="button" onClick={() => window.location.assign("/dev/menu-content-v2")}>{t.content}</button>
-          <button type="button" onClick={() => window.location.assign("/dev/menu-design-v2")}>{t.design}</button>
-          <button type="button" onClick={() => window.location.assign("/dev/menu-preview-v2")}>{t.preview}</button>
+          <button type="button" onClick={() => navigate(studioRoute("/menu-studio/content"))}>{t.content}</button>
+          <button type="button" onClick={() => navigate(studioRoute("/menu-studio/design"))}>{t.design}</button>
+          <button type="button" onClick={() => navigate(studioRoute("/menu-studio/preview"))}>{t.preview}</button>
           <button type="button" className="active">{t.publish}</button>
         </nav>
 
@@ -290,7 +296,7 @@ export default function MenuPublishStudioV2() {
             {publishState.error ? <div className="menu-publish-v2-publish-error"><CircleAlert size={14} /> <span>{publishState.error}</span></div> : null}
             <button type="button" className="save" onClick={savePublishSetup} disabled={isPublishing}>{savedState ? <Check size={14} /> : null}{savedState ? t.saved : t.saveSetup}</button>
             <button type="button" className="live" disabled={!ready || !normalizedSlug || isPublishing} onClick={publishLiveMenu}><Rocket size={14} /> {isPublishing ? t.publishing : publishedResult ? t.publishAgain : t.publishLive}</button>
-            <button type="button" className="preview-link" onClick={publishedResult ? openLiveMenu : () => window.location.assign("/dev/menu-preview-v2")}>{publishedResult ? t.openLive : t.openPreview}</button>
+            <button type="button" className="preview-link" onClick={publishedResult ? openLiveMenu : () => navigate(studioRoute("/menu-studio/preview"))}>{publishedResult ? t.openLive : t.openPreview}</button>
           </section>
         </aside>
       </div>
