@@ -15,11 +15,15 @@ export default function StudioLanguageMenu({
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
   const options = useMemo(() => {
+    // Compact selectors live in the Studio app chrome. They are interface
+    // controls and must always expose EN / HE / AR regardless of which
+    // customer languages are currently enabled for the published menu.
+    if (compact) return STUDIO_LANGUAGES;
     if (!Array.isArray(allowedLanguages) || !allowedLanguages.length) return STUDIO_LANGUAGES;
     const allowed = new Set(allowedLanguages);
     const filtered = STUDIO_LANGUAGES.filter((language) => allowed.has(language.code));
     return filtered.length ? filtered : STUDIO_LANGUAGES;
-  }, [allowedLanguages]);
+  }, [allowedLanguages, compact]);
   const active = options.find((language) => language.code === value) || studioLanguageMeta(value) || options[0];
 
   useEffect(() => {
