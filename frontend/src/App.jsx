@@ -62,6 +62,7 @@ import "./pages/MenuContentStudioV2Drag.css";
 import "./pages/MenuStudioHomeTheme.css";
 import "./pages/MenuStudioHomeThemeComponents.css";
 import "./pages/MenuContentStudioV2Mobile.css";
+import "./pages/MenuStudioStageNavStability.css";
 
 function LegacyStudioRedirect({ to }) {
   const location = useLocation();
