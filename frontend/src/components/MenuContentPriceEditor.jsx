@@ -67,11 +67,20 @@ export default function MenuContentPriceEditor({
     onChange?.({ price: "", price_options: nextOptions });
   }
 
+  function emptyCustomOption(price = "") {
+    return typedOption("custom", price, {
+      label: "",
+      label_en: "",
+      label_he: "",
+      label_ar: "",
+    });
+  }
+
   function useMultiplePrices() {
     const existing = String(item?.price || "").trim();
     setOptions([
-      typedOption("custom", existing, { label_en: "Option 1", label_he: "אפשרות 1", label_ar: "الخيار 1" }),
-      typedOption("custom", "", { label_en: "Option 2", label_he: "אפשרות 2", label_ar: "الخيار 2" }),
+      emptyCustomOption(existing),
+      emptyCustomOption(""),
     ]);
   }
 
@@ -99,15 +108,9 @@ export default function MenuContentPriceEditor({
   }
 
   function addOption() {
-    const number = options.length + 1;
     setOptions([
       ...options,
-      typedOption("custom", "", {
-        label: `Option ${number}`,
-        label_en: `Option ${number}`,
-        label_he: `אפשרות ${number}`,
-        label_ar: `الخيار ${number}`,
-      }),
+      emptyCustomOption(""),
     ]);
   }
 
@@ -178,6 +181,7 @@ export default function MenuContentPriceEditor({
                 dir="ltr"
                 value={option.price || ""}
                 onChange={(event) => updateOption(optionIndex, { price: event.target.value })}
+                placeholder="0"
               />
             </label>
 
