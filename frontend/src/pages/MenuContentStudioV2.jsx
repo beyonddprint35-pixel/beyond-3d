@@ -39,9 +39,44 @@ import "./MenuContentStudioV2Multilingual.css";
 import "./MenuContentStudioV2PriceOptions.css";
 import "./MenuContentStudioV2ImageEditor.css";
 
+const MENU_LANGUAGE_META = {
+  en: {
+    code: "EN",
+    label: "English",
+    dir: "ltr",
+    itemNamePlaceholder: "Item name",
+    descriptionPlaceholder: "Description",
+    categoryPlaceholder: "Category name",
+    subtitlePlaceholder: "Restaurant subtitle",
+  },
+  he: {
+    code: "HE",
+    label: "עברית",
+    dir: "rtl",
+    itemNamePlaceholder: "שם הפריט",
+    descriptionPlaceholder: "תיאור",
+    categoryPlaceholder: "שם הקטגוריה",
+    subtitlePlaceholder: "כותרת משנה למסעדה",
+  },
+  ar: {
+    code: "AR",
+    label: "العربية",
+    dir: "rtl",
+    itemNamePlaceholder: "اسم الصنف",
+    descriptionPlaceholder: "الوصف",
+    categoryPlaceholder: "اسم الفئة",
+    subtitlePlaceholder: "العنوان الفرعي للمطعم",
+  },
+};
+
 function textValue(value, language = "en") {
   if (value && typeof value === "object") return value[language] || value.en || value.he || value.ar || "";
   return String(value || "");
+}
+
+function localizedFieldValue(value, language = "en") {
+  if (value && typeof value === "object") return String(value[language] || "");
+  return language === "en" ? String(value || "") : "";
 }
 
 function nextSortOrder(list) {
@@ -130,6 +165,11 @@ export default function MenuContentStudioV2() {
   const currencySymbol = menu.currency_symbol || "₪";
 
   const visibleGroups = useMemo(() => ordered(menu.groups || []), [menu.groups]);
+  const editingLanguages = useMemo(() => {
+    const enabled = (Array.isArray(menu.languages) ? menu.languages : [])
+      .filter((language) => MENU_LANGUAGE_META[language]);
+    return enabled.length ? enabled : ["en", "he", "ar"];
+  }, [menu.languages]);
 
   useEffect(() => {
     setSaveState("saving");
@@ -219,7 +259,7 @@ export default function MenuContentStudioV2() {
     const id = `group-${Date.now()}`;
     const group = {
       id,
-      name: makeLocalizedText("New category", "קטגוריה חדשה", "فئة جديدة"),
+      name: makeLocalizedText("", "", ""),
       sort_order: nextSortOrder(menu.groups || []),
       visible: true,
     };
@@ -233,8 +273,8 @@ export default function MenuContentStudioV2() {
     const item = {
       id,
       group_id: groupId,
-      name: makeLocalizedText("New item", "פריט חדש", "صنف جديد"),
-      description: makeLocalizedText("Add a short description", "הוסיפו תיאור קצר", "أضيفوا وصفاً قصيراً"),
+      name: makeLocalizedText("", "", ""),
+      description: makeLocalizedText("", "", ""),
       price: "",
       price_options: [],
       image_url: "",
@@ -396,16 +436,52 @@ export default function MenuContentStudioV2() {
           {selection.type === "restaurant" ? (
             <>
               <div className="menu-content-v2-inspector-head"><span>{t.restaurantEyebrow}</span><h2>{t.menuDetails}</h2><p>{t.restaurantHelp}</p></div>
-              <div className="menu-content-v2-field"><label>{t.restaurantName}</label><input value={menu.restaurant_name || ""} onChange={(event) => updateRestaurant("restaurant_name", event.target.value)} /></div>
-              <div className="menu-content-v2-field"><label>{t.subtitle}</label><input dir={contentDir} value={textValue(menu.restaurant_subtitle, contentLanguage)} onChange={(event) => updateRestaurant("restaurant_subtitle", { ...(menu.restaurant_subtitle || {}), [contentLanguage]: event.target.value })} /></div>
+              <div className="menu-content-v2-field"><label>{t.restaurantName}</label><input value={menu.restaurant_name || ""} placeholder={t.restaurantName} onChange={(event) => updateRestaurant("restaurant_name", event.target.value)} /></div>
+              <div className="menu-content-v2-language-fields">
+                {editingLanguages.map((language) => {
+                  const meta = MENU_LANGUAGE_META[language];
+                  return (
+                    <section className="menu-content-v2-language-card" key={`restaurant-subtitle-${language}`} dir={meta.dir}>
+                      <header><strong>{meta.label}</strong><span>{meta.code}</span></header>
+                      <div className="menu-content-v2-field">
+                        <label>{t.subtitle}</label>
+                        <input
+                          dir={meta.dir}
+                          value={localizedFieldValue(menu.restaurant_subtitle, language)}
+                          placeholder={meta.subtitlePlaceholder}
+                          onChange={(event) => updateRestaurant("restaurant_subtitle", { ...(menu.restaurant_subtitle || {}), [language]: event.target.value })}
+                        />
+                      </div>
+                    </section>
+                  );
+                })}
+              </div>
               <div className="menu-content-v2-info-card"><Sparkles size={16} /><div><strong>{t.designApplied}</strong><p>{t.designAppliedHint(selectedDesignEntry?.name)}</p></div></div>
             </>
           ) : null}
 
           {selectedCategory ? (
             <>
-              <div className="menu-content-v2-inspector-head"><span>{t.categoryEyebrow}</span><h2 dir={contentDir}>{textValue(selectedCategory.name, contentLanguage)}</h2><p>{t.categoryHelp}</p></div>
-              <div className="menu-content-v2-field"><label>{t.categoryName}</label><input dir={contentDir} value={textValue(selectedCategory.name, contentLanguage)} onChange={(event) => updateLocalized("groups", selectedCategory.id, "name", contentLanguage, event.target.value)} /></div>
+              <div className="menu-content-v2-inspector-head"><span>{t.categoryEyebrow}</span><h2 dir={contentDir}>{textValue(selectedCategory.name, contentLanguage) || t.categoryName}</h2><p>{t.categoryHelp}</p></div>
+              <div className="menu-content-v2-language-fields">
+                {editingLanguages.map((language) => {
+                  const meta = MENU_LANGUAGE_META[language];
+                  return (
+                    <section className="menu-content-v2-language-card" key={`category-${selectedCategory.id}-${language}`} dir={meta.dir}>
+                      <header><strong>{meta.label}</strong><span>{meta.code}</span></header>
+                      <div className="menu-content-v2-field">
+                        <label>{t.categoryName}</label>
+                        <input
+                          dir={meta.dir}
+                          value={localizedFieldValue(selectedCategory.name, language)}
+                          placeholder={meta.categoryPlaceholder}
+                          onChange={(event) => updateLocalized("groups", selectedCategory.id, "name", language, event.target.value)}
+                        />
+                      </div>
+                    </section>
+                  );
+                })}
+              </div>
               <label className="menu-content-v2-toggle"><input type="checkbox" checked={selectedCategory.visible !== false} onChange={(event) => updateEntry("groups", selectedCategory.id, { visible: event.target.checked })} /><span /><div><strong>{t.visible}</strong><small>{t.visibleCategory}</small></div></label>
               <button type="button" className="menu-content-v2-inspector-add" onClick={() => addItem(selectedCategory.id)}><Plus size={14} /> {t.addItemCategory}</button>
               {menu.groups.length > 1 ? <button type="button" className="menu-content-v2-danger" onClick={() => deleteCategory(selectedCategory.id)}><Trash2 size={14} /> {t.deleteCategory}</button> : null}
@@ -414,9 +490,35 @@ export default function MenuContentStudioV2() {
 
           {selectedItem ? (
             <>
-              <div className="menu-content-v2-inspector-head"><span>{t.itemEyebrow}</span><h2 dir={contentDir}>{textValue(selectedItem.name, contentLanguage)}</h2><p>{t.itemHelp}</p></div>
-              <div className="menu-content-v2-field"><label>{t.itemName}</label><input dir={contentDir} value={textValue(selectedItem.name, contentLanguage)} onChange={(event) => updateLocalized("items", selectedItem.id, "name", contentLanguage, event.target.value)} /></div>
-              <div className="menu-content-v2-field"><label>{t.description}</label><textarea dir={contentDir} value={textValue(selectedItem.description, contentLanguage)} onChange={(event) => updateLocalized("items", selectedItem.id, "description", contentLanguage, event.target.value)} /></div>
+              <div className="menu-content-v2-inspector-head"><span>{t.itemEyebrow}</span><h2 dir={contentDir}>{textValue(selectedItem.name, contentLanguage) || t.itemName}</h2><p>{t.itemHelp}</p></div>
+              <div className="menu-content-v2-language-fields">
+                {editingLanguages.map((language) => {
+                  const meta = MENU_LANGUAGE_META[language];
+                  return (
+                    <section className="menu-content-v2-language-card" key={`item-${selectedItem.id}-${language}`} dir={meta.dir}>
+                      <header><strong>{meta.label}</strong><span>{meta.code}</span></header>
+                      <div className="menu-content-v2-field">
+                        <label>{t.itemName}</label>
+                        <input
+                          dir={meta.dir}
+                          value={localizedFieldValue(selectedItem.name, language)}
+                          placeholder={meta.itemNamePlaceholder}
+                          onChange={(event) => updateLocalized("items", selectedItem.id, "name", language, event.target.value)}
+                        />
+                      </div>
+                      <div className="menu-content-v2-field">
+                        <label>{t.description}</label>
+                        <textarea
+                          dir={meta.dir}
+                          value={localizedFieldValue(selectedItem.description, language)}
+                          placeholder={meta.descriptionPlaceholder}
+                          onChange={(event) => updateLocalized("items", selectedItem.id, "description", language, event.target.value)}
+                        />
+                      </div>
+                    </section>
+                  );
+                })}
+              </div>
 
               <MenuContentPriceEditor
                 item={selectedItem}
