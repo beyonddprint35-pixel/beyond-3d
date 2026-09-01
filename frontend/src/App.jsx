@@ -28,6 +28,7 @@ import MenuPublishStudioV2 from "./pages/MenuPublishStudioV2";
 import MenuMyMenusV2 from "./pages/MenuMyMenusV2";
 import MenuManageV2 from "./pages/MenuManageV2";
 import MenuStudioV2PersistenceBoundary from "./features/menu-engine/studio/MenuStudioV2PersistenceBoundary";
+import MenuStudioMobileStageNav from "./components/MenuStudioMobileStageNav";
 import CustomerShowcasePortal from "./components/CustomerShowcasePortal";
 
 import "./lib/beyondThemeBootstrap.js";
@@ -91,7 +92,10 @@ function MenuStudioV2Routes() {
 
   return (
     <MenuStudioV2PersistenceBoundary>
-      {screen}
+      <>
+        {screen}
+        <MenuStudioMobileStageNav />
+      </>
     </MenuStudioV2PersistenceBoundary>
   );
 }
