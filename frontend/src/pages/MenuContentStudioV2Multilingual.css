@@ -10,6 +10,51 @@
 .menu-content-v2 [dir="rtl"]{text-align:right}
 .menu-content-v2 [dir="ltr"]{text-align:left}
 
+.menu-content-v2-language-fields{
+  display:grid;
+  gap:10px;
+  margin:0 0 12px;
+}
+.menu-content-v2-language-card{
+  display:grid;
+  gap:9px;
+  padding:11px;
+  border:1px solid rgba(94,111,143,.16);
+  border-radius:14px;
+  background:rgba(255,255,255,.72);
+}
+.menu-content-v2-language-card>header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  direction:ltr;
+}
+.menu-content-v2-language-card>header strong{
+  color:#17233f;
+  font-size:12px;
+  font-weight:800;
+}
+.menu-content-v2-language-card>header span{
+  min-width:30px;
+  height:22px;
+  padding:0 7px;
+  display:grid;
+  place-items:center;
+  border-radius:999px;
+  color:#3868dc;
+  background:#edf3ff;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.06em;
+}
+.menu-content-v2-language-card .menu-content-v2-field{margin:0}
+.menu-content-v2-language-card input::placeholder,
+.menu-content-v2-language-card textarea::placeholder{
+  color:#9aa5b8;
+  opacity:1;
+}
+
 @media(max-width:1180px){
   .menu-content-v2-topbar{grid-template-columns:minmax(210px,1fr) auto}
   .menu-content-v2-product-nav{grid-column:1/-1;grid-row:2;justify-self:center}
@@ -20,4 +65,32 @@
   .menu-content-v2-top-actions{gap:4px}
   .menu-content-v2-save{display:none}
   .menu-content-v2-top-actions .studio-language-menu-trigger-copy strong{max-width:56px}
+
+  .menu-content-v2-language-fields{
+    gap:12px;
+    margin-bottom:16px;
+  }
+  .menu-content-v2-language-card{
+    gap:11px;
+    padding:14px;
+    border-radius:16px;
+    background:#fff;
+    box-shadow:0 8px 24px rgba(34,49,78,.05);
+  }
+  .menu-content-v2-language-card>header strong{font-size:14px}
+  .menu-content-v2-language-card>header span{
+    min-width:34px;
+    height:24px;
+    font-size:10px;
+  }
+  .menu-content-v2-language-card .menu-content-v2-field label{
+    font-size:12px;
+    font-weight:750;
+  }
+  .menu-content-v2-language-card input,
+  .menu-content-v2-language-card textarea{
+    width:100%;
+    font-size:16px !important;
+  }
+  .menu-content-v2-language-card textarea{min-height:88px}
 }
