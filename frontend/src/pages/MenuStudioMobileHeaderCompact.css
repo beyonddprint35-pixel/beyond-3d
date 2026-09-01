@@ -1,0 +1,225 @@
+/* =========================================================
+   BEYOND MENU STUDIO — COMPACT MOBILE HEADER
+   Keep only the product identity + essential controls on phones.
+   Desktop keeps the full homepage-style BEYOND wordmark treatment.
+   ========================================================= */
+
+@media (max-width: 850px) {
+  :is(
+    .menu-content-v2-topbar,
+    .menu-design-v2-topbar,
+    .menu-preview-v2-topbar,
+    .menu-publish-v2-topbar
+  ) {
+    min-height: 56px !important;
+    height: 56px !important;
+    padding: 7px 9px !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    gap: 6px !important;
+  }
+
+  :is(
+    .menu-content-v2-brand-wrap,
+    .menu-design-v2-brand-wrap,
+    .menu-preview-v2-brand-wrap,
+    .menu-publish-v2-brand-wrap
+  ) {
+    min-width: 0 !important;
+    gap: 5px !important;
+  }
+
+  :is(
+    .menu-content-v2-back,
+    .menu-design-v2-back,
+    .menu-preview-v2-back,
+    .menu-publish-v2-back
+  ) {
+    width: 34px !important;
+    min-width: 34px !important;
+    height: 34px !important;
+    padding: 0 !important;
+    border-radius: 10px !important;
+  }
+
+  :is(
+    .menu-content-v2-brand,
+    .menu-design-v2-brand,
+    .menu-preview-v2-brand,
+    .menu-publish-v2-brand
+  ) {
+    min-width: 0 !important;
+    max-width: 190px !important;
+    gap: 6px !important;
+    padding: 0 !important;
+  }
+
+  :is(
+    .menu-content-v2-brand,
+    .menu-design-v2-brand,
+    .menu-preview-v2-brand,
+    .menu-publish-v2-brand
+  ) img {
+    width: 27px !important;
+    height: 27px !important;
+    flex: 0 0 27px !important;
+  }
+
+  /* On mobile show the actual product name, not the wide BEYOND wordmark. */
+  :is(
+    .menu-content-v2 .menu-content-v2-brand,
+    .menu-design-v2 .menu-design-v2-brand,
+    .menu-preview-v2 .menu-preview-v2-brand,
+    .menu-publish-v2 .menu-publish-v2-brand
+  ) strong {
+    display: block !important;
+    width: auto !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    font-family: var(--font-body-family) !important;
+    font-size: 12.5px !important;
+    font-weight: 750 !important;
+    line-height: 1.1 !important;
+    letter-spacing: -0.02em !important;
+    color: var(--beyond-studio-text) !important;
+  }
+
+  :is(
+    .menu-content-v2 .menu-content-v2-brand,
+    .menu-design-v2 .menu-design-v2-brand,
+    .menu-preview-v2 .menu-preview-v2-brand,
+    .menu-publish-v2 .menu-publish-v2-brand
+  ) strong::after {
+    content: none !important;
+    display: none !important;
+  }
+
+  :is(
+    .menu-content-v2-brand,
+    .menu-design-v2-brand,
+    .menu-preview-v2-brand,
+    .menu-publish-v2-brand
+  ) > span {
+    min-width: 0 !important;
+    max-width: 155px !important;
+  }
+
+  /* Save state is useful on desktop, but it crowds the phone header. */
+  .menu-content-v2-save,
+  .menu-design-v2-save {
+    display: none !important;
+  }
+
+  :is(
+    .menu-content-v2-top-actions,
+    .menu-design-v2-top-actions,
+    .menu-preview-v2-top-actions,
+    .menu-publish-v2-top-actions
+  ) {
+    min-width: 44px !important;
+    width: 44px !important;
+    justify-self: end !important;
+  }
+
+  :is(
+    .menu-content-v2-top-actions,
+    .menu-design-v2-top-actions,
+    .menu-preview-v2-top-actions,
+    .menu-publish-v2-top-actions
+  ) .studio-language-menu {
+    width: 44px !important;
+    min-width: 44px !important;
+  }
+
+  :is(
+    .menu-content-v2-top-actions,
+    .menu-design-v2-top-actions,
+    .menu-preview-v2-top-actions,
+    .menu-publish-v2-top-actions
+  ) .studio-language-menu-trigger {
+    width: 44px !important;
+    min-width: 44px !important;
+    max-width: 44px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    padding: 0 6px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0 !important;
+    border-radius: 11px !important;
+  }
+
+  /* Compact language button = EN / HE / AR only. */
+  :is(
+    .menu-content-v2-top-actions,
+    .menu-design-v2-top-actions,
+    .menu-preview-v2-top-actions,
+    .menu-publish-v2-top-actions
+  ) .studio-language-menu-trigger > svg,
+  :is(
+    .menu-content-v2-top-actions,
+    .menu-design-v2-top-actions,
+    .menu-preview-v2-top-actions,
+    .menu-publish-v2-top-actions
+  ) .studio-language-menu-trigger-copy {
+    display: none !important;
+  }
+
+  :is(
+    .menu-content-v2-top-actions,
+    .menu-design-v2-top-actions,
+    .menu-preview-v2-top-actions,
+    .menu-publish-v2-top-actions
+  ) .studio-language-menu-code {
+    min-width: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: var(--beyond-studio-blue-light) !important;
+    font-size: 11px !important;
+    font-weight: 800 !important;
+    line-height: 1 !important;
+  }
+
+  :is(
+    .menu-content-v2-top-actions,
+    .menu-design-v2-top-actions,
+    .menu-preview-v2-top-actions,
+    .menu-publish-v2-top-actions
+  ) .studio-language-menu-list {
+    inset-inline-end: 0 !important;
+    inset-inline-start: auto !important;
+    min-width: 190px !important;
+  }
+}
+
+@media (max-width: 390px) {
+  :is(
+    .menu-content-v2-brand,
+    .menu-design-v2-brand,
+    .menu-preview-v2-brand,
+    .menu-publish-v2-brand
+  ) {
+    max-width: 168px !important;
+  }
+
+  :is(
+    .menu-content-v2-brand,
+    .menu-design-v2-brand,
+    .menu-preview-v2-brand,
+    .menu-publish-v2-brand
+  ) > span {
+    max-width: 132px !important;
+  }
+
+  :is(
+    .menu-content-v2 .menu-content-v2-brand,
+    .menu-design-v2 .menu-design-v2-brand,
+    .menu-preview-v2 .menu-preview-v2-brand,
+    .menu-publish-v2 .menu-publish-v2-brand
+  ) strong {
+    font-size: 12px !important;
+  }
+}
