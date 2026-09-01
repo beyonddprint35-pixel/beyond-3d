@@ -2,6 +2,7 @@ export const MENU_CONTENT_STUDIO_UI = {
   en: {
     interfaceLanguage:"Interface language", contentLanguage:"Menu content", backSetup:"Back to setup", workspace:"Menu workspace",
     content:"Content", design:"Design", preview:"Preview", publish:"Publish",
+    mobileMenu:"Menu", mobileEdit:"Edit", mobilePreview:"Preview", backToMenu:"Back to menu", editSelected:"Edit selected content",
     saved:"Saved locally", saving:"Saving…", saveError:"Could not save",
     contentEyebrow:"CONTENT", menuStructure:"Menu structure", addCategory:"Add category", categories:"Categories", restaurantDetails:"Restaurant details",
     addItem:"Add item", noPrice:"No price", items:(count)=>`${count} ${count === 1 ? "item" : "items"}`,
@@ -16,6 +17,7 @@ export const MENU_CONTENT_STUDIO_UI = {
   he: {
     interfaceLanguage:"שפת הממשק", contentLanguage:"שפת תוכן התפריט", backSetup:"חזרה להגדרה", workspace:"סביבת עבודת התפריט",
     content:"תוכן", design:"עיצוב", preview:"תצוגה מקדימה", publish:"פרסום",
+    mobileMenu:"תפריט", mobileEdit:"עריכה", mobilePreview:"תצוגה", backToMenu:"חזרה לתפריט", editSelected:"עריכת התוכן שנבחר",
     saved:"נשמר מקומית", saving:"שומר…", saveError:"לא ניתן לשמור",
     contentEyebrow:"תוכן", menuStructure:"מבנה התפריט", addCategory:"הוספת קטגוריה", categories:"קטגוריות", restaurantDetails:"פרטי המסעדה",
     addItem:"הוספת פריט", noPrice:"ללא מחיר", items:(count)=>`${count} פריטים`,
@@ -30,6 +32,7 @@ export const MENU_CONTENT_STUDIO_UI = {
   ar: {
     interfaceLanguage:"لغة الواجهة", contentLanguage:"لغة محتوى القائمة", backSetup:"العودة للإعداد", workspace:"مساحة عمل القائمة",
     content:"المحتوى", design:"التصميم", preview:"المعاينة", publish:"النشر",
+    mobileMenu:"القائمة", mobileEdit:"تعديل", mobilePreview:"معاينة", backToMenu:"العودة للقائمة", editSelected:"تعديل المحتوى المختار",
     saved:"تم الحفظ محلياً", saving:"جارٍ الحفظ…", saveError:"تعذر الحفظ",
     contentEyebrow:"المحتوى", menuStructure:"هيكل القائمة", addCategory:"إضافة فئة", categories:"الفئات", restaurantDetails:"تفاصيل المطعم",
     addItem:"إضافة صنف", noPrice:"بدون سعر", items:(count)=>`${count} أصناف`,
