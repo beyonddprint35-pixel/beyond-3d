@@ -24,6 +24,9 @@ export function writeStudioLanguage(language) {
   if (typeof window === "undefined" || !isStudioLanguage(language)) return;
   try {
     window.localStorage.setItem(STUDIO_UI_LANGUAGE_KEY, language);
+    window.dispatchEvent(new CustomEvent("beyond-studio-language-change", {
+      detail: { language },
+    }));
   } catch {
     // Language persistence is a convenience, never a blocker.
   }
