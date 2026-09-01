@@ -2,6 +2,7 @@ import { DEFAULT_MENU_DESIGN } from "../domain/designSchema";
 import { PREMIUM_MENU_DESIGNS, applyPremiumMenuDesign } from "../domain/menuDesignLibrary";
 import { normalizeV3MenuPriceOptions } from "../data/aiMenuImportAdapter";
 import { queueMenuStudioProjectSave } from "./menuStudioV2Persistence";
+import { readStudioLanguage } from "./studioLanguage";
 
 export const MENU_STUDIO_V2_DRAFT_KEY = "beyond-menu-content-studio-v2";
 export const MENU_CREATE_V2_FLOW_KEY = "beyond-menu-create-profile-v2";
@@ -53,7 +54,18 @@ export function readMenuStudioV2Draft() {
   try {
     const stored = JSON.parse(window.sessionStorage.getItem(MENU_STUDIO_V2_DRAFT_KEY) || "null");
     if (stored?.menu?.groups && stored?.menu?.items) {
-      return { ...stored, menu: normalizeV3MenuPriceOptions(stored.menu) };
+      const uiLanguage = readStudioLanguage(
+        stored.contentLanguage || stored.menu.default_language || "en",
+      );
+      return {
+        ...stored,
+        // Stage components historically use contentLanguage as their initial UI
+        // language. Resolve it from the immediate Studio preference so changing
+        // EN / HE / AR cannot snap back while moving between stages before a
+        // debounced draft save finishes.
+        contentLanguage: uiLanguage,
+        menu: normalizeV3MenuPriceOptions(stored.menu),
+      };
     }
   } catch {
     // Ignore malformed development drafts.
