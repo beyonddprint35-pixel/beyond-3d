@@ -4,7 +4,10 @@ import {
   ArrowRight,
   Check,
   ChevronRight,
+  Eye,
   GripVertical,
+  List,
+  Pencil,
   Plus,
   Smartphone,
   Sparkles,
@@ -87,6 +90,10 @@ function priceSummary(item, currencySymbol = "₪", language = "en") {
   return singlePrice ? `${currencySymbol}${singlePrice}` : "";
 }
 
+function studioRoute(path) {
+  return `${path}${window.location.search || ""}`;
+}
+
 export default function MenuContentStudioV2() {
   const params = useMemo(() => new URLSearchParams(window.location.search), []);
   const storedDraft = useMemo(readMenuStudioV2Draft, []);
@@ -107,6 +114,7 @@ export default function MenuContentStudioV2() {
   });
   const [menu, setMenu] = useState(() => storedDraft?.menu || createBlankMenuV2());
   const [selection, setSelection] = useState(() => ({ type: "restaurant", id: "restaurant" }));
+  const [mobilePane, setMobilePane] = useState("structure");
   const [saveState, setSaveState] = useState("saved");
   const [dragging, setDragging] = useState(null);
 
@@ -150,6 +158,11 @@ export default function MenuContentStudioV2() {
     setContentLanguage(language);
     setUiLanguage(language);
     writeStudioLanguage(language);
+  }
+
+  function selectForEdit(nextSelection) {
+    setSelection(nextSelection);
+    setMobilePane("edit");
   }
 
   function updateRestaurant(field, value) {
@@ -209,7 +222,7 @@ export default function MenuContentStudioV2() {
       visible: true,
     };
     setMenu((current) => ({ ...current, groups: [...current.groups, group] }));
-    setSelection({ type: "category", id });
+    selectForEdit({ type: "category", id });
   }
 
   function addItem(groupId) {
@@ -228,7 +241,7 @@ export default function MenuContentStudioV2() {
       sort_order: nextSortOrder(groupItems),
     };
     setMenu((current) => ({ ...current, items: [...current.items, item] }));
-    setSelection({ type: "item", id });
+    selectForEdit({ type: "item", id });
   }
 
   function deleteCategory(groupId) {
@@ -240,21 +253,23 @@ export default function MenuContentStudioV2() {
       items: current.items.filter((item) => item.group_id !== groupId),
     }));
     setSelection({ type: "restaurant", id: "restaurant" });
+    setMobilePane("structure");
   }
 
   function deleteItem(itemId) {
     setMenu((current) => ({ ...current, items: current.items.filter((item) => item.id !== itemId) }));
     setSelection({ type: "restaurant", id: "restaurant" });
+    setMobilePane("structure");
   }
 
   return (
     <main className="menu-content-v2" dir={rtl ? "rtl" : "ltr"} lang={uiLanguage}>
       <header className="menu-content-v2-topbar">
         <div className="menu-content-v2-brand-wrap">
-          <button type="button" className="menu-content-v2-back" onClick={() => window.location.assign("/dev/menu-create-v2")} title={t.backSetup}>
+          <button type="button" className="menu-content-v2-back" onClick={() => window.location.assign("/my-menus")} title={t.backSetup}>
             <BackIcon size={16} />
           </button>
-          <button type="button" className="menu-content-v2-brand" onClick={() => setSelection({ type: "restaurant", id: "restaurant" })}>
+          <button type="button" className="menu-content-v2-brand" onClick={() => selectForEdit({ type: "restaurant", id: "restaurant" })}>
             <img src={beyondLogo} alt="" />
             <span><strong>Beyond Menu Studio</strong><small>{menu.restaurant_name}</small></span>
           </button>
@@ -262,9 +277,9 @@ export default function MenuContentStudioV2() {
 
         <nav className="menu-content-v2-product-nav" aria-label={t.workspace}>
           <button type="button" className="active">{t.content}</button>
-          <button type="button" onClick={() => window.location.assign("/dev/menu-design-v2")}>{t.design}</button>
-          <button type="button" onClick={() => window.location.assign("/dev/menu-preview-v2")}>{t.preview}</button>
-          <button type="button" onClick={() => window.location.assign("/dev/menu-publish-v2")}>{t.publish}</button>
+          <button type="button" onClick={() => window.location.assign(studioRoute("/menu-studio/design"))}>{t.design}</button>
+          <button type="button" onClick={() => window.location.assign(studioRoute("/menu-studio/preview"))}>{t.preview}</button>
+          <button type="button" onClick={() => window.location.assign(studioRoute("/menu-studio/publish"))}>{t.publish}</button>
         </nav>
 
         <div className="menu-content-v2-top-actions">
@@ -273,14 +288,26 @@ export default function MenuContentStudioV2() {
         </div>
       </header>
 
-      <div className="menu-content-v2-workspace">
+      <nav className="menu-content-v2-mobile-mode-nav" aria-label={t.content}>
+        <button type="button" className={mobilePane === "structure" ? "active" : ""} onClick={() => setMobilePane("structure")}>
+          <List size={16} /><span>{t.mobileMenu}</span>
+        </button>
+        <button type="button" className={mobilePane === "edit" ? "active" : ""} onClick={() => setMobilePane("edit")}>
+          <Pencil size={16} /><span>{t.mobileEdit}</span>
+        </button>
+        <button type="button" className={mobilePane === "preview" ? "active" : ""} onClick={() => setMobilePane("preview")}>
+          <Eye size={16} /><span>{t.mobilePreview}</span>
+        </button>
+      </nav>
+
+      <div className={`menu-content-v2-workspace mobile-pane-${mobilePane}`}>
         <aside className="menu-content-v2-tree">
           <div className="menu-content-v2-panel-head">
             <div><span>{t.contentEyebrow}</span><strong>{t.menuStructure}</strong></div>
             <button type="button" onClick={addCategory} title={t.addCategory}><Plus size={16} /></button>
           </div>
 
-          <button type="button" className={`menu-content-v2-restaurant-row ${selection.type === "restaurant" ? "active" : ""}`} onClick={() => setSelection({ type: "restaurant", id: "restaurant" })}>
+          <button type="button" className={`menu-content-v2-restaurant-row ${selection.type === "restaurant" ? "active" : ""}`} onClick={() => selectForEdit({ type: "restaurant", id: "restaurant" })}>
             <span className="menu-content-v2-tree-icon">B</span>
             <span><strong>{menu.restaurant_name}</strong><small>{t.restaurantDetails}</small></span>
             <ChevronRight size={14} />
@@ -298,7 +325,7 @@ export default function MenuContentStudioV2() {
                     type="button"
                     draggable
                     className={`menu-content-v2-category-row ${selection.type === "category" && selection.id === group.id ? "active" : ""}`}
-                    onClick={() => setSelection({ type: "category", id: group.id })}
+                    onClick={() => selectForEdit({ type: "category", id: group.id })}
                     onDragStart={(event) => beginDrag(event, { type: "category", id: group.id })}
                     onDragOver={(event) => dragging?.type === "category" && event.preventDefault()}
                     onDrop={(event) => dropCategory(event, group.id)}
@@ -319,7 +346,7 @@ export default function MenuContentStudioV2() {
                           draggable
                           key={item.id}
                           className={`${selection.type === "item" && selection.id === item.id ? "active" : ""} ${itemDragging ? "dragging" : ""}`.trim()}
-                          onClick={() => setSelection({ type: "item", id: item.id })}
+                          onClick={() => selectForEdit({ type: "item", id: item.id })}
                           onDragStart={(event) => beginDrag(event, { type: "item", id: item.id, groupId: group.id })}
                           onDragOver={(event) => dragging?.type === "item" && dragging.groupId === group.id && event.preventDefault()}
                           onDrop={(event) => dropItem(event, item)}
@@ -359,6 +386,11 @@ export default function MenuContentStudioV2() {
         </section>
 
         <aside className="menu-content-v2-inspector">
+          <div className="menu-content-v2-mobile-editor-bar">
+            <button type="button" onClick={() => setMobilePane("structure")}><BackIcon size={17} /> {t.backToMenu}</button>
+            <button type="button" onClick={() => setMobilePane("preview")}><Eye size={16} /> {t.mobilePreview}</button>
+          </div>
+
           {selection.type === "restaurant" ? (
             <>
               <div className="menu-content-v2-inspector-head"><span>{t.restaurantEyebrow}</span><h2>{t.menuDetails}</h2><p>{t.restaurantHelp}</p></div>
@@ -407,7 +439,7 @@ export default function MenuContentStudioV2() {
 
           <div className="menu-content-v2-inspector-next">
             <div><Check size={14} /><span><strong>{t.updatesLive}</strong><small>{t.draftKept}</small></span></div>
-            <button type="button" onClick={() => window.location.assign("/dev/menu-design-v2")}>{t.continueDesign} <ForwardIcon size={14} /></button>
+            <button type="button" onClick={() => window.location.assign(studioRoute("/menu-studio/design"))}>{t.continueDesign} <ForwardIcon size={14} /></button>
           </div>
         </aside>
       </div>
