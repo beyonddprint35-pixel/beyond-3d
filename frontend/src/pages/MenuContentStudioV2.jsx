@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
   ArrowRight,
@@ -95,6 +96,7 @@ function studioRoute(path) {
 }
 
 export default function MenuContentStudioV2() {
+  const navigate = useNavigate();
   const params = useMemo(() => new URLSearchParams(window.location.search), []);
   const storedDraft = useMemo(readMenuStudioV2Draft, []);
   const profile = useMemo(readMenuCreateV2Profile, []);
@@ -266,7 +268,7 @@ export default function MenuContentStudioV2() {
     <main className="menu-content-v2" dir={rtl ? "rtl" : "ltr"} lang={uiLanguage}>
       <header className="menu-content-v2-topbar">
         <div className="menu-content-v2-brand-wrap">
-          <button type="button" className="menu-content-v2-back" onClick={() => window.location.assign("/my-menus")} title={t.backSetup}>
+          <button type="button" className="menu-content-v2-back" onClick={() => navigate("/my-menus")} title={t.backSetup}>
             <BackIcon size={16} />
           </button>
           <button type="button" className="menu-content-v2-brand" onClick={() => selectForEdit({ type: "restaurant", id: "restaurant" })}>
@@ -277,9 +279,9 @@ export default function MenuContentStudioV2() {
 
         <nav className="menu-content-v2-product-nav" aria-label={t.workspace}>
           <button type="button" className="active">{t.content}</button>
-          <button type="button" onClick={() => window.location.assign(studioRoute("/menu-studio/design"))}>{t.design}</button>
-          <button type="button" onClick={() => window.location.assign(studioRoute("/menu-studio/preview"))}>{t.preview}</button>
-          <button type="button" onClick={() => window.location.assign(studioRoute("/menu-studio/publish"))}>{t.publish}</button>
+          <button type="button" onClick={() => navigate(studioRoute("/menu-studio/design"))}>{t.design}</button>
+          <button type="button" onClick={() => navigate(studioRoute("/menu-studio/preview"))}>{t.preview}</button>
+          <button type="button" onClick={() => navigate(studioRoute("/menu-studio/publish"))}>{t.publish}</button>
         </nav>
 
         <div className="menu-content-v2-top-actions">
@@ -439,7 +441,7 @@ export default function MenuContentStudioV2() {
 
           <div className="menu-content-v2-inspector-next">
             <div><Check size={14} /><span><strong>{t.updatesLive}</strong><small>{t.draftKept}</small></span></div>
-            <button type="button" onClick={() => window.location.assign(studioRoute("/menu-studio/design"))}>{t.continueDesign} <ForwardIcon size={14} /></button>
+            <button type="button" onClick={() => navigate(studioRoute("/menu-studio/design"))}>{t.continueDesign} <ForwardIcon size={14} /></button>
           </div>
         </aside>
       </div>
