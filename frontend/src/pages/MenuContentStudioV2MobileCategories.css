@@ -250,10 +250,84 @@
     cursor: pointer;
   }
 
+  /* -------------------------------------------------------
+     IN-PAGE MOBILE EDITOR
+     Keep the category browser mounted underneath. Editing an item/category
+     opens as a bottom sheet instead of replacing the whole Content screen.
+     ------------------------------------------------------- */
+  .menu-content-v2 .menu-content-v2-workspace.mobile-pane-edit .menu-content-v2-tree {
+    display: block !important;
+  }
+
+  .menu-content-v2 .menu-content-v2-workspace.mobile-pane-edit::before {
+    content: "";
+    position: fixed;
+    z-index: 112;
+    inset: 58px 0 0;
+    background: rgba(20, 22, 28, .24);
+    backdrop-filter: blur(1.5px);
+    -webkit-backdrop-filter: blur(1.5px);
+    pointer-events: auto;
+  }
+
+  .menu-content-v2 .menu-content-v2-workspace.mobile-pane-edit .menu-content-v2-inspector {
+    position: fixed !important;
+    z-index: 118 !important;
+    top: auto !important;
+    right: 8px !important;
+    bottom: calc(78px + env(safe-area-inset-bottom, 0px)) !important;
+    left: 8px !important;
+    display: block !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    height: auto !important;
+    max-height: min(78dvh, 760px) !important;
+    padding: 0 14px 24px !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    border: 1px solid var(--mcv2-line) !important;
+    border-radius: 22px !important;
+    background: var(--mcv2-paper) !important;
+    box-shadow: 0 -8px 44px rgba(18, 22, 31, .22) !important;
+    -webkit-overflow-scrolling: touch;
+    animation: menu-content-v2-sheet-in .18s ease-out;
+  }
+
+  .menu-content-v2 .menu-content-v2-workspace.mobile-pane-edit .menu-content-v2-mobile-editor-bar {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 3 !important;
+    width: calc(100% + 28px) !important;
+    min-height: 58px !important;
+    margin: 0 -14px 8px !important;
+    padding: 8px 12px !important;
+    border-radius: 22px 22px 0 0 !important;
+    background: color-mix(in srgb, var(--mcv2-paper) 97%, transparent) !important;
+    box-shadow: 0 1px 0 var(--mcv2-line) !important;
+  }
+
+  .menu-content-v2 .menu-content-v2-workspace.mobile-pane-edit .menu-content-v2-inspector-head {
+    padding-top: 12px !important;
+  }
+
   .menu-content-v2[dir="rtl"] .menu-content-v2-mobile-category-tab,
   .menu-content-v2[dir="rtl"] .menu-content-v2-mobile-item-row,
   .menu-content-v2[dir="rtl"] .menu-content-v2-mobile-category-head {
     text-align: right;
+  }
+}
+
+@keyframes menu-content-v2-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -267,5 +341,16 @@
   .menu-content-v2-mobile-category-tab {
     min-width: 96px;
     max-width: 166px;
+  }
+
+  .menu-content-v2 .menu-content-v2-workspace.mobile-pane-edit .menu-content-v2-inspector {
+    right: 6px !important;
+    left: 6px !important;
+    padding-inline: 11px !important;
+  }
+
+  .menu-content-v2 .menu-content-v2-workspace.mobile-pane-edit .menu-content-v2-mobile-editor-bar {
+    width: calc(100% + 22px) !important;
+    margin-inline: -11px !important;
   }
 }
