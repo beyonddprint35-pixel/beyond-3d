@@ -1,5 +1,7 @@
 export const MENU_CONTENT_STUDIO_UI = {
   en: {
+    itemCategory:"Category / subcategory",
+    subcategories:"Subcategories", addSubcategory:"Add subcategory", subcategoryName:"Subcategory name", subcategoryEyebrow:"SUBCATEGORY", deleteSubcategory:"Delete subcategory", moveLeft:"Move left", moveRight:"Move right", moveUp:"Move up", moveDown:"Move down", shown:"Shown", hidden:"Hidden", hiddenGroup:"Hidden from customers, including its items.", hiddenByCategory:"Hidden because the category is hidden.",
     interfaceLanguage:"Interface language", contentLanguage:"Menu content", backSetup:"Back to setup", workspace:"Menu workspace",
     content:"Content", design:"Design", preview:"Preview", publish:"Publish",
     mobileMenu:"Menu", mobileEdit:"Edit", mobilePreview:"Preview", backToMenu:"Back to menu", editSelected:"Edit selected content",
@@ -15,6 +17,8 @@ export const MENU_CONTENT_STUDIO_UI = {
     newCategory:"New category", newItem:"New item", newDescription:"Add a short description",
   },
   he: {
+    itemCategory:"קטגוריה / תת־קטגוריה",
+    subcategories:"תת־קטגוריות", addSubcategory:"הוספת תת־קטגוריה", subcategoryName:"שם תת־הקטגוריה", subcategoryEyebrow:"תת־קטגוריה", deleteSubcategory:"מחיקת תת־קטגוריה", moveLeft:"הזזה שמאלה", moveRight:"הזזה ימינה", moveUp:"הזזה למעלה", moveDown:"הזזה למטה", shown:"מוצג", hidden:"מוסתר", hiddenGroup:"מוסתר מהלקוחות, כולל הפריטים שבתוכו.", hiddenByCategory:"מוסתר כי הקטגוריה מוסתרת.",
     interfaceLanguage:"שפת הממשק", contentLanguage:"שפת תוכן התפריט", backSetup:"חזרה להגדרה", workspace:"סביבת עבודת התפריט",
     content:"תוכן", design:"עיצוב", preview:"תצוגה מקדימה", publish:"פרסום",
     mobileMenu:"תפריט", mobileEdit:"עריכה", mobilePreview:"תצוגה", backToMenu:"חזרה לתפריט", editSelected:"עריכת התוכן שנבחר",
@@ -30,6 +34,8 @@ export const MENU_CONTENT_STUDIO_UI = {
     newCategory:"קטגוריה חדשה", newItem:"פריט חדש", newDescription:"הוסיפו תיאור קצר",
   },
   ar: {
+    itemCategory:"الفئة / الفئة الفرعية",
+    subcategories:"الفئات الفرعية", addSubcategory:"إضافة فئة فرعية", subcategoryName:"اسم الفئة الفرعية", subcategoryEyebrow:"فئة فرعية", deleteSubcategory:"حذف الفئة الفرعية", moveLeft:"نقل لليسار", moveRight:"نقل لليمين", moveUp:"نقل للأعلى", moveDown:"نقل للأسفل", shown:"ظاهر", hidden:"مخفي", hiddenGroup:"مخفي عن الزبائن، بما في ذلك أصنافه.", hiddenByCategory:"مخفي لأن الفئة مخفية.",
     interfaceLanguage:"لغة الواجهة", contentLanguage:"لغة محتوى القائمة", backSetup:"العودة للإعداد", workspace:"مساحة عمل القائمة",
     content:"المحتوى", design:"التصميم", preview:"المعاينة", publish:"النشر",
     mobileMenu:"القائمة", mobileEdit:"تعديل", mobilePreview:"معاينة", backToMenu:"العودة للقائمة", editSelected:"تعديل المحتوى المختار",

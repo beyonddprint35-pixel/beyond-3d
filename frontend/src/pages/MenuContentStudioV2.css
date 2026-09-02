@@ -17,7 +17,7 @@
   font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
 .menu-content-v2 *{box-sizing:border-box}
-.menu-content-v2 button,.menu-content-v2 input,.menu-content-v2 textarea{font:inherit}
+.menu-content-v2 button,.menu-content-v2 input,.menu-content-v2 textarea,.menu-content-v2 select{font:inherit}
 .menu-content-v2 button{color:inherit}
 
 .menu-content-v2-topbar{
@@ -84,9 +84,9 @@
 .menu-content-v2-inspector-head{padding:21px 18px 17px;border-bottom:1px solid var(--mcv2-line)}
 .menu-content-v2-inspector-head>span{color:var(--mcv2-blue);font-size:7px;font-weight:850;letter-spacing:.13em}.menu-content-v2-inspector-head h2{margin:7px 0 0;font-size:17px;font-weight:830;letter-spacing:-.035em}.menu-content-v2-inspector-head p{margin:6px 0 0;color:var(--mcv2-muted);font-size:8px;line-height:1.45}
 .menu-content-v2-field{margin:15px 16px 0;display:grid;gap:6px}.menu-content-v2-field>label{display:flex;align-items:center;justify-content:space-between;color:var(--mcv2-muted);font-size:8px;font-weight:750}.menu-content-v2-field>label small{color:var(--mcv2-faint);font-size:7px;font-weight:600}
-.menu-content-v2-field>input,.menu-content-v2-field>textarea,.menu-content-v2-price,.menu-content-v2-image-input{width:100%;border:1px solid var(--mcv2-line);border-radius:10px;color:var(--mcv2-text);background:#faf9f7;outline:0}
-.menu-content-v2-field>input{height:39px;padding:0 10px;font-size:9px}.menu-content-v2-field>textarea{min-height:74px;padding:9px 10px;resize:vertical;font-size:9px;line-height:1.45}
-.menu-content-v2-field>input:focus,.menu-content-v2-field>textarea:focus,.menu-content-v2-price:focus-within,.menu-content-v2-image-input:focus-within{border-color:rgba(73,116,229,.65);box-shadow:0 0 0 3px rgba(73,116,229,.07);background:#fff}
+.menu-content-v2-field>input,.menu-content-v2-field>select,.menu-content-v2-field>textarea,.menu-content-v2-price,.menu-content-v2-image-input{width:100%;border:1px solid var(--mcv2-line);border-radius:10px;color:var(--mcv2-text);background:#faf9f7;outline:0}
+.menu-content-v2-field>input,.menu-content-v2-field>select{height:39px;padding:0 10px;font-size:9px}.menu-content-v2-field>textarea{min-height:74px;padding:9px 10px;resize:vertical;font-size:9px;line-height:1.45}
+.menu-content-v2-field>input:focus,.menu-content-v2-field>select:focus,.menu-content-v2-field>textarea:focus,.menu-content-v2-price:focus-within,.menu-content-v2-image-input:focus-within{border-color:rgba(73,116,229,.65);box-shadow:0 0 0 3px rgba(73,116,229,.07);background:#fff}
 .menu-content-v2-price,.menu-content-v2-image-input{height:39px;padding:0 10px;display:flex;align-items:center;gap:7px}.menu-content-v2-price>span{color:var(--mcv2-muted);font-size:10px}.menu-content-v2-price input,.menu-content-v2-image-input input{width:100%;border:0;outline:0;background:transparent;font-size:9px}.menu-content-v2-image-input svg{color:var(--mcv2-faint);flex:0 0 auto}
 .menu-content-v2-toggle{margin:17px 16px 0;padding:10px;display:grid;grid-template-columns:auto auto 1fr;align-items:center;gap:8px;border:1px solid var(--mcv2-line);border-radius:11px;cursor:pointer}.menu-content-v2-toggle input{position:absolute;opacity:0;pointer-events:none}.menu-content-v2-toggle>span{width:31px;height:18px;padding:2px;display:flex;border-radius:999px;background:#d6d7da}.menu-content-v2-toggle>span::after{content:"";width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.12);transition:.15s ease}.menu-content-v2-toggle input:checked+span{justify-content:flex-end;background:#3eaa76}.menu-content-v2-toggle>div{display:grid;gap:2px}.menu-content-v2-toggle strong{font-size:8px}.menu-content-v2-toggle small{color:var(--mcv2-muted);font-size:7px}
 .menu-content-v2-info-card{margin:17px 16px 0;padding:12px;display:flex;align-items:flex-start;gap:9px;border:1px solid #dfe5f7;border-radius:12px;color:var(--mcv2-blue);background:#f7f9ff}.menu-content-v2-info-card svg{flex:0 0 auto}.menu-content-v2-info-card>div{display:grid;gap:4px}.menu-content-v2-info-card strong{font-size:8px}.menu-content-v2-info-card p{margin:0;color:#6f7890;font-size:7px;line-height:1.5}
