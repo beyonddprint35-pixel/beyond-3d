@@ -826,7 +826,7 @@ function LiveMenuDesignStudio() {
 export default function BeyondLiveMenuDesignPortal() {
   const path = window.location.pathname.replace(/\/+$/, "") || "/";
 
-  if (path === "/menu-studio") {
+  if (import.meta.env.DEV && path === "/dev/legacy-menu-studio") {
     return <LiveMenuDesignStudio />;
   }
 

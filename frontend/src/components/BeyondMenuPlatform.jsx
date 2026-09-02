@@ -9639,7 +9639,8 @@ export function BeyondMenuAdmin() {
 
 export function BeyondMenuRoute({ fallback }) {
   const path = location.pathname.replace(/\/+$/, "") || "/";
-  if (path === "/menu-studio") return <BeyondMenuStudio />;
+  // The current Studio is owned by App's router, including its root entry.
+  if (import.meta.env.DEV && path === "/dev/legacy-menu-studio") return <BeyondMenuStudio />;
   if (path === "/admin/menus") return <BeyondMenuAdmin />;
   if (path.startsWith("/menu/")) {
     const slug = decodeURIComponent(path.slice(6));
