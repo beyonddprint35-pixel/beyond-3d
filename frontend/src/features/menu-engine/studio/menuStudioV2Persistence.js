@@ -12,7 +12,7 @@ function text(value) {
 }
 
 function hasStudioMenu(state) {
-  return Boolean(state?.menu?.groups?.length && Array.isArray(state?.menu?.items));
+  return Array.isArray(state?.menu?.groups) && Array.isArray(state?.menu?.items);
 }
 
 function sourceTypeForDraft(draft) {
@@ -79,7 +79,7 @@ export function draftFromMenuStudioProject(project) {
   const state = project.studio_state && typeof project.studio_state === "object" ? project.studio_state : {};
   let menu = hasStudioMenu(state) ? state.menu : null;
 
-  if (!menu && Array.isArray(project?.structured_menu?.sections)) {
+  if (!menu && project?.structured_menu?.sections?.length && Array.isArray(project.structured_menu.sections)) {
     menu = adaptAiStructuredMenuToV3(project.structured_menu, { projectId: project.id });
   }
   if (!menu) return null;
@@ -231,7 +231,13 @@ export async function listMenuStudioProjects() {
     .is("archived_at", null)
     .order("updated_at", { ascending: false });
   if (error) throw error;
-  return (data || []).filter((project) => hasStudioMenu(project.studio_state));
+  return (data || []).flatMap((project) => {
+    if (hasStudioMenu(project.studio_state)) return [project];
+    // Older imports already have editable content, but predate studio_state.
+    // Use the same adapter as direct project entry; persist only when edited.
+    const draft = draftFromMenuStudioProject(project);
+    return draft ? [{ ...project, studio_state: studioStateFromDraft(draft, project.id) }] : [];
+  });
 }
 
 export async function archiveMenuStudioProject(projectId) {
