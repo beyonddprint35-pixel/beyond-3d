@@ -38,6 +38,7 @@ import "./MenuContentStudioV2.css";
 import "./MenuContentStudioV2Multilingual.css";
 import "./MenuContentStudioV2PriceOptions.css";
 import "./MenuContentStudioV2ImageEditor.css";
+import "./MenuContentStudioV2MobileCategories.css";
 
 const MENU_LANGUAGE_META = {
   en: {
@@ -130,6 +131,10 @@ function studioRoute(path) {
   return `${path}${window.location.search || ""}`;
 }
 
+function isMobileStudio() {
+  return typeof window !== "undefined" && window.matchMedia("(max-width: 850px)").matches;
+}
+
 export default function MenuContentStudioV2() {
   const navigate = useNavigate();
   const params = useMemo(() => new URLSearchParams(window.location.search), []);
@@ -152,6 +157,7 @@ export default function MenuContentStudioV2() {
   const [menu, setMenu] = useState(() => storedDraft?.menu || createBlankMenuV2());
   const [selection, setSelection] = useState(() => ({ type: "restaurant", id: "restaurant" }));
   const [mobilePane, setMobilePane] = useState("structure");
+  const [mobileCategoryId, setMobileCategoryId] = useState("");
   const [saveState, setSaveState] = useState("saved");
   const [dragging, setDragging] = useState(null);
 
@@ -170,6 +176,26 @@ export default function MenuContentStudioV2() {
       .filter((language) => MENU_LANGUAGE_META[language]);
     return enabled.length ? enabled : ["en", "he", "ar"];
   }, [menu.languages]);
+  const mobileCategory = useMemo(
+    () => visibleGroups.find((group) => group.id === mobileCategoryId) || visibleGroups[0] || null,
+    [visibleGroups, mobileCategoryId],
+  );
+  const mobileCategoryItems = useMemo(
+    () => mobileCategory
+      ? ordered(menu.items.filter((item) => item.group_id === mobileCategory.id))
+      : [],
+    [menu.items, mobileCategory],
+  );
+
+  useEffect(() => {
+    if (!visibleGroups.length) {
+      if (mobileCategoryId) setMobileCategoryId("");
+      return;
+    }
+    if (!visibleGroups.some((group) => group.id === mobileCategoryId)) {
+      setMobileCategoryId(visibleGroups[0].id);
+    }
+  }, [visibleGroups, mobileCategoryId]);
 
   useEffect(() => {
     setSaveState("saving");
@@ -205,6 +231,20 @@ export default function MenuContentStudioV2() {
   function selectForEdit(nextSelection) {
     setSelection(nextSelection);
     setMobilePane("edit");
+  }
+
+  function chooseMobileCategory(groupId) {
+    setMobileCategoryId(groupId);
+    setSelection({ type: "category", id: groupId });
+    setMobilePane("structure");
+  }
+
+  function openCategory(groupId) {
+    if (isMobileStudio()) {
+      chooseMobileCategory(groupId);
+      return;
+    }
+    selectForEdit({ type: "category", id: groupId });
   }
 
   function updateRestaurant(field, value) {
@@ -264,6 +304,7 @@ export default function MenuContentStudioV2() {
       visible: true,
     };
     setMenu((current) => ({ ...current, groups: [...current.groups, group] }));
+    setMobileCategoryId(id);
     selectForEdit({ type: "category", id });
   }
 
@@ -283,6 +324,7 @@ export default function MenuContentStudioV2() {
       sort_order: nextSortOrder(groupItems),
     };
     setMenu((current) => ({ ...current, items: [...current.items, item] }));
+    setMobileCategoryId(groupId);
     selectForEdit({ type: "item", id });
   }
 
@@ -294,14 +336,28 @@ export default function MenuContentStudioV2() {
       groups: current.groups.filter((group) => group.id !== groupId),
       items: current.items.filter((item) => item.group_id !== groupId),
     }));
-    setSelection({ type: "restaurant", id: "restaurant" });
-    setMobilePane("structure");
+    if (isMobileStudio()) {
+      setMobileCategoryId(ordered(remainingGroups)[0]?.id || "");
+      setSelection({ type: "category", id: ordered(remainingGroups)[0]?.id || "" });
+      setMobilePane("structure");
+    } else {
+      setSelection({ type: "restaurant", id: "restaurant" });
+      setMobilePane("structure");
+    }
   }
 
   function deleteItem(itemId) {
-    setMenu((current) => ({ ...current, items: current.items.filter((item) => item.id !== itemId) }));
-    setSelection({ type: "restaurant", id: "restaurant" });
-    setMobilePane("structure");
+    const item = menu.items.find((entry) => entry.id === itemId);
+    const groupId = item?.group_id || mobileCategoryId;
+    setMenu((current) => ({ ...current, items: current.items.filter((entry) => entry.id !== itemId) }));
+    if (isMobileStudio() && groupId) {
+      setMobileCategoryId(groupId);
+      setSelection({ type: "category", id: groupId });
+      setMobilePane("structure");
+    } else {
+      setSelection({ type: "restaurant", id: "restaurant" });
+      setMobilePane("structure");
+    }
   }
 
   return (
@@ -357,6 +413,79 @@ export default function MenuContentStudioV2() {
 
           <div className="menu-content-v2-tree-label"><span>{t.categories}</span><small>{visibleGroups.length}</small></div>
 
+          <div className="menu-content-v2-mobile-category-browser">
+            <div className="menu-content-v2-mobile-category-rail" role="tablist" aria-label={t.categories}>
+              {visibleGroups.map((group) => {
+                const items = ordered(menu.items.filter((item) => item.group_id === group.id));
+                const active = mobileCategory?.id === group.id;
+                return (
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={active}
+                    className={`menu-content-v2-mobile-category-tab ${active ? "active" : ""}`}
+                    key={`mobile-category-${group.id}`}
+                    onClick={() => chooseMobileCategory(group.id)}
+                  >
+                    <strong dir={contentDir}>{textValue(group.name, contentLanguage) || t.categoryName}</strong>
+                    <small>{t.items(items.length)}</small>
+                  </button>
+                );
+              })}
+              <button type="button" className="menu-content-v2-mobile-category-add" onClick={addCategory} title={t.addCategory} aria-label={t.addCategory}>
+                <Plus size={18} />
+              </button>
+            </div>
+
+            {mobileCategory ? (
+              <section className="menu-content-v2-mobile-category-content">
+                <header className="menu-content-v2-mobile-category-head">
+                  <div>
+                    <span>{t.categoryEyebrow}</span>
+                    <h3 dir={contentDir}>{textValue(mobileCategory.name, contentLanguage) || t.categoryName}</h3>
+                    <small>{t.items(mobileCategoryItems.length)}</small>
+                  </div>
+                  <button
+                    type="button"
+                    className="menu-content-v2-mobile-category-edit"
+                    onClick={() => selectForEdit({ type: "category", id: mobileCategory.id })}
+                    title={t.mobileEdit}
+                    aria-label={t.mobileEdit}
+                  >
+                    <Pencil size={16} />
+                  </button>
+                </header>
+
+                <div className="menu-content-v2-mobile-item-list">
+                  {mobileCategoryItems.map((item) => {
+                    const summary = priceSummary(item, currencySymbol, contentLanguage);
+                    return (
+                      <button
+                        type="button"
+                        className="menu-content-v2-mobile-item-row"
+                        key={`mobile-item-${item.id}`}
+                        onClick={() => {
+                          setMobileCategoryId(mobileCategory.id);
+                          selectForEdit({ type: "item", id: item.id });
+                        }}
+                      >
+                        <span>
+                          <strong dir={contentDir}>{textValue(item.name, contentLanguage) || t.itemName}</strong>
+                          <small>{summary || t.noPrice}</small>
+                        </span>
+                        <ChevronRight size={16} />
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <button type="button" className="menu-content-v2-mobile-add-item" onClick={() => addItem(mobileCategory.id)}>
+                  <Plus size={15} /> {t.addItem}
+                </button>
+              </section>
+            ) : null}
+          </div>
+
           <div className="menu-content-v2-categories">
             {visibleGroups.map((group) => {
               const items = ordered(menu.items.filter((item) => item.group_id === group.id));
@@ -367,7 +496,7 @@ export default function MenuContentStudioV2() {
                     type="button"
                     draggable
                     className={`menu-content-v2-category-row ${selection.type === "category" && selection.id === group.id ? "active" : ""}`}
-                    onClick={() => selectForEdit({ type: "category", id: group.id })}
+                    onClick={() => openCategory(group.id)}
                     onDragStart={(event) => beginDrag(event, { type: "category", id: group.id })}
                     onDragOver={(event) => dragging?.type === "category" && event.preventDefault()}
                     onDrop={(event) => dropCategory(event, group.id)}
