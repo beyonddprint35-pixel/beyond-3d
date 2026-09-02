@@ -30,6 +30,7 @@ import MenuAnalyticsStudioV2 from "./pages/MenuAnalyticsStudioV2";
 import MenuMyMenusV2 from "./pages/MenuMyMenusV2";
 import MenuManageV2 from "./pages/MenuManageV2";
 import MenuStudioV2PersistenceBoundary from "./features/menu-engine/studio/MenuStudioV2PersistenceBoundary";
+import MenuStudioWorkspace from "./features/menu-engine/studio/MenuStudioWorkspace";
 import MenuStudioMobileStageNav from "./components/MenuStudioMobileStageNav";
 import CustomerShowcasePortal from "./components/CustomerShowcasePortal";
 
@@ -115,7 +116,7 @@ function App() {
         {/* Production Menu experience. */}
         <Route path="/menu-builder" element={<MenuCreateV2 />} />
         <Route path="/menu-builder/import" element={<MenuImportStudioV2 />} />
-        <Route path="/menu-studio/*" element={<MenuStudioV2Routes />} />
+        <Route path="/menu-studio/*" element={<MenuStudioWorkspace><MenuStudioV2Routes /></MenuStudioWorkspace>} />
         <Route path="/my-menus" element={<MenuMyMenusV2 />} />
         <Route path="/my-menus/:projectId" element={<MenuManageV2 />} />
         <Route path="/menu/:slug" element={<MenuPublicV3Dev />} />

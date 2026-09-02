@@ -13,6 +13,8 @@ import {
   writeMenuStudioV2Draft,
 } from "../features/menu-engine/studio/menuStudioV2Session";
 import { readStudioLanguage } from "../features/menu-engine/studio/studioLanguage";
+import { menuStudioProjectId } from "../features/menu-engine/studio/menuStudioV2Persistence";
+import { useMenuStudioWorkspace } from "../features/menu-engine/studio/menuStudioWorkspaceContext";
 import "./MenuContentStudioV2Entry.css";
 
 const COPY = {
@@ -22,15 +24,20 @@ const COPY = {
 };
 
 export default function MenuContentStudioV2Entry() {
+  const workspace = useMenuStudioWorkspace();
   const params = useMemo(() => new URLSearchParams(window.location.search), []);
   const isWebsiteFlow = params.get("mode") === "website";
   const websiteImported = params.get("websiteImported") === "1";
   const shouldOpenWebsiteImporter = isWebsiteFlow && !websiteImported;
   const initialDraft = useMemo(() => shouldOpenWebsiteImporter ? null : readMenuStudioV2Draft(), [shouldOpenWebsiteImporter]);
-  const [ready, setReady] = useState(shouldOpenWebsiteImporter);
+  const [alreadyPrepared] = useState(() => {
+    const id = menuStudioProjectId(initialDraft);
+    return workspace?.isPrepared(id) || workspace?.isContentReady(id) || false;
+  });
+  const [ready, setReady] = useState(shouldOpenWebsiteImporter || alreadyPrepared);
 
   useEffect(() => {
-    if (shouldOpenWebsiteImporter) return undefined;
+    if (shouldOpenWebsiteImporter || alreadyPrepared) return undefined;
     let active = true;
 
     async function prepareDraft() {
@@ -71,6 +78,7 @@ export default function MenuContentStudioV2Entry() {
             ...draft,
             menu: repairedMenu,
           });
+          workspace?.markContentReady(menuStudioProjectId(draft));
           setReady(true);
         }
       }
@@ -78,7 +86,7 @@ export default function MenuContentStudioV2Entry() {
 
     prepareDraft();
     return () => { active = false; };
-  }, [initialDraft, shouldOpenWebsiteImporter]);
+  }, [initialDraft, shouldOpenWebsiteImporter, alreadyPrepared, workspace]);
 
   if (shouldOpenWebsiteImporter) return <MenuWebsiteImportV2 />;
 

@@ -8,6 +8,9 @@ export const MENU_STUDIO_V2_DRAFT_KEY = "beyond-menu-content-studio-v2";
 export const MENU_CREATE_V2_FLOW_KEY = "beyond-menu-create-profile-v2";
 export const MENU_CREATE_V2_DESIGN_KEY = "beyond-menu-recommended-design-v2";
 
+let lastWrittenSignature = "";
+let lastWrittenJSON = "";
+
 export function makeLocalizedText(en = "", he = "", ar = "") {
   return { en, he, ar };
 }
@@ -79,9 +82,24 @@ export function writeMenuStudioV2Draft(draft, { queueSave = true } = {}) {
     const normalizedDraft = draft?.menu
       ? { ...draft, menu: normalizeV3MenuPriceOptions(draft.menu) }
       : draft;
+    // Navigation flushes should not create a cloud write when nothing changed.
+    const withoutTimestamp = ({ savedAt: _savedAt, ...value } = {}) => {
+      if (value.publication) {
+        const { savedAt: _publicationSavedAt, ...publication } = value.publication;
+        return { ...value, publication };
+      }
+      return value;
+    };
+    const signature = JSON.stringify(withoutTimestamp(normalizedDraft));
+    // Only deduplicate writes handled in this page session; a browser copy
+    // restored after a reload may still need its first cloud save.
+    if (signature === lastWrittenSignature && window.sessionStorage.getItem(MENU_STUDIO_V2_DRAFT_KEY) === lastWrittenJSON) return true;
     const savedDraft = { ...normalizedDraft, savedAt: new Date().toISOString() };
-    window.sessionStorage.setItem(MENU_STUDIO_V2_DRAFT_KEY, JSON.stringify(savedDraft));
+    const savedJSON = JSON.stringify(savedDraft);
+    window.sessionStorage.setItem(MENU_STUDIO_V2_DRAFT_KEY, savedJSON);
     if (queueSave) queueMenuStudioProjectSave(savedDraft);
+    lastWrittenSignature = signature;
+    lastWrittenJSON = savedJSON;
     return true;
   } catch {
     return false;

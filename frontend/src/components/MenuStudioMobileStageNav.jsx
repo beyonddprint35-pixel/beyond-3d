@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { readStudioLanguage } from "../features/menu-engine/studio/studioLanguage";
+import { readStudioLanguage, studioLanguageDirection } from "../features/menu-engine/studio/studioLanguage";
 
 import { flushStudioDraft, STUDIO_NAV_COPY, STUDIO_STAGES } from "../features/menu-engine/studio/studioNavigation";
 
@@ -38,7 +38,7 @@ export default function MenuStudioMobileStageNav() {
   }
 
   return (
-    <nav className="menu-studio-mobile-stage-nav" aria-label="Menu Studio">
+    <nav className="menu-studio-mobile-stage-nav" aria-label="Menu Studio" dir={studioLanguageDirection(language)}>
       {STUDIO_STAGES.map((stage) => (
         <button
           key={stage}

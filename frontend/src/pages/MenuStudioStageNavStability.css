@@ -21,7 +21,6 @@
   align-items: center !important;
   justify-self: center !important;
   gap: 3px !important;
-  direction: ltr !important;
 }
 
 :is(
@@ -87,7 +86,6 @@
     grid-template-columns: repeat(5, minmax(0, 1fr));
     align-items: center;
     gap: 3px;
-    direction: ltr;
     border: 1px solid var(--beyond-studio-line);
     border-radius: 18px;
     background: var(--beyond-studio-surface);

@@ -16,6 +16,7 @@ import {
   setActiveMenuStudioProjectId,
 } from "./menuStudioV2Persistence";
 import { readStudioLanguage } from "./studioLanguage";
+import { useMenuStudioWorkspace } from "./menuStudioWorkspaceContext";
 import "./MenuStudioV2PersistenceBoundary.css";
 
 const COPY = {
@@ -51,6 +52,7 @@ const COPY = {
 export default function MenuStudioV2PersistenceBoundary({ children }) {
   const location = useLocation();
   const navigate = useNavigate();
+  const workspace = useMenuStudioWorkspace();
   const route = useRef({ location, navigate });
   route.current = { location, navigate };
   const params = useMemo(() => new URLSearchParams(location.search), [location.search]);
@@ -58,7 +60,8 @@ export default function MenuStudioV2PersistenceBoundary({ children }) {
     && params.get("mode") === "website"
     && params.get("websiteImported") !== "1";
   const requestedProjectId = params.get("project") || "";
-  const [state, setState] = useState(isWebsiteEntry ? "ready" : "loading");
+  const [prepared] = useState(() => workspace?.isPrepared(requestedProjectId) || false);
+  const [state, setState] = useState(isWebsiteEntry || prepared ? "ready" : "loading");
   const [message, setMessage] = useState("");
   const [cloudError, setCloudError] = useState("");
   const [language] = useState(() => readStudioLanguage("en"));
@@ -66,7 +69,7 @@ export default function MenuStudioV2PersistenceBoundary({ children }) {
   const rtl = language === "he" || language === "ar";
 
   useEffect(() => {
-    if (isWebsiteEntry) return undefined;
+    if (isWebsiteEntry || prepared) return undefined;
     let active = true;
 
     function withProjectInUrl(projectId) {
@@ -138,7 +141,7 @@ export default function MenuStudioV2PersistenceBoundary({ children }) {
 
     openDraft();
     return () => { active = false; };
-  }, [isWebsiteEntry, requestedProjectId, t.loading, t.migrating, t.missing]);
+  }, [isWebsiteEntry, prepared, requestedProjectId, t.loading, t.migrating, t.missing]);
 
   useEffect(() => {
     function onCloudSave(event) {

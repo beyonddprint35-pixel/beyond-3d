@@ -6,6 +6,7 @@ import StudioLanguageMenu from "./StudioLanguageMenu";
 import MenuStudioMenuSwitcher from "./MenuStudioMenuSwitcher";
 import { applyStoredBeyondTheme, setBeyondTheme } from "../lib/beyondThemeBootstrap";
 import { flushStudioDraft, STUDIO_NAV_COPY, STUDIO_STAGES } from "../features/menu-engine/studio/studioNavigation";
+import { studioLanguageDirection } from "../features/menu-engine/studio/studioLanguage";
 
 export default function MenuStudioHeader({ stage, language, onLanguageChange, menuName, onBack, backLabel, onBrand, saveState, saveLabel }) {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ export default function MenuStudioHeader({ stage, language, onLanguageChange, me
       <button type="button" className={`${prefix}-back`} aria-label={backLabel || t.back} onClick={() => { flushStudioDraft(); if (onBack) onBack(); else navigate("/"); }}><BackIcon size={16} /></button>
       <button type="button" className={`${prefix}-brand`} onClick={onBrand || (() => openStage("content"))}><img src={beyondLogo} alt="" /><span><strong>Beyond Menu Studio</strong><small>{menuName}</small></span></button>
     </div>
-    <nav className={`${prefix}-product-nav`} aria-label="Menu Studio">
+    <nav className={`${prefix}-product-nav`} aria-label="Menu Studio" dir={studioLanguageDirection(language)}>
       {STUDIO_STAGES.map((key) => <button type="button" key={key} aria-current={key === stage ? "page" : undefined} className={key === stage ? "active" : ""} onClick={() => openStage(key)}>{t[key]}</button>)}
     </nav>
     <div className={`${prefix}-top-actions`}>

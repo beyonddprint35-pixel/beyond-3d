@@ -5,6 +5,7 @@ import { supabase } from "../lib/supabaseClient";
 import { listMenuStudioProjects, readActiveMenuStudioProjectId } from "../features/menu-engine/studio/menuStudioV2Persistence";
 import { chooseStudioProject, studioProjectUrl } from "../features/menu-engine/studio/studioNavigation";
 import { readStudioLanguage } from "../features/menu-engine/studio/studioLanguage";
+import { useMenuStudioWorkspace } from "../features/menu-engine/studio/menuStudioWorkspaceContext";
 import "../features/menu-engine/studio/MenuStudioV2PersistenceBoundary.css";
 
 const COPY = {
@@ -16,6 +17,7 @@ const COPY = {
 export default function MenuStudioEntry() {
   const location = useLocation();
   const navigate = useNavigate();
+  const workspace = useMenuStudioWorkspace();
   const [state, setState] = useState("loading");
   const [attempt, setAttempt] = useState(0);
   const language = readStudioLanguage("en");
@@ -34,7 +36,7 @@ export default function MenuStudioEntry() {
         if (!active) return;
         if (error) throw error;
         if (!data?.session) { setState("signIn"); return; }
-        const projects = await listMenuStudioProjects();
+        const projects = await (workspace ? workspace.loadProjects() : listMenuStudioProjects());
         if (!active) return;
         const project = chooseStudioProject(projects, { siteId: params.get("site") || "", activeId: readActiveMenuStudioProjectId() });
         if (project) {
@@ -48,7 +50,7 @@ export default function MenuStudioEntry() {
     }
     open();
     return () => { active = false; };
-  }, [location.search, navigate, attempt, language]);
+  }, [location.search, navigate, attempt, language, workspace]);
   return <main className="menu-studio-persistence-screen" dir={language === "en" ? "ltr" : "rtl"}>
     <div className="menu-studio-persistence-card">
       {state === "loading" ? <LoaderCircle className="spin" size={24} /> : null}

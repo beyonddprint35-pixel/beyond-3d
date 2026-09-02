@@ -88,16 +88,7 @@
     direction: ltr !important;
   }
 
-  /* The shared stage bar is intentionally centered, but its stage order is LTR. */
-  body:has(:is(
-    .menu-content-v2,
-    .menu-design-v2,
-    .menu-preview-v2,
-    .menu-publish-v2
-  )[lang="en"]) .menu-studio-mobile-stage-nav {
-    direction: ltr !important;
-  }
-
+  /* Stage order follows the navigation's own language direction. */
   body:has(:is(
     .menu-content-v2,
     .menu-design-v2,
