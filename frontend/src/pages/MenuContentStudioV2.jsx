@@ -1,3 +1,4 @@
+import useStudioDraftSave from "../features/menu-engine/studio/useStudioDraftSave";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -15,12 +16,12 @@ import {
   Trash2,
 } from "lucide-react";
 
-import beyondLogo from "../assets/beyond-logo-transparent.png";
 import MenuContentMobileCategories from "../components/MenuContentMobileCategories";
 import { groupBranch, moveItemToGroup, moveMenuGroup, moveMenuItem, ordered, reorderMenuGroups, reorderMenuItems, removeMenuGroup, rootGroupId } from "../features/menu-engine/studio/menuStructure";
 import MenuContentImageEditor from "../components/MenuContentImageEditor";
 import MenuContentPriceEditor from "../components/MenuContentPriceEditor";
-import StudioLanguageMenu from "../components/StudioLanguageMenu";
+import MenuStudioHeader from "../components/MenuStudioHeader";
+import { flushStudioDraft } from "../features/menu-engine/studio/studioNavigation";
 import MenuStudioMobilePreview from "../features/menu-engine/studio/MenuStudioMobilePreview";
 import {
   createBlankMenuV2,
@@ -28,7 +29,6 @@ import {
   readMenuCreateV2Profile,
   readMenuStudioV2Draft,
   resolveMenuStudioV2Design,
-  writeMenuStudioV2Draft,
 } from "../features/menu-engine/studio/menuStudioV2Session";
 import {
   readStudioLanguage,
@@ -116,6 +116,7 @@ function priceSummary(item, currencySymbol = "₪", language = "en") {
 }
 
 function studioRoute(path) {
+  flushStudioDraft();
   return `${path}${window.location.search || ""}`;
 }
 
@@ -127,7 +128,7 @@ export default function MenuContentStudioV2() {
   const navigate = useNavigate();
   const params = useMemo(() => new URLSearchParams(window.location.search), []);
   const storedDraft = useMemo(readMenuStudioV2Draft, []);
-  const profile = useMemo(readMenuCreateV2Profile, []);
+  const profile = useMemo(() => storedDraft?.profile || readMenuCreateV2Profile(), [storedDraft]);
   const requestedDesignId = params.get("design") || "";
   const resolvedDesign = useMemo(
     () => resolveMenuStudioV2Design(storedDraft, requestedDesignId),
@@ -146,7 +147,6 @@ export default function MenuContentStudioV2() {
   const [selection, setSelection] = useState(() => ({ type: "restaurant", id: "restaurant" }));
   const [mobilePane, setMobilePane] = useState("structure");
   const [mobileCategoryId, setMobileCategoryId] = useState("");
-  const [saveState, setSaveState] = useState("saved");
   const [dragging, setDragging] = useState(null);
 
   const t = MENU_CONTENT_STUDIO_UI[uiLanguage] || MENU_CONTENT_STUDIO_UI.en;
@@ -179,21 +179,7 @@ export default function MenuContentStudioV2() {
     }
   }, [topLevelGroups, mobileCategoryId]);
 
-  useEffect(() => {
-    setSaveState("saving");
-    const timer = window.setTimeout(() => {
-      const ok = writeMenuStudioV2Draft({
-        ...(storedDraft || {}),
-        menu,
-        design,
-        designId: resolvedDesign.designId,
-        profile,
-        contentLanguage,
-      });
-      setSaveState(ok ? "saved" : "error");
-    }, 350);
-    return () => window.clearTimeout(timer);
-  }, [menu, design, resolvedDesign.designId, profile, contentLanguage, storedDraft]);
+  const saveState = useStudioDraftSave({ ...(storedDraft || {}), menu, design, designId: resolvedDesign.designId, profile, contentLanguage });
 
   const selectedCategory = selection.type === "category"
     ? menu.groups.find((group) => group.id === selection.id)
@@ -338,29 +324,7 @@ export default function MenuContentStudioV2() {
 
   return (
     <main className="menu-content-v2" dir={rtl ? "rtl" : "ltr"} lang={uiLanguage}>
-      <header className="menu-content-v2-topbar">
-        <div className="menu-content-v2-brand-wrap">
-          <button type="button" className="menu-content-v2-back" onClick={() => navigate("/my-menus")} title={t.backSetup}>
-            <BackIcon size={16} />
-          </button>
-          <button type="button" className="menu-content-v2-brand" onClick={() => selectForEdit({ type: "restaurant", id: "restaurant" })}>
-            <img src={beyondLogo} alt="" />
-            <span><strong>Beyond Menu Studio</strong><small>{menu.restaurant_name}</small></span>
-          </button>
-        </div>
-
-        <nav className="menu-content-v2-product-nav" aria-label={t.workspace}>
-          <button type="button" className="active">{t.content}</button>
-          <button type="button" onClick={() => navigate(studioRoute("/menu-studio/design"))}>{t.design}</button>
-          <button type="button" onClick={() => navigate(studioRoute("/menu-studio/preview"))}>{t.preview}</button>
-          <button type="button" onClick={() => navigate(studioRoute("/menu-studio/publish"))}>{t.publish}</button>
-        </nav>
-
-        <div className="menu-content-v2-top-actions">
-          <StudioLanguageMenu value={contentLanguage} onChange={changeStudioLanguage} label={t.contentLanguage} compact />
-          <div className="menu-content-v2-save"><span className={saveState === "saved" ? "ok" : ""} /><strong>{saveLabel}</strong></div>
-        </div>
-      </header>
+      <MenuStudioHeader stage="content" language={uiLanguage} onLanguageChange={changeStudioLanguage} menuName={menu.restaurant_name} onBrand={() => selectForEdit({ type: "restaurant", id: "restaurant" })} saveState={saveState} saveLabel={saveLabel} />
 
       <nav className="menu-content-v2-mobile-mode-nav" aria-label={t.content}>
         <button type="button" className={mobilePane === "structure" ? "active" : ""} onClick={() => setMobilePane("structure")}>

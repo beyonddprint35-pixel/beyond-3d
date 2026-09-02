@@ -1,8 +1,7 @@
+import { useStudioDraftFlush } from "../features/menu-engine/studio/useStudioDraftSave";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  ArrowLeft,
-  ArrowRight,
   Check,
   CheckCircle2,
   CircleAlert,
@@ -13,10 +12,12 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
-import beyondLogo from "../assets/beyond-logo-transparent.png";
 import StudioLanguageMenu from "../components/StudioLanguageMenu";
+import MenuStudioHeader from "../components/MenuStudioHeader";
+import { flushStudioDraft } from "../features/menu-engine/studio/studioNavigation";
 import { buildMenuStudioReadiness } from "../features/menu-engine/studio/menuStudioV2Readiness";
 import { publishMenuStudioDraft } from "../features/menu-engine/studio/menuStudioV2PublishService";
+import { menuStudioProjectId, queueMenuStudioProjectSave } from "../features/menu-engine/studio/menuStudioV2Persistence";
 import {
   createBlankMenuV2,
   readMenuCreateV2Profile,
@@ -77,13 +78,14 @@ function defaultSlug(name = "") {
 }
 
 function studioRoute(path) {
+  flushStudioDraft();
   return `${path}${window.location.search || ""}`;
 }
 
 export default function MenuPublishStudioV2() {
   const navigate = useNavigate();
   const storedDraft = useMemo(readMenuStudioV2Draft, []);
-  const profile = useMemo(readMenuCreateV2Profile, []);
+  const profile = useMemo(() => storedDraft?.profile || readMenuCreateV2Profile(), [storedDraft]);
   const resolved = useMemo(() => resolveMenuStudioV2Design(storedDraft), [storedDraft]);
   const [menu, setMenu] = useState(() => storedDraft?.menu || createBlankMenuV2());
   const [design] = useState(() => resolved.design);
@@ -109,7 +111,6 @@ export default function MenuPublishStudioV2() {
 
   const t = UI[uiLanguage] || UI.en;
   const rtl = studioLanguageDirection(uiLanguage) === "rtl";
-  const BackIcon = rtl ? ArrowRight : ArrowLeft;
   const normalizedSlug = safeSlug(slug);
   const publicUrl = `https://www.b3yondworld.com/menu/${normalizedSlug || "your-menu"}`;
   const readinessMenu = useMemo(() => ({ ...menu, languages: enabledLanguages, default_language: defaultLanguage }), [menu, enabledLanguages, defaultLanguage]);
@@ -175,6 +176,8 @@ export default function MenuPublishStudioV2() {
     };
   }
 
+  useStudioDraftFlush(buildPublishDraft());
+
   function savePublishSetup() {
     const nextDraft = buildPublishDraft();
     setMenu(nextDraft.menu);
@@ -202,7 +205,14 @@ export default function MenuPublishStudioV2() {
           isLive: true,
         },
       };
-      writeMenuStudioV2Draft(publishedDraft);
+      // Publishing may finish after the owner switches to another menu.
+      // Keep the result with its project instead of replacing the open draft.
+      const currentDraft = readMenuStudioV2Draft();
+      if (menuStudioProjectId(currentDraft) === menuStudioProjectId(publishedDraft)) {
+        writeMenuStudioV2Draft({ ...currentDraft, publication: publishedDraft.publication });
+      } else {
+        queueMenuStudioProjectSave(publishedDraft);
+      }
       setPublishState({ status:"published", result, error:"" });
     } catch (error) {
       setPublishState({ status:"error", result:publishedResult, error:error?.message || t.publishError });
@@ -217,26 +227,7 @@ export default function MenuPublishStudioV2() {
 
   return (
     <main className="menu-publish-v2" dir={rtl ? "rtl" : "ltr"} lang={uiLanguage}>
-      <header className="menu-publish-v2-topbar">
-        <div className="menu-publish-v2-brand-wrap">
-          <button type="button" className="menu-publish-v2-back" onClick={() => navigate(studioRoute("/menu-studio/preview"))} title={t.backPreview}><BackIcon size={16} /></button>
-          <button type="button" className="menu-publish-v2-brand" onClick={() => navigate(studioRoute("/menu-studio/content"))}>
-            <img src={beyondLogo} alt="" />
-            <span><strong>Beyond Menu Studio</strong><small>{menu.restaurant_name}</small></span>
-          </button>
-        </div>
-
-        <nav className="menu-publish-v2-product-nav" aria-label={t.workspace}>
-          <button type="button" onClick={() => navigate(studioRoute("/menu-studio/content"))}>{t.content}</button>
-          <button type="button" onClick={() => navigate(studioRoute("/menu-studio/design"))}>{t.design}</button>
-          <button type="button" onClick={() => navigate(studioRoute("/menu-studio/preview"))}>{t.preview}</button>
-          <button type="button" className="active">{t.publish}</button>
-        </nav>
-
-        <div className="menu-publish-v2-top-actions">
-          <StudioLanguageMenu value={uiLanguage} onChange={changeUiLanguage} label={t.interfaceLanguage} compact />
-        </div>
-      </header>
+      <MenuStudioHeader stage="publish" language={uiLanguage} onLanguageChange={changeUiLanguage} menuName={menu.restaurant_name} onBack={() => navigate(studioRoute("/menu-studio/preview"))} backLabel={t.backPreview} />
 
       <section className="menu-publish-v2-hero">
         <div><span><Rocket size={13} /> {t.eyebrow}</span><h1>{t.title}</h1><p>{t.hint}</p></div>

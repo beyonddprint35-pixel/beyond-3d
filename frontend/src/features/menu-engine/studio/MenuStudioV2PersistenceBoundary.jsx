@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Cloud, CloudOff, LoaderCircle } from "lucide-react";
 
 import {
@@ -8,6 +9,7 @@ import {
 import {
   draftFromMenuStudioProject,
   ensureMenuStudioProject,
+  flushMenuStudioProjectSave,
   loadMenuStudioProject,
   menuStudioProjectId,
   readActiveMenuStudioProjectId,
@@ -46,30 +48,34 @@ const COPY = {
   },
 };
 
-function withProjectInUrl(projectId) {
-  if (!projectId || typeof window === "undefined") return;
-  const url = new URL(window.location.href);
-  if (url.searchParams.get("project") === projectId) return;
-  url.searchParams.set("project", projectId);
-  window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
-}
-
 export default function MenuStudioV2PersistenceBoundary({ children }) {
-  const params = useMemo(() => new URLSearchParams(window.location.search), []);
-  const isWebsiteEntry = window.location.pathname === "/dev/menu-content-v2"
+  const location = useLocation();
+  const navigate = useNavigate();
+  const route = useRef({ location, navigate });
+  route.current = { location, navigate };
+  const params = useMemo(() => new URLSearchParams(location.search), [location.search]);
+  const isWebsiteEntry = ["/dev/menu-content-v2", "/menu-studio/content"].includes(location.pathname)
     && params.get("mode") === "website"
     && params.get("websiteImported") !== "1";
   const requestedProjectId = params.get("project") || "";
   const [state, setState] = useState(isWebsiteEntry ? "ready" : "loading");
   const [message, setMessage] = useState("");
   const [cloudError, setCloudError] = useState("");
-  const language = readStudioLanguage("en");
+  const [language] = useState(() => readStudioLanguage("en"));
   const t = COPY[language] || COPY.en;
   const rtl = language === "he" || language === "ar";
 
   useEffect(() => {
     if (isWebsiteEntry) return undefined;
     let active = true;
+
+    function withProjectInUrl(projectId) {
+      const current = route.current;
+      const query = new URLSearchParams(current.location.search);
+      if (!projectId || query.get("project") === projectId) return;
+      query.set("project", projectId);
+      current.navigate(`${current.location.pathname}?${query}${current.location.hash}`, { replace: true });
+    }
 
     async function openDraft() {
       const localDraft = readMenuStudioV2Draft();
@@ -80,10 +86,13 @@ export default function MenuStudioV2PersistenceBoundary({ children }) {
       try {
         if (requestedProjectId) {
           setMessage(t.loading);
+          await flushMenuStudioProjectSave(requestedProjectId);
+          if (!active) return;
           const project = await loadMenuStudioProject(requestedProjectId);
+          if (!active) return;
           const draft = draftFromMenuStudioProject(project);
           if (!draft) throw new Error(t.missing);
-          writeMenuStudioV2Draft(draft);
+          writeMenuStudioV2Draft(draft, { queueSave: false });
           setActiveMenuStudioProjectId(project.id);
           withProjectInUrl(project.id);
           if (active) setState("ready");
@@ -93,8 +102,9 @@ export default function MenuStudioV2PersistenceBoundary({ children }) {
         if (localDraft?.menu) {
           setMessage(localProjectId ? t.loading : t.migrating);
           const ensured = await ensureMenuStudioProject(localDraft);
+          if (!active) return;
           const nextDraft = ensured?.draft || localDraft;
-          writeMenuStudioV2Draft(nextDraft);
+          writeMenuStudioV2Draft(nextDraft, { queueSave: false });
           const projectId = menuStudioProjectId(nextDraft);
           if (projectId) withProjectInUrl(projectId);
           if (active) setState("ready");
@@ -103,10 +113,13 @@ export default function MenuStudioV2PersistenceBoundary({ children }) {
 
         if (targetProjectId) {
           setMessage(t.loading);
+          await flushMenuStudioProjectSave(targetProjectId);
+          if (!active) return;
           const project = await loadMenuStudioProject(targetProjectId);
+          if (!active) return;
           const draft = draftFromMenuStudioProject(project);
           if (!draft) throw new Error(t.missing);
-          writeMenuStudioV2Draft(draft);
+          writeMenuStudioV2Draft(draft, { queueSave: false });
           setActiveMenuStudioProjectId(project.id);
           withProjectInUrl(project.id);
           if (active) setState("ready");
@@ -118,7 +131,7 @@ export default function MenuStudioV2PersistenceBoundary({ children }) {
         console.warn("Could not open persistent Menu Studio draft.", error);
         if (active) {
           setMessage(error?.message || t.missing);
-          setState(localDraft?.menu ? "ready" : "missing");
+          setState(!requestedProjectId && localDraft?.menu ? "ready" : "missing");
         }
       }
     }
@@ -130,12 +143,13 @@ export default function MenuStudioV2PersistenceBoundary({ children }) {
   useEffect(() => {
     function onCloudSave(event) {
       const detail = event?.detail || {};
+      if (detail.projectId !== (requestedProjectId || menuStudioProjectId(readMenuStudioV2Draft()))) return;
       if (detail.state === "error") setCloudError(detail.message || t.cloudError);
       if (detail.state === "saved") setCloudError("");
     }
     window.addEventListener("beyond-menu-studio-cloud-save", onCloudSave);
     return () => window.removeEventListener("beyond-menu-studio-cloud-save", onCloudSave);
-  }, [t.cloudError]);
+  }, [t.cloudError, requestedProjectId]);
 
   if (state === "ready") {
     return <>
@@ -151,8 +165,8 @@ export default function MenuStudioV2PersistenceBoundary({ children }) {
         <h1>{t.missing}</h1>
         <p>{t.missingHint}</p>
         <div>
-          <button type="button" className="primary" onClick={() => window.location.assign("/dev/my-menus-v2")}>{t.myMenus}</button>
-          <button type="button" onClick={() => window.location.assign("/dev/menu-create-v2")}>{t.newMenu}</button>
+          <button type="button" className="primary" onClick={() => window.location.assign("/my-menus")}>{t.myMenus}</button>
+          <button type="button" onClick={() => window.location.assign("/menu-builder")}>{t.newMenu}</button>
         </div>
       </div>
     </main>;

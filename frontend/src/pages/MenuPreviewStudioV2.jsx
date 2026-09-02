@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Check, CheckCircle2, CircleAlert, Eye, Rocket, TriangleAlert } from "lucide-react";
 
-import beyondLogo from "../assets/beyond-logo-transparent.png";
-import StudioLanguageMenu from "../components/StudioLanguageMenu";
+import MenuStudioHeader from "../components/MenuStudioHeader";
+import { flushStudioDraft } from "../features/menu-engine/studio/studioNavigation";
 import MenuStudioPreviewStage from "../features/menu-engine/studio/MenuStudioPreviewStage";
 import { buildMenuStudioReadiness } from "../features/menu-engine/studio/menuStudioV2Readiness";
 import {
@@ -52,17 +52,18 @@ const UI = {
 };
 
 function studioRoute(path) {
+  flushStudioDraft();
   return `${path}${window.location.search || ""}`;
 }
 
 export default function MenuPreviewStudioV2() {
   const navigate = useNavigate();
   const storedDraft = useMemo(readMenuStudioV2Draft, []);
-  const profile = useMemo(readMenuCreateV2Profile, []);
+  const profile = useMemo(() => storedDraft?.profile || readMenuCreateV2Profile(), [storedDraft]);
   const resolved = useMemo(() => resolveMenuStudioV2Design(storedDraft), [storedDraft]);
   const [menu] = useState(() => storedDraft?.menu || createBlankMenuV2());
   const [design] = useState(() => resolved.design);
-  const menuLanguages = menu.languages?.length ? menu.languages : [menu.default_language || "en"];
+  const menuLanguages = useMemo(() => menu.languages?.length ? menu.languages : [menu.default_language || "en"], [menu.languages, menu.default_language]);
   const [contentLanguage, setContentLanguage] = useState(() => {
     const saved = storedDraft?.contentLanguage || readStudioLanguage(menu.default_language || menuLanguages[0] || "en");
     return menuLanguages.includes(saved) ? saved : menuLanguages[0] || "en";
@@ -97,26 +98,7 @@ export default function MenuPreviewStudioV2() {
 
   return (
     <main className="menu-preview-v2" dir={rtl ? "rtl" : "ltr"} lang={uiLanguage}>
-      <header className="menu-preview-v2-topbar">
-        <div className="menu-preview-v2-brand-wrap">
-          <button type="button" className="menu-preview-v2-back" onClick={() => navigate(studioRoute("/menu-studio/design"))} title={t.backDesign}><BackIcon size={16} /></button>
-          <button type="button" className="menu-preview-v2-brand" onClick={() => navigate(studioRoute("/menu-studio/content"))}>
-            <img src={beyondLogo} alt="" />
-            <span><strong>Beyond Menu Studio</strong><small>{menu.restaurant_name}</small></span>
-          </button>
-        </div>
-
-        <nav className="menu-preview-v2-product-nav" aria-label={t.workspace}>
-          <button type="button" onClick={() => navigate(studioRoute("/menu-studio/content"))}>{t.content}</button>
-          <button type="button" onClick={() => navigate(studioRoute("/menu-studio/design"))}>{t.design}</button>
-          <button type="button" className="active">{t.preview}</button>
-          <button type="button" onClick={() => navigate(studioRoute("/menu-studio/publish"))}>{t.publish}</button>
-        </nav>
-
-        <div className="menu-preview-v2-top-actions">
-          <StudioLanguageMenu value={contentLanguage} onChange={changeStudioLanguage} label={t.contentLanguage} compact allowedLanguages={menuLanguages} />
-        </div>
-      </header>
+      <MenuStudioHeader stage="preview" language={uiLanguage} onLanguageChange={changeStudioLanguage} menuName={menu.restaurant_name} onBack={() => navigate(studioRoute("/menu-studio/design"))} backLabel={t.backDesign} />
 
       <section className="menu-preview-v2-intro">
         <div className="menu-preview-v2-intro-copy">

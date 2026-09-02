@@ -73,7 +73,7 @@ export function readMenuStudioV2Draft() {
   return null;
 }
 
-export function writeMenuStudioV2Draft(draft) {
+export function writeMenuStudioV2Draft(draft, { queueSave = true } = {}) {
   if (typeof window === "undefined") return false;
   try {
     const normalizedDraft = draft?.menu
@@ -81,7 +81,7 @@ export function writeMenuStudioV2Draft(draft) {
       : draft;
     const savedDraft = { ...normalizedDraft, savedAt: new Date().toISOString() };
     window.sessionStorage.setItem(MENU_STUDIO_V2_DRAFT_KEY, JSON.stringify(savedDraft));
-    queueMenuStudioProjectSave(savedDraft);
+    if (queueSave) queueMenuStudioProjectSave(savedDraft);
     return true;
   } catch {
     return false;

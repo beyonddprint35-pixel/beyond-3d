@@ -8,7 +8,7 @@ const NAV_ITEMS = [
   { label: "BEYOND How it works", type: "section", target: "#how-it-works" },
   { label: "BEYOND QR &NFC Stands", type: "section", target: "#qr-nfc" },
   { label: "BEYOND Live Demo", type: "demo" },
-  { label: "BEYOND Menu studio", type: "link", target: "/my-menus" },
+  { label: "BEYOND Menu studio", type: "link", target: "/menu-studio" },
   { label: "BEYOND Pricing", type: "section", target: "#pricing" },
   { label: "BEYOND 3D Printing", type: "link", target: "/3DPRINTING" },
 ];
@@ -135,7 +135,7 @@ function makeLink(item) {
 }
 
 function goToMenuStudioGateway() {
-  window.location.assign("/my-menus");
+  window.location.assign("/menu-studio");
 }
 
 function configureStudioButton(button) {
@@ -172,8 +172,7 @@ function syncWorkspaceActions() {
   const accountButton = actions.querySelector(".menu-home-account");
   const signedIn = accountButton instanceof HTMLElement;
 
-  // The homepage has one workspace gateway only. My Menus is the first screen
-  // inside Menu Studio, so a second My Menus action would be redundant.
+  // Studio opens the current menu directly; menu switching lives inside Studio.
   actions.querySelectorAll(`.${WORKSPACE_MENUS_CLASS}`).forEach((button) => button.remove());
 
   let studioButtons = Array.from(

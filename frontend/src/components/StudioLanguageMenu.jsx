@@ -47,6 +47,7 @@ export default function StudioLanguageMenu({
       <button
         type="button"
         className="studio-language-menu-trigger"
+        aria-label={`${label}: ${active.nativeLabel}`}
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={() => setOpen((current) => !current)}

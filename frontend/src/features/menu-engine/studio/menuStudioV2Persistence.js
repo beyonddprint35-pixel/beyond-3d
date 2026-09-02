@@ -1,11 +1,11 @@
+import { createProjectSaveQueue } from "./projectSaveQueue";
 import { supabase } from "../../../lib/supabaseClient";
 import { adaptAiStructuredMenuToV3, normalizeV3MenuPriceOptions } from "../data/aiMenuImportAdapter";
 
 export const MENU_STUDIO_SCHEMA_VERSION = 2;
 export const MENU_STUDIO_ACTIVE_PROJECT_KEY = "beyond-menu-studio-active-project-v2";
 
-let queuedDraft = null;
-let queuedTimer = null;
+const projectSaves = createProjectSaveQueue({ save: saveMenuStudioProject, onState: emitSaveState });
 
 function text(value) {
   return value == null ? "" : String(value).trim();
@@ -206,7 +206,6 @@ export async function saveMenuStudioProject(draft = {}) {
     .select("id,updated_at")
     .single();
   if (error) throw error;
-  setActiveMenuStudioProjectId(projectId);
   return data;
 }
 
@@ -218,21 +217,11 @@ function emitSaveState(state, detail = {}) {
 export function queueMenuStudioProjectSave(draft = {}) {
   const projectId = menuStudioProjectId(draft);
   if (!projectId || !draft?.menu || typeof window === "undefined") return;
-  queuedDraft = draft;
-  if (queuedTimer) window.clearTimeout(queuedTimer);
-  emitSaveState("saving", { projectId });
-  queuedTimer = window.setTimeout(async () => {
-    const pending = queuedDraft;
-    queuedDraft = null;
-    queuedTimer = null;
-    try {
-      const saved = await saveMenuStudioProject(pending);
-      emitSaveState("saved", { projectId: menuStudioProjectId(pending), updatedAt: saved?.updated_at || null });
-    } catch (error) {
-      console.warn("Menu Studio cloud autosave failed.", error);
-      emitSaveState("error", { projectId: menuStudioProjectId(pending), message: error?.message || "Cloud save failed." });
-    }
-  }, 650);
+  projectSaves.enqueue(projectId, draft);
+}
+
+export function flushMenuStudioProjectSave(projectId) {
+  return projectSaves.flush(projectId);
 }
 
 export async function listMenuStudioProjects() {

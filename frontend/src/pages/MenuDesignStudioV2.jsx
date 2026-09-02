@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import useStudioDraftSave from "../features/menu-engine/studio/useStudioDraftSave";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Check, Sparkles } from "lucide-react";
 
-import beyondLogo from "../assets/beyond-logo-transparent.png";
-import StudioLanguageMenu from "../components/StudioLanguageMenu";
+import MenuStudioHeader from "../components/MenuStudioHeader";
+import { flushStudioDraft } from "../features/menu-engine/studio/studioNavigation";
 import MenuDesignControls from "../features/menu-engine/studio/MenuDesignControls";
 import MenuStudioDesignCanvas from "../features/menu-engine/studio/MenuStudioDesignCanvas";
 import { normalizeMenuDesign } from "../features/menu-engine/domain/designSchema";
@@ -12,7 +13,6 @@ import {
   readMenuCreateV2Profile,
   readMenuStudioV2Draft,
   resolveMenuStudioV2Design,
-  writeMenuStudioV2Draft,
 } from "../features/menu-engine/studio/menuStudioV2Session";
 import {
   readStudioLanguage,
@@ -43,41 +43,26 @@ const UI = {
 };
 
 function studioRoute(path) {
+  flushStudioDraft();
   return `${path}${window.location.search || ""}`;
 }
 
 export default function MenuDesignStudioV2() {
   const navigate = useNavigate();
   const storedDraft = useMemo(readMenuStudioV2Draft, []);
-  const profile = useMemo(readMenuCreateV2Profile, []);
+  const profile = useMemo(() => storedDraft?.profile || readMenuCreateV2Profile(), [storedDraft]);
   const resolved = useMemo(() => resolveMenuStudioV2Design(storedDraft), [storedDraft]);
   const [menu] = useState(() => storedDraft?.menu || createBlankMenuV2());
   const [design, setDesign] = useState(() => normalizeMenuDesign(resolved.design));
   const [contentLanguage, setContentLanguage] = useState(() => storedDraft?.contentLanguage || readStudioLanguage(menu.default_language || "en"));
   const [uiLanguage, setUiLanguage] = useState(() => storedDraft?.contentLanguage || readStudioLanguage(menu.default_language || "en"));
   const [panel, setPanel] = useState("brand");
-  const [saveState, setSaveState] = useState("saved");
 
   const t = UI[uiLanguage] || UI.en;
   const rtl = studioLanguageDirection(uiLanguage) === "rtl";
-  const BackIcon = rtl ? ArrowRight : ArrowLeft;
   const ForwardIcon = rtl ? ArrowLeft : ArrowRight;
 
-  useEffect(() => {
-    setSaveState("saving");
-    const timer = window.setTimeout(() => {
-      const ok = writeMenuStudioV2Draft({
-        ...(storedDraft || {}),
-        menu,
-        design,
-        designId: storedDraft?.designId || resolved.designId,
-        profile,
-        contentLanguage,
-      });
-      setSaveState(ok ? "saved" : "error");
-    }, 350);
-    return () => window.clearTimeout(timer);
-  }, [menu, design, resolved.designId, profile, contentLanguage, storedDraft]);
+  const saveState = useStudioDraftSave({ ...(storedDraft || {}), menu, design, designId: storedDraft?.designId || resolved.designId, profile, contentLanguage });
 
   const saveLabel = saveState === "saving" ? t.saving : saveState === "error" ? t.saveError : t.saved;
 
@@ -93,27 +78,7 @@ export default function MenuDesignStudioV2() {
 
   return (
     <main className="menu-design-v2" dir={rtl ? "rtl" : "ltr"} lang={uiLanguage}>
-      <header className="menu-design-v2-topbar">
-        <div className="menu-design-v2-brand-wrap">
-          <button type="button" className="menu-design-v2-back" onClick={() => navigate(studioRoute("/menu-studio/content"))} title={t.backContent}><BackIcon size={16} /></button>
-          <button type="button" className="menu-design-v2-brand" onClick={() => navigate(studioRoute("/menu-studio/content"))}>
-            <img src={beyondLogo} alt="" />
-            <span><strong>Beyond Menu Studio</strong><small>{menu.restaurant_name}</small></span>
-          </button>
-        </div>
-
-        <nav className="menu-design-v2-product-nav" aria-label={t.workspace}>
-          <button type="button" onClick={() => navigate(studioRoute("/menu-studio/content"))}>{t.content}</button>
-          <button type="button" className="active">{t.design}</button>
-          <button type="button" onClick={() => navigate(studioRoute("/menu-studio/preview"))}>{t.preview}</button>
-          <button type="button" onClick={() => navigate(studioRoute("/menu-studio/publish"))}>{t.publish}</button>
-        </nav>
-
-        <div className="menu-design-v2-top-actions">
-          <StudioLanguageMenu value={contentLanguage} onChange={changeStudioLanguage} label={t.contentLanguage} compact />
-          <div className="menu-design-v2-save"><span className={saveState === "saved" ? "ok" : ""} /><strong>{saveLabel}</strong></div>
-        </div>
-      </header>
+      <MenuStudioHeader stage="design" language={uiLanguage} onLanguageChange={changeStudioLanguage} menuName={menu.restaurant_name} onBack={() => navigate(studioRoute("/menu-studio/content"))} backLabel={t.backContent} saveState={saveState} saveLabel={saveLabel} />
 
       <section className="menu-design-v2-intro">
         <div><span><Sparkles size={13} /> {t.eyebrow}</span><h1>{t.title}</h1><p>{t.hint}</p></div>

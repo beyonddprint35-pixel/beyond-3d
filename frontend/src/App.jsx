@@ -25,6 +25,8 @@ import MenuContentStudioV2Entry from "./pages/MenuContentStudioV2Entry";
 import MenuDesignStudioV2 from "./pages/MenuDesignStudioV2";
 import MenuPreviewStudioV2 from "./pages/MenuPreviewStudioV2";
 import MenuPublishStudioV2 from "./pages/MenuPublishStudioV2";
+import MenuStudioEntry from "./pages/MenuStudioEntry";
+import MenuAnalyticsStudioV2 from "./pages/MenuAnalyticsStudioV2";
 import MenuMyMenusV2 from "./pages/MenuMyMenusV2";
 import MenuManageV2 from "./pages/MenuManageV2";
 import MenuStudioV2PersistenceBoundary from "./features/menu-engine/studio/MenuStudioV2PersistenceBoundary";
@@ -64,8 +66,8 @@ import "./pages/MenuStudioHomeTheme.css";
 import "./pages/MenuStudioHomeThemeComponents.css";
 import "./pages/MenuContentStudioV2Mobile.css";
 import "./pages/MenuStudioStageNavStability.css";
-import "./pages/MenuStudioMobileHeaderCompact.css";
 import "./pages/MenuStudioEnglishLTR.css";
+import "./components/MenuStudioHeader.css";
 
 function LegacyStudioRedirect({ to }) {
   const location = useLocation();
@@ -79,21 +81,22 @@ function MenuStudioV2Routes() {
   const stage = location.pathname.replace(/^\/menu-studio\/?/, "").split("/")[0];
 
   if (!stage) {
-    return <Navigate replace to={`/my-menus${location.search}${location.hash}`} />;
+    return <MenuStudioEntry />;
   }
 
   let screen = null;
   if (stage === "content") screen = <MenuContentStudioV2Entry />;
   if (stage === "design") screen = <MenuDesignStudioV2 />;
   if (stage === "preview") screen = <MenuPreviewStudioV2 />;
+  if (stage === "analytics") screen = <MenuAnalyticsStudioV2 />;
   if (stage === "publish") screen = <MenuPublishStudioV2 />;
 
   if (!screen) {
-    return <Navigate replace to={`/my-menus${location.search}${location.hash}`} />;
+    return <Navigate replace to={`/menu-studio${location.search}${location.hash}`} />;
   }
 
   return (
-    <MenuStudioV2PersistenceBoundary>
+    <MenuStudioV2PersistenceBoundary key={new URLSearchParams(location.search).get("project") || "local"}>
       <>
         {screen}
         <MenuStudioMobileStageNav />

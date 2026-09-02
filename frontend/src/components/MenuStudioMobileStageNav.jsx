@@ -3,13 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import { readStudioLanguage } from "../features/menu-engine/studio/studioLanguage";
 
-const COPY = {
-  en: { content: "Content", design: "Design", preview: "Preview", publish: "Publish" },
-  he: { content: "תוכן", design: "עיצוב", preview: "תצוגה מקדימה", publish: "פרסום" },
-  ar: { content: "المحتوى", design: "التصميم", preview: "المعاينة", publish: "النشر" },
-};
-
-const STAGES = ["content", "design", "preview", "publish"];
+import { flushStudioDraft, STUDIO_NAV_COPY, STUDIO_STAGES } from "../features/menu-engine/studio/studioNavigation";
 
 export default function MenuStudioMobileStageNav() {
   const location = useLocation();
@@ -17,7 +11,7 @@ export default function MenuStudioMobileStageNav() {
   const [language, setLanguage] = useState(() => readStudioLanguage("en"));
 
   const currentStage = location.pathname.replace(/^\/menu-studio\/?/, "").split("/")[0] || "content";
-  const t = COPY[language] || COPY.en;
+  const t = STUDIO_NAV_COPY[language] || STUDIO_NAV_COPY.en;
 
   useEffect(() => {
     const onLanguageChange = (event) => {
@@ -39,12 +33,13 @@ export default function MenuStudioMobileStageNav() {
 
   function openStage(stage) {
     if (stage === currentStage) return;
+    flushStudioDraft();
     navigate(`/menu-studio/${stage}${location.search}${location.hash}`);
   }
 
   return (
     <nav className="menu-studio-mobile-stage-nav" aria-label="Menu Studio">
-      {STAGES.map((stage) => (
+      {STUDIO_STAGES.map((stage) => (
         <button
           key={stage}
           type="button"
