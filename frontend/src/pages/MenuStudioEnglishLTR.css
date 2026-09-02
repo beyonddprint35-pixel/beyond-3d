@@ -1,0 +1,154 @@
+/* =========================================================
+   BEYOND MENU STUDIO — ENGLISH LTR AUTHORITY
+   Mobile-only guard against legacy RTL rules leaking into the English UI.
+   Explicit Hebrew/Arabic editing fields keep their own RTL direction.
+   ========================================================= */
+
+@media (max-width: 850px) {
+  :is(
+    .menu-content-v2,
+    .menu-design-v2,
+    .menu-preview-v2,
+    .menu-publish-v2
+  )[lang="en"] {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  :is(
+    .menu-content-v2,
+    .menu-design-v2,
+    .menu-preview-v2,
+    .menu-publish-v2
+  )[lang="en"] :where(
+    h1,
+    h2,
+    h3,
+    h4,
+    p,
+    label,
+    strong,
+    small,
+    span,
+    dt,
+    dd,
+    .menu-content-v2-panel-head,
+    .menu-content-v2-restaurant-row,
+    .menu-content-v2-mobile-category-tab,
+    .menu-content-v2-mobile-category-head,
+    .menu-content-v2-mobile-item-row,
+    .menu-content-v2-inspector-head,
+    .menu-content-v2-field,
+    .menu-content-v2-info-card,
+    .menu-content-v2-price-options,
+    .menu-content-v2-image-editor,
+    .menu-content-v2-toggle,
+    .menu-design-v2-intro,
+    .menu-design-v2-controls,
+    .menu-preview-v2-intro,
+    .menu-preview-v2-language-review,
+    .menu-preview-v2-language-copy,
+    .menu-publish-v2-intro
+  ) {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  :is(
+    .menu-content-v2,
+    .menu-design-v2,
+    .menu-preview-v2,
+    .menu-publish-v2
+  )[lang="en"] :where(input, textarea, select) {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* Keep common English row layouts physically LTR as well as text-aligned. */
+  .menu-content-v2[lang="en"] :is(
+    .menu-content-v2-brand-wrap,
+    .menu-content-v2-restaurant-row,
+    .menu-content-v2-mobile-category-head,
+    .menu-content-v2-mobile-item-row,
+    .menu-content-v2-mobile-editor-bar
+  ),
+  .menu-design-v2[lang="en"] :is(
+    .menu-design-v2-brand-wrap,
+    .menu-design-v2-intro
+  ),
+  .menu-preview-v2[lang="en"] :is(
+    .menu-preview-v2-brand-wrap,
+    .menu-preview-v2-intro,
+    .menu-preview-v2-language-review-heading
+  ),
+  .menu-publish-v2[lang="en"] :is(
+    .menu-publish-v2-brand-wrap,
+    .menu-publish-v2-intro
+  ) {
+    direction: ltr !important;
+  }
+
+  /* The shared stage bar is intentionally centered, but its stage order is LTR. */
+  body:has(:is(
+    .menu-content-v2,
+    .menu-design-v2,
+    .menu-preview-v2,
+    .menu-publish-v2
+  )[lang="en"]) .menu-studio-mobile-stage-nav {
+    direction: ltr !important;
+  }
+
+  body:has(:is(
+    .menu-content-v2,
+    .menu-design-v2,
+    .menu-preview-v2,
+    .menu-publish-v2
+  )[lang="en"]) .menu-studio-mobile-stage-nav > button,
+  :is(
+    .menu-content-v2,
+    .menu-design-v2,
+    .menu-preview-v2,
+    .menu-publish-v2
+  )[lang="en"] :is(
+    .studio-language-menu-trigger,
+    .menu-content-v2-mobile-category-add,
+    .menu-content-v2-mobile-category-edit,
+    .menu-content-v2-back,
+    .menu-design-v2-back,
+    .menu-preview-v2-back,
+    .menu-publish-v2-back
+  ) {
+    text-align: center !important;
+  }
+
+  /* Multilingual editor exception: Hebrew and Arabic fields remain RTL even
+     while the Studio interface itself is English. */
+  :is(
+    .menu-content-v2,
+    .menu-design-v2,
+    .menu-preview-v2,
+    .menu-publish-v2
+  )[lang="en"] [dir="rtl"],
+  :is(
+    .menu-content-v2,
+    .menu-design-v2,
+    .menu-preview-v2,
+    .menu-publish-v2
+  )[lang="en"] [dir="rtl"] :where(
+    h1,
+    h2,
+    h3,
+    h4,
+    p,
+    label,
+    strong,
+    small,
+    span,
+    input,
+    textarea,
+    select
+  ) {
+    direction: rtl !important;
+    text-align: right !important;
+  }
+}
