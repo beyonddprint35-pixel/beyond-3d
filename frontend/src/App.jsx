@@ -69,6 +69,7 @@ import "./pages/MenuContentStudioV2Mobile.css";
 import "./pages/MenuStudioStageNavStability.css";
 import "./pages/MenuStudioEnglishLTR.css";
 import "./components/MenuStudioHeader.css";
+import "./pages/MenuStudioDarkMode.css";
 
 function LegacyStudioRedirect({ to }) {
   const location = useLocation();
