@@ -1,0 +1,314 @@
+/* =========================================================
+   BEYOND MENU STUDIO — DARK MODE COMPLETION
+   Keeps editor chrome on the shared Studio palette while leaving the
+   customer menu preview/template artwork untouched.
+========================================================= */
+
+html[data-beyond-theme="dark"] :is(
+  .menu-content-v2,
+  .menu-design-v2,
+  .menu-preview-v2,
+  .menu-publish-v2,
+  .menu-analytics-v2
+) {
+  color-scheme: dark;
+}
+
+/* Content editor: controls that still had page-local light backgrounds. */
+html[data-beyond-theme="dark"] .menu-content-v2 :is(
+  .menu-content-v2-language-card,
+  .menu-content-v2-price-options,
+  .menu-content-v2-price-option,
+  .menu-content-v2-image-editor,
+  .menu-content-v2-image-upload,
+  .menu-content-v2-mobile-category-tab,
+  .menu-content-v2-mobile-category-add,
+  .menu-content-v2-mobile-category-content
+) {
+  color: var(--beyond-studio-text) !important;
+  border-color: var(--beyond-studio-line) !important;
+  background: var(--beyond-studio-surface-2) !important;
+  box-shadow: none !important;
+}
+
+html[data-beyond-theme="dark"] .menu-content-v2 .menu-content-v2-language-card > header strong {
+  color: var(--beyond-studio-text) !important;
+}
+
+html[data-beyond-theme="dark"] .menu-content-v2 .menu-content-v2-language-card > header span {
+  color: var(--beyond-studio-blue-light) !important;
+  background: var(--beyond-studio-blue-soft) !important;
+}
+
+html[data-beyond-theme="dark"] .menu-content-v2 :is(
+  .menu-content-v2-field > select,
+  .menu-content-v2-price-option input,
+  .menu-content-v2-price-option select
+) {
+  color: var(--beyond-studio-text) !important;
+  border-color: var(--beyond-studio-line) !important;
+  background: var(--beyond-studio-surface-3) !important;
+  color-scheme: dark;
+}
+
+html[data-beyond-theme="dark"] .menu-content-v2 :is(
+  input,
+  textarea,
+  select
+)::placeholder {
+  color: var(--beyond-studio-faint) !important;
+}
+
+html[data-beyond-theme="dark"] .menu-content-v2 :is(
+  .menu-content-v2-field > select,
+  .menu-content-v2-price-option input,
+  .menu-content-v2-price-option select
+):focus {
+  border-color: rgba(132,184,255,.48) !important;
+  background: var(--beyond-studio-surface-3) !important;
+  box-shadow: 0 0 0 3px rgba(39,120,255,.1) !important;
+}
+
+html[data-beyond-theme="dark"] .menu-content-v2 .menu-content-v2-price-mode,
+html[data-beyond-theme="dark"] .menu-content-v2 .menu-content-v2-price-add {
+  color: var(--beyond-studio-blue-light) !important;
+  border-color: rgba(132,184,255,.24) !important;
+  background: var(--beyond-studio-blue-soft) !important;
+}
+
+html[data-beyond-theme="dark"] .menu-content-v2 .menu-content-v2-price-option-remove,
+html[data-beyond-theme="dark"] .menu-content-v2 .menu-content-v2-danger {
+  color: #ef9aa4 !important;
+  border-color: rgba(217,119,131,.26) !important;
+  background: rgba(217,119,131,.08) !important;
+}
+
+html[data-beyond-theme="dark"] .menu-content-v2 .menu-content-v2-price-option-remove:hover,
+html[data-beyond-theme="dark"] .menu-content-v2 .menu-content-v2-danger:hover {
+  border-color: rgba(239,154,164,.42) !important;
+  background: rgba(217,119,131,.14) !important;
+}
+
+html[data-beyond-theme="dark"] .menu-content-v2 .menu-content-v2-image-preview {
+  background: var(--beyond-studio-canvas) !important;
+}
+
+html[data-beyond-theme="dark"] .menu-content-v2 .menu-content-v2-image-replace {
+  color: var(--beyond-studio-text) !important;
+  border: 1px solid var(--beyond-studio-line) !important;
+  background: rgba(7,11,18,.94) !important;
+  box-shadow: 0 8px 22px rgba(0,0,0,.22) !important;
+}
+
+html[data-beyond-theme="dark"] .menu-content-v2 .menu-content-v2-image-error {
+  color: #efaaa1 !important;
+  border: 1px solid rgba(217,119,131,.2) !important;
+  background: rgba(217,119,131,.08) !important;
+}
+
+html[data-beyond-theme="dark"] .menu-content-v2 .menu-content-v2-toggle {
+  background: var(--beyond-studio-surface-2) !important;
+}
+
+html[data-beyond-theme="dark"] .menu-content-v2 .menu-content-v2-mobile-editor-bar,
+html[data-beyond-theme="dark"] .menu-content-v2 .menu-content-v2-mobile-mode-nav {
+  border-color: var(--beyond-studio-line) !important;
+  background: rgba(7,11,18,.96) !important;
+}
+
+html[data-beyond-theme="dark"] .menu-content-v2 .menu-content-v2-mobile-editor-bar button {
+  color: var(--beyond-studio-text) !important;
+  border-color: var(--beyond-studio-line) !important;
+  background: var(--beyond-studio-surface-2) !important;
+}
+
+html[data-beyond-theme="dark"] .menu-content-v2 .menu-content-v2-mobile-category-tab.active {
+  color: #fff !important;
+  border-color: var(--beyond-studio-blue) !important;
+  background: linear-gradient(135deg,#1b67ff,#428cff) !important;
+}
+
+/* Confirmation dialog used by item/category/subcategory deletion. */
+.menu-content-v2-confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(0,0,0,.58);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.menu-content-v2-confirm-dialog {
+  width: min(420px,100%);
+  padding: 22px;
+  display: grid;
+  gap: 14px;
+  border: 1px solid var(--beyond-studio-line-strong);
+  border-radius: 20px;
+  color: var(--beyond-studio-text);
+  background: var(--beyond-studio-surface);
+  box-shadow: 0 28px 80px rgba(0,0,0,.42);
+}
+
+.menu-content-v2-confirm-dialog .icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  color: #ef9aa4;
+  background: rgba(217,119,131,.1);
+}
+
+.menu-content-v2-confirm-dialog h2 {
+  margin: 0;
+  font-size: 21px;
+  line-height: 1.15;
+  letter-spacing: -.025em;
+}
+
+.menu-content-v2-confirm-dialog p {
+  margin: 0;
+  color: var(--beyond-studio-muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.menu-content-v2-confirm-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+  margin-top: 4px;
+}
+
+.menu-content-v2-confirm-actions button {
+  min-height: 46px;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.menu-content-v2-confirm-actions .cancel {
+  color: var(--beyond-studio-text);
+  border: 1px solid var(--beyond-studio-line);
+  background: var(--beyond-studio-surface-2);
+}
+
+.menu-content-v2-confirm-actions .delete {
+  color: #fff;
+  border: 1px solid transparent;
+  background: #c54f5e;
+}
+
+.menu-content-v2-confirm-actions button:focus-visible {
+  outline: 2px solid var(--beyond-studio-blue-light);
+  outline-offset: 3px;
+}
+
+/* Design editor nested controls. */
+html[data-beyond-theme="dark"] .menu-design-v2 :is(
+  .studio-v3-design-library,
+  .studio-v3-design-library-head,
+  .studio-v3-design-control,
+  .studio-v3-design-select,
+  .studio-v3-range-field,
+  .studio-v3-design-color,
+  .studio-v3-logo-upload-row
+) {
+  border-color: var(--beyond-studio-line) !important;
+}
+
+html[data-beyond-theme="dark"] .menu-design-v2 :is(
+  .studio-v3-design-search,
+  .studio-v3-original-design,
+  .studio-v3-premium-design-card,
+  .studio-v3-design-tabs,
+  .studio-v3-design-choice,
+  .studio-v3-palette-grid > button,
+  .studio-v3-logo-upload-row
+) {
+  background: var(--beyond-studio-surface-2) !important;
+}
+
+/* Preview review states were still white/cream. */
+html[data-beyond-theme="dark"] .menu-preview-v2 .menu-preview-v2-language-cards > button.problem {
+  background: rgba(215,164,93,.055) !important;
+}
+
+html[data-beyond-theme="dark"] .menu-preview-v2 .menu-preview-v2-clear {
+  color: #76d6a8 !important;
+  background: rgba(72,185,132,.1) !important;
+}
+
+html[data-beyond-theme="dark"] .menu-preview-v2 .menu-preview-v2-empty-warning,
+html[data-beyond-theme="dark"] .menu-preview-v2 .menu-preview-v2-language-cards > button.problem .menu-preview-v2-language-state {
+  color: #e5b46f !important;
+  background: rgba(215,164,93,.1) !important;
+}
+
+html[data-beyond-theme="dark"] .menu-preview-v2 .menu-preview-v2-language-state {
+  color: #76d6a8 !important;
+  background: rgba(72,185,132,.1) !important;
+}
+
+/* Publish: checklist, status, select and action states. */
+html[data-beyond-theme="dark"] .menu-publish-v2 :is(
+  .menu-publish-v2-language-list .check,
+  .menu-publish-v2-card.duo > div,
+  .menu-publish-v2-action-card .save,
+  .menu-publish-v2-default-language select
+) {
+  color: var(--beyond-studio-text) !important;
+  border-color: var(--beyond-studio-line) !important;
+  background: var(--beyond-studio-surface-2) !important;
+}
+
+html[data-beyond-theme="dark"] .menu-publish-v2 .menu-publish-v2-checklist > div:not(.menu-publish-v2-side-title) {
+  border-bottom-color: var(--beyond-studio-line) !important;
+}
+
+html[data-beyond-theme="dark"] .menu-publish-v2 :is(
+  .menu-publish-v2-side-title strong,
+  .menu-publish-v2-dev-status
+) {
+  color: var(--beyond-studio-blue-light) !important;
+  border-color: rgba(132,184,255,.2) !important;
+  background: var(--beyond-studio-blue-soft) !important;
+}
+
+html[data-beyond-theme="dark"] .menu-publish-v2 .menu-publish-v2-dev-status.success {
+  color: #76d6a8 !important;
+  border-color: rgba(72,185,132,.22) !important;
+  background: rgba(72,185,132,.08) !important;
+}
+
+html[data-beyond-theme="dark"] .menu-publish-v2 .menu-publish-v2-publish-error {
+  color: #e5b46f !important;
+  border-color: rgba(215,164,93,.25) !important;
+  background: rgba(215,164,93,.08) !important;
+}
+
+/* Analytics already uses shared variables; make its status treatment consistent. */
+html[data-beyond-theme="dark"] .menu-analytics-v2 .menu-analytics-status {
+  color: var(--beyond-studio-text) !important;
+  border-color: var(--beyond-studio-line-strong) !important;
+  background: var(--beyond-studio-blue-soft) !important;
+}
+
+@media (max-width: 850px) {
+  .menu-content-v2-confirm-backdrop {
+    align-items: end;
+    padding: 12px 12px calc(88px + env(safe-area-inset-bottom,0px));
+  }
+
+  .menu-content-v2-confirm-dialog {
+    width: 100%;
+    padding: 20px;
+    border-radius: 20px;
+  }
+}
