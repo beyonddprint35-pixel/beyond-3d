@@ -8,7 +8,7 @@ import {
 } from "../domain/designSchema";
 import { MENU_DESIGN_CONSTRAINTS } from "../domain/designConstraints";
 import { getMenuLayoutCapabilities, hasAnyMenuLayoutCapability } from "../domain/designLayoutCapabilities";
-import { PREMIUM_MENU_DESIGNS, applyPremiumMenuDesign } from "../domain/menuDesignLibrary";
+import { PREMIUM_MENU_DESIGNS, applyPremiumMenuDesign, findMatchingMenuDesign } from "../domain/menuDesignLibrary";
 import MenuRenderer from "../renderer/MenuRenderer";
 import { getBaselineDesignForMenu } from "./draftSession";
 import MenuDesignLibraryFilters, { filterMenuDesigns } from "./MenuDesignLibraryFilters";
@@ -85,20 +85,14 @@ function DesignThumbnail({entry}){
   const [background,accent,text]=entry.swatches;
   return <span className={`studio-v3-premium-design-preview layout-${previewLayout(entry)}`} style={{"--thumb-bg":background,"--thumb-accent":accent,"--thumb-text":text}}><span className="studio-v3-thumb-hero"/><span className="studio-v3-thumb-nav"><i/><i/><i/></span><span className="studio-v3-thumb-items"><i/><i/><i/><i/></span></span>;
 }
-function presetMatches(current,preset){
-  if(!current||!preset)return false;
-  if(preset.template&&current.template!==preset.template)return false;
-  if(preset.styleVariant&&current.styleVariant!==preset.styleVariant)return false;
-  return ["theme","typography","layout","brand","badges"].every(section=>Object.entries(preset[section]||{}).every(([key,value])=>current?.[section]?.[key]===value));
-}
 function readFavorites(){
   if(typeof window==="undefined")return [];
   try{const parsed=JSON.parse(window.localStorage.getItem(FAVORITES_STORAGE_KEY)||"[]");return Array.isArray(parsed)?parsed.filter(Boolean):[];}catch{return [];}
 }
 
-export default function MenuDesignControls({design,baselineDesign,menu,language="en",panel,setPanel,patchDesign}){
+export default function MenuDesignControls({design,designId,baselineDesign,menu,language="en",panel,setPanel,patchDesign,onBrowseDesigns}){
   const t=COPY[language]||COPY.en;
-  const [workspaceMode,setWorkspaceMode]=useState("styles");
+  const [workspaceMode,setWorkspaceMode]=useState(onBrowseDesigns?"quick":"styles");
   const [query,setQuery]=useState("");
   const [filters,setFilters]=useState({browse:"all",type:"all",layout:"all",tone:"all"});
   const [previewEntry,setPreviewEntry]=useState(null);
@@ -106,7 +100,7 @@ export default function MenuDesignControls({design,baselineDesign,menu,language=
   const [favoritesOnly,setFavoritesOnly]=useState(false);
   const [history,setHistory]=useState({past:[],future:[]});
   const [focusTarget,setFocusTarget]=useState("hero");
-  const previousDesignRef=useRef(design);
+  const previousDesignRef=useRef({design,designId});
   const historyModeRef=useRef("normal");
   const lastHistoryAtRef=useRef(0);
   const baseDesignNameRef=useRef("");
@@ -123,7 +117,7 @@ export default function MenuDesignControls({design,baselineDesign,menu,language=
   const baseline=baselineDesign||getBaselineDesignForMenu(menu);
   const original=baseline?normalizeMenuDesign(baseline):null;
   const isOriginal=Boolean(original&&comparable(design)===comparable(original));
-  const activeDesignId=useMemo(()=>PREMIUM_MENU_DESIGNS.find(entry=>presetMatches(design,entry.design))?.id||"",[design]);
+  const activeDesignId=useMemo(()=>findMatchingMenuDesign(design)?.id||"",[design]);
   const activeDesign=useMemo(()=>PREMIUM_MENU_DESIGNS.find(entry=>entry.id===activeDesignId)||null,[activeDesignId]);
   const activePaletteKey=useMemo(()=>Object.entries(MENU_COLOR_PRESETS).find(([,preset])=>paletteMatches(design.theme,preset))?.[0]||"",[design.theme]);
   const filteredDesigns=useMemo(()=>{
@@ -136,12 +130,12 @@ export default function MenuDesignControls({design,baselineDesign,menu,language=
   const hasLayoutControls=hasAnyMenuLayoutCapability(layoutCapabilities);
   const hasImageControls=layoutCapabilities.imagePosition||layoutCapabilities.imageRatio;
   const hasShapeSpacingControls=layoutCapabilities.cardRadius||layoutCapabilities.sectionGap||layoutCapabilities.itemGap||layoutCapabilities.cardPadding;
-  const baseDesignName=activeDesign?.name||baseDesignNameRef.current||titleCase(design.template);
+  const baseDesignName=activeDesign?.name||PREMIUM_MENU_DESIGNS.find(entry=>entry.id===designId)?.name||baseDesignNameRef.current||titleCase(design.template);
   const designIsModified=!activeDesign;
 
   useEffect(()=>{if(activeDesign?.name)baseDesignNameRef.current=activeDesign.name;},[activeDesign?.name]);
   useEffect(()=>{
-    previousDesignRef.current=design;
+    previousDesignRef.current={design,designId};
     historyModeRef.current="normal";
     lastHistoryAtRef.current=0;
     baseDesignNameRef.current=activeDesign?.name||"";
@@ -149,16 +143,16 @@ export default function MenuDesignControls({design,baselineDesign,menu,language=
   },[menu?.slug]);
   useEffect(()=>{
     const previous=previousDesignRef.current;
-    if(comparable(previous)===comparable(design))return;
-    previousDesignRef.current=design;
+    if(comparable(previous.design)===comparable(design)&&previous.designId===designId)return;
+    previousDesignRef.current={design,designId};
     if(historyModeRef.current!=="normal"){historyModeRef.current="normal";return;}
     const now=Date.now();
     setHistory(current=>{
-      const startsNewStep=now-lastHistoryAtRef.current>420||!current.past.length;
+      const startsNewStep=previous.designId!==designId||now-lastHistoryAtRef.current>420||!current.past.length;
       lastHistoryAtRef.current=now;
-      return {past:startsNewStep?[...current.past,normalizeMenuDesign(previous)].slice(-60):current.past,future:[]};
+      return {past:startsNewStep?[...current.past,{design:normalizeMenuDesign(previous.design),designId:previous.designId}].slice(-60):current.past,future:[]};
     });
-  },[design]);
+  },[design,designId]);
   useEffect(()=>{try{window.localStorage.setItem(FAVORITES_STORAGE_KEY,JSON.stringify(favorites));}catch{}},[favorites]);
   useEffect(()=>{
     if(!previewEntry)return undefined;
@@ -179,7 +173,7 @@ export default function MenuDesignControls({design,baselineDesign,menu,language=
     };
     window.addEventListener("keydown",onKeyDown);
     return ()=>window.removeEventListener("keydown",onKeyDown);
-  },[history.past.length,history.future.length,design]);
+  },[history.past.length,history.future.length,design,designId]);
   useEffect(()=>{
     const onFocus=event=>{
       const focus=event.detail?.focus;
@@ -198,16 +192,16 @@ export default function MenuDesignControls({design,baselineDesign,menu,language=
     const previous=history.past[history.past.length-1];
     historyModeRef.current="undo";
     lastHistoryAtRef.current=0;
-    setHistory(current=>({past:current.past.slice(0,-1),future:[normalizeMenuDesign(design),...current.future].slice(0,60)}));
-    patchDesign(()=>previous);
+    setHistory(current=>({past:current.past.slice(0,-1),future:[{design:normalizeMenuDesign(design),designId},...current.future].slice(0,60)}));
+    patchDesign(()=>previous.design,previous.designId);
   }
   function redoDesign(){
     if(!history.future.length)return;
     const next=history.future[0];
     historyModeRef.current="redo";
     lastHistoryAtRef.current=0;
-    setHistory(current=>({past:[...current.past,normalizeMenuDesign(design)].slice(-60),future:current.future.slice(1)}));
-    patchDesign(()=>next);
+    setHistory(current=>({past:[...current.past,{design:normalizeMenuDesign(design),designId}].slice(-60),future:current.future.slice(1)}));
+    patchDesign(()=>next.design,next.designId);
   }
   function uploadImage(file,key){
     if(!file||!file.type?.startsWith("image/"))return;
@@ -216,7 +210,7 @@ export default function MenuDesignControls({design,baselineDesign,menu,language=
     reader.readAsDataURL(file);
   }
   function chooseDesign(entry){
-    patchDesign(current=>applyPremiumMenuDesign(current,entry.id));
+    patchDesign(current=>applyPremiumMenuDesign(current,entry.id),entry.id);
   }
   function toggleFavorite(entryId){setFavorites(current=>current.includes(entryId)?current.filter(id=>id!==entryId):[...current,entryId]);}
   function usePreviewDesign(){if(!previewEntry)return;chooseDesign(previewEntry);setPreviewEntry(null);}
@@ -251,22 +245,24 @@ export default function MenuDesignControls({design,baselineDesign,menu,language=
       </div>
     </div>
 
-    <div className="studio-v3-design-v2-nav" role="tablist" aria-label={t.design}>
-      {[["styles","▦",t.styles,t.stylesHint],["quick","✦",t.quick,t.quickHint],["advanced","⌘",t.advanced,t.advancedHint]].map(([key,icon,title,hint])=><button type="button" key={key} role="tab" aria-selected={workspaceMode===key} className={workspaceMode===key?"active":""} onClick={()=>setWorkspaceMode(key)}><i aria-hidden="true">{icon}</i><span><strong>{title}</strong><small>{hint}</small></span></button>)}
+    <div className={`studio-v3-design-v2-nav ${onBrowseDesigns?"external-picker":""}`} role="tablist" aria-label={t.design}>
+      {[["styles","▦",t.styles,t.stylesHint],["quick","✦",t.quick,t.quickHint],["advanced","⌘",t.advanced,t.advancedHint]].filter(([key])=>!onBrowseDesigns||key!=="styles").map(([key,icon,title,hint])=><button type="button" key={key} role="tab" aria-selected={workspaceMode===key} className={workspaceMode===key?"active":""} onClick={()=>setWorkspaceMode(key)}><i aria-hidden="true">{icon}</i><span><strong>{title}</strong><small>{hint}</small></span></button>)}
     </div>
 
     {workspaceMode==="quick"?<div className="studio-v3-design-quick-workspace">
       <section className="studio-v3-design-v2-current">
         <span className="studio-v3-current-design-mini" style={{"--current-bg":design.theme.background,"--current-accent":design.theme.accent,"--current-text":design.theme.text}} aria-hidden="true"/>
         <span><small>{t.current}</small><strong>{baseDesignName}</strong></span>
-        <button type="button" onClick={()=>setWorkspaceMode("styles")}>{t.changeDesign}</button>
+        <button type="button" onClick={()=>onBrowseDesigns?onBrowseDesigns():setWorkspaceMode("styles")}>{t.changeDesign}</button>
       </section>
 
-      <section className="studio-v3-design-v2-section">
+      {onBrowseDesigns?<button type="button" className="studio-v3-design-v2-secondary-action" disabled={!original||isOriginal} onClick={()=>patchDesign(()=>original)}>{t.restore}<span aria-hidden="true">↺</span></button>:null}
+
+      {!onBrowseDesigns?<section className="studio-v3-design-v2-section">
         <div className="studio-v3-design-v2-section-head"><div><strong>{t.recommended}</strong><small>{t.recommendedHint}</small></div></div>
         <div className="studio-v3-feeling-grid">{recommendedDesigns.map(({feel,entry})=><button type="button" key={entry.id} className={activeDesignId===entry.id?"active":""} onClick={()=>chooseDesign(entry)}><DesignThumbnail entry={entry}/><span><i aria-hidden="true">{feel.icon}</i><strong>{t[feel.key]}</strong><small>{entry.name}</small></span></button>)}</div>
         <button type="button" className="studio-v3-design-v2-secondary-action" onClick={()=>setWorkspaceMode("styles")}>{t.browseAll}<span aria-hidden="true">→</span></button>
-      </section>
+      </section>:null}
 
       <section className="studio-v3-design-v2-section">
         <div className="studio-v3-design-v2-section-head"><div><strong>{t.makeYours}</strong><small>{t.makeYoursHint}</small></div></div>

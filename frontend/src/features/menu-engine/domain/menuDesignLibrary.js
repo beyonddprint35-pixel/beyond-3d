@@ -14,6 +14,16 @@ export const PREMIUM_MENU_DESIGNS = Object.freeze(
   applyMenuDesignPresentationProfiles(MENU_DESIGN_LIBRARY),
 );
 
+export function findMatchingMenuDesign(design) {
+  return PREMIUM_MENU_DESIGNS.find(({ design: preset }) => {
+    if (!design || (preset.template && design.template !== preset.template)) return false;
+    if (preset.styleVariant && design.styleVariant !== preset.styleVariant) return false;
+    return ["theme", "typography", "layout", "brand", "badges"].every((section) =>
+      Object.entries(preset[section] || {}).every(([key, value]) => design[section]?.[key] === value),
+    );
+  });
+}
+
 export function applyPremiumMenuDesign(currentDesign, libraryId) {
   const entry = PREMIUM_MENU_DESIGNS.find((item) => item.id === libraryId);
   if (!entry) return normalizeMenuDesign(currentDesign);

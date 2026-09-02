@@ -150,6 +150,7 @@
   background:rgba(235,235,240,.86);
   backdrop-filter:blur(20px);
 }
+.studio-v3-design-v2-nav.external-picker{grid-template-columns:repeat(2,minmax(0,1fr))}
 .studio-v3-design-v2-nav>button{
   min-width:0;
   min-height:54px;

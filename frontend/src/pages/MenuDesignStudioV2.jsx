@@ -1,11 +1,13 @@
 import useStudioDraftSave from "../features/menu-engine/studio/useStudioDraftSave";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Check, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
 
 import MenuStudioHeader from "../components/MenuStudioHeader";
 import { flushStudioDraft } from "../features/menu-engine/studio/studioNavigation";
 import MenuDesignControls from "../features/menu-engine/studio/MenuDesignControls";
+import MenuDesignPicker from "../features/menu-engine/studio/MenuDesignPicker";
+import { applyPremiumMenuDesign, findMatchingMenuDesign } from "../features/menu-engine/domain/menuDesignLibrary";
 import MenuStudioDesignCanvas from "../features/menu-engine/studio/MenuStudioDesignCanvas";
 import { normalizeMenuDesign } from "../features/menu-engine/domain/designSchema";
 import {
@@ -25,20 +27,20 @@ const UI = {
   en: {
     interfaceLanguage:"Language", contentLanguage:"Language", backContent:"Back to Content", workspace:"Menu workspace",
     content:"Content", design:"Design", preview:"Preview", publish:"Publish", saved:"Saved locally", saving:"Saving…", saveError:"Could not save",
-    eyebrow:"DESIGN STUDIO", title:"Shape the customer experience", hint:"Choose a real menu design, then refine the brand, colors, type, layout and details while the live menu updates instantly.",
-    live:"LIVE DESIGN", continuePreview:"Continue to Preview", draftKept:"The same guided menu draft is being edited here.",
+    eyebrow:"DESIGN STUDIO", title:"Choose your menu design", hint:"Swipe through designs and tap one to see your menu update below.",
+    live:"LIVE DESIGN", continuePreview:"Continue to Preview", draftKept:"Design changes are saved to your draft.",
   },
   he: {
     interfaceLanguage:"שפה", contentLanguage:"שפה", backContent:"חזרה לתוכן", workspace:"סביבת עבודת התפריט",
     content:"תוכן", design:"עיצוב", preview:"תצוגה מקדימה", publish:"פרסום", saved:"נשמר מקומית", saving:"שומר…", saveError:"לא ניתן לשמור",
-    eyebrow:"סטודיו לעיצוב", title:"עצבו את חוויית הלקוח", hint:"בחרו עיצוב תפריט אמיתי ואז דייקו מותג, צבעים, טיפוגרפיה, פריסה ופרטים בזמן שהתפריט החי מתעדכן מיד.",
-    live:"עיצוב חי", continuePreview:"המשך לתצוגה מקדימה", draftKept:"אותה טיוטת תפריט מודרכת נערכת גם כאן.",
+    eyebrow:"סטודיו לעיצוב", title:"בחרו את עיצוב התפריט", hint:"גללו בין העיצובים ולחצו על עיצוב כדי לראות מיד את התפריט שלכם למטה.",
+    live:"עיצוב חי", continuePreview:"המשך לתצוגה מקדימה", draftKept:"שינויי העיצוב נשמרים בטיוטה שלכם.",
   },
   ar: {
     interfaceLanguage:"اللغة", contentLanguage:"اللغة", backContent:"العودة إلى المحتوى", workspace:"مساحة عمل القائمة",
     content:"المحتوى", design:"التصميم", preview:"المعاينة", publish:"النشر", saved:"تم الحفظ محلياً", saving:"جارٍ الحفظ…", saveError:"تعذر الحفظ",
-    eyebrow:"استوديو التصميم", title:"صمموا تجربة الزبون", hint:"اختاروا تصميماً حقيقياً للقائمة ثم اضبطوا الهوية والألوان والخطوط والتخطيط والتفاصيل بينما تتحدث القائمة مباشرة.",
-    live:"تصميم مباشر", continuePreview:"المتابعة إلى المعاينة", draftKept:"يتم تعديل نفس مسودة القائمة الموجهة هنا.",
+    eyebrow:"استوديو التصميم", title:"اختاروا تصميم قائمتكم", hint:"مرّروا بين التصاميم واضغطوا على أحدها لرؤية النتيجة فوراً أدناه.",
+    live:"تصميم مباشر", continuePreview:"المتابعة إلى المعاينة", draftKept:"تُحفظ تغييرات التصميم في مسودتكم.",
   },
 };
 
@@ -53,7 +55,11 @@ export default function MenuDesignStudioV2() {
   const profile = useMemo(() => storedDraft?.profile || readMenuCreateV2Profile(), [storedDraft]);
   const resolved = useMemo(() => resolveMenuStudioV2Design(storedDraft), [storedDraft]);
   const [menu] = useState(() => storedDraft?.menu || createBlankMenuV2());
-  const [design, setDesign] = useState(() => normalizeMenuDesign(resolved.design));
+  const [{ design, designId }, setDesignState] = useState(() => ({
+    design: normalizeMenuDesign(resolved.design),
+    designId: findMatchingMenuDesign(resolved.design)?.id || resolved.designId,
+  }));
+  const designRailRef = useRef(null);
   const [contentLanguage, setContentLanguage] = useState(() => storedDraft?.contentLanguage || readStudioLanguage(menu.default_language || "en"));
   const [uiLanguage, setUiLanguage] = useState(() => storedDraft?.contentLanguage || readStudioLanguage(menu.default_language || "en"));
   const [panel, setPanel] = useState("brand");
@@ -62,7 +68,7 @@ export default function MenuDesignStudioV2() {
   const rtl = studioLanguageDirection(uiLanguage) === "rtl";
   const ForwardIcon = rtl ? ArrowLeft : ArrowRight;
 
-  const saveState = useStudioDraftSave({ ...(storedDraft || {}), menu, design, designId: storedDraft?.designId || resolved.designId, profile, contentLanguage });
+  const saveState = useStudioDraftSave({ ...(storedDraft || {}), menu, design, designId, profile, contentLanguage });
 
   const saveLabel = saveState === "saving" ? t.saving : saveState === "error" ? t.saveError : t.saved;
 
@@ -72,8 +78,22 @@ export default function MenuDesignStudioV2() {
     writeStudioLanguage(language);
   }
 
-  function patchDesign(updater) {
-    setDesign((current) => normalizeMenuDesign(typeof updater === "function" ? updater(current) : updater));
+  function patchDesign(updater, selectedId) {
+    setDesignState((current) => {
+      const next = normalizeMenuDesign(typeof updater === "function" ? updater(current.design) : updater);
+      return { design: next, designId: selectedId || findMatchingMenuDesign(next)?.id || current.designId };
+    });
+  }
+
+  function chooseDesign(selectedId) {
+    if (selectedId === designId) return;
+    patchDesign((current) => applyPremiumMenuDesign(current, selectedId), selectedId);
+  }
+
+  function browseDesigns() {
+    const selected = designRailRef.current?.querySelector('[aria-selected="true"]');
+    selected?.scrollIntoView({ block: "center", inline: "nearest" });
+    selected?.focus({ preventScroll: true });
   }
 
   return (
@@ -82,35 +102,39 @@ export default function MenuDesignStudioV2() {
 
       <section className="menu-design-v2-intro">
         <div><span><Sparkles size={13} /> {t.eyebrow}</span><h1>{t.title}</h1><p>{t.hint}</p></div>
-        <div className="menu-design-v2-intro-status"><Check size={14} /><span><strong>{resolved.entry?.name || t.live}</strong><small>{t.draftKept}</small></span></div>
       </section>
 
       <div className="menu-design-v2-workspace">
+        <section className="menu-design-v2-canvas">
+          <MenuDesignPicker designId={designId} language={uiLanguage} onSelect={chooseDesign} railRef={designRailRef} previewId="menu-design-live-preview" />
+          <div className="menu-design-v2-live-preview" id="menu-design-live-preview" role="tabpanel" aria-labelledby={`menu-design-tab-${designId}`}>
+            <MenuStudioDesignCanvas
+              menu={{ ...menu, default_language: contentLanguage }}
+              design={design}
+              language={contentLanguage}
+              uiLanguage={uiLanguage}
+              label={t.live}
+              compact
+            />
+          </div>
+          <div className="menu-design-v2-next">
+            <span>{t.draftKept}</span>
+            <button type="button" onClick={() => navigate(studioRoute("/menu-studio/preview"))}>{t.continuePreview} <ForwardIcon size={14} /></button>
+          </div>
+        </section>
         <aside className="menu-design-v2-controls">
           <MenuDesignControls
             design={design}
+            designId={designId}
             baselineDesign={resolved.baselineDesign}
             menu={menu}
             language={uiLanguage}
             panel={panel}
             setPanel={setPanel}
             patchDesign={patchDesign}
+            onBrowseDesigns={browseDesigns}
           />
         </aside>
-
-        <section className="menu-design-v2-canvas">
-          <MenuStudioDesignCanvas
-            menu={{ ...menu, default_language: contentLanguage }}
-            design={design}
-            language={contentLanguage}
-            uiLanguage={uiLanguage}
-            label={t.live}
-          />
-          <div className="menu-design-v2-next">
-            <span>{t.draftKept}</span>
-            <button type="button" onClick={() => navigate(studioRoute("/menu-studio/preview"))}>{t.continuePreview} <ForwardIcon size={14} /></button>
-          </div>
-        </section>
       </div>
     </main>
   );

@@ -144,3 +144,18 @@
   .studio-v3-design-canvas-stage{min-height:540px;padding:26px 12px 20px}
   .studio-v3-design-canvas-size-label{top:9px}
 }
+
+/* Keep the design picker and its live canvas together on smaller screens. */
+@media(max-width:900px){
+  .studio-v3-design-canvas-workspace.compact{min-height:0;gap:8px}
+  .compact .studio-v3-design-canvas-stage{min-height:0;padding:26px 12px 20px}
+  .compact .studio-v3-design-canvas-toolbar{position:relative;top:auto;grid-template-columns:1fr auto;min-height:0;gap:6px;padding:6px}
+  .compact .studio-v3-design-canvas-title{display:none}
+  .compact .studio-v3-design-canvas-device-switch{grid-column:1;grid-row:1;justify-self:start}
+  .compact .studio-v3-design-canvas-zoom{grid-column:2;grid-row:1;justify-self:end}
+  .compact .studio-v3-design-canvas-device-switch button{min-width:36px;padding:0 8px}
+  .compact .studio-v3-design-canvas-device-switch button>span:last-child{display:none}
+  .compact .studio-v3-design-canvas-zoom button{min-width:30px;padding:0 5px}
+  .compact .studio-v3-design-canvas-zoom button.percentage{min-width:44px}
+  .compact .studio-v3-design-canvas-size-label{top:5px;padding:3px 7px}
+}

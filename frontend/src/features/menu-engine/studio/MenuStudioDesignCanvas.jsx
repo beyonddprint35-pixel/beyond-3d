@@ -63,7 +63,7 @@ function clonePreviewStyles(targetDocument) {
   targetDocument.head.appendChild(previewBase);
 }
 
-export default function MenuStudioDesignCanvas({ menu, design, language="en", uiLanguage="en", label="Live preview" }) {
+export default function MenuStudioDesignCanvas({ menu, design, language="en", uiLanguage="en", label="Live preview", compact=false }) {
   const copy = COPY[uiLanguage] || COPY.en;
   const stageRef = useRef(null);
   const iframeRef = useRef(null);
@@ -175,7 +175,7 @@ export default function MenuStudioDesignCanvas({ menu, design, language="en", ui
     setZoom(1);
   }
 
-  return <div className="studio-v3-design-canvas-workspace">
+  return <div className={`studio-v3-design-canvas-workspace${compact ? " compact" : ""}`}>
     <div className="studio-v3-design-canvas-toolbar">
       <div className="studio-v3-design-canvas-title">
         <span className="studio-v3-design-canvas-live"><i aria-hidden="true"/>{copy.live}</span>
@@ -184,7 +184,7 @@ export default function MenuStudioDesignCanvas({ menu, design, language="en", ui
       </div>
 
       <div className="studio-v3-design-canvas-device-switch" role="group" aria-label="Preview viewport">
-        {Object.keys(VIEWPORTS).map(key => <button type="button" key={key} className={deviceKey===key?"active":""} onClick={()=>chooseDevice(key)} title={`${VIEWPORTS[key].width}px`}><DeviceIcon type={key}/><span>{copy[key]}</span></button>)}
+        {Object.keys(VIEWPORTS).map(key => <button type="button" key={key} className={deviceKey===key?"active":""} onClick={()=>chooseDevice(key)} aria-label={copy[key]} aria-pressed={deviceKey===key} title={`${VIEWPORTS[key].width}px`}><DeviceIcon type={key}/><span>{copy[key]}</span></button>)}
       </div>
 
       <div className="studio-v3-design-canvas-zoom" role="group" aria-label="Preview zoom">
