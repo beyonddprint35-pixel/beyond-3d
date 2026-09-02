@@ -72,6 +72,39 @@ const MENU_LANGUAGE_META = {
   },
 };
 
+const DELETE_CONFIRM_COPY = {
+  en: {
+    itemTitle: "Delete item?",
+    categoryTitle: "Delete category?",
+    subcategoryTitle: "Delete subcategory?",
+    itemMessage: (name) => `Are you sure you want to delete${name ? ` “${name}”` : " this item"}? This action cannot be undone.`,
+    categoryMessage: (name) => `Are you sure you want to delete${name ? ` “${name}”` : " this category"}? Its subcategories and items will also be deleted. This action cannot be undone.`,
+    subcategoryMessage: (name) => `Are you sure you want to delete${name ? ` “${name}”` : " this subcategory"}? Its items will also be deleted. This action cannot be undone.`,
+    cancel: "Cancel",
+    confirm: "Delete",
+  },
+  he: {
+    itemTitle: "למחוק את הפריט?",
+    categoryTitle: "למחוק את הקטגוריה?",
+    subcategoryTitle: "למחוק את תת-הקטגוריה?",
+    itemMessage: (name) => `האם למחוק${name ? ` את „${name}”` : " את הפריט הזה"}? לא ניתן לבטל את הפעולה.`,
+    categoryMessage: (name) => `האם למחוק${name ? ` את „${name}”` : " את הקטגוריה הזאת"}? גם תתי-הקטגוריות והפריטים שבתוכה יימחקו. לא ניתן לבטל את הפעולה.`,
+    subcategoryMessage: (name) => `האם למחוק${name ? ` את „${name}”` : " את תת-הקטגוריה הזאת"}? גם הפריטים שבתוכה יימחקו. לא ניתן לבטל את הפעולה.`,
+    cancel: "ביטול",
+    confirm: "מחיקה",
+  },
+  ar: {
+    itemTitle: "حذف الصنف؟",
+    categoryTitle: "حذف الفئة؟",
+    subcategoryTitle: "حذف الفئة الفرعية؟",
+    itemMessage: (name) => `هل أنت متأكد من حذف${name ? ` «${name}»` : " هذا الصنف"}؟ لا يمكن التراجع عن هذه العملية.`,
+    categoryMessage: (name) => `هل أنت متأكد من حذف${name ? ` «${name}»` : " هذه الفئة"}؟ سيتم أيضًا حذف الفئات الفرعية والأصناف الموجودة داخلها. لا يمكن التراجع عن هذه العملية.`,
+    subcategoryMessage: (name) => `هل أنت متأكد من حذف${name ? ` «${name}»` : " هذه الفئة الفرعية"}؟ سيتم أيضًا حذف الأصناف الموجودة داخلها. لا يمكن التراجع عن هذه العملية.`,
+    cancel: "إلغاء",
+    confirm: "حذف",
+  },
+};
+
 function textValue(value, language = "en") {
   if (value && typeof value === "object") return value[language] || value.en || value.he || value.ar || "";
   return String(value || "");
@@ -148,8 +181,10 @@ export default function MenuContentStudioV2() {
   const [mobilePane, setMobilePane] = useState("structure");
   const [mobileCategoryId, setMobileCategoryId] = useState("");
   const [dragging, setDragging] = useState(null);
+  const [deleteConfirmation, setDeleteConfirmation] = useState(null);
 
   const t = MENU_CONTENT_STUDIO_UI[uiLanguage] || MENU_CONTENT_STUDIO_UI.en;
+  const deleteCopy = DELETE_CONFIRM_COPY[uiLanguage] || DELETE_CONFIRM_COPY.en;
   const rtl = studioLanguageDirection(uiLanguage) === "rtl";
   const contentDir = studioLanguageDirection(contentLanguage);
   const BackIcon = rtl ? ArrowRight : ArrowLeft;
@@ -178,6 +213,15 @@ export default function MenuContentStudioV2() {
       setMobileCategoryId(topLevelGroups[0].id);
     }
   }, [topLevelGroups, mobileCategoryId]);
+
+  useEffect(() => {
+    if (!deleteConfirmation) return undefined;
+    const onKeyDown = (event) => {
+      if (event.key === "Escape") setDeleteConfirmation(null);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [deleteConfirmation]);
 
   const saveState = useStudioDraftSave({ ...(storedDraft || {}), menu, design, designId: resolvedDesign.designId, profile, contentLanguage });
 
@@ -321,6 +365,45 @@ export default function MenuContentStudioV2() {
       setMobilePane("structure");
     }
   }
+
+  function requestDeleteCategory(groupId) {
+    const group = menu.groups.find((entry) => entry.id === groupId);
+    if (!group || (!group.parent_id && topLevelGroups.length <= 1)) return;
+    setDeleteConfirmation({
+      kind: group.parent_id ? "subcategory" : "category",
+      id: groupId,
+      name: textValue(group.name, contentLanguage),
+    });
+  }
+
+  function requestDeleteItem(itemId) {
+    const item = menu.items.find((entry) => entry.id === itemId);
+    if (!item) return;
+    setDeleteConfirmation({
+      kind: "item",
+      id: itemId,
+      name: textValue(item.name, contentLanguage),
+    });
+  }
+
+  function confirmDelete() {
+    if (!deleteConfirmation) return;
+    const pending = deleteConfirmation;
+    setDeleteConfirmation(null);
+    if (pending.kind === "item") deleteItem(pending.id);
+    else deleteCategory(pending.id);
+  }
+
+  const deleteDialogTitle = deleteConfirmation?.kind === "item"
+    ? deleteCopy.itemTitle
+    : deleteConfirmation?.kind === "subcategory"
+      ? deleteCopy.subcategoryTitle
+      : deleteCopy.categoryTitle;
+  const deleteDialogMessage = deleteConfirmation?.kind === "item"
+    ? deleteCopy.itemMessage(deleteConfirmation?.name)
+    : deleteConfirmation?.kind === "subcategory"
+      ? deleteCopy.subcategoryMessage(deleteConfirmation?.name)
+      : deleteCopy.categoryMessage(deleteConfirmation?.name);
 
   return (
     <main className="menu-content-v2" dir={rtl ? "rtl" : "ltr"} lang={uiLanguage}>
@@ -492,7 +575,7 @@ export default function MenuContentStudioV2() {
               <label className="menu-content-v2-toggle"><input type="checkbox" checked={selectedCategory.visible !== false} onChange={(event) => updateEntry("groups", selectedCategory.id, { visible: event.target.checked })} /><span /><div><strong>{t.visible}</strong><small>{t.visibleCategory}</small></div></label>
               <button type="button" className="menu-content-v2-inspector-add" onClick={() => addItem(selectedCategory.id)}><Plus size={14} /> {t.addItemCategory}</button>
               {!selectedCategory.parent_id ? <button type="button" className="menu-content-v2-inspector-add" onClick={() => addCategory(selectedCategory.id)}><Plus size={14} /> {t.addSubcategory}</button> : null}
-              {selectedCategory.parent_id || topLevelGroups.length > 1 ? <button type="button" className="menu-content-v2-danger" onClick={() => deleteCategory(selectedCategory.id)}><Trash2 size={14} /> {selectedCategory.parent_id ? t.deleteSubcategory : t.deleteCategory}</button> : null}
+              {selectedCategory.parent_id || topLevelGroups.length > 1 ? <button type="button" className="menu-content-v2-danger" onClick={() => requestDeleteCategory(selectedCategory.id)}><Trash2 size={14} /> {selectedCategory.parent_id ? t.deleteSubcategory : t.deleteCategory}</button> : null}
             </>
           ) : null}
 
@@ -559,7 +642,7 @@ export default function MenuContentStudioV2() {
               />
 
               <label className="menu-content-v2-toggle"><input type="checkbox" checked={selectedItem.visible !== false} onChange={(event) => updateEntry("items", selectedItem.id, { visible: event.target.checked })} /><span /><div><strong>{t.visible}</strong><small>{t.visibleItem}</small></div></label>
-              <button type="button" className="menu-content-v2-danger" onClick={() => deleteItem(selectedItem.id)}><Trash2 size={14} /> {t.deleteItem}</button>
+              <button type="button" className="menu-content-v2-danger" onClick={() => requestDeleteItem(selectedItem.id)}><Trash2 size={14} /> {t.deleteItem}</button>
             </>
           ) : null}
 
@@ -569,6 +652,28 @@ export default function MenuContentStudioV2() {
           </div>
         </aside>
       </div>
+
+      {deleteConfirmation ? (
+        <div className="menu-content-v2-confirm-backdrop" role="presentation" onMouseDown={(event) => {
+          if (event.target === event.currentTarget) setDeleteConfirmation(null);
+        }}>
+          <section
+            className="menu-content-v2-confirm-dialog"
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="menu-content-v2-confirm-title"
+            aria-describedby="menu-content-v2-confirm-message"
+          >
+            <span className="icon" aria-hidden="true"><Trash2 size={20} /></span>
+            <h2 id="menu-content-v2-confirm-title">{deleteDialogTitle}</h2>
+            <p id="menu-content-v2-confirm-message">{deleteDialogMessage}</p>
+            <div className="menu-content-v2-confirm-actions">
+              <button type="button" className="cancel" onClick={() => setDeleteConfirmation(null)}>{deleteCopy.cancel}</button>
+              <button type="button" className="delete" onClick={confirmDelete} autoFocus>{deleteCopy.confirm}</button>
+            </div>
+          </section>
+        </div>
+      ) : null}
     </main>
   );
 }
