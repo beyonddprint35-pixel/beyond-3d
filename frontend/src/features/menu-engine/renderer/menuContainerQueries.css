@@ -1,0 +1,12 @@
+/* =========================================================
+   BEYOND MENU ENGINE — RESPONSIVE CONTAINER ACTIVATION
+
+   Hero, watermark and presentation profiles use @container beyond-menu
+   so Studio phone/tablet previews respond to the rendered menu width rather
+   than the browser viewport. Keep this declaration isolated and stable.
+   ========================================================= */
+
+.bme-menu {
+  container-type: inline-size;
+  container-name: beyond-menu;
+}
