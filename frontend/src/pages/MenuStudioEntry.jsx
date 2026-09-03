@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabaseClient";
 import { listMenuStudioProjects, readActiveMenuStudioProjectId } from "../features/menu-engine/studio/menuStudioV2Persistence";
 import { chooseStudioProject, studioProjectUrl } from "../features/menu-engine/studio/studioNavigation";
 import { readStudioLanguage } from "../features/menu-engine/studio/studioLanguage";
@@ -7,9 +8,9 @@ import { useMenuStudioWorkspace } from "../features/menu-engine/studio/menuStudi
 import "../features/menu-engine/studio/MenuStudioV2PersistenceBoundary.css";
 
 const COPY = {
-  en: { error: "We couldn’t open your menu.", retry: "Try again", home: "Return home" },
-  he: { error: "לא הצלחנו לפתוח את התפריט.", retry: "ניסיון נוסף", home: "חזרה לבית" },
-  ar: { error: "تعذر فتح القائمة.", retry: "حاول مجددًا", home: "العودة للرئيسية" },
+  en: { signIn: "Sign in to open your menu", error: "We couldn’t open your menu.", retry: "Try again", home: "Return home" },
+  he: { signIn: "התחברו כדי לפתוח את התפריט", error: "לא הצלחנו לפתוח את התפריט.", retry: "ניסיון נוסף", home: "חזרה לבית" },
+  ar: { signIn: "سجّل الدخول لفتح قائمتك", error: "تعذر فتح القائمة.", retry: "حاول مجددًا", home: "العودة للرئيسية" },
 };
 
 export default function MenuStudioEntry() {
@@ -25,19 +26,34 @@ export default function MenuStudioEntry() {
   const requestedSiteId = String(params.get("site") || "").trim();
   const activeProjectId = readActiveMenuStudioProjectId();
 
-  const immediateTarget = requestedProjectId
-    ? `/menu-studio/content${location.search}`
-    : (!requestedSiteId && activeProjectId
-      ? studioProjectUrl("/menu-studio/content", location.search, activeProjectId)
-      : "");
-
   useEffect(() => {
-    if (immediateTarget) return undefined;
     let active = true;
     setState("resolving");
 
     async function open() {
       try {
+        // getSession resolves from the existing Supabase session first, so returning users
+        // avoid a project-list request before entering the Studio.
+        const { data, error } = await supabase.auth.getSession();
+        if (!active) return;
+        if (error) throw error;
+        if (!data?.session) {
+          setState("signIn");
+          return;
+        }
+
+        if (requestedProjectId) {
+          navigate(`/menu-studio/content${location.search}`, { replace: true });
+          return;
+        }
+
+        // The last active project is already stored locally. Use it immediately instead of
+        // waiting for listMenuStudioProjects on every Menu Studio click.
+        if (!requestedSiteId && activeProjectId) {
+          navigate(studioProjectUrl("/menu-studio/content", location.search, activeProjectId), { replace: true });
+          return;
+        }
+
         const projects = await (workspace ? workspace.loadProjects() : listMenuStudioProjects());
         if (!active) return;
         const project = chooseStudioProject(projects, {
@@ -59,19 +75,17 @@ export default function MenuStudioEntry() {
 
     void open();
     return () => { active = false; };
-  }, [immediateTarget, requestedSiteId, activeProjectId, location.search, navigate, attempt, language, workspace]);
+  }, [requestedProjectId, requestedSiteId, activeProjectId, location.search, navigate, attempt, language, workspace]);
 
-  if (immediateTarget) return <Navigate replace to={immediateTarget} />;
-
-  // First-time accounts may need one project lookup. Keep that resolution invisible instead
-  // of blocking the whole Studio with an "Opening..." card.
+  // Do not paint an intermediate full-screen loading card. The account page remains visible
+  // for the few milliseconds needed to resolve the route, then Studio replaces it.
   if (state === "resolving") return null;
 
   return <main className="menu-studio-persistence-screen" dir={language === "en" ? "ltr" : "rtl"}>
     <div className="menu-studio-persistence-card">
-      <h1>{t.error}</h1>
+      <h1>{state === "signIn" ? t.signIn : t.error}</h1>
       <div>
-        <button type="button" onClick={() => setAttempt((value) => value + 1)}>{t.retry}</button>
+        {state === "error" ? <button type="button" onClick={() => setAttempt((value) => value + 1)}>{t.retry}</button> : null}
         <button type="button" onClick={() => navigate("/")}>{t.home}</button>
       </div>
     </div>
