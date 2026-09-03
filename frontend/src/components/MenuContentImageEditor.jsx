@@ -1,11 +1,17 @@
 import { useState } from "react";
-import { ImagePlus, Link2, LoaderCircle, Trash2, Upload } from "lucide-react";
+import { ImagePlus, Link2, LoaderCircle, Sparkles, Trash2, Upload } from "lucide-react";
 
 import {
   removeMenuItemImage,
   uploadMenuItemImage,
   validateMenuItemImage,
 } from "../features/menu-engine/data/menuItemImageService";
+
+const AI_COPY = {
+  en: { title: "Create matching photos with AI", hint: "Use a few real restaurant dishes to generate matching visuals for selected menu items." },
+  he: { title: "יצירת תמונות תואמות עם AI", hint: "השתמשו בכמה תמונות אמיתיות מהמסעדה כדי ליצור תמונות תואמות לפריטים נבחרים." },
+  ar: { title: "إنشاء صور متناسقة بالذكاء الاصطناعي", hint: "استخدموا بعض صور الأطباق الحقيقية لإنشاء صور متناسقة لأصناف مختارة." },
+};
 
 export default function MenuContentImageEditor({ item, projectId = "draft", t, onChange }) {
   const [uploading, setUploading] = useState(false);
@@ -51,6 +57,15 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t, o
     }
   }
 
+  function openAiPhotos() {
+    const params = new URLSearchParams(window.location.search || "");
+    params.set("item", item.id);
+    window.location.assign(`/menu-studio/ai-images?${params.toString()}`);
+  }
+
+  const language = ["en", "he", "ar"].includes(document.documentElement.lang) ? document.documentElement.lang : "en";
+  const aiCopy = AI_COPY[language] || AI_COPY.en;
+
   return (
     <div className="menu-content-v2-image-editor">
       <div className="menu-content-v2-image-editor-head">
@@ -75,6 +90,11 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t, o
           <input type="file" accept="image/jpeg,image/png,image/webp" onChange={chooseFile} disabled={uploading} />
         </label>
       )}
+
+      <button type="button" className="menu-content-v2-image-ai" onClick={openAiPhotos}>
+        <Sparkles size={15} />
+        <span><strong>{aiCopy.title}</strong><small>{aiCopy.hint}</small></span>
+      </button>
 
       <button type="button" className="menu-content-v2-image-url-toggle" onClick={() => setShowUrl((value) => !value)}>
         <Link2 size={13} /> {showUrl ? t.hideImageUrl : t.useImageUrl}
