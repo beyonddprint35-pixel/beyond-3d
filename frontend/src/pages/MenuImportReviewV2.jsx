@@ -29,6 +29,8 @@ const UI = {
     eyebrow: "AI REVIEW",
     title: "Quick check before menu fit",
     hint: "BEYOND safely created the menu and kept uncertain rows here instead of guessing. Confirm only what you recognize from the original menu.",
+    sourcePhoto: "Where BEYOND found the issue",
+    sourcePhotoHint: "Cropped from your uploaded menu photo so you can compare the AI reading with the original.",
     sourceEvidence: "What BEYOND could read",
     issue: "Why this needs review",
     category: "Category",
@@ -50,6 +52,8 @@ const UI = {
     eyebrow: "בדיקת AI",
     title: "בדיקה קצרה לפני התאמת התפריט",
     hint: "BEYOND בנה את התפריט ושמר כאן שורות לא ודאיות במקום לנחש. אשרו רק פריטים שאתם מזהים מהתפריט המקורי.",
+    sourcePhoto: "איפה BEYOND זיהה את הבעיה",
+    sourcePhotoHint: "קטע שנחתך מתמונת התפריט שהעליתם כדי שתוכלו להשוות בין קריאת ה-AI למקור.",
     sourceEvidence: "מה BEYOND הצליח לקרוא",
     issue: "למה צריך לבדוק",
     category: "קטגוריה",
@@ -71,6 +75,8 @@ const UI = {
     eyebrow: "مراجعة AI",
     title: "مراجعة سريعة قبل ملاءمة القائمة",
     hint: "أنشأ BEYOND القائمة وحفظ الصفوف غير المؤكدة هنا بدلاً من التخمين. أكّدوا فقط ما تتعرفون عليه من القائمة الأصلية.",
+    sourcePhoto: "مكان المشكلة التي وجدها BEYOND",
+    sourcePhotoHint: "مقتطف من صورة القائمة التي رفعتموها حتى تتمكنوا من مقارنة قراءة AI بالمصدر.",
     sourceEvidence: "ما استطاع BEYOND قراءته",
     issue: "لماذا يحتاج للمراجعة",
     category: "الفئة",
@@ -340,6 +346,19 @@ export default function MenuImportReviewV2() {
               <div><span>{index + 1} / {rows.length}</span><strong>{current.source?.section_source || t.category}</strong></div>
               <em>{current.status}</em>
             </div>
+
+            {current.source?.source_crop_data_url ? (
+              <figure className="menu-import-review-v2-source-crop">
+                <div className="menu-import-review-v2-source-crop-head">
+                  <span>{t.sourcePhoto}</span>
+                  <small>{current.source?.source_photo_name || current.source?.source_file_name || ""}</small>
+                </div>
+                <div className="menu-import-review-v2-source-crop-image">
+                  <img src={current.source.source_crop_data_url} alt="" draggable="false" />
+                </div>
+                <figcaption>{t.sourcePhotoHint}</figcaption>
+              </figure>
+            ) : null}
 
             <label>
               <span>{t.category}</span>
