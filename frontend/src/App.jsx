@@ -23,6 +23,7 @@ import MenuCreateV2 from "./pages/MenuCreateV2";
 import MenuImportStudioV2 from "./pages/MenuImportStudioV2";
 import MenuImportReviewV2 from "./pages/MenuImportReviewV2";
 import MenuContentStudioV2Entry from "./pages/MenuContentStudioV2Entry";
+import MenuAiDishImagesV1 from "./pages/MenuAiDishImagesV1";
 import MenuDesignStudioV2 from "./pages/MenuDesignStudioV2";
 import MenuPreviewStudioV2 from "./pages/MenuPreviewStudioV2";
 import MenuPublishStudioV2 from "./pages/MenuPublishStudioV2";
@@ -97,6 +98,7 @@ function MenuStudioV2Routes() {
 
   let screen = null;
   if (stage === "content") screen = <MenuContentStudioV2Entry />;
+  if (stage === "ai-images") screen = <MenuAiDishImagesV1 />;
   if (stage === "design") screen = <MenuDesignStudioV2 />;
   if (stage === "preview") screen = <MenuPreviewStudioV2 />;
   if (stage === "analytics") screen = <MenuAnalyticsStudioV2 />;
@@ -110,7 +112,7 @@ function MenuStudioV2Routes() {
     <MenuStudioV2PersistenceBoundary key={new URLSearchParams(location.search).get("project") || "local"}>
       <>
         {screen}
-        <MenuStudioMobileStageNav />
+        {stage === "ai-images" ? null : <MenuStudioMobileStageNav />}
       </>
     </MenuStudioV2PersistenceBoundary>
   );
