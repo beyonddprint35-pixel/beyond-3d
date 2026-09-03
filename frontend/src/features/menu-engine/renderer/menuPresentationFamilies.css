@@ -6,6 +6,7 @@
    stable menu data contract.
    ========================================================= */
 
+@import "./menuContainerQueries.css";
 @import "./menuPresentationFamiliesBase.css";
 @import "./menuPresentationSignatureProfiles.css";
 @import "./menuPresentationPremiumProfiles.css";
