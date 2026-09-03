@@ -2,12 +2,22 @@ import { useEffect } from "react";
 import { supabase } from "../../../lib/supabaseClient";
 import { recordMenuAnalyticsEvent } from "./menuAnalytics";
 
-const MENU_ROOT_SELECTOR = '[data-customer-template-menu="true"][data-menu-site-id][data-menu-slug]';
+const MENU_ROOT_SELECTOR = '[data-customer-template-menu="true"]';
 const ITEM_SELECTOR = ".ep-menu-list article.ep-item-row, .ep-menu-list article.ep-wine-row";
 
-function isPublicMenuPath() {
+function publicMenuSlug() {
+  if (typeof window === "undefined") return "";
+  const match = window.location.pathname.match(/^\/menu\/([^/]+)\/?$/);
+  return match ? decodeURIComponent(match[1]).trim().toLowerCase() : "";
+}
+
+function isStudioPreviewFrame() {
   if (typeof window === "undefined") return false;
-  return /^\/menu\/[^/]+\/?$/.test(window.location.pathname);
+  try {
+    return window.self !== window.top;
+  } catch {
+    return true;
+  }
 }
 
 function languageFor(root) {
@@ -15,19 +25,29 @@ function languageFor(root) {
   return ["en", "he", "ar"].includes(value) ? value : "";
 }
 
-async function loadLegacyMenuIndex(siteId) {
+async function loadLegacyMenuIndex(slug) {
+  const { data: site, error: siteError } = await supabase
+    .from("menu_sites")
+    .select("id")
+    .eq("slug", slug)
+    .eq("published", true)
+    .maybeSingle();
+
+  if (siteError) throw siteError;
+  if (!site?.id) return null;
+
   const [groupResult, itemResult] = await Promise.all([
     supabase
       .from("menu_groups")
       .select("id,parent_id,sort_order,created_at")
-      .eq("site_id", siteId)
+      .eq("site_id", site.id)
       .eq("visible", true)
       .order("sort_order")
       .order("created_at"),
     supabase
       .from("menu_items")
       .select("id,group_id,sort_order,created_at")
-      .eq("site_id", siteId)
+      .eq("site_id", site.id)
       .eq("visible", true)
       .order("sort_order")
       .order("created_at"),
@@ -66,41 +86,42 @@ async function loadLegacyMenuIndex(siteId) {
   return { topGroups, itemsByTopGroup };
 }
 
-/**
- * Analytics compatibility layer for the approved legacy public-menu renderer.
- *
- * /menu/:slug is currently intercepted by BeyondMenuRoute before App's newer
- * MenuPublicV3Dev route can render. This component deliberately instruments
- * only that legacy customer-menu DOM, keeping its visual renderer untouched
- * while sending the same canonical analytics events as the V3 renderer.
- */
 export default function LegacyPublicMenuAnalytics() {
   useEffect(() => {
     if (typeof window === "undefined" || typeof document === "undefined") return undefined;
 
+    const slug = publicMenuSlug();
+    if (!slug || isStudioPreviewFrame()) return undefined;
+
     let disposed = false;
     let currentRoot = null;
     let currentIndex = null;
-    let attachToken = 0;
-    let rootMutationObserver = null;
     let impressionObserver = null;
+    let rootObserver = null;
+    let documentObserver = null;
     let scheduledFrame = 0;
     let lastCategoryId = "";
+
+    // Record the visit immediately from the public URL. This intentionally does
+    // not wait for BeyondPublicMenu to finish rendering, so a menu view cannot
+    // be lost because of renderer timing or legacy DOM differences.
+    void recordMenuAnalyticsEvent({
+      slug,
+      type: "menu_view",
+      language: "",
+    });
 
     const cleanupRoot = () => {
       if (scheduledFrame) cancelAnimationFrame(scheduledFrame);
       scheduledFrame = 0;
-      rootMutationObserver?.disconnect();
+      rootObserver?.disconnect();
       impressionObserver?.disconnect();
       if (currentRoot) currentRoot.removeEventListener("click", handleRootClick);
-      rootMutationObserver = null;
+      rootObserver = null;
       impressionObserver = null;
-      currentIndex = null;
-      lastCategoryId = "";
       currentRoot = null;
+      lastCategoryId = "";
     };
-
-    const currentSlug = () => String(currentRoot?.dataset?.menuSlug || "").trim().toLowerCase();
 
     const categoryButtons = () => Array.from(currentRoot?.querySelectorAll(".ep-tabs button") || []);
 
@@ -116,14 +137,14 @@ export default function LegacyPublicMenuAnalytics() {
       if (!categoryId || categoryId === lastCategoryId) return;
       lastCategoryId = categoryId;
       void recordMenuAnalyticsEvent({
-        slug: currentSlug(),
+        slug,
         type: "category_view",
         entityId: categoryId,
         language: languageFor(currentRoot),
       });
     };
 
-    const bindVisibleItems = () => {
+    const bindItems = () => {
       if (!currentRoot || !currentIndex) return;
       const categoryId = activeCategoryId();
       if (!categoryId) return;
@@ -133,35 +154,27 @@ export default function LegacyPublicMenuAnalytics() {
 
       articleNodes.forEach((node, index) => {
         const itemId = String(sourceItems[index]?.id || "");
-        if (!itemId) {
-          delete node.dataset.analyticsItemId;
-          return;
-        }
-
+        if (!itemId) return;
         node.dataset.analyticsItemId = itemId;
-        if (!impressionObserver) return;
 
-        if (node.dataset.analyticsObservedId !== itemId) {
+        if (impressionObserver && node.dataset.analyticsObservedId !== itemId) {
           node.dataset.analyticsObservedId = itemId;
           impressionObserver.observe(node);
         }
       });
     };
 
-    const syncLegacyMenu = () => {
+    const sync = () => {
       if (!currentRoot || !currentIndex) return;
-      const categoryId = activeCategoryId();
-      if (categoryId) recordCategory(categoryId);
-      bindVisibleItems();
+      recordCategory(activeCategoryId());
+      bindItems();
     };
 
     const scheduleSync = () => {
       if (scheduledFrame) cancelAnimationFrame(scheduledFrame);
       scheduledFrame = requestAnimationFrame(() => {
-        scheduledFrame = requestAnimationFrame(() => {
-          scheduledFrame = 0;
-          syncLegacyMenu();
-        });
+        scheduledFrame = 0;
+        sync();
       });
     };
 
@@ -172,8 +185,7 @@ export default function LegacyPublicMenuAnalytics() {
       if (categoryButton && currentRoot.contains(categoryButton)) {
         const buttons = categoryButtons();
         const index = buttons.indexOf(categoryButton);
-        const categoryId = String(currentIndex.topGroups[index]?.id || "");
-        recordCategory(categoryId);
+        recordCategory(String(currentIndex.topGroups[index]?.id || ""));
         scheduleSync();
         return;
       }
@@ -184,7 +196,7 @@ export default function LegacyPublicMenuAnalytics() {
       if (!itemId) return;
 
       void recordMenuAnalyticsEvent({
-        slug: currentSlug(),
+        slug,
         type: "item_open",
         entityId: itemId,
         language: languageFor(currentRoot),
@@ -192,29 +204,13 @@ export default function LegacyPublicMenuAnalytics() {
     }
 
     async function attach(root) {
-      if (disposed || !root || !isPublicMenuPath()) return;
-      if (root === currentRoot && currentIndex) {
-        scheduleSync();
-        return;
-      }
-
+      if (disposed || !root || root === currentRoot) return;
       cleanupRoot();
       currentRoot = root;
-      const token = ++attachToken;
-      const slug = currentSlug();
-      const siteId = String(root.dataset.menuSiteId || "").trim();
-      if (!slug || !siteId) return;
-
-      void recordMenuAnalyticsEvent({
-        slug,
-        type: "menu_view",
-        language: languageFor(root),
-      });
 
       try {
-        const index = await loadLegacyMenuIndex(siteId);
-        if (disposed || token !== attachToken || currentRoot !== root) return;
-        currentIndex = index;
+        currentIndex = await loadLegacyMenuIndex(slug);
+        if (disposed || !currentIndex || currentRoot !== root) return;
 
         if ("IntersectionObserver" in window) {
           impressionObserver = new IntersectionObserver((entries) => {
@@ -224,7 +220,7 @@ export default function LegacyPublicMenuAnalytics() {
               if (!itemId) return;
               impressionObserver?.unobserve(entry.target);
               void recordMenuAnalyticsEvent({
-                slug: currentSlug(),
+                slug,
                 type: "item_impression",
                 entityId: itemId,
                 language: languageFor(currentRoot),
@@ -234,39 +230,32 @@ export default function LegacyPublicMenuAnalytics() {
         }
 
         currentRoot.addEventListener("click", handleRootClick);
-        rootMutationObserver = new MutationObserver(scheduleSync);
-        rootMutationObserver.observe(currentRoot, {
+        rootObserver = new MutationObserver(scheduleSync);
+        rootObserver.observe(currentRoot, {
           childList: true,
           subtree: true,
           attributes: true,
           attributeFilter: ["class", "lang"],
         });
-        syncLegacyMenu();
+        sync();
       } catch (error) {
-        if (import.meta.env.DEV) {
-          console.warn("Legacy public menu analytics could not initialize.", error);
-        }
+        if (import.meta.env.DEV) console.warn("Legacy public menu analytics could not initialize.", error);
       }
     }
 
-    const detectMenu = () => {
+    const detectRoot = () => {
       if (disposed) return;
-      const root = isPublicMenuPath() ? document.querySelector(MENU_ROOT_SELECTOR) : null;
-      if (!root) {
-        if (currentRoot) cleanupRoot();
-        return;
-      }
-      void attach(root);
+      const root = document.querySelector(MENU_ROOT_SELECTOR);
+      if (root) void attach(root);
     };
 
-    const documentObserver = new MutationObserver(detectMenu);
+    documentObserver = new MutationObserver(detectRoot);
     documentObserver.observe(document.documentElement, { childList: true, subtree: true });
-    detectMenu();
+    detectRoot();
 
     return () => {
       disposed = true;
-      attachToken += 1;
-      documentObserver.disconnect();
+      documentObserver?.disconnect();
       cleanupRoot();
     };
   }, []);
