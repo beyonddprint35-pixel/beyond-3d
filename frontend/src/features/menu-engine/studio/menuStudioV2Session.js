@@ -20,7 +20,7 @@ export function createBlankMenuV2() {
     restaurant_name: "My Restaurant",
     restaurant_subtitle: makeLocalizedText("Restaurant menu", "תפריט מסעדה", "قائمة المطعم"),
     hero_eyebrow: makeLocalizedText("Welcome", "ברוכים הבאים", "أهلاً وسهلاً"),
-    hero_title: makeLocalizedText("Made for your table", "נוצר עבור השולחן שלכם", "صُممت لطاولتكم"),
+    hero_title: makeLocalizedText("Our Menu", "התפריט שלנו", "قائمتنا"),
     languages: ["en", "he", "ar"],
     default_language: "en",
     currency_symbol: "₪",
