@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   ArrowRight,
   Check,
@@ -145,6 +146,7 @@ function AccessPreview({ isHebrew }) {
 }
 
 export default function MenuHomeRefined() {
+  const navigate = useNavigate();
   const { language, isHebrew, toggleLanguage } = useBeyondLanguage();
   const [navOpen, setNavOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
@@ -361,7 +363,7 @@ export default function MenuHomeRefined() {
           </button>
 
           {authReady && session && hasMenuStudioAccess ? (
-            <button type="button" className="menu-home-studio-button" onClick={() => window.open(isMenuStudioAdmin ? "/menu-studio" : `/menu-studio?site=${menuStudioSiteId}`, "beyond-menu-studio", "width=1440,height=950,noopener,noreferrer")}>
+            <button type="button" className="menu-home-studio-button" onClick={() => navigate(isMenuStudioAdmin ? "/menu-studio" : `/menu-studio?site=${menuStudioSiteId}`)}>
               <span className="menu-home-studio-full">Menu Studio</span><span className="menu-home-studio-short">Studio</span>
             </button>
           ) : null}
