@@ -142,13 +142,19 @@ export default function MenuStudioDesignCanvas({ menu, design, language="en", ui
   },[iframeRoot,design?.template,design?.layout?.presentation]);
 
   useEffect(() => {
-    const frameWindow = iframeRef.current?.contentWindow;
-    const frameDocument = iframeRef.current?.contentDocument;
+    const frame = iframeRef.current;
+    const frameWindow = frame?.contentWindow;
+    const frameDocument = frame?.contentDocument;
     if (!frameWindow || !frameDocument) return;
-    frameWindow.scrollTo(0,0);
-    frameDocument.documentElement.scrollTop = 0;
-    frameDocument.body.scrollTop = 0;
-  },[deviceKey,design?.template,design?.layout?.presentation,language]);
+    try {
+      frameWindow.scrollTo(0,0);
+      if (frameDocument.documentElement) frameDocument.documentElement.scrollTop = 0;
+      if (frameDocument.body) frameDocument.body.scrollTop = 0;
+    } catch {
+      // The iframe can briefly be between documents while srcDoc is mounting.
+      // Scrolling is cosmetic, so never let that transient state crash Studio.
+    }
+  },[deviceKey,design?.template,design?.layout?.presentation,language,iframeRoot]);
 
   const scale = fitMode ? fitScale : zoom;
   const percent = Math.round(scale * 100);
@@ -157,7 +163,7 @@ export default function MenuStudioDesignCanvas({ menu, design, language="en", ui
 
   function preparePreviewFrame() {
     const frameDocument = iframeRef.current?.contentDocument;
-    if (!frameDocument) return;
+    if (!frameDocument?.head) return;
     clonePreviewStyles(frameDocument);
     setIframeRoot(frameDocument.getElementById("beyond-menu-preview-root"));
   }
