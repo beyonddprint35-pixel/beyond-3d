@@ -11,20 +11,36 @@ export default function MenuPublicV3Dev() {
   useEffect(() => {
     let active = true;
     setState({ status: "loading", payload: null, error: "" });
+
     loadResilientPublishedMenu(slug)
-      .then(payload => active && setState({ status: "ready", payload, error: "" }))
-      .catch(error => active && setState({ status: "error", payload: null, error: error?.message || "Menu unavailable" }));
+      .then(async (payload) => {
+        if (!active) return;
+        setState({ status: "ready", payload, error: "" });
+
+        // A customer menu view belongs to the public menu load itself. Keeping
+        // this here (rather than in a second render effect) makes analytics
+        // reliable across V3 snapshots, migrated legacy menus and local Vite
+        // testing. The database RPC deduplicates repeat views per session.
+        const recorded = await recordMenuAnalyticsEvent({
+          slug: payload?.slug || slug,
+          type: "menu_view",
+          language: payload?.menu?.default_language || "",
+        });
+
+        if (import.meta.env.DEV && !recorded) {
+          console.warn("Public menu loaded, but its analytics view was not recorded.", {
+            slug: payload?.slug || slug,
+            source: payload?.source || "unknown",
+          });
+        }
+      })
+      .catch((error) => {
+        if (!active) return;
+        setState({ status: "error", payload: null, error: error?.message || "Menu unavailable" });
+      });
+
     return () => { active = false; };
   }, [slug]);
-
-  useEffect(() => {
-    if (state.status !== "ready") return;
-    void recordMenuAnalyticsEvent({
-      slug: state.payload?.slug || slug,
-      type: "menu_view",
-      language: state.payload?.menu?.default_language || "",
-    });
-  }, [slug, state.status, state.payload?.slug, state.payload?.menu?.default_language]);
 
   const handleAnalyticsEvent = useCallback((event) => {
     void recordMenuAnalyticsEvent({
