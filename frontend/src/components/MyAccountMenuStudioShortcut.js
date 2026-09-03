@@ -1,4 +1,17 @@
+import { readActiveMenuStudioProjectId } from "../features/menu-engine/studio/menuStudioV2Persistence";
+
 const SHORTCUT_CLASS = "account-menu-studio-shortcut";
+
+function openMenuStudioFast() {
+  const projectId = readActiveMenuStudioProjectId();
+  const target = projectId
+    ? `/menu-studio/content?project=${encodeURIComponent(projectId)}`
+    : "/menu-studio";
+
+  if (`${window.location.pathname}${window.location.search}` === target) return;
+  window.history.pushState({}, "", target);
+  window.dispatchEvent(new PopStateEvent("popstate", { state: window.history.state }));
+}
 
 function syncMenuStudioShortcut() {
   const nav = document.querySelector(".account-nav");
@@ -23,9 +36,7 @@ function syncMenuStudioShortcut() {
     </svg>
   `;
 
-  button.addEventListener("click", () => {
-    window.location.assign("/menu-studio");
-  });
+  button.addEventListener("click", openMenuStudioFast);
 
   const profileButton = Array.from(nav.querySelectorAll("button")).find((item) =>
     String(item.textContent || "").trim() === "Profile"
