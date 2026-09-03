@@ -114,8 +114,9 @@
   .menu-analytics-side-stack { grid-template-columns: 1fr; }
   .menu-analytics-panel-heading { margin-bottom: 13px; }
   .menu-analytics-panel-heading > span { display: none; }
-  .menu-analytics-line-chart { min-height: 230px; margin: 0 -4px; overflow-x: auto; overflow-y: hidden; }
-  .menu-analytics-line-chart svg { width: 680px; max-width: none; min-height: 230px; }
+  .menu-analytics-line-chart { width: 100%; min-height: 0; margin: 0; overflow: hidden; }
+  .menu-analytics-line-chart svg { width: 100%; max-width: 100%; height: auto; min-height: 0; overflow: visible; }
+  .menu-analytics-axis-value, .menu-analytics-axis-date { font-size: 18px; }
   .menu-analytics-bar-meta strong { max-width: 58%; }
   .menu-analytics-insights article { grid-template-columns: 31px minmax(0, 1fr); gap: 9px; }
   .menu-analytics-trust-note { align-items: flex-start; text-align: start; }
