@@ -1,0 +1,145 @@
+/* =========================================================
+   BEYOND MENU ENGINE — PER-DESIGN LOGO WATERMARKS
+
+   Logo hero mode should behave like Heritage / El Puerto: the restaurant
+   mark becomes part of the hero artwork, never a generic card. Each
+   presentation gets its own scale / placement while the mark remains behind
+   the hero copy. Light presentations use multiply so white logo backgrounds
+   disappear into the page; dark presentations invert + screen for the same
+   effect on dark surfaces.
+   ========================================================= */
+
+/* ---------- Shared watermark canvas ---------- */
+.bme-menu .bme-hero.bme-hero-mode-watermark{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+}
+
+.bme-menu .bme-hero.bme-hero-mode-watermark .bme-hero-media-watermark{
+  position:absolute;
+  inset:0;
+  z-index:1;
+  width:100%;
+  height:100%;
+  display:block;
+  pointer-events:none;
+}
+
+.bme-menu .bme-hero.bme-hero-mode-watermark .bme-hero-copy{
+  position:relative;
+  z-index:4;
+}
+
+.bme-menu .bme-hero.bme-hero-mode-watermark .bme-watermark-pill{
+  position:absolute;
+  inset-inline-start:var(--bme-wm-start,auto);
+  inset-inline-end:var(--bme-wm-end,5%);
+  top:var(--bme-wm-top,50%);
+  bottom:var(--bme-wm-bottom,auto);
+  width:var(--bme-wm-size,clamp(180px,32cqw,340px));
+  height:var(--bme-wm-height,var(--bme-wm-size,clamp(180px,32cqw,340px)));
+  min-height:0;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  overflow:visible;
+  opacity:1;
+  transform:var(--bme-wm-transform,translateY(-50%));
+  transform-origin:center;
+  transition:transform .3s ease,opacity .3s ease;
+}
+
+.bme-menu .bme-hero.bme-hero-mode-watermark .bme-watermark-pill img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:contain;
+  object-position:center;
+  opacity:var(--bme-wm-opacity,.1);
+  /* On light surfaces white raster backgrounds disappear instead of
+     becoming the white square that previously hid the logo. */
+  filter:grayscale(1) saturate(0) contrast(.92);
+  mix-blend-mode:multiply;
+  transition:opacity .3s ease,filter .3s ease,transform .3s ease;
+}
+
+/* Dark presentation variants: white raster backgrounds become black after
+   inversion, and screen blending makes that black disappear into the hero. */
+.bme-menu:is(
+  .bme-presentation-noir-gallery,
+  .bme-presentation-neon-dock,
+  .bme-presentation-seoul-night,
+  .bme-presentation-luxury-steak,
+  .bme-presentation-smokehouse-story,
+  .bme-presentation-chef-editorial
+) .bme-hero.bme-hero-mode-watermark .bme-watermark-pill img{
+  filter:grayscale(1) saturate(0) invert(1) contrast(.9);
+  mix-blend-mode:screen;
+}
+
+/* ---------- Core signature designs ---------- */
+.bme-presentation-atelier{--bme-wm-size:clamp(220px,36cqw,390px);--bme-wm-end:2%;--bme-wm-top:52%;--bme-wm-opacity:.065;--bme-wm-transform:translateY(-50%) rotate(-5deg)}
+.bme-presentation-noir-gallery{--bme-wm-size:clamp(260px,46cqw,500px);--bme-wm-end:-4%;--bme-wm-top:48%;--bme-wm-opacity:.105;--bme-wm-transform:translateY(-50%) rotate(2deg)}
+.bme-presentation-riviera{--bme-wm-size:clamp(220px,38cqw,390px);--bme-wm-end:3%;--bme-wm-top:45%;--bme-wm-opacity:.095;--bme-wm-transform:translateY(-50%) rotate(-7deg)}
+.bme-presentation-omakase{--bme-wm-size:clamp(170px,28cqw,270px);--bme-wm-end:8%;--bme-wm-top:50%;--bme-wm-opacity:.055;--bme-wm-transform:translateY(-50%)}
+.bme-presentation-brasserie{--bme-wm-size:clamp(190px,31cqw,310px);--bme-wm-end:4%;--bme-wm-top:52%;--bme-wm-opacity:.065;--bme-wm-transform:translateY(-50%) rotate(-2deg)}
+.bme-presentation-white-gallery{--bme-wm-size:clamp(250px,42cqw,450px);--bme-wm-end:-2%;--bme-wm-top:48%;--bme-wm-opacity:.05;--bme-wm-transform:translateY(-50%)}
+.bme-presentation-cafe-cards{--bme-wm-size:clamp(190px,31cqw,310px);--bme-wm-end:4%;--bme-wm-top:50%;--bme-wm-opacity:.08;--bme-wm-transform:translateY(-50%) rotate(-3deg)}
+.bme-presentation-street-poster{--bme-wm-size:clamp(260px,44cqw,470px);--bme-wm-end:-5%;--bme-wm-top:50%;--bme-wm-opacity:.13;--bme-wm-transform:translateY(-50%) rotate(-9deg)}
+.bme-presentation-wine-register{--bme-wm-size:clamp(170px,28cqw,280px);--bme-wm-end:7%;--bme-wm-top:50%;--bme-wm-opacity:.06;--bme-wm-transform:translateY(-50%)}
+.bme-presentation-coastal-story{--bme-wm-size:clamp(220px,37cqw,380px);--bme-wm-end:3%;--bme-wm-top:46%;--bme-wm-opacity:.08;--bme-wm-transform:translateY(-50%) rotate(4deg)}
+.bme-presentation-monochrome-grid{--bme-wm-size:clamp(230px,38cqw,400px);--bme-wm-end:0%;--bme-wm-top:50%;--bme-wm-opacity:.045;--bme-wm-transform:translateY(-50%)}
+
+/* ---------- Phase 3 designs ---------- */
+.bme-presentation-trattoria-ledger{--bme-wm-size:clamp(200px,33cqw,330px);--bme-wm-end:4%;--bme-wm-top:50%;--bme-wm-opacity:.07;--bme-wm-transform:translateY(-50%) rotate(-4deg)}
+.bme-presentation-tokyo-ink{--bme-wm-size:clamp(165px,27cqw,265px);--bme-wm-end:8%;--bme-wm-top:50%;--bme-wm-opacity:.06;--bme-wm-transform:translateY(-50%) rotate(3deg)}
+.bme-presentation-garden-journal{--bme-wm-size:clamp(230px,39cqw,410px);--bme-wm-end:2%;--bme-wm-top:44%;--bme-wm-opacity:.085;--bme-wm-transform:translateY(-50%) rotate(-5deg)}
+.bme-presentation-bakery-counter{--bme-wm-size:clamp(195px,32cqw,330px);--bme-wm-end:5%;--bme-wm-top:48%;--bme-wm-opacity:.085;--bme-wm-transform:translateY(-50%) rotate(2deg)}
+.bme-presentation-neon-dock{--bme-wm-size:clamp(260px,45cqw,480px);--bme-wm-end:-5%;--bme-wm-top:46%;--bme-wm-opacity:.115;--bme-wm-transform:translateY(-50%) rotate(7deg)}
+.bme-presentation-desert-arches{--bme-wm-size:clamp(190px,32cqw,330px);--bme-wm-end:5%;--bme-wm-top:49%;--bme-wm-opacity:.075;--bme-wm-transform:translateY(-50%) rotate(-3deg)}
+.bme-presentation-tapas-collage{--bme-wm-size:clamp(260px,44cqw,470px);--bme-wm-end:-5%;--bme-wm-top:45%;--bme-wm-opacity:.09;--bme-wm-transform:translateY(-50%) rotate(8deg)}
+.bme-presentation-butcher-ledger{--bme-wm-size:clamp(220px,36cqw,380px);--bme-wm-end:2%;--bme-wm-top:50%;--bme-wm-opacity:.065;--bme-wm-transform:translateY(-50%) rotate(-2deg)}
+.bme-presentation-brunch-polaroids{--bme-wm-size:clamp(230px,39cqw,410px);--bme-wm-end:1%;--bme-wm-top:44%;--bme-wm-opacity:.085;--bme-wm-transform:translateY(-50%) rotate(-7deg)}
+.bme-presentation-rose-lounge{--bme-wm-size:clamp(210px,35cqw,360px);--bme-wm-end:4%;--bme-wm-top:47%;--bme-wm-opacity:.085;--bme-wm-transform:translateY(-50%) rotate(3deg)}
+.bme-presentation-beyond-launcher{--bme-wm-size:clamp(190px,32cqw,320px);--bme-wm-end:5%;--bme-wm-top:50%;--bme-wm-opacity:.08;--bme-wm-transform:translateY(-50%)}
+
+/* ---------- Premium / Phase 4 designs ---------- */
+.bme-presentation-levant-table{--bme-wm-size:clamp(200px,34cqw,350px);--bme-wm-end:4%;--bme-wm-top:48%;--bme-wm-opacity:.075;--bme-wm-transform:translateY(-50%) rotate(-4deg)}
+.bme-presentation-mosaic{--bme-wm-size:clamp(250px,43cqw,460px);--bme-wm-end:-4%;--bme-wm-top:45%;--bme-wm-opacity:.08;--bme-wm-transform:translateY(-50%) rotate(5deg)}
+.bme-presentation-nordic-paper{--bme-wm-size:clamp(235px,39cqw,410px);--bme-wm-end:1%;--bme-wm-top:50%;--bme-wm-opacity:.045;--bme-wm-transform:translateY(-50%) rotate(-2deg)}
+.bme-presentation-seoul-night{--bme-wm-size:clamp(260px,45cqw,480px);--bme-wm-end:-5%;--bme-wm-top:48%;--bme-wm-opacity:.115;--bme-wm-transform:translateY(-50%) rotate(6deg)}
+.bme-presentation-patisserie{--bme-wm-size:clamp(180px,30cqw,300px);--bme-wm-end:8%;--bme-wm-top:50%;--bme-wm-opacity:.055;--bme-wm-transform:translateY(-50%)}
+.bme-presentation-smokehouse-story{--bme-wm-size:clamp(270px,46cqw,500px);--bme-wm-end:-5%;--bme-wm-top:48%;--bme-wm-opacity:.09;--bme-wm-transform:translateY(-50%) rotate(-5deg)}
+.bme-presentation-tropical-club{--bme-wm-size:clamp(245px,42cqw,450px);--bme-wm-end:-3%;--bme-wm-top:43%;--bme-wm-opacity:.1;--bme-wm-transform:translateY(-50%) rotate(8deg)}
+.bme-presentation-botanical{--bme-wm-size:clamp(240px,41cqw,430px);--bme-wm-end:1%;--bme-wm-top:44%;--bme-wm-opacity:.08;--bme-wm-transform:translateY(-50%) rotate(-5deg)}
+.bme-presentation-coastal-gallery{--bme-wm-size:clamp(260px,44cqw,470px);--bme-wm-end:-4%;--bme-wm-top:46%;--bme-wm-opacity:.07;--bme-wm-transform:translateY(-50%) rotate(6deg)}
+.bme-presentation-breakfast-board{--bme-wm-size:clamp(210px,35cqw,370px);--bme-wm-end:3%;--bme-wm-top:45%;--bme-wm-opacity:.085;--bme-wm-transform:translateY(-50%) rotate(-4deg)}
+.bme-presentation-tap-board{--bme-wm-size:clamp(190px,31cqw,320px);--bme-wm-end:5%;--bme-wm-top:50%;--bme-wm-opacity:.065;--bme-wm-transform:translateY(-50%)}
+.bme-presentation-dessert-magazine{--bme-wm-size:clamp(260px,44cqw,470px);--bme-wm-end:-5%;--bme-wm-top:47%;--bme-wm-opacity:.075;--bme-wm-transform:translateY(-50%) rotate(8deg)}
+.bme-presentation-luxury-steak{--bme-wm-size:clamp(280px,47cqw,510px);--bme-wm-end:-6%;--bme-wm-top:48%;--bme-wm-opacity:.095;--bme-wm-transform:translateY(-50%) rotate(-4deg)}
+.bme-presentation-blue-launcher{--bme-wm-size:clamp(210px,35cqw,370px);--bme-wm-end:4%;--bme-wm-top:48%;--bme-wm-opacity:.08;--bme-wm-transform:translateY(-50%) rotate(3deg)}
+.bme-presentation-chef-editorial{--bme-wm-size:clamp(175px,29cqw,290px);--bme-wm-end:8%;--bme-wm-top:50%;--bme-wm-opacity:.055;--bme-wm-transform:translateY(-50%)}
+.bme-presentation-family-pizzeria{--bme-wm-size:clamp(240px,41cqw,430px);--bme-wm-end:-2%;--bme-wm-top:48%;--bme-wm-opacity:.1;--bme-wm-transform:translateY(-50%) rotate(-8deg)}
+
+/* ---------- Responsive watermark composition ---------- */
+@media(max-width:760px){
+  .bme-menu .bme-hero.bme-hero-mode-watermark .bme-watermark-pill{
+    width:min(var(--bme-wm-size,250px),62vw);
+    height:min(var(--bme-wm-size,250px),62vw);
+    inset-inline-end:clamp(-28px,var(--bme-wm-end,2%),18px);
+  }
+  .bme-menu .bme-hero.bme-hero-mode-watermark .bme-watermark-pill img{
+    opacity:calc(var(--bme-wm-opacity,.1) * .92);
+  }
+}
+
+@media(max-width:520px){
+  .bme-menu .bme-hero.bme-hero-mode-watermark .bme-watermark-pill{
+    width:min(var(--bme-wm-size,220px),56vw);
+    height:min(var(--bme-wm-size,220px),56vw);
+    inset-inline-end:-5%;
+  }
+}
