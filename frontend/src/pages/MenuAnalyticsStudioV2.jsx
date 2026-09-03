@@ -71,22 +71,53 @@ export default function MenuAnalyticsStudioV2() {
 
   useEffect(() => {
     let active = true;
+
     if (!projectId) {
       setAnalytics({ status: "empty", summary: null, error: "" });
       return () => { active = false; };
     }
-    setAnalytics({ status: "loading", summary: null, error: "" });
-    loadMenuAnalyticsSummary(projectId, 30)
-      .then((summary) => {
+
+    async function refresh({ showLoading = false } = {}) {
+      if (showLoading) {
+        setAnalytics((current) => ({ status: "loading", summary: current.summary, error: "" }));
+      }
+
+      try {
+        const summary = await loadMenuAnalyticsSummary(projectId, 30);
         if (!active) return;
         const hasActivity = Number(summary?.menu_views || 0)
           + Number(summary?.category_views || 0)
           + Number(summary?.item_impressions || 0)
           + Number(summary?.item_opens || 0) > 0;
         setAnalytics({ status: hasActivity ? "ready" : "empty", summary, error: "" });
-      })
-      .catch((error) => active && setAnalytics({ status: "error", summary: null, error: error?.message || "Analytics unavailable" }));
-    return () => { active = false; };
+      } catch (error) {
+        if (!active) return;
+        const message = error?.message || "Analytics unavailable";
+        setAnalytics((current) => current.summary
+          ? { ...current, error: message }
+          : { status: "error", summary: null, error: message });
+      }
+    }
+
+    void refresh({ showLoading: true });
+
+    const intervalId = window.setInterval(() => {
+      if (document.visibilityState === "visible") void refresh();
+    }, 10000);
+
+    const refreshWhenVisible = () => {
+      if (document.visibilityState === "visible") void refresh();
+    };
+
+    document.addEventListener("visibilitychange", refreshWhenVisible);
+    window.addEventListener("focus", refreshWhenVisible);
+
+    return () => {
+      active = false;
+      window.clearInterval(intervalId);
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
+      window.removeEventListener("focus", refreshWhenVisible);
+    };
   }, [projectId]);
 
   const summary = analytics.summary || {};
