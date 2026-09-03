@@ -1,15 +1,8 @@
-import { readActiveMenuStudioProjectId } from "../features/menu-engine/studio/menuStudioV2Persistence";
-
 const SHORTCUT_CLASS = "account-menu-studio-shortcut";
 
 function openMenuStudioFast() {
-  const projectId = readActiveMenuStudioProjectId();
-  const target = projectId
-    ? `/menu-studio/content?project=${encodeURIComponent(projectId)}`
-    : "/menu-studio";
-
-  if (`${window.location.pathname}${window.location.search}` === target) return;
-  window.history.pushState({}, "", target);
+  if (window.location.pathname === "/menu-studio") return;
+  window.history.pushState({}, "", "/menu-studio");
   window.dispatchEvent(new PopStateEvent("popstate", { state: window.history.state }));
 }
 
