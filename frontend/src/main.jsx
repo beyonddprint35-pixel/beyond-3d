@@ -10,6 +10,7 @@ import App from './App.jsx'
 import { BeyondMenuRoute } from "./components/BeyondMenuPlatform";
 import BeyondLiveMenuDesignPortal from "./components/BeyondLiveMenuDesignPortal";
 import MenuStudioHomeReturn from "./components/MenuStudioHomeReturn";
+import LegacyPublicMenuAnalytics from "./features/menu-engine/analytics/LegacyPublicMenuAnalytics";
 import installMenuTypographyGuard from "./features/menu-engine/renderer/menuTypographyGuard";
 import "./components/BeyondMenuPlatform.css";
 import "./components/BeyondLiveMenuDesign.css";
@@ -45,6 +46,7 @@ createRoot(document.getElementById('root')).render(
         fallback={<App />}
       />
 
+      <LegacyPublicMenuAnalytics />
       <MenuStudioHomeReturn />
       <BeyondLiveMenuDesignPortal />
     </BeyondLanguageProvider>
