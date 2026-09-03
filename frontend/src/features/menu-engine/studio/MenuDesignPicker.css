@@ -1,3 +1,7 @@
+.menu-design-picker-shell{display:grid;gap:7px;min-width:0}
+.menu-design-picker-industries{display:flex;gap:6px;align-items:center;padding-inline:42px}
+.menu-design-picker-industries button{min-height:34px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 13px;border:1px solid var(--md-line);border-radius:10px;background:var(--md-paper);color:var(--md-muted);font:800 11px/1 Inter,system-ui,sans-serif;cursor:pointer;transition:background .14s ease,border-color .14s ease,color .14s ease,box-shadow .14s ease}
+.menu-design-picker-industries button span{font-size:12px}.menu-design-picker-industries button:hover{border-color:color-mix(in srgb,var(--md-blue) 32%,var(--md-line));color:var(--md-blue)}.menu-design-picker-industries button.active{border-color:color-mix(in srgb,var(--md-blue) 42%,var(--md-line));background:color-mix(in srgb,var(--md-blue) 9%,var(--md-paper));color:var(--md-blue);box-shadow:0 2px 8px rgba(41,75,145,.06)}
 .menu-design-picker{display:flex;align-items:center;gap:6px;min-width:0}
 .menu-design-picker-rail{display:flex;gap:8px;min-width:0;flex:1;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;scroll-snap-type:x proximity;padding:4px 2px 8px}
 .menu-design-picker-tab{flex:0 0 auto;display:flex;align-items:center;gap:8px;min-height:52px;padding:10px 14px;border:1px solid var(--md-line);border-radius:14px;background:var(--md-paper);color:var(--md-text);cursor:pointer;scroll-snap-align:start;white-space:nowrap}
@@ -6,8 +10,10 @@
 .menu-design-picker-swatches{display:flex;overflow:hidden;border:1px solid rgba(128,128,128,.3);border-radius:50%;width:22px;height:22px;flex-shrink:0;transform:rotate(-30deg)}
 .menu-design-picker-swatches i{flex:1}
 .menu-design-picker-scroll{display:grid;place-items:center;width:36px;min-width:36px;height:44px;padding:0;border:1px solid var(--md-line);border-radius:11px;color:var(--md-text);background:var(--md-paper);cursor:pointer}
-.menu-design-picker button:focus-visible{outline:2px solid var(--md-blue);outline-offset:2px}
+.menu-design-picker-shell button:focus-visible{outline:2px solid var(--md-blue);outline-offset:2px}
 @media(max-width:600px){
+  .menu-design-picker-shell{gap:5px}
+  .menu-design-picker-industries{padding-inline:2px;overflow-x:auto;scrollbar-width:none}.menu-design-picker-industries::-webkit-scrollbar{display:none}.menu-design-picker-industries button{min-height:32px;padding:0 11px;flex:0 0 auto}
   .menu-design-picker{gap:3px}
   .menu-design-picker-scroll{display:none}
   .menu-design-picker-tab{padding:10px;min-height:48px;gap:6px}
