@@ -7,7 +7,8 @@ import MenuStudioHeader from "../components/MenuStudioHeader";
 import { flushStudioDraft } from "../features/menu-engine/studio/studioNavigation";
 import MenuDesignControls from "../features/menu-engine/studio/MenuDesignControls";
 import MenuDesignPicker from "../features/menu-engine/studio/MenuDesignPicker";
-import { applyPremiumMenuDesign, findMatchingMenuDesign } from "../features/menu-engine/domain/menuDesignLibrary";
+import MenuHeroHeadlineControl from "../features/menu-engine/studio/MenuHeroHeadlineControl";
+import { PREMIUM_MENU_DESIGNS, applyPremiumMenuDesign, findMatchingMenuDesign } from "../features/menu-engine/domain/menuDesignLibrary";
 import MenuStudioDesignCanvas from "../features/menu-engine/studio/MenuStudioDesignCanvas";
 import { normalizeMenuDesign } from "../features/menu-engine/domain/designSchema";
 import {
@@ -47,6 +48,36 @@ const UI = {
   },
 };
 
+const CLINIC_HERO_DEFAULT = Object.freeze({
+  en: "Our Treatments",
+  he: "הטיפולים שלנו",
+  ar: "علاجاتنا",
+});
+
+const GENERIC_HERO_TITLES = Object.freeze({
+  en: new Set(["", "our menu", "made for your table"]),
+  he: new Set(["", "התפריט שלנו", "נוצר עבור השולחן שלכם"]),
+  ar: new Set(["", "قائمتنا", "صُممت لطاولتكم", "صممت لطاولتكم"]),
+});
+
+function localizedHeroTitle(value) {
+  if (value && typeof value === "object" && !Array.isArray(value)) return { ...value };
+  return { en: String(value || ""), he: "", ar: "" };
+}
+
+function prepareMenuForIndustry(sourceMenu, entry) {
+  if (!sourceMenu || entry?.industry !== "clinic") return sourceMenu;
+  const heroTitle = localizedHeroTitle(sourceMenu.hero_title);
+  let changed = false;
+  ["en", "he", "ar"].forEach((language) => {
+    const current = String(heroTitle[language] || "").trim().toLocaleLowerCase();
+    if (!GENERIC_HERO_TITLES[language].has(current)) return;
+    heroTitle[language] = CLINIC_HERO_DEFAULT[language];
+    changed = true;
+  });
+  return changed ? { ...sourceMenu, hero_title: heroTitle } : sourceMenu;
+}
+
 function studioRoute(path) {
   flushStudioDraft();
   return `${path}${window.location.search || ""}`;
@@ -57,7 +88,7 @@ export default function MenuDesignStudioV2() {
   const storedDraft = useMemo(readMenuStudioV2Draft, []);
   const profile = useMemo(() => storedDraft?.profile || readMenuCreateV2Profile(), [storedDraft]);
   const resolved = useMemo(() => resolveMenuStudioV2Design(storedDraft), [storedDraft]);
-  const [menu] = useState(() => storedDraft?.menu || createBlankMenuV2());
+  const [menu, setMenu] = useState(() => prepareMenuForIndustry(storedDraft?.menu || createBlankMenuV2(), resolved.entry));
   const [{ design, designId }, setDesignState] = useState(() => ({
     design: normalizeMenuDesign(resolved.design),
     designId: findMatchingMenuDesign(resolved.design)?.id || resolved.designId,
@@ -71,6 +102,7 @@ export default function MenuDesignStudioV2() {
   const rtl = studioLanguageDirection(uiLanguage) === "rtl";
   const ForwardIcon = rtl ? ArrowLeft : ArrowRight;
   const logo = Object.prototype.hasOwnProperty.call(design.brand || {}, "logoUrl") ? design.brand.logoUrl : (menu.logo_url || "");
+  const selectedDesignEntry = PREMIUM_MENU_DESIGNS.find((entry) => entry.id === designId) || resolved.entry;
 
   const saveState = useStudioDraftSave({ ...(storedDraft || {}), menu, design, designId, profile, contentLanguage });
 
@@ -93,6 +125,16 @@ export default function MenuDesignStudioV2() {
     patchDesign((current) => ({ ...current, brand: { ...current.brand, logoUrl: value } }));
   }
 
+  function patchHeroHeadline(value) {
+    setMenu((current) => ({
+      ...current,
+      hero_title: {
+        ...localizedHeroTitle(current.hero_title),
+        [contentLanguage]: value,
+      },
+    }));
+  }
+
   function uploadLogo(file) {
     if (!file || !file.type?.startsWith("image/")) return;
     const reader = new FileReader();
@@ -102,6 +144,8 @@ export default function MenuDesignStudioV2() {
 
   function chooseDesign(selectedId) {
     if (selectedId === designId) return;
+    const selectedEntry = PREMIUM_MENU_DESIGNS.find((entry) => entry.id === selectedId);
+    setMenu((current) => prepareMenuForIndustry(current, selectedEntry));
     patchDesign((current) => applyPremiumMenuDesign(current, selectedId), selectedId);
   }
 
@@ -158,6 +202,14 @@ export default function MenuDesignStudioV2() {
             patchDesign={patchDesign}
             onBrowseDesigns={browseDesigns}
           />
+          {panel === "hero" ? (
+            <MenuHeroHeadlineControl
+              value={menu.hero_title}
+              language={contentLanguage}
+              industry={selectedDesignEntry?.industry || "restaurant"}
+              onChange={patchHeroHeadline}
+            />
+          ) : null}
         </aside>
       </div>
     </main>
