@@ -11,7 +11,7 @@ export const CLINIC_MENU_DESIGNS = Object.freeze([
     design:{
       template:"split",styleVariant:"standard",
       theme:{background:"#f8fcfb",surface:"#ffffff",card:"#ffffff",text:"#17363a",muted:"#708286",accent:"#2d8f91",accentSecondary:"#cce8e5",line:"#dbe9e7",categoryBackground:"#e7f5f3",categoryText:"#1d6264"},
-      typography:{headingFont:"DM Sans",bodyFont:"Inter",numberFont:"DM Sans",headingWeight:700,bodyWeight:400,itemWeight:650,heroSize:50,sectionSize:32,itemNameSize:17,descriptionSize:12,priceSize:15},
+      typography:{headingFont:"DM Sans",bodyFont:"Inter",numberFont:"DM Sans",headingWeight:700,bodyWeight:400,itemWeight:600,heroSize:50,sectionSize:32,itemNameSize:17,descriptionSize:12,priceSize:15},
       layout:{presentation:"clinic-pearl-dental",density:"spacious",navigationStyle:"pills",itemImagePosition:"right",itemImageRatio:"4:3",pricePosition:"below",cardRadius:22,sectionGap:36,itemGap:18,cardPadding:18},
       brand:{heroMediaMode:"watermark"},
     },
@@ -28,7 +28,7 @@ export const CLINIC_MENU_DESIGNS = Object.freeze([
     design:{
       template:"gallery",styleVariant:"standard",
       theme:{background:"#f4f1ec",surface:"#fbf9f6",card:"#fffdf9",text:"#2a2a2a",muted:"#81786e",accent:"#a88455",accentSecondary:"#ded2c0",line:"#ddd5ca",categoryBackground:"#2a2a2a",categoryText:"#f8f4ee"},
-      typography:{headingFont:"Playfair Display",bodyFont:"Inter",numberFont:"Inter",headingWeight:550,bodyWeight:400,itemWeight:600,heroSize:58,sectionSize:38,itemNameSize:17,descriptionSize:12,priceSize:15},
+      typography:{headingFont:"Playfair Display",bodyFont:"Inter",numberFont:"Inter",headingWeight:500,bodyWeight:400,itemWeight:600,heroSize:58,sectionSize:38,itemNameSize:17,descriptionSize:12,priceSize:15},
       layout:{presentation:"clinic-aurea-aesthetic",density:"spacious",navigationStyle:"minimal",itemImagePosition:"top",itemImageRatio:"3:2",pricePosition:"below",cardRadius:4,sectionGap:44,itemGap:22,cardPadding:16},
       brand:{heroMediaMode:"watermark"},
     },
@@ -45,7 +45,7 @@ export const CLINIC_MENU_DESIGNS = Object.freeze([
     design:{
       template:"classic",styleVariant:"standard",
       theme:{background:"#f3f8f7",surface:"#ffffff",card:"#ffffff",text:"#17312e",muted:"#70817e",accent:"#3f746d",accentSecondary:"#cbded9",line:"#d8e5e2",categoryBackground:"#3f746d",categoryText:"#ffffff"},
-      typography:{headingFont:"DM Sans",bodyFont:"Inter",numberFont:"DM Sans",headingWeight:700,bodyWeight:400,itemWeight:650,heroSize:48,sectionSize:31,itemNameSize:16,descriptionSize:12,priceSize:15},
+      typography:{headingFont:"DM Sans",bodyFont:"Inter",numberFont:"DM Sans",headingWeight:700,bodyWeight:400,itemWeight:600,heroSize:48,sectionSize:31,itemNameSize:16,descriptionSize:12,priceSize:15},
       layout:{presentation:"clinic-sage-medical",density:"comfortable",navigationStyle:"pills",pricePosition:"inline",cardRadius:14,sectionGap:30,itemGap:10,cardPadding:14},
       brand:{heroMediaMode:"watermark"},
     },
@@ -62,7 +62,7 @@ export const CLINIC_MENU_DESIGNS = Object.freeze([
     design:{
       template:"tiles",styleVariant:"standard",
       theme:{background:"#f5f9fc",surface:"#ffffff",card:"#ffffff",text:"#16334a",muted:"#6e8292",accent:"#246ca6",accentSecondary:"#b9d89f",line:"#dbe6ee",categoryBackground:"#246ca6",categoryText:"#ffffff"},
-      typography:{headingFont:"Montserrat",bodyFont:"DM Sans",numberFont:"DM Sans",headingWeight:750,bodyWeight:400,itemWeight:700,heroSize:52,sectionSize:34,itemNameSize:17,descriptionSize:12,priceSize:15},
+      typography:{headingFont:"Montserrat",bodyFont:"DM Sans",numberFont:"DM Sans",headingWeight:800,bodyWeight:400,itemWeight:700,heroSize:52,sectionSize:34,itemNameSize:17,descriptionSize:12,priceSize:15},
       layout:{presentation:"clinic-kinetic-physio",density:"comfortable",navigationStyle:"pills",itemImagePosition:"top",itemImageRatio:"16:9",pricePosition:"inline",cardRadius:22,sectionGap:32,itemGap:14,cardPadding:16},
       brand:{heroMediaMode:"watermark"},
     },
@@ -96,7 +96,7 @@ export const CLINIC_MENU_DESIGNS = Object.freeze([
     design:{
       template:"tiles",styleVariant:"standard",
       theme:{background:"#fffaf3",surface:"#ffffff",card:"#ffffff",text:"#29445b",muted:"#778897",accent:"#5f91c7",accentSecondary:"#f2c980",line:"#e8e1d8",categoryBackground:"#eaf3fb",categoryText:"#315f88"},
-      typography:{headingFont:"Poppins",bodyFont:"DM Sans",numberFont:"DM Sans",headingWeight:700,bodyWeight:400,itemWeight:650,heroSize:48,sectionSize:32,itemNameSize:16,descriptionSize:12,priceSize:15},
+      typography:{headingFont:"Poppins",bodyFont:"DM Sans",numberFont:"DM Sans",headingWeight:700,bodyWeight:400,itemWeight:600,heroSize:48,sectionSize:32,itemNameSize:16,descriptionSize:12,priceSize:15},
       layout:{presentation:"clinic-pediatric-smile",density:"comfortable",navigationStyle:"pills",itemImagePosition:"top",itemImageRatio:"4:3",pricePosition:"below",cardRadius:28,sectionGap:30,itemGap:14,cardPadding:15},
       brand:{heroMediaMode:"watermark"},
     },
