@@ -10,6 +10,7 @@ import {
   QrCode,
   Rocket,
   ShieldCheck,
+  Trash2,
 } from "lucide-react";
 
 import StudioLanguageMenu from "../components/StudioLanguageMenu";
@@ -17,8 +18,9 @@ import MenuStudioHeader from "../components/MenuStudioHeader";
 import { flushStudioDraft } from "../features/menu-engine/studio/studioNavigation";
 import { buildMenuStudioReadiness } from "../features/menu-engine/studio/menuStudioV2Readiness";
 import { publishMenuStudioDraft } from "../features/menu-engine/studio/menuStudioV2PublishService";
-import { menuStudioProjectId, queueMenuStudioProjectSave } from "../features/menu-engine/studio/menuStudioV2Persistence";
+import { deleteMenuStudioProject, menuStudioProjectId, queueMenuStudioProjectSave } from "../features/menu-engine/studio/menuStudioV2Persistence";
 import {
+  clearMenuStudioV2Draft,
   createBlankMenuV2,
   readMenuCreateV2Profile,
   readMenuStudioV2Draft,
@@ -44,6 +46,7 @@ const UI = {
     saveSetup:"Save publish setup", saved:"Publish setup saved", safePublish:"Safe live publishing", safePublishHint:"Publishing creates a locked live version. Future Studio edits stay private until you publish again.", publishLive:"Publish live", publishing:"Publishing…", publishAgain:"Publish new version",
     publicUrl:"Public URL", openPreview:"Open Preview", openLive:"Open live menu", allReady:"Your menu passes the Studio readiness checks.", notReady:"Complete the highlighted items before publishing.",
     published:"Menu is live", publishedHint:"Guests are seeing the locked version below.", version:"Version", publishError:"Could not publish this menu.",
+    deleteMenu:"Delete menu", deleteConfirmTitle:"Delete this menu?", deleteConfirmHint:"The Studio menu will be removed and its live link will be taken offline. This cannot be undone in Studio.", cancel:"Cancel", deleteForever:"Delete menu", deleting:"Deleting…", deleteError:"Could not delete this menu.",
   },
   he: {
     workspace:"סביבת עבודת התפריט", interfaceLanguage:"שפת הממשק", content:"תוכן", design:"עיצוב", preview:"תצוגה מקדימה", publish:"פרסום",
@@ -55,6 +58,7 @@ const UI = {
     saveSetup:"שמירת הגדרות פרסום", saved:"הגדרות הפרסום נשמרו", safePublish:"פרסום חי בטוח", safePublishHint:"הפרסום יוצר גרסה חיה נעולה. שינויים עתידיים ב-Studio נשארים פרטיים עד לפרסום מחדש.", publishLive:"פרסום חי", publishing:"מפרסם…", publishAgain:"פרסום גרסה חדשה",
     publicUrl:"כתובת ציבורית", openPreview:"פתיחת תצוגה", openLive:"פתיחת התפריט החי", allReady:"התפריט עובר את בדיקות המוכנות של Studio.", notReady:"השלימו את הפריטים המסומנים לפני הפרסום.",
     published:"התפריט חי", publishedHint:"האורחים רואים את הגרסה הנעולה שמופיעה למטה.", version:"גרסה", publishError:"לא ניתן לפרסם את התפריט.",
+    deleteMenu:"מחיקת תפריט", deleteConfirmTitle:"למחוק את התפריט הזה?", deleteConfirmHint:"התפריט יוסר מ-Studio והקישור החי שלו יירד מהאוויר. לא ניתן לבטל את הפעולה ב-Studio.", cancel:"ביטול", deleteForever:"מחיקת תפריט", deleting:"מוחק…", deleteError:"לא ניתן למחוק את התפריט.",
   },
   ar: {
     workspace:"مساحة عمل القائمة", interfaceLanguage:"لغة الواجهة", content:"المحتوى", design:"التصميم", preview:"المعاينة", publish:"النشر",
@@ -66,6 +70,7 @@ const UI = {
     saveSetup:"حفظ إعدادات النشر", saved:"تم حفظ إعدادات النشر", safePublish:"نشر مباشر آمن", safePublishHint:"ينشئ النشر نسخة مباشرة مقفلة. تبقى تعديلات Studio اللاحقة خاصة حتى تنشروا من جديد.", publishLive:"نشر مباشر", publishing:"جارٍ النشر…", publishAgain:"نشر نسخة جديدة",
     publicUrl:"الرابط العام", openPreview:"فتح المعاينة", openLive:"فتح القائمة المباشرة", allReady:"القائمة تجتاز فحوصات الجاهزية في Studio.", notReady:"أكملوا العناصر المحددة قبل النشر.",
     published:"القائمة مباشرة", publishedHint:"يشاهد الضيوف النسخة المقفلة الموضحة أدناه.", version:"النسخة", publishError:"تعذر نشر هذه القائمة.",
+    deleteMenu:"حذف القائمة", deleteConfirmTitle:"حذف هذه القائمة؟", deleteConfirmHint:"ستُزال القائمة من Studio وسيتم إيقاف رابطها المباشر. لا يمكن التراجع عن ذلك داخل Studio.", cancel:"إلغاء", deleteForever:"حذف القائمة", deleting:"جارٍ الحذف…", deleteError:"تعذر حذف هذه القائمة.",
   },
 };
 
@@ -94,6 +99,7 @@ export default function MenuPublishStudioV2() {
   const [enabledLanguages, setEnabledLanguages] = useState(() => storedDraft?.publication?.languages || menu.languages || ["en", "he", "ar"]);
   const [defaultLanguage, setDefaultLanguage] = useState(() => storedDraft?.publication?.defaultLanguage || menu.default_language || enabledLanguages[0] || "en");
   const [savedState, setSavedState] = useState(false);
+  const [deleteState, setDeleteState] = useState({ confirm:false, status:"idle", error:"" });
   const [publishState, setPublishState] = useState(() => {
     const publication = storedDraft?.publication || {};
     if (!publication.publishedVersionId) return { status:"idle", result:null, error:"" };
@@ -111,6 +117,7 @@ export default function MenuPublishStudioV2() {
 
   const t = UI[uiLanguage] || UI.en;
   const rtl = studioLanguageDirection(uiLanguage) === "rtl";
+  const projectId = menuStudioProjectId(storedDraft);
   const normalizedSlug = safeSlug(slug);
   const publicUrl = `https://www.b3yondworld.com/menu/${normalizedSlug || "your-menu"}`;
   const readinessMenu = useMemo(() => ({ ...menu, languages: enabledLanguages, default_language: defaultLanguage }), [menu, enabledLanguages, defaultLanguage]);
@@ -125,6 +132,7 @@ export default function MenuPublishStudioV2() {
   ];
   const ready = checks.every((check) => check.ok);
   const isPublishing = publishState.status === "publishing";
+  const isDeleting = deleteState.status === "deleting";
   const publishedResult = publishState.result;
 
   useEffect(() => {
@@ -219,6 +227,18 @@ export default function MenuPublishStudioV2() {
     }
   }
 
+  async function deleteCurrentMenu() {
+    if (!projectId || isDeleting || isPublishing) return;
+    setDeleteState({ confirm:true, status:"deleting", error:"" });
+    try {
+      await deleteMenuStudioProject(projectId);
+      clearMenuStudioV2Draft();
+      navigate("/my-menus", { replace:true });
+    } catch (error) {
+      setDeleteState({ confirm:true, status:"error", error:error?.message || t.deleteError });
+    }
+  }
+
   function openLiveMenu() {
     const liveSlug = publishedResult?.slug || normalizedSlug;
     if (!liveSlug) return;
@@ -285,9 +305,20 @@ export default function MenuPublishStudioV2() {
               </span>
             </div>
             {publishState.error ? <div className="menu-publish-v2-publish-error"><CircleAlert size={14} /> <span>{publishState.error}</span></div> : null}
-            <button type="button" className="save" onClick={savePublishSetup} disabled={isPublishing}>{savedState ? <Check size={14} /> : null}{savedState ? t.saved : t.saveSetup}</button>
-            <button type="button" className="live" disabled={!ready || !normalizedSlug || isPublishing} onClick={publishLiveMenu}><Rocket size={14} /> {isPublishing ? t.publishing : publishedResult ? t.publishAgain : t.publishLive}</button>
-            <button type="button" className="preview-link" onClick={publishedResult ? openLiveMenu : () => navigate(studioRoute("/menu-studio/preview"))}>{publishedResult ? t.openLive : t.openPreview}</button>
+            <button type="button" className="save" onClick={savePublishSetup} disabled={isPublishing || isDeleting}>{savedState ? <Check size={14} /> : null}{savedState ? t.saved : t.saveSetup}</button>
+            <button type="button" className="live" disabled={!ready || !normalizedSlug || isPublishing || isDeleting} onClick={publishLiveMenu}><Rocket size={14} /> {isPublishing ? t.publishing : publishedResult ? t.publishAgain : t.publishLive}</button>
+            <button type="button" className="preview-link" disabled={isDeleting} onClick={publishedResult ? openLiveMenu : () => navigate(studioRoute("/menu-studio/preview"))}>{publishedResult ? t.openLive : t.openPreview}</button>
+
+            {projectId ? <div className={`menu-publish-v2-danger ${deleteState.confirm ? "confirming" : ""}`}>
+              {deleteState.error ? <div className="menu-publish-v2-delete-error"><CircleAlert size={14} /><span>{deleteState.error}</span></div> : null}
+              {!deleteState.confirm ? <button type="button" className="delete-menu" disabled={isPublishing} onClick={() => setDeleteState({ confirm:true, status:"idle", error:"" })}><Trash2 size={14} /> {t.deleteMenu}</button> : <div className="menu-publish-v2-delete-confirm">
+                <div><strong>{t.deleteConfirmTitle}</strong><small>{t.deleteConfirmHint}</small></div>
+                <div className="menu-publish-v2-delete-actions">
+                  <button type="button" className="cancel-delete" disabled={isDeleting} onClick={() => setDeleteState({ confirm:false, status:"idle", error:"" })}>{t.cancel}</button>
+                  <button type="button" className="confirm-delete" disabled={isDeleting || isPublishing} onClick={deleteCurrentMenu}><Trash2 size={14} /> {isDeleting ? t.deleting : t.deleteForever}</button>
+                </div>
+              </div>}
+            </div> : null}
           </section>
         </aside>
       </div>
