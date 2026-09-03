@@ -76,6 +76,17 @@ export function readMenuStudioV2Draft() {
   return null;
 }
 
+export function clearMenuStudioV2Draft() {
+  if (typeof window === "undefined") return;
+  try {
+    window.sessionStorage.removeItem(MENU_STUDIO_V2_DRAFT_KEY);
+  } catch {
+    // Cleanup is best-effort; cloud deletion remains authoritative.
+  }
+  lastWrittenSignature = "";
+  lastWrittenJSON = "";
+}
+
 export function writeMenuStudioV2Draft(draft, { queueSave = true } = {}) {
   if (typeof window === "undefined") return false;
   try {
