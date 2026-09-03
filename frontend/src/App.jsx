@@ -27,8 +27,6 @@ import MenuPreviewStudioV2 from "./pages/MenuPreviewStudioV2";
 import MenuPublishStudioV2 from "./pages/MenuPublishStudioV2";
 import MenuStudioEntry from "./pages/MenuStudioEntry";
 import MenuAnalyticsStudioV2 from "./pages/MenuAnalyticsStudioV2";
-import MenuMyMenusV2 from "./pages/MenuMyMenusV2";
-import MenuManageV2 from "./pages/MenuManageV2";
 import MenuStudioV2PersistenceBoundary from "./features/menu-engine/studio/MenuStudioV2PersistenceBoundary";
 import MenuStudioWorkspace from "./features/menu-engine/studio/MenuStudioWorkspace";
 import MenuStudioMobileStageNav from "./components/MenuStudioMobileStageNav";
@@ -118,8 +116,10 @@ function App() {
         <Route path="/menu-builder" element={<MenuCreateV2 />} />
         <Route path="/menu-builder/import" element={<MenuImportStudioV2 />} />
         <Route path="/menu-studio/*" element={<MenuStudioWorkspace><MenuStudioV2Routes /></MenuStudioWorkspace>} />
-        <Route path="/my-menus" element={<MenuMyMenusV2 />} />
-        <Route path="/my-menus/:projectId" element={<MenuManageV2 />} />
+
+        {/* The old menu library screen is retired. Studio itself now resolves the active/next menu. */}
+        <Route path="/my-menus" element={<Navigate replace to="/menu-studio" />} />
+        <Route path="/my-menus/:projectId" element={<Navigate replace to="/menu-studio" />} />
         <Route path="/menu/:slug" element={<MenuPublicV3Dev />} />
 
         {/* Existing legacy utility remains available while we validate the new flow. */}
@@ -127,8 +127,8 @@ function App() {
 
         {/* Compatibility aliases: old local bookmarks now land on clean production routes. */}
         <Route path="/dev/menu-public-v3/:slug" element={<LegacyStudioRedirect to={({ slug }) => `/menu/${slug}`} />} />
-        <Route path="/dev/my-menus-v2" element={<LegacyStudioRedirect to="/my-menus" />} />
-        <Route path="/dev/menu-manage-v2/:projectId" element={<LegacyStudioRedirect to={({ projectId }) => `/my-menus/${projectId}`} />} />
+        <Route path="/dev/my-menus-v2" element={<LegacyStudioRedirect to="/menu-studio" />} />
+        <Route path="/dev/menu-manage-v2/:projectId" element={<LegacyStudioRedirect to="/menu-studio" />} />
         <Route path="/dev/menu-create-v2" element={<LegacyStudioRedirect to="/menu-builder" />} />
         <Route path="/dev/menu-import-v2" element={<LegacyStudioRedirect to="/menu-builder/import" />} />
         <Route path="/dev/menu-content-v2" element={<LegacyStudioRedirect to="/menu-studio/content" />} />
