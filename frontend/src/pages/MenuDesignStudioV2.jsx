@@ -48,16 +48,22 @@ const UI = {
   },
 };
 
+const RESTAURANT_HERO_DEFAULT = Object.freeze({
+  en: "Our Menu",
+  he: "התפריט שלנו",
+  ar: "قائمتنا",
+});
+
 const CLINIC_HERO_DEFAULT = Object.freeze({
   en: "Our Treatments",
   he: "הטיפולים שלנו",
   ar: "علاجاتنا",
 });
 
-const GENERIC_HERO_TITLES = Object.freeze({
-  en: new Set(["", "our menu", "made for your table"]),
-  he: new Set(["", "התפריט שלנו", "נוצר עבור השולחן שלכם"]),
-  ar: new Set(["", "قائمتنا", "صُممت لطاولتكم", "صممت لطاولتكم"]),
+const LEGACY_GENERIC_HERO_TITLES = Object.freeze({
+  en: new Set(["", "made for your table"]),
+  he: new Set(["", "נוצר עבור השולחן שלכם"]),
+  ar: new Set(["", "صُممت لطاولتكم", "صممت لطاولتكم"]),
 });
 
 function localizedHeroTitle(value) {
@@ -65,16 +71,28 @@ function localizedHeroTitle(value) {
   return { en: String(value || ""), he: "", ar: "" };
 }
 
+function normalizedHeroValue(value) {
+  return String(value || "").trim().toLocaleLowerCase();
+}
+
 function prepareMenuForIndustry(sourceMenu, entry) {
-  if (!sourceMenu || entry?.industry !== "clinic") return sourceMenu;
+  if (!sourceMenu) return sourceMenu;
+  const clinic = entry?.industry === "clinic";
+  const desiredDefaults = clinic ? CLINIC_HERO_DEFAULT : RESTAURANT_HERO_DEFAULT;
+  const oppositeDefaults = clinic ? RESTAURANT_HERO_DEFAULT : CLINIC_HERO_DEFAULT;
   const heroTitle = localizedHeroTitle(sourceMenu.hero_title);
   let changed = false;
+
   ["en", "he", "ar"].forEach((language) => {
-    const current = String(heroTitle[language] || "").trim().toLocaleLowerCase();
-    if (!GENERIC_HERO_TITLES[language].has(current)) return;
-    heroTitle[language] = CLINIC_HERO_DEFAULT[language];
+    const current = normalizedHeroValue(heroTitle[language]);
+    const desired = desiredDefaults[language];
+    const opposite = normalizedHeroValue(oppositeDefaults[language]);
+    if (current === normalizedHeroValue(desired)) return;
+    if (!LEGACY_GENERIC_HERO_TITLES[language].has(current) && current !== opposite) return;
+    heroTitle[language] = desired;
     changed = true;
   });
+
   return changed ? { ...sourceMenu, hero_title: heroTitle } : sourceMenu;
 }
 
