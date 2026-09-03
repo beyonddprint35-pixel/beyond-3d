@@ -23,6 +23,7 @@ import {
   writeStudioLanguage,
 } from "../features/menu-engine/studio/studioLanguage";
 import "./MenuDesignStudioV2.css";
+import "../features/menu-engine/studio/MenuDesignDarkMode.css";
 
 const UI = {
   en: {
