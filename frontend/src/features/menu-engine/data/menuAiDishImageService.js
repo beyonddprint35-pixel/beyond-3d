@@ -8,10 +8,6 @@ export const AI_DISH_REFERENCE_MAX_TOTAL_BYTES = 30 * 1024 * 1024;
 
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
-function clamp(value, min, max) {
-  return Math.min(max, Math.max(min, Number(value) || 0));
-}
-
 function fileToImage(file) {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);
@@ -137,7 +133,15 @@ async function parseFunctionError(error) {
   return new Error(message);
 }
 
-export async function generateDishImageWithAi({ projectId, restaurantName, vibe, item, reference }) {
+export async function generateDishImageWithAi({
+  projectId,
+  restaurantName,
+  vibe,
+  item,
+  reference,
+  styleReferencePath = "",
+  adjustment = "",
+}) {
   const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
   if (sessionError) throw sessionError;
   const session = sessionData?.session;
@@ -153,6 +157,8 @@ export async function generateDishImageWithAi({ projectId, restaurantName, vibe,
       vibe,
       item,
       reference,
+      styleReferencePath,
+      adjustment,
     },
     headers: { Authorization: `Bearer ${session.access_token}` },
   });
