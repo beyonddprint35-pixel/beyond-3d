@@ -70,6 +70,7 @@ import "./pages/MenuStudioStageNavStability.css";
 import "./pages/MenuStudioEnglishLTR.css";
 import "./components/MenuStudioHeader.css";
 import "./pages/MenuStudioDarkMode.css";
+import "./pages/MenuAiDishImagesV1StyleLock.css";
 
 function LegacyStudioRedirect({ to }) {
   const location = useLocation();
