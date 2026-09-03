@@ -192,7 +192,7 @@ export async function importMenuWithAi({ session, files = [], text = "", languag
   const imageOnly = files.length > 0
     && files.every((file) => file.type?.startsWith("image/"))
     && !String(text || "").trim();
-  const functionName = imageOnly ? "menu-ai-extract-smart-test" : "menu-ai-extract";
+  const functionName = imageOnly ? "menu-ai-extract-batch-test" : "menu-ai-extract";
 
   const { data, error: functionError } = await supabase.functions.invoke(functionName, {
     body: {
@@ -223,6 +223,8 @@ export async function importMenuWithAi({ session, files = [], text = "", languag
     menu: completedMenu,
     allowance: data.unlimited ? allowance : { ...allowance, remaining_attempts: data.remainingAttempts },
     aiCost: data.aiCost || null,
+    diagnostics: data.diagnostics || null,
+    reviewItems: Array.isArray(data.reviewItems) ? data.reviewItems : [],
     translationRepair: translation.repaired ? {
       repaired: true,
       missingBefore: translation.missingBefore,
