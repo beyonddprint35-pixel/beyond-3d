@@ -1,4 +1,5 @@
 import { supabase } from "../../../lib/supabaseClient";
+import { attachReviewSourceCrops } from "./menuReviewCrop";
 
 export const MENU_IMPORT_MAX_FILES = 12;
 export const MENU_IMPORT_MAX_TOTAL_MB = 25;
@@ -222,6 +223,10 @@ export async function importMenuWithAi({ session, files = [], text = "", languag
         languages,
       });
   const completedMenu = translation.menu;
+  const rawReviewItems = Array.isArray(data.reviewItems) ? data.reviewItems : [];
+  const reviewItems = imageOnly
+    ? await attachReviewSourceCrops(files, rawReviewItems)
+    : rawReviewItems;
 
   return {
     project: { ...project, name: completedMenu?.restaurant_name || project.name, structured_menu: completedMenu, status: "ready" },
@@ -229,7 +234,7 @@ export async function importMenuWithAi({ session, files = [], text = "", languag
     allowance: data.unlimited ? allowance : { ...allowance, remaining_attempts: data.remainingAttempts },
     aiCost: data.aiCost || null,
     diagnostics: data.diagnostics || null,
-    reviewItems: Array.isArray(data.reviewItems) ? data.reviewItems : [],
+    reviewItems,
     translationRepair: translation.repaired ? {
       repaired: true,
       missingBefore: translation.missingBefore,
