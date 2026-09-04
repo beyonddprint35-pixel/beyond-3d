@@ -32,6 +32,7 @@ import MenuAnalyticsStudioV2 from "./pages/MenuAnalyticsStudioV2";
 import MenuStudioV2PersistenceBoundary from "./features/menu-engine/studio/MenuStudioV2PersistenceBoundary";
 import MenuStudioWorkspace from "./features/menu-engine/studio/MenuStudioWorkspace";
 import MenuStudioMobileStageNav from "./components/MenuStudioMobileStageNav";
+import MenuSubscriptionPublishGate from "./components/MenuSubscriptionPublishGate";
 import CustomerShowcasePortal from "./components/CustomerShowcasePortal";
 
 import "./lib/beyondThemeBootstrap.js";
@@ -103,7 +104,7 @@ function MenuStudioV2Routes() {
   if (stage === "design") screen = <MenuDesignStudioV2 />;
   if (stage === "preview") screen = <MenuPreviewStudioV2 />;
   if (stage === "analytics") screen = <MenuAnalyticsStudioV2 />;
-  if (stage === "publish") screen = <MenuPublishStudioV2 />;
+  if (stage === "publish") screen = <MenuSubscriptionPublishGate><MenuPublishStudioV2 /></MenuSubscriptionPublishGate>;
 
   if (!screen) {
     return <Navigate replace to={`/menu-studio${location.search}${location.hash}`} />;
