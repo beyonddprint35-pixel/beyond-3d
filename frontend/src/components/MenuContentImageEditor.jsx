@@ -25,6 +25,7 @@ import {
   resetMenuPhotoStyleMemory,
 } from "../features/menu-engine/data/menuPhotoAiService";
 import "./MenuContentImageEditor.css";
+import "./MenuContentImageEditorStyleMemory.css";
 
 const PHOTO_COPY = {
   en: {
