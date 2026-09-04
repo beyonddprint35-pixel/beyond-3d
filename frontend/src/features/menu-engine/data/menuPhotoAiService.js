@@ -42,8 +42,16 @@ function resolveStorageContext(sourceUrl, sourcePath = "", projectId = "") {
   };
 }
 
-async function parseFunctionError(error) {
-  let message = error?.message || "AI could not enhance this photo.";
+async function sessionToken() {
+  const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+  if (sessionError) throw sessionError;
+  const session = sessionData?.session;
+  if (!session?.access_token) throw new Error("Please sign in again before enhancing photos.");
+  return session.access_token;
+}
+
+async function parseFunctionError(error, fallback = "AI photo request failed.") {
+  let message = error?.message || fallback;
   try {
     const response = error?.context;
     if (response && typeof response.clone === "function") {
@@ -63,6 +71,35 @@ async function parseFunctionError(error) {
   return new Error(message);
 }
 
+async function invokePhotoAi(body, fallback) {
+  const token = await sessionToken();
+  const { data, error } = await supabase.functions.invoke("menu-photo-enhance", {
+    body,
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (error) throw await parseFunctionError(error, fallback);
+  if (!data?.ok) throw new Error(data?.error || fallback);
+  return data;
+}
+
+export async function getMenuPhotoStyleMemory({ projectId }) {
+  if (!projectId || projectId === "draft") return { exists: false };
+  const data = await invokePhotoAi({ action: "status", projectId }, "Could not read Style Memory.");
+  return { exists: Boolean(data.styleMemoryExists), path: data.styleMemoryPath || "" };
+}
+
+export async function rememberMenuPhotoStyle({ projectId, approvedPath }) {
+  if (!projectId || projectId === "draft" || !approvedPath) throw new Error("Could not save Style Memory for this menu.");
+  const data = await invokePhotoAi({ action: "remember", projectId, approvedPath }, "Could not save Style Memory.");
+  return { exists: Boolean(data.styleMemoryExists), path: data.styleMemoryPath || "" };
+}
+
+export async function resetMenuPhotoStyleMemory({ projectId }) {
+  if (!projectId || projectId === "draft") return { exists: false };
+  const data = await invokePhotoAi({ action: "reset", projectId }, "Could not reset Style Memory.");
+  return { exists: Boolean(data.styleMemoryExists) };
+}
+
 export async function enhanceMenuPhotoWithAi({
   sourceUrl,
   sourcePath = "",
@@ -70,35 +107,28 @@ export async function enhanceMenuPhotoWithAi({
   mode = "enhance",
   itemId = "dish",
 }) {
-  const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-  if (sessionError) throw sessionError;
-  const session = sessionData?.session;
-  if (!session?.access_token) throw new Error("Please sign in again before enhancing photos.");
-
   const context = resolveStorageContext(sourceUrl, sourcePath, projectId);
   if (!context.projectId || !context.sourcePath) {
     throw new Error("The original uploaded dish photo could not be found. Try uploading it again.");
   }
 
   const size = await imageSizeForUrl(sourceUrl);
-  const { data, error } = await supabase.functions.invoke("menu-photo-enhance", {
-    body: {
-      projectId: context.projectId,
-      itemId,
-      sourcePath: context.sourcePath,
-      mode,
-      size,
-    },
-    headers: { Authorization: `Bearer ${session.access_token}` },
-  });
+  const data = await invokePhotoAi({
+    action: "enhance",
+    projectId: context.projectId,
+    itemId,
+    sourcePath: context.sourcePath,
+    mode,
+    size,
+  }, "AI could not enhance this photo.");
 
-  if (error) throw await parseFunctionError(error);
-  if (!data?.ok || !data?.imageBase64) throw new Error(data?.error || "AI returned no photo.");
-
+  if (!data?.imageBase64) throw new Error("AI returned no photo.");
   return {
     file: base64ToFile(data.imageBase64, data.mimeType, `${itemId}-${mode}-ai.png`),
     mode: data.mode || mode,
     model: data.model || "gpt-image-2",
     size: data.size || size,
+    styleLocked: Boolean(data.styleLocked),
+    styleMemoryExists: Boolean(data.styleMemoryExists),
   };
 }
