@@ -1,17 +1,43 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, Check } from "lucide-react";
+import { ChevronLeft, ChevronRight, Check, Image, Type } from "lucide-react";
 import { PREMIUM_MENU_DESIGNS } from "../domain/menuDesignLibrary";
 import { studioLanguageDirection } from "./studioLanguage";
 import "./MenuDesignPicker.css";
 
 const COPY = {
-  en: { designs: "Menu designs", previous: "Previous designs", next: "More designs", restaurant:"Restaurant", clinic:"Clinic", categories:"Design category" },
-  he: { designs: "עיצובי תפריט", previous: "עיצובים קודמים", next: "עיצובים נוספים", restaurant:"מסעדה", clinic:"קליניקה", categories:"קטגוריית עיצוב" },
-  ar: { designs: "تصاميم القائمة", previous: "التصاميم السابقة", next: "المزيد من التصاميم", restaurant:"مطعم", clinic:"عيادة", categories:"فئة التصميم" },
+  en: {
+    designs: "Menu designs",
+    previous: "Previous designs",
+    next: "More designs",
+    withPhotos: "With photos",
+    withoutPhotos: "Without photos",
+    categories: "Design category",
+  },
+  he: {
+    designs: "עיצובי תפריט",
+    previous: "עיצובים קודמים",
+    next: "עיצובים נוספים",
+    withPhotos: "עם תמונות",
+    withoutPhotos: "ללא תמונות",
+    categories: "קטגוריית עיצוב",
+  },
+  ar: {
+    designs: "تصاميم القائمة",
+    previous: "التصاميم السابقة",
+    next: "المزيد من التصاميم",
+    withPhotos: "مع صور",
+    withoutPhotos: "بدون صور",
+    categories: "فئة التصميم",
+  },
 };
 
-function industryForDesign(designId){
-  return PREMIUM_MENU_DESIGNS.find((entry)=>entry.id===designId)?.industry || "restaurant";
+function isPhotoDesign(entry) {
+  return entry?.design?.brand?.heroMediaMode === "image";
+}
+
+function categoryForDesign(designId) {
+  const entry = PREMIUM_MENU_DESIGNS.find((item) => item.id === designId);
+  return entry && isPhotoDesign(entry) ? "photos" : "text";
 }
 
 export default function MenuDesignPicker({ designId, language = "en", onSelect, railRef, previewId }) {
@@ -20,9 +46,26 @@ export default function MenuDesignPicker({ designId, language = "en", onSelect, 
   const rtl = studioLanguageDirection(language) === "rtl";
   const PreviousIcon = rtl ? ChevronRight : ChevronLeft;
   const NextIcon = rtl ? ChevronLeft : ChevronRight;
-  const [industry,setIndustry] = useState(()=>industryForDesign(designId));
-  const visibleDesigns = useMemo(()=>PREMIUM_MENU_DESIGNS.filter((entry)=>(entry.industry||"restaurant")===industry),[industry]);
-  const selectedVisible = visibleDesigns.some((entry)=>entry.id===designId);
+  const [category, setCategory] = useState(() => categoryForDesign(designId));
+
+  const restaurantDesigns = useMemo(
+    () => PREMIUM_MENU_DESIGNS.filter((entry) => (entry.industry || "restaurant") === "restaurant"),
+    [],
+  );
+
+  const visibleDesigns = useMemo(
+    () => restaurantDesigns.filter((entry) => (category === "photos" ? isPhotoDesign(entry) : !isPhotoDesign(entry))),
+    [restaurantDesigns, category],
+  );
+
+  const selectedVisible = visibleDesigns.some((entry) => entry.id === designId);
+
+  useEffect(() => {
+    const selectedEntry = PREMIUM_MENU_DESIGNS.find((entry) => entry.id === designId);
+    if (!selectedEntry || (selectedEntry.industry || "restaurant") !== "restaurant") return;
+    const nextCategory = isPhotoDesign(selectedEntry) ? "photos" : "text";
+    if (nextCategory !== category) setCategory(nextCategory);
+  }, [designId, category]);
 
   useEffect(() => {
     const rail = railRef.current;
@@ -32,12 +75,12 @@ export default function MenuDesignPicker({ designId, language = "en", onSelect, 
     const item = selected.getBoundingClientRect();
     const delta = item.left < bounds.left ? item.left - bounds.left : item.right > bounds.right ? item.right - bounds.right : 0;
     if (delta) rail.scrollBy({ left: delta, behavior: "auto" });
-  }, [designId, language, railRef, industry]);
+  }, [designId, language, railRef, category]);
 
-  function chooseIndustry(value){
-    setIndustry(value);
-    const rail=railRef.current;
-    if(rail)rail.scrollTo({left:0,behavior:"smooth"});
+  function chooseCategory(value) {
+    setCategory(value);
+    const rail = railRef.current;
+    if (rail) rail.scrollTo({ left: 0, behavior: "smooth" });
   }
 
   function scroll(direction) {
@@ -52,7 +95,7 @@ export default function MenuDesignPicker({ designId, language = "en", onSelect, 
     else if (event.key === "ArrowRight") next = index + (rtl ? -1 : 1);
     else if (event.key === "ArrowLeft") next = index + (rtl ? 1 : -1);
     else return;
-    if(!visibleDesigns.length)return;
+    if (!visibleDesigns.length) return;
     event.preventDefault();
     next = (next + visibleDesigns.length) % visibleDesigns.length;
     const entry = visibleDesigns[next];
@@ -60,18 +103,38 @@ export default function MenuDesignPicker({ designId, language = "en", onSelect, 
     onSelect(entry.id);
   }
 
+  const categoryLabel = category === "photos" ? t.withPhotos : t.withoutPhotos;
+
   return <div className="menu-design-picker-shell" dir={rtl ? "rtl" : "ltr"}>
     <div className="menu-design-picker-industries" role="tablist" aria-label={t.categories}>
-      <button type="button" role="tab" aria-selected={industry==="restaurant"} className={industry==="restaurant"?"active":""} onClick={()=>chooseIndustry("restaurant")}><span aria-hidden="true">🍽</span>{t.restaurant}</button>
-      <button type="button" role="tab" aria-selected={industry==="clinic"} className={industry==="clinic"?"active":""} onClick={()=>chooseIndustry("clinic")}><span aria-hidden="true">✚</span>{t.clinic}</button>
+      <button
+        type="button"
+        role="tab"
+        aria-selected={category === "photos"}
+        className={category === "photos" ? "active" : ""}
+        onClick={() => chooseCategory("photos")}
+      >
+        <Image size={15} aria-hidden="true" />
+        {t.withPhotos}
+      </button>
+      <button
+        type="button"
+        role="tab"
+        aria-selected={category === "text"}
+        className={category === "text" ? "active" : ""}
+        onClick={() => chooseCategory("text")}
+      >
+        <Type size={15} aria-hidden="true" />
+        {t.withoutPhotos}
+      </button>
     </div>
     <div className="menu-design-picker">
       <button type="button" className="menu-design-picker-scroll" onClick={() => scroll(-1)} aria-label={t.previous}><PreviousIcon size={18} /></button>
-      <div className="menu-design-picker-rail" role="tablist" aria-label={`${t.designs} · ${t[industry]}`} ref={railRef}>
+      <div className="menu-design-picker-rail" role="tablist" aria-label={`${t.designs} · ${categoryLabel}`} ref={railRef}>
         {visibleDesigns.map((entry, index) => <button
           type="button" role="tab" key={entry.id} id={`menu-design-tab-${entry.id}`}
           className="menu-design-picker-tab" aria-selected={entry.id === designId}
-          aria-controls={previewId} tabIndex={entry.id === designId || (!selectedVisible&&index===0) ? 0 : -1}
+          aria-controls={previewId} tabIndex={entry.id === designId || (!selectedVisible && index === 0) ? 0 : -1}
           ref={(node) => { if (node) buttons.current.set(entry.id, node); else buttons.current.delete(entry.id); }}
           onClick={() => onSelect(entry.id)} onKeyDown={(event) => onKeyDown(event, index)}
         >
