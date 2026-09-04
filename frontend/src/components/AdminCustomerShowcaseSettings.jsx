@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ExternalLink, Eye, EyeOff, Save } from "lucide-react";
+import { ChevronDown, ExternalLink, Eye, EyeOff, Save } from "lucide-react";
 
 import { supabase } from "../lib/supabaseClient";
 import {
@@ -10,6 +10,7 @@ import {
 } from "../lib/customerShowcase";
 
 import "./AdminCustomerShowcaseSettings.css";
+import "./AdminCompactPanel.css";
 
 function isLocalPreview() {
   if (typeof window === "undefined") return false;
@@ -38,6 +39,7 @@ export default function AdminCustomerShowcaseSettings({ password }) {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [localMode, setLocalMode] = useState(() => isLocalPreview());
+  const [expanded, setExpanded] = useState(false);
 
   async function loadDirect() {
     const [settingResult, sitesResult] = await Promise.all([
@@ -202,8 +204,8 @@ export default function AdminCustomerShowcaseSettings({ password }) {
   }
 
   return (
-    <section className="admin-customer-showcase-settings">
-      <div className="admin-customer-showcase-head">
+    <section className={`admin-customer-showcase-settings admin-compact-panel ${expanded ? "is-expanded" : ""}`}>
+      <div className="admin-customer-showcase-head admin-compact-panel-head">
         <div>
           <span className="admin-label">WEBSITE</span>
           <h2>Homepage Customers</h2>
@@ -212,87 +214,105 @@ export default function AdminCustomerShowcaseSettings({ password }) {
             <small>Local preview mode · customer settings are read directly from Supabase.</small>
           ) : null}
         </div>
-
-        <button type="button" className="primary-button" onClick={save} disabled={saving || loading}>
-          <Save size={16} /> {saving ? "Saving..." : "Save Customers"}
-        </button>
-      </div>
-
-      <div className={`admin-customer-showcase-toggle ${config.enabled ? "is-on" : ""}`}>
-        <div className="admin-customer-showcase-toggle-copy">
-          {config.enabled ? <Eye size={19} /> : <EyeOff size={19} />}
-          <div>
-            <strong>Show customer section on homepage</strong>
-            <span>
-              {config.enabled
-                ? "The selected customer menus can be shown publicly."
-                : "Hidden. Nothing from this section is currently displayed on the homepage."}
-            </span>
-          </div>
-        </div>
+        <span className="admin-compact-panel-summary">
+          {config.enabled ? "On" : "Off"} · {config.selected_site_ids.length} selected
+        </span>
         <button
           type="button"
-          className="admin-customer-showcase-switch"
-          aria-pressed={config.enabled}
-          onClick={() => setConfig((current) => ({ ...current, enabled: !current.enabled }))}
+          className="admin-compact-panel-toggle"
+          aria-expanded={expanded}
+          aria-label={expanded ? "Collapse Homepage Customers" : "Expand Homepage Customers"}
+          onClick={() => setExpanded((current) => !current)}
         >
-          <span />
+          <ChevronDown size={17} />
         </button>
       </div>
 
-      {loading ? <div className="admin-message">Loading customer menus...</div> : null}
-      {error ? <div className="admin-error">{error}</div> : null}
-      {message ? <div className="admin-customer-showcase-success">{message}</div> : null}
-
-      {!loading ? (
-        <>
-          <div className="admin-customer-showcase-summary">
-            <strong>{config.selected_site_ids.length}</strong>
-            <span>selected customer{config.selected_site_ids.length === 1 ? "" : "s"}</span>
+      {expanded ? (
+        <div className="admin-compact-panel-body">
+          <div className={`admin-customer-showcase-toggle ${config.enabled ? "is-on" : ""}`}>
+            <div className="admin-customer-showcase-toggle-copy">
+              {config.enabled ? <Eye size={19} /> : <EyeOff size={19} />}
+              <div>
+                <strong>Show customer section on homepage</strong>
+                <span>
+                  {config.enabled
+                    ? "The selected customer menus can be shown publicly."
+                    : "Hidden. Nothing from this section is currently displayed on the homepage."}
+                </span>
+              </div>
+            </div>
+            <button
+              type="button"
+              className="admin-customer-showcase-switch"
+              aria-pressed={config.enabled}
+              onClick={() => setConfig((current) => ({ ...current, enabled: !current.enabled }))}
+            >
+              <span />
+            </button>
           </div>
 
-          {sites.length ? (
-            <div className="admin-customer-showcase-grid">
-              {sites.map((site) => {
-                const selected = config.selected_site_ids.includes(site.id);
-                return (
-                  <article
-                    key={site.id}
-                    className={`admin-customer-site ${selected ? "is-selected" : ""}`}
-                  >
-                    <label className="admin-customer-site-select">
-                      <input
-                        type="checkbox"
-                        checked={selected}
-                        onChange={() => toggleSite(site.id)}
-                      />
-                      <div className="admin-customer-site-logo">
-                        {site.logo_url ? (
-                          <img src={site.logo_url} alt="" />
-                        ) : (
-                          <span>{String(site.name || "?").charAt(0).toUpperCase()}</span>
-                        )}
-                      </div>
-                      <div className="admin-customer-site-copy">
-                        <strong>{site.name || "Unnamed restaurant"}</strong>
-                        <span>/menu/{site.slug}</span>
-                      </div>
-                    </label>
-                    <a
-                      href={`/menu/${encodeURIComponent(site.slug)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Preview <ExternalLink size={13} />
-                    </a>
-                  </article>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="admin-message">No published customer menus are available yet.</div>
-          )}
-        </>
+          {loading ? <div className="admin-message">Loading customer menus...</div> : null}
+          {error ? <div className="admin-error">{error}</div> : null}
+          {message ? <div className="admin-customer-showcase-success">{message}</div> : null}
+
+          {!loading ? (
+            <>
+              <div className="admin-customer-showcase-summary">
+                <strong>{config.selected_site_ids.length}</strong>
+                <span>selected customer{config.selected_site_ids.length === 1 ? "" : "s"}</span>
+              </div>
+
+              {sites.length ? (
+                <div className="admin-customer-showcase-grid">
+                  {sites.map((site) => {
+                    const selected = config.selected_site_ids.includes(site.id);
+                    return (
+                      <article
+                        key={site.id}
+                        className={`admin-customer-site ${selected ? "is-selected" : ""}`}
+                      >
+                        <label className="admin-customer-site-select">
+                          <input
+                            type="checkbox"
+                            checked={selected}
+                            onChange={() => toggleSite(site.id)}
+                          />
+                          <div className="admin-customer-site-logo">
+                            {site.logo_url ? (
+                              <img src={site.logo_url} alt="" />
+                            ) : (
+                              <span>{String(site.name || "?").charAt(0).toUpperCase()}</span>
+                            )}
+                          </div>
+                          <div className="admin-customer-site-copy">
+                            <strong>{site.name || "Unnamed restaurant"}</strong>
+                            <span>/menu/{site.slug}</span>
+                          </div>
+                        </label>
+                        <a
+                          href={`/menu/${encodeURIComponent(site.slug)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Preview <ExternalLink size={13} />
+                        </a>
+                      </article>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="admin-message">No published customer menus are available yet.</div>
+              )}
+            </>
+          ) : null}
+
+          <div style={{ marginTop: 12, display: "flex", justifyContent: "flex-end" }}>
+            <button type="button" className="primary-button" onClick={save} disabled={saving || loading}>
+              <Save size={16} /> {saving ? "Saving..." : "Save Customers"}
+            </button>
+          </div>
+        </div>
       ) : null}
     </section>
   );
