@@ -1,0 +1,63 @@
+/* Final dark-mode polish for Advanced Design inspector controls. */
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-font-field > span,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-control-label {
+  color:#aeb7c3 !important;
+}
+
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-font-picker {
+  border-color:rgba(255,255,255,.11) !important;
+  background:#171e26 !important;
+}
+
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-font-sample {
+  background:#202833 !important;
+  color:#f2f5f8 !important;
+}
+
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-font-picker select {
+  color:#eef2f7 !important;
+  background:#171e26 !important;
+}
+
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-font-picker select option {
+  color:#eef2f7;
+  background:#171e26;
+}
+
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-weight-choice {
+  border-color:rgba(255,255,255,.11) !important;
+  background:#1b222b !important;
+  color:#c8d0da !important;
+}
+
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-weight-choice:hover {
+  border-color:rgba(106,143,244,.44) !important;
+  background:#222c38 !important;
+  color:#f3f6fa !important;
+}
+
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-weight-choice.active {
+  border-color:rgba(106,143,244,.74) !important;
+  background:rgba(73,116,229,.20) !important;
+  color:#9bb1ff !important;
+  box-shadow:0 0 0 2px rgba(73,116,229,.10);
+}
+
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-inspector-range {
+  border-color:rgba(255,255,255,.08) !important;
+}
+
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-inspector-range-head,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-inspector-range-head span {
+  color:#c9d0d9 !important;
+}
+
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-inspector-range-head b {
+  background:#202833 !important;
+  color:#f2f5f8 !important;
+  border-color:rgba(255,255,255,.08) !important;
+}
+
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-inspector-range input[type="range"] {
+  accent-color:#5f82ef;
+}
