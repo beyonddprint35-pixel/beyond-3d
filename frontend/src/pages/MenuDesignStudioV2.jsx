@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
 import MenuStudioHeader from "../components/MenuStudioHeader";
 import { flushStudioDraft } from "../features/menu-engine/studio/studioNavigation";
 import MenuDesignControls from "../features/menu-engine/studio/MenuDesignControls";
+import MenuItemNameColorControl from "../features/menu-engine/studio/MenuItemNameColorControl";
 import MenuDesignPicker from "../features/menu-engine/studio/MenuDesignPicker";
 import MenuHeroHeadlineControl from "../features/menu-engine/studio/MenuHeroHeadlineControl";
 import { PREMIUM_MENU_DESIGNS, applyPremiumMenuDesign, findMatchingMenuDesign } from "../features/menu-engine/domain/menuDesignLibrary";
@@ -221,6 +222,7 @@ export default function MenuDesignStudioV2() {
             patchDesign={patchDesign}
             onBrowseDesigns={browseDesigns}
           />
+          {panel === "type" ? <MenuItemNameColorControl design={design} language={uiLanguage} patchDesign={patchDesign} /> : null}
           {panel === "hero" ? (
             <MenuHeroHeadlineControl
               value={menu.hero_title}
