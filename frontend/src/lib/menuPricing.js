@@ -69,39 +69,65 @@ function normalizeFeature(feature) {
   };
 }
 
+function normalizePlan(candidate = {}, fallbackPlan = null, index = 0) {
+  const fallback = fallbackPlan || {
+    id: `plan-${index + 1}`,
+    name_en: "New Plan",
+    name_he: "חבילה חדשה",
+    description_en: "",
+    description_he: "",
+    price: "",
+    period_en: "/ month",
+    period_he: "/ חודש",
+    setup_fee: "",
+    setup_note_en: "",
+    setup_note_he: "",
+    cta_en: "Choose plan",
+    cta_he: "בחירת חבילה",
+    recommended: false,
+    features: [],
+  };
+
+  const candidateFeatures = Array.isArray(candidate.features)
+    ? candidate.features.map(normalizeFeature).filter((feature) => feature.en || feature.he)
+    : fallback.features;
+
+  const rawId = text(candidate.id, fallback.id).trim();
+
+  return {
+    ...fallback,
+    ...candidate,
+    id: rawId || fallback.id,
+    name_en: text(candidate.name_en, fallback.name_en),
+    name_he: text(candidate.name_he, fallback.name_he),
+    description_en: text(candidate.description_en, fallback.description_en),
+    description_he: text(candidate.description_he, fallback.description_he),
+    price: text(candidate.price, fallback.price),
+    period_en: text(candidate.period_en, fallback.period_en),
+    period_he: text(candidate.period_he, fallback.period_he),
+    setup_fee: text(candidate.setup_fee, fallback.setup_fee),
+    setup_note_en: text(candidate.setup_note_en, fallback.setup_note_en),
+    setup_note_he: text(candidate.setup_note_he, fallback.setup_note_he),
+    cta_en: text(candidate.cta_en, fallback.cta_en),
+    cta_he: text(candidate.cta_he, fallback.cta_he),
+    recommended: Boolean(candidate.recommended),
+    features: candidateFeatures,
+  };
+}
+
 export function normalizeMenuPricing(value) {
   const source = value && typeof value === "object" ? value : {};
   const sourcePlans = Array.isArray(source.plans) ? source.plans : [];
 
+  const defaultIds = new Set(DEFAULT_MENU_PRICING.plans.map((plan) => plan.id));
   const plans = DEFAULT_MENU_PRICING.plans.map((fallbackPlan, index) => {
-    const candidate =
-      sourcePlans.find((plan) => plan?.id === fallbackPlan.id) ||
-      sourcePlans[index] ||
-      {};
+    const candidate = sourcePlans.find((plan) => plan?.id === fallbackPlan.id) || sourcePlans[index] || {};
+    return normalizePlan(candidate, fallbackPlan, index);
+  });
 
-    const candidateFeatures = Array.isArray(candidate.features)
-      ? candidate.features.map(normalizeFeature).filter((feature) => feature.en || feature.he)
-      : fallbackPlan.features;
-
-    return {
-      ...fallbackPlan,
-      ...candidate,
-      id: fallbackPlan.id,
-      name_en: text(candidate.name_en, fallbackPlan.name_en),
-      name_he: text(candidate.name_he, fallbackPlan.name_he),
-      description_en: text(candidate.description_en, fallbackPlan.description_en),
-      description_he: text(candidate.description_he, fallbackPlan.description_he),
-      price: text(candidate.price, fallbackPlan.price),
-      period_en: text(candidate.period_en, fallbackPlan.period_en),
-      period_he: text(candidate.period_he, fallbackPlan.period_he),
-      setup_fee: text(candidate.setup_fee, fallbackPlan.setup_fee),
-      setup_note_en: text(candidate.setup_note_en, fallbackPlan.setup_note_en),
-      setup_note_he: text(candidate.setup_note_he, fallbackPlan.setup_note_he),
-      cta_en: text(candidate.cta_en, fallbackPlan.cta_en),
-      cta_he: text(candidate.cta_he, fallbackPlan.cta_he),
-      recommended: Boolean(candidate.recommended),
-      features: candidateFeatures.length ? candidateFeatures : fallbackPlan.features,
-    };
+  sourcePlans.forEach((candidate, index) => {
+    if (!candidate || defaultIds.has(candidate.id)) return;
+    plans.push(normalizePlan(candidate, null, plans.length + index));
   });
 
   return {
