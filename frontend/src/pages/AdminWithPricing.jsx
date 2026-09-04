@@ -6,6 +6,7 @@ import AdminCustomerShowcaseSettings from "../components/AdminCustomerShowcaseSe
 import AdminPromoCodes from "../components/AdminPromoCodes";
 import AdminPromoEmailSender from "../components/AdminPromoEmailSender";
 import AdminMenuOwnershipManager from "../components/AdminMenuOwnershipManager";
+import "../components/AdminPricingPanelMatch.css";
 import Admin from "./Admin";
 
 export default function AdminWithPricing() {
