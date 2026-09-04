@@ -36,9 +36,10 @@ function resolveStorageContext(sourceUrl, sourcePath = "", projectId = "") {
     }
   }
   const parts = path.split("/").filter(Boolean);
+  const explicitProject = projectId && projectId !== "draft" ? projectId : "";
   return {
     sourcePath: path,
-    projectId: String(projectId || parts[1] || "").trim(),
+    projectId: String(explicitProject || parts[1] || "").trim(),
   };
 }
 
@@ -82,22 +83,25 @@ async function invokePhotoAi(body, fallback) {
   return data;
 }
 
-export async function getMenuPhotoStyleMemory({ projectId }) {
-  if (!projectId || projectId === "draft") return { exists: false };
-  const data = await invokePhotoAi({ action: "status", projectId }, "Could not read Style Memory.");
-  return { exists: Boolean(data.styleMemoryExists), path: data.styleMemoryPath || "" };
+export async function getMenuPhotoStyleMemory({ projectId = "", sourcePath = "" }) {
+  const context = resolveStorageContext("", sourcePath, projectId);
+  if (!context.projectId) return { exists: false };
+  const data = await invokePhotoAi({ action: "status", projectId: context.projectId }, "Could not read Style Memory.");
+  return { exists: Boolean(data.styleMemoryExists), path: data.styleMemoryPath || "", projectId: context.projectId };
 }
 
-export async function rememberMenuPhotoStyle({ projectId, approvedPath }) {
-  if (!projectId || projectId === "draft" || !approvedPath) throw new Error("Could not save Style Memory for this menu.");
-  const data = await invokePhotoAi({ action: "remember", projectId, approvedPath }, "Could not save Style Memory.");
-  return { exists: Boolean(data.styleMemoryExists), path: data.styleMemoryPath || "" };
+export async function rememberMenuPhotoStyle({ projectId = "", sourcePath = "", approvedPath }) {
+  const context = resolveStorageContext("", sourcePath || approvedPath, projectId);
+  if (!context.projectId || !approvedPath) throw new Error("Could not save Style Memory for this menu.");
+  const data = await invokePhotoAi({ action: "remember", projectId: context.projectId, approvedPath }, "Could not save Style Memory.");
+  return { exists: Boolean(data.styleMemoryExists), path: data.styleMemoryPath || "", projectId: context.projectId };
 }
 
-export async function resetMenuPhotoStyleMemory({ projectId }) {
-  if (!projectId || projectId === "draft") return { exists: false };
-  const data = await invokePhotoAi({ action: "reset", projectId }, "Could not reset Style Memory.");
-  return { exists: Boolean(data.styleMemoryExists) };
+export async function resetMenuPhotoStyleMemory({ projectId = "", sourcePath = "" }) {
+  const context = resolveStorageContext("", sourcePath, projectId);
+  if (!context.projectId) return { exists: false };
+  const data = await invokePhotoAi({ action: "reset", projectId: context.projectId }, "Could not reset Style Memory.");
+  return { exists: Boolean(data.styleMemoryExists), projectId: context.projectId };
 }
 
 export async function enhanceMenuPhotoWithAi({
@@ -130,5 +134,6 @@ export async function enhanceMenuPhotoWithAi({
     size: data.size || size,
     styleLocked: Boolean(data.styleLocked),
     styleMemoryExists: Boolean(data.styleMemoryExists),
+    projectId: context.projectId,
   };
 }
