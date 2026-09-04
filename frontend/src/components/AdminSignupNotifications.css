@@ -1,0 +1,105 @@
+.admin-signup-notifications {
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.025);
+}
+
+.admin-signup-notifications .has-unread {
+  color: #a9baff;
+  font-weight: 800;
+}
+
+.admin-signup-notifications-toolbar {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.admin-signup-notifications-toolbar button {
+  min-height: 32px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+
+.admin-signup-notifications-list {
+  display: grid;
+  gap: 7px;
+}
+
+.admin-signup-notification {
+  display: grid;
+  grid-template-columns: 32px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 10px;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 11px;
+  background: rgba(255,255,255,.02);
+}
+
+.admin-signup-notification.is-unread {
+  border-color: rgba(83,120,239,.28);
+  background: rgba(83,120,239,.07);
+}
+
+.admin-signup-notification.is-read {
+  opacity: .64;
+}
+
+.admin-signup-notification-icon {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: rgba(83,120,239,.11);
+  color: #9bb0ff;
+}
+
+.admin-signup-notification-copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.admin-signup-notification-copy strong,
+.admin-signup-notification-copy span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-signup-notification-copy strong {
+  font-size: 12px;
+}
+
+.admin-signup-notification-copy span,
+.admin-signup-notification time {
+  color: rgba(255,255,255,.5);
+  font-size: 10px;
+}
+
+.admin-signup-notification time {
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .admin-signup-notifications-toolbar {
+    justify-content: stretch;
+  }
+
+  .admin-signup-notifications-toolbar button {
+    flex: 1;
+  }
+
+  .admin-signup-notification {
+    grid-template-columns: 30px minmax(0,1fr);
+  }
+
+  .admin-signup-notification time {
+    grid-column: 2;
+  }
+}

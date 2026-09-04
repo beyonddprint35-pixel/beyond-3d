@@ -249,6 +249,59 @@ export async function archiveMenuStudioProject(projectId) {
   if (readActiveMenuStudioProjectId() === projectId) setActiveMenuStudioProjectId("");
 }
 
+export async function deleteMenuStudioProject(projectId) {
+  const id = text(projectId);
+  if (!id) throw new Error("This menu could not be identified.");
+
+  await flushMenuStudioProjectSave(id);
+
+  const { data: project, error: projectError } = await supabase
+    .from("menu_projects")
+    .select("id,activated_site_id,source_metadata,studio_state")
+    .eq("id", id)
+    .maybeSingle();
+  if (projectError) throw projectError;
+  if (!project?.id) throw new Error("This menu no longer exists or you do not have permission to delete it.");
+
+  const legacySiteId = text(
+    project.activated_site_id
+      || project.studio_state?.profile?.legacySiteId
+      || project.source_metadata?.studio_migration?.site_id,
+  );
+
+  // Older migrated menus can still be served from menu_sites. Take that route
+  // offline before removing the Studio project so a deleted menu cannot remain live.
+  if (legacySiteId) {
+    const { data: legacySite, error: legacyReadError } = await supabase
+      .from("menu_sites")
+      .select("id,published")
+      .eq("id", legacySiteId)
+      .maybeSingle();
+    if (legacyReadError) throw legacyReadError;
+
+    if (legacySite?.published) {
+      const { data: unpublished, error: unpublishError } = await supabase
+        .from("menu_sites")
+        .update({ published: false })
+        .eq("id", legacySiteId)
+        .select("id");
+      if (unpublishError) throw unpublishError;
+      if (!unpublished?.length) throw new Error("Could not take the live menu offline. Please try again.");
+    }
+  }
+
+  const { data: deleted, error } = await supabase
+    .from("menu_projects")
+    .delete()
+    .eq("id", id)
+    .select("id");
+  if (error) throw error;
+  if (!deleted?.length) throw new Error("This menu could not be deleted.");
+
+  if (readActiveMenuStudioProjectId() === id) setActiveMenuStudioProjectId("");
+  return true;
+}
+
 export async function duplicateMenuStudioProject(project) {
   const session = await currentSession();
   if (!session?.user?.id) throw new Error("Sign in is required.");

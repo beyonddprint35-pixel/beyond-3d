@@ -1,0 +1,602 @@
+/* =========================================================
+   BEYOND MENU ENGINE — DESIGN-AWARE HERO PHOTO PROFILES
+
+   Photo mode is part of each menu composition, never a generic floating card.
+   These rules load after the structural hero families and only affect
+   .bme-hero-mode-image, leaving logo/watermark and clean modes untouched.
+   ========================================================= */
+
+/* ---------- Shared photo behavior ---------- */
+.bme-menu .bme-hero.bme-hero-mode-image{
+  overflow:hidden;
+}
+.bme-menu .bme-hero.bme-hero-mode-image .bme-hero-media-image{
+  padding:0;
+  background:var(--bme-accent-secondary);
+}
+.bme-menu .bme-hero.bme-hero-mode-image .bme-hero-media-image img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  transform:scale(1.002);
+}
+
+/* =========================================================
+   1. EDITORIAL COVER
+   Large architectural side image instead of a card.
+   ========================================================= */
+.bme-menu:is(
+  .bme-presentation-atelier,
+  .bme-presentation-nordic-paper,
+  .bme-presentation-monochrome-grid,
+  .bme-presentation-chef-editorial,
+  .bme-presentation-minimal-grid,
+  .bme-presentation-tokyo-ink
+) .bme-hero.bme-hero-mode-image{
+  grid-template-columns:minmax(0,1.08fr) minmax(250px,.92fr);
+  gap:clamp(26px,5cqw,70px);
+}
+.bme-menu:is(
+  .bme-presentation-atelier,
+  .bme-presentation-nordic-paper,
+  .bme-presentation-monochrome-grid,
+  .bme-presentation-chef-editorial,
+  .bme-presentation-minimal-grid,
+  .bme-presentation-tokyo-ink
+) .bme-hero.bme-hero-mode-image .bme-hero-media{
+  align-self:stretch;
+  min-height:300px;
+  transform:none;
+}
+.bme-menu:is(
+  .bme-presentation-atelier,
+  .bme-presentation-nordic-paper,
+  .bme-presentation-monochrome-grid,
+  .bme-presentation-chef-editorial,
+  .bme-presentation-minimal-grid,
+  .bme-presentation-tokyo-ink
+) .bme-hero.bme-hero-mode-image .bme-hero-media-image{
+  width:100%;
+  height:100%;
+  min-height:300px;
+  border:0;
+  border-radius:2px;
+  box-shadow:none;
+}
+.bme-presentation-atelier .bme-hero.bme-hero-mode-image .bme-hero-media-image{clip-path:polygon(8% 0,100% 0,100% 94%,0 100%)}
+.bme-presentation-nordic-paper .bme-hero.bme-hero-mode-image .bme-hero-media-image{border-radius:0 0 42% 0}
+.bme-presentation-monochrome-grid .bme-hero.bme-hero-mode-image .bme-hero-media-image{filter:grayscale(1);border:1px solid var(--bme-text)}
+.bme-presentation-tokyo-ink .bme-hero.bme-hero-mode-image .bme-hero-media-image{clip-path:polygon(0 0,100% 4%,96% 100%,3% 96%)}
+.bme-presentation-chef-editorial .bme-hero.bme-hero-mode-image .bme-hero-media-image{max-width:520px;justify-self:end}
+
+/* =========================================================
+   2. IMMERSIVE / CINEMA
+   Full-bleed photography already suits these designs; improve tone per style.
+   ========================================================= */
+.bme-menu:is(
+  .bme-presentation-noir-gallery,
+  .bme-presentation-smokehouse-story,
+  .bme-presentation-luxury-steak,
+  .bme-presentation-white-gallery,
+  .bme-presentation-coastal-gallery,
+  .bme-presentation-brunch-polaroids,
+  .bme-presentation-patisserie,
+  .bme-presentation-photo-story
+) .bme-hero.bme-hero-mode-image .bme-hero-media-image{
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+}
+.bme-presentation-noir-gallery .bme-hero.bme-hero-mode-image .bme-hero-media-image img,
+.bme-presentation-luxury-steak .bme-hero.bme-hero-mode-image .bme-hero-media-image img{filter:saturate(.74) contrast(1.12) brightness(.76)}
+.bme-presentation-smokehouse-story .bme-hero.bme-hero-mode-image .bme-hero-media-image img{filter:saturate(.7) contrast(1.12) sepia(.08) brightness(.72)}
+.bme-presentation-white-gallery .bme-hero.bme-hero-mode-image .bme-hero-media-image img{filter:saturate(.82) contrast(1.02) brightness(.9)}
+.bme-presentation-coastal-gallery .bme-hero.bme-hero-mode-image .bme-hero-media-image img{filter:saturate(.82) brightness(.92)}
+.bme-presentation-patisserie .bme-hero.bme-hero-mode-image .bme-hero-media-image img{filter:saturate(.72) brightness(.96)}
+
+/* =========================================================
+   3. SPLIT IDENTITY
+   Photo becomes the second half of the hero, with edge-led crops.
+   ========================================================= */
+.bme-menu:is(
+  .bme-presentation-riviera,
+  .bme-presentation-coastal-story,
+  .bme-presentation-botanical,
+  .bme-presentation-garden-journal,
+  .bme-presentation-breakfast-board,
+  .bme-presentation-levant-table
+) .bme-hero.bme-hero-mode-image{
+  grid-template-columns:minmax(0,.9fr) minmax(300px,1.1fr);
+  gap:clamp(22px,4cqw,54px);
+}
+.bme-menu:is(
+  .bme-presentation-riviera,
+  .bme-presentation-coastal-story,
+  .bme-presentation-botanical,
+  .bme-presentation-garden-journal,
+  .bme-presentation-breakfast-board,
+  .bme-presentation-levant-table
+) .bme-hero.bme-hero-mode-image .bme-hero-media{
+  align-self:stretch;
+  min-height:310px;
+  transform:none;
+}
+.bme-menu:is(
+  .bme-presentation-riviera,
+  .bme-presentation-coastal-story,
+  .bme-presentation-botanical,
+  .bme-presentation-garden-journal,
+  .bme-presentation-breakfast-board,
+  .bme-presentation-levant-table
+) .bme-hero.bme-hero-mode-image .bme-hero-media-image{
+  width:100%;
+  height:100%;
+  min-height:310px;
+  border:0;
+  box-shadow:none;
+}
+.bme-presentation-riviera .bme-hero.bme-hero-mode-image .bme-hero-media-image{border-radius:46% 10px 46% 10px}
+.bme-presentation-coastal-story .bme-hero.bme-hero-mode-image .bme-hero-media-image{border-radius:70px 8px 70px 8px}
+.bme-presentation-botanical .bme-hero.bme-hero-mode-image .bme-hero-media-image{border-radius:48% 48% 18px 18px}
+.bme-presentation-garden-journal .bme-hero.bme-hero-mode-image .bme-hero-media-image{clip-path:polygon(9% 0,100% 0,92% 100%,0 94%);border-radius:0}
+.bme-presentation-breakfast-board .bme-hero.bme-hero-mode-image .bme-hero-media-image{border-radius:40px 40px 8px 40px}
+.bme-presentation-levant-table .bme-hero.bme-hero-mode-image .bme-hero-media-image{border-radius:90px 90px 16px 16px}
+
+/* =========================================================
+   4. POSTER / NIGHTLIFE / COLLAGE
+   Replace the narrow floating phone-card image with a bold right-side crop.
+   ========================================================= */
+.bme-menu:is(
+  .bme-presentation-street-poster,
+  .bme-presentation-seoul-night,
+  .bme-presentation-neon-dock,
+  .bme-presentation-mosaic,
+  .bme-presentation-tapas-collage,
+  .bme-presentation-dessert-magazine,
+  .bme-presentation-rose-lounge,
+  .bme-presentation-bakery-counter,
+  .bme-presentation-cafe-cards,
+  .bme-presentation-cocktail-cards,
+  .bme-presentation-magazine
+) .bme-hero.bme-hero-mode-image{
+  grid-template-columns:minmax(0,.92fr) minmax(280px,1.08fr);
+  gap:clamp(18px,3cqw,34px);
+  align-items:stretch;
+}
+.bme-menu:is(
+  .bme-presentation-street-poster,
+  .bme-presentation-seoul-night,
+  .bme-presentation-neon-dock,
+  .bme-presentation-mosaic,
+  .bme-presentation-tapas-collage,
+  .bme-presentation-dessert-magazine,
+  .bme-presentation-rose-lounge,
+  .bme-presentation-bakery-counter,
+  .bme-presentation-cafe-cards,
+  .bme-presentation-cocktail-cards,
+  .bme-presentation-magazine
+) .bme-hero.bme-hero-mode-image .bme-hero-copy{
+  grid-column:1;
+  position:relative;
+  z-index:4;
+  align-self:center;
+}
+.bme-menu:is(
+  .bme-presentation-street-poster,
+  .bme-presentation-seoul-night,
+  .bme-presentation-neon-dock,
+  .bme-presentation-mosaic,
+  .bme-presentation-tapas-collage,
+  .bme-presentation-dessert-magazine,
+  .bme-presentation-rose-lounge,
+  .bme-presentation-bakery-counter,
+  .bme-presentation-cafe-cards,
+  .bme-presentation-cocktail-cards,
+  .bme-presentation-magazine
+) .bme-hero.bme-hero-mode-image .bme-hero-media{
+  grid-column:2;
+  align-self:stretch;
+  width:100%;
+  min-height:300px;
+  transform:none;
+}
+.bme-menu:is(
+  .bme-presentation-street-poster,
+  .bme-presentation-seoul-night,
+  .bme-presentation-neon-dock,
+  .bme-presentation-mosaic,
+  .bme-presentation-tapas-collage,
+  .bme-presentation-dessert-magazine,
+  .bme-presentation-rose-lounge,
+  .bme-presentation-bakery-counter,
+  .bme-presentation-cafe-cards,
+  .bme-presentation-cocktail-cards,
+  .bme-presentation-magazine
+) .bme-hero.bme-hero-mode-image .bme-hero-media-image{
+  width:100%;
+  height:100%;
+  min-height:300px;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+  transform:none;
+}
+.bme-presentation-street-poster .bme-hero.bme-hero-mode-image .bme-hero-media-image{border:3px solid var(--bme-text);box-shadow:9px 9px 0 var(--bme-accent);transform:rotate(1.2deg)}
+.bme-presentation-seoul-night .bme-hero.bme-hero-mode-image .bme-hero-media-image{clip-path:polygon(13% 0,100% 0,100% 100%,0 100%)}
+.bme-presentation-neon-dock .bme-hero.bme-hero-mode-image .bme-hero-media-image{clip-path:polygon(20% 0,100% 0,86% 100%,0 100%);filter:drop-shadow(0 0 18px color-mix(in srgb,var(--bme-accent) 28%,transparent))}
+.bme-presentation-mosaic .bme-hero.bme-hero-mode-image .bme-hero-media-image{clip-path:polygon(0 0,100% 8%,94% 100%,6% 92%)}
+.bme-presentation-tapas-collage .bme-hero.bme-hero-mode-image .bme-hero-media-image{transform:rotate(1.8deg);border:5px solid var(--bme-card);box-shadow:10px 12px 0 color-mix(in srgb,var(--bme-accent) 25%,transparent)}
+.bme-presentation-dessert-magazine .bme-hero.bme-hero-mode-image .bme-hero-media-image{clip-path:polygon(8% 0,100% 0,92% 100%,0 94%)}
+.bme-presentation-rose-lounge .bme-hero.bme-hero-mode-image .bme-hero-media-image{border-radius:50% 50% 14px 14px}
+.bme-presentation-bakery-counter .bme-hero.bme-hero-mode-image .bme-hero-media-image{border-radius:120px 120px 24px 24px}
+.bme-presentation-cafe-cards .bme-hero.bme-hero-mode-image .bme-hero-media-image{border-radius:28px 6px 28px 6px}
+.bme-presentation-cocktail-cards .bme-hero.bme-hero-mode-image .bme-hero-media-image{clip-path:polygon(16% 0,100% 0,100% 100%,0 100%)}
+.bme-presentation-cocktail-cards .bme-hero.bme-hero-mode-image .bme-hero-media-image img{filter:saturate(.9) contrast(1.08) brightness(.8)}
+.bme-presentation-magazine .bme-hero.bme-hero-mode-image .bme-hero-media-image{clip-path:polygon(0 4%,94% 0,100% 94%,8% 100%)}
+
+/* =========================================================
+   5. BRAND STAGE
+   Photo becomes a wide editorial plate above the title, not a round badge.
+   ========================================================= */
+.bme-menu:is(
+  .bme-presentation-omakase,
+  .bme-presentation-brasserie,
+  .bme-presentation-wine-register,
+  .bme-presentation-trattoria-ledger,
+  .bme-presentation-butcher-ledger,
+  .bme-presentation-tap-board,
+  .bme-presentation-standard
+) .bme-hero.bme-hero-mode-image .bme-hero-media{
+  width:min(100%,720px);
+  min-height:0;
+  justify-self:center;
+  transform:none;
+}
+.bme-menu:is(
+  .bme-presentation-omakase,
+  .bme-presentation-brasserie,
+  .bme-presentation-wine-register,
+  .bme-presentation-trattoria-ledger,
+  .bme-presentation-butcher-ledger,
+  .bme-presentation-tap-board,
+  .bme-presentation-standard
+) .bme-hero.bme-hero-mode-image .bme-hero-media-image{
+  width:100%;
+  height:auto;
+  min-height:0;
+  aspect-ratio:16/7;
+  border-radius:0;
+  border:0;
+  box-shadow:none;
+}
+.bme-presentation-omakase .bme-hero.bme-hero-mode-image .bme-hero-media{width:min(100%,560px)}
+.bme-presentation-omakase .bme-hero.bme-hero-mode-image .bme-hero-media-image{aspect-ratio:16/8;border-radius:2px}
+.bme-presentation-brasserie .bme-hero.bme-hero-mode-image .bme-hero-media-image{border:1px solid var(--bme-text);padding:6px;background:var(--bme-bg)}
+.bme-presentation-wine-register .bme-hero.bme-hero-mode-image .bme-hero-media-image{aspect-ratio:18/6;filter:saturate(.65)}
+.bme-presentation-trattoria-ledger .bme-hero.bme-hero-mode-image .bme-hero-media-image{transform:rotate(-.6deg);border:1px solid color-mix(in srgb,var(--bme-text) 34%,transparent)}
+.bme-presentation-butcher-ledger .bme-hero.bme-hero-mode-image .bme-hero-media-image{aspect-ratio:18/7;filter:saturate(.7) sepia(.08)}
+.bme-presentation-tap-board .bme-hero.bme-hero-mode-image .bme-hero-media-image{border-block:2px solid var(--bme-text)}
+
+/* =========================================================
+   6. CATEGORY-LED / APP INTRO
+   Large side media on wide views; cinematic background on phones.
+   ========================================================= */
+.bme-menu:is(
+  .bme-presentation-beyond-launcher,
+  .bme-presentation-blue-launcher,
+  .bme-presentation-tropical-club,
+  .bme-presentation-family-pizzeria,
+  .bme-presentation-launcher,
+  .bme-presentation-category-covers,
+  .bme-presentation-desert-arches,
+  .bme-presentation-bottom-tabs
+) .bme-hero.bme-hero-mode-image{
+  grid-template-columns:minmax(0,.9fr) minmax(280px,1.1fr);
+  gap:clamp(18px,4cqw,46px);
+  align-items:stretch;
+}
+.bme-menu:is(
+  .bme-presentation-beyond-launcher,
+  .bme-presentation-blue-launcher,
+  .bme-presentation-tropical-club,
+  .bme-presentation-family-pizzeria,
+  .bme-presentation-launcher,
+  .bme-presentation-category-covers,
+  .bme-presentation-desert-arches,
+  .bme-presentation-bottom-tabs
+) .bme-hero.bme-hero-mode-image .bme-hero-media{
+  align-self:stretch;
+  width:100%;
+  min-height:260px;
+  transform:none;
+}
+.bme-menu:is(
+  .bme-presentation-beyond-launcher,
+  .bme-presentation-blue-launcher,
+  .bme-presentation-tropical-club,
+  .bme-presentation-family-pizzeria,
+  .bme-presentation-launcher,
+  .bme-presentation-category-covers,
+  .bme-presentation-desert-arches,
+  .bme-presentation-bottom-tabs
+) .bme-hero.bme-hero-mode-image .bme-hero-media-image{
+  width:100%;
+  height:100%;
+  min-height:260px;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+  transform:none;
+}
+.bme-presentation-blue-launcher .bme-hero.bme-hero-mode-image .bme-hero-media-image{border-radius:32px 8px 32px 8px}
+.bme-presentation-tropical-club .bme-hero.bme-hero-mode-image .bme-hero-media-image{border-radius:50% 50% 18px 18px}
+.bme-presentation-family-pizzeria .bme-hero.bme-hero-mode-image .bme-hero-media-image{border-radius:50%}
+.bme-presentation-desert-arches .bme-hero.bme-hero-mode-image .bme-hero-media-image{border-radius:120px 120px 12px 12px}
+.bme-presentation-category-covers .bme-hero.bme-hero-mode-image .bme-hero-media-image{clip-path:polygon(8% 0,100% 0,94% 100%,0 92%)}
+
+/* =========================================================
+   MOBILE PHOTO COMPOSITIONS
+   Never collapse photo mode into the old narrow 66/82px media column.
+   ========================================================= */
+@container beyond-menu (max-width:430px){
+  /* Editorial: title first, wide magazine image second. */
+  .bme-menu:is(
+    .bme-presentation-atelier,
+    .bme-presentation-nordic-paper,
+    .bme-presentation-monochrome-grid,
+    .bme-presentation-chef-editorial,
+    .bme-presentation-minimal-grid,
+    .bme-presentation-tokyo-ink
+  ) .bme-hero.bme-hero-mode-image{
+    grid-template-columns:1fr;
+    gap:24px;
+    min-height:0;
+    padding-top:46px;
+    padding-bottom:32px;
+  }
+  .bme-menu:is(
+    .bme-presentation-atelier,
+    .bme-presentation-nordic-paper,
+    .bme-presentation-monochrome-grid,
+    .bme-presentation-chef-editorial,
+    .bme-presentation-minimal-grid,
+    .bme-presentation-tokyo-ink
+  ) .bme-hero.bme-hero-mode-image .bme-hero-copy{grid-column:1;grid-row:1}
+  .bme-menu:is(
+    .bme-presentation-atelier,
+    .bme-presentation-nordic-paper,
+    .bme-presentation-monochrome-grid,
+    .bme-presentation-chef-editorial,
+    .bme-presentation-minimal-grid,
+    .bme-presentation-tokyo-ink
+  ) .bme-hero.bme-hero-mode-image .bme-hero-media{grid-column:1;grid-row:2;min-height:185px}
+  .bme-menu:is(
+    .bme-presentation-atelier,
+    .bme-presentation-nordic-paper,
+    .bme-presentation-monochrome-grid,
+    .bme-presentation-chef-editorial,
+    .bme-presentation-minimal-grid,
+    .bme-presentation-tokyo-ink
+  ) .bme-hero.bme-hero-mode-image .bme-hero-media-image{min-height:185px;aspect-ratio:16/9}
+
+  /* Split: compact title + full-width landscape image. */
+  .bme-menu:is(
+    .bme-presentation-riviera,
+    .bme-presentation-coastal-story,
+    .bme-presentation-botanical,
+    .bme-presentation-garden-journal,
+    .bme-presentation-breakfast-board,
+    .bme-presentation-levant-table
+  ) .bme-hero.bme-hero-mode-image{
+    grid-template-columns:1fr;
+    gap:22px;
+  }
+  .bme-menu:is(
+    .bme-presentation-riviera,
+    .bme-presentation-coastal-story,
+    .bme-presentation-botanical,
+    .bme-presentation-garden-journal,
+    .bme-presentation-breakfast-board,
+    .bme-presentation-levant-table
+  ) .bme-hero.bme-hero-mode-image .bme-hero-copy{grid-column:1;grid-row:1}
+  .bme-menu:is(
+    .bme-presentation-riviera,
+    .bme-presentation-coastal-story,
+    .bme-presentation-botanical,
+    .bme-presentation-garden-journal,
+    .bme-presentation-breakfast-board,
+    .bme-presentation-levant-table
+  ) .bme-hero.bme-hero-mode-image .bme-hero-media{grid-column:1;grid-row:2;min-height:190px}
+  .bme-menu:is(
+    .bme-presentation-riviera,
+    .bme-presentation-coastal-story,
+    .bme-presentation-botanical,
+    .bme-presentation-garden-journal,
+    .bme-presentation-breakfast-board,
+    .bme-presentation-levant-table
+  ) .bme-hero.bme-hero-mode-image .bme-hero-media-image{min-height:190px;aspect-ratio:16/9;border-radius:26px}
+
+  /* Poster/nightlife: use image as a real background, not a tiny card. */
+  .bme-menu:is(
+    .bme-presentation-street-poster,
+    .bme-presentation-seoul-night,
+    .bme-presentation-neon-dock,
+    .bme-presentation-mosaic,
+    .bme-presentation-tapas-collage,
+    .bme-presentation-dessert-magazine,
+    .bme-presentation-rose-lounge,
+    .bme-presentation-bakery-counter,
+    .bme-presentation-cafe-cards,
+    .bme-presentation-cocktail-cards,
+    .bme-presentation-magazine
+  ) .bme-hero.bme-hero-mode-image{
+    grid-template-columns:1fr;
+    min-height:350px;
+    padding-top:62px;
+    padding-bottom:40px;
+    background:var(--bme-bg);
+  }
+  .bme-menu:is(
+    .bme-presentation-street-poster,
+    .bme-presentation-seoul-night,
+    .bme-presentation-neon-dock,
+    .bme-presentation-mosaic,
+    .bme-presentation-tapas-collage,
+    .bme-presentation-dessert-magazine,
+    .bme-presentation-rose-lounge,
+    .bme-presentation-bakery-counter,
+    .bme-presentation-cafe-cards,
+    .bme-presentation-cocktail-cards,
+    .bme-presentation-magazine
+  ) .bme-hero.bme-hero-mode-image .bme-hero-media{
+    position:absolute;
+    inset:0;
+    z-index:0;
+    width:100%;
+    height:100%;
+    min-height:0;
+    transform:none;
+  }
+  .bme-menu:is(
+    .bme-presentation-street-poster,
+    .bme-presentation-seoul-night,
+    .bme-presentation-neon-dock,
+    .bme-presentation-mosaic,
+    .bme-presentation-tapas-collage,
+    .bme-presentation-dessert-magazine,
+    .bme-presentation-rose-lounge,
+    .bme-presentation-bakery-counter,
+    .bme-presentation-cafe-cards,
+    .bme-presentation-cocktail-cards,
+    .bme-presentation-magazine
+  ) .bme-hero.bme-hero-mode-image .bme-hero-media-image{
+    width:100%;
+    height:100%;
+    min-height:100%;
+    border:0;
+    border-radius:0;
+    box-shadow:none;
+    clip-path:none;
+    transform:none;
+  }
+  .bme-menu:is(
+    .bme-presentation-street-poster,
+    .bme-presentation-seoul-night,
+    .bme-presentation-neon-dock,
+    .bme-presentation-mosaic,
+    .bme-presentation-tapas-collage,
+    .bme-presentation-dessert-magazine,
+    .bme-presentation-rose-lounge,
+    .bme-presentation-bakery-counter,
+    .bme-presentation-cafe-cards,
+    .bme-presentation-cocktail-cards,
+    .bme-presentation-magazine
+  ) .bme-hero.bme-hero-mode-image::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    z-index:1;
+    background:linear-gradient(90deg,color-mix(in srgb,var(--bme-bg) 94%,transparent) 0%,color-mix(in srgb,var(--bme-bg) 72%,transparent) 54%,color-mix(in srgb,var(--bme-bg) 30%,transparent) 100%);
+  }
+  .bme-menu:is(
+    .bme-presentation-street-poster,
+    .bme-presentation-seoul-night,
+    .bme-presentation-neon-dock,
+    .bme-presentation-mosaic,
+    .bme-presentation-tapas-collage,
+    .bme-presentation-dessert-magazine,
+    .bme-presentation-rose-lounge,
+    .bme-presentation-bakery-counter,
+    .bme-presentation-cafe-cards,
+    .bme-presentation-cocktail-cards,
+    .bme-presentation-magazine
+  ) .bme-hero.bme-hero-mode-image .bme-hero-copy{grid-column:1;grid-row:1;z-index:4;max-width:76%}
+
+  /* Category-led: same idea — photo becomes the atmosphere of the intro. */
+  .bme-menu:is(
+    .bme-presentation-beyond-launcher,
+    .bme-presentation-blue-launcher,
+    .bme-presentation-tropical-club,
+    .bme-presentation-family-pizzeria,
+    .bme-presentation-launcher,
+    .bme-presentation-category-covers,
+    .bme-presentation-desert-arches,
+    .bme-presentation-bottom-tabs
+  ) .bme-hero.bme-hero-mode-image{
+    grid-template-columns:1fr;
+    min-height:320px;
+    padding-top:54px;
+    padding-bottom:64px;
+  }
+  .bme-menu:is(
+    .bme-presentation-beyond-launcher,
+    .bme-presentation-blue-launcher,
+    .bme-presentation-tropical-club,
+    .bme-presentation-family-pizzeria,
+    .bme-presentation-launcher,
+    .bme-presentation-category-covers,
+    .bme-presentation-desert-arches,
+    .bme-presentation-bottom-tabs
+  ) .bme-hero.bme-hero-mode-image .bme-hero-media{
+    position:absolute;
+    inset:0;
+    z-index:0;
+    min-height:0;
+    width:100%;
+    height:100%;
+  }
+  .bme-menu:is(
+    .bme-presentation-beyond-launcher,
+    .bme-presentation-blue-launcher,
+    .bme-presentation-tropical-club,
+    .bme-presentation-family-pizzeria,
+    .bme-presentation-launcher,
+    .bme-presentation-category-covers,
+    .bme-presentation-desert-arches,
+    .bme-presentation-bottom-tabs
+  ) .bme-hero.bme-hero-mode-image .bme-hero-media-image{
+    width:100%;
+    height:100%;
+    min-height:100%;
+    border:0;
+    border-radius:0;
+    clip-path:none;
+  }
+  .bme-menu:is(
+    .bme-presentation-beyond-launcher,
+    .bme-presentation-blue-launcher,
+    .bme-presentation-tropical-club,
+    .bme-presentation-family-pizzeria,
+    .bme-presentation-launcher,
+    .bme-presentation-category-covers,
+    .bme-presentation-desert-arches,
+    .bme-presentation-bottom-tabs
+  ) .bme-hero.bme-hero-mode-image::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    z-index:1;
+    width:auto;
+    aspect-ratio:auto;
+    border:0;
+    border-radius:0;
+    background:linear-gradient(90deg,color-mix(in srgb,var(--bme-bg) 92%,transparent),color-mix(in srgb,var(--bme-bg) 52%,transparent));
+    box-shadow:none;
+  }
+  .bme-menu:is(
+    .bme-presentation-beyond-launcher,
+    .bme-presentation-blue-launcher,
+    .bme-presentation-tropical-club,
+    .bme-presentation-family-pizzeria,
+    .bme-presentation-launcher,
+    .bme-presentation-category-covers,
+    .bme-presentation-desert-arches,
+    .bme-presentation-bottom-tabs
+  ) .bme-hero.bme-hero-mode-image .bme-hero-copy{position:relative;z-index:4;max-width:78%}
+}
+
+@container beyond-menu (max-width:350px){
+  /* Explicitly beat the legacy 66px media column rule for all photo modes. */
+  .bme-menu .bme-hero.bme-hero-mode-image{grid-template-columns:1fr}
+}

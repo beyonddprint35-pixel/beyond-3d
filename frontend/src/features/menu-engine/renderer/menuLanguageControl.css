@@ -124,6 +124,41 @@
 .bme-language-dropdown-list>button small{color:#96989e;font-size:8px;font-weight:850;letter-spacing:.04em}
 .bme-language-check{font-size:12px;font-weight:900;text-align:center}
 
+/* Standard menus keep the original control layout and only inherit theme colors. */
+.bme-language-standard.bme-language-toggle{
+  border-color:var(--bme-line,#ddd5c8);
+  background:var(--bme-surface,#fff);
+}
+.bme-language-standard.bme-language-toggle>button{
+  color:var(--bme-muted,#6f6f72);
+}
+.bme-language-standard.bme-language-toggle>button.active{
+  color:var(--bme-category-text,#fff);
+  background:var(--bme-category-bg,var(--bme-text,#17191d));
+}
+.bme-language-standard .bme-language-dropdown-trigger{
+  border-color:var(--bme-line,#ddd5c8);
+  color:var(--bme-text,#17191d);
+  background:var(--bme-surface,#fff);
+}
+.bme-language-standard .bme-language-dropdown-list{
+  border-color:var(--bme-line,#ddd5c8);
+  background:var(--bme-surface,#fff);
+}
+.bme-language-standard .bme-language-dropdown-list>button{
+  color:var(--bme-text,#34373d);
+}
+.bme-language-standard .bme-language-dropdown-list>button:hover{
+  background:var(--bme-card,#f5f3ef);
+}
+.bme-language-standard .bme-language-dropdown-list>button.active{
+  color:var(--bme-accent,#4974e5);
+  background:var(--bme-card,#f2f5ff);
+}
+.bme-language-standard .bme-language-dropdown-list>button small{
+  color:var(--bme-muted,#96989e);
+}
+
 /* Heritage keeps its warm approved shell while sharing the same behavior. */
 .bme-language-heritage.bme-language-toggle{
   border-color:#ddd5c8;

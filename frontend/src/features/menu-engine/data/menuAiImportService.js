@@ -1,4 +1,5 @@
 import { supabase } from "../../../lib/supabaseClient";
+import { attachReviewSourceCrops } from "./menuReviewCrop";
 
 export const MENU_IMPORT_MAX_FILES = 12;
 export const MENU_IMPORT_MAX_TOTAL_MB = 25;
@@ -192,7 +193,7 @@ export async function importMenuWithAi({ session, files = [], text = "", languag
   const imageOnly = files.length > 0
     && files.every((file) => file.type?.startsWith("image/"))
     && !String(text || "").trim();
-  const functionName = imageOnly ? "menu-ai-extract-smart-test" : "menu-ai-extract";
+  const functionName = imageOnly ? "menu-ai-extract-batch-test" : "menu-ai-extract";
 
   const { data, error: functionError } = await supabase.functions.invoke(functionName, {
     body: {
@@ -210,19 +211,30 @@ export async function importMenuWithAi({ session, files = [], text = "", languag
   if (functionError) throw await parseFunctionError(functionError);
   if (!data?.ok || !data?.menu) throw new Error(data?.error || "Could not build this menu.");
 
-  const translation = await completeMissingMenuTranslations({
-    session,
-    projectId: project.id,
-    menu: data.menu,
-    languages,
-  });
+  // The batched photo pipeline already performs its own source-first translation pass.
+  // Running the generic translation repair again on a large imported menu is redundant,
+  // increases cost, and can time out. Keep repair only for the legacy PDF/text pipeline.
+  const translation = imageOnly
+    ? { menu: data.menu, repaired: false, missingBefore: 0, aiCost: null }
+    : await completeMissingMenuTranslations({
+        session,
+        projectId: project.id,
+        menu: data.menu,
+        languages,
+      });
   const completedMenu = translation.menu;
+  const rawReviewItems = Array.isArray(data.reviewItems) ? data.reviewItems : [];
+  const reviewItems = imageOnly
+    ? await attachReviewSourceCrops(files, rawReviewItems)
+    : rawReviewItems;
 
   return {
     project: { ...project, name: completedMenu?.restaurant_name || project.name, structured_menu: completedMenu, status: "ready" },
     menu: completedMenu,
     allowance: data.unlimited ? allowance : { ...allowance, remaining_attempts: data.remainingAttempts },
     aiCost: data.aiCost || null,
+    diagnostics: data.diagnostics || null,
+    reviewItems,
     translationRepair: translation.repaired ? {
       repaired: true,
       missingBefore: translation.missingBefore,

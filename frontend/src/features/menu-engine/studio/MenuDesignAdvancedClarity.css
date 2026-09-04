@@ -1,0 +1,201 @@
+/* =========================================================
+   BEYOND MENU STUDIO — ADVANCED DESIGN CLARITY
+
+   Advanced controls should read like a familiar settings screen, not a
+   compact developer inspector. This layer keeps the same capabilities and
+   data model while making the hierarchy and interactive controls clearer.
+   ========================================================= */
+
+/* Remove the old target strip completely. The six settings destinations below
+   are the single source of navigation in Advanced mode. */
+.studio-v3-design-v2-advanced .studio-v3-context-targets{
+  display:none !important;
+}
+
+.studio-v3-design-v2-advanced .studio-v3-inspector-shell{
+  gap:10px;
+  padding:10px;
+  border-radius:16px;
+  background:var(--beyond-studio-bg-soft,#f5f6f9);
+}
+
+/* Settings-style navigation: one obvious destination per row. */
+.studio-v3-design-v2-advanced .studio-v3-design-v2-tabs{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  gap:6px !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+}
+.studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button{
+  width:100%;
+  min-height:46px;
+  height:auto !important;
+  display:grid !important;
+  grid-template-columns:32px minmax(0,1fr) 14px;
+  align-items:center;
+  justify-content:stretch !important;
+  gap:9px !important;
+  padding:6px 9px !important;
+  border:1px solid var(--beyond-studio-line,rgba(60,60,67,.12)) !important;
+  border-radius:12px !important;
+  background:var(--beyond-studio-surface,#fff) !important;
+  color:var(--beyond-studio-text,#343438) !important;
+  text-align:start;
+  box-shadow:none !important;
+}
+.studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button::after{
+  content:"›";
+  justify-self:end;
+  color:var(--beyond-studio-muted,#92929a);
+  font-size:18px;
+  font-weight:600;
+  line-height:1;
+}
+.studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button:hover{
+  border-color:color-mix(in srgb,var(--beyond-studio-blue,#4974e5) 35%,var(--beyond-studio-line,transparent)) !important;
+  background:color-mix(in srgb,var(--beyond-studio-blue,#4974e5) 4%,var(--beyond-studio-surface,#fff)) !important;
+}
+.studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button.active{
+  border-color:color-mix(in srgb,var(--beyond-studio-blue,#4974e5) 50%,var(--beyond-studio-line,transparent)) !important;
+  background:var(--beyond-studio-blue-soft,#eef3ff) !important;
+  color:var(--beyond-studio-blue,#4974e5) !important;
+  box-shadow:0 0 0 2px color-mix(in srgb,var(--beyond-studio-blue,#4974e5) 8%,transparent) !important;
+}
+.studio-v3-design-v2-advanced .studio-v3-design-tab-icon{
+  width:32px;
+  height:32px;
+  display:grid;
+  place-items:center;
+  border-radius:9px;
+  background:color-mix(in srgb,currentColor 8%,transparent);
+  font-size:15px;
+}
+.studio-v3-design-v2-advanced .studio-v3-design-tab-label{
+  overflow:visible;
+  white-space:normal;
+  text-overflow:clip;
+  font-size:11.5px;
+  font-weight:760;
+  line-height:1.2;
+}
+
+/* The selected-setting header should explain, not compete with navigation. */
+.studio-v3-design-v2-advanced .studio-v3-inspector-panel-head{
+  grid-template-columns:36px minmax(0,1fr);
+  gap:10px;
+  padding:11px;
+  border-radius:13px;
+  background:var(--beyond-studio-surface,#fff);
+}
+.studio-v3-design-v2-advanced .studio-v3-inspector-panel-head>span{
+  width:36px;
+  height:36px;
+  min-width:36px;
+  min-height:36px;
+  border-radius:10px;
+  background:var(--beyond-studio-blue-soft,#eef3ff);
+  color:var(--beyond-studio-blue,#4974e5);
+  font-size:15px;
+}
+.studio-v3-design-v2-advanced .studio-v3-inspector-panel-head strong{
+  color:var(--beyond-studio-text,#1d1d1f);
+  font-size:13px;
+}
+.studio-v3-design-v2-advanced .studio-v3-inspector-panel-head small{
+  color:var(--beyond-studio-muted,#7a7a80);
+  font-size:10.5px;
+  line-height:1.4;
+}
+
+/* Make each block read as a self-contained task. */
+.studio-v3-design-v2-advanced .studio-v3-inspector-block{
+  gap:12px;
+  padding:13px;
+  border-radius:14px;
+  background:var(--beyond-studio-surface,#fff);
+}
+.studio-v3-design-v2-advanced .studio-v3-inspector-block-title{
+  display:grid;
+  justify-content:stretch;
+  gap:3px;
+  color:var(--beyond-studio-text,#343438);
+  font-size:12px;
+}
+.studio-v3-design-v2-advanced .studio-v3-inspector-block-title small{
+  color:var(--beyond-studio-muted,#8a8a8f);
+  font-size:10px;
+  line-height:1.4;
+}
+
+/* Sliders become visibly interactive controls rather than thin technical bars. */
+.studio-v3-design-v2-advanced .studio-v3-inspector-range{
+  gap:10px;
+  padding:11px 0;
+}
+.studio-v3-design-v2-advanced .studio-v3-inspector-range-head{
+  color:var(--beyond-studio-text,#55555a);
+  font-size:11px;
+  font-weight:700;
+}
+.studio-v3-design-v2-advanced .studio-v3-inspector-range-head b{
+  min-width:54px;
+  padding:6px 8px;
+  border:1px solid var(--beyond-studio-line,rgba(60,60,67,.1));
+  border-radius:9px;
+  background:var(--beyond-studio-surface-2,#f1f3f7);
+  color:var(--beyond-studio-text,#343438);
+  font-size:10px;
+}
+.studio-v3-design-v2-advanced .studio-v3-inspector-range input[type="range"]{
+  width:100%;
+  height:22px;
+  margin:0;
+  accent-color:var(--beyond-studio-blue,#4974e5);
+  cursor:ew-resize;
+}
+.studio-v3-design-v2-advanced .studio-v3-inspector-range input[type="range"]::-webkit-slider-runnable-track{
+  height:5px;
+  border-radius:999px;
+  background:color-mix(in srgb,var(--beyond-studio-blue,#4974e5) 22%,var(--beyond-studio-line,#dfe3eb));
+}
+.studio-v3-design-v2-advanced .studio-v3-inspector-range input[type="range"]::-webkit-slider-thumb{
+  width:18px;
+  height:18px;
+  margin-top:-6.5px;
+  border:3px solid var(--beyond-studio-surface,#fff);
+  border-radius:50%;
+  background:var(--beyond-studio-blue,#4974e5);
+  box-shadow:0 1px 6px rgba(0,0,0,.18);
+  -webkit-appearance:none;
+}
+
+/* Hero mode is a primary visual decision — make the three choices unmistakable. */
+.studio-v3-design-v2-advanced .studio-v3-hero-mode-grid{
+  gap:7px;
+}
+.studio-v3-design-v2-advanced .studio-v3-visual-choice{
+  min-height:78px;
+  border-color:var(--beyond-studio-line,rgba(60,60,67,.13));
+  background:var(--beyond-studio-surface,#fff);
+  color:var(--beyond-studio-muted,#66666b);
+}
+.studio-v3-design-v2-advanced .studio-v3-visual-choice.active{
+  border-color:color-mix(in srgb,var(--beyond-studio-blue,#4974e5) 55%,var(--beyond-studio-line,transparent));
+  background:var(--beyond-studio-blue-soft,#f7f9ff);
+  color:var(--beyond-studio-blue,#4974e5);
+}
+
+/* Keep the narrow Studio sidebar usable. */
+@media(max-width:760px){
+  .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
+  .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button{
+    grid-template-columns:30px minmax(0,1fr);
+    min-height:52px;
+  }
+  .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button::after{display:none}
+}

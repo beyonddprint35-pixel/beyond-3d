@@ -1,0 +1,116 @@
+/* Heritage Original — make Studio design controls actually drive the exact heritage renderer. */
+.bme-heritage-exact {
+  background: var(--ep-bg, #f6f4ef);
+  color: var(--ep-ink, #121212);
+  font-family: var(--ep-body-font, Inter, Arial, sans-serif);
+}
+
+.bme-heritage-exact .ep-app {
+  background: var(--ep-paper, #fffdf8);
+  color: var(--ep-ink, #121212);
+  font-family: var(--ep-body-font, Inter, Arial, sans-serif);
+}
+
+.bme-heritage-exact .ep-brand-title {
+  color: var(--ep-ink, #151515);
+  font-family: var(--ep-heading-font, "Playfair Display", Georgia, serif) !important;
+  font-size: var(--ep-brand-size, 28px) !important;
+  font-weight: var(--ep-heading-weight, 800) !important;
+}
+
+.bme-heritage-exact .ep-brand-sub,
+.bme-heritage-exact .ep-lang-pill button,
+.bme-heritage-exact .ep-item-description,
+.bme-heritage-exact .ep-section-count {
+  color: var(--ep-muted, #7b756e);
+  font-family: var(--ep-body-font, Inter, Arial, sans-serif) !important;
+}
+
+.bme-heritage-exact .ep-hero-title {
+  color: var(--ep-ink, #121212);
+  font-family: var(--ep-heading-font, "Playfair Display", Georgia, serif) !important;
+  font-size: var(--ep-hero-size, 46px) !important;
+  font-weight: var(--ep-heading-weight, 900) !important;
+}
+
+.bme-heritage-exact .ep-tabs-wrap {
+  border-color: var(--ep-line, #e5ded2);
+  background: color-mix(in srgb, var(--ep-bg, #f6f4ef) 92%, transparent);
+}
+
+.bme-heritage-exact .ep-tabs button {
+  border-color: var(--ep-line, #e5ded2);
+  color: var(--ep-category-text, var(--ep-muted, #7b756e));
+  background: var(--ep-category-bg, var(--ep-card, #fff));
+  font-family: var(--ep-body-font, Inter, Arial, sans-serif) !important;
+  font-size: var(--ep-category-size, 12px) !important;
+}
+
+.bme-heritage-exact .ep-tabs button.active {
+  border-color: var(--ep-accent, #121212);
+  background: var(--ep-accent, #121212);
+  color: #fff;
+}
+
+.bme-heritage-exact .ep-section-head h2,
+.bme-heritage-exact .ep-app[dir="rtl"] .ep-section-head h2 {
+  color: var(--ep-ink, #121212);
+  font-family: var(--ep-heading-font, "Playfair Display", Georgia, serif) !important;
+  font-size: var(--ep-section-size, 38px) !important;
+  font-weight: var(--ep-heading-weight, 900) !important;
+  line-height: 1 !important;
+}
+
+.bme-heritage-exact .ep-section-count {
+  border-color: var(--ep-line, #e5ded2);
+  background: var(--ep-card, #fff);
+}
+
+.bme-heritage-exact .ep-item-category {
+  border-color: var(--ep-line, #e5ded2);
+  color: var(--ep-muted, #a59d92);
+  font-family: var(--ep-body-font, Inter, Arial, sans-serif) !important;
+  font-size: var(--ep-category-size, 10px) !important;
+}
+
+.bme-heritage-exact .ep-item-row {
+  margin-block: var(--ep-item-gap, 12px);
+  padding: var(--ep-card-padding, 15px);
+  border-color: var(--ep-line, #e5ded2);
+  border-radius: var(--ep-radius, 22px);
+  background: var(--ep-card, #fff);
+}
+
+.bme-heritage-exact .ep-item-name,
+.bme-heritage-exact .ep-app[dir="rtl"] .ep-item-name {
+  color: var(--ep-ink, #161616);
+  font-family: var(--ep-heading-font, "Playfair Display", Georgia, serif) !important;
+  font-size: var(--ep-item-size, 17px) !important;
+  font-weight: var(--ep-item-weight, 700) !important;
+  line-height: 1.18 !important;
+}
+
+.bme-heritage-exact .ep-item-description {
+  font-size: var(--ep-description-size, 11px) !important;
+  font-weight: var(--ep-body-weight, 400) !important;
+  line-height: 1.45 !important;
+}
+
+.bme-heritage-exact .ep-item-price,
+.bme-heritage-exact .ep-price-option strong,
+.bme-heritage-exact .ep-dual-price strong {
+  color: var(--ep-ink, #151515);
+  font-family: var(--ep-number-font, var(--ep-heading-font, "Playfair Display", Georgia, serif)) !important;
+  font-size: var(--ep-price-size, 18px) !important;
+}
+
+.bme-heritage-exact .ep-footer {
+  border-color: var(--ep-line, #e5ded2);
+  color: var(--ep-muted, #6a655f);
+  background: var(--ep-paper, #fffdf8);
+  font-family: var(--ep-body-font, Inter, Arial, sans-serif);
+}
+
+.bme-heritage-exact .ep-footer strong {
+  color: var(--ep-ink, #151515);
+}

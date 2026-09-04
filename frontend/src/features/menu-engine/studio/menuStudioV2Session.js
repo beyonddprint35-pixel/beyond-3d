@@ -20,7 +20,7 @@ export function createBlankMenuV2() {
     restaurant_name: "My Restaurant",
     restaurant_subtitle: makeLocalizedText("Restaurant menu", "תפריט מסעדה", "قائمة المطعم"),
     hero_eyebrow: makeLocalizedText("Welcome", "ברוכים הבאים", "أهلاً وسهلاً"),
-    hero_title: makeLocalizedText("Made for your table", "נוצר עבור השולחן שלכם", "صُممت لطاولتكم"),
+    hero_title: makeLocalizedText("Our Menu", "התפריט שלנו", "قائمتنا"),
     languages: ["en", "he", "ar"],
     default_language: "en",
     currency_symbol: "₪",
@@ -74,6 +74,17 @@ export function readMenuStudioV2Draft() {
     // Ignore malformed development drafts.
   }
   return null;
+}
+
+export function clearMenuStudioV2Draft() {
+  if (typeof window === "undefined") return;
+  try {
+    window.sessionStorage.removeItem(MENU_STUDIO_V2_DRAFT_KEY);
+  } catch {
+    // Cleanup is best-effort; cloud deletion remains authoritative.
+  }
+  lastWrittenSignature = "";
+  lastWrittenJSON = "";
 }
 
 export function writeMenuStudioV2Draft(draft, { queueSave = true } = {}) {

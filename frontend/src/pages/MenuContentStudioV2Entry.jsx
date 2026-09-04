@@ -23,6 +23,12 @@ const COPY = {
   ar: "جارٍ استكمال لغات القائمة…",
 };
 
+function photoImportTranslationsReady(draft) {
+  if (draft?.profile?.aiTranslationsReady === true) return true;
+  const pipelineVersion = String(draft?.profile?.aiImportDiagnostics?.pipelineVersion || "").trim().toLowerCase();
+  return pipelineVersion.startsWith("v14-") || pipelineVersion.startsWith("v15-");
+}
+
 export default function MenuContentStudioV2Entry() {
   const workspace = useMenuStudioWorkspace();
   const params = useMemo(() => new URLSearchParams(window.location.search), []);
@@ -30,11 +36,12 @@ export default function MenuContentStudioV2Entry() {
   const websiteImported = params.get("websiteImported") === "1";
   const shouldOpenWebsiteImporter = isWebsiteFlow && !websiteImported;
   const initialDraft = useMemo(() => shouldOpenWebsiteImporter ? null : readMenuStudioV2Draft(), [shouldOpenWebsiteImporter]);
+  const modernPhotoImport = useMemo(() => photoImportTranslationsReady(initialDraft), [initialDraft]);
   const [alreadyPrepared] = useState(() => {
     const id = menuStudioProjectId(initialDraft);
     return workspace?.isPrepared(id) || workspace?.isContentReady(id) || false;
   });
-  const [ready, setReady] = useState(shouldOpenWebsiteImporter || alreadyPrepared);
+  const [ready, setReady] = useState(shouldOpenWebsiteImporter || alreadyPrepared || modernPhotoImport);
 
   useEffect(() => {
     if (shouldOpenWebsiteImporter || alreadyPrepared) return undefined;
@@ -57,36 +64,46 @@ export default function MenuContentStudioV2Entry() {
       // vocabulary (for example שליש/חצי and ثلث/نصف for draft beer).
       let repairedMenu = normalizeV3MenuPriceOptions(draft.menu);
 
-      try {
-        const fields = collectV3TranslationRepairFields(repairedMenu);
-        if (projectId && fields.length) {
-          const session = await getMenuImportSession();
-          if (session && active) {
-            const repair = await repairV3MenuTranslations({
-              session,
-              projectId,
-              menu: repairedMenu,
-            });
-            if (repair?.menu) repairedMenu = normalizeV3MenuPriceOptions(repair.menu);
+      // Modern photo extraction already performs source-first translation for
+      // all requested customer languages. Re-running the generic V3 repair on a
+      // large photo menu can create hundreds of redundant translation fields
+      // and block Content Studio for tens of seconds. Keep the repair only for
+      // legacy PDF/text/older imports that still need it.
+      if (!modernPhotoImport) {
+        try {
+          const fields = collectV3TranslationRepairFields(repairedMenu);
+          if (projectId && fields.length) {
+            const session = await getMenuImportSession();
+            if (session && active) {
+              const repair = await repairV3MenuTranslations({
+                session,
+                projectId,
+                menu: repairedMenu,
+              });
+              if (repair?.menu) repairedMenu = normalizeV3MenuPriceOptions(repair.menu);
+            }
           }
+        } catch (error) {
+          console.warn("Could not complete V3 menu translations before opening Studio.", error);
         }
-      } catch (error) {
-        console.warn("Could not complete V3 menu translations before opening Studio.", error);
-      } finally {
-        if (active) {
-          writeMenuStudioV2Draft({
-            ...draft,
-            menu: repairedMenu,
-          });
-          workspace?.markContentReady(menuStudioProjectId(draft));
-          setReady(true);
-        }
+      }
+
+      if (active) {
+        writeMenuStudioV2Draft({
+          ...draft,
+          menu: repairedMenu,
+          profile: modernPhotoImport
+            ? { ...(draft.profile || {}), aiTranslationsReady: true }
+            : draft.profile,
+        });
+        workspace?.markContentReady(menuStudioProjectId(draft));
+        setReady(true);
       }
     }
 
     prepareDraft();
     return () => { active = false; };
-  }, [initialDraft, shouldOpenWebsiteImporter, alreadyPrepared, workspace]);
+  }, [initialDraft, shouldOpenWebsiteImporter, alreadyPrepared, modernPhotoImport, workspace]);
 
   if (shouldOpenWebsiteImporter) return <MenuWebsiteImportV2 />;
 

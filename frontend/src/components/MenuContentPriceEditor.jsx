@@ -1,4 +1,5 @@
 import { Plus, Trash2 } from "lucide-react";
+import MenuContentBadgeEditor from "./MenuContentBadgeEditor";
 
 const PRICE_TYPES = [
   { key: "one_third", en: "1/3", he: "1/3", ar: "1/3" },
@@ -123,78 +124,86 @@ export default function MenuContentPriceEditor({
     setOptions(next);
   }
 
+  const badges = <MenuContentBadgeEditor item={item} language={contentLanguage} onChange={onChange} />;
+
   if (!multiple) {
     return (
-      <div className="menu-content-v2-price-editor">
-        <div className="menu-content-v2-field">
-          <label>{t.price}</label>
-          <div className="menu-content-v2-price">
-            <span>{currencySymbol}</span>
-            <input
-              inputMode="decimal"
-              dir="ltr"
-              value={item?.price || ""}
-              onChange={(event) => onChange?.({ price: event.target.value, price_options: [] })}
-              placeholder="0"
-            />
-          </div>
-        </div>
-        <button type="button" className="menu-content-v2-price-mode" onClick={useMultiplePrices}>
-          <Plus size={14} /> {t.useMultiplePrices}
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="menu-content-v2-price-options">
-      <header>
-        <div><strong>{t.priceOptions}</strong><small>{t.multiPriceHelp}</small></div>
-        <button type="button" onClick={useSinglePrice}>{t.useSinglePrice}</button>
-      </header>
-
-      {options.map((option, optionIndex) => {
-        const typeKey = resolveTypeKey(option);
-        return (
-          <div className="menu-content-v2-price-option" key={`${item?.id || "item"}-price-${optionIndex}`}>
-            <div className="menu-content-v2-price-option-type">
-              <label>{t.priceType}</label>
-              <select value={typeKey} onChange={(event) => changeType(optionIndex, event.target.value)}>
-                {PRICE_TYPES.map((type) => <option key={type.key} value={type.key}>{type[contentLanguage] || type.en}</option>)}
-              </select>
-              {typeKey === "custom" ? (
-                <input
-                  className="menu-content-v2-price-option-custom"
-                  dir={contentDir}
-                  value={optionLabel(option, contentLanguage)}
-                  onChange={(event) => updateCustomLabel(optionIndex, event.target.value)}
-                  placeholder={t.customPriceLabel}
-                />
-              ) : null}
-            </div>
-
-            <label className="menu-content-v2-price-option-price">
-              {t.optionPrice}
+      <>
+        <div className="menu-content-v2-price-editor">
+          <div className="menu-content-v2-field">
+            <label>{t.price}</label>
+            <div className="menu-content-v2-price">
               <span>{currencySymbol}</span>
               <input
                 inputMode="decimal"
                 dir="ltr"
-                value={option.price || ""}
-                onChange={(event) => updateOption(optionIndex, { price: event.target.value })}
+                value={item?.price || ""}
+                onChange={(event) => onChange?.({ price: event.target.value, price_options: [] })}
                 placeholder="0"
               />
-            </label>
-
-            <button type="button" className="menu-content-v2-price-option-remove" onClick={() => removeOption(optionIndex)} title={t.removePriceOption}>
-              <Trash2 size={14} />
-            </button>
+            </div>
           </div>
-        );
-      })}
+          <button type="button" className="menu-content-v2-price-mode" onClick={useMultiplePrices}>
+            <Plus size={14} /> {t.useMultiplePrices}
+          </button>
+        </div>
+        {badges}
+      </>
+    );
+  }
 
-      <button type="button" className="menu-content-v2-price-add" onClick={addOption}>
-        <Plus size={14} /> {t.addPriceOption}
-      </button>
-    </div>
+  return (
+    <>
+      <div className="menu-content-v2-price-options">
+        <header>
+          <div><strong>{t.priceOptions}</strong><small>{t.multiPriceHelp}</small></div>
+          <button type="button" onClick={useSinglePrice}>{t.useSinglePrice}</button>
+        </header>
+
+        {options.map((option, optionIndex) => {
+          const typeKey = resolveTypeKey(option);
+          return (
+            <div className="menu-content-v2-price-option" key={`${item?.id || "item"}-price-${optionIndex}`}>
+              <div className="menu-content-v2-price-option-type">
+                <label>{t.priceType}</label>
+                <select value={typeKey} onChange={(event) => changeType(optionIndex, event.target.value)}>
+                  {PRICE_TYPES.map((type) => <option key={type.key} value={type.key}>{type[contentLanguage] || type.en}</option>)}
+                </select>
+                {typeKey === "custom" ? (
+                  <input
+                    className="menu-content-v2-price-option-custom"
+                    dir={contentDir}
+                    value={optionLabel(option, contentLanguage)}
+                    onChange={(event) => updateCustomLabel(optionIndex, event.target.value)}
+                    placeholder={t.customPriceLabel}
+                  />
+                ) : null}
+              </div>
+
+              <label className="menu-content-v2-price-option-price">
+                {t.optionPrice}
+                <span>{currencySymbol}</span>
+                <input
+                  inputMode="decimal"
+                  dir="ltr"
+                  value={option.price || ""}
+                  onChange={(event) => updateOption(optionIndex, { price: event.target.value })}
+                  placeholder="0"
+                />
+              </label>
+
+              <button type="button" className="menu-content-v2-price-option-remove" onClick={() => removeOption(optionIndex)} title={t.removePriceOption}>
+                <Trash2 size={14} />
+              </button>
+            </div>
+          );
+        })}
+
+        <button type="button" className="menu-content-v2-price-add" onClick={addOption}>
+          <Plus size={14} /> {t.addPriceOption}
+        </button>
+      </div>
+      {badges}
+    </>
   );
 }

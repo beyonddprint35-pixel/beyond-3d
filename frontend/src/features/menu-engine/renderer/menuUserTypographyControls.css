@@ -1,0 +1,51 @@
+/* =========================================================
+   BEYOND MENU ENGINE — USER TYPOGRAPHY OVERRIDES
+
+   Advanced Design typography controls are explicit user choices. They must
+   win over presentation-profile defaults so every slider has a visible,
+   predictable effect in both Studio preview and the published menu.
+   ========================================================= */
+
+/* Generic renderer */
+.bme-menu .bme-hero h1{
+  font-size:var(--bme-hero-size);
+}
+.bme-menu .bme-section-heading h2{
+  font-size:var(--bme-section-size);
+}
+.bme-menu .bme-item-copy h3,
+.bme-menu .bme-visual-copy h3{
+  font-size:var(--bme-item-size);
+}
+.bme-menu .bme-item-copy p,
+.bme-menu .bme-visual-copy p{
+  font-size:var(--bme-description-size);
+}
+.bme-menu .bme-price,
+.bme-menu .bme-price-option strong{
+  font-size:var(--bme-price-size);
+}
+
+/* Heritage renderer uses its own variable namespace. */
+.bme-heritage-exact .ep-hero-title{
+  font-size:var(--ep-hero-size);
+}
+.bme-heritage-exact .ep-item-name{
+  font-size:var(--ep-item-size);
+}
+.bme-heritage-exact .ep-item-description{
+  font-size:var(--ep-description-size);
+}
+.bme-heritage-exact .ep-item-price,
+.bme-heritage-exact .ep-price-option strong{
+  font-size:var(--ep-price-size);
+}
+
+/* Keep very large custom headings usable on narrow phones without ignoring
+   the user's selected value. */
+@media(max-width:430px){
+  .bme-menu .bme-hero h1,
+  .bme-heritage-exact .ep-hero-title{
+    overflow-wrap:anywhere;
+  }
+}

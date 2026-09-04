@@ -1,0 +1,105 @@
+/* =========================================================
+   BEYOND MENU ENGINE — HEADER / HERO SIGNATURE POLISH
+
+   Dedicated presentation profile files own the major composition. This layer
+   adds consistent premium finishing and makes logo watermarks automatically
+   react to light and dark menu palettes without requiring a second logo file.
+   ========================================================= */
+
+/* ---------- Adaptive logo watermark ---------- */
+.bme-menu .bme-watermark-pill{
+  pointer-events:none;
+  transition:opacity .28s ease,transform .28s ease,background-color .28s ease,border-color .28s ease;
+}
+.bme-menu .bme-watermark-pill img{
+  /* Turn any uploaded artwork into a neutral white silhouette, then Difference
+     automatically resolves it dark on light surfaces and light on dark ones. */
+  filter:grayscale(1) brightness(0) invert(1) contrast(1.08);
+  mix-blend-mode:difference;
+  opacity:.92;
+  transition:filter .28s ease,opacity .28s ease,transform .28s ease;
+}
+.bme-menu .bme-hero-mode-watermark .bme-watermark-pill{
+  background:transparent;
+  box-shadow:none;
+}
+.bme-menu .bme-hero-mode-watermark .bme-watermark-pill:hover img{transform:scale(1.025)}
+
+/* Header logo stays faithful to the uploaded brand artwork. */
+.bme-menu .bme-header .bme-brand>img{mix-blend-mode:normal}
+
+/* ---------- Core signature headers ---------- */
+.bme-presentation-atelier .bme-header{background:transparent;border-bottom:0}
+.bme-presentation-atelier .bme-header::after{content:"";position:absolute;inset-inline:clamp(18px,4vw,48px);bottom:0;height:1px;background:linear-gradient(90deg,var(--bme-text) 0 14%,transparent 14% 100%)}
+
+.bme-presentation-noir-gallery .bme-header{background:color-mix(in srgb,var(--bme-bg) 82%,transparent);border-bottom-color:color-mix(in srgb,var(--bme-accent) 22%,var(--bme-line));backdrop-filter:blur(16px)}
+.bme-presentation-noir-gallery .bme-header::after{content:"";position:absolute;right:0;bottom:-1px;width:32%;height:1px;background:linear-gradient(90deg,transparent,var(--bme-accent))}
+
+.bme-presentation-riviera .bme-header{background:linear-gradient(90deg,var(--bme-bg),color-mix(in srgb,var(--bme-accent-secondary) 12%,var(--bme-bg)));border-bottom:0}
+.bme-presentation-riviera .bme-header::after{content:"";position:absolute;left:clamp(18px,4vw,48px);bottom:0;width:72px;height:2px;border-radius:999px;background:var(--bme-accent)}
+
+.bme-presentation-omakase .bme-header{background:transparent;border-bottom:0}
+.bme-presentation-omakase .bme-brand::after{content:"";width:7px;height:7px;border-radius:50%;background:var(--bme-accent);margin-inline-start:7px;align-self:center}
+
+.bme-presentation-brasserie .bme-header{border-top:1px solid var(--bme-text);border-bottom:3px double var(--bme-text);background:var(--bme-surface)}
+
+.bme-presentation-white-gallery .bme-header{background:transparent;border-bottom:0}
+.bme-presentation-white-gallery .bme-header::after{content:"";position:absolute;inset-inline:clamp(18px,4vw,48px);bottom:0;height:1px;background:var(--bme-line)}
+
+.bme-presentation-cafe-cards .bme-header{background:color-mix(in srgb,var(--bme-accent-secondary) 10%,var(--bme-bg));border-bottom:0}
+.bme-presentation-cafe-cards .bme-brand>img{border-radius:14px}
+
+.bme-presentation-street-poster .bme-header{border:3px solid var(--bme-text);border-inline:0;background:var(--bme-accent-secondary)}
+.bme-presentation-street-poster .bme-brand strong{text-transform:uppercase;letter-spacing:-.04em}
+
+.bme-presentation-wine-register .bme-header{background:transparent;border-bottom:1px solid var(--bme-line)}
+.bme-presentation-wine-register .bme-header::after{content:"";position:absolute;left:50%;bottom:-4px;width:8px;height:8px;transform:translateX(-50%) rotate(45deg);background:var(--bme-bg);border:1px solid var(--bme-accent)}
+
+.bme-presentation-coastal-story .bme-header{background:color-mix(in srgb,var(--bme-surface) 82%,transparent);border-bottom-color:color-mix(in srgb,var(--bme-accent) 18%,var(--bme-line));backdrop-filter:blur(14px)}
+
+.bme-presentation-monochrome-grid .bme-header{background:var(--bme-bg);border-top:1px solid var(--bme-text);border-bottom:1px solid var(--bme-text)}
+
+/* ---------- Phase 3 signatures ---------- */
+.bme-presentation-trattoria-ledger .bme-header{background:color-mix(in srgb,var(--bme-accent-secondary) 10%,var(--bme-bg))}
+.bme-presentation-tokyo-ink .bme-header::after{content:"";position:absolute;inset-inline-end:clamp(18px,4vw,48px);bottom:0;width:28px;height:3px;background:var(--bme-accent)}
+.bme-presentation-garden-journal .bme-header{background:color-mix(in srgb,var(--bme-surface) 88%,transparent);border-bottom:0;backdrop-filter:blur(14px)}
+.bme-presentation-bakery-counter .bme-header{background:color-mix(in srgb,var(--bme-accent-secondary) 18%,var(--bme-bg));border-bottom:0}
+.bme-presentation-neon-dock .bme-header{background:color-mix(in srgb,var(--bme-bg) 78%,transparent);box-shadow:0 10px 32px color-mix(in srgb,var(--bme-accent) 8%,transparent);backdrop-filter:blur(18px)}
+.bme-presentation-desert-arches .bme-header::after{content:"";position:absolute;left:50%;bottom:-1px;width:76px;height:16px;transform:translateX(-50%);border:1px solid var(--bme-accent);border-bottom:0;border-radius:80px 80px 0 0;opacity:.55}
+.bme-presentation-tapas-collage .bme-header{border-bottom:2px solid var(--bme-text);background:transparent}
+.bme-presentation-butcher-ledger .bme-header{background:linear-gradient(90deg,var(--bme-bg),color-mix(in srgb,var(--bme-accent) 7%,var(--bme-bg)))}
+.bme-presentation-brunch-polaroids .bme-header{background:color-mix(in srgb,var(--bme-card) 90%,transparent);border-bottom:0;box-shadow:0 9px 26px color-mix(in srgb,var(--bme-text) 7%,transparent)}
+.bme-presentation-rose-lounge .bme-header{background:linear-gradient(90deg,color-mix(in srgb,var(--bme-accent-secondary) 18%,var(--bme-bg)),var(--bme-bg));border-bottom-color:color-mix(in srgb,var(--bme-accent) 20%,var(--bme-line))}
+.bme-presentation-beyond-launcher .bme-header{background:var(--bme-category-bg);color:var(--bme-category-text);border-bottom:0}
+
+/* ---------- Premium / Phase 4 signatures ---------- */
+.bme-presentation-levant-table .bme-header{background:color-mix(in srgb,var(--bme-accent-secondary) 15%,var(--bme-bg));border-bottom:0}
+.bme-presentation-mosaic .bme-header{background:transparent;border-bottom:0}
+.bme-presentation-mosaic .bme-header::after{content:"";position:absolute;inset-inline:clamp(18px,4vw,48px);bottom:0;height:1px;background:linear-gradient(90deg,var(--bme-accent),transparent 42%,var(--bme-accent))}
+.bme-presentation-nordic-paper .bme-header{background:transparent;border-bottom:0}
+.bme-presentation-nordic-paper .bme-brand strong{font-weight:600;letter-spacing:-.045em}
+.bme-presentation-seoul-night .bme-header{background:color-mix(in srgb,var(--bme-bg) 80%,transparent);backdrop-filter:blur(18px);box-shadow:0 8px 28px color-mix(in srgb,var(--bme-accent) 10%,transparent)}
+.bme-presentation-patisserie .bme-header{background:transparent;border-bottom:0}
+.bme-presentation-patisserie .bme-header::after{content:"";position:absolute;left:50%;bottom:0;width:84px;height:1px;transform:translateX(-50%);background:var(--bme-accent)}
+.bme-presentation-smokehouse-story .bme-header{background:linear-gradient(90deg,var(--bme-bg),color-mix(in srgb,var(--bme-accent) 8%,var(--bme-bg)));border-bottom-color:color-mix(in srgb,var(--bme-accent) 38%,var(--bme-line))}
+.bme-presentation-tropical-club .bme-header{background:color-mix(in srgb,var(--bme-surface) 82%,transparent);border-bottom:0;backdrop-filter:blur(16px)}
+.bme-presentation-botanical .bme-header{background:linear-gradient(90deg,var(--bme-bg),color-mix(in srgb,var(--bme-accent-secondary) 18%,var(--bme-bg)));border-bottom:0}
+.bme-presentation-coastal-gallery .bme-header{background:transparent;border-bottom:0}
+.bme-presentation-coastal-gallery .bme-header::after{content:"";position:absolute;inset-inline:clamp(18px,4vw,48px);bottom:0;height:1px;background:color-mix(in srgb,var(--bme-accent) 34%,var(--bme-line))}
+.bme-presentation-breakfast-board .bme-header{background:color-mix(in srgb,var(--bme-accent-secondary) 20%,var(--bme-bg));border-bottom:0}
+.bme-presentation-tap-board .bme-header{background:var(--bme-bg);border-top:2px solid var(--bme-text);border-bottom:2px solid var(--bme-text)}
+.bme-presentation-dessert-magazine .bme-header{background:transparent;border-bottom:0}
+.bme-presentation-dessert-magazine .bme-header::after{content:"";position:absolute;inset-inline-start:clamp(18px,4vw,48px);bottom:0;width:96px;height:2px;background:var(--bme-accent)}
+.bme-presentation-luxury-steak .bme-header{background:color-mix(in srgb,var(--bme-bg) 86%,transparent);border-bottom-color:color-mix(in srgb,var(--bme-accent) 30%,var(--bme-line));backdrop-filter:blur(16px)}
+.bme-presentation-blue-launcher .bme-header{background:linear-gradient(90deg,var(--bme-category-bg),color-mix(in srgb,var(--bme-accent) 72%,var(--bme-category-bg)));color:var(--bme-category-text);border-bottom:0}
+.bme-presentation-chef-editorial .bme-header{background:transparent;border-bottom:0}
+.bme-presentation-chef-editorial .bme-header::after{content:"";position:absolute;left:50%;bottom:0;width:7px;height:7px;transform:translate(-50%,50%) rotate(45deg);background:var(--bme-accent)}
+.bme-presentation-family-pizzeria .bme-header{background:color-mix(in srgb,var(--bme-accent-secondary) 18%,var(--bme-bg));border-bottom:0}
+
+/* The adaptive watermark is intentionally quieter on small screens. */
+@media(max-width:600px){
+  .bme-menu .bme-watermark-pill{opacity:.72}
+  .bme-menu .bme-watermark-pill img{opacity:.82}
+  .bme-presentation-street-poster .bme-header{border-width:2px}
+  .bme-presentation-brasserie .bme-header{border-top:0}
+}

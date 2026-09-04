@@ -1,0 +1,16 @@
+.menu-content-v2-badge-editor{margin:15px 16px 0;padding:13px;border:1px solid var(--mcv2-line);border-radius:12px;background:#faf9f7;display:grid;gap:14px}
+.menu-content-v2-badge-editor>header{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.menu-content-v2-badge-editor>header>div{display:grid;gap:4px;min-width:0}
+.menu-content-v2-badge-editor>header strong{font-size:14px;font-weight:850;color:var(--mcv2-text)}
+.menu-content-v2-badge-editor>header small{font-size:11px;line-height:1.4;color:var(--mcv2-muted)}
+.menu-content-v2-badge-editor .confirmed{flex:0 0 auto;padding:4px 7px;border-radius:999px;background:#eaf7ef;color:#27865c;font-size:8px;font-weight:850;white-space:nowrap}
+.menu-content-v2-badge-group{display:grid;gap:8px}
+.menu-content-v2-badge-group>strong,.menu-content-v2-badge-spice>strong{font-size:11px;font-weight:850;color:#485263}
+.menu-content-v2-badge-group>div{display:flex;flex-wrap:wrap;gap:7px}
+.menu-content-v2-badge-group button{min-height:34px;padding:6px 9px;display:flex;align-items:center;gap:6px;border:1px solid #dce1e9;border-radius:10px;background:#fff;color:#566174;font-size:10px;font-weight:750;cursor:pointer;transition:border-color .15s ease,background .15s ease,color .15s ease,box-shadow .15s ease}
+.menu-content-v2-badge-group button>span{font-size:12px;line-height:1}
+.menu-content-v2-badge-group button.active{border-color:#7191e8;background:#eef3ff;color:#315dcc;box-shadow:0 0 0 2px rgba(73,116,229,.06)}
+.menu-content-v2-badge-spice{display:grid;gap:7px}
+.menu-content-v2-badge-spice select{width:100%;height:40px;padding:0 10px;border:1px solid var(--mcv2-line);border-radius:10px;background:#fff;color:var(--mcv2-text);font-size:11px;outline:0}
+.menu-content-v2-badge-spice select:focus{border-color:rgba(73,116,229,.65);box-shadow:0 0 0 3px rgba(73,116,229,.07)}
+@media(max-width:860px){.menu-content-v2-badge-editor{padding:14px}.menu-content-v2-badge-editor>header{display:grid}.menu-content-v2-badge-editor>header strong{font-size:16px}.menu-content-v2-badge-editor>header small{font-size:12px}.menu-content-v2-badge-group>strong,.menu-content-v2-badge-spice>strong{font-size:12px}.menu-content-v2-badge-group button{min-height:38px;padding:8px 11px;font-size:11px}.menu-content-v2-badge-spice select{height:44px;font-size:12px}}

@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { Mail, Search, Send, Users, X } from "lucide-react";
+import { ChevronDown, Mail, Search, Send, Users, X } from "lucide-react";
 
 import { supabase } from "../lib/supabaseClient";
 import "./AdminPromoEmailSender.css";
+import "./AdminCompactPanel.css";
 
 function readJson(response) {
   const contentType = response.headers.get("content-type") || "";
@@ -23,6 +24,7 @@ export default function AdminPromoEmailSender({ password }) {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [serverAvailable, setServerAvailable] = useState(true);
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -160,90 +162,103 @@ export default function AdminPromoEmailSender({ password }) {
   }
 
   return (
-    <section className="admin-promo-email-settings">
-      <div className="admin-promo-email-head">
+    <section className={`admin-promo-email-settings admin-compact-panel ${expanded ? "is-expanded" : ""}`}>
+      <div className="admin-promo-email-head admin-compact-panel-head">
         <div>
           <span className="admin-label">SUBSCRIPTIONS</span>
           <h2>Promo Email Sender</h2>
           <p>Send an active promo code directly to selected authenticated Beyond users.</p>
           <small>Recipients are selected manually. Up to 25 users can be emailed in one send.</small>
         </div>
-        <div className="admin-promo-email-count"><Users size={17} /><strong>{selectedUserIds.length}</strong><span>selected</span></div>
+        <span className="admin-compact-panel-summary">{selectedUserIds.length} selected · {users.length} users</span>
+        <button
+          type="button"
+          className="admin-compact-panel-toggle"
+          aria-expanded={expanded}
+          aria-label={expanded ? "Collapse Promo Email Sender" : "Expand Promo Email Sender"}
+          onClick={() => setExpanded((current) => !current)}
+        >
+          <ChevronDown size={17} />
+        </button>
       </div>
 
-      {error ? <div className="admin-error admin-promo-email-alert">{error}</div> : null}
-      {message ? <div className="admin-promo-email-success">{message}</div> : null}
+      {expanded ? (
+        <div className="admin-compact-panel-body">
+          {error ? <div className="admin-error admin-promo-email-alert">{error}</div> : null}
+          {message ? <div className="admin-promo-email-success">{message}</div> : null}
 
-      {!serverAvailable ? (
-        <div className="admin-promo-email-server-note">
-          Email delivery is server-only. The recipient picker works here, but actual sending will work after the Resend variables are configured in Netlify and the function is available.
-        </div>
-      ) : null}
-
-      <div className="admin-promo-email-layout">
-        <div className="admin-promo-email-config">
-          <label>
-            <span>Promo code to send</span>
-            <select value={selectedPromoId} onChange={(event) => setSelectedPromoId(event.target.value)} disabled={loading || !promos.length}>
-              {!promos.length ? <option value="">No active promo codes</option> : null}
-              {promos.map((promo) => (
-                <option value={promo.id} key={promo.id}>
-                  {promo.code} — {Number(promo.discount_percent)}% off — {promo.name}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          {selectedPromo ? (
-            <div className="admin-promo-email-preview">
-              <Mail size={18} />
-              <div>
-                <strong>{selectedPromo.code}</strong>
-                <span>{Number(selectedPromo.discount_percent)}% off · {selectedPromo.name}</span>
-              </div>
+          {!serverAvailable ? (
+            <div className="admin-promo-email-server-note">
+              Email delivery is server-only. The recipient picker works here, but actual sending will work after the Resend variables are configured in Netlify and the function is available.
             </div>
           ) : null}
 
-          <div className="admin-promo-email-actions-row">
-            <button type="button" className="primary-button" onClick={sendEmails} disabled={sending || loading || !selectedPromoId || !selectedUserIds.length}>
-              <Send size={16} /> {sending ? "Sending..." : `Send to ${selectedUserIds.length || 0}`}
-            </button>
-            {selectedUserIds.length ? (
-              <button type="button" className="secondary-button" onClick={() => setSelectedUserIds([])}>
-                <X size={15} /> Clear selection
-              </button>
-            ) : null}
-          </div>
-        </div>
+          <div className="admin-promo-email-layout">
+            <div className="admin-promo-email-config">
+              <label>
+                <span>Promo code to send</span>
+                <select value={selectedPromoId} onChange={(event) => setSelectedPromoId(event.target.value)} disabled={loading || !promos.length}>
+                  {!promos.length ? <option value="">No active promo codes</option> : null}
+                  {promos.map((promo) => (
+                    <option value={promo.id} key={promo.id}>
+                      {promo.code} — {Number(promo.discount_percent)}% off — {promo.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
-        <div className="admin-promo-email-users">
-          <div className="admin-promo-email-users-head">
-            <div className="admin-promo-email-search">
-              <Search size={15} />
-              <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search name or email" />
+              {selectedPromo ? (
+                <div className="admin-promo-email-preview">
+                  <Mail size={18} />
+                  <div>
+                    <strong>{selectedPromo.code}</strong>
+                    <span>{Number(selectedPromo.discount_percent)}% off · {selectedPromo.name}</span>
+                  </div>
+                </div>
+              ) : null}
+
+              <div className="admin-promo-email-actions-row">
+                <button type="button" className="primary-button" onClick={sendEmails} disabled={sending || loading || !selectedPromoId || !selectedUserIds.length}>
+                  <Send size={16} /> {sending ? "Sending..." : `Send to ${selectedUserIds.length || 0}`}
+                </button>
+                {selectedUserIds.length ? (
+                  <button type="button" className="secondary-button" onClick={() => setSelectedUserIds([])}>
+                    <X size={15} /> Clear selection
+                  </button>
+                ) : null}
+              </div>
             </div>
-            <button type="button" onClick={selectVisible} disabled={!filteredUsers.length}>Select visible</button>
-          </div>
 
-          <div className="admin-promo-email-user-list">
-            {loading ? <div className="admin-message">Loading authenticated users...</div> : null}
-            {!loading && !filteredUsers.length ? <div className="admin-message">No authenticated users match this search.</div> : null}
-            {!loading ? filteredUsers.map((user) => {
-              const checked = selectedUserIds.includes(user.id);
-              return (
-                <label className={`admin-promo-email-user ${checked ? "is-selected" : ""}`} key={user.id}>
-                  <input type="checkbox" checked={checked} onChange={() => toggleUser(user.id)} />
-                  <span className="admin-promo-email-avatar">{String(user.full_name || user.email || "U").charAt(0).toUpperCase()}</span>
-                  <span className="admin-promo-email-user-copy">
-                    <strong>{user.full_name || String(user.email).split("@")[0]}</strong>
-                    <small>{user.email}</small>
-                  </span>
-                </label>
-              );
-            }) : null}
+            <div className="admin-promo-email-users">
+              <div className="admin-promo-email-users-head">
+                <div className="admin-promo-email-search">
+                  <Search size={15} />
+                  <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search name or email" />
+                </div>
+                <button type="button" onClick={selectVisible} disabled={!filteredUsers.length}>Select visible</button>
+              </div>
+
+              <div className="admin-promo-email-user-list">
+                {loading ? <div className="admin-message">Loading authenticated users...</div> : null}
+                {!loading && !filteredUsers.length ? <div className="admin-message">No authenticated users match this search.</div> : null}
+                {!loading ? filteredUsers.map((user) => {
+                  const checked = selectedUserIds.includes(user.id);
+                  return (
+                    <label className={`admin-promo-email-user ${checked ? "is-selected" : ""}`} key={user.id}>
+                      <input type="checkbox" checked={checked} onChange={() => toggleUser(user.id)} />
+                      <span className="admin-promo-email-avatar">{String(user.full_name || user.email || "U").charAt(0).toUpperCase()}</span>
+                      <span className="admin-promo-email-user-copy">
+                        <strong>{user.full_name || String(user.email).split("@")[0]}</strong>
+                        <small>{user.email}</small>
+                      </span>
+                    </label>
+                  );
+                }) : null}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      ) : null}
     </section>
   );
 }

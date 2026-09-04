@@ -60,8 +60,15 @@ export default function MenuStudioV2PersistenceBoundary({ children }) {
     && params.get("mode") === "website"
     && params.get("websiteImported") !== "1";
   const requestedProjectId = params.get("project") || "";
+  const localDraftAtEntry = useMemo(() => readMenuStudioV2Draft(), []);
+  const localProjectIdAtEntry = menuStudioProjectId(localDraftAtEntry);
+  const hasWarmProjectDraft = Boolean(
+    requestedProjectId
+    && localDraftAtEntry?.menu
+    && localProjectIdAtEntry === requestedProjectId
+  );
   const [prepared] = useState(() => workspace?.isPrepared(requestedProjectId) || false);
-  const [state, setState] = useState(isWebsiteEntry || prepared ? "ready" : "loading");
+  const [state, setState] = useState(isWebsiteEntry || prepared || hasWarmProjectDraft ? "ready" : "loading");
   const [message, setMessage] = useState("");
   const [cloudError, setCloudError] = useState("");
   const [language] = useState(() => readStudioLanguage("en"));
@@ -69,6 +76,10 @@ export default function MenuStudioV2PersistenceBoundary({ children }) {
   const rtl = language === "he" || language === "ar";
 
   useEffect(() => {
+    if (hasWarmProjectDraft) {
+      setActiveMenuStudioProjectId(requestedProjectId);
+      return undefined;
+    }
     if (isWebsiteEntry || prepared) return undefined;
     let active = true;
 
@@ -139,9 +150,9 @@ export default function MenuStudioV2PersistenceBoundary({ children }) {
       }
     }
 
-    openDraft();
+    void openDraft();
     return () => { active = false; };
-  }, [isWebsiteEntry, prepared, requestedProjectId, t.loading, t.migrating, t.missing]);
+  }, [hasWarmProjectDraft, isWebsiteEntry, prepared, requestedProjectId, t.loading, t.migrating, t.missing]);
 
   useEffect(() => {
     function onCloudSave(event) {

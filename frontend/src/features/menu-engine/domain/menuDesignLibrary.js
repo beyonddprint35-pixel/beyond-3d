@@ -2,16 +2,21 @@ import { normalizeMenuDesign } from "./designSchema";
 import { PREMIUM_MENU_DESIGNS as CORE_MENU_DESIGNS } from "./premiumMenuDesignLibrary";
 import { PHASE3_MENU_DESIGNS } from "./premiumMenuDesignLibraryPhase3";
 import { PHASE4_MENU_DESIGNS } from "./premiumMenuDesignLibraryPhase4";
+import { CLINIC_MENU_DESIGNS } from "./premiumMenuDesignLibraryClinics";
 import { applyMenuDesignPresentationProfiles } from "./menuDesignPresentationProfiles";
 
 const MENU_DESIGN_LIBRARY = [
   ...CORE_MENU_DESIGNS,
   ...PHASE3_MENU_DESIGNS,
   ...PHASE4_MENU_DESIGNS,
+  ...CLINIC_MENU_DESIGNS,
 ];
 
 export const PREMIUM_MENU_DESIGNS = Object.freeze(
-  applyMenuDesignPresentationProfiles(MENU_DESIGN_LIBRARY),
+  applyMenuDesignPresentationProfiles(MENU_DESIGN_LIBRARY).map((entry) => ({
+    ...entry,
+    industry: entry.industry || "restaurant",
+  })),
 );
 
 export function findMatchingMenuDesign(design) {

@@ -1,5 +1,11 @@
 const SHORTCUT_CLASS = "account-menu-studio-shortcut";
 
+function openMenuStudioFast() {
+  if (window.location.pathname === "/menu-studio") return;
+  window.history.pushState({}, "", "/menu-studio");
+  window.dispatchEvent(new PopStateEvent("popstate", { state: window.history.state }));
+}
+
 function syncMenuStudioShortcut() {
   const nav = document.querySelector(".account-nav");
   if (!nav) return;
@@ -23,9 +29,7 @@ function syncMenuStudioShortcut() {
     </svg>
   `;
 
-  button.addEventListener("click", () => {
-    window.location.assign("/menu-studio");
-  });
+  button.addEventListener("click", openMenuStudioFast);
 
   const profileButton = Array.from(nav.querySelectorAll("button")).find((item) =>
     String(item.textContent || "").trim() === "Profile"

@@ -1,0 +1,4 @@
+/* Pricing is intentionally deferred until a menu reaches Publish. */
+.auth-business-card .auth-plan-section{display:none!important}
+.auth-business-card .auth-business-success>p,
+.auth-business-card .auth-business-next{display:none!important}

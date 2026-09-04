@@ -1,0 +1,14 @@
+.bme-menu .bme-item-copy h3{
+  color:var(--bme-item-name-color,var(--bme-text)) !important;
+  opacity:1 !important;
+  -webkit-text-fill-color:var(--bme-item-name-color,var(--bme-text));
+}
+
+.bme-heritage-exact .ep-item-name,
+.bme-heritage-exact .ep-app[dir="rtl"] .ep-item-name,
+.bme-heritage-exact .ep-app.ep-lang-he .ep-item-name,
+.bme-heritage-exact .ep-app.ep-lang-ar .ep-item-name{
+  color:var(--ep-item-name-color,var(--ep-ink,#161616)) !important;
+  opacity:1 !important;
+  -webkit-text-fill-color:var(--ep-item-name-color,var(--ep-ink,#161616)) !important;
+}

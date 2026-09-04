@@ -45,23 +45,32 @@ const UI = {
     source:"MENU SOURCE", upload:"Upload PDF or photos", uploadHint:"PDF, JPG, PNG or WEBP. You can combine several menu pages.", choose:"Choose files", paste:"Write or paste menu text", pasteHint:"Optional. Add text if you have a copy of the menu or want to improve extraction accuracy.",
     languages:"CUSTOMER LANGUAGES", languageHint:"Choose the languages BEYOND should prepare during import.", private:"Your AI import is private", attempts:"Successful imports use your available AI builds. System failures are not treated as successful builds.", build:"Build my menu", building:"Building your menu…", signIn:"Sign in is required to use AI import.", returnHome:"Return to BEYOND", remaining:"AI builds remaining", unlimited:"Unlimited AI builds", files:"files", remove:"Remove", error:"Could not import this menu", continueFit:"Continue to menu fit", success:"Menu imported successfully", successHint:"The content is ready. Next we’ll ask a few questions and recommend the best design directions.",
     recoveryTitle:"We couldn’t read this source reliably.", recoveryHint:"Your files are still here. Try again, add any menu text you have, or continue manually. A failed system read is not counted as a successful AI build.", retry:"Try again", addText:"Add menu text", manual:"Continue manually", technical:"Technical detail",
+    smartPhoto:"Smart photo recovery", smartPhotoHint:"BEYOND groups overlapping phone photos, retries weak groups automatically, merges duplicates, and translates only after the source menu is verified.", verified:"Verified items", review:"Needs review", reads:"AI reads", cost:"AI cost", reused:"Reused cached result", reviewDetails:"Rows kept for review instead of being invented",
   },
   he: {
     language:"שפת הממשק", back:"חזרה", eyebrow:"ייבוא תפריט עם AI", title:"הכניסו את התפריט הקיים ל-Studio", hint:"העלו PDF או תמונות תפריט, הדביקו טקסט או שלבו ביניהם. BEYOND AI יסדר את התוכן ואז נמליץ על עיצובים שמתאימים למסעדה שלכם.",
     source:"מקור התפריט", upload:"העלאת PDF או תמונות", uploadHint:"PDF, JPG, PNG או WEBP. אפשר לשלב כמה עמודים.", choose:"בחירת קבצים", paste:"כתיבה או הדבקת טקסט", pasteHint:"אופציונלי. הוסיפו טקסט אם יש לכם עותק או כדי לשפר את דיוק הזיהוי.",
     languages:"שפות ללקוחות", languageHint:"בחרו את השפות ש-BEYOND יכין בזמן הייבוא.", private:"הייבוא עם AI פרטי", attempts:"ייבוא מוצלח משתמש בניסיונות ה-AI הזמינים. תקלת מערכת לא נחשבת לבנייה מוצלחת.", build:"בניית התפריט שלי", building:"בונה את התפריט…", signIn:"צריך להתחבר כדי להשתמש בייבוא AI.", returnHome:"חזרה ל-BEYOND", remaining:"ניסיונות AI שנותרו", unlimited:"ניסיונות AI ללא הגבלה", files:"קבצים", remove:"הסר", error:"לא ניתן לייבא את התפריט", continueFit:"המשך להתאמת התפריט", success:"התפריט יובא בהצלחה", successHint:"התוכן מוכן. עכשיו נשאל כמה שאלות ונמליץ על כיווני העיצוב המתאימים ביותר.",
     recoveryTitle:"לא הצלחנו לקרוא את המקור בצורה אמינה.", recoveryHint:"הקבצים שלכם עדיין כאן. נסו שוב, הוסיפו טקסט מהתפריט אם יש לכם, או המשיכו ידנית. קריאת מערכת שנכשלה אינה נחשבת לבניית AI מוצלחת.", retry:"נסו שוב", addText:"הוספת טקסט תפריט", manual:"המשך ידנית", technical:"פרט טכני",
+    smartPhoto:"שחזור תמונות חכם", smartPhotoHint:"BEYOND מקבץ תמונות טלפון חופפות, מנסה שוב רק קבוצות חלשות, מאחד כפילויות ומתרגם רק אחרי אימות התפריט.", verified:"פריטים שאומתו", review:"דורש בדיקה", reads:"קריאות AI", cost:"עלות AI", reused:"נעשה שימוש בתוצאה שמורה", reviewDetails:"שורות שנשמרו לבדיקה במקום להמציא מידע",
   },
   ar: {
     language:"لغة الواجهة", back:"رجوع", eyebrow:"استيراد القائمة بالذكاء الاصطناعي", title:"أدخلوا قائمتكم الحالية إلى Studio", hint:"ارفعوا PDF أو صور القائمة، الصقوا النص أو اجمعوا بينهما. سيقوم BEYOND AI بترتيب المحتوى ثم نقترح تصاميم تناسب مطعمكم.",
     source:"مصدر القائمة", upload:"رفع PDF أو صور", uploadHint:"PDF أو JPG أو PNG أو WEBP. يمكن الجمع بين عدة صفحات.", choose:"اختيار الملفات", paste:"كتابة أو لصق نص القائمة", pasteHint:"اختياري. أضيفوا النص إن كان متوفراً أو لتحسين دقة الاستخراج.",
     languages:"لغات الزبائن", languageHint:"اختاروا اللغات التي يجب أن يجهزها BEYOND أثناء الاستيراد.", private:"استيراد الذكاء الاصطناعي خاص", attempts:"الاستيراد الناجح يستخدم محاولات AI المتاحة. أعطال النظام لا تُحسب كبناء ناجح.", build:"بناء قائمتي", building:"جارٍ بناء القائمة…", signIn:"يجب تسجيل الدخول لاستخدام استيراد AI.", returnHome:"العودة إلى BEYOND", remaining:"محاولات AI المتبقية", unlimited:"محاولات AI غير محدودة", files:"ملفات", remove:"إزالة", error:"تعذر استيراد هذه القائمة", continueFit:"المتابعة إلى ملاءمة القائمة", success:"تم استيراد القائمة بنجاح", successHint:"المحتوى جاهز. الآن سنطرح بعض الأسئلة ونقترح أفضل اتجاهات التصميم.",
     recoveryTitle:"لم نتمكن من قراءة هذا المصدر بشكل موثوق.", recoveryHint:"ملفاتكم ما زالت موجودة. حاولوا مرة أخرى، أضيفوا أي نص متوفر من القائمة، أو تابعوا يدوياً. فشل قراءة النظام لا يُحسب كبناء AI ناجح.", retry:"المحاولة مرة أخرى", addText:"إضافة نص القائمة", manual:"المتابعة يدوياً", technical:"تفصيل تقني",
+    smartPhoto:"استعادة ذكية للصور", smartPhotoHint:"يقسّم BEYOND صور الهاتف المتداخلة إلى مجموعات، يعيد قراءة المجموعات الضعيفة فقط، يدمج التكرارات ثم يترجم بعد التحقق من المصدر.", verified:"عناصر مؤكدة", review:"تحتاج مراجعة", reads:"قراءات AI", cost:"تكلفة AI", reused:"تم استخدام نتيجة محفوظة", reviewDetails:"صفوف محفوظة للمراجعة بدلاً من تخمينها",
   },
 };
 
 function formatMb(bytes) {
   return `${(Number(bytes || 0) / 1024 / 1024).toFixed(1)} MB`;
+}
+
+function formatUsd(value) {
+  const amount = Number(value || 0);
+  if (!Number.isFinite(amount)) return "$0.000";
+  return `$${amount.toFixed(amount < 0.01 ? 4 : 3)}`;
 }
 
 export default function MenuImportStudioV2() {
@@ -81,12 +90,14 @@ export default function MenuImportStudioV2() {
   const [error, setError] = useState("");
   const [attemptFailed, setAttemptFailed] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [importReport, setImportReport] = useState(null);
 
   const t = UI[uiLanguage] || UI.en;
   const rtl = studioLanguageDirection(uiLanguage) === "rtl";
   const BackIcon = rtl ? ArrowRight : ArrowLeft;
   const ForwardIcon = rtl ? ArrowLeft : ArrowRight;
   const totalBytes = totalImportBytes(files);
+  const imageOnly = files.length > 0 && files.every((file) => file.type?.startsWith("image/")) && !menuText.trim();
 
   useEffect(() => {
     let active = true;
@@ -115,6 +126,13 @@ export default function MenuImportStudioV2() {
     });
   }
 
+  function resetResultState() {
+    setAttemptFailed(false);
+    setSuccess(false);
+    setImportReport(null);
+    setError("");
+  }
+
   function addFiles(event) {
     const selected = Array.from(event.target.files || []);
     const combined = [...files, ...selected].slice(0, MENU_IMPORT_MAX_FILES);
@@ -126,8 +144,7 @@ export default function MenuImportStudioV2() {
       return;
     }
     setFiles(combined);
-    setError("");
-    setAttemptFailed(false);
+    resetResultState();
     event.target.value = "";
   }
 
@@ -137,13 +154,20 @@ export default function MenuImportStudioV2() {
     setError("");
     setAttemptFailed(false);
     setSuccess(false);
+    setImportReport(null);
     try {
       const result = await importMenuWithAi({ session, files, text: menuText, languages });
       const adaptedMenu = adaptAiStructuredMenuToV3(result.menu, { projectId: result.project?.id });
       writeMenuStudioV2Draft({
         menu: adaptedMenu,
         designId: "",
-        profile: { mode: "upload", importedProjectId: result.project?.id || "", uiLanguage },
+        profile: {
+          mode: "upload",
+          importedProjectId: result.project?.id || "",
+          uiLanguage,
+          aiImportDiagnostics: result.diagnostics || null,
+          aiImportReviewItems: result.reviewItems || [],
+        },
         contentLanguage: adaptedMenu.default_language || languages[0] || "en",
         importProject: result.project,
         savedAt: new Date().toISOString(),
@@ -154,12 +178,15 @@ export default function MenuImportStudioV2() {
           answers: {},
           uiLanguage,
           importedProjectId: result.project?.id || "",
+          aiImportDiagnostics: result.diagnostics || null,
+          aiImportReviewCount: result.reviewItems?.length || 0,
           createdAt: new Date().toISOString(),
         }));
       } catch {
         // Import remains usable without storage metadata.
       }
       setAllowance(result.allowance || allowance);
+      setImportReport({ diagnostics: result.diagnostics || null, reviewItems: result.reviewItems || [], aiCost: result.aiCost || null });
       setSuccess(true);
     } catch (importError) {
       setError(importError?.message || t.error);
@@ -236,13 +263,14 @@ export default function MenuImportStudioV2() {
             <article className="menu-import-v2-card source-card">
               <header><div><span>{t.source}</span><strong>{t.upload}</strong><p>{t.uploadHint}</p></div><small>{MENU_IMPORT_MAX_FILES} · {MENU_IMPORT_MAX_TOTAL_MB} MB</small></header>
               <label className="menu-import-v2-dropzone"><FileUp size={25} /><strong>{t.choose}</strong><span>{t.uploadHint}</span><input type="file" accept="application/pdf,image/jpeg,image/png,image/webp" multiple onChange={addFiles} /></label>
-              {files.length ? <div className="menu-import-v2-files">{files.map((file, index) => <div key={`${file.name}-${index}`}>{file.type === "application/pdf" ? <FileText size={15} /> : <ImageIcon size={15} />}<span><strong>{file.name}</strong><small>{formatMb(file.size)}</small></span><button type="button" onClick={() => { setFiles((current) => current.filter((_, itemIndex) => itemIndex !== index)); setAttemptFailed(false); setError(""); }} title={t.remove}><Trash2 size={13} /></button></div>)}</div> : null}
+              {files.length ? <div className="menu-import-v2-files">{files.map((file, index) => <div key={`${file.name}-${index}`}>{file.type === "application/pdf" ? <FileText size={15} /> : <ImageIcon size={15} />}<span><strong>{file.name}</strong><small>{formatMb(file.size)}</small></span><button type="button" onClick={() => { setFiles((current) => current.filter((_, itemIndex) => itemIndex !== index)); resetResultState(); }} title={t.remove}><Trash2 size={13} /></button></div>)}</div> : null}
               <div className="menu-import-v2-upload-meta"><span>{files.length} {t.files}</span><span>{formatMb(totalBytes)} / {MENU_IMPORT_MAX_TOTAL_MB} MB</span></div>
+              {imageOnly && files.length > 1 ? <div className="menu-import-v2-smart-photo"><Sparkles size={15} /><span><strong>{t.smartPhoto}</strong><small>{t.smartPhotoHint}</small></span></div> : null}
             </article>
 
             <article className="menu-import-v2-card text-card">
               <header><div><span>{t.source}</span><strong>{t.paste}</strong><p>{t.pasteHint}</p></div></header>
-              <textarea ref={textAreaRef} value={menuText} onChange={(event) => { setMenuText(event.target.value); setAttemptFailed(false); setError(""); }} placeholder="Burgers\nClassic Burger - 58₪\nBeef patty, lettuce, tomato..." />
+              <textarea ref={textAreaRef} value={menuText} onChange={(event) => { setMenuText(event.target.value); resetResultState(); }} placeholder="Burgers\nClassic Burger - 58₪\nBeef patty, lettuce, tomato..." />
             </article>
           </section>
 
@@ -272,6 +300,17 @@ export default function MenuImportStudioV2() {
               </div> : null}
 
               {success ? <div className="menu-import-v2-success"><Check size={16} /><span><strong>{t.success}</strong><small>{t.successHint}</small></span></div> : null}
+
+              {success && importReport?.diagnostics ? <div className="menu-import-v2-report">
+                <div className="menu-import-v2-report-grid">
+                  <div><span>{t.verified}</span><strong>{importReport.diagnostics.verifiedItemCount ?? "—"}</strong></div>
+                  <div className={Number(importReport.diagnostics.reviewItemCount || 0) ? "warn" : ""}><span>{t.review}</span><strong>{importReport.diagnostics.reviewItemCount ?? 0}</strong></div>
+                  <div><span>{t.reads}</span><strong>{importReport.diagnostics.openaiRequestCount ?? "—"}</strong></div>
+                  <div><span>{t.cost}</span><strong>{formatUsd(importReport.diagnostics.estimatedCostUsd ?? importReport.aiCost?.estimated_cost_usd)}</strong></div>
+                </div>
+                {importReport.diagnostics.cacheHit ? <div className="menu-import-v2-cache-note"><Check size={12} /> {t.reused}</div> : null}
+                {importReport.reviewItems?.length ? <details className="menu-import-v2-review-list"><summary>{t.reviewDetails} ({importReport.reviewItems.length})</summary><ul>{importReport.reviewItems.slice(0, 8).map((item, index) => <li key={`${item.name_source || "review"}-${index}`}><strong>{item.name_source || item.source_evidence || `#${index + 1}`}</strong><span>{item.issue || item.price_source || "Review source photo"}</span></li>)}</ul></details> : null}
+              </div> : null}
 
               {!success && !attemptFailed ? <button type="button" className="menu-import-v2-build" disabled={loading || !session || (!files.length && !menuText.trim()) || !languages.length} onClick={handleBuild}>{loading ? <><LoaderCircle className="spin" size={16} /> {t.building}</> : <><Sparkles size={16} /> {t.build}</>}</button> : null}
               {success ? <button type="button" className="menu-import-v2-build" onClick={continueToFit}>{t.continueFit} <ForwardIcon size={15} /></button> : null}

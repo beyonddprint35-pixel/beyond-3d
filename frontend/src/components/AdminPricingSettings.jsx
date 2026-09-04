@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Plus, Save, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronRight, Plus, Save, Trash2 } from "lucide-react";
 
 import { supabase } from "../lib/supabaseClient";
 import {
@@ -11,9 +11,21 @@ import {
 import "./AdminPricingSettings.css";
 
 const SETTINGS_KEY = "menu_pricing_plans";
+const PROTECTED_PLAN_IDS = new Set(["basic", "premium"]);
 
 function clonePricing(value) {
   return JSON.parse(JSON.stringify(value));
+}
+
+function makePlanId(existingPlans) {
+  const used = new Set((existingPlans || []).map((plan) => plan.id));
+  let index = 1;
+  let id = "custom-plan";
+  while (used.has(id)) {
+    index += 1;
+    id = `custom-plan-${index}`;
+  }
+  return id;
 }
 
 function isLocalPreview() {
@@ -45,6 +57,8 @@ export default function AdminPricingSettings({ password }) {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [localMode, setLocalMode] = useState(() => isLocalPreview());
+  const [expanded, setExpanded] = useState(false);
+  const [openPlans, setOpenPlans] = useState({});
 
   async function loadDirectFromSupabase() {
     const { data, error: supabaseError } = await supabase
@@ -168,6 +182,48 @@ export default function AdminPricingSettings({ password }) {
     }));
   }
 
+  function addPlan() {
+    setPricing((current) => {
+      const id = makePlanId(current.plans);
+      const nextPlan = {
+        id,
+        name_en: "New Plan",
+        name_he: "חבילה חדשה",
+        description_en: "",
+        description_he: "",
+        price: "",
+        period_en: "/ month",
+        period_he: "/ חודש",
+        setup_fee: "",
+        setup_note_en: "",
+        setup_note_he: "",
+        cta_en: "Choose plan",
+        cta_he: "בחירת חבילה",
+        recommended: false,
+        features: [],
+      };
+      setOpenPlans((open) => ({ ...open, [id]: true }));
+      return { ...current, plans: [...current.plans, nextPlan] };
+    });
+  }
+
+  function removePlan(planId) {
+    if (PROTECTED_PLAN_IDS.has(planId)) return;
+    const plan = pricing.plans.find((item) => item.id === planId);
+    const ok = window.confirm(`Delete pricing model “${plan?.name_en || planId}”?`);
+    if (!ok) return;
+
+    setPricing((current) => ({
+      ...current,
+      plans: current.plans.filter((item) => item.id !== planId),
+    }));
+    setOpenPlans((current) => {
+      const next = { ...current };
+      delete next[planId];
+      return next;
+    });
+  }
+
   function updateFeature(planIndex, featureIndex, field, value) {
     setPricing((current) => ({
       ...current,
@@ -263,30 +319,40 @@ export default function AdminPricingSettings({ password }) {
   }
 
   return (
-    <section className="admin-pricing-settings">
-      <div className="admin-pricing-settings-head">
-        <div>
-          <span className="admin-label">WEBSITE</span>
-          <h2>Menu Pricing</h2>
-          <p>Change prices, setup fees, plan text and features shown on the Beyond homepage.</p>
-          {localMode ? (
-            <small style={{ display: "block", marginTop: "8px", color: "#7f91ad" }}>
-              Local preview mode · pricing is read directly from Supabase.
-            </small>
-          ) : null}
-        </div>
-        <button type="button" className="primary-button" onClick={savePricing} disabled={saving || loading}>
-          <Save size={16} /> {saving ? "Saving..." : "Save Pricing"}
+    <section className={`admin-pricing-settings${expanded ? " is-expanded" : ""}`}>
+      <div className="admin-pricing-settings-head compact">
+        <button
+          type="button"
+          className="admin-pricing-collapse-toggle"
+          onClick={() => setExpanded((value) => !value)}
+          aria-expanded={expanded}
+        >
+          {expanded ? <ChevronDown size={17} /> : <ChevronRight size={17} />}
+          <span>
+            <span className="admin-label">WEBSITE</span>
+            <strong>Menu Pricing</strong>
+            <small>{pricing.plans?.length || 0} plans · edit prices, setup fees and features</small>
+          </span>
         </button>
+
+        {expanded ? (
+          <button type="button" className="primary-button admin-pricing-save-compact" onClick={savePricing} disabled={saving || loading}>
+            <Save size={15} /> {saving ? "Saving..." : "Save"}
+          </button>
+        ) : null}
       </div>
 
       {loading ? <div className="admin-message">Loading pricing settings...</div> : null}
       {error ? <div className="admin-error">{error}</div> : null}
       {message ? <div className="admin-pricing-success">{message}</div> : null}
 
-      {!loading ? (
-        <>
-          <div className="admin-pricing-copy-grid">
+      {expanded && !loading ? (
+        <div className="admin-pricing-expanded-content">
+          {localMode ? (
+            <small className="admin-pricing-local-note">Local preview · pricing reads directly from Supabase.</small>
+          ) : null}
+
+          <div className="admin-pricing-copy-grid compact-grid">
             <label>
               <span>Section title — English</span>
               <input value={pricing.headline_en} onChange={(event) => updateRoot("headline_en", event.target.value)} />
@@ -305,70 +371,102 @@ export default function AdminPricingSettings({ password }) {
             </label>
           </div>
 
-          <div className="admin-pricing-plans">
-            {pricing.plans.map((plan, planIndex) => (
-              <article className="admin-pricing-plan" key={plan.id}>
-                <div className="admin-pricing-plan-title">
-                  <div>
-                    <span>{plan.id.toUpperCase()}</span>
-                    <h3>{plan.name_en || plan.id}</h3>
-                  </div>
-                  <label className="admin-pricing-check">
-                    <input
-                      type="checkbox"
-                      checked={Boolean(plan.recommended)}
-                      onChange={(event) => updatePlan(planIndex, "recommended", event.target.checked)}
-                    />
-                    Recommended
-                  </label>
-                </div>
-
-                <div className="admin-pricing-fields">
-                  <label><span>Name — English</span><input value={plan.name_en} onChange={(event) => updatePlan(planIndex, "name_en", event.target.value)} /></label>
-                  <label><span>Name — Hebrew</span><input dir="rtl" value={plan.name_he} onChange={(event) => updatePlan(planIndex, "name_he", event.target.value)} /></label>
-                  <label className="wide"><span>Description — English</span><textarea value={plan.description_en} onChange={(event) => updatePlan(planIndex, "description_en", event.target.value)} /></label>
-                  <label className="wide"><span>Description — Hebrew</span><textarea dir="rtl" value={plan.description_he} onChange={(event) => updatePlan(planIndex, "description_he", event.target.value)} /></label>
-                  <label><span>Price</span><input value={plan.price} onChange={(event) => updatePlan(planIndex, "price", event.target.value)} placeholder="₪49" /></label>
-                  <label><span>Period — English</span><input value={plan.period_en} onChange={(event) => updatePlan(planIndex, "period_en", event.target.value)} /></label>
-                  <label><span>Period — Hebrew</span><input dir="rtl" value={plan.period_he} onChange={(event) => updatePlan(planIndex, "period_he", event.target.value)} /></label>
-                  <label><span>One-time setup fee</span><input value={plan.setup_fee} onChange={(event) => updatePlan(planIndex, "setup_fee", event.target.value)} placeholder="₪200" /></label>
-                  <label className="wide"><span>Setup note — English</span><input value={plan.setup_note_en} onChange={(event) => updatePlan(planIndex, "setup_note_en", event.target.value)} placeholder="NFC stands not included" /></label>
-                  <label className="wide"><span>Setup note — Hebrew</span><input dir="rtl" value={plan.setup_note_he} onChange={(event) => updatePlan(planIndex, "setup_note_he", event.target.value)} /></label>
-                  <label><span>Button — English</span><input value={plan.cta_en} onChange={(event) => updatePlan(planIndex, "cta_en", event.target.value)} /></label>
-                  <label><span>Button — Hebrew</span><input dir="rtl" value={plan.cta_he} onChange={(event) => updatePlan(planIndex, "cta_he", event.target.value)} /></label>
-                </div>
-
-                <div className="admin-pricing-feature-head">
-                  <strong>Features</strong>
-                  <button type="button" className="secondary-button" onClick={() => addFeature(planIndex)}>
-                    <Plus size={15} /> Add feature
-                  </button>
-                </div>
-
-                <div className="admin-pricing-feature-list">
-                  {plan.features.map((feature, featureIndex) => (
-                    <div className="admin-pricing-feature-row" key={`${plan.id}-${featureIndex}`}>
-                      <input
-                        value={feature.en}
-                        placeholder="English feature"
-                        onChange={(event) => updateFeature(planIndex, featureIndex, "en", event.target.value)}
-                      />
-                      <input
-                        dir="rtl"
-                        value={feature.he}
-                        placeholder="פיצ'ר בעברית"
-                        onChange={(event) => updateFeature(planIndex, featureIndex, "he", event.target.value)}
-                      />
-                      <button type="button" onClick={() => removeFeature(planIndex, featureIndex)} aria-label="Remove feature">
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </article>
-            ))}
+          <div className="admin-pricing-feature-head" style={{ marginTop: 0 }}>
+            <strong>Pricing models</strong>
+            <button type="button" className="secondary-button" onClick={addPlan}>
+              <Plus size={14} /> Add pricing model
+            </button>
           </div>
-        </>
+
+          <div className="admin-pricing-plans compact-plans">
+            {pricing.plans.map((plan, planIndex) => {
+              const isPlanOpen = Boolean(openPlans[plan.id]);
+              const removable = !PROTECTED_PLAN_IDS.has(plan.id);
+              return (
+                <article className={`admin-pricing-plan compact-plan${isPlanOpen ? " is-open" : ""}`} key={plan.id}>
+                  <button
+                    type="button"
+                    className="admin-pricing-plan-summary"
+                    onClick={() => setOpenPlans((current) => ({ ...current, [plan.id]: !current[plan.id] }))}
+                    aria-expanded={isPlanOpen}
+                  >
+                    <span className="admin-pricing-plan-chevron">
+                      {isPlanOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                    </span>
+                    <span className="admin-pricing-plan-summary-copy">
+                      <strong>{plan.name_en || plan.id}</strong>
+                      <small>{plan.price || "No price"}{plan.period_en ? ` · ${plan.period_en}` : ""}</small>
+                    </span>
+                    {plan.recommended ? <span className="admin-pricing-recommended-pill">Recommended</span> : null}
+                  </button>
+
+                  {isPlanOpen ? (
+                    <div className="admin-pricing-plan-body">
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 10 }}>
+                        <label className="admin-pricing-check compact-check" style={{ marginBottom: 0 }}>
+                          <input
+                            type="checkbox"
+                            checked={Boolean(plan.recommended)}
+                            onChange={(event) => updatePlan(planIndex, "recommended", event.target.checked)}
+                          />
+                          Recommended
+                        </label>
+                        {removable ? (
+                          <button type="button" className="secondary-button" onClick={() => removePlan(plan.id)} style={{ minHeight: 30, padding: "0 9px", fontSize: 11 }}>
+                            <Trash2 size={14} /> Delete model
+                          </button>
+                        ) : null}
+                      </div>
+
+                      <div className="admin-pricing-fields">
+                        <label><span>Name — English</span><input value={plan.name_en} onChange={(event) => updatePlan(planIndex, "name_en", event.target.value)} /></label>
+                        <label><span>Name — Hebrew</span><input dir="rtl" value={plan.name_he} onChange={(event) => updatePlan(planIndex, "name_he", event.target.value)} /></label>
+                        <label className="wide"><span>Description — English</span><textarea value={plan.description_en} onChange={(event) => updatePlan(planIndex, "description_en", event.target.value)} /></label>
+                        <label className="wide"><span>Description — Hebrew</span><textarea dir="rtl" value={plan.description_he} onChange={(event) => updatePlan(planIndex, "description_he", event.target.value)} /></label>
+                        <label><span>Price</span><input value={plan.price} onChange={(event) => updatePlan(planIndex, "price", event.target.value)} placeholder="₪49" /></label>
+                        <label><span>Period — English</span><input value={plan.period_en} onChange={(event) => updatePlan(planIndex, "period_en", event.target.value)} /></label>
+                        <label><span>Period — Hebrew</span><input dir="rtl" value={plan.period_he} onChange={(event) => updatePlan(planIndex, "period_he", event.target.value)} /></label>
+                        <label><span>One-time setup fee</span><input value={plan.setup_fee} onChange={(event) => updatePlan(planIndex, "setup_fee", event.target.value)} placeholder="₪200" /></label>
+                        <label className="wide"><span>Setup note — English</span><input value={plan.setup_note_en} onChange={(event) => updatePlan(planIndex, "setup_note_en", event.target.value)} placeholder="NFC stands not included" /></label>
+                        <label className="wide"><span>Setup note — Hebrew</span><input dir="rtl" value={plan.setup_note_he} onChange={(event) => updatePlan(planIndex, "setup_note_he", event.target.value)} /></label>
+                        <label><span>Button — English</span><input value={plan.cta_en} onChange={(event) => updatePlan(planIndex, "cta_en", event.target.value)} /></label>
+                        <label><span>Button — Hebrew</span><input dir="rtl" value={plan.cta_he} onChange={(event) => updatePlan(planIndex, "cta_he", event.target.value)} /></label>
+                      </div>
+
+                      <div className="admin-pricing-feature-head">
+                        <strong>Features</strong>
+                        <button type="button" className="secondary-button" onClick={() => addFeature(planIndex)}>
+                          <Plus size={14} /> Add
+                        </button>
+                      </div>
+
+                      <div className="admin-pricing-feature-list">
+                        {plan.features.map((feature, featureIndex) => (
+                          <div className="admin-pricing-feature-row" key={`${plan.id}-${featureIndex}`}>
+                            <input
+                              value={feature.en}
+                              placeholder="English feature"
+                              onChange={(event) => updateFeature(planIndex, featureIndex, "en", event.target.value)}
+                            />
+                            <input
+                              dir="rtl"
+                              value={feature.he}
+                              placeholder="פיצ'ר בעברית"
+                              onChange={(event) => updateFeature(planIndex, featureIndex, "he", event.target.value)}
+                            />
+                            <button type="button" onClick={() => removeFeature(planIndex, featureIndex)} aria-label="Remove feature">
+                              <Trash2 size={15} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
+                </article>
+              );
+            })}
+          </div>
+        </div>
       ) : null}
     </section>
   );

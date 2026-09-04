@@ -1,0 +1,237 @@
+/* =========================================================
+   BEYOND MENU STUDIO — DESIGN CONTROLS DARK MODE
+   Keep the Studio controls dark without changing the actual menu preview.
+   ========================================================= */
+
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-pro-controls.studio-v3-design-v2{
+  --design-ink:#f4f6f8;
+  --design-text:#d6dbe2;
+  --design-muted:#929ba7;
+  --design-line:rgba(255,255,255,.11);
+  --design-line-strong:rgba(255,255,255,.18);
+  --design-surface:#11171e;
+  --design-canvas:#090d12;
+  --design-elevated:rgba(17,23,30,.92);
+  --design-blue-soft:rgba(73,116,229,.16);
+  --design-shadow:0 12px 34px rgba(0,0,0,.28),0 1px 2px rgba(0,0,0,.2);
+  --design-shadow-hover:0 18px 42px rgba(0,0,0,.38),0 2px 6px rgba(0,0,0,.22);
+  color:var(--design-ink);
+}
+
+html[data-beyond-theme="dark"] .menu-design-v2 .menu-design-v2-controls{
+  border-color:rgba(255,255,255,.08);
+  background:#0d1218;
+}
+
+/* Current design + main sections */
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-v2-current,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-v2-section,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-library,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-context-editor-head{
+  border-color:var(--design-line);
+  background:var(--design-surface);
+  box-shadow:0 1px 2px rgba(0,0,0,.24);
+}
+
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-v2-current>button,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-v2-secondary-action,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-context-editor-head>button{
+  background:#1a212a;
+  color:#c8d3e7;
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-v2-current>button:hover,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-v2-secondary-action:hover,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-context-editor-head>button:hover{
+  background:#202a36;
+  color:#edf3ff;
+}
+
+/* Quick style cards */
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-quick-control-card{
+  background:#151b22;
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-quick-control-title>.dot{
+  background:rgba(73,116,229,.16);
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-quick-control-title>.dot.colors{
+  border-color:#151b22;
+  box-shadow:0 0 0 1px var(--design-line);
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-quick-control-title>button{
+  background:#202730;
+  color:#aeb7c3;
+  box-shadow:inset 0 0 0 1px var(--design-line);
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-quick-control-title>button:hover{
+  background:#253044;
+  color:#8eabff;
+}
+
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-quick-palette-row>button,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-quick-type-grid button,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-quick-hero-grid button,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-quick-density-grid button,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-quick-hero-upload{
+  border-color:var(--design-line);
+  background:#1b222b;
+  color:#d1d7df;
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-quick-palette-row>button:hover,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-quick-type-grid button:hover,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-quick-hero-grid button:hover,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-quick-density-grid button:hover{
+  border-color:rgba(106,143,244,.48);
+  background:#202936;
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-quick-palette-row>button.active,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-quick-hero-grid button.active,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-quick-density-grid button.active{
+  border-color:rgba(106,143,244,.72);
+  background:rgba(73,116,229,.14);
+  color:#8eabff;
+  box-shadow:0 0 0 2px rgba(73,116,229,.10);
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-quick-hero-upload label{
+  background:rgba(73,116,229,.16);
+  color:#93adff;
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-quick-hero-upload button{
+  background:#242b34;
+  color:#b3bbc6;
+}
+
+/* Recommended-style cards */
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-feeling-grid>button{
+  border-color:var(--design-line);
+  background:#171e26;
+  color:var(--design-text);
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-feeling-grid>button:hover{
+  border-color:rgba(106,143,244,.42);
+  background:#1b2430;
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-feeling-grid>button.active{
+  border-color:rgba(106,143,244,.72);
+  background:rgba(73,116,229,.14);
+}
+
+/* Complete library chrome. Mini previews keep their own design palette. */
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-search,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-original-design{
+  border-color:var(--design-line);
+  background:#171e26;
+  color:#d5dbe3;
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-search input{
+  color:#f1f4f8;
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-search input::placeholder{
+  color:#77818e;
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-original-design strong{
+  color:#eef2f7;
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-original-design small{
+  color:#8f99a6;
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-original-design.active{
+  border-color:rgba(106,143,244,.7);
+  background:rgba(73,116,229,.14);
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-premium-design-card{
+  border-color:var(--design-line)!important;
+  background:#151c24!important;
+  color:#e8edf3!important;
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-premium-design-copy{
+  background:#151c24;
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-premium-design-copy strong{
+  color:#eef2f7;
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-premium-design-copy em,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-category{
+  color:#8f99a6!important;
+}
+
+/* Advanced inspector */
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-inspector-shell{
+  background:#0d1218!important;
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-inspector-panel-head,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-inspector-block{
+  border-color:var(--design-line)!important;
+  background:#151c24!important;
+  color:#e7ebf0!important;
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button:hover{
+  background:#1b2532!important;
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button.active{
+  border-color:rgba(106,143,244,.62)!important;
+  background:rgba(73,116,229,.16)!important;
+  color:#91aaff!important;
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-inspector-panel-head strong,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-inspector-block-title,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-inspector-range-head{
+  color:#eef2f7!important;
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-inspector-panel-head small,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-inspector-block-title small{
+  color:#929ba7!important;
+}
+
+/* Generic controls still carrying light-mode values. */
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-choice,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-palette-grid>button,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-select select,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-select input,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-color-input input{
+  border-color:var(--design-line);
+  background:#1b222b;
+  color:#e4e9ef;
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-choice:hover,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-palette-grid>button:hover{
+  border-color:rgba(106,143,244,.42);
+  background:#202936;
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-choice.active{
+  border-color:rgba(106,143,244,.72);
+  background:rgba(73,116,229,.14);
+  color:#91aaff;
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-section,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-range-field{
+  border-color:var(--design-line);
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-section>strong,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-control-label,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-select,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-range-field,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-color{
+  color:#aab3bf;
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-range-field b{
+  color:#edf1f6;
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-color-input code{
+  color:#8f99a6;
+}
+
+/* Command bar inside the inspector when present. */
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-commandbar{
+  border-color:var(--design-line);
+  background:rgba(17,23,30,.92);
+  box-shadow:0 8px 28px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.04);
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-history-actions button{
+  background:#1b222b;
+  color:#aeb7c3;
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-breadcrumb>em.modified{
+  background:#202730;
+  color:#b3bbc6;
+}

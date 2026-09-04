@@ -1,0 +1,84 @@
+.admin-pricing-settings {
+  margin: 0 0 12px !important;
+  padding: 0 !important;
+  overflow: hidden;
+  border-radius: 16px !important;
+}
+
+.admin-pricing-settings.is-expanded {
+  padding: 0 !important;
+}
+
+.admin-pricing-settings-head.compact {
+  min-height: 58px;
+  padding: 13px 15px !important;
+  margin: 0 !important;
+}
+
+.admin-pricing-collapse-toggle {
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.admin-pricing-collapse-toggle > svg {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  padding: 7px;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 9px;
+  background: rgba(255,255,255,.035);
+  color: #aebbd0;
+  transition: transform 160ms ease;
+}
+
+.admin-pricing-settings.is-expanded .admin-pricing-collapse-toggle > svg {
+  transform: rotate(90deg);
+}
+
+.admin-pricing-collapse-toggle > span {
+  flex: 1 1 auto;
+}
+
+.admin-pricing-collapse-toggle .admin-label {
+  font-size: 9px;
+  margin-bottom: 0;
+}
+
+.admin-pricing-collapse-toggle strong {
+  font-size: 16px;
+}
+
+.admin-pricing-settings:not(.is-expanded) .admin-pricing-collapse-toggle small {
+  display: none;
+}
+
+.admin-pricing-save-compact {
+  min-height: 32px;
+  margin-left: 4px;
+}
+
+.admin-pricing-expanded-content {
+  margin-top: 0;
+  padding: 2px 15px 15px;
+  border-top: 0;
+}
+
+.admin-pricing-settings > .admin-message,
+.admin-pricing-settings > .admin-error,
+.admin-pricing-settings > .admin-pricing-success {
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
+@media (max-width: 640px) {
+  .admin-pricing-settings-head.compact {
+    min-height: 56px;
+    padding: 12px 13px !important;
+  }
+
+  .admin-pricing-expanded-content {
+    padding: 0 13px 13px;
+  }
+}

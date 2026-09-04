@@ -3,6 +3,7 @@ import { supabase } from "../../../lib/supabaseClient";
 import { draftFromMenuStudioProject, listMenuStudioProjects, menuStudioProjectId, setActiveMenuStudioProjectId } from "./menuStudioV2Persistence";
 import { readMenuStudioV2Draft, writeMenuStudioV2Draft } from "./menuStudioV2Session";
 import { MenuStudioWorkspaceContext } from "./menuStudioWorkspaceContext";
+import "./MenuDesignAdvancedClarity.css";
 
 // This cache lives only while Studio is open. A reload fetches fresh account data.
 export default function MenuStudioWorkspace({ children }) {
