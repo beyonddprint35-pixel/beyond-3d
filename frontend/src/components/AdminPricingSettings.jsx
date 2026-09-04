@@ -11,9 +11,21 @@ import {
 import "./AdminPricingSettings.css";
 
 const SETTINGS_KEY = "menu_pricing_plans";
+const PROTECTED_PLAN_IDS = new Set(["basic", "premium"]);
 
 function clonePricing(value) {
   return JSON.parse(JSON.stringify(value));
+}
+
+function makePlanId(existingPlans) {
+  const used = new Set((existingPlans || []).map((plan) => plan.id));
+  let index = 1;
+  let id = "custom-plan";
+  while (used.has(id)) {
+    index += 1;
+    id = `custom-plan-${index}`;
+  }
+  return id;
 }
 
 function isLocalPreview() {
@@ -170,6 +182,48 @@ export default function AdminPricingSettings({ password }) {
     }));
   }
 
+  function addPlan() {
+    setPricing((current) => {
+      const id = makePlanId(current.plans);
+      const nextPlan = {
+        id,
+        name_en: "New Plan",
+        name_he: "חבילה חדשה",
+        description_en: "",
+        description_he: "",
+        price: "",
+        period_en: "/ month",
+        period_he: "/ חודש",
+        setup_fee: "",
+        setup_note_en: "",
+        setup_note_he: "",
+        cta_en: "Choose plan",
+        cta_he: "בחירת חבילה",
+        recommended: false,
+        features: [],
+      };
+      setOpenPlans((open) => ({ ...open, [id]: true }));
+      return { ...current, plans: [...current.plans, nextPlan] };
+    });
+  }
+
+  function removePlan(planId) {
+    if (PROTECTED_PLAN_IDS.has(planId)) return;
+    const plan = pricing.plans.find((item) => item.id === planId);
+    const ok = window.confirm(`Delete pricing model “${plan?.name_en || planId}”?`);
+    if (!ok) return;
+
+    setPricing((current) => ({
+      ...current,
+      plans: current.plans.filter((item) => item.id !== planId),
+    }));
+    setOpenPlans((current) => {
+      const next = { ...current };
+      delete next[planId];
+      return next;
+    });
+  }
+
   function updateFeature(planIndex, featureIndex, field, value) {
     setPricing((current) => ({
       ...current,
@@ -317,9 +371,17 @@ export default function AdminPricingSettings({ password }) {
             </label>
           </div>
 
+          <div className="admin-pricing-feature-head" style={{ marginTop: 0 }}>
+            <strong>Pricing models</strong>
+            <button type="button" className="secondary-button" onClick={addPlan}>
+              <Plus size={14} /> Add pricing model
+            </button>
+          </div>
+
           <div className="admin-pricing-plans compact-plans">
             {pricing.plans.map((plan, planIndex) => {
               const isPlanOpen = Boolean(openPlans[plan.id]);
+              const removable = !PROTECTED_PLAN_IDS.has(plan.id);
               return (
                 <article className={`admin-pricing-plan compact-plan${isPlanOpen ? " is-open" : ""}`} key={plan.id}>
                   <button
@@ -340,14 +402,21 @@ export default function AdminPricingSettings({ password }) {
 
                   {isPlanOpen ? (
                     <div className="admin-pricing-plan-body">
-                      <label className="admin-pricing-check compact-check">
-                        <input
-                          type="checkbox"
-                          checked={Boolean(plan.recommended)}
-                          onChange={(event) => updatePlan(planIndex, "recommended", event.target.checked)}
-                        />
-                        Recommended
-                      </label>
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 10 }}>
+                        <label className="admin-pricing-check compact-check" style={{ marginBottom: 0 }}>
+                          <input
+                            type="checkbox"
+                            checked={Boolean(plan.recommended)}
+                            onChange={(event) => updatePlan(planIndex, "recommended", event.target.checked)}
+                          />
+                          Recommended
+                        </label>
+                        {removable ? (
+                          <button type="button" className="secondary-button" onClick={() => removePlan(plan.id)} style={{ minHeight: 30, padding: "0 9px", fontSize: 11 }}>
+                            <Trash2 size={14} /> Delete model
+                          </button>
+                        ) : null}
+                      </div>
 
                       <div className="admin-pricing-fields">
                         <label><span>Name — English</span><input value={plan.name_en} onChange={(event) => updatePlan(planIndex, "name_en", event.target.value)} /></label>
