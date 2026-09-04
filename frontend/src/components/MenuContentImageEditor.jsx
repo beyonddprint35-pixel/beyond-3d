@@ -42,13 +42,13 @@ const PHOTO_COPY = {
     foodLockHint: "AI is instructed not to add, remove or change ingredients, portions or plating.",
     generate: "Generate AI preview", generating: "Enhancing your real photo…",
     generatingHint: "Beyond is preserving the dish and rebuilding only the presentation that needs improvement.",
-    before: "Original", after: "AI result", compare: "Compare", compareSaved: "Compare with original",
+    before: "Original", after: "AI result", compare: "Compare",
     enhancedView: "Enhanced photo", regenerate: "Try again", usePhoto: "Use AI photo", saving: "Saving photo…", cancel: "Cancel",
     advancedAi: "Create a new photo with AI instead", advancedAiHint: "Only use this when you do not have a real photo of the dish.",
     memoryTitle: "Style Memory", memoryOn: "Active — matching this restaurant's approved look",
     memoryOff: "Not set yet — your first approved Match Menu Style photo will teach Beyond the look",
     memoryUsed: "Style Memory used", memoryNew: "This can become the restaurant style after you approve it",
-    memoryReset: "Reset style", memoryResetting: "Resetting…", memorySaved: "Restaurant style learned",
+    memoryReset: "Reset style", memoryResetting: "Resetting…",
   },
   he: {
     title: "תמונת המנה", hint: "השתמשו בתמונה אמיתית. Beyond יכול להפוך אותה למקצועית בלי לשנות את המנה.",
@@ -63,13 +63,13 @@ const PHOTO_COPY = {
     foodLockHint: "ה-AI מונחה לא להוסיף, להסיר או לשנות מרכיבים, כמויות או צילחות.",
     generate: "יצירת תצוגת AI", generating: "משפר את התמונה האמיתית…",
     generatingHint: "Beyond שומר על המנה ומשפר רק את ההצגה שדורשת תיקון.",
-    before: "מקור", after: "תוצאת AI", compare: "השוואה", compareSaved: "השוואה למקור",
+    before: "מקור", after: "תוצאת AI", compare: "השוואה",
     enhancedView: "תמונה משופרת", regenerate: "נסו שוב", usePhoto: "שימוש בתמונת AI", saving: "שומר את התמונה…", cancel: "ביטול",
     advancedAi: "יצירת תמונה חדשה עם AI במקום", advancedAiHint: "רק כשאין תמונה אמיתית של המנה.",
     memoryTitle: "זיכרון סגנון", memoryOn: "פעיל — מתאים לסגנון המאושר של המסעדה",
     memoryOff: "עדיין לא הוגדר — התמונה הראשונה שתאשרו במצב התאמת סגנון תלמד את Beyond את המראה",
     memoryUsed: "נעשה שימוש בזיכרון הסגנון", memoryNew: "לאחר האישור התמונה יכולה להפוך לסגנון המסעדה",
-    memoryReset: "איפוס סגנון", memoryResetting: "מאפס…", memorySaved: "סגנון המסעדה נלמד",
+    memoryReset: "איפוס סגנון", memoryResetting: "מאפס…",
   },
   ar: {
     title: "صورة الطبق", hint: "استخدم صورة حقيقية. يمكن لـ Beyond جعلها احترافية دون تغيير الطبق.",
@@ -84,13 +84,13 @@ const PHOTO_COPY = {
     foodLockHint: "الذكاء الاصطناعي موجه لعدم إضافة أو إزالة أو تغيير المكونات أو الكمية أو التقديم.",
     generate: "إنشاء معاينة AI", generating: "نحسّن صورتك الحقيقية…",
     generatingHint: "يحافظ Beyond على الطبق ويعيد فقط تحسين العرض اللازم.",
-    before: "الأصل", after: "نتيجة AI", compare: "مقارنة", compareSaved: "قارن مع الأصل",
+    before: "الأصل", after: "نتيجة AI", compare: "مقارنة",
     enhancedView: "الصورة المحسّنة", regenerate: "حاول مرة أخرى", usePhoto: "استخدم صورة AI", saving: "جارٍ حفظ الصورة…", cancel: "إلغاء",
     advancedAi: "أنشئ صورة جديدة بالذكاء الاصطناعي", advancedAiHint: "استخدم هذا فقط عندما لا توجد صورة حقيقية للطبق.",
     memoryTitle: "ذاكرة الأسلوب", memoryOn: "نشطة — تطابق المظهر المعتمد لهذا المطعم",
     memoryOff: "لم تُضبط بعد — أول صورة تعتمدها في مطابقة أسلوب القائمة ستعلّم Beyond المظهر",
     memoryUsed: "تم استخدام ذاكرة الأسلوب", memoryNew: "بعد الاعتماد يمكن أن تصبح هذه الصورة أسلوب المطعم",
-    memoryReset: "إعادة ضبط الأسلوب", memoryResetting: "جارٍ الضبط…", memorySaved: "تم تعلم أسلوب المطعم",
+    memoryReset: "إعادة ضبط الأسلوب", memoryResetting: "جارٍ الضبط…",
   },
 };
 
@@ -207,12 +207,10 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
         previousPath: item.image_processed_path || "",
       });
 
-      let memoryLearned = false;
       if (result.mode === "match" && !styleMemory.exists) {
         try {
           const memory = await rememberMenuPhotoStyle({ projectId, sourcePath, approvedPath: uploaded.image_path });
-          memoryLearned = Boolean(memory.exists);
-          setStyleMemory({ loaded: true, exists: memoryLearned });
+          setStyleMemory({ loaded: true, exists: Boolean(memory.exists) });
         } catch (memoryError) {
           setError(memoryError?.message || "Photo saved, but Style Memory could not be updated.");
         }
@@ -228,7 +226,6 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
         image_variant: `ai-${result.mode}`,
         image_ai_mode: result.mode,
         image_ai_model: result.model,
-        image_style_memory: result.mode === "match" ? (styleMemory.exists || memoryLearned ? "active" : "") : item.image_style_memory || "",
       });
       clearResult();
       setSavedCompareSide("after");
