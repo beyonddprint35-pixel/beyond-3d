@@ -23,6 +23,25 @@ function imageSizeForUrl(url) {
   });
 }
 
+function resolveStorageContext(sourceUrl, sourcePath = "", projectId = "") {
+  let path = String(sourcePath || "").trim();
+  if (!path && sourceUrl) {
+    try {
+      const url = new URL(sourceUrl);
+      const marker = "/storage/v1/object/public/menu-item-images/";
+      const index = url.pathname.indexOf(marker);
+      if (index >= 0) path = decodeURIComponent(url.pathname.slice(index + marker.length));
+    } catch {
+      path = "";
+    }
+  }
+  const parts = path.split("/").filter(Boolean);
+  return {
+    sourcePath: path,
+    projectId: String(projectId || parts[1] || "").trim(),
+  };
+}
+
 async function parseFunctionError(error) {
   let message = error?.message || "AI could not enhance this photo.";
   try {
@@ -46,8 +65,8 @@ async function parseFunctionError(error) {
 
 export async function enhanceMenuPhotoWithAi({
   sourceUrl,
-  sourcePath,
-  projectId,
+  sourcePath = "",
+  projectId = "",
   mode = "enhance",
   itemId = "dish",
 }) {
@@ -55,15 +74,18 @@ export async function enhanceMenuPhotoWithAi({
   if (sessionError) throw sessionError;
   const session = sessionData?.session;
   if (!session?.access_token) throw new Error("Please sign in again before enhancing photos.");
-  if (!projectId || projectId === "draft") throw new Error("Save this menu first before enhancing photos with AI.");
-  if (!sourcePath) throw new Error("The original dish photo could not be found. Try uploading it again.");
+
+  const context = resolveStorageContext(sourceUrl, sourcePath, projectId);
+  if (!context.projectId || !context.sourcePath) {
+    throw new Error("The original uploaded dish photo could not be found. Try uploading it again.");
+  }
 
   const size = await imageSizeForUrl(sourceUrl);
   const { data, error } = await supabase.functions.invoke("menu-photo-enhance", {
     body: {
-      projectId,
+      projectId: context.projectId,
       itemId,
-      sourcePath,
+      sourcePath: context.sourcePath,
       mode,
       size,
     },
