@@ -1,11 +1,12 @@
-import { useState } from "react";
-import { ImagePlus, Link2, LoaderCircle, Sparkles, Trash2, Upload } from "lucide-react";
+import { useRef, useState } from "react";
+import { Camera, ImagePlus, Link2, LoaderCircle, Sparkles, Trash2, Upload } from "lucide-react";
 
 import {
   removeMenuItemImage,
   uploadMenuItemImage,
   validateMenuItemImage,
 } from "../features/menu-engine/data/menuItemImageService";
+import "./MenuContentImageEditor.css";
 
 const AI_COPY = {
   en: { title: "Create matching photos with AI", hint: "Use a few real restaurant dishes to generate matching visuals for selected menu items." },
@@ -13,15 +14,48 @@ const AI_COPY = {
   ar: { title: "إنشاء صور متناسقة بالذكاء الاصطناعي", hint: "استخدموا بعض صور الأطباق الحقيقية لإنشاء صور متناسقة لأصناف مختارة." },
 };
 
+const PHOTO_COPY = {
+  en: {
+    title: "Dish photo",
+    hint: "Take a photo now or choose one from your phone.",
+    take: "Take photo",
+    takeHint: "Open camera",
+    choose: "Choose from phone",
+    chooseHint: "Photo library",
+    replace: "Replace photo",
+    ready: "Photo added",
+  },
+  he: {
+    title: "תמונת המנה",
+    hint: "צלמו עכשיו או בחרו תמונה מהטלפון.",
+    take: "צילום עכשיו",
+    takeHint: "פתיחת המצלמה",
+    choose: "בחירה מהטלפון",
+    chooseHint: "ספריית התמונות",
+    replace: "החלפת תמונה",
+    ready: "התמונה נוספה",
+  },
+  ar: {
+    title: "صورة الطبق",
+    hint: "التقط صورة الآن أو اختر صورة من هاتفك.",
+    take: "التقط صورة",
+    takeHint: "فتح الكاميرا",
+    choose: "اختر من الهاتف",
+    chooseHint: "مكتبة الصور",
+    replace: "استبدال الصورة",
+    ready: "تمت إضافة الصورة",
+  },
+};
+
 export default function MenuContentImageEditor({ item, projectId = "draft", t, onChange }) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [showUrl, setShowUrl] = useState(false);
+  const cameraInputRef = useRef(null);
+  const libraryInputRef = useRef(null);
 
-  async function chooseFile(event) {
-    const file = event.target.files?.[0];
-    event.target.value = "";
-    if (!file) return;
+  async function uploadFile(file) {
+    if (!file || uploading) return;
     const validation = validateMenuItemImage(file);
     if (validation) {
       setError(validation);
@@ -41,7 +75,14 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t, o
       setError(uploadError?.message || t.imageUploadError);
     } finally {
       setUploading(false);
+      if (cameraInputRef.current) cameraInputRef.current.value = "";
+      if (libraryInputRef.current) libraryInputRef.current.value = "";
     }
+  }
+
+  function chooseFile(event) {
+    const file = event.target.files?.[0];
+    uploadFile(file);
   }
 
   async function removeImage() {
@@ -65,31 +106,35 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t, o
 
   const language = ["en", "he", "ar"].includes(document.documentElement.lang) ? document.documentElement.lang : "en";
   const aiCopy = AI_COPY[language] || AI_COPY.en;
+  const photoCopy = PHOTO_COPY[language] || PHOTO_COPY.en;
 
   return (
-    <div className="menu-content-v2-image-editor">
+    <div className="menu-content-v2-image-editor menu-content-v2-image-editor-friendly">
       <div className="menu-content-v2-image-editor-head">
-        <div><strong>{t.itemPhoto}</strong><small>{t.itemPhotoHint}</small></div>
+        <div><strong>{photoCopy.title}</strong><small>{photoCopy.hint}</small></div>
         {item.image_url ? <button type="button" onClick={removeImage} disabled={uploading}><Trash2 size={13} /> {t.removePhoto}</button> : null}
       </div>
 
       {item.image_url ? (
         <div className="menu-content-v2-image-preview">
           <img src={item.image_url} alt="" />
-          <label className="menu-content-v2-image-replace">
-            {uploading ? <LoaderCircle size={14} className="spin" /> : <Upload size={14} />}
-            <span>{uploading ? t.uploadingPhoto : t.replacePhoto}</span>
-            <input type="file" accept="image/jpeg,image/png,image/webp" onChange={chooseFile} disabled={uploading} />
-          </label>
+          <div className="menu-content-v2-photo-ready-badge">✓ {photoCopy.ready}</div>
         </div>
-      ) : (
-        <label className="menu-content-v2-image-upload">
-          {uploading ? <LoaderCircle size={18} className="spin" /> : <ImagePlus size={18} />}
-          <strong>{uploading ? t.uploadingPhoto : t.uploadPhoto}</strong>
-          <small>{t.photoFormats}</small>
-          <input type="file" accept="image/jpeg,image/png,image/webp" onChange={chooseFile} disabled={uploading} />
-        </label>
-      )}
+      ) : null}
+
+      <div className="menu-content-v2-photo-actions">
+        <button type="button" className="menu-content-v2-photo-action menu-content-v2-photo-action-camera" disabled={uploading} onClick={() => cameraInputRef.current?.click()}>
+          {uploading ? <LoaderCircle size={19} className="spin" /> : <Camera size={19} />}
+          <span><strong>{uploading ? t.uploadingPhoto : photoCopy.take}</strong><small>{photoCopy.takeHint}</small></span>
+        </button>
+        <button type="button" className="menu-content-v2-photo-action" disabled={uploading} onClick={() => libraryInputRef.current?.click()}>
+          {uploading ? <LoaderCircle size={19} className="spin" /> : <ImagePlus size={19} />}
+          <span><strong>{item.image_url ? photoCopy.replace : photoCopy.choose}</strong><small>{photoCopy.chooseHint}</small></span>
+        </button>
+      </div>
+
+      <input ref={cameraInputRef} className="menu-content-v2-photo-native-input" type="file" accept="image/*" capture="environment" onChange={chooseFile} disabled={uploading} />
+      <input ref={libraryInputRef} className="menu-content-v2-photo-native-input" type="file" accept="image/jpeg,image/png,image/webp" onChange={chooseFile} disabled={uploading} />
 
       <button type="button" className="menu-content-v2-image-ai" onClick={openAiPhotos}>
         <Sparkles size={15} />
