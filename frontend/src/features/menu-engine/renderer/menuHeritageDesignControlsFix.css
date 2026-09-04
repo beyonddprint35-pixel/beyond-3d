@@ -13,9 +13,9 @@
 
 .bme-heritage-exact .ep-brand-title {
   color: var(--ep-ink, #151515);
-  font-family: var(--ep-heading-font, "Playfair Display", Georgia, serif);
-  font-size: var(--ep-brand-size, 28px);
-  font-weight: var(--ep-heading-weight, 800);
+  font-family: var(--ep-heading-font, "Playfair Display", Georgia, serif) !important;
+  font-size: var(--ep-brand-size, 28px) !important;
+  font-weight: var(--ep-heading-weight, 800) !important;
 }
 
 .bme-heritage-exact .ep-brand-sub,
@@ -23,14 +23,14 @@
 .bme-heritage-exact .ep-item-description,
 .bme-heritage-exact .ep-section-count {
   color: var(--ep-muted, #7b756e);
-  font-family: var(--ep-body-font, Inter, Arial, sans-serif);
+  font-family: var(--ep-body-font, Inter, Arial, sans-serif) !important;
 }
 
 .bme-heritage-exact .ep-hero-title {
   color: var(--ep-ink, #121212);
-  font-family: var(--ep-heading-font, "Playfair Display", Georgia, serif);
-  font-size: var(--ep-hero-size, 46px);
-  font-weight: var(--ep-heading-weight, 900);
+  font-family: var(--ep-heading-font, "Playfair Display", Georgia, serif) !important;
+  font-size: var(--ep-hero-size, 46px) !important;
+  font-weight: var(--ep-heading-weight, 900) !important;
 }
 
 .bme-heritage-exact .ep-tabs-wrap {
@@ -42,8 +42,8 @@
   border-color: var(--ep-line, #e5ded2);
   color: var(--ep-category-text, var(--ep-muted, #7b756e));
   background: var(--ep-category-bg, var(--ep-card, #fff));
-  font-family: var(--ep-body-font, Inter, Arial, sans-serif);
-  font-size: var(--ep-category-size, 12px);
+  font-family: var(--ep-body-font, Inter, Arial, sans-serif) !important;
+  font-size: var(--ep-category-size, 12px) !important;
 }
 
 .bme-heritage-exact .ep-tabs button.active {
@@ -56,8 +56,9 @@
 .bme-heritage-exact .ep-app[dir="rtl"] .ep-section-head h2 {
   color: var(--ep-ink, #121212);
   font-family: var(--ep-heading-font, "Playfair Display", Georgia, serif) !important;
-  font-size: var(--ep-section-size, 38px);
-  font-weight: var(--ep-heading-weight, 900);
+  font-size: var(--ep-section-size, 38px) !important;
+  font-weight: var(--ep-heading-weight, 900) !important;
+  line-height: 1 !important;
 }
 
 .bme-heritage-exact .ep-section-count {
@@ -68,8 +69,8 @@
 .bme-heritage-exact .ep-item-category {
   border-color: var(--ep-line, #e5ded2);
   color: var(--ep-muted, #a59d92);
-  font-family: var(--ep-body-font, Inter, Arial, sans-serif);
-  font-size: var(--ep-category-size, 10px);
+  font-family: var(--ep-body-font, Inter, Arial, sans-serif) !important;
+  font-size: var(--ep-category-size, 10px) !important;
 }
 
 .bme-heritage-exact .ep-item-row {
@@ -84,21 +85,23 @@
 .bme-heritage-exact .ep-app[dir="rtl"] .ep-item-name {
   color: var(--ep-ink, #161616);
   font-family: var(--ep-heading-font, "Playfair Display", Georgia, serif) !important;
-  font-size: var(--ep-item-size, 17px);
+  font-size: var(--ep-item-size, 17px) !important;
   font-weight: var(--ep-item-weight, 700) !important;
+  line-height: 1.18 !important;
 }
 
 .bme-heritage-exact .ep-item-description {
-  font-size: var(--ep-description-size, 11px);
-  font-weight: var(--ep-body-weight, 400);
+  font-size: var(--ep-description-size, 11px) !important;
+  font-weight: var(--ep-body-weight, 400) !important;
+  line-height: 1.45 !important;
 }
 
 .bme-heritage-exact .ep-item-price,
 .bme-heritage-exact .ep-price-option strong,
 .bme-heritage-exact .ep-dual-price strong {
   color: var(--ep-ink, #151515);
-  font-family: var(--ep-number-font, var(--ep-heading-font, "Playfair Display", Georgia, serif));
-  font-size: var(--ep-price-size, 18px);
+  font-family: var(--ep-number-font, var(--ep-heading-font, "Playfair Display", Georgia, serif)) !important;
+  font-size: var(--ep-price-size, 18px) !important;
 }
 
 .bme-heritage-exact .ep-footer {
