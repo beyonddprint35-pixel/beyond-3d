@@ -33,9 +33,6 @@ const COPY = {
 
 function isPhotoDesign(entry) {
   const design = entry?.design || {};
-  // A design belongs in "With photos" when photography is part of the actual
-  // menu experience — either in the hero or on item cards. This also catches
-  // tile/card designs whose hero is only a watermark but whose items use photos.
   return design?.brand?.heroMediaMode === "image" || Boolean(design?.layout?.itemImagePosition);
 }
 
@@ -64,12 +61,13 @@ export default function MenuDesignPicker({ designId, language = "en", onSelect, 
 
   const selectedVisible = visibleDesigns.some((entry) => entry.id === designId);
 
+  // Keep the category aligned when a design itself changes, but do not force the
+  // user back to that category just because they manually switched tabs.
   useEffect(() => {
     const selectedEntry = PREMIUM_MENU_DESIGNS.find((entry) => entry.id === designId);
     if (!selectedEntry || (selectedEntry.industry || "restaurant") !== "restaurant") return;
-    const nextCategory = isPhotoDesign(selectedEntry) ? "photos" : "text";
-    if (nextCategory !== category) setCategory(nextCategory);
-  }, [designId, category]);
+    setCategory(isPhotoDesign(selectedEntry) ? "photos" : "text");
+  }, [designId]);
 
   useEffect(() => {
     const rail = railRef.current;
