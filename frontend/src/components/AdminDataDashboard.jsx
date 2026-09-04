@@ -33,6 +33,10 @@ function prettyJson(value) {
   return JSON.stringify(value || {}, null, 2);
 }
 
+function isWarningStatus(value) {
+  return typeof value === "string" && /MISSING|UNVERIFIED/i.test(value);
+}
+
 export default function AdminDataDashboard() {
   const [expanded, setExpanded] = useState(false);
   const [tables, setTables] = useState([]);
@@ -124,6 +128,7 @@ export default function AdminDataDashboard() {
   }
 
   function openEdit(row) {
+    if (!currentTable?.writable) return;
     setEditor({ mode: "edit", row });
     setEditorText(prettyJson(row));
   }
@@ -161,10 +166,13 @@ export default function AdminDataDashboard() {
 
   async function removeRow(row) {
     const key = row?.[pk];
-    const ok = window.confirm(
-      `Delete this row from ${currentTable?.label || selectedTable}?\n\n${pk}: ${String(key)}\n\nThis can affect related data and cannot be undone.`
-    );
-    if (!ok) return;
+    const isAuthUser = selectedTable === "auth_users";
+    const subject = row?.email || row?.full_name || String(key);
+    const message = isAuthUser
+      ? `Permanently delete the Beyond account for ${subject}?\n\nThis removes the Supabase Auth user and invalidates the old password/session. If this person signs up again with the same email, they will go through the complete signup and verification flow as a new account.\n\nOwned menu/account data can also be removed. This cannot be undone.`
+      : `Delete this row from ${currentTable?.label || selectedTable}?\n\n${pk}: ${String(key)}\n\nThis can affect related data and cannot be undone.`;
+
+    if (!window.confirm(message)) return;
 
     setError("");
     try {
@@ -227,9 +235,25 @@ export default function AdminDataDashboard() {
             </div>
             <label className="admin-data-search">
               <Search size={15} />
-              <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search loaded rows…" />
+              <input
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder={selectedTable === "auth_users" ? "Search login accounts…" : "Search loaded rows…"}
+              />
             </label>
           </div>
+
+          {selectedTable === "auth_users" ? (
+            <div className="admin-data-account-note">
+              <strong>This is the primary user account list.</strong>
+              <span>Anyone who can sign in to Beyond must appear here. <b>PROFILE MISSING</b> means the login account still exists in Supabase Auth but its Beyond user profile was deleted. Delete the account here to remove the real login and old password.</span>
+            </div>
+          ) : selectedTable === "profiles" ? (
+            <div className="admin-data-account-note is-secondary">
+              <strong>User Profiles are application data only.</strong>
+              <span>Deleting a User Profile does not delete the person's Supabase Auth login. Use Auth Users · Login Accounts when you want to remove a customer account completely.</span>
+            </div>
+          ) : null}
 
           {error ? <div className="admin-error admin-data-error">{error}</div> : null}
 
@@ -248,11 +272,17 @@ export default function AdminDataDashboard() {
                   {filteredRows.map((row, index) => (
                     <tr key={String(row?.[pk] ?? index)}>
                       {columns.map((column) => (
-                        <td key={column} title={typeof row?.[column] === "object" ? prettyJson(row[column]) : String(row?.[column] ?? "")}>{formatCell(row?.[column])}</td>
+                        <td
+                          key={column}
+                          className={isWarningStatus(row?.[column]) ? "admin-data-cell-warning" : ""}
+                          title={typeof row?.[column] === "object" ? prettyJson(row[column]) : String(row?.[column] ?? "")}
+                        >
+                          {formatCell(row?.[column])}
+                        </td>
                       ))}
                       <td className="admin-data-actions">
-                        <button type="button" aria-label="Edit row" onClick={() => openEdit(row)}><Edit3 size={14} /></button>
-                        <button type="button" className="danger" aria-label="Delete row" onClick={() => removeRow(row)}><Trash2 size={14} /></button>
+                        {currentTable?.writable ? <button type="button" aria-label="Edit row" onClick={() => openEdit(row)}><Edit3 size={14} /></button> : null}
+                        {currentTable?.deletable !== false ? <button type="button" className="danger" aria-label={selectedTable === "auth_users" ? "Delete user account" : "Delete row"} onClick={() => removeRow(row)}><Trash2 size={14} /></button> : null}
                       </td>
                     </tr>
                   ))}
@@ -264,7 +294,9 @@ export default function AdminDataDashboard() {
           </div>
 
           <div className="admin-data-note">
-            Showing up to 100 rows at a time. Use the search field to filter the currently loaded rows. Destructive changes require confirmation.
+            {selectedTable === "auth_users"
+              ? "Auth Users is the source of truth for who can log in. User Profiles and Business Accounts are linked application records."
+              : "Showing up to 100 rows at a time. Use the search field to filter the currently loaded rows. Destructive changes require confirmation."}
           </div>
         </div>
       ) : null}
