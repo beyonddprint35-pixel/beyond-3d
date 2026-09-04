@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { CheckCircle2, RefreshCw, Search, UserRoundCog } from "lucide-react";
+import { CheckCircle2, ChevronDown, RefreshCw, Search, UserRoundCog } from "lucide-react";
 import {
   loadAdminMenuOwnership,
   transferAdminMenuOwnership,
 } from "../features/menu-engine/data/adminMenuOwnershipService";
+import "./AdminCompactPanel.css";
 
 function userLabel(user) {
   if (!user) return "Unassigned";
@@ -21,6 +22,7 @@ export default function AdminMenuOwnershipManager() {
   const [selectedMenuId, setSelectedMenuId] = useState("");
   const [selectedUserId, setSelectedUserId] = useState("");
   const [saving, setSaving] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   async function load() {
     setLoading(true);
@@ -83,65 +85,87 @@ export default function AdminMenuOwnershipManager() {
   }
 
   return (
-    <section style={{ marginBottom: 34, padding: 20, border: "1px solid rgba(73,116,229,.28)", borderRadius: 20, background: "rgba(73,116,229,.07)" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14, flexWrap: "wrap", marginBottom: 18 }}>
+    <section
+      className={`admin-compact-panel ${expanded ? "is-expanded" : ""}`}
+      style={{ border: "1px solid rgba(73,116,229,.28)", background: "rgba(73,116,229,.07)" }}
+    >
+      <div className="admin-compact-panel-head">
         <div>
-          <div className="section-kicker">MENU ADMIN</div>
-          <h2 style={{ margin: "5px 0 5px", fontSize: 24 }}>Menu ownership</h2>
-          <p style={{ margin: 0, opacity: .72 }}>Assign or reassign any menu to a verified Beyond user.</p>
+          <span className="admin-label">MENU ADMIN</span>
+          <h2>Menu Ownership</h2>
+          <p>Assign or reassign any menu to a verified Beyond user.</p>
         </div>
-        <button type="button" className="secondary-button" onClick={load} disabled={loading}>
-          <RefreshCw size={15} /> {loading ? "Loading…" : "Refresh"}
+        <span className="admin-compact-panel-summary">
+          {loading ? "Loading…" : `${menus.length} menus · ${users.length} users`}
+        </span>
+        <button
+          type="button"
+          className="admin-compact-panel-toggle"
+          aria-expanded={expanded}
+          aria-label={expanded ? "Collapse Menu Ownership" : "Expand Menu Ownership"}
+          onClick={() => setExpanded((current) => !current)}
+        >
+          <ChevronDown size={17} />
         </button>
       </div>
 
-      {error ? <div className="admin-error" style={{ marginBottom: 14 }}>{error}</div> : null}
-      {notice ? <div style={{ display: "flex", gap: 8, alignItems: "center", padding: 12, borderRadius: 12, marginBottom: 14, background: "rgba(60,180,115,.12)" }}><CheckCircle2 size={17} /> {notice}</div> : null}
+      {expanded ? (
+        <div className="admin-compact-panel-body">
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 10 }}>
+            <button type="button" className="secondary-button" onClick={load} disabled={loading}>
+              <RefreshCw size={15} /> {loading ? "Loading…" : "Refresh"}
+            </button>
+          </div>
 
-      {!loading && !error ? (
-        <div style={{ display: "grid", gap: 14 }}>
-          <label style={{ display: "grid", gap: 7 }}>
-            <span className="admin-label">FIND MENU</span>
-            <div style={{ position: "relative" }}>
-              <Search size={16} style={{ position: "absolute", left: 14, top: 15, opacity: .55 }} />
-              <input
-                type="search"
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                placeholder="Search menu, slug or current owner…"
-                style={{ width: "100%", minHeight: 46, padding: "0 14px 0 40px", borderRadius: 12, border: "1px solid rgba(255,255,255,.12)", background: "rgba(0,0,0,.18)", color: "inherit" }}
-              />
-            </div>
-          </label>
+          {error ? <div className="admin-error" style={{ marginBottom: 14 }}>{error}</div> : null}
+          {notice ? <div style={{ display: "flex", gap: 8, alignItems: "center", padding: 10, borderRadius: 10, marginBottom: 12, background: "rgba(60,180,115,.12)" }}><CheckCircle2 size={16} /> {notice}</div> : null}
 
-          <label style={{ display: "grid", gap: 7 }}>
-            <span className="admin-label">MENU</span>
-            <select value={selectedMenuId} onChange={(event) => { setSelectedMenuId(event.target.value); setSelectedUserId(""); setNotice(""); }} style={{ minHeight: 48, padding: "0 12px", borderRadius: 12 }}>
-              {filteredMenus.map((menu) => (
-                <option key={menu.id} value={menu.id}>{menu.name || "Untitled menu"}{menu.archived_at ? " · Archived" : ""}</option>
-              ))}
-            </select>
-          </label>
+          {!loading && !error ? (
+            <div style={{ display: "grid", gap: 10 }}>
+              <label style={{ display: "grid", gap: 6 }}>
+                <span className="admin-label">FIND MENU</span>
+                <div style={{ position: "relative" }}>
+                  <Search size={15} style={{ position: "absolute", left: 12, top: 12, opacity: .55 }} />
+                  <input
+                    type="search"
+                    value={search}
+                    onChange={(event) => setSearch(event.target.value)}
+                    placeholder="Search menu, slug or current owner…"
+                    style={{ width: "100%", minHeight: 40, padding: "0 12px 0 36px", borderRadius: 10, border: "1px solid rgba(255,255,255,.12)", background: "rgba(0,0,0,.18)", color: "inherit" }}
+                  />
+                </div>
+              </label>
 
-          {selectedMenu ? (
-            <div style={{ display: "grid", gap: 5, padding: 12, borderRadius: 12, background: "rgba(255,255,255,.045)" }}>
-              <span className="admin-label">CURRENT OWNER</span>
-              <strong>{userLabel(currentOwner) || selectedMenu.owner_user_id || "Unassigned"}</strong>
-              <small style={{ opacity: .6 }}>Created by stays unchanged when ownership is transferred.</small>
+              <label style={{ display: "grid", gap: 6 }}>
+                <span className="admin-label">MENU</span>
+                <select value={selectedMenuId} onChange={(event) => { setSelectedMenuId(event.target.value); setSelectedUserId(""); setNotice(""); }} style={{ minHeight: 40, padding: "0 10px", borderRadius: 10 }}>
+                  {filteredMenus.map((menu) => (
+                    <option key={menu.id} value={menu.id}>{menu.name || "Untitled menu"}</option>
+                  ))}
+                </select>
+              </label>
+
+              {selectedMenu ? (
+                <div style={{ display: "grid", gap: 4, padding: 10, borderRadius: 10, background: "rgba(255,255,255,.045)" }}>
+                  <span className="admin-label">CURRENT OWNER</span>
+                  <strong style={{ fontSize: 13 }}>{userLabel(currentOwner) || selectedMenu.owner_user_id || "Unassigned"}</strong>
+                  <small style={{ opacity: .6 }}>Created by stays unchanged when ownership is transferred.</small>
+                </div>
+              ) : null}
+
+              <label style={{ display: "grid", gap: 6 }}>
+                <span className="admin-label">ASSIGN TO VERIFIED USER</span>
+                <select value={selectedUserId} onChange={(event) => setSelectedUserId(event.target.value)} style={{ minHeight: 40, padding: "0 10px", borderRadius: 10 }}>
+                  <option value="">Choose a verified user…</option>
+                  {users.map((user) => <option key={user.id} value={user.id}>{userLabel(user)}</option>)}
+                </select>
+              </label>
+
+              <button type="button" className="primary-button" onClick={transfer} disabled={!canTransfer} style={{ minHeight: 40, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                <UserRoundCog size={16} /> {saving ? "Reassigning…" : selectedMenu?.owner_user_id ? "Reassign menu" : "Assign menu"}
+              </button>
             </div>
           ) : null}
-
-          <label style={{ display: "grid", gap: 7 }}>
-            <span className="admin-label">ASSIGN TO VERIFIED USER</span>
-            <select value={selectedUserId} onChange={(event) => setSelectedUserId(event.target.value)} style={{ minHeight: 48, padding: "0 12px", borderRadius: 12 }}>
-              <option value="">Choose a verified user…</option>
-              {users.map((user) => <option key={user.id} value={user.id}>{userLabel(user)}</option>)}
-            </select>
-          </label>
-
-          <button type="button" className="primary-button" onClick={transfer} disabled={!canTransfer} style={{ minHeight: 48, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-            <UserRoundCog size={17} /> {saving ? "Reassigning…" : selectedMenu?.owner_user_id ? "Reassign menu" : "Assign menu"}
-          </button>
         </div>
       ) : null}
     </section>
