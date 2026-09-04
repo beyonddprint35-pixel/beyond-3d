@@ -124,6 +124,7 @@ export default function AdminDataDashboard() {
   }
 
   function openEdit(row) {
+    if (!currentTable?.writable) return;
     setEditor({ mode: "edit", row });
     setEditorText(prettyJson(row));
   }
@@ -161,10 +162,13 @@ export default function AdminDataDashboard() {
 
   async function removeRow(row) {
     const key = row?.[pk];
-    const ok = window.confirm(
-      `Delete this row from ${currentTable?.label || selectedTable}?\n\n${pk}: ${String(key)}\n\nThis can affect related data and cannot be undone.`
-    );
-    if (!ok) return;
+    const isAuthUser = selectedTable === "auth_users";
+    const subject = row?.email || row?.full_name || String(key);
+    const message = isAuthUser
+      ? `Permanently delete the Beyond account for ${subject}?\n\nThis removes the Supabase Auth user and invalidates the old password/session. If this person signs up again with the same email, they will go through the complete signup and verification flow as a new account.\n\nOwned menu/account data can also be removed. This cannot be undone.`
+      : `Delete this row from ${currentTable?.label || selectedTable}?\n\n${pk}: ${String(key)}\n\nThis can affect related data and cannot be undone.`;
+
+    if (!window.confirm(message)) return;
 
     setError("");
     try {
@@ -224,6 +228,7 @@ export default function AdminDataDashboard() {
             <div>
               <strong>{currentTable?.label || "Table"}</strong>
               <span>{count} rows · primary key: {pk}</span>
+              {selectedTable === "auth_users" ? <span>Delete here to remove the actual login account, not only its profile/business row.</span> : null}
             </div>
             <label className="admin-data-search">
               <Search size={15} />
@@ -251,8 +256,8 @@ export default function AdminDataDashboard() {
                         <td key={column} title={typeof row?.[column] === "object" ? prettyJson(row[column]) : String(row?.[column] ?? "")}>{formatCell(row?.[column])}</td>
                       ))}
                       <td className="admin-data-actions">
-                        <button type="button" aria-label="Edit row" onClick={() => openEdit(row)}><Edit3 size={14} /></button>
-                        <button type="button" className="danger" aria-label="Delete row" onClick={() => removeRow(row)}><Trash2 size={14} /></button>
+                        {currentTable?.writable ? <button type="button" aria-label="Edit row" onClick={() => openEdit(row)}><Edit3 size={14} /></button> : null}
+                        {currentTable?.deletable !== false ? <button type="button" className="danger" aria-label={selectedTable === "auth_users" ? "Delete user account" : "Delete row"} onClick={() => removeRow(row)}><Trash2 size={14} /></button> : null}
                       </td>
                     </tr>
                   ))}
