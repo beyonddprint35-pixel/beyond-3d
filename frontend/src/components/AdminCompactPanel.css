@@ -1,0 +1,112 @@
+.admin-compact-panel {
+  margin: 0 0 12px !important;
+  padding: 0 !important;
+  overflow: hidden;
+  border-radius: 16px !important;
+}
+
+.admin-compact-panel-head {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 14px !important;
+  margin: 0 !important;
+  padding: 13px 15px !important;
+}
+
+.admin-compact-panel-head > div:first-child {
+  min-width: 0;
+}
+
+.admin-compact-panel-head .admin-label {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 9px;
+}
+
+.admin-compact-panel-head h2 {
+  margin: 0 !important;
+  font-size: 16px !important;
+  line-height: 1.2;
+}
+
+.admin-compact-panel-head p,
+.admin-compact-panel-head small {
+  display: none !important;
+}
+
+.admin-compact-panel-summary {
+  color: rgba(255,255,255,.5);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.admin-compact-panel-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  padding: 0;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 9px;
+  background: rgba(255,255,255,.035);
+  color: #aebbd0;
+  cursor: pointer;
+}
+
+.admin-compact-panel-toggle svg {
+  transition: transform 160ms ease;
+}
+
+.admin-compact-panel.is-expanded .admin-compact-panel-toggle svg {
+  transform: rotate(180deg);
+}
+
+.admin-compact-panel-body {
+  padding: 2px 15px 15px;
+}
+
+.admin-compact-panel-body .admin-promo-form,
+.admin-compact-panel-body .admin-promo-email-config,
+.admin-compact-panel-body .admin-promo-email-users,
+.admin-compact-panel-body .admin-customer-showcase-toggle {
+  padding: 13px;
+  border-radius: 14px;
+}
+
+.admin-compact-panel-body .admin-promo-fields,
+.admin-compact-panel-body .admin-promo-email-layout,
+.admin-compact-panel-body .admin-customer-showcase-grid {
+  gap: 10px;
+}
+
+.admin-compact-panel-body .admin-promo-fields input,
+.admin-compact-panel-body .admin-promo-fields select,
+.admin-compact-panel-body .admin-promo-email-config select,
+.admin-compact-panel-body .admin-promo-email-search input {
+  min-height: 38px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+}
+
+.admin-compact-panel-body .admin-promo-card,
+.admin-compact-panel-body .admin-customer-site,
+.admin-compact-panel-body .admin-promo-email-user {
+  padding: 9px 10px;
+}
+
+@media (max-width: 640px) {
+  .admin-compact-panel-head {
+    padding: 12px 13px !important;
+  }
+
+  .admin-compact-panel-summary {
+    display: none;
+  }
+
+  .admin-compact-panel-body {
+    padding: 0 13px 13px;
+  }
+}
