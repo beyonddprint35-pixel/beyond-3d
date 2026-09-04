@@ -11,12 +11,13 @@
 .menu-item-name-color-copy strong{color:#343438;font-size:12px;font-weight:740}
 .menu-item-name-color-copy small{color:#8a8a8f;font-size:10px;line-height:1.45}
 .menu-item-name-color-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
-.menu-item-name-color-picker{min-width:0;height:44px;display:grid;grid-template-columns:32px minmax(0,1fr);align-items:center;gap:9px;padding:6px 10px;border:1px solid rgba(60,60,67,.13);border-radius:12px;background:#f7f7f9;cursor:pointer}
-.menu-item-name-color-picker input{position:absolute;inline-size:1px;block-size:1px;opacity:0;pointer-events:none}
-.menu-item-name-color-swatch{width:32px;height:32px;border-radius:9px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.1)}
-.menu-item-name-color-picker code{overflow:hidden;color:#4d4d52;font:650 10.5px/1.2 Inter,sans-serif;text-overflow:ellipsis;white-space:nowrap}
-.menu-item-name-color-row button{min-height:44px;padding:0 11px;border:1px solid rgba(60,60,67,.13);border-radius:12px;background:#fff;color:#4974e5;font-size:10px;font-weight:700;cursor:pointer}
-.menu-item-name-color-row button:disabled{opacity:.4;cursor:not-allowed}
+.menu-item-name-color-picker{min-width:0;height:44px;display:grid;grid-template-columns:32px minmax(0,1fr);align-items:center;gap:9px;padding:6px 10px;border:1px solid rgba(60,60,67,.13);border-radius:12px;background:#f7f7f9;cursor:pointer;position:relative}
+.menu-item-name-color-native{position:absolute;left:8px;top:6px;width:32px;height:32px;opacity:0;cursor:pointer;z-index:2}
+.menu-item-name-color-swatch{width:32px;height:32px;border-radius:9px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.1);pointer-events:none}
+.menu-item-name-color-hex{min-width:0;width:100%;height:30px;padding:0;border:0;outline:0;background:transparent;color:#4d4d52;font:650 10.5px/1.2 Inter,sans-serif;text-transform:uppercase}
+.menu-item-name-color-actions{display:flex;align-items:center;gap:6px}
+.menu-item-name-color-actions button{min-height:44px;padding:0 11px;border:1px solid rgba(60,60,67,.13);border-radius:12px;background:#fff;color:#4974e5;font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap}
+.menu-item-name-color-actions button:disabled{opacity:.4;cursor:not-allowed}
 
 html[data-beyond-theme="dark"] .menu-item-name-color-control{
   border-color:rgba(255,255,255,.11);
@@ -25,14 +26,15 @@ html[data-beyond-theme="dark"] .menu-item-name-color-control{
 html[data-beyond-theme="dark"] .menu-item-name-color-copy strong{color:#eef2f7}
 html[data-beyond-theme="dark"] .menu-item-name-color-copy small{color:#929ba7}
 html[data-beyond-theme="dark"] .menu-item-name-color-picker,
-html[data-beyond-theme="dark"] .menu-item-name-color-row button{
+html[data-beyond-theme="dark"] .menu-item-name-color-actions button{
   border-color:rgba(255,255,255,.11);
   background:#1b222b;
 }
-html[data-beyond-theme="dark"] .menu-item-name-color-picker code{color:#e4e9ef}
-html[data-beyond-theme="dark"] .menu-item-name-color-row button{color:#91aaff}
+html[data-beyond-theme="dark"] .menu-item-name-color-hex{color:#e4e9ef}
+html[data-beyond-theme="dark"] .menu-item-name-color-actions button{color:#91aaff}
 
 @media(max-width:600px){
   .menu-item-name-color-row{grid-template-columns:1fr}
-  .menu-item-name-color-row button{width:100%}
+  .menu-item-name-color-actions{display:grid;grid-template-columns:1fr 1fr}
+  .menu-item-name-color-actions button{width:100%}
 }
