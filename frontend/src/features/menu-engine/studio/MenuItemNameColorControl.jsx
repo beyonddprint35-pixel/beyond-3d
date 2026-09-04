@@ -14,6 +14,30 @@ function normalizeHex(value) {
   return null;
 }
 
+function syncStudioPreviewItemNameColor(color) {
+  if (typeof document === "undefined") return;
+  const selectors = ".ep-item-name,.bme-item-copy h3,.bme-visual-copy h3";
+  const applyToDocument = (targetDocument) => {
+    if (!targetDocument) return;
+    targetDocument.querySelectorAll(".bme-heritage-exact").forEach((root) => root.style.setProperty("--ep-item-name-color", color));
+    targetDocument.querySelectorAll(".bme-menu").forEach((root) => root.style.setProperty("--bme-item-name-color", color));
+    targetDocument.querySelectorAll(selectors).forEach((node) => {
+      node.style.setProperty("color", color, "important");
+      node.style.setProperty("-webkit-text-fill-color", color, "important");
+      node.style.setProperty("opacity", "1", "important");
+    });
+  };
+
+  applyToDocument(document);
+  document.querySelectorAll("iframe.studio-v3-design-device-iframe").forEach((frame) => {
+    try {
+      applyToDocument(frame.contentDocument);
+    } catch {
+      // Studio preview iframes are same-origin, but ignore transient reload states.
+    }
+  });
+}
+
 export default function MenuItemNameColorControl({ design, language = "en", patchDesign }) {
   const t = COPY[language] || COPY.en;
   const mainText = design?.theme?.text || "#121212";
@@ -23,11 +47,19 @@ export default function MenuItemNameColorControl({ design, language = "en", patc
 
   useEffect(() => {
     setHexDraft(value.toUpperCase());
+    syncStudioPreviewItemNameColor(value);
+    const frame = window.requestAnimationFrame(() => syncStudioPreviewItemNameColor(value));
+    const timer = window.setTimeout(() => syncStudioPreviewItemNameColor(value), 120);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(timer);
+    };
   }, [value]);
 
   function setColor(color) {
     const normalized = normalizeHex(color);
     if (!normalized) return;
+    syncStudioPreviewItemNameColor(normalized);
     patchDesign((current) => ({
       ...current,
       theme: { ...current.theme, itemNameColor: normalized },
@@ -45,6 +77,7 @@ export default function MenuItemNameColorControl({ design, language = "en", patc
   }
 
   function resetColor() {
+    syncStudioPreviewItemNameColor(mainText);
     patchDesign((current) => {
       const theme = { ...current.theme };
       delete theme.itemNameColor;
