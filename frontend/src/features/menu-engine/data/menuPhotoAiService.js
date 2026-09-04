@@ -4,7 +4,7 @@ function base64ToFile(base64, mimeType, name) {
   const binary = atob(base64);
   const bytes = new Uint8Array(binary.length);
   for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
-  return new File([bytes], name, { type: mimeType || "image/jpeg" });
+  return new File([bytes], name, { type: mimeType || "image/png" });
 }
 
 function imageSizeForUrl(url) {
@@ -23,30 +23,60 @@ function imageSizeForUrl(url) {
   });
 }
 
-export async function enhanceMenuPhotoWithAi({ sourceUrl, mode = "enhance", itemId = "dish" }) {
-  const { data, error: sessionError } = await supabase.auth.getSession();
+async function parseFunctionError(error) {
+  let message = error?.message || "AI could not enhance this photo.";
+  try {
+    const response = error?.context;
+    if (response && typeof response.clone === "function") {
+      const raw = await response.clone().text();
+      if (raw) {
+        try {
+          const body = JSON.parse(raw);
+          message = body?.error || body?.message || message;
+        } catch {
+          message = raw;
+        }
+      }
+    }
+  } catch {
+    // Keep the original function error.
+  }
+  return new Error(message);
+}
+
+export async function enhanceMenuPhotoWithAi({
+  sourceUrl,
+  sourcePath,
+  projectId,
+  mode = "enhance",
+  itemId = "dish",
+}) {
+  const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
   if (sessionError) throw sessionError;
-  const token = data?.session?.access_token;
-  if (!token) throw new Error("Please sign in again before enhancing photos.");
+  const session = sessionData?.session;
+  if (!session?.access_token) throw new Error("Please sign in again before enhancing photos.");
+  if (!projectId || projectId === "draft") throw new Error("Save this menu first before enhancing photos with AI.");
+  if (!sourcePath) throw new Error("The original dish photo could not be found. Try uploading it again.");
 
   const size = await imageSizeForUrl(sourceUrl);
-  const endpoint = import.meta.env.VITE_MENU_PHOTO_AI_ENDPOINT || "/.netlify/functions/menu-photo-enhance";
-  const response = await fetch(endpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+  const { data, error } = await supabase.functions.invoke("menu-photo-enhance", {
+    body: {
+      projectId,
+      itemId,
+      sourcePath,
+      mode,
+      size,
     },
-    body: JSON.stringify({ sourceUrl, mode, size }),
+    headers: { Authorization: `Bearer ${session.access_token}` },
   });
-  const result = await response.json().catch(() => null);
-  if (!response.ok) throw new Error(result?.error || "AI could not enhance this photo.");
-  if (!result?.imageBase64) throw new Error("AI returned no photo.");
+
+  if (error) throw await parseFunctionError(error);
+  if (!data?.ok || !data?.imageBase64) throw new Error(data?.error || "AI returned no photo.");
 
   return {
-    file: base64ToFile(result.imageBase64, result.mimeType, `${itemId}-${mode}-ai.jpg`),
-    mode: result.mode || mode,
-    model: result.model || "gpt-image-2",
-    size: result.size || size,
+    file: base64ToFile(data.imageBase64, data.mimeType, `${itemId}-${mode}-ai.png`),
+    mode: data.mode || mode,
+    model: data.model || "gpt-image-2",
+    size: data.size || size,
   };
 }
