@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { BadgePercent, Pencil, Plus, Save, Trash2, X } from "lucide-react";
+import { BadgePercent, ChevronDown, Pencil, Plus, Save, Trash2, X } from "lucide-react";
 
 import { supabase } from "../lib/supabaseClient";
 import "./AdminPromoCodes.css";
+import "./AdminCompactPanel.css";
 
 const EMPTY_PROMO = {
   id: "",
@@ -83,6 +84,7 @@ export default function AdminPromoCodes({ password }) {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [localMode, setLocalMode] = useState(() => isLocalPreview());
+  const [expanded, setExpanded] = useState(false);
 
   const editing = Boolean(form.id);
 
@@ -198,10 +200,13 @@ export default function AdminPromoCodes({ password }) {
   }
 
   function editPromo(promo) {
+    setExpanded(true);
     setForm(normalizePromo(promo));
     setMessage("");
     setError("");
-    document.querySelector(".admin-promo-form")?.scrollIntoView({ behavior: "smooth", block: "center" });
+    window.setTimeout(() => {
+      document.querySelector(".admin-promo-form")?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 0);
   }
 
   function validate() {
@@ -317,67 +322,80 @@ export default function AdminPromoCodes({ password }) {
   }
 
   return (
-    <section className="admin-promo-settings">
-      <div className="admin-promo-head">
+    <section className={`admin-promo-settings admin-compact-panel ${expanded ? "is-expanded" : ""}`}>
+      <div className="admin-promo-head admin-compact-panel-head">
         <div>
           <span className="admin-label">SUBSCRIPTIONS</span>
           <h2>Promo Codes</h2>
           <p>Create discounts for Beyond Menu subscriptions and control exactly how long they apply.</p>
           {localMode ? <small>Local preview mode · promo codes are managed directly in Supabase.</small> : null}
         </div>
-        <div className="admin-promo-count"><strong>{activeCount}</strong><span>active</span></div>
+        <span className="admin-compact-panel-summary">{activeCount} active · {promos.length} total</span>
+        <button
+          type="button"
+          className="admin-compact-panel-toggle"
+          aria-expanded={expanded}
+          aria-label={expanded ? "Collapse Promo Codes" : "Expand Promo Codes"}
+          onClick={() => setExpanded((current) => !current)}
+        >
+          <ChevronDown size={17} />
+        </button>
       </div>
 
-      {error ? <div className="admin-error admin-promo-alert">{error}</div> : null}
-      {message ? <div className="admin-promo-success">{message}</div> : null}
+      {expanded ? (
+        <div className="admin-compact-panel-body">
+          {error ? <div className="admin-error admin-promo-alert">{error}</div> : null}
+          {message ? <div className="admin-promo-success">{message}</div> : null}
 
-      <form className="admin-promo-form" onSubmit={savePromo}>
-        <div className="admin-promo-form-title">
-          <div><BadgePercent size={18} /><strong>{editing ? "Edit Promo Code" : "Create Promo Code"}</strong></div>
-          {editing ? <button type="button" className="admin-promo-close" onClick={resetForm}><X size={16} /> Cancel</button> : null}
-        </div>
+          <form className="admin-promo-form" onSubmit={savePromo}>
+            <div className="admin-promo-form-title">
+              <div><BadgePercent size={18} /><strong>{editing ? "Edit Promo Code" : "Create Promo Code"}</strong></div>
+              {editing ? <button type="button" className="admin-promo-close" onClick={resetForm}><X size={16} /> Cancel</button> : null}
+            </div>
 
-        <div className="admin-promo-fields">
-          <label><span>Promo name</span><input value={form.name} onChange={(e) => updateField("name", e.target.value)} placeholder="Launch offer" /></label>
-          <label><span>Promo code</span><input value={form.code} onChange={(e) => updateField("code", e.target.value.toUpperCase().replace(/[^A-Z0-9_-]/g, ""))} placeholder="WELCOME20" /></label>
-          <label><span>Discount percentage</span><div className="admin-promo-percent"><input type="number" min="1" max="100" step="0.01" value={form.discount_percent} onChange={(e) => updateField("discount_percent", e.target.value)} placeholder="20" /><b>%</b></div></label>
-          <label><span>Discount duration</span><select value={form.duration_type} onChange={(e) => updateField("duration_type", e.target.value)}><option value="once">1 billing cycle</option><option value="months">Number of months</option><option value="forever">Forever</option></select></label>
-          {form.duration_type === "months" ? <label><span>Number of months</span><input type="number" min="1" max="120" value={form.duration_months} onChange={(e) => updateField("duration_months", e.target.value)} placeholder="3" /></label> : null}
-          <label><span>Can be used from (optional)</span><input type="datetime-local" value={form.valid_from} onChange={(e) => updateField("valid_from", e.target.value)} /></label>
-          <label><span>Can be used until (optional)</span><input type="datetime-local" value={form.valid_until} onChange={(e) => updateField("valid_until", e.target.value)} /></label>
-          <label className="admin-promo-active"><input type="checkbox" checked={form.is_active} onChange={(e) => updateField("is_active", e.target.checked)} /><span>Active and available to use</span></label>
-        </div>
+            <div className="admin-promo-fields">
+              <label><span>Promo name</span><input value={form.name} onChange={(e) => updateField("name", e.target.value)} placeholder="Launch offer" /></label>
+              <label><span>Promo code</span><input value={form.code} onChange={(e) => updateField("code", e.target.value.toUpperCase().replace(/[^A-Z0-9_-]/g, ""))} placeholder="WELCOME20" /></label>
+              <label><span>Discount percentage</span><div className="admin-promo-percent"><input type="number" min="1" max="100" step="0.01" value={form.discount_percent} onChange={(e) => updateField("discount_percent", e.target.value)} placeholder="20" /><b>%</b></div></label>
+              <label><span>Discount duration</span><select value={form.duration_type} onChange={(e) => updateField("duration_type", e.target.value)}><option value="once">1 billing cycle</option><option value="months">Number of months</option><option value="forever">Forever</option></select></label>
+              {form.duration_type === "months" ? <label><span>Number of months</span><input type="number" min="1" max="120" value={form.duration_months} onChange={(e) => updateField("duration_months", e.target.value)} placeholder="3" /></label> : null}
+              <label><span>Can be used from (optional)</span><input type="datetime-local" value={form.valid_from} onChange={(e) => updateField("valid_from", e.target.value)} /></label>
+              <label><span>Can be used until (optional)</span><input type="datetime-local" value={form.valid_until} onChange={(e) => updateField("valid_until", e.target.value)} /></label>
+              <label className="admin-promo-active"><input type="checkbox" checked={form.is_active} onChange={(e) => updateField("is_active", e.target.checked)} /><span>Active and available to use</span></label>
+            </div>
 
-        <div className="admin-promo-form-actions">
-          <button type="submit" className="primary-button" disabled={saving}><Save size={16} />{saving ? "Saving..." : editing ? "Save Changes" : "Create Promo Code"}</button>
-          {!editing ? <button type="button" className="secondary-button" onClick={() => setForm(EMPTY_PROMO)}><Plus size={15} /> Clear</button> : null}
-        </div>
-      </form>
+            <div className="admin-promo-form-actions">
+              <button type="submit" className="primary-button" disabled={saving}><Save size={16} />{saving ? "Saving..." : editing ? "Save Changes" : "Create Promo Code"}</button>
+              {!editing ? <button type="button" className="secondary-button" onClick={() => setForm(EMPTY_PROMO)}><Plus size={15} /> Clear</button> : null}
+            </div>
+          </form>
 
-      <div className="admin-promo-list-head"><strong>Existing promo codes</strong><span>{promos.length} total</span></div>
+          <div className="admin-promo-list-head"><strong>Existing promo codes</strong><span>{promos.length} total</span></div>
 
-      {loading ? <div className="admin-message">Loading promo codes...</div> : null}
-      {!loading && !promos.length ? <div className="admin-message">No promo codes yet. Create your first code above.</div> : null}
+          {loading ? <div className="admin-message">Loading promo codes...</div> : null}
+          {!loading && !promos.length ? <div className="admin-message">No promo codes yet. Create your first code above.</div> : null}
 
-      {!loading && promos.length ? (
-        <div className="admin-promo-list">
-          {promos.map((promo) => (
-            <article className={`admin-promo-card ${promo.is_active ? "is-active" : "is-inactive"}`} key={promo.id}>
-              <div className="admin-promo-main">
-                <div className="admin-promo-code-line"><code>{promo.code}</code><span>{promo.is_active ? "ACTIVE" : "INACTIVE"}</span></div>
-                <h3>{promo.name}</h3>
-                <div className="admin-promo-meta">
-                  <strong>{Number(promo.discount_percent)}% OFF</strong>
-                  <span>{durationLabel(promo)}</span>
-                  <span>{promo.valid_until ? `usable until ${new Date(promo.valid_until).toLocaleDateString()}` : "no expiry date"}</span>
-                </div>
-              </div>
-              <div className="admin-promo-actions">
-                <button type="button" onClick={() => editPromo(promo)}><Pencil size={15} /> Edit</button>
-                <button type="button" className="danger" disabled={deletingId === promo.id} onClick={() => removePromo(promo)}><Trash2 size={15} />{deletingId === promo.id ? "Deleting..." : "Delete"}</button>
-              </div>
-            </article>
-          ))}
+          {!loading && promos.length ? (
+            <div className="admin-promo-list">
+              {promos.map((promo) => (
+                <article className={`admin-promo-card ${promo.is_active ? "is-active" : "is-inactive"}`} key={promo.id}>
+                  <div className="admin-promo-main">
+                    <div className="admin-promo-code-line"><code>{promo.code}</code><span>{promo.is_active ? "ACTIVE" : "INACTIVE"}</span></div>
+                    <h3>{promo.name}</h3>
+                    <div className="admin-promo-meta">
+                      <strong>{Number(promo.discount_percent)}% OFF</strong>
+                      <span>{durationLabel(promo)}</span>
+                      <span>{promo.valid_until ? `usable until ${new Date(promo.valid_until).toLocaleDateString()}` : "no expiry date"}</span>
+                    </div>
+                  </div>
+                  <div className="admin-promo-actions">
+                    <button type="button" onClick={() => editPromo(promo)}><Pencil size={15} /> Edit</button>
+                    <button type="button" className="danger" disabled={deletingId === promo.id} onClick={() => removePromo(promo)}><Trash2 size={15} />{deletingId === promo.id ? "Deleting..." : "Delete"}</button>
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : null}
         </div>
       ) : null}
     </section>
