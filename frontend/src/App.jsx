@@ -75,6 +75,7 @@ import "./pages/MenuStudioDarkMode.css";
 import "./pages/MenuAiDishImagesV1StyleLock.css";
 import "./features/menu-engine/studio/MenuDesignDarkModePolish.css";
 import "./features/menu-engine/renderer/menuHeritageDesignControlsFix.css";
+import "./features/menu-engine/renderer/menuItemNameColor.css";
 
 function LegacyStudioRedirect({ to }) {
   const location = useLocation();
