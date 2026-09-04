@@ -32,7 +32,11 @@ const COPY = {
 };
 
 function isPhotoDesign(entry) {
-  return entry?.design?.brand?.heroMediaMode === "image";
+  const design = entry?.design || {};
+  // A design belongs in "With photos" when photography is part of the actual
+  // menu experience — either in the hero or on item cards. This also catches
+  // tile/card designs whose hero is only a watermark but whose items use photos.
+  return design?.brand?.heroMediaMode === "image" || Boolean(design?.layout?.itemImagePosition);
 }
 
 function categoryForDesign(designId) {
