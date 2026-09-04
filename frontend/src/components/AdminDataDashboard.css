@@ -63,6 +63,30 @@
   opacity: .62;
 }
 
+.admin-data-account-note {
+  display: grid;
+  gap: 4px;
+  padding: 11px 12px;
+  border-radius: 11px;
+  border: 1px solid rgba(73,116,229,.24);
+  background: rgba(73,116,229,.09);
+}
+
+.admin-data-account-note.is-secondary {
+  border-color: rgba(255,255,255,.09);
+  background: rgba(255,255,255,.035);
+}
+
+.admin-data-account-note strong {
+  font-size: 12px;
+}
+
+.admin-data-account-note span {
+  font-size: 11px;
+  line-height: 1.45;
+  opacity: .75;
+}
+
 .admin-data-search {
   min-width: min(300px, 100%);
   display: flex;
@@ -124,6 +148,11 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.admin-data-grid td.admin-data-cell-warning {
+  color: #ffb5b5;
+  font-weight: 800;
 }
 
 .admin-data-actions-head,
