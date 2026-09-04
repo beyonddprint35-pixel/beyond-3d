@@ -1,0 +1,257 @@
+.admin-data-dashboard {
+  border: 1px solid rgba(73, 116, 229, .24);
+  background: rgba(73, 116, 229, .055);
+}
+
+.admin-data-body {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-data-toolbar,
+.admin-data-meta-row,
+.admin-data-modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.admin-data-toolbar {
+  justify-content: space-between;
+}
+
+.admin-data-table-picker {
+  min-width: min(320px, 100%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  min-height: 40px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.11);
+  background: rgba(0,0,0,.14);
+}
+
+.admin-data-table-picker select {
+  flex: 1;
+  min-width: 0;
+  min-height: 38px;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: inherit;
+}
+
+.admin-data-meta-row {
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.admin-data-meta-row > div {
+  display: grid;
+  gap: 2px;
+}
+
+.admin-data-meta-row strong {
+  font-size: 14px;
+}
+
+.admin-data-meta-row span,
+.admin-data-note {
+  font-size: 11px;
+  opacity: .62;
+}
+
+.admin-data-search {
+  min-width: min(300px, 100%);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.1);
+  background: rgba(0,0,0,.14);
+}
+
+.admin-data-search input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: inherit;
+}
+
+.admin-data-grid-wrap {
+  width: 100%;
+  overflow: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(0,0,0,.11);
+  max-height: 520px;
+}
+
+.admin-data-grid {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+  font-size: 11px;
+}
+
+.admin-data-grid th,
+.admin-data-grid td {
+  text-align: left;
+  padding: 9px 10px;
+  border-bottom: 1px solid rgba(255,255,255,.065);
+  vertical-align: top;
+  max-width: 220px;
+}
+
+.admin-data-grid th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: rgba(20,24,34,.98);
+  font-size: 10px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  opacity: .82;
+}
+
+.admin-data-grid td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-data-actions-head,
+.admin-data-actions {
+  width: 86px;
+  text-align: right !important;
+}
+
+.admin-data-actions {
+  white-space: nowrap;
+}
+
+.admin-data-actions button,
+.admin-data-modal-head button {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.1);
+  background: rgba(255,255,255,.04);
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.admin-data-actions button + button {
+  margin-left: 5px;
+}
+
+.admin-data-actions button.danger {
+  color: #ff8b8b;
+  border-color: rgba(255,95,95,.18);
+}
+
+.admin-data-empty {
+  padding: 28px 16px;
+  text-align: center;
+  opacity: .58;
+  font-size: 12px;
+}
+
+.admin-data-error {
+  margin: 0;
+}
+
+.admin-data-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(0,0,0,.68);
+  backdrop-filter: blur(8px);
+}
+
+.admin-data-modal {
+  width: min(720px, 100%);
+  max-height: min(82vh, 760px);
+  overflow: auto;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.13);
+  background: #111722;
+  box-shadow: 0 24px 70px rgba(0,0,0,.44);
+}
+
+.admin-data-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.admin-data-modal-head h3 {
+  margin: 2px 0 0;
+  font-size: 18px;
+}
+
+.admin-data-modal p {
+  margin: 10px 0;
+  font-size: 12px;
+  opacity: .7;
+}
+
+.admin-data-modal textarea {
+  width: 100%;
+  min-height: 360px;
+  resize: vertical;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.11);
+  background: rgba(0,0,0,.26);
+  color: inherit;
+  font: 12px/1.55 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.admin-data-modal-actions {
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+@media (max-width: 680px) {
+  .admin-data-toolbar,
+  .admin-data-meta-row {
+    align-items: stretch;
+  }
+
+  .admin-data-toolbar > *,
+  .admin-data-search,
+  .admin-data-table-picker {
+    width: 100%;
+  }
+
+  .admin-data-toolbar button {
+    flex: 1 1 120px;
+  }
+
+  .admin-data-grid-wrap {
+    max-height: 420px;
+  }
+
+  .admin-data-modal {
+    padding: 13px;
+  }
+
+  .admin-data-modal textarea {
+    min-height: 300px;
+  }
+}
