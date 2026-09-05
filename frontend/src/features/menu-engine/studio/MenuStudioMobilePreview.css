@@ -77,9 +77,10 @@
   -webkit-overflow-scrolling:touch;
   scrollbar-width:thin;
   scrollbar-color:rgba(92,102,118,.28) transparent;
-  /* Fixed overlays from the customer menu are contained by this simulated
-     viewport instead of escaping to the browser window. */
-  transform:translateZ(0);
+  /* Do not transform this scrolling element. A transformed scroller becomes
+     the containing block for position:fixed children and makes the
+     accessibility launcher scroll with menu content. The transformed device
+     above already contains fixed overlays inside the simulated phone. */
 }
 .menu-studio-mobile-preview-scroll::-webkit-scrollbar{width:5px}
 .menu-studio-mobile-preview-scroll::-webkit-scrollbar-thumb{border-radius:99px;background:rgba(92,102,118,.24)}
@@ -159,8 +160,11 @@
    viewport and clear of the home indicator. The launcher intentionally stays
    black and white regardless of the selected menu theme. */
 .menu-studio-mobile-preview-scroll .restaurant-a11y-toggle{
-  left:14px;
-  bottom:38px;
+  position:fixed !important;
+  left:14px !important;
+  right:auto !important;
+  bottom:38px !important;
+  top:auto !important;
   z-index:70;
   width:46px;
   height:46px;
@@ -180,8 +184,11 @@
   stroke:none !important;
 }
 .menu-studio-mobile-preview-scroll .restaurant-a11y-panel{
-  left:12px;
-  bottom:94px;
+  position:fixed !important;
+  left:12px !important;
+  right:auto !important;
+  bottom:94px !important;
+  top:auto !important;
   z-index:71;
   width:calc(100% - 24px);
   max-height:calc(100% - 112px);
