@@ -40,12 +40,27 @@
   align-items:center;
   justify-content:space-between;
   gap:8px;
+}
+.menu-content-v2[dir="rtl"] .menu-content-v2-language-card>header{
+  direction:rtl;
+  text-align:right;
+}
+.menu-content-v2[dir="ltr"] .menu-content-v2-language-card>header{
   direction:ltr;
+  text-align:left;
 }
 .menu-content-v2-language-card>header strong{
   color:#17233f;
   font-size:12px;
   font-weight:800;
+}
+.menu-content-v2[dir="rtl"] .menu-content-v2-language-card>header strong{
+  direction:rtl;
+  text-align:right;
+}
+.menu-content-v2[dir="ltr"] .menu-content-v2-language-card>header strong{
+  direction:ltr;
+  text-align:left;
 }
 .menu-content-v2-language-card>header span{
   min-width:30px;
@@ -59,6 +74,8 @@
   font-size:9px;
   font-weight:900;
   letter-spacing:.06em;
+  direction:ltr;
+  text-align:center;
 }
 .menu-content-v2-language-card .menu-content-v2-field{margin:0}
 .menu-content-v2-language-card input::placeholder,
@@ -87,6 +104,24 @@
 .menu-content-v2[lang="ar"] .menu-content-v2-language-card:nth-child(1)>header strong::after{content:"الإنجليزية"}
 .menu-content-v2[lang="ar"] .menu-content-v2-language-card:nth-child(2)>header strong::after{content:"العبرية"}
 .menu-content-v2[lang="ar"] .menu-content-v2-language-card:nth-child(3)>header strong::after{content:"العربية"}
+
+/* Field labels belong to the Studio UI language, not to the value language.
+   Hebrew/Arabic UI keeps every label RTL/right while the actual input can still
+   remain LTR for English content. */
+.menu-content-v2[dir="rtl"] .menu-content-v2-language-card .menu-content-v2-field > label{
+  display:block;
+  width:100%;
+  direction:rtl !important;
+  text-align:right !important;
+  unicode-bidi:plaintext;
+}
+.menu-content-v2[dir="ltr"] .menu-content-v2-language-card .menu-content-v2-field > label{
+  display:block;
+  width:100%;
+  direction:ltr !important;
+  text-align:left !important;
+  unicode-bidi:plaintext;
+}
 
 /* Description labels are interface copy, not content-language copy. */
 .menu-content-v2 .menu-content-v2-language-card .menu-content-v2-field:has(>textarea) > label{
