@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import MenuContentStudioV2 from "./MenuContentStudioV2";
 import MenuWebsiteImportV2 from "./MenuWebsiteImportV2";
@@ -29,6 +29,26 @@ function photoImportTranslationsReady(draft) {
   return pipelineVersion.startsWith("v14-") || pipelineVersion.startsWith("v15-");
 }
 
+function isTranslationField(target) {
+  return target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement
+    ? Boolean(target.closest(".menu-content-v2-language-card"))
+    : false;
+}
+
+function restoreCaretAfterReact(target, start, end, direction) {
+  const restore = () => {
+    if (document.activeElement !== target) return;
+    try {
+      const max = String(target.value || "").length;
+      target.setSelectionRange(Math.min(start, max), Math.min(end, max), direction || "none");
+    } catch {
+      // Some input types do not expose a text selection API.
+    }
+  };
+  queueMicrotask(restore);
+  window.requestAnimationFrame(restore);
+}
+
 export default function MenuContentStudioV2Entry() {
   const workspace = useMenuStudioWorkspace();
   const params = useMemo(() => new URLSearchParams(window.location.search), []);
@@ -42,6 +62,9 @@ export default function MenuContentStudioV2Entry() {
     return workspace?.isPrepared(id) || workspace?.isContentReady(id) || false;
   });
   const [ready, setReady] = useState(shouldOpenWebsiteImporter || alreadyPrepared || modernPhotoImport);
+  const [editorRevision, setEditorRevision] = useState(0);
+  const translationTimerRef = useRef(null);
+  const translationBusyRef = useRef(false);
 
   useEffect(() => {
     if (shouldOpenWebsiteImporter || alreadyPrepared) return undefined;
@@ -105,6 +128,68 @@ export default function MenuContentStudioV2Entry() {
     return () => { active = false; };
   }, [initialDraft, shouldOpenWebsiteImporter, alreadyPrepared, modernPhotoImport, workspace]);
 
+  useEffect(() => {
+    if (!ready || shouldOpenWebsiteImporter) return undefined;
+
+    const onInputCapture = (event) => {
+      const target = event.target;
+      if (!isTranslationField(target)) return;
+      const start = target.selectionStart;
+      const end = target.selectionEnd;
+      if (start == null || end == null) return;
+      restoreCaretAfterReact(target, start, end, target.selectionDirection);
+    };
+
+    async function translateMissingLanguages() {
+      if (translationBusyRef.current) return;
+      const draft = readMenuStudioV2Draft();
+      const projectId = menuStudioProjectId(draft);
+      if (!draft?.menu || !projectId) return;
+      const fields = collectV3TranslationRepairFields(draft.menu);
+      if (!fields.length) return;
+
+      translationBusyRef.current = true;
+      try {
+        const session = await getMenuImportSession();
+        if (!session) return;
+        const repair = await repairV3MenuTranslations({ session, projectId, menu: draft.menu });
+        if (!repair?.repaired || !repair?.menu) return;
+        const latestDraft = readMenuStudioV2Draft();
+        if (menuStudioProjectId(latestDraft) !== projectId) return;
+        writeMenuStudioV2Draft({
+          ...latestDraft,
+          menu: normalizeV3MenuPriceOptions(repair.menu),
+          profile: { ...(latestDraft?.profile || {}), aiTranslationsReady: true },
+        });
+        setEditorRevision((current) => current + 1);
+      } catch (error) {
+        console.warn("Could not auto-translate the missing menu languages.", error);
+      } finally {
+        translationBusyRef.current = false;
+      }
+    }
+
+    const onBlurCapture = (event) => {
+      if (!isTranslationField(event.target)) return;
+      if (!String(event.target.value || "").trim()) return;
+      window.clearTimeout(translationTimerRef.current);
+      // Content Studio persists controlled input changes after 350ms. Run after
+      // that save so the translation service receives the exact text the user
+      // just finished typing, regardless of whether it was EN, HE or AR.
+      translationTimerRef.current = window.setTimeout(() => {
+        void translateMissingLanguages();
+      }, 475);
+    };
+
+    document.addEventListener("input", onInputCapture, true);
+    document.addEventListener("blur", onBlurCapture, true);
+    return () => {
+      document.removeEventListener("input", onInputCapture, true);
+      document.removeEventListener("blur", onBlurCapture, true);
+      window.clearTimeout(translationTimerRef.current);
+    };
+  }, [ready, shouldOpenWebsiteImporter]);
+
   if (shouldOpenWebsiteImporter) return <MenuWebsiteImportV2 />;
 
   if (!ready) {
@@ -117,5 +202,5 @@ export default function MenuContentStudioV2Entry() {
     );
   }
 
-  return <MenuContentStudioV2 />;
+  return <MenuContentStudioV2 key={editorRevision} />;
 }
