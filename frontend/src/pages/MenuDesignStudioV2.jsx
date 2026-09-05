@@ -25,6 +25,7 @@ import {
 } from "../features/menu-engine/studio/studioLanguage";
 import "./MenuDesignStudioV2.css";
 import "../features/menu-engine/studio/MenuDesignDarkMode.css";
+import "../features/menu-engine/studio/MenuDesignVariants.css";
 
 const UI = {
   en: {
@@ -33,6 +34,7 @@ const UI = {
     eyebrow:"DESIGN STUDIO", title:"Choose your menu design", hint:"Swipe through designs and tap one to see your menu update below.",
     live:"LIVE DESIGN", continuePreview:"Continue to Preview", draftKept:"Design changes are saved to your draft.",
     restaurantLogo:"Restaurant logo", logoHint:"PNG, JPG, WebP or SVG", uploadLogo:"Upload logo", replaceLogo:"Replace logo", removeLogo:"Remove",
+    savedDesigns:"Saved designs", savedDesignsHint:"Keep two favorites for this menu. Switching slots never changes your menu content.", designA:"Design A", designB:"Design B", editing:"Editing", duplicateHint:"Tap to create from your current design",
   },
   he: {
     interfaceLanguage:"שפה", contentLanguage:"שפה", backContent:"חזרה לתוכן", workspace:"סביבת עבודת התפריט",
@@ -40,6 +42,7 @@ const UI = {
     eyebrow:"סטודיו לעיצוב", title:"בחרו את עיצוב התפריט", hint:"גללו בין העיצובים ולחצו על עיצוב כדי לראות מיד את התפריט שלכם למטה.",
     live:"עיצוב חי", continuePreview:"המשך לתצוגה מקדימה", draftKept:"שינויי העיצוב נשמרים בטיוטה שלכם.",
     restaurantLogo:"לוגו המסעדה", logoHint:"PNG, JPG, WebP או SVG", uploadLogo:"העלאת לוגו", replaceLogo:"החלפת לוגו", removeLogo:"הסרה",
+    savedDesigns:"עיצובים שמורים", savedDesignsHint:"שמרו שני עיצובים מועדפים לאותו תפריט. התוכן נשאר משותף.", designA:"עיצוב A", designB:"עיצוב B", editing:"בעריכה", duplicateHint:"לחצו כדי ליצור מהעיצוב הנוכחי",
   },
   ar: {
     interfaceLanguage:"اللغة", contentLanguage:"اللغة", backContent:"العودة إلى المحتوى", workspace:"مساحة عمل القائمة",
@@ -47,6 +50,7 @@ const UI = {
     eyebrow:"استوديو التصميم", title:"اختاروا تصميم قائمتكم", hint:"مرّروا بين التصاميم واضغطوا على أحدها لرؤية النتيجة فوراً أدناه.",
     live:"تصميم مباشر", continuePreview:"المتابعة إلى المعاينة", draftKept:"تُحفظ تغييرات التصميم في مسودتكم.",
     restaurantLogo:"شعار المطعم", logoHint:"PNG أو JPG أو WebP أو SVG", uploadLogo:"رفع الشعار", replaceLogo:"استبدال الشعار", removeLogo:"إزالة",
+    savedDesigns:"تصاميم محفوظة", savedDesignsHint:"احتفظوا بتصميمين مفضلين لنفس القائمة. يبقى المحتوى مشتركاً.", designA:"التصميم A", designB:"التصميم B", editing:"قيد التعديل", duplicateHint:"اضغطوا للإنشاء من التصميم الحالي",
   },
 };
 
@@ -103,15 +107,40 @@ function studioRoute(path) {
   return `${path}${window.location.search || ""}`;
 }
 
+function designSlotLabel(slot, t) {
+  return slot === "B" ? t.designB : t.designA;
+}
+
 export default function MenuDesignStudioV2() {
   const navigate = useNavigate();
   const storedDraft = useMemo(readMenuStudioV2Draft, []);
-  const profile = useMemo(() => storedDraft?.profile || readMenuCreateV2Profile(), [storedDraft]);
   const resolved = useMemo(() => resolveMenuStudioV2Design(storedDraft), [storedDraft]);
-  const [menu, setMenu] = useState(() => prepareMenuForIndustry(storedDraft?.menu || createBlankMenuV2(), resolved.entry));
+  const initialProfile = useMemo(() => storedDraft?.profile || readMenuCreateV2Profile() || {}, [storedDraft]);
+  const initialActiveSlot = initialProfile?.activeDesignVariant === "B" ? "B" : "A";
+  const initialVariants = useMemo(() => {
+    const saved = initialProfile?.designVariants || {};
+    const fallback = {
+      design: normalizeMenuDesign(resolved.design),
+      designId: findMatchingMenuDesign(resolved.design)?.id || resolved.designId,
+    };
+    return {
+      A: saved.A?.design ? { design: normalizeMenuDesign(saved.A.design), designId: saved.A.designId || findMatchingMenuDesign(saved.A.design)?.id || resolved.designId } : fallback,
+      B: saved.B?.design ? { design: normalizeMenuDesign(saved.B.design), designId: saved.B.designId || findMatchingMenuDesign(saved.B.design)?.id || resolved.designId } : null,
+    };
+  }, [initialProfile, resolved]);
+  const initialVariant = initialVariants[initialActiveSlot] || initialVariants.A;
+
+  const [profile, setProfile] = useState(() => ({
+    ...initialProfile,
+    activeDesignVariant: initialActiveSlot,
+    designVariants: initialVariants,
+  }));
+  const [activeDesignVariant, setActiveDesignVariant] = useState(initialActiveSlot);
+  const [designVariants, setDesignVariants] = useState(initialVariants);
+  const [menu, setMenu] = useState(() => prepareMenuForIndustry(storedDraft?.menu || createBlankMenuV2(), PREMIUM_MENU_DESIGNS.find((entry) => entry.id === initialVariant?.designId) || resolved.entry));
   const [{ design, designId }, setDesignState] = useState(() => ({
-    design: normalizeMenuDesign(resolved.design),
-    designId: findMatchingMenuDesign(resolved.design)?.id || resolved.designId,
+    design: normalizeMenuDesign(initialVariant?.design || resolved.design),
+    designId: initialVariant?.designId || findMatchingMenuDesign(resolved.design)?.id || resolved.designId,
   }));
   const designRailRef = useRef(null);
   const [contentLanguage, setContentLanguage] = useState(() => storedDraft?.contentLanguage || readStudioLanguage(menu.default_language || "en"));
@@ -134,11 +163,41 @@ export default function MenuDesignStudioV2() {
     writeStudioLanguage(language);
   }
 
+  function persistVariants(nextVariants, nextActive = activeDesignVariant) {
+    setDesignVariants(nextVariants);
+    setProfile((current) => ({
+      ...(current || {}),
+      activeDesignVariant: nextActive,
+      designVariants: nextVariants,
+    }));
+  }
+
   function patchDesign(updater, selectedId) {
     setDesignState((current) => {
       const next = normalizeMenuDesign(typeof updater === "function" ? updater(current.design) : updater);
-      return { design: next, designId: selectedId || findMatchingMenuDesign(next)?.id || current.designId };
+      const nextId = selectedId || findMatchingMenuDesign(next)?.id || current.designId;
+      const nextVariants = {
+        ...designVariants,
+        [activeDesignVariant]: { design: next, designId: nextId },
+      };
+      persistVariants(nextVariants, activeDesignVariant);
+      return { design: next, designId: nextId };
     });
+  }
+
+  function switchDesignVariant(slot) {
+    if (slot === activeDesignVariant) return;
+    let nextVariants = designVariants;
+    let target = designVariants[slot];
+    if (!target) {
+      target = { design: normalizeMenuDesign(design), designId };
+      nextVariants = { ...designVariants, [slot]: target };
+    }
+    const targetEntry = PREMIUM_MENU_DESIGNS.find((entry) => entry.id === target.designId) || resolved.entry;
+    setMenu((current) => prepareMenuForIndustry(current, targetEntry));
+    setActiveDesignVariant(slot);
+    setDesignState({ design: normalizeMenuDesign(target.design), designId: target.designId || resolved.designId });
+    persistVariants(nextVariants, slot);
   }
 
   function patchLogo(value) {
@@ -175,6 +234,12 @@ export default function MenuDesignStudioV2() {
     selected?.focus({ preventScroll: true });
   }
 
+  function slotDesignName(slot) {
+    const variant = designVariants[slot];
+    if (!variant) return t.duplicateHint;
+    return PREMIUM_MENU_DESIGNS.find((entry) => entry.id === variant.designId)?.name || "Custom";
+  }
+
   return (
     <main className="menu-design-v2" dir={rtl ? "rtl" : "ltr"} lang={uiLanguage}>
       <MenuStudioHeader stage="design" language={uiLanguage} onLanguageChange={changeStudioLanguage} menuName={menu.restaurant_name} onBack={() => navigate(studioRoute("/menu-studio/content"))} backLabel={t.backContent} saveState={saveState} saveLabel={saveLabel} />
@@ -192,6 +257,18 @@ export default function MenuDesignStudioV2() {
         </div>
       </section>
 
+      <section className="menu-design-v2-variants" aria-label={t.savedDesigns}>
+        <div className="menu-design-v2-variants-copy"><strong>{t.savedDesigns}</strong><small>{t.savedDesignsHint}</small></div>
+        <div className="menu-design-v2-variant-buttons">
+          {["A", "B"].map((slot) => (
+            <button key={slot} type="button" className={`menu-design-v2-variant-button ${activeDesignVariant === slot ? "active" : ""}`} onClick={() => switchDesignVariant(slot)} aria-pressed={activeDesignVariant === slot}>
+              <span className="menu-design-v2-variant-letter">{slot}</span>
+              <span><strong>{designSlotLabel(slot, t)}{activeDesignVariant === slot ? ` · ${t.editing}` : ""}</strong><small>{slotDesignName(slot)}</small></span>
+            </button>
+          ))}
+        </div>
+      </section>
+
       <div className="menu-design-v2-workspace">
         <section className="menu-design-v2-canvas">
           <MenuDesignPicker designId={designId} language={uiLanguage} onSelect={chooseDesign} railRef={designRailRef} previewId="menu-design-live-preview" />
@@ -201,7 +278,7 @@ export default function MenuDesignStudioV2() {
               design={design}
               language={contentLanguage}
               uiLanguage={uiLanguage}
-              label={t.live}
+              label={`${t.live} · ${activeDesignVariant}`}
               compact
             />
           </div>
