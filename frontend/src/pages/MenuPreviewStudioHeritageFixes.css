@@ -138,19 +138,33 @@
 .menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-section-head h2{
   font-size:38px !important;
 }
+
+/* The renderer groups items inside one wrapper per category/subcategory.
+   Make each wrapper span the whole menu width, then create the actual desktop
+   columns inside that wrapper. This prevents the whole category from being
+   squeezed into only one of the outer grid columns. */
 .menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-menu-list{
   min-height:0 !important;
   padding:6px 48px 26px !important;
-  display:grid !important;
-  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
-  grid-auto-flow:row !important;
-  align-content:start !important;
-  gap:14px 16px !important;
+  display:block !important;
   overflow-y:auto !important;
 }
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-menu-list > div{
+  width:100% !important;
+  min-width:0 !important;
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:14px 16px !important;
+  align-items:stretch !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-menu-list > div + div{
+  margin-top:18px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-item-category-wrap,
 .menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-item-category,
 .menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-group-note{
   grid-column:1/-1 !important;
+  width:100% !important;
 }
 .menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-item-category{
   margin-top:2px !important;
@@ -164,6 +178,13 @@
   padding:14px 16px !important;
   border-radius:18px !important;
   align-self:stretch !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-item-info{
+  min-width:0 !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-item-name,
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-item-description{
+  overflow-wrap:anywhere !important;
 }
 .menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-item-name{
   font-size:17px !important;
