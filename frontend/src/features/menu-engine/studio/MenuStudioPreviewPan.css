@@ -10,6 +10,14 @@
 .studio-v3-preview-v2-stage.is-panning *{
   cursor:grabbing !important;
 }
+.studio-v3-preview-pan-canvas{
+  min-width:100%;
+  min-height:100%;
+  width:max-content;
+  height:max-content;
+  display:grid;
+  place-items:center;
+}
 .studio-v3-preview-pan-hint{
   position:sticky;
   top:10px;
