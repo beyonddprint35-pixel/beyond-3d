@@ -9,6 +9,18 @@
 .menu-content-v2[dir="rtl"] input[dir="ltr"]{text-align:left}
 .menu-content-v2 [dir="rtl"]{text-align:right}
 .menu-content-v2 [dir="ltr"]{text-align:left}
+.menu-content-v2 input[dir="rtl"],
+.menu-content-v2 textarea[dir="rtl"]{
+  direction:rtl;
+  text-align:right;
+  unicode-bidi:plaintext;
+}
+.menu-content-v2 input[dir="ltr"],
+.menu-content-v2 textarea[dir="ltr"]{
+  direction:ltr;
+  text-align:left;
+  unicode-bidi:plaintext;
+}
 
 .menu-content-v2-language-fields{
   display:grid;
