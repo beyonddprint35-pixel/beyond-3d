@@ -163,15 +163,17 @@ export default function MenuStudioPreviewStage({ menu, design, language="en", ui
   useEffect(() => {
     const stage = stageRef.current;
     if (!stage) return;
+    const center = () => {
+      stage.scrollLeft = Math.max(0,(stage.scrollWidth-stage.clientWidth)/2);
+      stage.scrollTop = Math.max(0,(stage.scrollHeight-stage.clientHeight)/2);
+    };
     if (fitMode) {
       stage.scrollTo({ left:0, top:0 });
       return;
     }
-    requestAnimationFrame(() => {
-      stage.scrollLeft = Math.max(0,(stage.scrollWidth-stage.clientWidth)/2);
-      stage.scrollTop = Math.max(0,(stage.scrollHeight-stage.clientHeight)/2);
-    });
-  },[fitMode,deviceKey]);
+    const frame = requestAnimationFrame(() => requestAnimationFrame(center));
+    return () => cancelAnimationFrame(frame);
+  },[fitMode,deviceKey,scale]);
 
   function chooseDevice(key) {
     setDeviceKey(key);
@@ -256,7 +258,7 @@ export default function MenuStudioPreviewStage({ menu, design, language="en", ui
     <div
       className={`studio-v3-preview-v2-stage device-${deviceKey} ${fitMode?"is-fit":"is-pannable"} ${panning?"is-panning":""}`}
       ref={stageRef}
-      style={{overflow:fitMode?"hidden":"auto",placeItems:fitMode?"center":"start"}}
+      style={{overflow:fitMode?"hidden":"auto",placeItems:"center",direction:"ltr"}}
       onPointerDown={startPan}
       onPointerMove={movePan}
       onPointerUp={stopPan}
@@ -264,10 +266,12 @@ export default function MenuStudioPreviewStage({ menu, design, language="en", ui
       title={fitMode?undefined:copy.panHint}
     >
       {!fitMode?<div className="studio-v3-preview-pan-hint">{copy.panHint}</div>:null}
-      <div className="studio-v3-preview-v2-holder" style={holderStyle}>
-        {deviceKey==="mobile"?<MobileFrame menu={menu} design={design} language={language} style={deviceStyle}/>:null}
-        {deviceKey==="tablet"?<TabletFrame menu={menu} design={design} language={language} style={deviceStyle}/>:null}
-        {deviceKey==="desktop"?<DesktopFrame menu={menu} design={design} language={language} style={deviceStyle}/>:null}
+      <div className="studio-v3-preview-pan-canvas">
+        <div className="studio-v3-preview-v2-holder" style={holderStyle}>
+          {deviceKey==="mobile"?<MobileFrame menu={menu} design={design} language={language} style={deviceStyle}/>:null}
+          {deviceKey==="tablet"?<TabletFrame menu={menu} design={design} language={language} style={deviceStyle}/>:null}
+          {deviceKey==="desktop"?<DesktopFrame menu={menu} design={design} language={language} style={deviceStyle}/>:null}
+        </div>
       </div>
     </div>
   </section>;
