@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import MenuRenderer from "../renderer/MenuRenderer";
 import "./MenuStudioPreviewStage.css";
+import "./MenuStudioPreviewPan.css";
 
 const DEVICE_PRESETS = Object.freeze({
   mobile:{ width:390, height:844, outerWidth:422, outerHeight:876 },
@@ -23,6 +24,7 @@ const COPY = {
     zoomIn:"Zoom in",
     resetZoom:"Reset zoom",
     devicePreview:"Menu device preview",
+    panHint:"Drag to move around",
   },
   he:{
     title:"תצוגה מקדימה",
@@ -38,6 +40,7 @@ const COPY = {
     zoomIn:"הגדל",
     resetZoom:"איפוס זום",
     devicePreview:"תצוגת תפריט לפי מכשיר",
+    panHint:"גררו כדי לזוז בתצוגה",
   },
   ar:{
     title:"المعاينة",
@@ -45,7 +48,7 @@ const COPY = {
     mobile:"هاتف",
     tablet:"جهاز لوحي",
     desktop:"كمبيوتر",
-    mobileHint:"هكذا سيشاهد معظم الضيوف قائمتك",
+    mobileHint:"هكذا سيشاهد معظم الضيوف القائمة",
     tabletHint:"مثالي لأجهزة iPad وشاشات الطاولات",
     desktopHint:"تجربة مصقولة للشاشات الواسعة",
     fit:"ملاءمة",
@@ -53,6 +56,7 @@ const COPY = {
     zoomIn:"تكبير",
     resetZoom:"إعادة ضبط التكبير",
     devicePreview:"معاينة القائمة حسب الجهاز",
+    panHint:"اسحب للتنقل داخل المعاينة",
   },
 };
 
@@ -111,10 +115,12 @@ function DesktopFrame({ menu, design, language, style }) {
 export default function MenuStudioPreviewStage({ menu, design, language="en", uiLanguage="en" }) {
   const copy = COPY[uiLanguage] || COPY.en;
   const stageRef = useRef(null);
+  const panRef = useRef(null);
   const [deviceKey,setDeviceKey] = useState("mobile");
   const [fitMode,setFitMode] = useState(true);
   const [zoom,setZoom] = useState(.8);
   const [fitScale,setFitScale] = useState(.8);
+  const [panning,setPanning] = useState(false);
   const device = DEVICE_PRESETS[deviceKey];
   const deviceHint = copy[`${deviceKey}Hint`];
 
@@ -154,6 +160,19 @@ export default function MenuStudioPreviewStage({ menu, design, language="en", ui
     "--preview-screen-height":`${device.height}px`,
   }),[device.outerWidth,device.outerHeight,device.width,device.height,scale]);
 
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
+    if (fitMode) {
+      stage.scrollTo({ left:0, top:0 });
+      return;
+    }
+    requestAnimationFrame(() => {
+      stage.scrollLeft = Math.max(0,(stage.scrollWidth-stage.clientWidth)/2);
+      stage.scrollTop = Math.max(0,(stage.scrollHeight-stage.clientHeight)/2);
+    });
+  },[fitMode,deviceKey]);
+
   function chooseDevice(key) {
     setDeviceKey(key);
     setFitMode(true);
@@ -165,6 +184,39 @@ export default function MenuStudioPreviewStage({ menu, design, language="en", ui
   function resetZoom() {
     setFitMode(false);
     setZoom(1);
+  }
+
+  function startPan(event) {
+    if (fitMode || event.button !== 0) return;
+    if (event.target.closest("button,a,input,textarea,select,[role='button']")) return;
+    const stage = stageRef.current;
+    if (!stage) return;
+    panRef.current = {
+      pointerId:event.pointerId,
+      startX:event.clientX,
+      startY:event.clientY,
+      scrollLeft:stage.scrollLeft,
+      scrollTop:stage.scrollTop,
+    };
+    stage.setPointerCapture?.(event.pointerId);
+    setPanning(true);
+  }
+
+  function movePan(event) {
+    const pan = panRef.current;
+    const stage = stageRef.current;
+    if (!pan || !stage || pan.pointerId !== event.pointerId) return;
+    stage.scrollLeft = pan.scrollLeft - (event.clientX-pan.startX);
+    stage.scrollTop = pan.scrollTop - (event.clientY-pan.startY);
+    event.preventDefault();
+  }
+
+  function stopPan(event) {
+    const stage = stageRef.current;
+    if (!panRef.current) return;
+    if (event?.pointerId != null) stage?.releasePointerCapture?.(event.pointerId);
+    panRef.current = null;
+    setPanning(false);
   }
 
   return <section className="studio-v3-preview-v2" aria-label={copy.devicePreview}>
@@ -201,7 +253,17 @@ export default function MenuStudioPreviewStage({ menu, design, language="en", ui
       <div><strong>{copy[deviceKey]}</strong><span>{deviceHint}</span></div>
     </div>
 
-    <div className={`studio-v3-preview-v2-stage device-${deviceKey}`} ref={stageRef}>
+    <div
+      className={`studio-v3-preview-v2-stage device-${deviceKey} ${fitMode?"is-fit":"is-pannable"} ${panning?"is-panning":""}`}
+      ref={stageRef}
+      style={{overflow:fitMode?"hidden":"auto",placeItems:fitMode?"center":"start"}}
+      onPointerDown={startPan}
+      onPointerMove={movePan}
+      onPointerUp={stopPan}
+      onPointerCancel={stopPan}
+      title={fitMode?undefined:copy.panHint}
+    >
+      {!fitMode?<div className="studio-v3-preview-pan-hint">{copy.panHint}</div>:null}
       <div className="studio-v3-preview-v2-holder" style={holderStyle}>
         {deviceKey==="mobile"?<MobileFrame menu={menu} design={design} language={language} style={deviceStyle}/>:null}
         {deviceKey==="tablet"?<TabletFrame menu={menu} design={design} language={language} style={deviceStyle}/>:null}
