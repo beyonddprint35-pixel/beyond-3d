@@ -62,13 +62,14 @@ function mergeMissingTranslations(latestMenu, repairedMenu, fields) {
     const parts = String(key || "").split(".");
     if (parts[0] === "groups") {
       const groupIndex = Number(parts[1]);
+      const field = parts[2];
       const language = parts[3];
       const latestGroup = next.groups?.[groupIndex];
       const repairedGroup = repairedMenu.groups?.[groupIndex];
-      if (!latestGroup || !repairedGroup || !language) return;
-      if (String(latestGroup.name?.[language] || "").trim()) return;
-      const translated = String(repairedGroup.name?.[language] || "").trim();
-      if (translated) latestGroup.name = { ...(latestGroup.name || {}), [language]: translated };
+      if (!latestGroup || !repairedGroup || !language || (field !== "name" && field !== "note")) return;
+      if (String(latestGroup[field]?.[language] || "").trim()) return;
+      const translated = String(repairedGroup[field]?.[language] || "").trim();
+      if (translated) latestGroup[field] = { ...(latestGroup[field] || {}), [language]: translated };
       return;
     }
 
@@ -139,16 +140,8 @@ export default function MenuContentStudioV2Entry() {
         || draft?.menu?.source_project_id
         || "";
 
-      // Imported price semantics are normalized every time Studio opens. This
-      // also upgrades older drafts when the normalizer learns new serving-size
-      // vocabulary (for example שליש/חצי and ثلث/نصف for draft beer).
       let repairedMenu = normalizeV3MenuPriceOptions(draft.menu);
 
-      // Modern photo extraction already performs source-first translation for
-      // all requested customer languages. Re-running the generic V3 repair on a
-      // large photo menu can create hundreds of redundant translation fields
-      // and block Content Studio for tens of seconds. Keep the repair only for
-      // legacy PDF/text/older imports that still need it.
       if (!modernPhotoImport) {
         try {
           const fields = collectV3TranslationRepairFields(repairedMenu);
@@ -231,9 +224,6 @@ export default function MenuContentStudioV2Entry() {
       if (!isTranslationField(event.target)) return;
       if (!String(event.target.value || "").trim()) return;
       window.clearTimeout(translationTimerRef.current);
-      // Content Studio persists controlled input changes after 350ms. Run after
-      // that save so the translation service receives the exact text the user
-      // just finished typing, regardless of whether it was EN, HE or AR.
       translationTimerRef.current = window.setTimeout(() => {
         void translateMissingLanguages();
       }, 475);
