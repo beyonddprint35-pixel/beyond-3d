@@ -14,10 +14,6 @@ function containsArabic(value) {
   return /[\u0600-\u06ff]/.test(text(value));
 }
 
-function containsLatin(value) {
-  return /[A-Za-z]/.test(text(value));
-}
-
 function wrongScript(value, targetLanguage) {
   const next = text(value);
   if (!next) return true;
@@ -29,8 +25,7 @@ function wrongScript(value, targetLanguage) {
 
 function sourceFor(localized, targetLanguage) {
   const value = localized && typeof localized === "object" ? localized : {};
-  const preferences = targetLanguage === "en" ? ["en", "he", "ar"] : ["en", "he", "ar"];
-  for (const code of preferences) {
+  for (const code of ["en", "he", "ar"]) {
     if (code === targetLanguage) continue;
     const candidate = text(value[code]);
     if (candidate) return candidate;
@@ -69,6 +64,7 @@ export function collectV3TranslationRepairFields(menu = {}) {
   const fields = [];
   (menu.groups || []).forEach((group, groupIndex) => {
     collectLocalizedField(fields, `groups.${groupIndex}.name`, group?.name, "category name", languages);
+    collectLocalizedField(fields, `groups.${groupIndex}.note`, group?.note, "category note", languages);
   });
 
   (menu.items || []).forEach((item, itemIndex) => {
@@ -93,10 +89,12 @@ function setLocalizedPath(menu, key, value) {
   const parts = String(key || "").split(".");
   if (parts[0] === "groups") {
     const groupIndex = Number(parts[1]);
+    const field = parts[2];
     const language = parts[3];
     if (!Number.isInteger(groupIndex) || !language || !menu.groups?.[groupIndex]) return;
+    if (field !== "name" && field !== "note") return;
     const group = menu.groups[groupIndex];
-    group.name = { ...(group.name || {}), [language]: value };
+    group[field] = { ...(group[field] || {}), [language]: value };
     return;
   }
 
