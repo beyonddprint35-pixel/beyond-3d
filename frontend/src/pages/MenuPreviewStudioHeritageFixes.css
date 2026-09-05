@@ -1,0 +1,120 @@
+/* Preview-only fixes for Heritage Original and accessibility controls. */
+
+/* Make the simulated device viewport establish the containing block for
+   fixed accessibility UI. This keeps the launcher inside the device screen
+   instead of drifting to the transformed hardware shell. */
+.menu-preview-v2 .studio-v3-preview-device-screen{
+  position:relative;
+  transform:translateZ(0);
+  isolation:isolate;
+}
+
+.menu-preview-v2 .studio-v3-preview-device-screen .restaurant-a11y-toggle{
+  left:16px !important;
+  right:auto !important;
+  bottom:16px !important;
+  z-index:9999 !important;
+  width:64px !important;
+  height:64px !important;
+  border:3px solid #fff !important;
+  color:#fff !important;
+  background:#111 !important;
+  box-shadow:0 10px 28px rgba(0,0,0,.32) !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-screen .restaurant-a11y-toggle svg{
+  width:38px !important;
+  height:38px !important;
+  color:#fff !important;
+  stroke:#fff !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-screen .restaurant-a11y-toggle .restaurant-a11y-head{
+  fill:#fff !important;
+  stroke:none !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-screen .restaurant-a11y-panel{
+  left:16px !important;
+  right:auto !important;
+  bottom:92px !important;
+  z-index:10000 !important;
+  width:min(330px,calc(100% - 32px)) !important;
+  max-height:calc(100% - 116px) !important;
+}
+
+/* Heritage Original was deliberately capped at a 460px mobile column. In
+   tablet/desktop preview that made it look like a phone menu floating inside
+   the larger device. Let it become a genuine responsive layout in those
+   device presets while preserving the approved mobile presentation. */
+.menu-preview-v2 .studio-v3-preview-device-shell.tablet .bme-heritage-exact,
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact{
+  width:100% !important;
+  height:100% !important;
+  min-height:100% !important;
+  background:var(--ep-bg,#f6f4ef) !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.tablet .bme-heritage-exact .ep-app,
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-app{
+  width:100% !important;
+  max-width:none !important;
+  height:100% !important;
+  min-height:100% !important;
+  margin:0 !important;
+  box-shadow:none !important;
+}
+
+/* Tablet: wider spacing and rows so Heritage reads as a tablet design. */
+.menu-preview-v2 .studio-v3-preview-device-shell.tablet .bme-heritage-exact .ep-header{
+  padding:28px 34px 16px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.tablet .bme-heritage-exact .ep-hero{
+  margin:8px 30px 18px !important;
+  padding:24px 28px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.tablet .bme-heritage-exact .ep-tabs{
+  padding-inline:30px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.tablet .bme-heritage-exact .ep-section-head{
+  padding-inline:34px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.tablet .bme-heritage-exact .ep-menu-list{
+  padding-inline:30px !important;
+}
+
+/* Desktop: use the available width rather than keeping a phone-shaped center
+   column. The active section remains the scrolling content area. */
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-header{
+  padding:22px 46px 12px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-hero{
+  min-height:126px !important;
+  margin:6px 42px 12px !important;
+  padding:20px 30px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-hero-title{
+  max-width:58% !important;
+  font-size:48px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-tabs{
+  padding-inline:42px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-section-head{
+  padding:18px 46px 8px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-menu-list{
+  padding:0 42px 28px !important;
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  align-content:start !important;
+  column-gap:18px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-item-category{
+  grid-column:1/-1 !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-item-row{
+  margin:8px 0 !important;
+  min-width:0 !important;
+}
+
+/* Keep preview overlays above menu content in every device size. */
+.menu-preview-v2 .studio-v3-preview-device-screen .restaurant-a11y-statement-backdrop{
+  z-index:10001 !important;
+}
