@@ -13,9 +13,9 @@
 .menu-preview-v2-footer{width:min(1180px,calc(100% - 40px));margin:0 auto;padding:20px 0 44px;display:flex;justify-content:space-between;gap:12px}.menu-preview-v2-footer button{min-height:43px;padding:0 16px;display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:12px;font-size:10px;font-weight:820;cursor:pointer}.menu-preview-v2-footer .secondary{border:1px solid var(--mp-line);background:#fff}.menu-preview-v2-footer .primary{border:0;color:#fff;background:var(--mp-blue);box-shadow:0 10px 25px rgba(73,116,229,.22)}
 .menu-preview-v2[dir="rtl"] .menu-preview-v2-brand,.menu-preview-v2[dir="rtl"] .menu-preview-v2-language-cards>button{text-align:right}
 
-/* Desktop preview should behave like a real studio viewport, not a long page.
-   All preview controls, the complete device frame and navigation stay visible
-   at once. The device itself scales to the remaining space. */
+/* Desktop preview is intentionally compact so the device preview gets most
+   of the viewport. Information remains available without competing with the
+   actual menu preview for vertical space. */
 @media(min-width:1051px) and (min-height:720px){
   .menu-preview-v2{
     height:100vh;
@@ -25,50 +25,109 @@
     grid-template-rows:auto auto auto minmax(0,1fr) auto;
   }
   .menu-preview-v2-intro{
-    padding:14px 0 10px;
-    gap:20px;
+    width:min(1400px,calc(100% - 32px));
+    padding:7px 0 5px;
+    grid-template-columns:minmax(0,1fr) 330px;
+    gap:14px;
     align-items:center;
   }
-  .menu-preview-v2-intro h1{margin-top:6px;font-size:clamp(25px,2.4vw,38px)}
-  .menu-preview-v2-intro p{margin-top:7px;font-size:11px;line-height:1.45}
-  .menu-preview-v2-summary{padding:11px 14px}
-  .menu-preview-v2-summary dl{margin-top:8px;padding-top:8px}
-  .menu-preview-v2-language-review{
-    margin-bottom:9px;
-    padding:9px 11px;
+  .menu-preview-v2-intro-copy>span{font-size:8px;letter-spacing:.1em}
+  .menu-preview-v2-intro h1{margin-top:3px;font-size:clamp(22px,2vw,30px);line-height:1.05}
+  .menu-preview-v2-intro p{display:none}
+  .menu-preview-v2-summary{
+    min-height:54px;
+    padding:7px 10px;
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 1.15fr;
+    align-items:center;
+    gap:10px;
+    border-radius:13px;
   }
-  .menu-preview-v2-language-review-heading{margin-bottom:7px}
-  .menu-preview-v2-language-cards>button{min-height:43px;padding:7px 10px}
+  .menu-preview-v2-summary>div{gap:7px;align-items:center}
+  .menu-preview-v2-summary strong{font-size:9px}
+  .menu-preview-v2-summary small{margin-top:1px;font-size:7px}
+  .menu-preview-v2-summary dl{
+    margin:0;
+    padding:0 0 0 10px;
+    border-top:0;
+    border-inline-start:1px solid var(--mp-line);
+    gap:6px;
+  }
+  .menu-preview-v2-summary dt{font-size:6px}
+  .menu-preview-v2-summary dd{font-size:8px}
+
+  .menu-preview-v2-language-review{
+    width:min(1400px,calc(100% - 32px));
+    margin:0 auto 5px;
+    padding:5px 7px;
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr);
+    align-items:center;
+    gap:9px;
+    border-radius:13px;
+  }
+  .menu-preview-v2-language-review-heading{
+    min-width:185px;
+    margin:0;
+    gap:6px;
+  }
+  .menu-preview-v2-language-review-heading>div{gap:1px}
+  .menu-preview-v2-language-review-heading>div>span{display:none}
+  .menu-preview-v2-language-review-heading strong{font-size:9px}
+  .menu-preview-v2-clear,.menu-preview-v2-empty-warning{padding:4px 6px;font-size:7px!important}
+  .menu-preview-v2-language-cards{gap:5px}
+  .menu-preview-v2-language-cards>button{
+    min-height:36px;
+    padding:4px 7px;
+    gap:6px;
+    border-radius:9px;
+  }
+  .menu-preview-v2-language-state{width:22px;height:22px;border-radius:7px}
+  .menu-preview-v2-language-copy strong{font-size:9px}
+  .menu-preview-v2-language-copy small{font-size:6.5px}
+  .menu-preview-v2-language-cards b{font-size:6.5px}
+
   .menu-preview-v2-stage-wrap{
+    width:min(1450px,calc(100% - 24px));
     height:auto;
     min-height:0;
     align-self:stretch;
+    border-radius:18px;
   }
   .menu-preview-v2-stage-wrap>.studio-v3-preview-v2{
     height:100%;
     min-height:0;
-    padding:12px 18px 14px;
-    gap:7px;
+    padding:7px 10px 9px;
+    gap:5px;
+    grid-template-rows:auto minmax(0,1fr);
   }
   .menu-preview-v2-stage-wrap .studio-v3-preview-v2-header{
+    min-height:38px;
     align-items:center;
+    gap:10px;
   }
-  .menu-preview-v2-stage-wrap .studio-v3-preview-v2-heading h1{font-size:24px}
-  .menu-preview-v2-stage-wrap .studio-v3-preview-v2-heading p{margin-top:4px;font-size:10px}
-  .menu-preview-v2-stage-wrap .studio-v3-preview-v2-eyebrow{margin-bottom:2px;font-size:8px}
+  .menu-preview-v2-stage-wrap .studio-v3-preview-v2-heading{max-width:none}
+  .menu-preview-v2-stage-wrap .studio-v3-preview-v2-heading h1{font-size:18px}
+  .menu-preview-v2-stage-wrap .studio-v3-preview-v2-heading p,
+  .menu-preview-v2-stage-wrap .studio-v3-preview-v2-eyebrow,
+  .menu-preview-v2-stage-wrap .studio-v3-preview-v2-device-meta{display:none}
+  .menu-preview-v2-stage-wrap .studio-v3-preview-device-switch,
+  .menu-preview-v2-stage-wrap .studio-v3-preview-zoom{padding:2px;border-radius:10px}
   .menu-preview-v2-stage-wrap .studio-v3-preview-device-switch button,
-  .menu-preview-v2-stage-wrap .studio-v3-preview-zoom button{height:32px}
-  .menu-preview-v2-stage-wrap .studio-v3-preview-v2-device-meta{min-height:34px}
+  .menu-preview-v2-stage-wrap .studio-v3-preview-zoom button{height:30px}
+  .menu-preview-v2-stage-wrap .studio-v3-preview-device-switch button{min-width:88px;padding:0 9px}
   .menu-preview-v2-stage-wrap .studio-v3-preview-v2-stage{
     min-height:0;
     height:100%;
     overflow:hidden;
-    padding:14px;
+    padding:8px;
+    border-radius:14px;
   }
   .menu-preview-v2-footer{
-    padding:9px 0 12px;
+    width:min(1400px,calc(100% - 32px));
+    padding:5px 0 7px;
   }
-  .menu-preview-v2-footer button{min-height:38px}
+  .menu-preview-v2-footer button{min-height:34px;padding:0 13px}
 }
 
 @media(max-width:1050px){.menu-preview-v2-topbar{grid-template-columns:1fr auto}.menu-preview-v2-product-nav{order:3;grid-column:1/-1;justify-self:center;margin-bottom:8px}.menu-preview-v2-intro{grid-template-columns:1fr}.menu-preview-v2-summary{max-width:560px}.menu-preview-v2-stage-wrap{height:690px}}
