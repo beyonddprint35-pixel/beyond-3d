@@ -50,6 +50,7 @@ const MENU_LANGUAGE_META = {
     itemNamePlaceholder: "Item name",
     descriptionPlaceholder: "Description",
     categoryPlaceholder: "Category name",
+    notePlaceholder: "General note for this section",
     subtitlePlaceholder: "Restaurant subtitle",
   },
   he: {
@@ -59,6 +60,7 @@ const MENU_LANGUAGE_META = {
     itemNamePlaceholder: "שם הפריט",
     descriptionPlaceholder: "תיאור",
     categoryPlaceholder: "שם הקטגוריה",
+    notePlaceholder: "הערה כללית לקטגוריה",
     subtitlePlaceholder: "כותרת משנה למסעדה",
   },
   ar: {
@@ -68,8 +70,15 @@ const MENU_LANGUAGE_META = {
     itemNamePlaceholder: "اسم الصنف",
     descriptionPlaceholder: "الوصف",
     categoryPlaceholder: "اسم الفئة",
+    notePlaceholder: "ملاحظة عامة لهذا القسم",
     subtitlePlaceholder: "العنوان الفرعي للمطعم",
   },
+};
+
+const GROUP_NOTE_COPY = {
+  en: "General note",
+  he: "הערה כללית",
+  ar: "ملاحظة عامة",
 };
 
 const DELETE_CONFIRM_COPY = {
@@ -308,6 +317,7 @@ export default function MenuContentStudioV2() {
     const group = {
       id,
       name: makeLocalizedText("", "", ""),
+      note: makeLocalizedText("", "", ""),
       parent_id: parentId,
       sort_order: nextSortOrder(menu.groups.filter((entry) => (entry.parent_id || null) === parentId)),
       visible: true,
@@ -566,6 +576,15 @@ export default function MenuContentStudioV2() {
                           value={localizedFieldValue(selectedCategory.name, language)}
                           placeholder={meta.categoryPlaceholder}
                           onChange={(event) => updateLocalized("groups", selectedCategory.id, "name", language, event.target.value)}
+                        />
+                      </div>
+                      <div className="menu-content-v2-field menu-content-v2-group-note-field">
+                        <label>{GROUP_NOTE_COPY[uiLanguage] || GROUP_NOTE_COPY.en}</label>
+                        <textarea
+                          dir={meta.dir}
+                          value={localizedFieldValue(selectedCategory.note, language)}
+                          placeholder={meta.notePlaceholder}
+                          onChange={(event) => updateLocalized("groups", selectedCategory.id, "note", language, event.target.value)}
                         />
                       </div>
                     </section>
