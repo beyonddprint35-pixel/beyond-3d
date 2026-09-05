@@ -21,6 +21,7 @@ import {
 } from "../features/menu-engine/studio/studioLanguage";
 import "./MenuPreviewStudioV2.css";
 import "./MenuPreviewStudioHeritageFixes.css";
+import "./MenuPreviewStudioMaxStage.css";
 
 const UI = {
   en: {
