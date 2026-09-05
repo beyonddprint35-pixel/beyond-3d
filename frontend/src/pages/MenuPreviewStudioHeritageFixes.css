@@ -9,6 +9,22 @@
   isolation:isolate;
 }
 
+/* In preview, Heritage must fill the simulated device viewport itself.
+   Using 100dvh here measures the real browser viewport, which leaves an
+   unwanted strip below the menu inside the simulated phone/tablet/desktop. */
+.menu-preview-v2 .studio-v3-preview-device-screen > .bme-heritage-exact{
+  width:100% !important;
+  height:100% !important;
+  min-height:100% !important;
+  background:var(--ep-paper,#fffdf8) !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-screen > .bme-heritage-exact .ep-app{
+  width:100% !important;
+  height:100% !important;
+  min-height:100% !important;
+  max-height:100% !important;
+}
+
 .menu-preview-v2 .studio-v3-preview-device-screen .restaurant-a11y-toggle{
   left:16px !important;
   right:auto !important;
