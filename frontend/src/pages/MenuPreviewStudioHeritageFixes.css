@@ -79,39 +79,105 @@
   padding-inline:30px !important;
 }
 
-/* Desktop: use the available width rather than keeping a phone-shaped center
-   column. The active section remains the scrolling content area. */
+/* Desktop: give Heritage a genuine desktop composition instead of stretching
+   the mobile layout. The hero and navigation span the page, while menu items
+   use a balanced multi-column grid that fills the available canvas. */
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-app{
+  grid-template-rows:auto auto auto auto minmax(0,1fr) auto !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-app.ep-no-hero{
+  grid-template-rows:auto auto auto minmax(0,1fr) auto !important;
+}
 .menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-header{
-  padding:22px 46px 12px !important;
+  min-height:78px !important;
+  padding:18px 52px 12px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-brand{
+  gap:16px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-logo{
+  width:52px !important;
+  height:52px !important;
+  flex-basis:52px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-brand-title{
+  font-size:30px !important;
 }
 .menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-hero{
-  min-height:126px !important;
-  margin:6px 42px 12px !important;
-  padding:20px 30px !important;
+  min-height:172px !important;
+  margin:8px 48px 14px !important;
+  padding:28px 38px !important;
+  border-radius:30px !important;
 }
 .menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-hero-title{
-  max-width:58% !important;
-  font-size:48px !important;
+  max-width:54% !important;
+  margin-top:10px !important;
+  font-size:58px !important;
+  line-height:.92 !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-hero-background-logo{
+  width:300px !important;
+  height:300px !important;
+  bottom:-86px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-tabs-wrap{
+  padding:8px 0 !important;
 }
 .menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-tabs{
-  padding-inline:42px !important;
+  padding-inline:48px !important;
+  gap:10px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-tabs button{
+  min-height:40px !important;
+  padding-inline:16px !important;
 }
 .menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-section-head{
-  padding:18px 46px 8px !important;
+  min-height:78px !important;
+  padding:18px 52px 10px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-section-head h2{
+  font-size:38px !important;
 }
 .menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-menu-list{
-  padding:0 42px 28px !important;
+  min-height:0 !important;
+  padding:6px 48px 26px !important;
   display:grid !important;
-  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  grid-auto-flow:row !important;
   align-content:start !important;
-  column-gap:18px !important;
+  gap:14px 16px !important;
+  overflow-y:auto !important;
 }
-.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-item-category{
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-item-category,
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-group-note{
   grid-column:1/-1 !important;
 }
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-item-category{
+  margin-top:2px !important;
+  padding:10px 4px 8px !important;
+}
 .menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-item-row{
-  margin:8px 0 !important;
+  width:100% !important;
   min-width:0 !important;
+  min-height:82px !important;
+  margin:0 !important;
+  padding:14px 16px !important;
+  border-radius:18px !important;
+  align-self:stretch !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-item-name{
+  font-size:17px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-item-description{
+  font-size:11px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-item-price,
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-price-option strong{
+  font-size:17px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-footer{
+  min-height:48px !important;
+  padding:7px 20px 8px !important;
 }
 
 /* Keep preview overlays above menu content in every device size. */
