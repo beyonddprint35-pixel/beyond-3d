@@ -3,6 +3,7 @@
   margin:0;
   white-space:pre-wrap;
   overflow-wrap:anywhere;
+  unicode-bidi:plaintext;
 }
 
 .bme-section-heading>div{
@@ -34,6 +35,7 @@
 
 .ep-section-head>div:first-child{
   min-width:0;
+  width:100%;
 }
 
 .ep-group-note{
@@ -60,14 +62,26 @@
   margin-top:4px;
 }
 
+.bme-menu[dir="rtl"] .bme-group-note,
+.bme-heritage-exact[dir="rtl"] .ep-group-note,
+.ep-page[dir="rtl"] .ep-group-note,
 [dir="rtl"] .bme-group-note,
 [dir="rtl"] .ep-group-note{
-  text-align:right;
-  direction:rtl;
+  display:block;
+  width:100%;
+  text-align:right !important;
+  direction:rtl !important;
+  unicode-bidi:plaintext;
 }
 
+.bme-menu[dir="ltr"] .bme-group-note,
+.bme-heritage-exact[dir="ltr"] .ep-group-note,
+.ep-page[dir="ltr"] .ep-group-note,
 [dir="ltr"] .bme-group-note,
 [dir="ltr"] .ep-group-note{
-  text-align:left;
-  direction:ltr;
+  display:block;
+  width:100%;
+  text-align:left !important;
+  direction:ltr !important;
+  unicode-bidi:plaintext;
 }
