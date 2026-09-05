@@ -9,9 +9,11 @@ import {
   selectMenuSubscriptionPlan,
 } from "../features/menu-engine/data/menuSubscriptionService";
 import { menuStudioProjectId } from "../features/menu-engine/studio/menuStudioV2Persistence";
-import { readMenuStudioV2Draft } from "../features/menu-engine/studio/menuStudioV2Session";
+import { readMenuStudioV2Draft, writeMenuStudioV2Draft } from "../features/menu-engine/studio/menuStudioV2Session";
 import { readStudioLanguage, studioLanguageDirection } from "../features/menu-engine/studio/studioLanguage";
+import { PREMIUM_MENU_DESIGNS } from "../features/menu-engine/domain/menuDesignLibrary";
 import "./MenuSubscriptionPublishGate.css";
+import "./MenuPublishDesignChooser.css";
 
 const COPY = {
   en: {
@@ -33,6 +35,11 @@ const COPY = {
     monthly: "Monthly",
     errorTitle: "Subscription check failed",
     missingProject: "This menu must be saved to your Beyond account before you can choose a plan.",
+    chooseDesignEyebrow: "FINAL DESIGN",
+    chooseDesignTitle: "Which design do you want to publish?",
+    chooseDesignIntro: "Your content is shared between both favorites. Choose the design guests should see on the live menu.",
+    designA: "Design A",
+    designB: "Design B",
   },
   he: {
     eyebrow: "בחירת חבילה",
@@ -53,6 +60,11 @@ const COPY = {
     monthly: "חודשי",
     errorTitle: "לא ניתן לבדוק את המנוי",
     missingProject: "צריך לשמור את התפריט בחשבון Beyond לפני בחירת חבילה.",
+    chooseDesignEyebrow: "עיצוב סופי",
+    chooseDesignTitle: "איזה עיצוב תרצו לפרסם?",
+    chooseDesignIntro: "התוכן משותף לשני העיצובים. בחרו איזה עיצוב האורחים יראו בתפריט החי.",
+    designA: "עיצוב A",
+    designB: "עיצוב B",
   },
   ar: {
     eyebrow: "اختيار الخطة",
@@ -73,6 +85,11 @@ const COPY = {
     monthly: "شهري",
     errorTitle: "تعذر فحص الاشتراك",
     missingProject: "يجب حفظ القائمة في حساب Beyond قبل اختيار خطة.",
+    chooseDesignEyebrow: "التصميم النهائي",
+    chooseDesignTitle: "أي تصميم تريدون نشره؟",
+    chooseDesignIntro: "المحتوى مشترك بين التصميمين. اختاروا التصميم الذي سيشاهده الضيوف في القائمة المباشرة.",
+    designA: "التصميم A",
+    designB: "التصميم B",
   },
 };
 
@@ -97,6 +114,11 @@ function featureText(feature, lang) {
   return feature?.[lang] || feature?.en || feature?.he || "";
 }
 
+function designName(variant) {
+  if (!variant) return "";
+  return PREMIUM_MENU_DESIGNS.find((entry) => entry.id === variant.designId)?.name || "Custom";
+}
+
 export default function MenuSubscriptionPublishGate({ children }) {
   const navigate = useNavigate();
   const draft = useMemo(() => readMenuStudioV2Draft(), []);
@@ -106,6 +128,7 @@ export default function MenuSubscriptionPublishGate({ children }) {
   const [state, setState] = useState({ loading: true, data: null, error: "" });
   const [selectingPlanId, setSelectingPlanId] = useState("");
   const [activating, setActivating] = useState(false);
+  const [publishDesignVariant, setPublishDesignVariant] = useState("");
   const t = COPY[language] || COPY.en;
   const rtl = studioLanguageDirection(language) === "rtl";
 
@@ -155,7 +178,63 @@ export default function MenuSubscriptionPublishGate({ children }) {
     }
   }
 
+  function choosePublishDesign(slot) {
+    const currentDraft = readMenuStudioV2Draft();
+    const variant = currentDraft?.profile?.designVariants?.[slot];
+    if (!variant?.design) return;
+    writeMenuStudioV2Draft({
+      ...currentDraft,
+      design: variant.design,
+      designId: variant.designId || currentDraft.designId,
+      profile: {
+        ...(currentDraft.profile || {}),
+        activeDesignVariant: slot,
+      },
+      publication: {
+        ...(currentDraft.publication || {}),
+        selectedDesignVariant: slot,
+      },
+    });
+    setPublishDesignVariant(slot);
+  }
+
+  const latestDraft = readMenuStudioV2Draft() || draft;
+  const designVariants = latestDraft?.profile?.designVariants || {};
+  const availableVariants = ["A", "B"].filter((slot) => designVariants?.[slot]?.design);
+  const requiresDesignChoice = availableVariants.length > 1;
+
   if (state.data?.canPublish || state.data?.subscription?.status === "active") {
+    if (requiresDesignChoice && !publishDesignVariant) {
+      return (
+        <>
+          <MenuStudioHeader
+            stage="publish"
+            language={language}
+            menuName={menuName}
+            onBack={() => navigate(`/menu-studio/preview${window.location.search || ""}`)}
+            backLabel={t.back}
+          />
+          <main className="menu-publish-design-choice" dir={rtl ? "rtl" : "ltr"} lang={language}>
+            <section className="menu-publish-design-choice-card">
+              <span>{t.chooseDesignEyebrow}</span>
+              <h1>{t.chooseDesignTitle}</h1>
+              <p>{t.chooseDesignIntro}</p>
+              <div className="menu-publish-design-choice-options">
+                {availableVariants.map((slot) => (
+                  <button key={slot} type="button" className="menu-publish-design-choice-option" onClick={() => choosePublishDesign(slot)}>
+                    <span className="menu-publish-design-choice-letter">{slot}</span>
+                    <span>
+                      <strong>{slot === "B" ? t.designB : t.designA}</strong>
+                      <small>{designName(designVariants[slot])}</small>
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </section>
+          </main>
+        </>
+      );
+    }
     return children;
   }
 
