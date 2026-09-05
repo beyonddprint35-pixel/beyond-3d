@@ -12,5 +12,64 @@
 .menu-preview-v2-stage-wrap{width:min(1240px,calc(100% - 40px));height:min(760px,calc(100vh - 225px));min-height:580px;margin:0 auto;border:1px solid var(--mp-line);border-radius:24px;overflow:hidden;background:#ece9e4;box-shadow:0 24px 65px rgba(38,40,45,.07)}.menu-preview-v2-stage-wrap>.studio-v3-preview-v2{height:100%;min-height:100%}
 .menu-preview-v2-footer{width:min(1180px,calc(100% - 40px));margin:0 auto;padding:20px 0 44px;display:flex;justify-content:space-between;gap:12px}.menu-preview-v2-footer button{min-height:43px;padding:0 16px;display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:12px;font-size:10px;font-weight:820;cursor:pointer}.menu-preview-v2-footer .secondary{border:1px solid var(--mp-line);background:#fff}.menu-preview-v2-footer .primary{border:0;color:#fff;background:var(--mp-blue);box-shadow:0 10px 25px rgba(73,116,229,.22)}
 .menu-preview-v2[dir="rtl"] .menu-preview-v2-brand,.menu-preview-v2[dir="rtl"] .menu-preview-v2-language-cards>button{text-align:right}
+
+/* Desktop preview should behave like a real studio viewport, not a long page.
+   All preview controls, the complete device frame and navigation stay visible
+   at once. The device itself scales to the remaining space. */
+@media(min-width:1051px) and (min-height:720px){
+  .menu-preview-v2{
+    height:100vh;
+    min-height:0;
+    overflow:hidden;
+    display:grid;
+    grid-template-rows:auto auto auto minmax(0,1fr) auto;
+  }
+  .menu-preview-v2-intro{
+    padding:14px 0 10px;
+    gap:20px;
+    align-items:center;
+  }
+  .menu-preview-v2-intro h1{margin-top:6px;font-size:clamp(25px,2.4vw,38px)}
+  .menu-preview-v2-intro p{margin-top:7px;font-size:11px;line-height:1.45}
+  .menu-preview-v2-summary{padding:11px 14px}
+  .menu-preview-v2-summary dl{margin-top:8px;padding-top:8px}
+  .menu-preview-v2-language-review{
+    margin-bottom:9px;
+    padding:9px 11px;
+  }
+  .menu-preview-v2-language-review-heading{margin-bottom:7px}
+  .menu-preview-v2-language-cards>button{min-height:43px;padding:7px 10px}
+  .menu-preview-v2-stage-wrap{
+    height:auto;
+    min-height:0;
+    align-self:stretch;
+  }
+  .menu-preview-v2-stage-wrap>.studio-v3-preview-v2{
+    height:100%;
+    min-height:0;
+    padding:12px 18px 14px;
+    gap:7px;
+  }
+  .menu-preview-v2-stage-wrap .studio-v3-preview-v2-header{
+    align-items:center;
+  }
+  .menu-preview-v2-stage-wrap .studio-v3-preview-v2-heading h1{font-size:24px}
+  .menu-preview-v2-stage-wrap .studio-v3-preview-v2-heading p{margin-top:4px;font-size:10px}
+  .menu-preview-v2-stage-wrap .studio-v3-preview-v2-eyebrow{margin-bottom:2px;font-size:8px}
+  .menu-preview-v2-stage-wrap .studio-v3-preview-device-switch button,
+  .menu-preview-v2-stage-wrap .studio-v3-preview-zoom button{height:32px}
+  .menu-preview-v2-stage-wrap .studio-v3-preview-v2-device-meta{min-height:34px}
+  .menu-preview-v2-stage-wrap .studio-v3-preview-v2-stage{
+    min-height:0;
+    height:100%;
+    overflow:hidden;
+    padding:14px;
+  }
+  .menu-preview-v2-footer{
+    padding:9px 0 12px;
+  }
+  .menu-preview-v2-footer button{min-height:38px}
+}
+
 @media(max-width:1050px){.menu-preview-v2-topbar{grid-template-columns:1fr auto}.menu-preview-v2-product-nav{order:3;grid-column:1/-1;justify-self:center;margin-bottom:8px}.menu-preview-v2-intro{grid-template-columns:1fr}.menu-preview-v2-summary{max-width:560px}.menu-preview-v2-stage-wrap{height:690px}}
 @media(max-width:720px){.menu-preview-v2-topbar{padding:9px 12px;grid-template-columns:1fr}.menu-preview-v2-brand-wrap{justify-content:space-between}.menu-preview-v2-top-actions{justify-content:stretch}.menu-preview-v2-top-actions>.studio-language-menu{flex:1}.menu-preview-v2-product-nav{width:100%;overflow:auto;justify-content:flex-start}.menu-preview-v2-intro{width:min(100% - 24px,1180px);padding-top:26px}.menu-preview-v2-language-review{width:calc(100% - 24px)}.menu-preview-v2-language-review-heading{align-items:flex-start;flex-direction:column}.menu-preview-v2-language-cards{grid-template-columns:1fr}.menu-preview-v2-stage-wrap{width:calc(100% - 20px);height:650px;min-height:520px;border-radius:18px}.menu-preview-v2-summary dl{grid-template-columns:1fr 1fr 1fr}.menu-preview-v2-footer{width:calc(100% - 24px);padding-bottom:28px}.menu-preview-v2-footer button{flex:1}}
