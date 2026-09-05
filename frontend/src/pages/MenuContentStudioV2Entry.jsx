@@ -49,6 +49,63 @@ function restoreCaretAfterReact(target, start, end, direction) {
   window.requestAnimationFrame(restore);
 }
 
+function cloneMenu(menu) {
+  return typeof structuredClone === "function"
+    ? structuredClone(menu)
+    : JSON.parse(JSON.stringify(menu));
+}
+
+function mergeMissingTranslations(latestMenu, repairedMenu, fields) {
+  const next = cloneMenu(latestMenu);
+
+  fields.forEach(({ key }) => {
+    const parts = String(key || "").split(".");
+    if (parts[0] === "groups") {
+      const groupIndex = Number(parts[1]);
+      const language = parts[3];
+      const latestGroup = next.groups?.[groupIndex];
+      const repairedGroup = repairedMenu.groups?.[groupIndex];
+      if (!latestGroup || !repairedGroup || !language) return;
+      if (String(latestGroup.name?.[language] || "").trim()) return;
+      const translated = String(repairedGroup.name?.[language] || "").trim();
+      if (translated) latestGroup.name = { ...(latestGroup.name || {}), [language]: translated };
+      return;
+    }
+
+    if (parts[0] !== "items") return;
+    const itemIndex = Number(parts[1]);
+    const latestItem = next.items?.[itemIndex];
+    const repairedItem = repairedMenu.items?.[itemIndex];
+    if (!latestItem || !repairedItem) return;
+
+    if (parts[2] === "name" || parts[2] === "description") {
+      const field = parts[2];
+      const language = parts[3];
+      if (!language || String(latestItem[field]?.[language] || "").trim()) return;
+      const translated = String(repairedItem[field]?.[language] || "").trim();
+      if (translated) latestItem[field] = { ...(latestItem[field] || {}), [language]: translated };
+      return;
+    }
+
+    if (parts[2] === "price_options") {
+      const optionIndex = Number(parts[3]);
+      const language = parts[5];
+      const latestOption = latestItem.price_options?.[optionIndex];
+      const repairedOption = repairedItem.price_options?.[optionIndex];
+      if (!latestOption || !repairedOption || !language) return;
+      const labelKey = `label_${language}`;
+      if (String(latestOption[labelKey] || "").trim()) return;
+      const translated = String(repairedOption[labelKey] || "").trim();
+      if (translated) {
+        latestOption[labelKey] = translated;
+        if (!latestOption.label) latestOption.label = latestOption.label_en || latestOption.label_he || latestOption.label_ar || "";
+      }
+    }
+  });
+
+  return next;
+}
+
 export default function MenuContentStudioV2Entry() {
   const workspace = useMenuStudioWorkspace();
   const params = useMemo(() => new URLSearchParams(window.location.search), []);
@@ -156,9 +213,10 @@ export default function MenuContentStudioV2Entry() {
         if (!repair?.repaired || !repair?.menu) return;
         const latestDraft = readMenuStudioV2Draft();
         if (menuStudioProjectId(latestDraft) !== projectId) return;
+        const mergedMenu = mergeMissingTranslations(latestDraft.menu, repair.menu, fields);
         writeMenuStudioV2Draft({
           ...latestDraft,
-          menu: normalizeV3MenuPriceOptions(repair.menu),
+          menu: normalizeV3MenuPriceOptions(mergedMenu),
           profile: { ...(latestDraft?.profile || {}), aiTranslationsReady: true },
         });
         setEditorRevision((current) => current + 1);
