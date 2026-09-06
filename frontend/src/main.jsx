@@ -12,11 +12,13 @@ import BeyondLiveMenuDesignPortal from "./components/BeyondLiveMenuDesignPortal"
 import MenuStudioHomeReturn from "./components/MenuStudioHomeReturn";
 import LegacyPublicMenuAnalytics from "./features/menu-engine/analytics/LegacyPublicMenuAnalytics";
 import installMenuTypographyGuard from "./features/menu-engine/renderer/menuTypographyGuard";
+import installUiTypographyGuard from "./styles/uiTypographyGuard";
 import "./components/BeyondMenuPlatform.css";
 import "./components/BeyondLiveMenuDesign.css";
 import "./components/BeyondLiveMenuDesignMobilePatch.css";
 import "./pages/MenuStudioV3Controls.css";
 import "./features/menu-engine/renderer/menuTypographyGuard.css";
+import "./styles/uiTypographyGuard.css";
 
 // Development must never be controlled by a previously-installed service worker.
 // The app currently has no /sw-menu.js asset, so registering it here only creates
@@ -36,6 +38,7 @@ if (import.meta.env.DEV && "serviceWorker" in navigator) {
 }
 
 installMenuTypographyGuard();
+installUiTypographyGuard();
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
