@@ -41,6 +41,7 @@ import "./MenuContentStudioV2Multilingual.css";
 import "./MenuContentStudioV2PriceOptions.css";
 import "./MenuContentStudioV2ImageEditor.css";
 import "./MenuContentStudioV2MobileCategories.css";
+import "./MenuContentStudioV2Friendly.css";
 
 const MENU_LANGUAGE_META = {
   en: {
