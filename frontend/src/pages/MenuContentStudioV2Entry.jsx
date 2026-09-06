@@ -127,62 +127,6 @@ function issueSignature(fields = []) {
   return fields.map((field) => `${field.key}|${field.targetLanguage}|${field.issue}|${field.source}`).join("\n");
 }
 
-function captureEditorPosition() {
-  const root = document.querySelector(".menu-content-v2");
-  if (!root) return null;
-
-  const categoryButtons = [...root.querySelectorAll(".menu-content-v2-category-row")];
-  const itemButtons = [...root.querySelectorAll(".menu-content-v2-items > button:not(.menu-content-v2-add-item)")];
-  const activeCategory = root.querySelector(".menu-content-v2-category-row.active");
-  const activeItem = root.querySelector(".menu-content-v2-items > button.active:not(.menu-content-v2-add-item)");
-  const scrollSelectors = [
-    ".menu-content-v2-tree",
-    ".menu-content-v2-inspector",
-    ".menu-content-v2-canvas",
-    ".menu-content-v2-workspace",
-  ];
-
-  return {
-    windowX: window.scrollX,
-    windowY: window.scrollY,
-    categoryIndex: activeCategory ? categoryButtons.indexOf(activeCategory) : -1,
-    itemIndex: activeItem ? itemButtons.indexOf(activeItem) : -1,
-    scrolls: scrollSelectors.map((selector) => {
-      const element = root.querySelector(selector);
-      return element ? { selector, top: element.scrollTop, left: element.scrollLeft } : null;
-    }).filter(Boolean),
-  };
-}
-
-function restoreEditorPosition(snapshot) {
-  if (!snapshot) return;
-  const restore = () => {
-    const root = document.querySelector(".menu-content-v2");
-    if (!root) return;
-
-    if (snapshot.itemIndex >= 0) {
-      const itemButtons = [...root.querySelectorAll(".menu-content-v2-items > button:not(.menu-content-v2-add-item)")];
-      itemButtons[snapshot.itemIndex]?.click();
-    } else if (snapshot.categoryIndex >= 0) {
-      const categoryButtons = [...root.querySelectorAll(".menu-content-v2-category-row")];
-      categoryButtons[snapshot.categoryIndex]?.click();
-    }
-
-    window.requestAnimationFrame(() => {
-      snapshot.scrolls.forEach(({ selector, top, left }) => {
-        const element = root.querySelector(selector);
-        if (element) {
-          element.scrollTop = top;
-          element.scrollLeft = left;
-        }
-      });
-      window.scrollTo(snapshot.windowX, snapshot.windowY);
-    });
-  };
-
-  window.requestAnimationFrame(() => window.requestAnimationFrame(restore));
-}
-
 export default function MenuContentStudioV2Entry() {
   const workspace = useMenuStudioWorkspace();
   const params = useMemo(() => new URLSearchParams(window.location.search), []);
@@ -196,19 +140,11 @@ export default function MenuContentStudioV2Entry() {
     return workspace?.isPrepared(id) || workspace?.isContentReady(id) || false;
   });
   const [ready, setReady] = useState(shouldOpenWebsiteImporter || alreadyPrepared || modernPhotoImport);
-  const [editorRevision, setEditorRevision] = useState(0);
   const [translationIssues, setTranslationIssues] = useState(() => issueSnapshot(initialDraft?.menu));
   const [translationError, setTranslationError] = useState("");
   const translationTimerRef = useRef(null);
   const translationBusyRef = useRef(false);
   const lastAttemptSignatureRef = useRef("");
-  const editorPositionRef = useRef(null);
-
-  useEffect(() => {
-    if (!editorRevision) return;
-    restoreEditorPosition(editorPositionRef.current);
-    editorPositionRef.current = null;
-  }, [editorRevision]);
 
   useEffect(() => {
     if (shouldOpenWebsiteImporter || alreadyPrepared) return undefined;
@@ -296,16 +232,18 @@ export default function MenuContentStudioV2Entry() {
         const mergedMenu = repair?.menu ? mergeMissingTranslations(latestDraft.menu, repair.menu, fields) : latestDraft.menu;
         const normalizedMenu = normalizeV3MenuPriceOptions(mergedMenu);
         const issues = issueSnapshot(normalizedMenu);
+        const nextProfile = { ...(latestDraft?.profile || {}), aiTranslationsReady: issues.length === 0, translationIssues: issues };
         setTranslationIssues(issues);
         writeMenuStudioV2Draft({
           ...latestDraft,
           menu: normalizedMenu,
-          profile: { ...(latestDraft?.profile || {}), aiTranslationsReady: issues.length === 0, translationIssues: issues },
+          profile: nextProfile,
         });
         if (repair?.repaired) {
           setTranslationError("");
-          editorPositionRef.current = captureEditorPosition();
-          setEditorRevision((current) => current + 1);
+          window.dispatchEvent(new CustomEvent("beyond-menu-translations-applied", {
+            detail: { menu: normalizedMenu, profile: nextProfile },
+          }));
         } else if (issues.length) {
           setTranslationError("The translation service returned no usable replacement for the flagged fields.");
         }
@@ -376,7 +314,7 @@ export default function MenuContentStudioV2Entry() {
   const language = readStudioLanguage("en");
   return (
     <>
-      <MenuContentStudioV2 key={editorRevision} />
+      <MenuContentStudioV2 />
       {translationIssues.length ? <aside className="menu-content-v2-translation-warning" role="status" aria-live="polite"><span aria-hidden="true">!</span><strong>{(ISSUE_COPY[language] || ISSUE_COPY.en)(translationIssues.length)}</strong></aside> : null}
       {translationError ? (
         <aside className="menu-content-v2-translation-error" role="alert">
