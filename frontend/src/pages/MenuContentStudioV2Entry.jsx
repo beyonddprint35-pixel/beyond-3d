@@ -7,6 +7,7 @@ import { getMenuImportSession } from "../features/menu-engine/data/menuAiImportS
 import {
   collectV3TranslationRepairFields,
   repairV3MenuTranslations,
+  translationLooksValid,
 } from "../features/menu-engine/data/menuV3TranslationRepairService";
 import {
   readMenuStudioV2Draft,
@@ -21,6 +22,12 @@ const COPY = {
   en: "Completing menu languages…",
   he: "משלים את שפות התפריט…",
   ar: "جارٍ استكمال لغات القائمة…",
+};
+
+const ISSUE_COPY = {
+  en: (count) => `${count} translation${count === 1 ? "" : "s"} need review`,
+  he: (count) => `${count} תרגומים דורשים בדיקה`,
+  ar: (count) => `${count} ترجمة تحتاج إلى مراجعة`,
 };
 
 function photoImportTranslationsReady(draft) {
@@ -58,7 +65,7 @@ function cloneMenu(menu) {
 function mergeMissingTranslations(latestMenu, repairedMenu, fields) {
   const next = cloneMenu(latestMenu);
 
-  fields.forEach(({ key }) => {
+  fields.forEach(({ key, targetLanguage }) => {
     const parts = String(key || "").split(".");
     if (parts[0] === "groups") {
       const groupIndex = Number(parts[1]);
@@ -67,9 +74,12 @@ function mergeMissingTranslations(latestMenu, repairedMenu, fields) {
       const latestGroup = next.groups?.[groupIndex];
       const repairedGroup = repairedMenu.groups?.[groupIndex];
       if (!latestGroup || !repairedGroup || !language || (field !== "name" && field !== "note")) return;
-      if (String(latestGroup[field]?.[language] || "").trim()) return;
+      const current = String(latestGroup[field]?.[language] || "").trim();
       const translated = String(repairedGroup[field]?.[language] || "").trim();
-      if (translated) latestGroup[field] = { ...(latestGroup[field] || {}), [language]: translated };
+      if (translationLooksValid(current, targetLanguage || language)) return;
+      if (translationLooksValid(translated, targetLanguage || language)) {
+        latestGroup[field] = { ...(latestGroup[field] || {}), [language]: translated };
+      }
       return;
     }
 
@@ -82,9 +92,13 @@ function mergeMissingTranslations(latestMenu, repairedMenu, fields) {
     if (parts[2] === "name" || parts[2] === "description") {
       const field = parts[2];
       const language = parts[3];
-      if (!language || String(latestItem[field]?.[language] || "").trim()) return;
+      if (!language) return;
+      const current = String(latestItem[field]?.[language] || "").trim();
       const translated = String(repairedItem[field]?.[language] || "").trim();
-      if (translated) latestItem[field] = { ...(latestItem[field] || {}), [language]: translated };
+      if (translationLooksValid(current, targetLanguage || language)) return;
+      if (translationLooksValid(translated, targetLanguage || language)) {
+        latestItem[field] = { ...(latestItem[field] || {}), [language]: translated };
+      }
       return;
     }
 
@@ -95,9 +109,10 @@ function mergeMissingTranslations(latestMenu, repairedMenu, fields) {
       const repairedOption = repairedItem.price_options?.[optionIndex];
       if (!latestOption || !repairedOption || !language) return;
       const labelKey = `label_${language}`;
-      if (String(latestOption[labelKey] || "").trim()) return;
+      const current = String(latestOption[labelKey] || "").trim();
       const translated = String(repairedOption[labelKey] || "").trim();
-      if (translated) {
+      if (translationLooksValid(current, targetLanguage || language)) return;
+      if (translationLooksValid(translated, targetLanguage || language)) {
         latestOption[labelKey] = translated;
         if (!latestOption.label) latestOption.label = latestOption.label_en || latestOption.label_he || latestOption.label_ar || "";
       }
@@ -105,6 +120,10 @@ function mergeMissingTranslations(latestMenu, repairedMenu, fields) {
   });
 
   return next;
+}
+
+function issueSnapshot(menu) {
+  return collectV3TranslationRepairFields(menu || {});
 }
 
 export default function MenuContentStudioV2Entry() {
@@ -121,6 +140,7 @@ export default function MenuContentStudioV2Entry() {
   });
   const [ready, setReady] = useState(shouldOpenWebsiteImporter || alreadyPrepared || modernPhotoImport);
   const [editorRevision, setEditorRevision] = useState(0);
+  const [translationIssues, setTranslationIssues] = useState(() => issueSnapshot(initialDraft?.menu));
   const translationTimerRef = useRef(null);
   const translationBusyRef = useRef(false);
 
@@ -141,33 +161,34 @@ export default function MenuContentStudioV2Entry() {
         || "";
 
       let repairedMenu = normalizeV3MenuPriceOptions(draft.menu);
+      let issues = issueSnapshot(repairedMenu);
 
       if (!modernPhotoImport) {
         try {
-          const fields = collectV3TranslationRepairFields(repairedMenu);
-          if (projectId && fields.length) {
+          if (projectId && issues.length) {
             const session = await getMenuImportSession();
             if (session && active) {
-              const repair = await repairV3MenuTranslations({
-                session,
-                projectId,
-                menu: repairedMenu,
-              });
+              const repair = await repairV3MenuTranslations({ session, projectId, menu: repairedMenu });
               if (repair?.menu) repairedMenu = normalizeV3MenuPriceOptions(repair.menu);
+              issues = repair?.issues || issueSnapshot(repairedMenu);
             }
           }
         } catch (error) {
           console.warn("Could not complete V3 menu translations before opening Studio.", error);
+          issues = issueSnapshot(repairedMenu);
         }
       }
 
       if (active) {
+        setTranslationIssues(issues);
         writeMenuStudioV2Draft({
           ...draft,
           menu: repairedMenu,
-          profile: modernPhotoImport
-            ? { ...(draft.profile || {}), aiTranslationsReady: true }
-            : draft.profile,
+          profile: {
+            ...(draft.profile || {}),
+            ...(modernPhotoImport ? { aiTranslationsReady: true } : {}),
+            translationIssues: issues,
+          },
         });
         workspace?.markContentReady(menuStudioProjectId(draft));
         setReady(true);
@@ -196,25 +217,38 @@ export default function MenuContentStudioV2Entry() {
       const projectId = menuStudioProjectId(draft);
       if (!draft?.menu || !projectId) return;
       const fields = collectV3TranslationRepairFields(draft.menu);
-      if (!fields.length) return;
+      if (!fields.length) {
+        setTranslationIssues([]);
+        return;
+      }
 
       translationBusyRef.current = true;
       try {
         const session = await getMenuImportSession();
-        if (!session) return;
+        if (!session) {
+          setTranslationIssues(fields);
+          return;
+        }
         const repair = await repairV3MenuTranslations({ session, projectId, menu: draft.menu });
-        if (!repair?.repaired || !repair?.menu) return;
         const latestDraft = readMenuStudioV2Draft();
         if (menuStudioProjectId(latestDraft) !== projectId) return;
-        const mergedMenu = mergeMissingTranslations(latestDraft.menu, repair.menu, fields);
+        const mergedMenu = repair?.menu ? mergeMissingTranslations(latestDraft.menu, repair.menu, fields) : latestDraft.menu;
+        const normalizedMenu = normalizeV3MenuPriceOptions(mergedMenu);
+        const issues = issueSnapshot(normalizedMenu);
+        setTranslationIssues(issues);
         writeMenuStudioV2Draft({
           ...latestDraft,
-          menu: normalizeV3MenuPriceOptions(mergedMenu),
-          profile: { ...(latestDraft?.profile || {}), aiTranslationsReady: true },
+          menu: normalizedMenu,
+          profile: {
+            ...(latestDraft?.profile || {}),
+            aiTranslationsReady: issues.length === 0,
+            translationIssues: issues,
+          },
         });
-        setEditorRevision((current) => current + 1);
+        if (repair?.repaired) setEditorRevision((current) => current + 1);
       } catch (error) {
         console.warn("Could not auto-translate the missing menu languages.", error);
+        setTranslationIssues(fields);
       } finally {
         translationBusyRef.current = false;
       }
@@ -250,5 +284,16 @@ export default function MenuContentStudioV2Entry() {
     );
   }
 
-  return <MenuContentStudioV2 key={editorRevision} />;
+  const language = readStudioLanguage("en");
+  return (
+    <>
+      <MenuContentStudioV2 key={editorRevision} />
+      {translationIssues.length ? (
+        <aside className="menu-content-v2-translation-warning" role="status" aria-live="polite">
+          <span aria-hidden="true">!</span>
+          <strong>{(ISSUE_COPY[language] || ISSUE_COPY.en)(translationIssues.length)}</strong>
+        </aside>
+      ) : null}
+    </>
+  );
 }
