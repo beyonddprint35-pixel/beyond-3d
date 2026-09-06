@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, ChevronDown, ChevronRight, EyeOff, Pencil, Plus } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, ChevronRight, EyeOff, Pencil, Plus } from "lucide-react";
 import { groupBranch, ordered } from "../features/menu-engine/studio/menuStructure";
 import "./MenuContentContextAdd.css";
 
@@ -87,7 +87,6 @@ export default function MenuContentMobileCategories({
         <button type="button" className="menu-content-v2-context-add-trigger" aria-expanded={addOpen} onClick={() => setAddOpen((value) => !value)}>
           <Plus size={mobile ? 20 : 15} />
           <span>{addCopy.add}</span>
-          <ChevronDown size={mobile ? 16 : 13} className={addOpen ? "open" : ""} />
         </button>
         {addOpen ? (
           <div className="menu-content-v2-context-add-menu">
