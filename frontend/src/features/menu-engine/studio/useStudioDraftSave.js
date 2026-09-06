@@ -88,6 +88,13 @@ function writePreparedDraft(draft) {
   return writeMenuStudioV2Draft(draft);
 }
 
+function pushPreparedDraftToLiveStudio(prepared, liveMenu) {
+  if (!prepared?.menu || prepared.menu === liveMenu) return;
+  window.dispatchEvent(new CustomEvent("beyond-menu-translations-applied", {
+    detail: { menu: prepared.menu, profile: prepared.profile || {} },
+  }));
+}
+
 export function useStudioDraftFlush(draft) {
   const latest = useRef(draft);
   latest.current = prepareFreshDraft(draft);
@@ -96,15 +103,11 @@ export function useStudioDraftFlush(draft) {
       const prepared = latest.current;
       const saved = writePreparedDraft(prepared);
       if (event?.detail && !saved) event.detail.saved = false;
-      if (saved && prepared?.menu) {
-        window.dispatchEvent(new CustomEvent("beyond-menu-translations-applied", {
-          detail: { menu: prepared.menu, profile: prepared.profile || {} },
-        }));
-      }
+      if (saved) pushPreparedDraftToLiveStudio(prepared, draft.menu);
     };
     window.addEventListener("beyond-menu-studio-flush-draft", flush);
     return () => window.removeEventListener("beyond-menu-studio-flush-draft", flush);
-  }, []);
+  }, [draft.menu]);
 }
 
 export default function useStudioDraftSave(draft) {
@@ -116,7 +119,12 @@ export default function useStudioDraftSave(draft) {
 
   useEffect(() => {
     setState("saving");
-    const timer = window.setTimeout(() => setState(writePreparedDraft(latest.current) ? "saved" : "error"), 350);
+    const timer = window.setTimeout(() => {
+      const prepared = latest.current;
+      const saved = writePreparedDraft(prepared);
+      if (saved) pushPreparedDraftToLiveStudio(prepared, menu);
+      setState(saved ? "saved" : "error");
+    }, 350);
     return () => window.clearTimeout(timer);
   }, [menu, design, designId, profile, contentLanguage]);
   return state;
