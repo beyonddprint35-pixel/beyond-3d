@@ -130,6 +130,44 @@
   .menu-content-v2-field>label{font-size:12px!important;font-weight:750}
   .menu-content-v2-field>input,.menu-content-v2-field>select{height:42px;font-size:13px!important}
   .menu-content-v2-field>textarea{min-height:82px;font-size:13px!important;line-height:1.45}
+
+  /* Item editor order: the four frequent tasks come first, then selling details,
+     translations and structural settings. This is visual-only and preserves data. */
+  .menu-content-v2-inspector:has(.menu-content-v2-image-editor){display:flex;flex-direction:column}
+  .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-mobile-editor-bar{order:0}
+  .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-inspector-head{order:1}
+  .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-primary-editor{order:2}
+  .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-price-editor,
+  .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-price-options{order:3}
+  .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-image-editor{order:4}
+  .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-badge-editor{order:5}
+  .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-translations{order:6}
+  .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-friendly-section:not(.menu-content-v2-translations){order:7}
+  .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-inspector-next{order:8}
+
+  /* Give the lower-priority zones clear names without adding more controls. */
+  .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-badge-editor::before{
+    content:"Selling details";
+    display:block;
+    margin:0 0 2px;
+    color:#7b8491;
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:.02em;
+  }
+  .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-friendly-section:not(.menu-content-v2-translations)::before{
+    content:"Item settings";
+    display:block;
+    margin:0 0 10px;
+    color:#7b8491;
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:.02em;
+  }
+  .menu-content-v2[lang="he"] .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-badge-editor::before{content:"פרטי מכירה"}
+  .menu-content-v2[lang="he"] .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-friendly-section:not(.menu-content-v2-translations)::before{content:"הגדרות פריט"}
+  .menu-content-v2[lang="ar"] .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-badge-editor::before{content:"تفاصيل البيع"}
+  .menu-content-v2[lang="ar"] .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-friendly-section:not(.menu-content-v2-translations)::before{content:"إعدادات الصنف"}
 }
 
 @media(max-width:1120px){
