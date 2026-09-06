@@ -21,29 +21,39 @@ body.menu-studio-viewport-lock #root{
   position:fixed!important;
   inset:0!important;
   width:100%!important;
-  height:100dvh!important;
+  height:100%!important;
   min-height:0!important;
-  max-height:100dvh!important;
+  max-height:100%!important;
   margin:0!important;
   overflow:hidden!important;
 }
 
-/* Content Studio is a viewport application, not a long page.
-   Header + optional mobile mode bar take only their natural height and the
-   workspace consumes every remaining pixel on the screen it is opened on. */
+/* Content Studio is a viewport application. Flex is intentional here: it is
+   more robust than viewport math when browser chrome, zoom, mobile bars, or
+   embedded preview environments change the usable screen height. */
 body.menu-studio-viewport-lock .menu-content-v2{
+  position:absolute!important;
+  inset:0!important;
   width:100%!important;
-  height:100dvh!important;
+  height:100%!important;
   min-height:0!important;
-  max-height:100dvh!important;
-  display:grid!important;
-  grid-template-rows:auto auto minmax(0,1fr)!important;
+  max-height:none!important;
+  display:flex!important;
+  flex-direction:column!important;
   overflow:hidden!important;
 }
 
+body.menu-studio-viewport-lock .menu-content-v2 > .menu-studio-header,
+body.menu-studio-viewport-lock .menu-content-v2 > .menu-content-v2-topbar,
+body.menu-studio-viewport-lock .menu-content-v2 > .menu-content-v2-mobile-mode-nav{
+  flex:0 0 auto!important;
+}
+
 body.menu-studio-viewport-lock .menu-content-v2-workspace{
+  position:relative!important;
+  flex:1 1 0!important;
   width:100%!important;
-  height:auto!important;
+  height:0!important;
   min-height:0!important;
   max-height:none!important;
   overflow:hidden!important;
@@ -73,15 +83,13 @@ body.menu-studio-viewport-lock .menu-preview-v2,
 body.menu-studio-viewport-lock .menu-analytics-v2,
 body.menu-studio-viewport-lock .menu-publish-v2{
   width:100%!important;
-  height:100dvh!important;
+  height:100%!important;
   min-height:0!important;
-  max-height:100dvh!important;
+  max-height:100%!important;
   overflow:hidden!important;
   overscroll-behavior:contain;
 }
 
-/* Keep legacy/current Studio shells from extending beyond the viewport, but
-   do not impose a fixed height on nested menu previews. */
 body.menu-studio-viewport-lock [class*="studio-v3"]{
-  max-height:100dvh;
+  max-height:100%;
 }
