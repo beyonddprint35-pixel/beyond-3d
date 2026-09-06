@@ -1,0 +1,53 @@
+.menu-content-v2-friendly-section-side{display:flex;align-items:center;gap:6px;color:var(--mcv2-muted)}
+.menu-content-v2-friendly-section-side svg{transition:transform .16s ease}
+.menu-content-v2-friendly-section-side svg.open{transform:rotate(180deg)}
+
+.menu-content-v2-friendly-translation-cards{margin-top:10px!important}
+.menu-content-v2-primary-editor>.menu-content-v2-language-card.is-primary>header{padding-left:0!important;padding-right:0!important}
+.menu-content-v2-primary-editor>.menu-content-v2-language-card.is-primary>header::before{content:""}
+
+.menu-content-v2-primary-add{margin-top:14px!important;background:var(--mcv2-blue)!important;color:#fff!important;border-color:var(--mcv2-blue)!important}
+.menu-content-v2-friendly-empty{margin:18px 12px;padding:18px 12px;border:1px dashed var(--mcv2-line);border-radius:12px;color:var(--mcv2-muted);text-align:center;font-size:9px}
+
+@media(min-width:1121px){
+  .menu-content-v2-tree-label::after{display:none!important}
+  .menu-content-v2-category-block:not(.is-open) .menu-content-v2-category-row svg:last-child{opacity:.6}
+  .menu-content-v2-category-block.is-open .menu-content-v2-category-row svg:last-child{transform:rotate(90deg)}
+  .menu-content-v2[dir="rtl"] .menu-content-v2-category-block.is-open .menu-content-v2-category-row svg:last-child{transform:scaleX(-1) rotate(90deg)}
+
+  .menu-content-v2-friendly-search{position:sticky;top:0;z-index:3}
+  .menu-content-v2-friendly-drag-hint{margin-top:2px;margin-bottom:10px}
+
+  .menu-content-v2-primary-editor{padding-top:0}
+  .menu-content-v2-primary-editor>.menu-content-v2-field:first-child{margin-top:0}
+  .menu-content-v2-primary-editor .menu-content-v2-language-card.is-primary{display:block}
+  .menu-content-v2-primary-editor .menu-content-v2-language-card.is-primary>header{margin:0 0 7px;min-height:auto}
+  .menu-content-v2-primary-editor .menu-content-v2-language-card.is-primary>header strong{color:var(--mcv2-muted);font-size:8px!important;font-weight:750}
+  .menu-content-v2-primary-editor .menu-content-v2-language-card.is-primary>header strong::after{font-size:8px!important}
+  .menu-content-v2-primary-editor .menu-content-v2-language-card.is-primary>header span{height:20px;min-width:29px;font-size:8px}
+
+  .menu-content-v2-translations{padding-bottom:2px}
+  .menu-content-v2-friendly-language-status{margin-top:9px}
+  .menu-content-v2-friendly-section-title:hover{color:var(--mcv2-blue)}
+
+  .menu-content-v2-friendly-advanced-body{padding-bottom:2px}
+  .menu-content-v2-friendly-advanced-body .menu-content-v2-field:first-child{margin-top:10px}
+
+  .menu-content-v2-canvas-toolbar{display:flex!important;justify-content:space-between!important}
+  .menu-content-v2-canvas-toolbar>div:first-child{display:flex!important}
+
+  .menu-content-v2-items>button.menu-content-v2-add-item{margin-top:4px;padding-left:8px;padding-right:8px;min-height:32px;border:1px dashed #ccd7ef;border-radius:9px;background:#fbfcff;color:var(--mcv2-blue)}
+  .menu-content-v2-items>button.menu-content-v2-add-item:hover{background:#f3f7ff}
+}
+
+@media(max-width:1120px){
+  .menu-content-v2-friendly-section{margin:14px 14px 0;padding-top:13px;border-top:1px solid var(--mcv2-line)}
+  .menu-content-v2-friendly-section-title{width:100%;padding:0;display:flex;align-items:center;justify-content:space-between;gap:8px;border:0;background:transparent;color:inherit;font-weight:800}
+  .menu-content-v2-friendly-section-title>span:first-child{display:flex;align-items:center;gap:7px}
+  .menu-content-v2-friendly-language-status{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+  .menu-content-v2-friendly-language-chip{padding:5px 7px;border-radius:999px;background:#eef8f3;color:#347759;font-size:10px;font-weight:800}
+  .menu-content-v2-friendly-language-chip.missing{background:#fbf5e8;color:#8b6c38}
+  .menu-content-v2-friendly-translation-cards{display:grid;gap:10px}
+  .menu-content-v2-friendly-advanced-body{margin-top:9px}
+  .menu-content-v2-primary-add{margin-left:14px!important;margin-right:14px!important;width:calc(100% - 28px)!important}
+}
