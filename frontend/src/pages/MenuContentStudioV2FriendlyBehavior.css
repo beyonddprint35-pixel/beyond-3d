@@ -38,6 +38,47 @@
 
   .menu-content-v2-items>button.menu-content-v2-add-item{margin-top:4px;padding-left:8px;padding-right:8px;min-height:32px;border:1px dashed #ccd7ef;border-radius:9px;background:#fbfcff;color:var(--mcv2-blue)}
   .menu-content-v2-items>button.menu-content-v2-add-item:hover{background:#f3f7ff}
+
+  /* Quick-edit polish: common item fields read as one simple form instead of a stack of admin cards. */
+  .menu-content-v2-inspector{background:#fff}
+  .menu-content-v2-inspector-head{position:sticky;top:0;z-index:4;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+  .menu-content-v2-inspector-head h2{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  .menu-content-v2-price-editor{margin:3px 14px 0;padding:12px 0 0;border-top:1px solid #eceae7;gap:8px}
+  .menu-content-v2-price-editor>.menu-content-v2-field{margin:0}
+  .menu-content-v2-price-mode{margin:0;height:34px;border-style:solid;border-color:#dbe3f7;border-radius:9px;background:#f8faff;font-size:8px;font-weight:800}
+  .menu-content-v2-price-options{margin:0;padding:10px;border:0;border-radius:11px;background:#f8f8f7;gap:8px}
+  .menu-content-v2-price-options>header strong{font-size:10px}
+  .menu-content-v2-price-options>header small{font-size:8px}
+  .menu-content-v2-price-option{padding:8px;grid-template-columns:minmax(0,1fr) 82px 28px;gap:6px;border-color:#e7e5e2;border-radius:9px}
+  .menu-content-v2-price-option label,.menu-content-v2-price-option-type{font-size:8px}
+  .menu-content-v2-price-option input,.menu-content-v2-price-option select{height:36px;font-size:9px}
+  .menu-content-v2-price-option-remove{width:28px;height:36px}
+  .menu-content-v2-price-add{height:34px;font-size:8px}
+
+  .menu-content-v2-image-editor{margin:12px 14px 0;padding:12px 0 0;border:0;border-top:1px solid #eceae7;border-radius:0;background:transparent;gap:8px}
+  .menu-content-v2-image-editor-head{align-items:center}
+  .menu-content-v2-image-editor-head strong{font-size:10px}
+  .menu-content-v2-image-editor-head small{display:none}
+  .menu-content-v2-image-editor-head>button{font-size:8px}
+  .menu-content-v2-image-upload{min-height:82px;padding:10px;border-color:#d8dfef;border-radius:10px;background:#fbfcff}
+  .menu-content-v2-image-upload strong{font-size:9px}
+  .menu-content-v2-image-upload small{font-size:7px}
+  .menu-content-v2-image-preview{min-height:110px;border-radius:10px}
+  .menu-content-v2-image-preview>img{height:142px}
+  .menu-content-v2-image-replace{height:30px;font-size:8px}
+  .menu-content-v2-image-ai{padding:9px;border-radius:10px}
+  .menu-content-v2-image-ai strong{font-size:9px}
+  .menu-content-v2-image-ai small{font-size:7px}
+  .menu-content-v2-image-url-toggle{font-size:8px}
+
+  .menu-content-v2-toggle{min-height:46px;padding:9px 10px}
+  .menu-content-v2-toggle strong{font-size:9px}
+  .menu-content-v2-toggle small{font-size:7px}
+
+  .menu-content-v2-inspector-next{position:sticky;bottom:0;z-index:5;margin:18px 0 0;padding:12px 14px 14px;border-top:1px solid var(--mcv2-line);background:rgba(255,255,255,.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+  .menu-content-v2-inspector-next>div{display:none}
+  .menu-content-v2-inspector-next>button{min-height:42px;border-radius:11px;font-size:9px}
 }
 
 @media(max-width:1120px){
@@ -50,4 +91,14 @@
   .menu-content-v2-friendly-translation-cards{display:grid;gap:10px}
   .menu-content-v2-friendly-advanced-body{margin-top:9px}
   .menu-content-v2-primary-add{margin-left:14px!important;margin-right:14px!important;width:calc(100% - 28px)!important}
+
+  /* Mobile editors should feel like native forms rather than desktop admin panels. */
+  .menu-content-v2-inspector-head{padding-bottom:10px}
+  .menu-content-v2-primary-editor{margin:0 14px}
+  .menu-content-v2-primary-editor .menu-content-v2-language-card.is-primary{padding:0;border:0;box-shadow:none;background:transparent!important}
+  .menu-content-v2-primary-editor .menu-content-v2-language-card.is-primary>header{padding:0 0 5px!important;justify-content:flex-end}
+  .menu-content-v2-primary-editor .menu-content-v2-language-card.is-primary .menu-content-v2-field{margin-top:9px}
+  .menu-content-v2-price-editor{margin-top:10px}
+  .menu-content-v2-image-editor{margin-top:12px}
+  .menu-content-v2-inspector-next{padding-bottom:max(18px,env(safe-area-inset-bottom))}
 }
