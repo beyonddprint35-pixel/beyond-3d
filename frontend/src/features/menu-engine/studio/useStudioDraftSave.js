@@ -19,8 +19,18 @@ function clearOtherLanguages(value, sourceLanguage) {
   return next;
 }
 
+function clearAllLanguages() {
+  return { en: "", he: "", ar: "" };
+}
+
 function entryMap(list = []) {
   return new Map((Array.isArray(list) ? list : []).map((entry) => [entry?.id, entry]));
+}
+
+function languageWasDeleted(previousValue, nextValue) {
+  const before = localized(previousValue);
+  const after = localized(nextValue);
+  return LANGUAGES.some((language) => text(before[language]).trim() && !text(after[language]).trim());
 }
 
 function invalidateChangedPrimaryTranslations(previousDraft, nextDraft) {
@@ -40,6 +50,11 @@ function invalidateChangedPrimaryTranslations(previousDraft, nextDraft) {
     if (!previous) return group;
     let next = group;
     for (const field of ["name", "note"]) {
+      if (languageWasDeleted(previous[field], group[field])) {
+        next = { ...next, [field]: clearAllLanguages() };
+        changed = true;
+        continue;
+      }
       const before = text(localized(previous[field])[sourceLanguage]);
       const after = text(localized(group[field])[sourceLanguage]);
       if (before !== after) {
@@ -55,6 +70,11 @@ function invalidateChangedPrimaryTranslations(previousDraft, nextDraft) {
     if (!previous) return item;
     let next = item;
     for (const field of ["name", "description"]) {
+      if (languageWasDeleted(previous[field], item[field])) {
+        next = { ...next, [field]: clearAllLanguages() };
+        changed = true;
+        continue;
+      }
       const before = text(localized(previous[field])[sourceLanguage]);
       const after = text(localized(item[field])[sourceLanguage]);
       if (before !== after) {
@@ -88,13 +108,6 @@ function writePreparedDraft(draft) {
   return writeMenuStudioV2Draft(draft);
 }
 
-function pushPreparedDraftToLiveStudio(prepared, liveMenu) {
-  if (!prepared?.menu || prepared.menu === liveMenu) return;
-  window.dispatchEvent(new CustomEvent("beyond-menu-translations-applied", {
-    detail: { menu: prepared.menu, profile: prepared.profile || {} },
-  }));
-}
-
 export function useStudioDraftFlush(draft) {
   const latest = useRef(draft);
   latest.current = prepareFreshDraft(draft);
@@ -103,11 +116,15 @@ export function useStudioDraftFlush(draft) {
       const prepared = latest.current;
       const saved = writePreparedDraft(prepared);
       if (event?.detail && !saved) event.detail.saved = false;
-      if (saved) pushPreparedDraftToLiveStudio(prepared, draft.menu);
+      if (saved && prepared?.menu) {
+        window.dispatchEvent(new CustomEvent("beyond-menu-translations-applied", {
+          detail: { menu: prepared.menu, profile: prepared.profile || {} },
+        }));
+      }
     };
     window.addEventListener("beyond-menu-studio-flush-draft", flush);
     return () => window.removeEventListener("beyond-menu-studio-flush-draft", flush);
-  }, [draft.menu]);
+  }, []);
 }
 
 export default function useStudioDraftSave(draft) {
@@ -122,7 +139,11 @@ export default function useStudioDraftSave(draft) {
     const timer = window.setTimeout(() => {
       const prepared = latest.current;
       const saved = writePreparedDraft(prepared);
-      if (saved) pushPreparedDraftToLiveStudio(prepared, menu);
+      if (saved && prepared?.menu) {
+        window.dispatchEvent(new CustomEvent("beyond-menu-translations-applied", {
+          detail: { menu: prepared.menu, profile: prepared.profile || {} },
+        }));
+      }
       setState(saved ? "saved" : "error");
     }, 350);
     return () => window.clearTimeout(timer);
