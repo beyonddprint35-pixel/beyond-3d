@@ -77,26 +77,47 @@
   -webkit-overflow-scrolling:touch;
   scrollbar-width:thin;
   scrollbar-color:rgba(92,102,118,.28) transparent;
-  /* Do not transform this scrolling element. A transformed scroller becomes
-     the containing block for position:fixed children and makes the
-     accessibility launcher scroll with menu content. The transformed device
-     above already contains fixed overlays inside the simulated phone. */
 }
 .menu-studio-mobile-preview-scroll::-webkit-scrollbar{width:5px}
 .menu-studio-mobile-preview-scroll::-webkit-scrollbar-thumb{border-radius:99px;background:rgba(92,102,118,.24)}
 
-.menu-studio-mobile-preview-scroll>.bme-menu,
-.menu-studio-mobile-preview-scroll>.bme-heritage-exact,
-.menu-studio-mobile-preview-scroll>.ep-page{
-  width:100%;
-  height:auto;
-  min-height:100%;
+/* Hard preview rule: every renderer fills the complete simulated screen.
+   Short menus expand their content region so no theme/background strip is
+   exposed below the footer. */
+.menu-studio-mobile-preview-scroll > .bme-menu,
+.menu-studio-mobile-preview-scroll > .bme-heritage-exact,
+.menu-studio-mobile-preview-scroll > .ep-page{
+  width:100% !important;
+  height:100% !important;
+  min-height:100% !important;
   overflow:visible;
 }
 
+.menu-studio-mobile-preview-scroll > .bme-menu{
+  display:flex !important;
+  flex-direction:column !important;
+}
+.menu-studio-mobile-preview-scroll > .bme-menu > .bme-content{
+  flex:1 0 auto !important;
+}
+.menu-studio-mobile-preview-scroll > .bme-menu > .bme-footer{
+  margin-top:auto !important;
+}
+
+/* Heritage used 100dvh internally, which refers to the browser window rather
+   than the simulated phone. Pin both Heritage layers to the phone screen and
+   let its minmax menu-list row absorb any unused height. */
+.menu-studio-mobile-preview-scroll > .bme-heritage-exact,
+.menu-studio-mobile-preview-scroll > .ep-page{
+  display:block !important;
+}
+.menu-studio-mobile-preview-scroll > .bme-heritage-exact > .ep-app,
+.menu-studio-mobile-preview-scroll > .ep-page > .ep-app,
 .menu-studio-mobile-preview-scroll .bme-heritage-exact .ep-app{
-  height:auto;
-  min-height:100%;
+  width:100% !important;
+  height:100% !important;
+  min-height:100% !important;
+  max-height:100% !important;
 }
 
 /* Dynamic Island safe area: the menu/header background still paints all the
@@ -156,9 +177,6 @@
   pointer-events:none;
 }
 
-/* Keep the actual customer accessibility controls inside the simulated
-   viewport and clear of the home indicator. The launcher intentionally stays
-   black and white regardless of the selected menu theme. */
 .menu-studio-mobile-preview-scroll .restaurant-a11y-toggle{
   position:fixed !important;
   left:14px !important;
@@ -204,9 +222,6 @@
   border-radius:18px;
 }
 
-/* Keyboard skip navigation remains available on the real public menu. It is
-   hidden only in this visual device mockup so it does not float outside the
-   simulated website. */
 .menu-studio-mobile-preview-scroll .restaurant-skip-link{
   display:none !important;
 }
