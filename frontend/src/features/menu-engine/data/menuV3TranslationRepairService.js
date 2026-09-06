@@ -29,15 +29,10 @@ function hasSuspiciousPlaceholderFragment(value, source = "") {
   const original = text(source);
   if (!next) return false;
 
-  // A model sometimes translates only part of a sentence and substitutes a word
-  // or phrase with "..."/"…". This used to pass because the rest of the sentence
-  // contained valid letters. Treat it as unresolved unless the source itself used
-  // an ellipsis in that place/context.
   const targetHasEllipsis = /(?:\.{3,}|…{1,})/.test(next);
   const sourceHasEllipsis = /(?:\.{3,}|…{1,})/.test(original);
   if (targetHasEllipsis && !sourceHasEllipsis) return true;
 
-  // Also reject obvious replacement-marker runs emitted by failed translation.
   if (/(?:\?{3,}|-{3,}|_{3,})/.test(next) && !/(?:\?{3,}|-{3,}|_{3,})/.test(original)) return true;
   return false;
 }
@@ -69,8 +64,16 @@ export function translationQualityIssue(value, targetLanguage, source = "") {
 
 function sourceFor(localized, targetLanguage) {
   const value = localized && typeof localized === "object" ? localized : {};
-  for (const code of ["en", "he", "ar"]) {
-    if (code === targetLanguage) continue;
+
+  // Prefer the likely original/source language instead of another generated
+  // translation. In the common Hebrew-first flow this prevents a broken English
+  // translation (for example one containing "...") from becoming the source used
+  // to validate Arabic and hiding the same failure there.
+  const preferredOrder = targetLanguage === "he"
+    ? ["en", "ar"]
+    : ["he", targetLanguage === "en" ? "ar" : "en"];
+
+  for (const code of preferredOrder) {
     const candidate = text(value[code]);
     if (candidate && !isPlaceholderTranslation(candidate)) return candidate;
   }
@@ -104,8 +107,6 @@ export function collectV3TranslationRepairFields(menu = {}) {
   const configured = Array.isArray(menu?.languages)
     ? menu.languages.filter((code) => LANGUAGES.includes(code))
     : [];
-  // Content Studio supports EN/HE/AR. Validate all three whenever multilingual
-  // localized fields exist, even if an older menu saved an incomplete languages array.
   const languages = [...new Set(configured.length ? [...configured, ...LANGUAGES] : LANGUAGES)];
 
   const fields = [];
