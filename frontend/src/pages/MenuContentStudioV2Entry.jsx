@@ -77,9 +77,7 @@ function mergeMissingTranslations(latestMenu, repairedMenu, fields) {
       const latestGroup = next.groups?.[groupIndex];
       const repairedGroup = repairedMenu.groups?.[groupIndex];
       if (!latestGroup || !repairedGroup || !language || (field !== "name" && field !== "note")) return;
-      const current = String(latestGroup[field]?.[language] || "").trim();
       const translated = String(repairedGroup[field]?.[language] || "").trim();
-      if (translationLooksValid(current, targetLanguage || language, source)) return;
       if (translationLooksValid(translated, targetLanguage || language, source)) {
         latestGroup[field] = { ...(latestGroup[field] || {}), [language]: translated };
       }
@@ -96,9 +94,7 @@ function mergeMissingTranslations(latestMenu, repairedMenu, fields) {
       const field = parts[2];
       const language = parts[3];
       if (!language) return;
-      const current = String(latestItem[field]?.[language] || "").trim();
       const translated = String(repairedItem[field]?.[language] || "").trim();
-      if (translationLooksValid(current, targetLanguage || language, source)) return;
       if (translationLooksValid(translated, targetLanguage || language, source)) {
         latestItem[field] = { ...(latestItem[field] || {}), [language]: translated };
       }
@@ -112,9 +108,7 @@ function mergeMissingTranslations(latestMenu, repairedMenu, fields) {
       const repairedOption = repairedItem.price_options?.[optionIndex];
       if (!latestOption || !repairedOption || !language) return;
       const labelKey = `label_${language}`;
-      const current = String(latestOption[labelKey] || "").trim();
       const translated = String(repairedOption[labelKey] || "").trim();
-      if (translationLooksValid(current, targetLanguage || language, source)) return;
       if (translationLooksValid(translated, targetLanguage || language, source)) {
         latestOption[labelKey] = translated;
         if (!latestOption.label) latestOption.label = latestOption.label_en || latestOption.label_he || latestOption.label_ar || "";
@@ -204,9 +198,9 @@ export default function MenuContentStudioV2Entry() {
   useEffect(() => {
     if (!ready || shouldOpenWebsiteImporter) return undefined;
 
-    async function translateMissingLanguages({ force = false } = {}) {
+    async function translateMissingLanguages({ force = false, skipFlush = false } = {}) {
       if (translationBusyRef.current) return;
-      flushStudioDraft();
+      if (!skipFlush) flushStudioDraft();
 
       const draft = readMenuStudioV2Draft();
       const projectId = menuStudioProjectId(draft);
@@ -288,7 +282,7 @@ export default function MenuContentStudioV2Entry() {
       if (!String(event.target.value || "").trim()) return;
       flushStudioDraft();
       window.clearTimeout(translationTimerRef.current);
-      translationTimerRef.current = window.setTimeout(() => { void translateMissingLanguages({ force: true }); }, 120);
+      translationTimerRef.current = window.setTimeout(() => { void translateMissingLanguages({ force: true, skipFlush: true }); }, 120);
     };
 
     const onRetry = () => {
