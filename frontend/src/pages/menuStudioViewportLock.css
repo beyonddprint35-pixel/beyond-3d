@@ -1,25 +1,20 @@
-/* Global Studio regulation: the browser page itself never scrolls past the Studio.
-   Scrolling belongs only to the Studio's internal panes. */
-html.menu-studio-viewport-lock{
+/* Global Studio regulation: the Studio shell always fits the active browser viewport.
+   The document itself never scrolls; only internal Studio panes can scroll. */
+html.menu-studio-viewport-lock,
+body.menu-studio-viewport-lock{
   width:100%;
   height:100%;
-  min-height:100%;
+  min-height:0!important;
   max-height:100%;
+  margin:0!important;
+  padding:0!important;
   overflow:hidden!important;
   overscroll-behavior:none;
-  scroll-behavior:auto!important;
 }
 
 body.menu-studio-viewport-lock{
   position:fixed!important;
   inset:0!important;
-  width:100%!important;
-  height:100dvh!important;
-  min-height:100dvh!important;
-  max-height:100dvh!important;
-  margin:0!important;
-  overflow:hidden!important;
-  overscroll-behavior:none;
 }
 
 body.menu-studio-viewport-lock #root{
@@ -27,28 +22,66 @@ body.menu-studio-viewport-lock #root{
   inset:0!important;
   width:100%!important;
   height:100dvh!important;
-  min-height:100dvh!important;
+  min-height:0!important;
   max-height:100dvh!important;
+  margin:0!important;
   overflow:hidden!important;
 }
 
-/* All current Menu Studio tabs live inside the route above. Keep the outer
-   Studio surface pinned to the viewport; individual panels remain scrollable. */
-body.menu-studio-viewport-lock .menu-content-v2,
-body.menu-studio-viewport-lock .menu-design-v2,
-body.menu-studio-viewport-lock .menu-preview-v2,
-body.menu-studio-viewport-lock .menu-analytics-v2,
-body.menu-studio-viewport-lock .menu-publish-v2,
-body.menu-studio-viewport-lock [class*="menu-studio"],
-body.menu-studio-viewport-lock [class*="studio-v3"]{
-  max-height:100dvh;
+/* Content Studio is a viewport application, not a long page.
+   Header + optional mobile mode bar take only their natural height and the
+   workspace consumes every remaining pixel on the screen it is opened on. */
+body.menu-studio-viewport-lock .menu-content-v2{
+  width:100%!important;
+  height:100dvh!important;
+  min-height:0!important;
+  max-height:100dvh!important;
+  display:grid!important;
+  grid-template-rows:auto auto minmax(0,1fr)!important;
+  overflow:hidden!important;
 }
 
-/* Prevent wheel/touch momentum from bubbling into an empty document canvas. */
-body.menu-studio-viewport-lock .menu-content-v2-workspace,
+body.menu-studio-viewport-lock .menu-content-v2-workspace{
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  overflow:hidden!important;
+  align-self:stretch;
+}
+
+/* Every column owns its own scrolling. The workspace never increases the
+   height of the document, even with long menus or inspector content. */
+body.menu-studio-viewport-lock .menu-content-v2-tree,
+body.menu-studio-viewport-lock .menu-content-v2-inspector,
+body.menu-studio-viewport-lock .menu-content-v2-preview,
+body.menu-studio-viewport-lock .menu-content-v2-canvas{
+  min-height:0!important;
+  max-height:100%!important;
+}
+
+body.menu-studio-viewport-lock .menu-content-v2-tree,
+body.menu-studio-viewport-lock .menu-content-v2-inspector,
+body.menu-studio-viewport-lock .menu-content-v2-canvas{
+  overflow-y:auto;
+  overscroll-behavior:contain;
+}
+
+/* The other Studio routes are likewise constrained to the current screen. */
 body.menu-studio-viewport-lock .menu-design-v2,
 body.menu-studio-viewport-lock .menu-preview-v2,
 body.menu-studio-viewport-lock .menu-analytics-v2,
 body.menu-studio-viewport-lock .menu-publish-v2{
+  width:100%!important;
+  height:100dvh!important;
+  min-height:0!important;
+  max-height:100dvh!important;
+  overflow:hidden!important;
   overscroll-behavior:contain;
+}
+
+/* Keep legacy/current Studio shells from extending beyond the viewport, but
+   do not impose a fixed height on nested menu previews. */
+body.menu-studio-viewport-lock [class*="studio-v3"]{
+  max-height:100dvh;
 }
