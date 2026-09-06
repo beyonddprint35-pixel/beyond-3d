@@ -24,6 +24,7 @@ import "./pages/MenuContentStudioV2FinalPolish.css";
 import "./pages/MenuContentStudioV2FinishingPolish.css";
 import "./pages/MenuContentStudioV2DarkModeFix.css";
 import "./pages/menuStudioViewportLock.css";
+import "./pages/menuStudioDarkModeRegulation.css";
 import "./features/menu-engine/renderer/menuTypographyGuard.css";
 import "./features/menu-engine/renderer/menuViewportFill.css";
 import "./styles/uiTypographyGuard.css";
