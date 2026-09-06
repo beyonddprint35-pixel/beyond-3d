@@ -88,16 +88,6 @@ function writePreparedDraft(draft) {
   return writeMenuStudioV2Draft(draft);
 }
 
-function replaceObjectContents(target, source) {
-  if (!target || typeof target !== "object" || !source || typeof source !== "object") return;
-  Object.keys(target).forEach((key) => {
-    if (!(key in source)) delete target[key];
-  });
-  Object.entries(source).forEach(([key, value]) => {
-    target[key] = value;
-  });
-}
-
 export function useStudioDraftFlush(draft) {
   const latest = useRef(draft);
   latest.current = prepareFreshDraft(draft);
@@ -113,34 +103,10 @@ export function useStudioDraftFlush(draft) {
 
 export default function useStudioDraftSave(draft) {
   useStudioDraftFlush(draft);
-  const liveDraft = useRef(draft);
-  liveDraft.current = draft;
   const latest = useRef(draft);
   latest.current = prepareFreshDraft(draft);
   const [state, setState] = useState("saved");
-  const [, forceTranslationSync] = useState(0);
   const { menu, design, designId, profile, contentLanguage } = draft;
-
-  useEffect(() => {
-    const applyTranslations = (event) => {
-      const translatedMenu = event?.detail?.menu;
-      const liveMenu = liveDraft.current?.menu;
-      if (!translatedMenu || !liveMenu) return;
-      replaceObjectContents(liveMenu, translatedMenu);
-      latest.current = {
-        ...latest.current,
-        menu: liveMenu,
-        profile: {
-          ...(latest.current?.profile || {}),
-          ...(event?.detail?.profile || {}),
-        },
-      };
-      forceTranslationSync((current) => current + 1);
-    };
-
-    window.addEventListener("beyond-menu-translations-applied", applyTranslations);
-    return () => window.removeEventListener("beyond-menu-translations-applied", applyTranslations);
-  }, []);
 
   useEffect(() => {
     setState("saving");
