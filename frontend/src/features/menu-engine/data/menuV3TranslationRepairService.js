@@ -64,11 +64,6 @@ export function translationQualityIssue(value, targetLanguage, source = "") {
 
 function sourceFor(localized, targetLanguage) {
   const value = localized && typeof localized === "object" ? localized : {};
-
-  // Prefer the likely original/source language instead of another generated
-  // translation. In the common Hebrew-first flow this prevents a broken English
-  // translation (for example one containing "...") from becoming the source used
-  // to validate Arabic and hiding the same failure there.
   const preferredOrder = targetLanguage === "he"
     ? ["en", "ar"]
     : ["he", targetLanguage === "en" ? "ar" : "en"];
@@ -169,8 +164,33 @@ function setLocalizedPath(menu, key, value) {
   }
 }
 
-function parseFunctionError(error) {
-  return error?.message || "Could not repair menu translations.";
+async function parseFunctionError(error) {
+  let message = error?.message || "Could not repair menu translations.";
+  let status = Number(error?.context?.status || 0);
+  try {
+    const response = error?.context;
+    if (response && typeof response.clone === "function") {
+      const raw = await response.clone().text();
+      if (raw) {
+        try {
+          const parsed = JSON.parse(raw);
+          message = parsed?.error || parsed?.message || message;
+        } catch {
+          message = raw || message;
+        }
+      }
+    }
+  } catch {}
+  const next = new Error(message);
+  next.status = status;
+  return next;
+}
+
+async function invokeTranslation(accessToken, projectId, fields) {
+  return supabase.functions.invoke("menu-ai-v3-translate-fields", {
+    body: { projectId, fields },
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
 }
 
 export async function repairV3MenuTranslations({ session, projectId, menu }) {
@@ -178,11 +198,21 @@ export async function repairV3MenuTranslations({ session, projectId, menu }) {
   const fields = collectV3TranslationRepairFields(menu);
   if (!fields.length) return { menu, repaired: false, repairedCount: 0, issues: [] };
 
-  const { data, error } = await supabase.functions.invoke("menu-ai-v3-translate-fields", {
-    body: { projectId, fields },
-    headers: { Authorization: `Bearer ${session.access_token}` },
-  });
-  if (error) throw new Error(parseFunctionError(error));
+  let activeSession = session;
+  let result = await invokeTranslation(activeSession.access_token, projectId, fields);
+
+  // Codespaces/browser sessions can keep an expired access token even while the
+  // local Studio remains usable. Refresh once on auth failures before giving up.
+  if (result.error && [401, 403].includes(Number(result.error?.context?.status || 0))) {
+    const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
+    if (!refreshError && refreshed?.session?.access_token) {
+      activeSession = refreshed.session;
+      result = await invokeTranslation(activeSession.access_token, projectId, fields);
+    }
+  }
+
+  if (result.error) throw await parseFunctionError(result.error);
+  const data = result.data;
   if (!data?.ok || !Array.isArray(data?.translations)) throw new Error(data?.error || "Could not repair menu translations.");
 
   const next = typeof structuredClone === "function" ? structuredClone(menu) : JSON.parse(JSON.stringify(menu));
