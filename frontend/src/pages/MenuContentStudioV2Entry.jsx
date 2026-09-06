@@ -13,6 +13,7 @@ import {
   readMenuStudioV2Draft,
   writeMenuStudioV2Draft,
 } from "../features/menu-engine/studio/menuStudioV2Session";
+import { flushStudioDraft } from "../features/menu-engine/studio/studioNavigation";
 import { readStudioLanguage } from "../features/menu-engine/studio/studioLanguage";
 import { menuStudioProjectId } from "../features/menu-engine/studio/menuStudioV2Persistence";
 import { useMenuStudioWorkspace } from "../features/menu-engine/studio/menuStudioWorkspaceContext";
@@ -195,8 +196,6 @@ export default function MenuContentStudioV2Entry() {
       setTranslationIssues(issueSnapshot(latest?.menu));
     };
 
-    // Always re-check once Studio is mounted. This catches older drafts that were
-    // previously marked aiTranslationsReady before stricter quality rules existed.
     refreshIssues();
     const issueInterval = window.setInterval(refreshIssues, 2000);
 
@@ -211,6 +210,12 @@ export default function MenuContentStudioV2Entry() {
 
     async function translateMissingLanguages() {
       if (translationBusyRef.current) return;
+
+      // Always persist the latest in-memory Content state first. Previously this
+      // function could read the previous local draft if the owner blurred a field
+      // before the normal 350ms draft-save timer had completed.
+      flushStudioDraft();
+
       const draft = readMenuStudioV2Draft();
       const projectId = menuStudioProjectId(draft);
       if (!draft?.menu || !projectId) return;
@@ -251,8 +256,12 @@ export default function MenuContentStudioV2Entry() {
     const onBlurCapture = (event) => {
       if (!isTranslationField(event.target)) return;
       if (!String(event.target.value || "").trim()) return;
+
+      // Flush immediately on blur so translation always sees the text the owner
+      // just typed, then give React one short frame before starting the API call.
+      flushStudioDraft();
       window.clearTimeout(translationTimerRef.current);
-      translationTimerRef.current = window.setTimeout(() => { void translateMissingLanguages(); }, 475);
+      translationTimerRef.current = window.setTimeout(() => { void translateMissingLanguages(); }, 120);
     };
 
     document.addEventListener("input", onInputCapture, true);
