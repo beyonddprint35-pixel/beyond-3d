@@ -80,17 +80,23 @@ function invalidateChangedPrimaryTranslations(previousDraft, nextDraft) {
   };
 }
 
-function writeFreshDraft(draft) {
-  const previous = readMenuStudioV2Draft();
-  return writeMenuStudioV2Draft(invalidateChangedPrimaryTranslations(previous, draft));
+function prepareFreshDraft(draft) {
+  return invalidateChangedPrimaryTranslations(readMenuStudioV2Draft(), draft);
+}
+
+function writePreparedDraft(draft) {
+  return writeMenuStudioV2Draft(draft);
 }
 
 export function useStudioDraftFlush(draft) {
   const latest = useRef(draft);
-  latest.current = draft;
+  // Keep the invalidated version in the ref itself. Previously the blur flush wrote
+  // cleared translations, but the normal 350ms autosave still held the raw React
+  // draft and restored the stale HE/AR values before translation completed.
+  latest.current = prepareFreshDraft(draft);
   useEffect(() => {
     const flush = (event) => {
-      const saved = writeFreshDraft(latest.current);
+      const saved = writePreparedDraft(latest.current);
       if (event?.detail && !saved) event.detail.saved = false;
     };
     window.addEventListener("beyond-menu-studio-flush-draft", flush);
@@ -101,12 +107,12 @@ export function useStudioDraftFlush(draft) {
 export default function useStudioDraftSave(draft) {
   useStudioDraftFlush(draft);
   const latest = useRef(draft);
-  latest.current = draft;
+  latest.current = prepareFreshDraft(draft);
   const [state, setState] = useState("saved");
   const { menu, design, designId, profile, contentLanguage } = draft;
   useEffect(() => {
     setState("saving");
-    const timer = window.setTimeout(() => setState(writeFreshDraft(latest.current) ? "saved" : "error"), 350);
+    const timer = window.setTimeout(() => setState(writePreparedDraft(latest.current) ? "saved" : "error"), 350);
     return () => window.clearTimeout(timer);
   }, [menu, design, designId, profile, contentLanguage]);
   return state;
