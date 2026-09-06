@@ -14,13 +14,45 @@ function containsArabic(value) {
   return /[\u0600-\u06ff]/.test(text(value));
 }
 
-function wrongScript(value, targetLanguage) {
+function containsLatin(value) {
+  return /[A-Za-z]/.test(text(value));
+}
+
+function isPlaceholderTranslation(value) {
   const next = text(value);
   if (!next) return true;
+
+  // Never accept punctuation-only / ellipsis-style model fallbacks as a translation.
+  // This catches values such as "...", "…", "---", "???" and similar placeholders.
+  if (!/[\p{L}\p{N}]/u.test(next)) return true;
+
+  const normalized = next
+    .replace(/[\s\u200e\u200f]/g, "")
+    .replace(/[.!?…,:;\-–—_'"`()\[\]{}]/g, "");
+  return normalized.length === 0;
+}
+
+function wrongScript(value, targetLanguage) {
+  const next = text(value);
+  if (!next || isPlaceholderTranslation(next)) return true;
   if (targetLanguage === "ar") return containsHebrew(next);
   if (targetLanguage === "he") return containsArabic(next);
   if (targetLanguage === "en") return containsHebrew(next) || containsArabic(next);
   return false;
+}
+
+export function translationLooksValid(value, targetLanguage) {
+  const next = text(value);
+  if (!next || isPlaceholderTranslation(next)) return false;
+  return !wrongScript(next, targetLanguage);
+}
+
+export function translationQualityIssue(value, targetLanguage) {
+  const next = text(value);
+  if (!next) return "missing";
+  if (isPlaceholderTranslation(next)) return "placeholder";
+  if (wrongScript(next, targetLanguage)) return "wrong-script";
+  return "";
 }
 
 function sourceFor(localized, targetLanguage) {
@@ -28,7 +60,7 @@ function sourceFor(localized, targetLanguage) {
   for (const code of ["en", "he", "ar"]) {
     if (code === targetLanguage) continue;
     const candidate = text(value[code]);
-    if (candidate) return candidate;
+    if (candidate && !isPlaceholderTranslation(candidate)) return candidate;
   }
   return "";
 }
@@ -38,7 +70,7 @@ function needsRepair(localized, targetLanguage) {
   const current = text(value[targetLanguage]);
   const source = sourceFor(value, targetLanguage);
   if (!source) return false;
-  return wrongScript(current, targetLanguage);
+  return !translationLooksValid(current, targetLanguage);
 }
 
 function collectLocalizedField(fields, path, localized, kind, languages) {
@@ -51,6 +83,7 @@ function collectLocalizedField(fields, path, localized, kind, languages) {
       source,
       targetLanguage: language,
       kind,
+      issue: translationQualityIssue(localized?.[language], language),
     });
   });
 }
@@ -126,9 +159,9 @@ function parseFunctionError(error) {
 }
 
 export async function repairV3MenuTranslations({ session, projectId, menu }) {
-  if (!session?.access_token || !projectId || !menu) return { menu, repaired: false, repairedCount: 0 };
+  if (!session?.access_token || !projectId || !menu) return { menu, repaired: false, repairedCount: 0, issues: [] };
   const fields = collectV3TranslationRepairFields(menu);
-  if (!fields.length) return { menu, repaired: false, repairedCount: 0 };
+  if (!fields.length) return { menu, repaired: false, repairedCount: 0, issues: [] };
 
   const { data, error } = await supabase.functions.invoke("menu-ai-v3-translate-fields", {
     body: { projectId, fields },
@@ -140,13 +173,22 @@ export async function repairV3MenuTranslations({ session, projectId, menu }) {
   const next = typeof structuredClone === "function"
     ? structuredClone(menu)
     : JSON.parse(JSON.stringify(menu));
+
   data.translations.forEach((entry) => {
     const translated = text(entry?.text);
-    if (translated) setLocalizedPath(next, entry?.key, translated);
+    const field = fields.find((candidate) => candidate.key === entry?.key);
+    if (!field || !translationLooksValid(translated, field.targetLanguage)) return;
+    setLocalizedPath(next, entry?.key, translated);
   });
 
+  // Do not silently accept a bad AI fallback. Return the unresolved fields so
+  // Studio can flag them instead of treating punctuation such as "..." as complete.
   const remaining = collectV3TranslationRepairFields(next);
-  if (remaining.length) throw new Error(`Could not repair ${remaining.length} menu language fields.`);
 
-  return { menu: next, repaired: true, repairedCount: data.translations.length };
+  return {
+    menu: next,
+    repaired: data.translations.length > 0 && remaining.length < fields.length,
+    repairedCount: fields.length - remaining.length,
+    issues: remaining,
+  };
 }
