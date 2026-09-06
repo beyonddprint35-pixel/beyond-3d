@@ -16,6 +16,7 @@ import installUiTypographyGuard from "./styles/uiTypographyGuard";
 import installMenuContentAdvancedAlwaysOpen from "./features/menu-engine/studio/menuContentAdvancedAlwaysOpen";
 import installMenuContentCategoryAccordion from "./pages/menuContentCategoryAccordion";
 import installMenuContentPreviewSelection from "./pages/menuContentPreviewSelection";
+import installMenuContentVisibilityScrollGuard from "./pages/menuContentVisibilityScrollGuard";
 import installMenuStudioViewportLock from "./pages/menuStudioViewportLock";
 import "./components/BeyondMenuPlatform.css";
 import "./components/BeyondLiveMenuDesign.css";
@@ -45,6 +46,7 @@ installUiTypographyGuard();
 installMenuContentAdvancedAlwaysOpen();
 installMenuContentCategoryAccordion();
 installMenuContentPreviewSelection();
+installMenuContentVisibilityScrollGuard();
 installMenuStudioViewportLock();
 
 createRoot(document.getElementById('root')).render(
