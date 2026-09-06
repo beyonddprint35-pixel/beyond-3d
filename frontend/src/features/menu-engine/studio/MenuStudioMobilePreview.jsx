@@ -18,6 +18,8 @@ export default function MenuStudioMobilePreview({
   language = "en",
   minScale = 0.3,
   maxScale = 1,
+  onSelectItem,
+  onSelectCategory,
 }) {
   const stageRef = useRef(null);
   const [scale, setScale] = useState(0.72);
@@ -60,6 +62,11 @@ export default function MenuStudioMobilePreview({
     "--studio-mobile-screen-height": `${MOBILE_DEVICE.screenHeight}px`,
   }), [scale]);
 
+  const handlePreviewEvent = (event) => {
+    if (event?.type === "item_open" && event.entityId) onSelectItem?.(event.entityId);
+    if (event?.type === "category_view" && event.entityId) onSelectCategory?.(event.entityId);
+  };
+
   return (
     <div className="menu-studio-mobile-preview-fit" ref={stageRef}>
       <div className="menu-studio-mobile-preview-holder" style={holderStyle}>
@@ -76,6 +83,7 @@ export default function MenuStudioMobilePreview({
                   menu={{ ...menu, default_language: language }}
                   design={design}
                   initialLanguage={language}
+                  onAnalyticsEvent={handlePreviewEvent}
                 />
               </div>
             </div>
