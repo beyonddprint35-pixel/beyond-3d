@@ -93,8 +93,14 @@ export function useStudioDraftFlush(draft) {
   latest.current = prepareFreshDraft(draft);
   useEffect(() => {
     const flush = (event) => {
-      const saved = writePreparedDraft(latest.current);
+      const prepared = latest.current;
+      const saved = writePreparedDraft(prepared);
       if (event?.detail && !saved) event.detail.saved = false;
+      if (saved && prepared?.menu) {
+        window.dispatchEvent(new CustomEvent("beyond-menu-translations-applied", {
+          detail: { menu: prepared.menu, profile: prepared.profile || {} },
+        }));
+      }
     };
     window.addEventListener("beyond-menu-studio-flush-draft", flush);
     return () => window.removeEventListener("beyond-menu-studio-flush-draft", flush);
