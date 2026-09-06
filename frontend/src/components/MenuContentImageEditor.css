@@ -19,4 +19,37 @@
 .menu-content-v2-photo-compare-tabs{display:grid;grid-template-columns:1fr 1fr;padding:3px;border:1px solid #dce2eb;border-radius:11px;background:#eef1f6}.menu-content-v2-photo-compare-tabs button{min-height:34px;display:flex;align-items:center;justify-content:center;gap:5px;border:0;border-radius:8px;background:transparent;color:#738095;font-size:8.5px;font-weight:900;cursor:pointer}.menu-content-v2-photo-compare-tabs button.active{background:#fff;color:#315ed5;box-shadow:0 2px 8px rgba(34,49,75,.08)}
 .menu-content-v2-photo-ai-result-actions{display:grid;grid-template-columns:auto 1fr;gap:8px}.menu-content-v2-photo-ai-result-actions button{min-height:42px;border-radius:10px;font-size:9px;font-weight:950;cursor:pointer}.menu-content-v2-photo-ai-result-actions .secondary{padding:0 13px;border:1px solid #d7dde7;background:#fff;color:#667287}.menu-content-v2-photo-ai-result-actions .primary{display:flex;align-items:center;justify-content:center;gap:6px;border:1px solid #4974e5;background:#4974e5;color:#fff;box-shadow:0 7px 18px rgba(73,116,229,.2)}.menu-content-v2-photo-ai-result-actions button:disabled{opacity:.58;cursor:wait}
 .menu-content-v2-image-ai-secondary{opacity:.78}.menu-content-v2-image-ai-secondary:hover{opacity:1}
+
+html[data-beyond-theme="dark"] .menu-content-v2-image-editor-friendly{color:#edf3ff}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-action{background:#0d141f;color:#edf3ff;border-color:#28364a;box-shadow:none}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-action:hover{background:#121c2a;border-color:#3d5480;box-shadow:none}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-action-camera{background:linear-gradient(135deg,#14213b,#0d141f);color:#8fb0ff;border-color:#3d5f9b}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-action small{color:#93a2b8}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-prepare{background:linear-gradient(135deg,#101a2b,#0b121d);color:#edf3ff;border-color:#365489;box-shadow:none}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-prepare strong{color:#9bb8ff}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-prepare small{color:#93a2b8}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-prepare-arrow{color:#7896de}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-studio{background:linear-gradient(180deg,#0e1622,#0a111a);border-color:#263a5c;box-shadow:none}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-studio-head strong{color:#edf3ff}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-studio-head small{color:#93a2b8}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-studio-head>button{background:#111a27;color:#a6b4c8;box-shadow:none}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-food-lock{background:#0d2119;border-color:#244c3a}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-food-lock>span{background:#123325;color:#65d9a1}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-food-lock strong{color:#6fe2aa}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-food-lock small{color:#91b6a7}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-mode-grid button{background:#0d141f;color:#d9e3f2;border-color:#28364a;box-shadow:none}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-mode-grid button.active{background:#14213b;border-color:#496cae;box-shadow:0 0 0 1px rgba(111,149,255,.08)}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-mode-grid .mode-icon{background:#172234;color:#8ea7d8}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-mode-grid button.active .mode-icon{background:#4974e5;color:#fff}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-mode-grid small{color:#93a2b8}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-mode-grid em{background:#18294c;color:#9db8ff}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-studio-preview{background:#111824}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-processing{background:rgba(10,17,27,.94)}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-processing strong{color:#edf3ff}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-processing small{color:#93a2b8}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-compare-tabs{background:#0b121d;border-color:#28364a}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-compare-tabs button{color:#93a2b8}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-compare-tabs button.active{background:#14213b;color:#9db8ff;box-shadow:none}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-ai-result-actions .secondary{background:#0d141f;color:#c4cfde;border-color:#28364a}
+
 @media(max-width:600px){.menu-content-v2-photo-actions{grid-template-columns:1fr}.menu-content-v2-photo-action{min-height:66px}.menu-content-v2-photo-action-camera{min-height:74px;border-color:rgba(73,116,229,.5);box-shadow:0 6px 16px rgba(73,116,229,.08)}.menu-content-v2-photo-action strong{font-size:13.5px}.menu-content-v2-photo-action small{font-size:11px}.menu-content-v2-photo-prepare{padding:14px}.menu-content-v2-photo-prepare strong{font-size:14px}.menu-content-v2-photo-prepare small{font-size:11px}.menu-content-v2-photo-studio{margin-inline:-1px;padding:12px}.menu-content-v2-photo-studio-head strong{font-size:14px}.menu-content-v2-photo-studio-head small{font-size:11px}.menu-content-v2-photo-food-lock strong{font-size:12px}.menu-content-v2-photo-food-lock small{font-size:10.5px}.menu-content-v2-photo-style-memory strong{font-size:12px}.menu-content-v2-photo-style-memory small{font-size:10.5px;line-height:1.45}.menu-content-v2-photo-style-memory button{font-size:10.5px}.menu-content-v2-photo-mode-grid{grid-template-columns:1fr}.menu-content-v2-photo-mode-grid button{grid-template-columns:38px 1fr;align-items:center;padding:12px}.menu-content-v2-photo-mode-grid .mode-icon{grid-row:1;width:34px;height:34px}.menu-content-v2-photo-mode-grid button>span:last-child{grid-column:2}.menu-content-v2-photo-mode-grid strong{font-size:13px}.menu-content-v2-photo-mode-grid small{font-size:10.5px}.menu-content-v2-photo-mode-grid em{font-size:8.5px;padding:3px 7px}.menu-content-v2-photo-studio-preview,.menu-content-v2-photo-studio-preview>img{min-height:210px}.menu-content-v2-photo-ai-generate{min-height:50px;font-size:13px}.menu-content-v2-photo-compare-tabs button{font-size:11px}.menu-content-v2-photo-ai-result-actions{grid-template-columns:1fr}.menu-content-v2-photo-ai-result-actions button{font-size:12px}.menu-content-v2-photo-ai-result-actions .primary{min-height:48px}.menu-content-v2-photo-ai-result-actions .secondary{order:2}.menu-content-v2-photo-ready-badge{font-size:10px}.menu-content-v2-photo-saved-compare button{font-size:10.5px}}
