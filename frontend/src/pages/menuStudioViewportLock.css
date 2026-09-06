@@ -1,46 +1,42 @@
-/* Global Studio regulation: the Studio shell always fits the active browser viewport.
-   The document itself never scrolls; only internal Studio panes can scroll. */
+/* Global Studio viewport contract.
+   The document never becomes a scroll surface; each Studio pane owns its own scroll. */
 html.menu-studio-viewport-lock,
 body.menu-studio-viewport-lock{
   width:100%;
   height:100%;
   min-height:0!important;
-  max-height:100%;
   margin:0!important;
   padding:0!important;
   overflow:hidden!important;
   overscroll-behavior:none;
 }
 
+/* Important: do not position:fixed the document root. Chromium can shift a
+   fixed body/root when an invisible form control receives focus. */
 body.menu-studio-viewport-lock{
-  position:fixed!important;
-  inset:0!important;
+  position:static!important;
 }
 
 body.menu-studio-viewport-lock #root{
-  position:fixed!important;
-  inset:0!important;
   width:100%!important;
-  height:100%!important;
+  height:100vh!important;
+  height:100dvh!important;
   min-height:0!important;
-  max-height:100%!important;
+  max-height:100dvh!important;
   margin:0!important;
   overflow:hidden!important;
 }
 
-/* Content Studio is a viewport application. Flex is intentional here: it is
-   more robust than viewport math when browser chrome, zoom, mobile bars, or
-   embedded preview environments change the usable screen height. */
 body.menu-studio-viewport-lock .menu-content-v2{
-  position:absolute!important;
-  inset:0!important;
   width:100%!important;
-  height:100%!important;
+  height:100vh!important;
+  height:100dvh!important;
   min-height:0!important;
-  max-height:none!important;
+  max-height:100dvh!important;
   display:flex!important;
   flex-direction:column!important;
   overflow:hidden!important;
+  overflow-anchor:none;
 }
 
 body.menu-studio-viewport-lock .menu-content-v2 > .menu-studio-header,
@@ -58,16 +54,16 @@ body.menu-studio-viewport-lock .menu-content-v2-workspace{
   max-height:none!important;
   overflow:hidden!important;
   align-self:stretch;
+  overflow-anchor:none;
 }
 
-/* Every column owns its own scrolling. The workspace never increases the
-   height of the document, even with long menus or inspector content. */
 body.menu-studio-viewport-lock .menu-content-v2-tree,
 body.menu-studio-viewport-lock .menu-content-v2-inspector,
 body.menu-studio-viewport-lock .menu-content-v2-preview,
 body.menu-studio-viewport-lock .menu-content-v2-canvas{
   min-height:0!important;
   max-height:100%!important;
+  overflow-anchor:none;
 }
 
 body.menu-studio-viewport-lock .menu-content-v2-tree,
@@ -77,19 +73,42 @@ body.menu-studio-viewport-lock .menu-content-v2-canvas{
   overscroll-behavior:contain;
 }
 
-/* The other Studio routes are likewise constrained to the current screen. */
+/* Keep the real checkbox located inside the visible switch. Previously it was
+   absolutely positioned without coordinates, so Chromium could scroll a
+   container/document to reveal the focused 0-opacity input after React rerender. */
+body.menu-studio-viewport-lock .menu-content-v2-toggle,
+body.menu-studio-viewport-lock .menu-content-v2-mobile-visibility{
+  position:relative;
+  overflow-anchor:none;
+}
+body.menu-studio-viewport-lock .menu-content-v2-toggle > input[type="checkbox"],
+body.menu-studio-viewport-lock .menu-content-v2-mobile-visibility > input[type="checkbox"]{
+  position:absolute!important;
+  inset-inline-start:8px!important;
+  top:50%!important;
+  width:1px!important;
+  height:1px!important;
+  margin:0!important;
+  padding:0!important;
+  opacity:0!important;
+  transform:translateY(-50%)!important;
+  pointer-events:none!important;
+}
+
 body.menu-studio-viewport-lock .menu-design-v2,
 body.menu-studio-viewport-lock .menu-preview-v2,
 body.menu-studio-viewport-lock .menu-analytics-v2,
 body.menu-studio-viewport-lock .menu-publish-v2{
   width:100%!important;
-  height:100%!important;
+  height:100vh!important;
+  height:100dvh!important;
   min-height:0!important;
-  max-height:100%!important;
+  max-height:100dvh!important;
   overflow:hidden!important;
   overscroll-behavior:contain;
+  overflow-anchor:none;
 }
 
 body.menu-studio-viewport-lock [class*="studio-v3"]{
-  max-height:100%;
+  max-height:100dvh;
 }
