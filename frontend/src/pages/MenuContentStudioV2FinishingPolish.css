@@ -1,0 +1,83 @@
+/* Content Studio finishing polish — clearer focus, quieter chrome, faster scanning. */
+
+@media (min-width:1121px){
+  /* Keep the left navigation stable while the menu itself scrolls. */
+  .menu-content-v2-tree{background:#fff}
+  .menu-content-v2-panel-head{position:sticky;top:0;z-index:6;background:rgba(255,255,255,.98);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+  .menu-content-v2-friendly-search{top:66px!important;z-index:5!important;background:#fff!important}
+
+  /* Drag handles should support reordering without becoming the main visual. */
+  .menu-content-v2-category-row>svg:first-child,
+  .menu-content-v2-items>button>svg:first-child{opacity:.34;transition:opacity .14s ease}
+  .menu-content-v2-category-row:hover>svg:first-child,
+  .menu-content-v2-category-row.active>svg:first-child,
+  .menu-content-v2-items>button:hover>svg:first-child,
+  .menu-content-v2-items>button.active>svg:first-child{opacity:.78}
+
+  /* Make one active editing target unmistakable without using heavy fills. */
+  .menu-content-v2-items>button.active{
+    position:relative;
+    background:#f2f6ff!important;
+    color:#214cae!important;
+    font-weight:750;
+  }
+  .menu-content-v2-items>button.active::after{
+    content:"";
+    position:absolute;
+    inset-block:7px;
+    inset-inline-start:-2px;
+    width:3px;
+    border-radius:999px;
+    background:var(--mcv2-blue);
+  }
+
+  /* Expanded categories read as section headers; collapsed categories stay quiet. */
+  .menu-content-v2-category-block.is-open>.menu-content-v2-category-row{
+    border-color:#cad8fa!important;
+    background:#f7f9ff!important;
+  }
+  .menu-content-v2-category-row>svg:last-child{transition:transform .16s ease,opacity .16s ease}
+
+  /* Add-item stays available but does not compete with existing items. */
+  .menu-content-v2-items>button.menu-content-v2-add-item{
+    justify-content:flex-start;
+    min-height:36px!important;
+    margin-top:6px!important;
+    border:0!important;
+    background:transparent!important;
+    color:#5673b8!important;
+    font-weight:700;
+  }
+  .menu-content-v2-items>button.menu-content-v2-add-item:hover{background:#f4f7ff!important;color:#315dcc!important}
+
+  /* Main edit fields get one consistent focus language. */
+  .menu-content-v2-inspector input:focus,
+  .menu-content-v2-inspector textarea:focus,
+  .menu-content-v2-inspector select:focus{
+    border-color:rgba(73,116,229,.72)!important;
+    box-shadow:0 0 0 3px rgba(73,116,229,.08)!important;
+    outline:0!important;
+  }
+
+  /* Reduce card-on-card feeling in the lower editor. */
+  .menu-content-v2-translations,
+  .menu-content-v2-friendly-section:not(.menu-content-v2-translations){box-shadow:none!important}
+  .menu-content-v2-badge-editor{box-shadow:none!important}
+
+  /* Preview is supportive context, not another editing panel. */
+  .menu-content-v2-canvas-toolbar{border-bottom:1px solid #e8ecf3!important;background:#f7f8fb!important}
+  .menu-content-v2-canvas-toolbar .live{box-shadow:0 0 0 4px rgba(43,181,119,.08)}
+}
+
+@media (max-width:1120px){
+  .menu-content-v2-inspector input:focus,
+  .menu-content-v2-inspector textarea:focus,
+  .menu-content-v2-inspector select:focus{
+    border-color:rgba(73,116,229,.72)!important;
+    box-shadow:0 0 0 3px rgba(73,116,229,.08)!important;
+    outline:0!important;
+  }
+
+  .menu-content-v2-mobile-mode-nav button{min-height:46px}
+  .menu-content-v2-mobile-editor-bar button{min-height:44px}
+}
