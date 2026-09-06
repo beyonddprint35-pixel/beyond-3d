@@ -117,6 +117,15 @@ export default function MenuContentStudioV2() {
   useEffect(() => { if (!topLevelGroups.length) { if (mobileCategoryId) setMobileCategoryId(""); return; } if (!topLevelGroups.some((group) => group.id === mobileCategoryId)) setMobileCategoryId(topLevelGroups[0].id); }, [topLevelGroups, mobileCategoryId]);
   useEffect(() => { setTranslationsOpen(false); setAdvancedOpen(false); }, [selection.type, selection.id]);
   useEffect(() => { if (!deleteConfirmation) return undefined; const onKeyDown = (event) => { if (event.key === "Escape") setDeleteConfirmation(null); }; window.addEventListener("keydown", onKeyDown); return () => window.removeEventListener("keydown", onKeyDown); }, [deleteConfirmation]);
+  useEffect(() => {
+    const applyTranslations = (event) => {
+      const translatedMenu = event?.detail?.menu;
+      if (!translatedMenu) return;
+      setMenu(translatedMenu);
+    };
+    window.addEventListener("beyond-menu-translations-applied", applyTranslations);
+    return () => window.removeEventListener("beyond-menu-translations-applied", applyTranslations);
+  }, []);
 
   const saveState = useStudioDraftSave({ ...(storedDraft || {}), menu, design, designId: resolvedDesign.designId, profile, contentLanguage });
   const selectedCategory = selection.type === "category" ? menu.groups.find((group) => group.id === selection.id) : null;
