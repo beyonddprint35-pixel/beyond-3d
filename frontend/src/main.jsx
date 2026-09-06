@@ -19,6 +19,7 @@ import "./components/BeyondMenuPlatform.css";
 import "./components/BeyondLiveMenuDesign.css";
 import "./components/BeyondLiveMenuDesignMobilePatch.css";
 import "./pages/MenuStudioV3Controls.css";
+import "./pages/MenuContentStudioV2FinalPolish.css";
 import "./features/menu-engine/renderer/menuTypographyGuard.css";
 import "./features/menu-engine/renderer/menuViewportFill.css";
 import "./styles/uiTypographyGuard.css";
