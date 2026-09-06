@@ -14,6 +14,10 @@ function containsArabic(value) {
   return /[\u0600-\u06ff]/.test(text(value));
 }
 
+function alphabeticCount(value) {
+  return (text(value).match(/\p{L}/gu) || []).length;
+}
+
 function isPlaceholderTranslation(value) {
   const next = text(value);
   if (!next) return true;
@@ -37,6 +41,21 @@ function hasSuspiciousPlaceholderFragment(value, source = "") {
   return false;
 }
 
+function isSuspiciouslyShort(value, source = "") {
+  const targetLetters = alphabeticCount(value);
+  const sourceLetters = alphabeticCount(source);
+  if (!sourceLetters) return false;
+
+  // A real translated menu word should never collapse to a single letter.
+  // This catches model truncations such as Hebrew "חסה" becoming English "h".
+  if (sourceLetters >= 2 && targetLetters < 2) return true;
+
+  // For longer phrases, reject extreme truncation while still allowing naturally
+  // shorter translations between Hebrew, Arabic and English.
+  if (sourceLetters >= 10 && targetLetters < Math.max(3, Math.floor(sourceLetters * 0.18))) return true;
+  return false;
+}
+
 function wrongScript(value, targetLanguage) {
   const next = text(value);
   if (!next || isPlaceholderTranslation(next)) return true;
@@ -50,6 +69,7 @@ export function translationLooksValid(value, targetLanguage, source = "") {
   const next = text(value);
   if (!next || isPlaceholderTranslation(next)) return false;
   if (hasSuspiciousPlaceholderFragment(next, source)) return false;
+  if (isSuspiciouslyShort(next, source)) return false;
   return !wrongScript(next, targetLanguage);
 }
 
@@ -58,6 +78,7 @@ export function translationQualityIssue(value, targetLanguage, source = "") {
   if (!next) return "missing";
   if (isPlaceholderTranslation(next)) return "placeholder";
   if (hasSuspiciousPlaceholderFragment(next, source)) return "partial-placeholder";
+  if (isSuspiciouslyShort(next, source)) return "too-short";
   if (wrongScript(next, targetLanguage)) return "wrong-script";
   return "";
 }
@@ -201,8 +222,6 @@ export async function repairV3MenuTranslations({ session, projectId, menu }) {
   let activeSession = session;
   let result = await invokeTranslation(activeSession.access_token, projectId, fields);
 
-  // Codespaces/browser sessions can keep an expired access token even while the
-  // local Studio remains usable. Refresh once on auth failures before giving up.
   if (result.error && [401, 403].includes(Number(result.error?.context?.status || 0))) {
     const { data: refreshed, error: refreshError } = await supabase.auth.refreshSession();
     if (!refreshError && refreshed?.session?.access_token) {
