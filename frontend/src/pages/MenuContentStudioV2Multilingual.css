@@ -1,3 +1,5 @@
+@import "./MenuContentStudioV2Friendly.css";
+
 .menu-content-v2-top-actions{justify-self:end;display:flex;align-items:center;gap:7px;min-width:0}
 .menu-content-v2[dir="rtl"] .menu-content-v2-brand span{text-align:right}
 .menu-content-v2[dir="rtl"] .menu-content-v2-tree,
@@ -9,6 +11,18 @@
 .menu-content-v2[dir="rtl"] input[dir="ltr"]{text-align:left}
 .menu-content-v2 [dir="rtl"]{text-align:right}
 .menu-content-v2 [dir="ltr"]{text-align:left}
+.menu-content-v2 input[dir="rtl"],
+.menu-content-v2 textarea[dir="rtl"]{
+  direction:rtl;
+  text-align:right;
+  unicode-bidi:plaintext;
+}
+.menu-content-v2 input[dir="ltr"],
+.menu-content-v2 textarea[dir="ltr"]{
+  direction:ltr;
+  text-align:left;
+  unicode-bidi:plaintext;
+}
 
 .menu-content-v2-language-fields{
   display:grid;
@@ -55,6 +69,93 @@
   opacity:1;
 }
 
+/* The Studio interface language owns all editor chrome. Content fields keep
+   their own input direction, but labels and language names follow EN/HE/AR. */
+.menu-content-v2[lang="he"] .menu-content-v2-language-card>header strong,
+.menu-content-v2[lang="ar"] .menu-content-v2-language-card>header strong,
+.menu-content-v2[lang="en"] .menu-content-v2-language-card>header strong{
+  font-size:0;
+}
+.menu-content-v2 .menu-content-v2-language-card>header strong::after{
+  font-size:12px;
+  font-weight:800;
+}
+.menu-content-v2[lang="he"] .menu-content-v2-language-card:nth-child(1)>header strong::after{content:"אנגלית"}
+.menu-content-v2[lang="he"] .menu-content-v2-language-card:nth-child(2)>header strong::after{content:"עברית"}
+.menu-content-v2[lang="he"] .menu-content-v2-language-card:nth-child(3)>header strong::after{content:"ערבית"}
+.menu-content-v2[lang="en"] .menu-content-v2-language-card:nth-child(1)>header strong::after{content:"English"}
+.menu-content-v2[lang="en"] .menu-content-v2-language-card:nth-child(2)>header strong::after{content:"Hebrew"}
+.menu-content-v2[lang="en"] .menu-content-v2-language-card:nth-child(3)>header strong::after{content:"Arabic"}
+.menu-content-v2[lang="ar"] .menu-content-v2-language-card:nth-child(1)>header strong::after{content:"الإنجليزية"}
+.menu-content-v2[lang="ar"] .menu-content-v2-language-card:nth-child(2)>header strong::after{content:"العبرية"}
+.menu-content-v2[lang="ar"] .menu-content-v2-language-card:nth-child(3)>header strong::after{content:"العربية"}
+
+/* In RTL Studio modes the language name sits on the right and the EN/HE/AR
+   abbreviation stays on the left. English keeps the opposite arrangement. */
+.menu-content-v2[lang="he"] .menu-content-v2-language-card>header,
+.menu-content-v2[lang="ar"] .menu-content-v2-language-card>header{
+  direction:rtl;
+  text-align:right;
+}
+.menu-content-v2[lang="he"] .menu-content-v2-language-card>header strong,
+.menu-content-v2[lang="ar"] .menu-content-v2-language-card>header strong{order:1;text-align:right}
+.menu-content-v2[lang="he"] .menu-content-v2-language-card>header span,
+.menu-content-v2[lang="ar"] .menu-content-v2-language-card>header span{order:2;direction:ltr}
+.menu-content-v2[lang="he"] .menu-content-v2-language-card .menu-content-v2-field>label,
+.menu-content-v2[lang="ar"] .menu-content-v2-language-card .menu-content-v2-field>label{
+  direction:rtl;
+  text-align:right;
+  justify-content:flex-start;
+}
+.menu-content-v2[lang="en"] .menu-content-v2-language-card>header{direction:ltr;text-align:left}
+.menu-content-v2[lang="en"] .menu-content-v2-language-card .menu-content-v2-field>label{text-align:left}
+
+/* Description labels are interface copy, not content-language copy. */
+.menu-content-v2 .menu-content-v2-language-card .menu-content-v2-field:has(>textarea) > label{
+  font-size:0;
+}
+.menu-content-v2 .menu-content-v2-language-card .menu-content-v2-field:has(>textarea) > label::after{
+  font-size:12px;
+  font-weight:750;
+}
+.menu-content-v2[lang="he"] .menu-content-v2-language-card .menu-content-v2-field:has(>textarea) > label::after{content:"תיאור"}
+.menu-content-v2[lang="en"] .menu-content-v2-language-card .menu-content-v2-field:has(>textarea) > label::after{content:"Description"}
+.menu-content-v2[lang="ar"] .menu-content-v2-language-card .menu-content-v2-field:has(>textarea) > label::after{content:"الوصف"}
+
+/* Category/subcategory notes use their own interface label. */
+.menu-content-v2[lang="he"] .menu-content-v2-group-note-field > label::after{content:"הערה כללית" !important}
+.menu-content-v2[lang="en"] .menu-content-v2-group-note-field > label::after{content:"General note" !important}
+.menu-content-v2[lang="ar"] .menu-content-v2-group-note-field > label::after{content:"ملاحظة عامة" !important}
+
+/* Structure guidance: make reordering discoverable and explain how to move an
+   item into another category/subcategory from the item editor. */
+.menu-content-v2-tree-label::after{
+  display:block;
+  margin-top:6px;
+  color:var(--mcv2-muted,#777b84);
+  font-size:7px;
+  font-weight:650;
+  line-height:1.35;
+  letter-spacing:0;
+  text-transform:none;
+}
+.menu-content-v2[lang="en"] .menu-content-v2-tree-label::after{content:"Drag categories and items to reorder them."}
+.menu-content-v2[lang="he"] .menu-content-v2-tree-label::after{content:"גררו קטגוריות ופריטים כדי לשנות את הסדר שלהם."}
+.menu-content-v2[lang="ar"] .menu-content-v2-tree-label::after{content:"اسحبوا الفئات والعناصر لتغيير ترتيبها."}
+.menu-content-v2-tree-label{flex-wrap:wrap;align-items:flex-start}
+.menu-content-v2-tree-label::after{flex:0 0 100%}
+
+.menu-content-v2-field:has(#studio-item-group)::after{
+  display:block;
+  margin-top:1px;
+  color:var(--mcv2-muted,#777b84);
+  font-size:7px;
+  line-height:1.4;
+}
+.menu-content-v2[lang="en"] .menu-content-v2-field:has(#studio-item-group)::after{content:"Choose another category or subcategory here to move this item."}
+.menu-content-v2[lang="he"] .menu-content-v2-field:has(#studio-item-group)::after{content:"בחרו כאן קטגוריה או תת־קטגוריה אחרת כדי להעביר אליה את הפריט."}
+.menu-content-v2[lang="ar"] .menu-content-v2-field:has(#studio-item-group)::after{content:"اختاروا فئة أو فئة فرعية أخرى هنا لنقل هذا العنصر إليها."}
+
 @media(max-width:1180px){
   .menu-content-v2-topbar{grid-template-columns:minmax(210px,1fr) auto}
   .menu-content-v2-product-nav{grid-column:1/-1;grid-row:2;justify-self:center}
@@ -78,6 +179,7 @@
     box-shadow:0 8px 24px rgba(34,49,78,.05);
   }
   .menu-content-v2-language-card>header strong{font-size:14px}
+  .menu-content-v2 .menu-content-v2-language-card>header strong::after{font-size:14px}
   .menu-content-v2-language-card>header span{
     min-width:34px;
     height:24px;

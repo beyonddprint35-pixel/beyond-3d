@@ -1,0 +1,276 @@
+/* Friendly Content Studio UX layer — progressive disclosure without changing menu data. */
+
+.menu-content-v2{
+  --mcv2-panel-width:310px;
+  --mcv2-editor-width:360px;
+}
+
+@media (min-width:1121px){
+  .menu-content-v2-workspace{
+    grid-template-columns:var(--mcv2-panel-width) minmax(460px,1fr) var(--mcv2-editor-width);
+  }
+
+  .menu-content-v2-tree,
+  .menu-content-v2-inspector{
+    scrollbar-width:thin;
+  }
+
+  .menu-content-v2-panel-head{
+    height:auto;
+    min-height:66px;
+    padding:14px 16px 9px;
+    border-bottom:0;
+  }
+  .menu-content-v2-panel-head>div{gap:2px}
+  .menu-content-v2-panel-head span{
+    font-size:0;
+    letter-spacing:0;
+    text-transform:none;
+    color:var(--mcv2-text);
+  }
+  .menu-content-v2-panel-head span::after{
+    font-size:15px;
+    font-weight:850;
+    letter-spacing:-.025em;
+  }
+  .menu-content-v2[lang="en"] .menu-content-v2-panel-head span::after{content:"Your menu"}
+  .menu-content-v2[lang="he"] .menu-content-v2-panel-head span::after{content:"התפריט שלך"}
+  .menu-content-v2[lang="ar"] .menu-content-v2-panel-head span::after{content:"قائمتك"}
+  .menu-content-v2-panel-head strong{
+    color:var(--mcv2-muted);
+    font-size:0;
+    font-weight:650;
+  }
+  .menu-content-v2-panel-head strong::after{font-size:8px}
+  .menu-content-v2[lang="en"] .menu-content-v2-panel-head strong::after{content:"Choose something to edit"}
+  .menu-content-v2[lang="he"] .menu-content-v2-panel-head strong::after{content:"בחרו מה תרצו לערוך"}
+  .menu-content-v2[lang="ar"] .menu-content-v2-panel-head strong::after{content:"اختر ما تريد تعديله"}
+  .menu-content-v2-panel-head button{
+    width:36px;
+    height:36px;
+    border:0;
+    border-radius:11px;
+    color:#fff;
+    background:var(--mcv2-blue);
+    box-shadow:0 5px 14px rgba(73,116,229,.18);
+  }
+
+  .menu-content-v2-friendly-search{
+    margin:0 14px 10px;
+    height:38px;
+    padding:0 11px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    border:1px solid var(--mcv2-line);
+    border-radius:11px;
+    background:#fafafa;
+    color:var(--mcv2-muted);
+  }
+  .menu-content-v2-friendly-search:focus-within{
+    border-color:rgba(73,116,229,.45);
+    background:#fff;
+    box-shadow:0 0 0 3px rgba(73,116,229,.06);
+  }
+  .menu-content-v2-friendly-search input{
+    width:100%;
+    min-width:0;
+    border:0;
+    outline:0;
+    background:transparent;
+    color:var(--mcv2-text);
+    font-size:9px;
+  }
+
+  .menu-content-v2-friendly-drag-hint{
+    margin:0 15px 9px;
+    color:var(--mcv2-muted);
+    font-size:7px;
+    line-height:1.45;
+  }
+
+  .menu-content-v2-restaurant-row{
+    margin:0 10px 8px;
+    width:calc(100% - 20px);
+    min-height:48px;
+    border:1px solid transparent;
+    border-radius:12px;
+    background:transparent;
+  }
+  .menu-content-v2-restaurant-row:hover{background:#f7f7f6}
+  .menu-content-v2-restaurant-row.active{
+    border-color:#dbe4fb;
+    background:#f6f8ff;
+  }
+  .menu-content-v2-tree-icon{
+    width:28px;
+    height:28px;
+    border-radius:9px;
+    font-size:9px;
+  }
+
+  .menu-content-v2-tree-label{
+    padding:9px 15px 7px;
+    color:var(--mcv2-text);
+    font-size:8px;
+    letter-spacing:0;
+    text-transform:none;
+  }
+  .menu-content-v2-tree-label small{font-size:7px}
+  .menu-content-v2-tree-label::after{
+    margin-top:3px!important;
+    opacity:.72;
+  }
+
+  .menu-content-v2-categories{padding:0 9px 12px}
+  .menu-content-v2-category-block{
+    margin-bottom:4px;
+    border:0;
+    border-radius:12px;
+    overflow:hidden;
+    background:transparent;
+  }
+  .menu-content-v2-category-row{
+    min-height:44px;
+    padding:7px 9px;
+    border:1px solid transparent;
+    border-radius:11px;
+    color:var(--mcv2-text);
+    background:transparent;
+  }
+  .menu-content-v2-category-row:hover{background:#f7f7f6}
+  .menu-content-v2-category-row.active,
+  .menu-content-v2-category-block:has(.menu-content-v2-items>button.active)>.menu-content-v2-category-row{
+    color:var(--mcv2-text);
+    border-color:#dfe6f7;
+    background:#f7f9ff;
+  }
+  .menu-content-v2-category-row strong{font-size:9px}
+  .menu-content-v2-category-row small{font-size:7px}
+
+  /* Keep the menu calm: only the category currently being edited (or the
+     category containing the selected item) opens its item list. */
+  .menu-content-v2-category-block:not(:has(>.menu-content-v2-category-row.active)):not(:has(.menu-content-v2-items>button.active))>.menu-content-v2-items{
+    display:none;
+  }
+
+  .menu-content-v2-items{
+    padding:4px 4px 7px 24px;
+    gap:1px;
+  }
+  [dir="rtl"] .menu-content-v2-items{padding:4px 24px 7px 4px}
+  .menu-content-v2-items>button{
+    min-height:36px;
+    padding:5px 7px;
+    border-radius:9px;
+    color:#626a78;
+  }
+  .menu-content-v2-items>button:hover{background:#f6f7f9}
+  .menu-content-v2-items>button.active{
+    color:#234fbb;
+    background:#edf3ff;
+  }
+  .menu-content-v2-items strong{font-size:8.5px}
+  .menu-content-v2-items small{font-size:7px}
+  .menu-content-v2-add-category{
+    margin:5px 14px 14px;
+    width:calc(100% - 28px);
+    border-style:solid;
+    background:#fff;
+  }
+
+  .menu-content-v2-preview{grid-template-rows:42px minmax(0,1fr)}
+  .menu-content-v2-canvas-toolbar{
+    padding:0 13px;
+    grid-template-columns:1fr;
+    background:#f8f8f7;
+  }
+  .menu-content-v2-canvas-toolbar>div:first-child{gap:7px}
+  .menu-content-v2-canvas-toolbar strong{font-size:9px}
+  .menu-content-v2-canvas-toolbar small{display:none}
+  .menu-content-v2-design-chip,
+  .menu-content-v2-device{display:none!important}
+  .menu-content-v2-canvas{padding:18px}
+
+  .menu-content-v2-inspector-head{
+    padding:18px 18px 11px;
+    border-bottom:0;
+  }
+  .menu-content-v2-inspector-head>span{
+    font-size:7px;
+    letter-spacing:0;
+    text-transform:none;
+  }
+  .menu-content-v2-inspector-head h2{
+    margin-top:5px;
+    font-size:19px;
+  }
+  .menu-content-v2-inspector-head p{display:none}
+
+  .menu-content-v2-language-fields{
+    gap:8px;
+    margin-bottom:8px;
+  }
+  .menu-content-v2-language-card{
+    margin:0 13px;
+    padding:10px!important;
+    border-color:#eceae7!important;
+    border-radius:12px!important;
+    background:#fbfbfa!important;
+    box-shadow:none!important;
+  }
+  .menu-content-v2-language-card>header{
+    padding:0 1px 2px!important;
+  }
+  .menu-content-v2-language-card .menu-content-v2-field{margin-top:8px}
+
+  /* Put the Studio's current language first visually. The other translations
+     remain available immediately below it, so nothing is removed. */
+  .menu-content-v2[lang="en"] .menu-content-v2-language-card:nth-child(1),
+  .menu-content-v2[lang="he"] .menu-content-v2-language-card:nth-child(2),
+  .menu-content-v2[lang="ar"] .menu-content-v2-language-card:nth-child(3){
+    order:-1;
+    border-color:#d6e1fb!important;
+    background:#fff!important;
+  }
+  .menu-content-v2[lang="en"] .menu-content-v2-language-card:nth-child(1)::before,
+  .menu-content-v2[lang="he"] .menu-content-v2-language-card:nth-child(2)::before,
+  .menu-content-v2[lang="ar"] .menu-content-v2-language-card:nth-child(3)::before{
+    content:"";
+    width:34px;
+    height:3px;
+    margin:-10px auto 0;
+    border-radius:0 0 999px 999px;
+    background:var(--mcv2-blue);
+  }
+
+  .menu-content-v2-field{margin-top:11px}
+  .menu-content-v2-field>label{font-size:8px}
+  .menu-content-v2-field>input,.menu-content-v2-field>select{height:42px;font-size:10px}
+  .menu-content-v2-field>textarea{min-height:76px;font-size:10px}
+  .menu-content-v2-field:has(#studio-item-group){
+    margin-top:6px;
+    padding-top:9px;
+    border-top:1px solid #efedea;
+  }
+
+  .menu-content-v2-toggle{
+    margin-top:11px;
+    border:0;
+    background:#f8f8f7;
+  }
+  .menu-content-v2-inspector-add,
+  .menu-content-v2-danger{margin-top:8px}
+  .menu-content-v2-info-card{display:none}
+
+  .menu-content-v2-inspector-next{
+    margin-top:14px;
+    padding-bottom:16px;
+  }
+}
+
+@media(max-width:1120px){
+  .menu-content-v2-friendly-search,
+  .menu-content-v2-friendly-drag-hint,
+  .menu-content-v2-friendly-expand{display:none}
+}

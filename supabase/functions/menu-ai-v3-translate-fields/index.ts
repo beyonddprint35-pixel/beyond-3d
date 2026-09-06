@@ -96,6 +96,8 @@ Deno.serve(async (req: Request) => {
       `Target language codes: en=English, he=Hebrew, ar=Arabic.\n` +
       `STRICT RULES:\n` +
       `- Return exactly one result for every input key, in the same order.\n` +
+      `- Never return a truncated fragment, initial, single letter, placeholder, or ellipsis instead of a complete translation.\n` +
+      `- For normal words, return the full natural word in the target language. Example: Hebrew חסה -> English lettuce -> Arabic خس.\n` +
       `- Never change prices, quantities, dish facts, ingredients, or brand identity.\n` +
       `- Translate category names and normal dish names naturally.\n` +
       `- Brand/product names may remain recognizable, but surrounding words must be in the requested language.\n` +

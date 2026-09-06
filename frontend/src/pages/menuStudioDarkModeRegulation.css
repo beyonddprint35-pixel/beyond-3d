@@ -1,0 +1,131 @@
+/* Global Menu Studio dark-mode regulation.
+   Keeps the Studio shell consistently dark on every tab while leaving rendered customer menus alone. */
+
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock #root{
+  background:#070b12!important;
+  color:#edf3ff;
+}
+
+/* Shared Studio header: one consistent surface across Content / Design / Preview / Analytics / Publish. */
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-studio-header{
+  background:rgba(7,11,18,.96)!important;
+  border-color:#202a38!important;
+  color:#edf3ff!important;
+  box-shadow:none!important;
+}
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-studio-header button,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-studio-header a{
+  border-color:#263244;
+}
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-studio-header small,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-studio-header [class*="save"]{
+  color:#9ba8bc!important;
+}
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-studio-header [class*="product-nav"]{
+  background:#0d141f!important;
+  border-color:#202a38!important;
+}
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-studio-header [class*="product-nav"] button{
+  color:#94a1b5!important;
+  background:transparent!important;
+}
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-studio-header [class*="product-nav"] button.active,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-studio-header [class*="product-nav"] button[aria-current="page"]{
+  color:#dce8ff!important;
+  background:#18305c!important;
+  box-shadow:none!important;
+}
+
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .studio-theme-toggle,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-studio-header-controls button{
+  color:#b9c8e4!important;
+  background:#0e1622!important;
+  border-color:#2a3850!important;
+}
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .studio-theme-toggle:hover,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-studio-header-controls button:hover{
+  color:#fff!important;
+  background:#152238!important;
+  border-color:#3a5075!important;
+}
+
+/* The area underneath any Studio route can never reveal a white browser/page surface. */
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-content-v2,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-design-v2,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-preview-v2,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-analytics-v2,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-publish-v2{
+  background-color:#070b12!important;
+  color:#edf3ff;
+}
+
+/* Native controls and browser autofill should not flash light inside Studio chrome. */
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock input,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock textarea,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock select{
+  color-scheme:dark;
+}
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock input:-webkit-autofill,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock textarea:-webkit-autofill,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock select:-webkit-autofill{
+  -webkit-text-fill-color:#edf3ff;
+  -webkit-box-shadow:0 0 0 1000px #0b121d inset;
+  caret-color:#edf3ff;
+}
+
+/* Dark scrollbars belong to Studio chrome only. Never theme the customer's rendered menu. */
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-content-v2-tree,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-content-v2-inspector,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-content-v2-canvas,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-design-v2,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-preview-v2,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-analytics-v2,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-publish-v2{
+  scrollbar-color:#34445c #0b111a;
+}
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-content-v2-tree::-webkit-scrollbar,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-content-v2-inspector::-webkit-scrollbar,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-content-v2-canvas::-webkit-scrollbar,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-design-v2::-webkit-scrollbar,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-preview-v2::-webkit-scrollbar,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-analytics-v2::-webkit-scrollbar,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-publish-v2::-webkit-scrollbar{width:10px;height:10px}
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-content-v2-tree::-webkit-scrollbar-track,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-content-v2-inspector::-webkit-scrollbar-track,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-content-v2-canvas::-webkit-scrollbar-track,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-design-v2::-webkit-scrollbar-track,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-preview-v2::-webkit-scrollbar-track,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-analytics-v2::-webkit-scrollbar-track,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-publish-v2::-webkit-scrollbar-track{background:#0b111a}
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-content-v2-tree::-webkit-scrollbar-thumb,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-content-v2-inspector::-webkit-scrollbar-thumb,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-content-v2-canvas::-webkit-scrollbar-thumb,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-design-v2::-webkit-scrollbar-thumb,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-preview-v2::-webkit-scrollbar-thumb,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-analytics-v2::-webkit-scrollbar-thumb,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-publish-v2::-webkit-scrollbar-thumb{background:#34445c;border:2px solid #0b111a;border-radius:999px}
+
+/* Explicitly reset the actual restaurant menu so Studio dark mode never leaks into its native controls or scrollbars. */
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-studio-mobile-preview-scroll,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .bme-menu,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .bme-heritage-exact,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .ep-page,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .bme-menu *,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .bme-heritage-exact *,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .ep-page *{
+  color-scheme:light;
+  scrollbar-color:auto;
+}
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-studio-mobile-preview-scroll::-webkit-scrollbar,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .bme-menu::-webkit-scrollbar,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .bme-heritage-exact::-webkit-scrollbar,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .ep-page::-webkit-scrollbar{width:auto;height:auto}
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-studio-mobile-preview-scroll::-webkit-scrollbar-track,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .bme-menu::-webkit-scrollbar-track,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .bme-heritage-exact::-webkit-scrollbar-track,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .ep-page::-webkit-scrollbar-track{background:initial}
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .menu-studio-mobile-preview-scroll::-webkit-scrollbar-thumb,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .bme-menu::-webkit-scrollbar-thumb,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .bme-heritage-exact::-webkit-scrollbar-thumb,
+html[data-beyond-theme="dark"] body.menu-studio-viewport-lock .ep-page::-webkit-scrollbar-thumb{background:initial;border:initial;border-radius:initial}

@@ -1,0 +1,191 @@
+.menu-content-v2-friendly-section-side{display:flex;align-items:center;gap:6px;color:var(--mcv2-muted)}
+.menu-content-v2-friendly-section-side svg{transition:transform .16s ease}
+.menu-content-v2-friendly-section-side svg.open{transform:rotate(180deg)}
+
+.menu-content-v2-friendly-translation-cards{margin-top:10px!important}
+.menu-content-v2-primary-editor>.menu-content-v2-language-card.is-primary>header{padding-left:0!important;padding-right:0!important}
+.menu-content-v2-primary-editor>.menu-content-v2-language-card.is-primary>header::before{content:""}
+.menu-content-v2-primary-editor .menu-content-v2-language-card>header strong,
+.menu-content-v2-friendly-translation-cards .menu-content-v2-language-card>header strong{display:none!important}
+
+.menu-content-v2-primary-add{margin-top:14px!important;background:var(--mcv2-blue)!important;color:#fff!important;border-color:var(--mcv2-blue)!important}
+.menu-content-v2-friendly-empty{margin:18px 12px;padding:18px 12px;border:1px dashed var(--mcv2-line);border-radius:12px;color:var(--mcv2-muted);text-align:center;font-size:12px}
+
+/* Advanced controls are part of the normal editor now; no separate "More options" gate. */
+.menu-content-v2-friendly-section:not(.menu-content-v2-translations)>.menu-content-v2-friendly-section-title{display:none!important}
+.menu-content-v2-friendly-section:not(.menu-content-v2-translations){padding-top:10px!important}
+.menu-content-v2-friendly-section:not(.menu-content-v2-translations) .menu-content-v2-friendly-advanced-body{display:grid;gap:10px;margin-top:0!important}
+
+/* Translation control uses the same Beyond card/button language as the rest of Studio. */
+.menu-content-v2-translations{margin-top:14px;padding:12px;border:1px solid var(--mcv2-line);border-radius:12px;background:var(--mcv2-paper,#fff);box-shadow:0 3px 10px rgba(22,31,51,.025)}
+.menu-content-v2-translations>.menu-content-v2-friendly-section-title{width:100%;min-height:42px;padding:0 2px;display:flex;align-items:center;justify-content:space-between;gap:10px;border:0;background:transparent;color:var(--mcv2-text);font:inherit;font-size:13px;font-weight:800;text-align:start;cursor:pointer}
+.menu-content-v2-translations>.menu-content-v2-friendly-section-title>span:first-child{display:flex;align-items:center;gap:8px;color:var(--mcv2-text)}
+.menu-content-v2-translations>.menu-content-v2-friendly-section-title>span:first-child svg{color:var(--mcv2-blue)}
+.menu-content-v2-translations .menu-content-v2-friendly-section-side small{font-size:12px;font-weight:700;color:var(--mcv2-blue)}
+.menu-content-v2-translations .menu-content-v2-friendly-section-side svg{color:var(--mcv2-blue)}
+.menu-content-v2-friendly-language-status{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+.menu-content-v2-friendly-language-chip{padding:5px 8px;border:1px solid #dce9e2;border-radius:999px;background:#f3faf6;color:#347759;font-size:12px;font-weight:800}
+.menu-content-v2-friendly-language-chip.missing{border-color:#eee2c7;background:#fff9ed;color:#8b6c38}
+
+@media(min-width:1121px){
+  .menu-content-v2-tree-label::after{display:none!important}
+  .menu-content-v2-category-block:not(.is-open) .menu-content-v2-category-row svg:last-child{opacity:.6}
+  .menu-content-v2-category-block.is-open .menu-content-v2-category-row svg:last-child{transform:rotate(90deg)}
+  .menu-content-v2[dir="rtl"] .menu-content-v2-category-block.is-open .menu-content-v2-category-row svg:last-child{transform:scaleX(-1) rotate(90deg)}
+
+  .menu-content-v2-friendly-search{position:sticky;top:0;z-index:3}
+  .menu-content-v2-friendly-drag-hint{margin-top:2px;margin-bottom:10px}
+
+  .menu-content-v2-primary-editor{padding-top:0}
+  .menu-content-v2-primary-editor>.menu-content-v2-field:first-child{margin-top:0}
+  .menu-content-v2-primary-editor .menu-content-v2-language-card.is-primary{display:block}
+  .menu-content-v2-primary-editor .menu-content-v2-language-card.is-primary>header{margin:0 0 7px;min-height:auto;justify-content:flex-end}
+  .menu-content-v2-primary-editor .menu-content-v2-language-card.is-primary>header span{height:24px;min-width:32px;font-size:12px}
+
+  .menu-content-v2-translations{padding-bottom:12px}
+  .menu-content-v2-friendly-section-title:hover{color:var(--mcv2-blue)}
+
+  .menu-content-v2-friendly-advanced-body{padding-bottom:2px}
+  .menu-content-v2-friendly-advanced-body .menu-content-v2-field:first-child{margin-top:0}
+
+  .menu-content-v2-canvas-toolbar{display:flex!important;justify-content:space-between!important}
+  .menu-content-v2-canvas-toolbar>div:first-child{display:flex!important}
+
+  .menu-content-v2-items>button.menu-content-v2-add-item{margin-top:4px;padding-left:10px;padding-right:10px;min-height:34px;border:1px dashed #ccd7ef;border-radius:9px;background:#fbfcff;color:var(--mcv2-blue);font-size:12px}
+  .menu-content-v2-items>button.menu-content-v2-add-item:hover{background:#f3f7ff}
+
+  /* Quick-edit polish: name, description, price and photo form one continuous primary workflow. */
+  .menu-content-v2-inspector{background:#fff}
+  .menu-content-v2-inspector-head{position:sticky;top:0;z-index:4;padding-bottom:12px;background:rgba(255,255,255,.97);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid #f0efed}
+  .menu-content-v2-inspector-head h2{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  .menu-content-v2-primary-editor{padding:2px 14px 0}
+  .menu-content-v2-primary-editor .menu-content-v2-language-card.is-primary{margin:0!important;padding:0!important;border:0!important;background:transparent!important}
+  .menu-content-v2-primary-editor .menu-content-v2-language-card.is-primary .menu-content-v2-field{margin-top:10px}
+
+  .menu-content-v2-price-editor{margin:10px 14px 0;padding:14px 0 0;border-top:1px solid #eceae7;gap:10px}
+  .menu-content-v2-price-editor>.menu-content-v2-field{margin:0}
+  .menu-content-v2-price-mode{margin:0;height:38px;border-style:solid;border-color:#dbe3f7;border-radius:10px;background:#f8faff;font-size:12px;font-weight:800}
+  .menu-content-v2-price-options{margin:12px 14px 0;padding:12px;border:1px solid #eceae7;border-radius:12px;background:#fbfbfa;gap:10px}
+  .menu-content-v2-price-options>header strong{font-size:13px}
+  .menu-content-v2-price-options>header small{font-size:12px;line-height:1.4}
+  .menu-content-v2-price-options>header button{font-size:12px}
+  .menu-content-v2-price-option{padding:10px;grid-template-columns:minmax(0,1fr) 92px 32px;gap:8px;border-color:#e7e5e2;border-radius:10px;background:#fff}
+  .menu-content-v2-price-option label,.menu-content-v2-price-option-type{font-size:12px}
+  .menu-content-v2-price-option input,.menu-content-v2-price-option select{height:38px;font-size:12px}
+  .menu-content-v2-price-option-remove{width:32px;height:38px}
+  .menu-content-v2-price-add{height:38px;font-size:12px}
+
+  .menu-content-v2-image-editor{margin:14px 14px 0;padding:14px 0 0;border:0;border-top:1px solid #eceae7;border-radius:0;background:transparent;gap:10px}
+  .menu-content-v2-image-editor-head{align-items:center}
+  .menu-content-v2-image-editor-head strong{font-size:13px}
+  .menu-content-v2-image-editor-head small{display:none}
+  .menu-content-v2-image-editor-head>button{font-size:12px}
+  .menu-content-v2-image-upload{min-height:90px;padding:12px;border-color:#d8dfef;border-radius:11px;background:#fbfcff}
+  .menu-content-v2-image-upload strong{font-size:13px}
+  .menu-content-v2-image-upload small{font-size:12px;line-height:1.4}
+  .menu-content-v2-image-preview{min-height:120px;border-radius:11px}
+  .menu-content-v2-image-preview>img{height:150px}
+  .menu-content-v2-image-replace{height:34px;font-size:12px}
+  .menu-content-v2-image-ai{padding:11px;border-radius:11px}
+  .menu-content-v2-image-ai strong{font-size:13px}
+  .menu-content-v2-image-ai small{font-size:12px;line-height:1.4}
+  .menu-content-v2-image-url-toggle{font-size:12px}
+
+  /* Secondary selling information stays available, but reads as one quieter section. */
+  .menu-content-v2-badge-editor{margin-top:16px!important}
+
+  /* Structural controls are visually separated from customer-facing content. */
+  .menu-content-v2-friendly-section:not(.menu-content-v2-translations){margin:18px 14px 0!important;padding:14px!important;border:1px solid #eceae7!important;border-radius:12px!important;background:#fafafa!important}
+  .menu-content-v2-friendly-section:not(.menu-content-v2-translations) .menu-content-v2-friendly-advanced-body{gap:12px}
+  .menu-content-v2-friendly-section:not(.menu-content-v2-translations) .menu-content-v2-field:has(#studio-item-group){margin:0;padding:0;border:0}
+
+  .menu-content-v2-toggle{min-height:50px;padding:10px 11px;margin-top:0;border:1px solid #eceae7;background:#fff}
+  .menu-content-v2-toggle strong{font-size:13px}
+  .menu-content-v2-toggle small{font-size:12px;line-height:1.35}
+  .menu-content-v2-danger,.menu-content-v2-inspector-add{min-height:40px;font-size:12px}
+
+  .menu-content-v2-inspector-next{position:sticky;bottom:0;z-index:5;margin:18px 0 0;padding:12px 14px 14px;border-top:1px solid var(--mcv2-line);background:rgba(255,255,255,.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+  .menu-content-v2-inspector-next>div{display:none}
+  .menu-content-v2-inspector-next>button{min-height:42px;border-radius:11px;font-size:13px}
+
+  /* Clear menu hierarchy: categories are stronger, items are lighter and indented. */
+  .menu-content-v2-panel-head strong::after{font-size:12px!important}
+  .menu-content-v2-friendly-search input{font-size:13px!important}
+  .menu-content-v2-friendly-drag-hint{font-size:12px!important}
+  .menu-content-v2-tree-label{font-size:13px!important;font-weight:800}
+  .menu-content-v2-tree-label small{font-size:12px!important}
+  .menu-content-v2-category-row{min-height:48px;padding:9px 10px}
+  .menu-content-v2-category-row strong{font-size:13px!important;font-weight:850}
+  .menu-content-v2-category-row small{font-size:12px!important;color:#7b8491}
+  .menu-content-v2-items{padding-top:5px;padding-bottom:8px;gap:2px}
+  .menu-content-v2-items>button{min-height:38px;padding:7px 8px;border-left:2px solid transparent}
+  .menu-content-v2[dir="rtl"] .menu-content-v2-items>button{border-left:0;border-right:2px solid transparent}
+  .menu-content-v2-items>button:hover{border-color:#dfe6f7}
+  .menu-content-v2-items>button.active{border-color:#4974e5}
+  .menu-content-v2-items strong{font-size:12px!important;font-weight:750}
+  .menu-content-v2-items small{font-size:12px!important;color:#8a919c}
+  .menu-content-v2-canvas-toolbar strong{font-size:12px!important}
+  .menu-content-v2-inspector-head>span{font-size:12px!important;font-weight:800;color:var(--mcv2-blue)}
+  .menu-content-v2-field>label{font-size:12px!important;font-weight:750}
+  .menu-content-v2-field>input,.menu-content-v2-field>select{height:42px;font-size:13px!important}
+  .menu-content-v2-field>textarea{min-height:82px;font-size:13px!important;line-height:1.45}
+
+  /* Item editor order: the four frequent tasks come first, then selling details,
+     translations and structural settings. This is visual-only and preserves data. */
+  .menu-content-v2-inspector:has(.menu-content-v2-image-editor){display:flex;flex-direction:column}
+  .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-mobile-editor-bar{order:0}
+  .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-inspector-head{order:1}
+  .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-primary-editor{order:2}
+  .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-price-editor,
+  .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-price-options{order:3}
+  .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-image-editor{order:4}
+  .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-badge-editor{order:5}
+  .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-translations{order:6}
+  .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-friendly-section:not(.menu-content-v2-translations){order:7}
+  .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-inspector-next{order:8}
+
+  /* Give the lower-priority zones clear names without adding more controls. */
+  .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-badge-editor::before{
+    content:"Selling details";
+    display:block;
+    margin:0 0 2px;
+    color:#7b8491;
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:.02em;
+  }
+  .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-friendly-section:not(.menu-content-v2-translations)::before{
+    content:"Item settings";
+    display:block;
+    margin:0 0 10px;
+    color:#7b8491;
+    font-size:12px;
+    font-weight:800;
+    letter-spacing:.02em;
+  }
+  .menu-content-v2[lang="he"] .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-badge-editor::before{content:"פרטי מכירה"}
+  .menu-content-v2[lang="he"] .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-friendly-section:not(.menu-content-v2-translations)::before{content:"הגדרות פריט"}
+  .menu-content-v2[lang="ar"] .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-badge-editor::before{content:"تفاصيل البيع"}
+  .menu-content-v2[lang="ar"] .menu-content-v2-inspector:has(.menu-content-v2-image-editor)>.menu-content-v2-friendly-section:not(.menu-content-v2-translations)::before{content:"إعدادات الصنف"}
+}
+
+@media(max-width:1120px){
+  .menu-content-v2-friendly-section{margin:14px 14px 0;padding-top:13px;border-top:1px solid var(--mcv2-line)}
+  .menu-content-v2-translations{margin:14px 14px 0;padding:12px;border:1px solid var(--mcv2-line);border-radius:12px}
+  .menu-content-v2-friendly-section-title{width:100%;padding:0;display:flex;align-items:center;justify-content:space-between;gap:8px;border:0;background:transparent;color:inherit;font-weight:800}
+  .menu-content-v2-friendly-section-title>span:first-child{display:flex;align-items:center;gap:7px}
+  .menu-content-v2-friendly-translation-cards{display:grid;gap:10px}
+  .menu-content-v2-friendly-advanced-body{margin-top:0}
+  .menu-content-v2-primary-add{margin-left:14px!important;margin-right:14px!important;width:calc(100% - 28px)!important}
+
+  /* Mobile editors should feel like native forms rather than desktop admin panels. */
+  .menu-content-v2-inspector-head{padding-bottom:10px}
+  .menu-content-v2-primary-editor{margin:0 14px}
+  .menu-content-v2-primary-editor .menu-content-v2-language-card.is-primary{padding:0;border:0;box-shadow:none;background:transparent!important}
+  .menu-content-v2-primary-editor .menu-content-v2-language-card.is-primary>header{padding:0 0 5px!important;justify-content:flex-end}
+  .menu-content-v2-primary-editor .menu-content-v2-language-card.is-primary .menu-content-v2-field{margin-top:9px}
+  .menu-content-v2-price-editor{margin-top:10px}
+  .menu-content-v2-image-editor{margin-top:12px}
+  .menu-content-v2-inspector-next{padding-bottom:max(18px,env(safe-area-inset-bottom))}
+}

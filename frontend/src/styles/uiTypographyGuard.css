@@ -1,0 +1,23 @@
+:root{
+  --beyond-ui-font-min:12px;
+  --beyond-ui-font-small:13px;
+  --beyond-ui-font-body:14px;
+}
+
+/* Global Beyond product UI readability rule.
+   Text below 12px is not permitted in the application UI.
+   Customer-facing menu designs/previews are intentionally excluded so their
+   typography remains controlled by the selected menu template. */
+.beyond-ui-readable-min{
+  font-size:var(--beyond-ui-font-min)!important;
+  line-height:1.35!important;
+}
+
+/* Studio-specific baseline for common helper/caption UI. */
+.menu-content-v2 :where(.menu-content-v2-panel-head span,.menu-content-v2-tree-label,.menu-content-v2-friendly-drag-hint,.menu-content-v2-friendly-empty,.menu-content-v2-friendly-language-chip,.menu-content-v2-language-card header span,.menu-content-v2-field label,.menu-content-v2-inspector-head>span,.menu-content-v2-inspector-next small,.menu-content-v2-restaurant-row small,.menu-content-v2-category-row small,.menu-content-v2-items button small){
+  font-size:var(--beyond-ui-font-min)!important;
+}
+
+.menu-content-v2 :where(input,textarea,select,button){
+  font-size:max(var(--beyond-ui-font-min),1em);
+}

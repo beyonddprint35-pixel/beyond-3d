@@ -1,0 +1,190 @@
+/* Content Studio dark-mode completion.
+   Applies only to Studio chrome/editor UI; the rendered customer menu preview keeps its own design theme. */
+
+html[data-beyond-theme="dark"] .menu-content-v2{
+  --mcv2-bg:#070b12;
+  --mcv2-paper:#0d131d;
+  --mcv2-soft:#111823;
+  --mcv2-canvas:#08101a;
+  --mcv2-text:#edf3ff;
+  --mcv2-muted:#9ba8bc;
+  --mcv2-faint:#748198;
+  --mcv2-line:#202a38;
+  --mcv2-line-strong:#2b3748;
+  --mcv2-blue:#6f95ff;
+  --mcv2-blue-soft:#14213b;
+  --mcv2-green:#47c58a;
+  color:var(--mcv2-text);
+  background:var(--mcv2-bg)!important;
+}
+
+html[data-beyond-theme="dark"] .menu-content-v2-topbar,
+html[data-beyond-theme="dark"] .menu-content-v2-tree,
+html[data-beyond-theme="dark"] .menu-content-v2-inspector,
+html[data-beyond-theme="dark"] .menu-content-v2-panel-head,
+html[data-beyond-theme="dark"] .menu-content-v2-inspector-head{
+  background:#0b111a!important;
+  color:var(--mcv2-text)!important;
+  border-color:var(--mcv2-line)!important;
+}
+
+html[data-beyond-theme="dark"] .menu-content-v2-product-nav,
+html[data-beyond-theme="dark"] .menu-content-v2-back,
+html[data-beyond-theme="dark"] .menu-content-v2-friendly-search,
+html[data-beyond-theme="dark"] .menu-content-v2-add-category,
+html[data-beyond-theme="dark"] .menu-content-v2-items>button.menu-content-v2-add-item,
+html[data-beyond-theme="dark"] .menu-content-v2-language-card,
+html[data-beyond-theme="dark"] .menu-content-v2-translations,
+html[data-beyond-theme="dark"] .menu-content-v2-friendly-section:not(.menu-content-v2-translations),
+html[data-beyond-theme="dark"] .menu-content-v2-toggle,
+html[data-beyond-theme="dark"] .menu-content-v2-price-options,
+html[data-beyond-theme="dark"] .menu-content-v2-price-option,
+html[data-beyond-theme="dark"] .menu-content-v2-image-upload,
+html[data-beyond-theme="dark"] .menu-content-v2-image-ai,
+html[data-beyond-theme="dark"] .menu-content-v2-badge-editor,
+html[data-beyond-theme="dark"] .menu-content-v2-badge-group button,
+html[data-beyond-theme="dark"] .menu-content-v2-badge-spice select{
+  background:#101722!important;
+  color:var(--mcv2-text)!important;
+  border-color:var(--mcv2-line)!important;
+  box-shadow:none!important;
+}
+
+html[data-beyond-theme="dark"] .menu-content-v2-product-nav button{color:var(--mcv2-muted)!important}
+html[data-beyond-theme="dark"] .menu-content-v2-product-nav button.active{
+  color:#dce8ff!important;
+  background:#18233a!important;
+  box-shadow:none!important;
+}
+
+html[data-beyond-theme="dark"] .menu-content-v2-restaurant-row,
+html[data-beyond-theme="dark"] .menu-content-v2-category-row,
+html[data-beyond-theme="dark"] .menu-content-v2-category-block{
+  background:transparent!important;
+  border-color:var(--mcv2-line)!important;
+}
+html[data-beyond-theme="dark"] .menu-content-v2-restaurant-row:hover,
+html[data-beyond-theme="dark"] .menu-content-v2-category-row:hover,
+html[data-beyond-theme="dark"] .menu-content-v2-items>button:hover{background:#111925!important}
+html[data-beyond-theme="dark"] .menu-content-v2-restaurant-row.active,
+html[data-beyond-theme="dark"] .menu-content-v2-category-row.active,
+html[data-beyond-theme="dark"] .menu-content-v2-category-block:has(.menu-content-v2-items>button.active)>.menu-content-v2-category-row,
+html[data-beyond-theme="dark"] .menu-content-v2-items>button.active{
+  background:#15223a!important;
+  color:#8eaeff!important;
+  border-color:#2c4777!important;
+}
+html[data-beyond-theme="dark"] .menu-content-v2-category-row strong,
+html[data-beyond-theme="dark"] .menu-content-v2-items strong,
+html[data-beyond-theme="dark"] .menu-content-v2-restaurant-row strong{color:var(--mcv2-text)!important}
+html[data-beyond-theme="dark"] .menu-content-v2-category-row small,
+html[data-beyond-theme="dark"] .menu-content-v2-items small,
+html[data-beyond-theme="dark"] .menu-content-v2-restaurant-row small,
+html[data-beyond-theme="dark"] .menu-content-v2-tree-label,
+html[data-beyond-theme="dark"] .menu-content-v2-friendly-drag-hint{color:var(--mcv2-muted)!important}
+html[data-beyond-theme="dark"] .menu-content-v2-tree-label small{background:#141c28!important;color:#9dabbe!important}
+
+html[data-beyond-theme="dark"] .menu-content-v2-preview,
+html[data-beyond-theme="dark"] .menu-content-v2-canvas-toolbar{
+  background:#08101a!important;
+  border-color:#1e2937!important;
+  color:var(--mcv2-text)!important;
+}
+html[data-beyond-theme="dark"] .menu-content-v2-canvas{
+  background:radial-gradient(circle at 1px 1px,rgba(132,149,177,.14) 1px,transparent 1.15px) 0 0/18px 18px,#07101a!important;
+}
+
+html[data-beyond-theme="dark"] .menu-content-v2-primary-editor .menu-content-v2-language-card.is-primary,
+html[data-beyond-theme="dark"] .menu-content-v2-primary-editor .menu-content-v2-language-card.is-primary:hover{
+  background:transparent!important;
+}
+
+html[data-beyond-theme="dark"] .menu-content-v2-field>label,
+html[data-beyond-theme="dark"] .menu-content-v2-field>label small,
+html[data-beyond-theme="dark"] .menu-content-v2-inspector-head p,
+html[data-beyond-theme="dark"] .menu-content-v2-toggle small,
+html[data-beyond-theme="dark"] .menu-content-v2-image-editor-head small,
+html[data-beyond-theme="dark"] .menu-content-v2-image-upload small,
+html[data-beyond-theme="dark"] .menu-content-v2-image-ai small,
+html[data-beyond-theme="dark"] .menu-content-v2-badge-editor>header small,
+html[data-beyond-theme="dark"] .menu-content-v2-badge-group>strong,
+html[data-beyond-theme="dark"] .menu-content-v2-badge-spice>strong{color:var(--mcv2-muted)!important}
+
+html[data-beyond-theme="dark"] .menu-content-v2-field>input,
+html[data-beyond-theme="dark"] .menu-content-v2-field>select,
+html[data-beyond-theme="dark"] .menu-content-v2-field>textarea,
+html[data-beyond-theme="dark"] .menu-content-v2-price,
+html[data-beyond-theme="dark"] .menu-content-v2-image-input,
+html[data-beyond-theme="dark"] .menu-content-v2-price-option input,
+html[data-beyond-theme="dark"] .menu-content-v2-price-option select{
+  color:var(--mcv2-text)!important;
+  background:#0a111b!important;
+  border-color:#263244!important;
+  box-shadow:none!important;
+}
+html[data-beyond-theme="dark"] .menu-content-v2-field>input::placeholder,
+html[data-beyond-theme="dark"] .menu-content-v2-field>textarea::placeholder,
+html[data-beyond-theme="dark"] .menu-content-v2-price input::placeholder{color:#627087!important}
+html[data-beyond-theme="dark"] .menu-content-v2-field>input:focus,
+html[data-beyond-theme="dark"] .menu-content-v2-field>select:focus,
+html[data-beyond-theme="dark"] .menu-content-v2-field>textarea:focus,
+html[data-beyond-theme="dark"] .menu-content-v2-price:focus-within,
+html[data-beyond-theme="dark"] .menu-content-v2-image-input:focus-within{
+  background:#0d1622!important;
+  border-color:#5f85ed!important;
+  box-shadow:0 0 0 3px rgba(95,133,237,.14)!important;
+}
+
+html[data-beyond-theme="dark"] .menu-content-v2-price-mode,
+html[data-beyond-theme="dark"] .menu-content-v2-price-add,
+html[data-beyond-theme="dark"] .menu-content-v2-image-replace,
+html[data-beyond-theme="dark"] .menu-content-v2-image-editor-head>button,
+html[data-beyond-theme="dark"] .menu-content-v2-inspector-add{
+  background:#111b2b!important;
+  border-color:#29436f!important;
+  color:#8faeff!important;
+}
+
+html[data-beyond-theme="dark"] .menu-content-v2-danger{
+  background:#1b1115!important;
+  border-color:#52303a!important;
+  color:#f08a99!important;
+}
+html[data-beyond-theme="dark"] .menu-content-v2-danger:hover{background:#25151b!important}
+
+html[data-beyond-theme="dark"] .menu-content-v2-badge-group button.active{
+  background:#172746!important;
+  border-color:#365b9a!important;
+  color:#a9c0ff!important;
+}
+html[data-beyond-theme="dark"] .menu-content-v2-badge-editor .confirmed{
+  background:#11271f!important;
+  color:#6dd3a5!important;
+}
+html[data-beyond-theme="dark"] .menu-content-v2-friendly-language-chip{
+  background:#10271d!important;
+  border-color:#24533d!important;
+  color:#7bd4ad!important;
+}
+html[data-beyond-theme="dark"] .menu-content-v2-friendly-language-chip.missing{
+  background:#2a2213!important;
+  border-color:#5e4d27!important;
+  color:#d8b96f!important;
+}
+
+html[data-beyond-theme="dark"] .menu-content-v2-inspector-next{
+  background:rgba(11,17,26,.97)!important;
+  border-color:var(--mcv2-line)!important;
+}
+html[data-beyond-theme="dark"] .menu-content-v2-inspector-next>button{
+  color:#fff!important;
+  background:#4f7df1!important;
+}
+
+/* Keep the actual customer menu preview untouched by Studio dark mode. */
+html[data-beyond-theme="dark"] .menu-content-v2-phone,
+html[data-beyond-theme="dark"] .menu-content-v2-phone .bme-menu,
+html[data-beyond-theme="dark"] .menu-content-v2-phone .bme-heritage-exact,
+html[data-beyond-theme="dark"] .menu-content-v2-phone .ep-page{
+  color:initial;
+}

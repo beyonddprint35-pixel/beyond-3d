@@ -1,0 +1,81 @@
+/* Final Content Studio balance pass: editing is primary, preview is supportive. */
+
+@media (min-width:1121px){
+  .menu-content-v2{
+    --mcv2-panel-width:324px;
+    --mcv2-editor-width:420px;
+  }
+
+  .menu-content-v2-workspace{
+    grid-template-columns:var(--mcv2-panel-width) minmax(380px,1fr) var(--mcv2-editor-width)!important;
+  }
+
+  /* The preview stays useful, but no longer consumes disproportionate workspace. */
+  .menu-content-v2-preview{background:#f4f6fa}
+  .menu-content-v2-canvas{padding:14px!important}
+  .menu-content-v2-canvas .menu-studio-mobile-preview-fit{padding:12px!important}
+
+  /* Give the editor a calmer, wider form rhythm. */
+  .menu-content-v2-inspector{border-left:1px solid #e9edf4}
+  [dir="rtl"] .menu-content-v2-inspector{border-left:0;border-right:1px solid #e9edf4}
+  .menu-content-v2-inspector-head{padding-left:18px!important;padding-right:18px!important}
+  .menu-content-v2-primary-editor{padding-left:18px!important;padding-right:18px!important}
+  .menu-content-v2-price-editor,
+  .menu-content-v2-price-options,
+  .menu-content-v2-image-editor,
+  .menu-content-v2-badge-editor,
+  .menu-content-v2-translations,
+  .menu-content-v2-friendly-section:not(.menu-content-v2-translations){
+    margin-left:18px!important;
+    margin-right:18px!important;
+  }
+
+  .menu-content-v2-field>input,
+  .menu-content-v2-field>select,
+  .menu-content-v2-field>textarea{border-radius:10px}
+  .menu-content-v2-field>textarea{min-height:92px!important}
+
+  /* Keep price controls readable in the wider inspector. */
+  .menu-content-v2-price-option{grid-template-columns:minmax(0,1fr) 108px 34px!important}
+
+  /* Structural actions should never compete visually with normal editing. */
+  .menu-content-v2-danger{background:#fff!important;border-color:#f0d8d8!important;color:#a94747!important;box-shadow:none!important}
+  .menu-content-v2-danger:hover{background:#fff7f7!important}
+
+  /* Left hierarchy: stronger category separation, quieter rows. */
+  .menu-content-v2-category-block{margin-bottom:6px!important}
+  .menu-content-v2-category-row{border-color:#edf0f5!important;background:#fff!important}
+  .menu-content-v2-category-row:hover{background:#f8faff!important}
+  .menu-content-v2-category-row.active,
+  .menu-content-v2-category-block:has(.menu-content-v2-items>button.active)>.menu-content-v2-category-row{
+    border-color:#cfdcfb!important;
+    background:#f4f7ff!important;
+  }
+  .menu-content-v2-items{margin:2px 0 4px}
+  .menu-content-v2-items>button{background:transparent}
+
+  /* Sticky Continue button should be present but visually secondary while editing. */
+  .menu-content-v2-inspector-next{padding-left:18px!important;padding-right:18px!important}
+  .menu-content-v2-inspector-next>button{box-shadow:none!important}
+}
+
+@media (max-width:1120px){
+  /* Mobile keeps the same hierarchy with comfortable touch sizing. */
+  .menu-content-v2-inspector-head{padding-left:16px!important;padding-right:16px!important}
+  .menu-content-v2-primary-editor{margin-left:16px!important;margin-right:16px!important}
+  .menu-content-v2-field>input,
+  .menu-content-v2-field>select{min-height:46px}
+  .menu-content-v2-field>textarea{min-height:96px}
+  .menu-content-v2-price-mode,
+  .menu-content-v2-price-add,
+  .menu-content-v2-image-replace,
+  .menu-content-v2-danger,
+  .menu-content-v2-inspector-add{min-height:44px}
+
+  .menu-content-v2-badge-editor,
+  .menu-content-v2-translations,
+  .menu-content-v2-friendly-section:not(.menu-content-v2-translations){
+    margin-left:16px!important;
+    margin-right:16px!important;
+  }
+}

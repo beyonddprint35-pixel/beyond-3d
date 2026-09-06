@@ -1,5 +1,13 @@
+import { useEffect, useState } from "react";
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, ChevronRight, EyeOff, Pencil, Plus } from "lucide-react";
 import { groupBranch, ordered } from "../features/menu-engine/studio/menuStructure";
+import "./MenuContentContextAdd.css";
+
+const ADD_COPY = {
+  en: { add: "Add", item: "Item", category: "Category", subcategory: "Subcategory", itemHint: "Add to this category", subHint: "Create inside this category", categoryHint: "Create a new menu section" },
+  he: { add: "הוספה", item: "פריט", category: "קטגוריה", subcategory: "תת־קטגוריה", itemHint: "הוספה לקטגוריה הזאת", subHint: "יצירה בתוך הקטגוריה הזאת", categoryHint: "יצירת חלק חדש בתפריט" },
+  ar: { add: "إضافة", item: "عنصر", category: "فئة", subcategory: "فئة فرعية", itemHint: "إضافة إلى هذه الفئة", subHint: "إنشاء داخل هذه الفئة", categoryHint: "إنشاء قسم جديد في القائمة" },
+};
 
 function VisibilitySwitch({ entry, name, t, onChange }) {
   const visible = entry.visible !== false;
@@ -32,35 +40,96 @@ export default function MenuContentMobileCategories({
   textValue, priceSummary, onSelectCategory, onEdit, onAddCategory, onAddItem,
   onMoveGroup, onMoveItem, onVisibility,
 }) {
+  const [addOpen, setAddOpen] = useState(false);
   const branch = activeCategory ? groupBranch(menu.groups, activeCategory.id) : [];
   const groupName = (group) => textValue(group.name, contentLanguage) || (group.parent_id ? t.subcategoryName : t.categoryName);
   const itemName = (item) => textValue(item.name, contentLanguage) || t.itemName;
+  const addCopy = ADD_COPY[contentLanguage] || ADD_COPY.en;
+
+  useEffect(() => setAddOpen(false), [activeCategory?.id]);
+
+  useEffect(() => {
+    if (!addOpen) return undefined;
+
+    const closeIfOutside = (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      if (!target.closest(".menu-content-v2-context-add")) setAddOpen(false);
+    };
+
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") setAddOpen(false);
+    };
+
+    document.addEventListener("pointerdown", closeIfOutside);
+    document.addEventListener("keydown", closeOnEscape);
+
+    return () => {
+      document.removeEventListener("pointerdown", closeIfOutside);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [addOpen]);
+
   function branchItemCount(group) {
     const ids = new Set(groupBranch(menu.groups, group.id).map((entry) => entry.id));
     return menu.items.filter((item) => ids.has(item.group_id)).length;
   }
+
+  function addAndClose(action) {
+    setAddOpen(false);
+    action();
+  }
+
+  function ContextAdd({ mobile = false }) {
+    const categoryName = activeCategory ? groupName(activeCategory) : "";
+    return (
+      <div className={`menu-content-v2-context-add ${mobile ? "is-mobile" : "is-desktop"}`}>
+        <button type="button" className="menu-content-v2-context-add-trigger" aria-expanded={addOpen} onClick={() => setAddOpen((value) => !value)}>
+          <Plus size={mobile ? 20 : 15} />
+          <span>{addCopy.add}</span>
+        </button>
+        {addOpen ? (
+          <div className="menu-content-v2-context-add-menu">
+            {activeCategory ? <>
+              <button type="button" onClick={() => addAndClose(() => onAddItem(activeCategory.id))}>
+                <span className="icon"><Plus size={15} /></span>
+                <span><strong>{addCopy.item}</strong><small>{categoryName ? `${addCopy.itemHint} · ${categoryName}` : addCopy.itemHint}</small></span>
+              </button>
+              <button type="button" onClick={() => addAndClose(() => onAddCategory(activeCategory.id))}>
+                <span className="icon"><Plus size={15} /></span>
+                <span><strong>{addCopy.subcategory}</strong><small>{addCopy.subHint}</small></span>
+              </button>
+            </> : null}
+            <button type="button" onClick={() => addAndClose(() => onAddCategory())}>
+              <span className="icon"><Plus size={15} /></span>
+              <span><strong>{addCopy.category}</strong><small>{addCopy.categoryHint}</small></span>
+            </button>
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+
   function renderItems(group, hiddenByParent) {
     const items = ordered(menu.items.filter((item) => item.group_id === group.id));
     return (
-      <>
-        <div className="menu-content-v2-mobile-item-list">
-          {items.map((item, index) => (
-            <div className={`menu-content-v2-mobile-item-entry ${item.visible === false || hiddenByParent ? "is-hidden" : ""}`} key={item.id}>
-              <button type="button" className="menu-content-v2-mobile-item-row" onClick={() => onEdit({ type: "item", id: item.id })}>
-                <span><strong dir={contentDir}>{itemName(item)}</strong><small>{priceSummary(item, menu.currency_symbol || "₪", contentLanguage) || t.noPrice}</small></span>
-                <ChevronRight size={16} />
-              </button>
-              <div className="menu-content-v2-mobile-item-actions">
-                <MoveButtons index={index} count={items.length} name={itemName(item)} t={t} onMove={(step) => onMoveItem(item.id, step)} />
-                <VisibilitySwitch entry={item} name={itemName(item)} t={t} onChange={(visible) => onVisibility("items", item.id, visible)} />
-              </div>
+      <div className="menu-content-v2-mobile-item-list">
+        {items.map((item, index) => (
+          <div className={`menu-content-v2-mobile-item-entry ${item.visible === false || hiddenByParent ? "is-hidden" : ""}`} key={item.id}>
+            <button type="button" className="menu-content-v2-mobile-item-row" onClick={() => onEdit({ type: "item", id: item.id })}>
+              <span><strong dir={contentDir}>{itemName(item)}</strong><small>{priceSummary(item, menu.currency_symbol || "₪", contentLanguage) || t.noPrice}</small></span>
+              <ChevronRight size={16} />
+            </button>
+            <div className="menu-content-v2-mobile-item-actions">
+              <MoveButtons index={index} count={items.length} name={itemName(item)} t={t} onMove={(step) => onMoveItem(item.id, step)} />
+              <VisibilitySwitch entry={item} name={itemName(item)} t={t} onChange={(visible) => onVisibility("items", item.id, visible)} />
             </div>
-          ))}
-        </div>
-        <button type="button" className="menu-content-v2-mobile-add-item" onClick={() => onAddItem(group.id)}><Plus size={16} /> {t.addItem}</button>
-      </>
+          </div>
+        ))}
+      </div>
     );
   }
+
   function renderGroup(group, isRoot) {
     const siblings = isRoot ? categories : ordered(menu.groups.filter((entry) => entry.parent_id === group.parent_id));
     const index = siblings.findIndex((entry) => entry.id === group.id);
@@ -76,28 +145,31 @@ export default function MenuContentMobileCategories({
           <VisibilitySwitch entry={group} name={groupName(group)} t={t} onChange={(visible) => onVisibility("groups", group.id, visible)} />
         </div>
         {group.visible === false || hiddenByParent ? <p className="menu-content-v2-mobile-hidden-note"><EyeOff size={14} />{hiddenByParent ? t.hiddenByCategory : t.hiddenGroup}</p> : null}
-        {isRoot ? <div className="menu-content-v2-mobile-subcategory-heading"><button type="button" onClick={() => onAddCategory(group.id)}><Plus size={17} /> {t.addSubcategory}</button></div> : null}
         {renderItems(group, group.visible === false || hiddenByParent)}
-        {isRoot ? <>
-          {branch.length > 1 ? <div className="menu-content-v2-mobile-subcategory-heading"><strong>{t.subcategories}</strong></div> : null}
+        {isRoot && branch.length > 1 ? <>
+          <div className="menu-content-v2-mobile-subcategory-heading"><strong>{t.subcategories}</strong></div>
           {branch.slice(1).map((child) => renderGroup(child, false))}
         </> : null}
       </section>
     );
   }
+
   return (
-    <div className="menu-content-v2-mobile-category-browser">
-      <div className="menu-content-v2-mobile-category-nav">
-        <div className="menu-content-v2-mobile-category-rail" aria-label={t.categories}>
-          {categories.map((group) => (
-            <button type="button" aria-pressed={activeCategory?.id === group.id} className={`menu-content-v2-mobile-category-tab ${activeCategory?.id === group.id ? "active" : ""}`} key={group.id} onClick={() => onSelectCategory(group.id)}>
-              <strong dir={contentDir}>{groupName(group)}</strong><small>{group.visible === false ? <><EyeOff size={12} /> {t.hidden} · </> : null}{t.items(branchItemCount(group))}</small>
-            </button>
-          ))}
+    <>
+      <ContextAdd />
+      <div className="menu-content-v2-mobile-category-browser">
+        <div className="menu-content-v2-mobile-category-nav">
+          <div className="menu-content-v2-mobile-category-rail" aria-label={t.categories}>
+            {categories.map((group) => (
+              <button type="button" aria-pressed={activeCategory?.id === group.id} className={`menu-content-v2-mobile-category-tab ${activeCategory?.id === group.id ? "active" : ""}`} key={group.id} onClick={() => onSelectCategory(group.id)}>
+                <strong dir={contentDir}>{groupName(group)}</strong><small>{group.visible === false ? <><EyeOff size={12} /> {t.hidden} · </> : null}{t.items(branchItemCount(group))}</small>
+              </button>
+            ))}
+          </div>
+          <ContextAdd mobile />
         </div>
-        <button type="button" className="menu-content-v2-mobile-category-add" onClick={() => onAddCategory()} title={t.addCategory} aria-label={t.addCategory}><Plus size={21} /></button>
+        {activeCategory ? renderGroup(activeCategory, true) : null}
       </div>
-      {activeCategory ? renderGroup(activeCategory, true) : null}
-    </div>
+    </>
   );
 }

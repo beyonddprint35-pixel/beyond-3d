@@ -1,0 +1,223 @@
+/* Preview-only fixes for Heritage Original and accessibility controls. */
+
+/* Make the simulated device viewport establish the containing block for
+   fixed accessibility UI. This keeps the launcher inside the device screen
+   instead of drifting to the transformed hardware shell. */
+.menu-preview-v2 .studio-v3-preview-device-screen{
+  position:relative;
+  transform:translateZ(0);
+  isolation:isolate;
+}
+
+/* In preview, Heritage must fill the simulated device viewport itself.
+   Using 100dvh here measures the real browser viewport, which leaves an
+   unwanted strip below the menu inside the simulated phone/tablet/desktop. */
+.menu-preview-v2 .studio-v3-preview-device-screen > .bme-heritage-exact{
+  width:100% !important;
+  height:100% !important;
+  min-height:100% !important;
+  background:var(--ep-paper,#fffdf8) !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-screen > .bme-heritage-exact .ep-app{
+  width:100% !important;
+  height:100% !important;
+  min-height:100% !important;
+  max-height:100% !important;
+}
+
+.menu-preview-v2 .studio-v3-preview-device-screen .restaurant-a11y-toggle{
+  left:16px !important;
+  right:auto !important;
+  bottom:16px !important;
+  z-index:9999 !important;
+  width:64px !important;
+  height:64px !important;
+  border:3px solid #fff !important;
+  color:#fff !important;
+  background:#111 !important;
+  box-shadow:0 10px 28px rgba(0,0,0,.32) !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-screen .restaurant-a11y-toggle svg{
+  width:38px !important;
+  height:38px !important;
+  color:#fff !important;
+  stroke:#fff !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-screen .restaurant-a11y-toggle .restaurant-a11y-head{
+  fill:#fff !important;
+  stroke:none !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-screen .restaurant-a11y-panel{
+  left:16px !important;
+  right:auto !important;
+  bottom:92px !important;
+  z-index:10000 !important;
+  width:min(330px,calc(100% - 32px)) !important;
+  max-height:calc(100% - 116px) !important;
+}
+
+/* Heritage Original was deliberately capped at a 460px mobile column. In
+   tablet/desktop preview that made it look like a phone menu floating inside
+   the larger device. Let it become a genuine responsive layout in those
+   device presets while preserving the approved mobile presentation. */
+.menu-preview-v2 .studio-v3-preview-device-shell.tablet .bme-heritage-exact,
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact{
+  width:100% !important;
+  height:100% !important;
+  min-height:100% !important;
+  background:var(--ep-bg,#f6f4ef) !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.tablet .bme-heritage-exact .ep-app,
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-app{
+  width:100% !important;
+  max-width:none !important;
+  height:100% !important;
+  min-height:100% !important;
+  margin:0 !important;
+  box-shadow:none !important;
+}
+
+/* Tablet: wider spacing and rows so Heritage reads as a tablet design. */
+.menu-preview-v2 .studio-v3-preview-device-shell.tablet .bme-heritage-exact .ep-header{
+  padding:28px 34px 16px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.tablet .bme-heritage-exact .ep-hero{
+  margin:8px 30px 18px !important;
+  padding:24px 28px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.tablet .bme-heritage-exact .ep-tabs{
+  padding-inline:30px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.tablet .bme-heritage-exact .ep-section-head{
+  padding-inline:34px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.tablet .bme-heritage-exact .ep-menu-list{
+  padding-inline:30px !important;
+}
+
+/* Desktop: give Heritage a genuine desktop composition instead of stretching
+   the mobile layout. The hero and navigation span the page, while menu items
+   use a balanced multi-column grid that fills the available canvas. */
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-app{
+  grid-template-rows:auto auto auto auto minmax(0,1fr) auto !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-app.ep-no-hero{
+  grid-template-rows:auto auto auto minmax(0,1fr) auto !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-header{
+  min-height:78px !important;
+  padding:18px 52px 12px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-brand{
+  gap:16px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-logo{
+  width:52px !important;
+  height:52px !important;
+  flex-basis:52px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-brand-title{
+  font-size:30px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-hero{
+  min-height:172px !important;
+  margin:8px 48px 14px !important;
+  padding:28px 38px !important;
+  border-radius:30px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-hero-title{
+  max-width:54% !important;
+  margin-top:10px !important;
+  font-size:58px !important;
+  line-height:.92 !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-hero-background-logo{
+  width:300px !important;
+  height:300px !important;
+  bottom:-86px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-tabs-wrap{
+  padding:8px 0 !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-tabs{
+  padding-inline:48px !important;
+  gap:10px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-tabs button{
+  min-height:40px !important;
+  padding-inline:16px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-section-head{
+  min-height:78px !important;
+  padding:18px 52px 10px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-section-head h2{
+  font-size:38px !important;
+}
+
+/* The renderer groups items inside one wrapper per category/subcategory.
+   Make each wrapper span the whole menu width, then create the actual desktop
+   columns inside that wrapper. This prevents the whole category from being
+   squeezed into only one of the outer grid columns. */
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-menu-list{
+  min-height:0 !important;
+  padding:6px 48px 26px !important;
+  display:block !important;
+  overflow-y:auto !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-menu-list > div{
+  width:100% !important;
+  min-width:0 !important;
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:14px 16px !important;
+  align-items:stretch !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-menu-list > div + div{
+  margin-top:18px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-item-category-wrap,
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-item-category,
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-group-note{
+  grid-column:1/-1 !important;
+  width:100% !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-item-category{
+  margin-top:2px !important;
+  padding:10px 4px 8px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-item-row{
+  width:100% !important;
+  min-width:0 !important;
+  min-height:82px !important;
+  margin:0 !important;
+  padding:14px 16px !important;
+  border-radius:18px !important;
+  align-self:stretch !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-item-info{
+  min-width:0 !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-item-name,
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-item-description{
+  overflow-wrap:anywhere !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-item-name{
+  font-size:17px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-item-description{
+  font-size:11px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-item-price,
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-price-option strong{
+  font-size:17px !important;
+}
+.menu-preview-v2 .studio-v3-preview-device-shell.desktop .bme-heritage-exact .ep-footer{
+  min-height:48px !important;
+  padding:7px 20px 8px !important;
+}
+
+/* Keep preview overlays above menu content in every device size. */
+.menu-preview-v2 .studio-v3-preview-device-screen .restaurant-a11y-statement-backdrop{
+  z-index:10001 !important;
+}

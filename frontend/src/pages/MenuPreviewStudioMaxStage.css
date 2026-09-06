@@ -1,0 +1,103 @@
+/* Desktop Preview: prioritize the actual device preview over supporting metadata. */
+@media (min-width: 1051px) and (min-height: 720px) {
+  .menu-preview-v2 {
+    grid-template-rows: auto auto minmax(0,1fr) auto !important;
+  }
+
+  /* Hide the large intro/readiness block on desktop; the preview itself is the focus. */
+  .menu-preview-v2-intro {
+    display: none !important;
+  }
+
+  /* Keep language review available, but compress it into one slim toolbar row. */
+  .menu-preview-v2-language-review {
+    width: min(1480px, calc(100% - 20px)) !important;
+    min-height: 38px !important;
+    margin: 4px auto 4px !important;
+    padding: 4px 6px !important;
+    grid-template-columns: auto minmax(0,1fr) !important;
+    gap: 6px !important;
+    border-radius: 10px !important;
+  }
+  .menu-preview-v2-language-review-heading {
+    min-width: 0 !important;
+    margin: 0 !important;
+    gap: 4px !important;
+  }
+  .menu-preview-v2-language-review-heading > div > span,
+  .menu-preview-v2-language-review-heading > div > strong {
+    display: none !important;
+  }
+  .menu-preview-v2-clear,
+  .menu-preview-v2-empty-warning {
+    min-height: 26px !important;
+    padding: 3px 7px !important;
+    font-size: 7px !important;
+  }
+  .menu-preview-v2-language-cards {
+    gap: 4px !important;
+  }
+  .menu-preview-v2-language-cards > button {
+    min-height: 28px !important;
+    padding: 2px 6px !important;
+    border-radius: 8px !important;
+  }
+  .menu-preview-v2-language-state {
+    width: 18px !important;
+    height: 18px !important;
+    border-radius: 6px !important;
+  }
+  .menu-preview-v2-language-copy strong { font-size: 8px !important; }
+  .menu-preview-v2-language-copy small { display: none !important; }
+  .menu-preview-v2-language-cards b { font-size: 6px !important; }
+
+  /* Give nearly all remaining height to the device stage. */
+  .menu-preview-v2-stage-wrap {
+    width: min(1510px, calc(100% - 12px)) !important;
+    min-height: 0 !important;
+    height: auto !important;
+    align-self: stretch !important;
+    border-radius: 14px !important;
+  }
+  .menu-preview-v2-stage-wrap > .studio-v3-preview-v2 {
+    padding: 4px 6px 6px !important;
+    gap: 3px !important;
+    grid-template-rows: 34px minmax(0,1fr) !important;
+  }
+  .menu-preview-v2-stage-wrap .studio-v3-preview-v2-header {
+    min-height: 34px !important;
+  }
+  .menu-preview-v2-stage-wrap .studio-v3-preview-v2-heading {
+    display: none !important;
+  }
+  .menu-preview-v2-stage-wrap .studio-v3-preview-v2-controls {
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+  .menu-preview-v2-stage-wrap .studio-v3-preview-device-switch,
+  .menu-preview-v2-stage-wrap .studio-v3-preview-zoom {
+    padding: 1px !important;
+  }
+  .menu-preview-v2-stage-wrap .studio-v3-preview-device-switch button,
+  .menu-preview-v2-stage-wrap .studio-v3-preview-zoom button {
+    height: 28px !important;
+  }
+  .menu-preview-v2-stage-wrap .studio-v3-preview-device-switch button {
+    min-width: 78px !important;
+  }
+  .menu-preview-v2-stage-wrap .studio-v3-preview-v2-stage {
+    height: 100% !important;
+    min-height: 0 !important;
+    padding: 4px !important;
+    border-radius: 12px !important;
+  }
+
+  .menu-preview-v2-footer {
+    width: min(1480px, calc(100% - 20px)) !important;
+    padding: 3px 0 4px !important;
+  }
+  .menu-preview-v2-footer button {
+    min-height: 30px !important;
+    padding: 0 11px !important;
+  }
+}
