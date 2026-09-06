@@ -15,12 +15,14 @@ import installMenuTypographyGuard from "./features/menu-engine/renderer/menuTypo
 import installUiTypographyGuard from "./styles/uiTypographyGuard";
 import installMenuContentAdvancedAlwaysOpen from "./features/menu-engine/studio/menuContentAdvancedAlwaysOpen";
 import installMenuContentCategoryAccordion from "./pages/menuContentCategoryAccordion";
+import installMenuStudioViewportLock from "./pages/menuStudioViewportLock";
 import "./components/BeyondMenuPlatform.css";
 import "./components/BeyondLiveMenuDesign.css";
 import "./components/BeyondLiveMenuDesignMobilePatch.css";
 import "./pages/MenuStudioV3Controls.css";
 import "./pages/MenuContentStudioV2FinalPolish.css";
 import "./pages/MenuContentStudioV2FinishingPolish.css";
+import "./pages/menuStudioViewportLock.css";
 import "./features/menu-engine/renderer/menuTypographyGuard.css";
 import "./features/menu-engine/renderer/menuViewportFill.css";
 import "./styles/uiTypographyGuard.css";
@@ -46,6 +48,7 @@ installMenuTypographyGuard();
 installUiTypographyGuard();
 installMenuContentAdvancedAlwaysOpen();
 installMenuContentCategoryAccordion();
+installMenuStudioViewportLock();
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
