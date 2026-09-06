@@ -14,22 +14,32 @@ function containsArabic(value) {
   return /[\u0600-\u06ff]/.test(text(value));
 }
 
-function containsLatin(value) {
-  return /[A-Za-z]/.test(text(value));
-}
-
 function isPlaceholderTranslation(value) {
   const next = text(value);
   if (!next) return true;
-
-  // Never accept punctuation-only / ellipsis-style model fallbacks as a translation.
-  // This catches values such as "...", "…", "---", "???" and similar placeholders.
   if (!/[\p{L}\p{N}]/u.test(next)) return true;
-
   const normalized = next
     .replace(/[\s\u200e\u200f]/g, "")
     .replace(/[.!?…,:;\-–—_'"`()\[\]{}]/g, "");
   return normalized.length === 0;
+}
+
+function hasSuspiciousPlaceholderFragment(value, source = "") {
+  const next = text(value);
+  const original = text(source);
+  if (!next) return false;
+
+  // A model sometimes translates only part of a sentence and substitutes a word
+  // or phrase with "..."/"…". This used to pass because the rest of the sentence
+  // contained valid letters. Treat it as unresolved unless the source itself used
+  // an ellipsis in that place/context.
+  const targetHasEllipsis = /(?:\.{3,}|…{1,})/.test(next);
+  const sourceHasEllipsis = /(?:\.{3,}|…{1,})/.test(original);
+  if (targetHasEllipsis && !sourceHasEllipsis) return true;
+
+  // Also reject obvious replacement-marker runs emitted by failed translation.
+  if (/(?:\?{3,}|-{3,}|_{3,})/.test(next) && !/(?:\?{3,}|-{3,}|_{3,})/.test(original)) return true;
+  return false;
 }
 
 function wrongScript(value, targetLanguage) {
@@ -41,16 +51,18 @@ function wrongScript(value, targetLanguage) {
   return false;
 }
 
-export function translationLooksValid(value, targetLanguage) {
+export function translationLooksValid(value, targetLanguage, source = "") {
   const next = text(value);
   if (!next || isPlaceholderTranslation(next)) return false;
+  if (hasSuspiciousPlaceholderFragment(next, source)) return false;
   return !wrongScript(next, targetLanguage);
 }
 
-export function translationQualityIssue(value, targetLanguage) {
+export function translationQualityIssue(value, targetLanguage, source = "") {
   const next = text(value);
   if (!next) return "missing";
   if (isPlaceholderTranslation(next)) return "placeholder";
+  if (hasSuspiciousPlaceholderFragment(next, source)) return "partial-placeholder";
   if (wrongScript(next, targetLanguage)) return "wrong-script";
   return "";
 }
@@ -70,7 +82,7 @@ function needsRepair(localized, targetLanguage) {
   const current = text(value[targetLanguage]);
   const source = sourceFor(value, targetLanguage);
   if (!source) return false;
-  return !translationLooksValid(current, targetLanguage);
+  return !translationLooksValid(current, targetLanguage, source);
 }
 
 function collectLocalizedField(fields, path, localized, kind, languages) {
@@ -83,16 +95,18 @@ function collectLocalizedField(fields, path, localized, kind, languages) {
       source,
       targetLanguage: language,
       kind,
-      issue: translationQualityIssue(localized?.[language], language),
+      issue: translationQualityIssue(localized?.[language], language, source),
     });
   });
 }
 
 export function collectV3TranslationRepairFields(menu = {}) {
-  const languages = Array.isArray(menu?.languages)
-    ? [...new Set(menu.languages.filter((code) => LANGUAGES.includes(code)))]
+  const configured = Array.isArray(menu?.languages)
+    ? menu.languages.filter((code) => LANGUAGES.includes(code))
     : [];
-  if (!languages.length) return [];
+  // Content Studio supports EN/HE/AR. Validate all three whenever multilingual
+  // localized fields exist, even if an older menu saved an incomplete languages array.
+  const languages = [...new Set(configured.length ? [...configured, ...LANGUAGES] : LANGUAGES)];
 
   const fields = [];
   (menu.groups || []).forEach((group, groupIndex) => {
@@ -170,21 +184,16 @@ export async function repairV3MenuTranslations({ session, projectId, menu }) {
   if (error) throw new Error(parseFunctionError(error));
   if (!data?.ok || !Array.isArray(data?.translations)) throw new Error(data?.error || "Could not repair menu translations.");
 
-  const next = typeof structuredClone === "function"
-    ? structuredClone(menu)
-    : JSON.parse(JSON.stringify(menu));
+  const next = typeof structuredClone === "function" ? structuredClone(menu) : JSON.parse(JSON.stringify(menu));
 
   data.translations.forEach((entry) => {
     const translated = text(entry?.text);
     const field = fields.find((candidate) => candidate.key === entry?.key);
-    if (!field || !translationLooksValid(translated, field.targetLanguage)) return;
+    if (!field || !translationLooksValid(translated, field.targetLanguage, field.source)) return;
     setLocalizedPath(next, entry?.key, translated);
   });
 
-  // Do not silently accept a bad AI fallback. Return the unresolved fields so
-  // Studio can flag them instead of treating punctuation such as "..." as complete.
   const remaining = collectV3TranslationRepairFields(next);
-
   return {
     menu: next,
     repaired: data.translations.length > 0 && remaining.length < fields.length,
