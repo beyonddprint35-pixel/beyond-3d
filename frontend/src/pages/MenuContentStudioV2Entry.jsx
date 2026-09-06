@@ -31,6 +31,12 @@ const ISSUE_COPY = {
   ar: (count) => `${count} ترجمة تحتاج إلى مراجعة`,
 };
 
+const ERROR_COPY = {
+  en: (message) => `Automatic translation failed: ${message}`,
+  he: (message) => `התרגום האוטומטי נכשל: ${message}`,
+  ar: (message) => `فشلت الترجمة التلقائية: ${message}`,
+};
+
 function photoImportTranslationsReady(draft) {
   if (draft?.profile?.aiTranslationsReady === true) return true;
   const pipelineVersion = String(draft?.profile?.aiImportDiagnostics?.pipelineVersion || "").trim().toLowerCase();
@@ -123,6 +129,10 @@ function issueSnapshot(menu) {
   return collectV3TranslationRepairFields(menu || {});
 }
 
+function issueSignature(fields = []) {
+  return fields.map((field) => `${field.key}|${field.targetLanguage}|${field.issue}|${field.source}`).join("\n");
+}
+
 export default function MenuContentStudioV2Entry() {
   const workspace = useMenuStudioWorkspace();
   const params = useMemo(() => new URLSearchParams(window.location.search), []);
@@ -138,8 +148,10 @@ export default function MenuContentStudioV2Entry() {
   const [ready, setReady] = useState(shouldOpenWebsiteImporter || alreadyPrepared || modernPhotoImport);
   const [editorRevision, setEditorRevision] = useState(0);
   const [translationIssues, setTranslationIssues] = useState(() => issueSnapshot(initialDraft?.menu));
+  const [translationError, setTranslationError] = useState("");
   const translationTimerRef = useRef(null);
   const translationBusyRef = useRef(false);
+  const lastAttemptSignatureRef = useRef("");
 
   useEffect(() => {
     if (shouldOpenWebsiteImporter || alreadyPrepared) return undefined;
@@ -169,6 +181,7 @@ export default function MenuContentStudioV2Entry() {
         } catch (error) {
           console.warn("Could not complete V3 menu translations before opening Studio.", error);
           issues = issueSnapshot(repairedMenu);
+          if (active) setTranslationError(error?.message || "Could not reach the translation service.");
         }
       }
 
@@ -191,47 +204,35 @@ export default function MenuContentStudioV2Entry() {
   useEffect(() => {
     if (!ready || shouldOpenWebsiteImporter) return undefined;
 
-    const refreshIssues = () => {
-      const latest = readMenuStudioV2Draft();
-      setTranslationIssues(issueSnapshot(latest?.menu));
-    };
-
-    refreshIssues();
-    const issueInterval = window.setInterval(refreshIssues, 2000);
-
-    const onInputCapture = (event) => {
-      const target = event.target;
-      if (!isTranslationField(target)) return;
-      const start = target.selectionStart;
-      const end = target.selectionEnd;
-      if (start == null || end == null) return;
-      restoreCaretAfterReact(target, start, end, target.selectionDirection);
-    };
-
-    async function translateMissingLanguages() {
+    async function translateMissingLanguages({ force = false } = {}) {
       if (translationBusyRef.current) return;
-
-      // Always persist the latest in-memory Content state first. Previously this
-      // function could read the previous local draft if the owner blurred a field
-      // before the normal 350ms draft-save timer had completed.
       flushStudioDraft();
 
       const draft = readMenuStudioV2Draft();
       const projectId = menuStudioProjectId(draft);
-      if (!draft?.menu || !projectId) return;
-      const fields = collectV3TranslationRepairFields(draft.menu);
-      if (!fields.length) {
-        setTranslationIssues([]);
+      if (!draft?.menu || !projectId) {
+        setTranslationError("The menu project could not be identified.");
         return;
       }
 
+      const fields = collectV3TranslationRepairFields(draft.menu);
+      if (!fields.length) {
+        setTranslationIssues([]);
+        setTranslationError("");
+        lastAttemptSignatureRef.current = "";
+        return;
+      }
+
+      const signature = issueSignature(fields);
+      if (!force && signature === lastAttemptSignatureRef.current) return;
+      lastAttemptSignatureRef.current = signature;
       translationBusyRef.current = true;
+      setTranslationError("");
+
       try {
         const session = await getMenuImportSession();
-        if (!session) {
-          setTranslationIssues(fields);
-          return;
-        }
+        if (!session) throw new Error("Your session is not available. Sign in again and retry.");
+
         const repair = await repairV3MenuTranslations({ session, projectId, menu: draft.menu });
         const latestDraft = readMenuStudioV2Draft();
         if (menuStudioProjectId(latestDraft) !== projectId) return;
@@ -244,31 +245,64 @@ export default function MenuContentStudioV2Entry() {
           menu: normalizedMenu,
           profile: { ...(latestDraft?.profile || {}), aiTranslationsReady: issues.length === 0, translationIssues: issues },
         });
-        if (repair?.repaired) setEditorRevision((current) => current + 1);
+        if (repair?.repaired) {
+          setTranslationError("");
+          setEditorRevision((current) => current + 1);
+        } else if (issues.length) {
+          setTranslationError("The translation service returned no usable replacement for the flagged fields.");
+        }
       } catch (error) {
         console.warn("Could not auto-translate the missing menu languages.", error);
         setTranslationIssues(fields);
+        setTranslationError(error?.message || "Could not reach the translation service.");
       } finally {
         translationBusyRef.current = false;
       }
     }
 
+    const refreshIssues = () => {
+      const latest = readMenuStudioV2Draft();
+      const issues = issueSnapshot(latest?.menu);
+      setTranslationIssues(issues);
+      const signature = issueSignature(issues);
+      if (issues.length && signature !== lastAttemptSignatureRef.current && !translationBusyRef.current) {
+        window.clearTimeout(translationTimerRef.current);
+        translationTimerRef.current = window.setTimeout(() => { void translateMissingLanguages(); }, 250);
+      }
+    };
+
+    refreshIssues();
+    const issueInterval = window.setInterval(refreshIssues, 1500);
+
+    const onInputCapture = (event) => {
+      const target = event.target;
+      if (!isTranslationField(target)) return;
+      const start = target.selectionStart;
+      const end = target.selectionEnd;
+      if (start == null || end == null) return;
+      restoreCaretAfterReact(target, start, end, target.selectionDirection);
+    };
+
     const onBlurCapture = (event) => {
       if (!isTranslationField(event.target)) return;
       if (!String(event.target.value || "").trim()) return;
-
-      // Flush immediately on blur so translation always sees the text the owner
-      // just typed, then give React one short frame before starting the API call.
       flushStudioDraft();
       window.clearTimeout(translationTimerRef.current);
-      translationTimerRef.current = window.setTimeout(() => { void translateMissingLanguages(); }, 120);
+      translationTimerRef.current = window.setTimeout(() => { void translateMissingLanguages({ force: true }); }, 120);
+    };
+
+    const onRetry = () => {
+      lastAttemptSignatureRef.current = "";
+      void translateMissingLanguages({ force: true });
     };
 
     document.addEventListener("input", onInputCapture, true);
     document.addEventListener("blur", onBlurCapture, true);
+    window.addEventListener("beyond-menu-translation-retry", onRetry);
     return () => {
       document.removeEventListener("input", onInputCapture, true);
       document.removeEventListener("blur", onBlurCapture, true);
+      window.removeEventListener("beyond-menu-translation-retry", onRetry);
       window.clearTimeout(translationTimerRef.current);
       window.clearInterval(issueInterval);
     };
@@ -286,6 +320,12 @@ export default function MenuContentStudioV2Entry() {
     <>
       <MenuContentStudioV2 key={editorRevision} />
       {translationIssues.length ? <aside className="menu-content-v2-translation-warning" role="status" aria-live="polite"><span aria-hidden="true">!</span><strong>{(ISSUE_COPY[language] || ISSUE_COPY.en)(translationIssues.length)}</strong></aside> : null}
+      {translationError ? (
+        <aside className="menu-content-v2-translation-error" role="alert">
+          <strong>{(ERROR_COPY[language] || ERROR_COPY.en)(translationError)}</strong>
+          <button type="button" onClick={() => window.dispatchEvent(new CustomEvent("beyond-menu-translation-retry"))}>Retry</button>
+        </aside>
+      ) : null}
     </>
   );
 }
