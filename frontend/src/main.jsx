@@ -14,6 +14,7 @@ import LegacyPublicMenuAnalytics from "./features/menu-engine/analytics/LegacyPu
 import installMenuTypographyGuard from "./features/menu-engine/renderer/menuTypographyGuard";
 import installUiTypographyGuard from "./styles/uiTypographyGuard";
 import installMenuContentAdvancedAlwaysOpen from "./features/menu-engine/studio/menuContentAdvancedAlwaysOpen";
+import installMenuContentCategoryAccordion from "./pages/menuContentCategoryAccordion";
 import "./components/BeyondMenuPlatform.css";
 import "./components/BeyondLiveMenuDesign.css";
 import "./components/BeyondLiveMenuDesignMobilePatch.css";
@@ -41,6 +42,7 @@ if (import.meta.env.DEV && "serviceWorker" in navigator) {
 installMenuTypographyGuard();
 installUiTypographyGuard();
 installMenuContentAdvancedAlwaysOpen();
+installMenuContentCategoryAccordion();
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
