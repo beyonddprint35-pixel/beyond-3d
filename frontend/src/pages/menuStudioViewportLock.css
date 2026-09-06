@@ -1,0 +1,40 @@
+/* Global Studio regulation: the browser page itself never scrolls past the Studio.
+   Scrolling belongs only to the Studio's internal panes. */
+html.menu-studio-viewport-lock,
+body.menu-studio-viewport-lock{
+  width:100%;
+  height:100%;
+  min-height:100%;
+  max-height:100%;
+  overflow:hidden!important;
+  overscroll-behavior:none;
+}
+
+body.menu-studio-viewport-lock #root{
+  width:100%;
+  height:100dvh;
+  min-height:100dvh;
+  max-height:100dvh;
+  overflow:hidden!important;
+}
+
+/* All current Menu Studio tabs live inside the route above. Keep the outer
+   Studio surface pinned to the viewport; individual panels remain scrollable. */
+body.menu-studio-viewport-lock .menu-content-v2,
+body.menu-studio-viewport-lock .menu-design-v2,
+body.menu-studio-viewport-lock .menu-preview-v2,
+body.menu-studio-viewport-lock .menu-analytics-v2,
+body.menu-studio-viewport-lock .menu-publish-v2,
+body.menu-studio-viewport-lock [class*="menu-studio"],
+body.menu-studio-viewport-lock [class*="studio-v3"]{
+  max-height:100dvh;
+}
+
+/* Prevent wheel/touch momentum from bubbling into an empty document canvas. */
+body.menu-studio-viewport-lock .menu-content-v2-workspace,
+body.menu-studio-viewport-lock .menu-design-v2,
+body.menu-studio-viewport-lock .menu-preview-v2,
+body.menu-studio-viewport-lock .menu-analytics-v2,
+body.menu-studio-viewport-lock .menu-publish-v2{
+  overscroll-behavior:contain;
+}
