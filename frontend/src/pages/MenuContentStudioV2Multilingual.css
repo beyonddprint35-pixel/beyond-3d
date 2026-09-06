@@ -1,3 +1,5 @@
+@import "./MenuContentStudioV2Friendly.css";
+
 .menu-content-v2-top-actions{justify-self:end;display:flex;align-items:center;gap:7px;min-width:0}
 .menu-content-v2[dir="rtl"] .menu-content-v2-brand span{text-align:right}
 .menu-content-v2[dir="rtl"] .menu-content-v2-tree,
