@@ -48,24 +48,20 @@ function restoreCaretAfterReact(target, start, end, direction) {
     try {
       const max = String(target.value || "").length;
       target.setSelectionRange(Math.min(start, max), Math.min(end, max), direction || "none");
-    } catch {
-      // Some input types do not expose a text selection API.
-    }
+    } catch {}
   };
   queueMicrotask(restore);
   window.requestAnimationFrame(restore);
 }
 
 function cloneMenu(menu) {
-  return typeof structuredClone === "function"
-    ? structuredClone(menu)
-    : JSON.parse(JSON.stringify(menu));
+  return typeof structuredClone === "function" ? structuredClone(menu) : JSON.parse(JSON.stringify(menu));
 }
 
 function mergeMissingTranslations(latestMenu, repairedMenu, fields) {
   const next = cloneMenu(latestMenu);
 
-  fields.forEach(({ key, targetLanguage }) => {
+  fields.forEach(({ key, targetLanguage, source }) => {
     const parts = String(key || "").split(".");
     if (parts[0] === "groups") {
       const groupIndex = Number(parts[1]);
@@ -76,8 +72,8 @@ function mergeMissingTranslations(latestMenu, repairedMenu, fields) {
       if (!latestGroup || !repairedGroup || !language || (field !== "name" && field !== "note")) return;
       const current = String(latestGroup[field]?.[language] || "").trim();
       const translated = String(repairedGroup[field]?.[language] || "").trim();
-      if (translationLooksValid(current, targetLanguage || language)) return;
-      if (translationLooksValid(translated, targetLanguage || language)) {
+      if (translationLooksValid(current, targetLanguage || language, source)) return;
+      if (translationLooksValid(translated, targetLanguage || language, source)) {
         latestGroup[field] = { ...(latestGroup[field] || {}), [language]: translated };
       }
       return;
@@ -95,8 +91,8 @@ function mergeMissingTranslations(latestMenu, repairedMenu, fields) {
       if (!language) return;
       const current = String(latestItem[field]?.[language] || "").trim();
       const translated = String(repairedItem[field]?.[language] || "").trim();
-      if (translationLooksValid(current, targetLanguage || language)) return;
-      if (translationLooksValid(translated, targetLanguage || language)) {
+      if (translationLooksValid(current, targetLanguage || language, source)) return;
+      if (translationLooksValid(translated, targetLanguage || language, source)) {
         latestItem[field] = { ...(latestItem[field] || {}), [language]: translated };
       }
       return;
@@ -111,8 +107,8 @@ function mergeMissingTranslations(latestMenu, repairedMenu, fields) {
       const labelKey = `label_${language}`;
       const current = String(latestOption[labelKey] || "").trim();
       const translated = String(repairedOption[labelKey] || "").trim();
-      if (translationLooksValid(current, targetLanguage || language)) return;
-      if (translationLooksValid(translated, targetLanguage || language)) {
+      if (translationLooksValid(current, targetLanguage || language, source)) return;
+      if (translationLooksValid(translated, targetLanguage || language, source)) {
         latestOption[labelKey] = translated;
         if (!latestOption.label) latestOption.label = latestOption.label_en || latestOption.label_he || latestOption.label_ar || "";
       }
@@ -155,11 +151,7 @@ export default function MenuContentStudioV2Entry() {
         return;
       }
 
-      const projectId = draft?.importProject?.id
-        || draft?.profile?.importedProjectId
-        || draft?.menu?.source_project_id
-        || "";
-
+      const projectId = draft?.importProject?.id || draft?.profile?.importedProjectId || draft?.menu?.source_project_id || "";
       let repairedMenu = normalizeV3MenuPriceOptions(draft.menu);
       let issues = issueSnapshot(repairedMenu);
 
@@ -184,11 +176,7 @@ export default function MenuContentStudioV2Entry() {
         writeMenuStudioV2Draft({
           ...draft,
           menu: repairedMenu,
-          profile: {
-            ...(draft.profile || {}),
-            ...(modernPhotoImport ? { aiTranslationsReady: true } : {}),
-            translationIssues: issues,
-          },
+          profile: { ...(draft.profile || {}), ...(modernPhotoImport ? { aiTranslationsReady: true } : {}), translationIssues: issues },
         });
         workspace?.markContentReady(menuStudioProjectId(draft));
         setReady(true);
@@ -201,6 +189,16 @@ export default function MenuContentStudioV2Entry() {
 
   useEffect(() => {
     if (!ready || shouldOpenWebsiteImporter) return undefined;
+
+    const refreshIssues = () => {
+      const latest = readMenuStudioV2Draft();
+      setTranslationIssues(issueSnapshot(latest?.menu));
+    };
+
+    // Always re-check once Studio is mounted. This catches older drafts that were
+    // previously marked aiTranslationsReady before stricter quality rules existed.
+    refreshIssues();
+    const issueInterval = window.setInterval(refreshIssues, 2000);
 
     const onInputCapture = (event) => {
       const target = event.target;
@@ -239,11 +237,7 @@ export default function MenuContentStudioV2Entry() {
         writeMenuStudioV2Draft({
           ...latestDraft,
           menu: normalizedMenu,
-          profile: {
-            ...(latestDraft?.profile || {}),
-            aiTranslationsReady: issues.length === 0,
-            translationIssues: issues,
-          },
+          profile: { ...(latestDraft?.profile || {}), aiTranslationsReady: issues.length === 0, translationIssues: issues },
         });
         if (repair?.repaired) setEditorRevision((current) => current + 1);
       } catch (error) {
@@ -258,9 +252,7 @@ export default function MenuContentStudioV2Entry() {
       if (!isTranslationField(event.target)) return;
       if (!String(event.target.value || "").trim()) return;
       window.clearTimeout(translationTimerRef.current);
-      translationTimerRef.current = window.setTimeout(() => {
-        void translateMissingLanguages();
-      }, 475);
+      translationTimerRef.current = window.setTimeout(() => { void translateMissingLanguages(); }, 475);
     };
 
     document.addEventListener("input", onInputCapture, true);
@@ -269,6 +261,7 @@ export default function MenuContentStudioV2Entry() {
       document.removeEventListener("input", onInputCapture, true);
       document.removeEventListener("blur", onBlurCapture, true);
       window.clearTimeout(translationTimerRef.current);
+      window.clearInterval(issueInterval);
     };
   }, [ready, shouldOpenWebsiteImporter]);
 
@@ -276,24 +269,14 @@ export default function MenuContentStudioV2Entry() {
 
   if (!ready) {
     const language = readStudioLanguage("en");
-    return (
-      <main className="menu-content-v2-entry-loading" dir={language === "he" || language === "ar" ? "rtl" : "ltr"}>
-        <span className="menu-content-v2-entry-spinner" aria-hidden="true" />
-        <strong>{COPY[language] || COPY.en}</strong>
-      </main>
-    );
+    return <main className="menu-content-v2-entry-loading" dir={language === "he" || language === "ar" ? "rtl" : "ltr"}><span className="menu-content-v2-entry-spinner" aria-hidden="true" /><strong>{COPY[language] || COPY.en}</strong></main>;
   }
 
   const language = readStudioLanguage("en");
   return (
     <>
       <MenuContentStudioV2 key={editorRevision} />
-      {translationIssues.length ? (
-        <aside className="menu-content-v2-translation-warning" role="status" aria-live="polite">
-          <span aria-hidden="true">!</span>
-          <strong>{(ISSUE_COPY[language] || ISSUE_COPY.en)(translationIssues.length)}</strong>
-        </aside>
-      ) : null}
+      {translationIssues.length ? <aside className="menu-content-v2-translation-warning" role="status" aria-live="polite"><span aria-hidden="true">!</span><strong>{(ISSUE_COPY[language] || ISSUE_COPY.en)(translationIssues.length)}</strong></aside> : null}
     </>
   );
 }
