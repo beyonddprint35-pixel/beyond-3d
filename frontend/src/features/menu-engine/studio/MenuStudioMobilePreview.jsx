@@ -28,12 +28,20 @@ export default function MenuStudioMobilePreview({ menu, design, language = "en",
   const holderStyle = useMemo(() => ({ width: `${Math.round(MOBILE_DEVICE.outerWidth * scale)}px`, height: `${Math.round(MOBILE_DEVICE.outerHeight * scale)}px` }), [scale]);
   const deviceStyle = useMemo(() => ({ width: `${MOBILE_DEVICE.outerWidth}px`, height: `${MOBILE_DEVICE.outerHeight}px`, transform: `scale(${scale})`, "--studio-mobile-screen-width": `${MOBILE_DEVICE.screenWidth}px`, "--studio-mobile-screen-height": `${MOBILE_DEVICE.screenHeight}px` }), [scale]);
 
+  const broadcast = (detail) => window.dispatchEvent(new CustomEvent("beyond-content-preview-select", { detail }));
   const handlePreviewEvent = (event) => {
-    if (!event?.entityId) return;
-    if (event.type === "item_open") onSelectItem?.(event.entityId);
-    if (event.type === "category_view") onSelectCategory?.(event.entityId);
-    if (event.type === "item_open" || event.type === "category_view") window.dispatchEvent(new CustomEvent("beyond-content-preview-select", { detail: event }));
+    if (event?.type !== "item_open" || !event.entityId) return;
+    onSelectItem?.(event.entityId);
+    broadcast(event);
+  };
+  const handlePreviewClick = (event) => {
+    const button = event.target.closest?.(".bme-category-nav button, .ep-tabs button");
+    if (!button) return;
+    const label = String(button.textContent || "").trim();
+    if (!label) return;
+    onSelectCategory?.(label);
+    broadcast({ type: "category_click", label, language });
   };
 
-  return <div className="menu-studio-mobile-preview-fit" ref={stageRef}><div className="menu-studio-mobile-preview-holder" style={holderStyle}><div className="menu-studio-mobile-preview-device" style={deviceStyle}><div className="menu-studio-mobile-preview-hardware"><span className="menu-studio-mobile-preview-island" aria-hidden="true" /><div className="menu-studio-mobile-preview-screen" dir={isRtl(language) ? "rtl" : "ltr"} lang={language}><div className="menu-studio-mobile-preview-scroll"><MenuRenderer menu={{ ...menu, default_language: language }} design={design} initialLanguage={language} onAnalyticsEvent={handlePreviewEvent} /></div></div><span className="menu-studio-mobile-preview-home" aria-hidden="true" /></div></div></div></div>;
+  return <div className="menu-studio-mobile-preview-fit" ref={stageRef}><div className="menu-studio-mobile-preview-holder" style={holderStyle}><div className="menu-studio-mobile-preview-device" style={deviceStyle}><div className="menu-studio-mobile-preview-hardware"><span className="menu-studio-mobile-preview-island" aria-hidden="true" /><div className="menu-studio-mobile-preview-screen" dir={isRtl(language) ? "rtl" : "ltr"} lang={language} onClickCapture={handlePreviewClick}><div className="menu-studio-mobile-preview-scroll"><MenuRenderer menu={{ ...menu, default_language: language }} design={design} initialLanguage={language} onAnalyticsEvent={handlePreviewEvent} /></div></div><span className="menu-studio-mobile-preview-home" aria-hidden="true" /></div></div></div></div>;
 }
