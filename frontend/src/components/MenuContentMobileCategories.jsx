@@ -48,6 +48,28 @@ export default function MenuContentMobileCategories({
 
   useEffect(() => setAddOpen(false), [activeCategory?.id]);
 
+  useEffect(() => {
+    if (!addOpen) return undefined;
+
+    const closeIfOutside = (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      if (!target.closest(".menu-content-v2-context-add")) setAddOpen(false);
+    };
+
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") setAddOpen(false);
+    };
+
+    document.addEventListener("pointerdown", closeIfOutside);
+    document.addEventListener("keydown", closeOnEscape);
+
+    return () => {
+      document.removeEventListener("pointerdown", closeIfOutside);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [addOpen]);
+
   function branchItemCount(group) {
     const ids = new Set(groupBranch(menu.groups, group.id).map((entry) => entry.id));
     return menu.items.filter((item) => ids.has(item.group_id)).length;
