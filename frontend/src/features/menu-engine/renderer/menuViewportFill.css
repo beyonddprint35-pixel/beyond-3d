@@ -1,0 +1,61 @@
+/* =========================================================
+   BEYOND MENU — FULL VIEWPORT REGULATION
+   Every customer-facing menu design must occupy at least the full available
+   screen. Short menus should expand naturally instead of exposing the theme
+   background as an empty strip below the footer.
+   ========================================================= */
+
+/* Standard renderer family */
+.bme-menu {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100%;
+}
+
+.bme-menu > .bme-content {
+  flex: 1 0 auto;
+}
+
+.bme-menu > .bme-footer {
+  margin-top: auto;
+}
+
+/* Heritage renderer family */
+.ep-page,
+.bme-heritage-exact {
+  width: 100%;
+  min-height: 100%;
+}
+
+.bme-heritage-exact > .ep-app,
+.ep-page > .ep-app {
+  width: 100%;
+  min-height: 100%;
+}
+
+/* Studio/device previews: whatever renderer is mounted directly inside the
+   simulated screen must always paint at least the full screen height. */
+.menu-studio-mobile-preview-scroll > *,
+.studio-v3-preview-device-screen > * {
+  width: 100%;
+  min-height: 100% !important;
+}
+
+/* Keep the useful page surface growing on short menus so the footer sits at
+   the bottom of the screen rather than leaving an exposed background band. */
+.menu-studio-mobile-preview-scroll > .bme-menu,
+.studio-v3-preview-device-screen > .bme-menu {
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-studio-mobile-preview-scroll > .bme-menu > .bme-content,
+.studio-v3-preview-device-screen > .bme-menu > .bme-content {
+  flex: 1 0 auto;
+}
+
+.menu-studio-mobile-preview-scroll > .bme-menu > .bme-footer,
+.studio-v3-preview-device-screen > .bme-menu > .bme-footer {
+  margin-top: auto;
+}
