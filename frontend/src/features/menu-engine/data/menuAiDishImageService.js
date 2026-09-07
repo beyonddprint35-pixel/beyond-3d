@@ -143,6 +143,42 @@ async function parseFunctionError(error) {
   return new Error(message);
 }
 
+async function requireSession() {
+  const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+  if (sessionError) throw sessionError;
+  const session = sessionData?.session;
+  if (!session?.access_token) throw new Error("Sign in to use AI dish photos.");
+  return session;
+}
+
+export async function searchProductReferenceImages(query) {
+  const session = await requireSession();
+  const { data, error } = await supabase.functions.invoke("menu-ai-product-reference-search", {
+    body: { action: "search", query: String(query || "").trim().slice(0, 180) },
+    headers: { Authorization: `Bearer ${session.access_token}` },
+  });
+  if (error) throw await parseFunctionError(error);
+  if (!data?.ok) throw new Error(data?.error || "Could not search for product references.");
+  return Array.isArray(data.results) ? data.results : [];
+}
+
+export async function resolveProductReferenceImage(result) {
+  const session = await requireSession();
+  const { data, error } = await supabase.functions.invoke("menu-ai-product-reference-search", {
+    body: {
+      action: "resolve",
+      imageUrl: result?.imageUrl || "",
+      sourceUrl: result?.sourceUrl || "",
+      source: result?.source || "",
+      title: result?.title || "",
+    },
+    headers: { Authorization: `Bearer ${session.access_token}` },
+  });
+  if (error) throw await parseFunctionError(error);
+  if (!data?.ok || !data?.reference?.base64) throw new Error(data?.error || "Could not prepare this online reference.");
+  return data.reference;
+}
+
 export async function generateDishImageWithAi({
   projectId,
   restaurantName,
@@ -155,14 +191,14 @@ export async function generateDishImageWithAi({
   brandName = "",
   brandMode = "",
   brandReference = null,
+  productReference = null,
 }) {
-  const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-  if (sessionError) throw sessionError;
-  const session = sessionData?.session;
-  if (!session?.access_token) throw new Error("Sign in to generate AI dish photos.");
+  const session = await requireSession();
   if (!projectId) throw new Error("This menu needs a saved project before AI dish photos can be generated.");
   if (!item?.id || !item?.name) throw new Error("Choose a valid menu item.");
   if (!reference?.base64 && !editReferencePath) throw new Error("Upload restaurant reference photos first, or refine an existing saved version.");
+
+  const selectedProductReference = productReference || (typeof window !== "undefined" ? window.__beyondAiProductReference || null : null);
 
   const { data, error } = await supabase.functions.invoke("menu-ai-dish-image-test", {
     body: {
@@ -177,6 +213,7 @@ export async function generateDishImageWithAi({
       brandName,
       brandMode,
       brandReference,
+      productReference: selectedProductReference,
     },
     headers: { Authorization: `Bearer ${session.access_token}` },
   });
