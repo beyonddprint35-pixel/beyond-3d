@@ -14,7 +14,6 @@ import {
 
 import beyondLogo from "../assets/beyond-logo-transparent.png";
 import StudioLanguageMenu from "../components/StudioLanguageMenu";
-import { removeMenuItemImage } from "../features/menu-engine/data/menuItemImageService";
 import {
   AI_DISH_MAX_ITEMS,
   AI_DISH_MIN_ITEMS,
@@ -71,117 +70,45 @@ const COPY = {
     search: "Search menu items",
     selected: "selected",
     max: "Maximum 3 items",
-    generate: "Generate test images",
     generateAnchor: "Generate first style image",
     generateRemaining: "Generate remaining with Style Lock",
     approveToContinue: "Approve the first result to lock the photo style and continue.",
     preparing: "Preparing references…",
     generating: "Generating",
     results: "AI results",
-    resultsHint: "Approve only images that are representative of what guests will actually receive.",
+    resultsHint: "Every generated version is saved. Switching back to an older version does not use another AI generation.",
     styleLock: "Style Lock",
     styleLockWaiting: "Approve the first generated dish. BEYOND will use it as the visual anchor for every remaining image.",
     styleLockActive: "Style Lock active",
     styleLockActiveHint: "New images now match this approved photo's crop, lighting, plate scale and atmosphere.",
     use: "Use this image",
     used: "Using this image",
-    regenerate: "Regenerate",
+    regenerate: "Create another version",
     moreLike: "More like my restaurant",
     accurate: "Make dish more accurate",
     composition: "Change composition",
+    history: "Saved versions",
+    historyHint: "Tap any version to preview it. This is free and does not generate a new image.",
+    refine: "Refine this image",
+    refinePlaceholder: "Tell Beyond what to change, for example: Add the Guinness logo clearly to the glass. Keep everything else the same.",
+    refineAction: "Create refined version",
+    refineCost: "This creates a new saved version and uses 1 AI generation.",
+    selectedVersion: "Selected",
     failed: "Generation failed",
     cost: "AI cost",
     totalCost: "Session AI cost",
     noDraft: "Open an existing menu in Studio before using AI dish photos.",
     projectMissing: "This menu must be saved as a Studio project before the image test can run.",
-    accuracy: "AI images are visual representations. The restaurant owner should verify ingredients, portion and plating before publishing.",
+    accuracy: "AI images are visual representations. The restaurant owner should verify ingredients, portion, branding and plating before publishing.",
     done: "Return to Content",
   },
   he: {
-    eyebrow: "תמונות מנות AI · בדיקה",
-    title: "למדו את BEYOND איך המסעדה שלכם נראית",
-    hint: "העלו כמה תמונות אמיתיות של מנות, בחרו אווירה ואז צרו תמונות תואמות עבור 2–3 פריטים בתפריט.",
-    back: "חזרה לתוכן",
-    references: "1 · תמונות מקור",
-    referenceHint: `העלו ${AI_DISH_REFERENCE_MIN_FILES}–${AI_DISH_REFERENCE_MAX_FILES} תמונות אמיתיות מהמסעדה.`,
-    choosePhotos: "בחירת תמונות מקור",
-    vibe: "2 · אווירת המסעדה",
-    vibeHint: "האווירה מנחה את התאורה והסגנון; התמונות האמיתיות הן ההפניה המרכזית.",
-    custom: "הנחיה נוספת אופציונלית",
-    customPlaceholder: "לדוגמה: צלחות קרמיקה לבנות, שולחן אבן, אור טבעי…",
-    items: "3 · בחרו 2–3 פריטים",
-    itemHint: "תחילה BEYOND יוצר תמונת סגנון אחת. אשרו אותה ואז שאר המנות ישתמשו בה כעוגן צילום.",
-    search: "חיפוש פריטים",
-    selected: "נבחרו",
-    max: "עד 3 פריטים",
-    generate: "יצירת תמונות בדיקה",
-    generateAnchor: "יצירת תמונת סגנון ראשונה",
-    generateRemaining: "יצירת השאר עם Style Lock",
-    approveToContinue: "אשרו את התמונה הראשונה כדי לנעול את סגנון הצילום ולהמשיך.",
-    preparing: "מכין תמונות מקור…",
-    generating: "יוצר",
-    results: "תוצאות AI",
-    resultsHint: "אשרו רק תמונות שמייצגות באופן סביר את המנה שהלקוח יקבל.",
-    styleLock: "Style Lock",
-    styleLockWaiting: "אשרו את המנה הראשונה שנוצרה. BEYOND ישתמש בה כעוגן חזותי לשאר התמונות.",
-    styleLockActive: "Style Lock פעיל",
-    styleLockActiveHint: "התמונות החדשות יתאימו לחיתוך, התאורה, קנה המידה והאווירה של התמונה שאושרה.",
-    use: "שימוש בתמונה",
-    used: "התמונה נבחרה",
-    regenerate: "יצירה מחדש",
-    moreLike: "יותר כמו המסעדה שלי",
-    accurate: "דיוק גבוה יותר במנה",
-    composition: "שינוי קומפוזיציה",
-    failed: "היצירה נכשלה",
-    cost: "עלות AI",
-    totalCost: "עלות AI בסשן",
-    noDraft: "פתחו תפריט קיים ב-Studio לפני שימוש בתמונות AI.",
-    projectMissing: "צריך לשמור את התפריט כפרויקט Studio לפני יצירת תמונות AI.",
-    accuracy: "תמונות AI הן המחשה. יש לוודא מרכיבים, גודל מנה והגשה לפני פרסום.",
-    done: "חזרה לתוכן",
+    eyebrow: "תמונות מנות AI · בדיקה", title: "למדו את BEYOND איך המסעדה שלכם נראית", hint: "העלו כמה תמונות אמיתיות של מנות, בחרו אווירה ואז צרו תמונות תואמות עבור 2–3 פריטים בתפריט.", back: "חזרה לתוכן",
+    references: "1 · תמונות מקור", referenceHint: `העלו ${AI_DISH_REFERENCE_MIN_FILES}–${AI_DISH_REFERENCE_MAX_FILES} תמונות אמיתיות מהמסעדה.`, choosePhotos: "בחירת תמונות מקור", vibe: "2 · אווירת המסעדה", vibeHint: "האווירה מנחה את התאורה והסגנון; התמונות האמיתיות הן ההפניה המרכזית.", custom: "הנחיה נוספת אופציונלית", customPlaceholder: "לדוגמה: צלחות קרמיקה לבנות, שולחן אבן, אור טבעי…", items: "3 · בחרו 2–3 פריטים", itemHint: "תחילה BEYOND יוצר תמונת סגנון אחת. אשרו אותה ואז שאר המנות ישתמשו בה כעוגן צילום.", search: "חיפוש פריטים", selected: "נבחרו", max: "עד 3 פריטים", generateAnchor: "יצירת תמונת סגנון ראשונה", generateRemaining: "יצירת השאר עם Style Lock", approveToContinue: "אשרו את התמונה הראשונה כדי לנעול את סגנון הצילום ולהמשיך.", preparing: "מכין תמונות מקור…", generating: "יוצר", results: "תוצאות AI", resultsHint: "כל גרסה שנוצרת נשמרת. חזרה לגרסה קודמת לא משתמשת ביצירת AI נוספת.", styleLock: "Style Lock", styleLockWaiting: "אשרו את המנה הראשונה שנוצרה. BEYOND ישתמש בה כעוגן חזותי לשאר התמונות.", styleLockActive: "Style Lock פעיל", styleLockActiveHint: "התמונות החדשות יתאימו לחיתוך, התאורה, קנה המידה והאווירה של התמונה שאושרה.", use: "שימוש בתמונה", used: "התמונה נבחרה", regenerate: "יצירת גרסה נוספת", moreLike: "יותר כמו המסעדה שלי", accurate: "דיוק גבוה יותר במנה", composition: "שינוי קומפוזיציה", history: "גרסאות שמורות", historyHint: "לחצו על כל גרסה כדי לצפות בה. הפעולה חינמית ואינה יוצרת תמונה חדשה.", refine: "שיפור התמונה הזו", refinePlaceholder: "כתבו מה לשנות, לדוגמה: הוסף את הלוגו של Guinness בצורה ברורה על הכוס. שמור את כל השאר ללא שינוי.", refineAction: "יצירת גרסה משופרת", refineCost: "הפעולה יוצרת גרסה שמורה חדשה ומשתמשת ביצירת AI אחת.", selectedVersion: "נבחרה", failed: "היצירה נכשלה", cost: "עלות AI", totalCost: "עלות AI בסשן", noDraft: "פתחו תפריט קיים ב-Studio לפני שימוש בתמונות AI.", projectMissing: "צריך לשמור את התפריט כפרויקט Studio לפני יצירת תמונות AI.", accuracy: "תמונות AI הן המחשה. יש לוודא מרכיבים, גודל מנה, מיתוג והגשה לפני פרסום.", done: "חזרה לתוכן",
   },
   ar: {
-    eyebrow: "صور أطباق AI · اختبار",
-    title: "علّموا BEYOND شكل مطعمكم",
-    hint: "ارفعوا بعض الصور الحقيقية للأطباق، اختاروا الأجواء، ثم أنشئوا صوراً متناسقة لـ 2–3 أصناف.",
-    back: "العودة إلى المحتوى",
-    references: "1 · صور مرجعية",
-    referenceHint: `ارفعوا ${AI_DISH_REFERENCE_MIN_FILES}–${AI_DISH_REFERENCE_MAX_FILES} صور حقيقية من المطعم.`,
-    choosePhotos: "اختيار صور مرجعية",
-    vibe: "2 · أجواء المطعم",
-    vibeHint: "الأجواء توجه الإضاءة والمزاج، بينما تبقى الصور الحقيقية المرجع الأساسي.",
-    custom: "توجيه إضافي اختياري",
-    customPlaceholder: "مثال: أطباق خزفية بيضاء، طاولة حجرية، إضاءة نافذة طبيعية…",
-    items: "3 · اختاروا 2–3 أصناف",
-    itemHint: "ينشئ BEYOND أولاً صورة أسلوب واحدة. اعتمدوها ثم تستخدمها بقية الأطباق كمرجع تصوير.",
-    search: "البحث في الأصناف",
-    selected: "مختارة",
-    max: "الحد الأقصى 3 أصناف",
-    generate: "إنشاء صور الاختبار",
-    generateAnchor: "إنشاء صورة الأسلوب الأولى",
-    generateRemaining: "إنشاء البقية مع Style Lock",
-    approveToContinue: "اعتمدوا النتيجة الأولى لتثبيت أسلوب الصور والمتابعة.",
-    preparing: "جارٍ تجهيز الصور المرجعية…",
-    generating: "جارٍ إنشاء",
-    results: "نتائج AI",
-    resultsHint: "اعتمدوا فقط الصور التي تمثل بشكل معقول ما سيحصل عليه الزبون.",
-    styleLock: "Style Lock",
-    styleLockWaiting: "اعتمدوا أول طبق تم إنشاؤه. سيستخدمه BEYOND كمرجع بصري لبقية الصور.",
-    styleLockActive: "Style Lock فعال",
-    styleLockActiveHint: "الصور الجديدة ستتبع القص والإضاءة وحجم الطبق والأجواء في الصورة المعتمدة.",
-    use: "استخدام هذه الصورة",
-    used: "تم اختيار الصورة",
-    regenerate: "إعادة الإنشاء",
-    moreLike: "أقرب إلى مطعمي",
-    accurate: "اجعل الطبق أدق",
-    composition: "تغيير التكوين",
-    failed: "فشل الإنشاء",
-    cost: "تكلفة AI",
-    totalCost: "تكلفة AI للجلسة",
-    noDraft: "افتحوا قائمة موجودة في Studio قبل استخدام صور AI.",
-    projectMissing: "يجب حفظ القائمة كمشروع Studio قبل اختبار صور AI.",
-    accuracy: "صور AI تمثيلية. يجب على صاحب المطعم التحقق من المكونات والحصة والتقديم قبل النشر.",
-    done: "العودة إلى المحتوى",
+    eyebrow: "صور أطباق AI · اختبار", title: "علّموا BEYOND شكل مطعمكم", hint: "ارفعوا بعض الصور الحقيقية للأطباق، اختاروا الأجواء، ثم أنشئوا صوراً متناسقة لـ 2–3 أصناف.", back: "العودة إلى المحتوى",
+    references: "1 · صور مرجعية", referenceHint: `ارفعوا ${AI_DISH_REFERENCE_MIN_FILES}–${AI_DISH_REFERENCE_MAX_FILES} صور حقيقية من المطعم.`, choosePhotos: "اختيار صور مرجعية", vibe: "2 · أجواء المطعم", vibeHint: "الأجواء توجه الإضاءة والمزاج، بينما تبقى الصور الحقيقية المرجع الأساسي.", custom: "توجيه إضافي اختياري", customPlaceholder: "مثال: أطباق خزفية بيضاء، طاولة حجرية، إضاءة نافذة طبيعية…", items: "3 · اختاروا 2–3 أصناف", itemHint: "ينشئ BEYOND أولاً صورة أسلوب واحدة. اعتمدوها ثم تستخدمها بقية الأطباق كمرجع تصوير.", search: "البحث في الأصناف", selected: "مختارة", max: "الحد الأقصى 3 أصناف", generateAnchor: "إنشاء صورة الأسلوب الأولى", generateRemaining: "إنشاء البقية مع Style Lock", approveToContinue: "اعتمدوا النتيجة الأولى لتثبيت أسلوب الصور والمتابعة.", preparing: "جارٍ تجهيز الصور المرجعية…", generating: "جارٍ إنشاء", results: "نتائج AI", resultsHint: "يتم حفظ كل نسخة يتم إنشاؤها. الرجوع إلى نسخة أقدم لا يستخدم إنشاء AI جديداً.", styleLock: "Style Lock", styleLockWaiting: "اعتمدوا أول طبق تم إنشاؤه. سيستخدمه BEYOND كمرجع بصري لبقية الصور.", styleLockActive: "Style Lock فعال", styleLockActiveHint: "الصور الجديدة ستتبع القص والإضاءة وحجم الطبق والأجواء في الصورة المعتمدة.", use: "استخدام هذه الصورة", used: "تم اختيار الصورة", regenerate: "إنشاء نسخة أخرى", moreLike: "أقرب إلى مطعمي", accurate: "اجعل الطبق أدق", composition: "تغيير التكوين", history: "النسخ المحفوظة", historyHint: "اضغط على أي نسخة لمعاينتها. هذا مجاني ولا ينشئ صورة جديدة.", refine: "عدّل هذه الصورة", refinePlaceholder: "اكتب ما تريد تغييره، مثال: أضف شعار Guinness بوضوح على الكأس وحافظ على كل شيء آخر كما هو.", refineAction: "إنشاء نسخة معدلة", refineCost: "ينشئ هذا نسخة محفوظة جديدة ويستخدم عملية إنشاء AI واحدة.", selectedVersion: "مختارة", failed: "فشل الإنشاء", cost: "تكلفة AI", totalCost: "تكلفة AI للجلسة", noDraft: "افتحوا قائمة موجودة في Studio قبل استخدام صور AI.", projectMissing: "يجب حفظ القائمة كمشروع Studio قبل اختبار صور AI.", accuracy: "صور AI تمثيلية. يجب التحقق من المكونات والحصة والعلامة التجارية والتقديم قبل النشر.", done: "العودة إلى المحتوى",
   },
 };
 
@@ -189,11 +116,20 @@ function projectIdFor(draft) {
   const query = new URLSearchParams(window.location.search).get("project") || "";
   return query || draft?.importProject?.id || draft?.profile?.importedProjectId || draft?.menu?.source_project_id || "";
 }
-function itemLabel(item, language) {
-  return localizedDishText(item?.name, language) || localizedDishText(item?.name, "en") || "Unnamed item";
-}
-function descriptionLabel(item, language) {
-  return localizedDishText(item?.description, language) || localizedDishText(item?.description, "en");
+function itemLabel(item, language) { return localizedDishText(item?.name, language) || localizedDishText(item?.name, "en") || "Unnamed item"; }
+function descriptionLabel(item, language) { return localizedDishText(item?.description, language) || localizedDishText(item?.description, "en"); }
+function historyFor(item) { return Array.isArray(item?.image_ai_history) ? item.image_ai_history.filter((entry) => entry?.imageUrl && entry?.imagePath) : []; }
+function resultsFromDraft(draft) {
+  const next = {};
+  for (const item of draft?.menu?.items || []) {
+    const versions = historyFor(item);
+    if (!versions.length) continue;
+    const selectedIndex = Math.max(0, versions.findIndex((entry) => entry.imagePath === item.image_path));
+    const activeIndex = selectedIndex >= 0 ? selectedIndex : versions.length - 1;
+    const active = versions[activeIndex] || versions[versions.length - 1];
+    next[item.id] = { status: "ready", ...active, versions, activeVersion: activeIndex, approved: active.imagePath === item.image_path };
+  }
+  return next;
 }
 
 export default function MenuAiDishImagesV1() {
@@ -201,11 +137,15 @@ export default function MenuAiDishImagesV1() {
   const [draft, setDraft] = useState(initialDraft);
   const [uiLanguage, setUiLanguage] = useState(() => readStudioLanguage(initialDraft?.contentLanguage || "en"));
   const [files, setFiles] = useState([]);
-  const [selectedIds, setSelectedIds] = useState([]);
+  const [selectedIds, setSelectedIds] = useState(() => {
+    const requested = new URLSearchParams(window.location.search).get("item") || "";
+    return requested ? [requested] : [];
+  });
   const [vibeId, setVibeId] = useState("fresh");
   const [customVibe, setCustomVibe] = useState("");
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState({});
+  const [results, setResults] = useState(() => resultsFromDraft(initialDraft));
+  const [refineInstructions, setRefineInstructions] = useState({});
   const [reference, setReference] = useState(null);
   const [styleAnchor, setStyleAnchor] = useState(null);
   const [sessionCost, setSessionCost] = useState(0);
@@ -235,31 +175,22 @@ export default function MenuAiDishImagesV1() {
   useEffect(() => () => filePreviews.forEach(({ url }) => URL.revokeObjectURL(url)), [filePreviews]);
 
   const firstSelectedId = selectedIds[0] || "";
-  const firstResultReady = !styleAnchor && results[firstSelectedId]?.status === "ready";
-  const readyCount = Object.values(results).filter((result) => result?.status === "ready").length;
-  const approvedCount = Object.values(results).filter((result) => result?.approved).length;
+  const firstResultReady = !styleAnchor && results[firstSelectedId]?.status === "ready" && !results[firstSelectedId]?.approved;
+  const readyCount = selectedIds.filter((id) => results[id]?.status === "ready").length;
+  const approvedCount = selectedIds.filter((id) => results[id]?.approved).length;
 
   function goBack() { window.location.assign(`/menu-studio/content${window.location.search || ""}`); }
   function changeLanguage(language) { setUiLanguage(language); writeStudioLanguage(language); }
-  function resetVisualDirection() {
-    setReference(null);
-    setResults({});
-    setStyleAnchor(null);
-  }
+  function resetVisualDirection() { setReference(null); setStyleAnchor(null); }
   function chooseFiles(event) {
     const selected = Array.from(event.target.files || []).slice(0, AI_DISH_REFERENCE_MAX_FILES);
     event.target.value = "";
     if (!selected.length) return;
     const validation = validateDishReferenceFiles(selected);
     if (validation) { setError(validation); return; }
-    setFiles(selected);
-    resetVisualDirection();
-    setError("");
+    setFiles(selected); resetVisualDirection(); setError("");
   }
-  function removeFile(index) {
-    setFiles((current) => current.filter((_, itemIndex) => itemIndex !== index));
-    resetVisualDirection();
-  }
+  function removeFile(index) { setFiles((current) => current.filter((_, itemIndex) => itemIndex !== index)); resetVisualDirection(); }
   function toggleItem(itemId) {
     setSelectedIds((current) => {
       if (current.includes(itemId)) return current.filter((id) => id !== itemId);
@@ -270,39 +201,52 @@ export default function MenuAiDishImagesV1() {
   async function ensureReference() {
     if (reference) return reference;
     setPreparing(true);
-    try {
-      const next = await createDishReferenceCollage(files);
-      setReference(next);
-      return next;
-    } finally { setPreparing(false); }
+    try { const next = await createDishReferenceCollage(files); setReference(next); return next; }
+    finally { setPreparing(false); }
   }
   function payloadFor(item) {
     const group = groupsById.get(item.group_id);
-    return {
-      id: item.id,
-      name: itemLabel(item, uiLanguage),
-      description: descriptionLabel(item, uiLanguage),
-      category: localizedDishText(group?.name, uiLanguage) || localizedDishText(group?.name, "en"),
-    };
+    return { id: item.id, name: itemLabel(item, uiLanguage), description: descriptionLabel(item, uiLanguage), category: localizedDishText(group?.name, uiLanguage) || localizedDishText(group?.name, "en") };
+  }
+  function persistVersion(itemId, version) {
+    setDraft((current) => {
+      if (!current?.menu) return current;
+      const nextDraft = {
+        ...current,
+        menu: {
+          ...current.menu,
+          items: current.menu.items.map((item) => item.id === itemId ? { ...item, image_ai_history: [...historyFor(item), version] } : item),
+        },
+      };
+      writeMenuStudioV2Draft(nextDraft);
+      return nextDraft;
+    });
   }
   async function generateOne(item, forceReference = null, adjustment = "") {
     const preparedReference = forceReference || await ensureReference();
     setResults((current) => ({ ...current, [item.id]: { ...(current[item.id] || {}), status: "generating", error: "" } }));
     try {
-      const result = await generateDishImageWithAi({
-        projectId,
-        restaurantName: menu?.restaurant_name || "",
-        vibe,
-        item: payloadFor(item),
-        reference: preparedReference,
-        styleReferencePath: styleAnchor?.imagePath || "",
-        adjustment,
+      const generated = await generateDishImageWithAi({ projectId, restaurantName: menu?.restaurant_name || "", vibe, item: payloadFor(item), reference: preparedReference, styleReferencePath: styleAnchor?.imagePath || "", adjustment });
+      setSessionCost((current) => current + Number(generated?.cost?.estimated_cost_usd || 0));
+      const version = {
+        id: typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `${item.id}-${Date.now()}`,
+        imageUrl: generated.imageUrl,
+        imagePath: generated.imagePath,
+        model: generated.model || "gpt-image-2",
+        styleLocked: Boolean(generated.styleLocked),
+        cost: generated.cost || null,
+        adjustment: adjustment || "",
+        createdAt: new Date().toISOString(),
+      };
+      persistVersion(item.id, version);
+      setResults((current) => {
+        const existingVersions = Array.isArray(current[item.id]?.versions) ? current[item.id].versions : historyFor(draft?.menu?.items?.find((entry) => entry.id === item.id));
+        const versions = [...existingVersions, version];
+        return { ...current, [item.id]: { status: "ready", ...version, versions, activeVersion: versions.length - 1, approved: false } };
       });
-      setSessionCost((current) => current + Number(result?.cost?.estimated_cost_usd || 0));
-      setResults((current) => ({ ...current, [item.id]: { status: "ready", ...result, approved: false } }));
-      return result;
+      return generated;
     } catch (generationError) {
-      setResults((current) => ({ ...current, [item.id]: { status: "error", error: generationError?.message || t.failed } }));
+      setResults((current) => ({ ...current, [item.id]: { ...(current[item.id] || {}), status: "error", error: generationError?.message || t.failed } }));
       return null;
     }
   }
@@ -310,10 +254,7 @@ export default function MenuAiDishImagesV1() {
     setError("");
     const validation = validateDishReferenceFiles(files);
     if (validation) { setError(validation); return; }
-    if (selectedIds.length < AI_DISH_MIN_ITEMS || selectedIds.length > AI_DISH_MAX_ITEMS) {
-      setError(`Choose ${AI_DISH_MIN_ITEMS}–${AI_DISH_MAX_ITEMS} menu items for this test.`);
-      return;
-    }
+    if (selectedIds.length < AI_DISH_MIN_ITEMS || selectedIds.length > AI_DISH_MAX_ITEMS) { setError(`Choose ${AI_DISH_MIN_ITEMS}–${AI_DISH_MAX_ITEMS} menu items for this test.`); return; }
     if (!projectId) { setError(t.projectMissing); return; }
     if (firstResultReady) { setError(t.approveToContinue); return; }
     setRunning(true);
@@ -331,14 +272,23 @@ export default function MenuAiDishImagesV1() {
           if (item) await generateOne(item, preparedReference);
         }
       }
-    } catch (generationError) {
-      setError(generationError?.message || "Could not prepare the test images.");
-    } finally { setRunning(false); }
+    } catch (generationError) { setError(generationError?.message || "Could not prepare the test images."); }
+    finally { setRunning(false); }
   }
-  async function regenerate(item, adjustment = REGEN_DIRECTIONS.alternative) {
-    const previous = results[item.id];
-    if (previous?.imagePath && !previous?.approved) await removeMenuItemImage(previous.imagePath).catch(() => {});
-    await generateOne(item, null, adjustment);
+  async function regenerate(item, adjustment = REGEN_DIRECTIONS.alternative) { await generateOne(item, null, adjustment); }
+  async function refine(item) {
+    const instruction = String(refineInstructions[item.id] || "").trim();
+    if (!instruction) return;
+    await regenerate(item, `Refine the current concept with this specific customer instruction: ${instruction}. Preserve everything not explicitly requested to change.`);
+  }
+  function selectVersion(itemId, index) {
+    setResults((current) => {
+      const result = current[itemId];
+      const version = result?.versions?.[index];
+      if (!version) return current;
+      const item = draft?.menu?.items?.find((entry) => entry.id === itemId);
+      return { ...current, [itemId]: { ...result, ...version, status: "ready", activeVersion: index, approved: version.imagePath === item?.image_path } };
+    });
   }
   function approve(itemId) {
     const candidate = results[itemId];
@@ -356,21 +306,16 @@ export default function MenuAiDishImagesV1() {
           image_ai_vibe: vibeId,
           image_ai_style_locked: Boolean(styleAnchor || itemId === firstSelectedId),
           image_ai_generated_at: new Date().toISOString(),
+          image_ai_selected_version: candidate.id || "",
         } : item),
       },
     };
-    writeMenuStudioV2Draft(nextDraft);
-    setDraft(nextDraft);
+    writeMenuStudioV2Draft(nextDraft); setDraft(nextDraft);
     setResults((current) => ({ ...current, [itemId]: { ...current[itemId], approved: true } }));
-    if (!styleAnchor || styleAnchor.itemId === itemId) {
-      setStyleAnchor({ itemId, imageUrl: candidate.imageUrl, imagePath: candidate.imagePath });
-      setError("");
-    }
+    if (!styleAnchor || styleAnchor.itemId === itemId) { setStyleAnchor({ itemId, imageUrl: candidate.imageUrl, imagePath: candidate.imagePath }); setError(""); }
   }
 
-  if (!draft?.menu) {
-    return <main className="ai-dish-v1 ai-dish-v1-empty" dir={rtl ? "rtl" : "ltr"}><div><ImagePlus size={28} /><h1>{t.noDraft}</h1><button type="button" onClick={goBack}>{t.back}</button></div></main>;
-  }
+  if (!draft?.menu) return <main className="ai-dish-v1 ai-dish-v1-empty" dir={rtl ? "rtl" : "ltr"}><div><ImagePlus size={28} /><h1>{t.noDraft}</h1><button type="button" onClick={goBack}>{t.back}</button></div></main>;
 
   return (
     <main className="ai-dish-v1" dir={rtl ? "rtl" : "ltr"} lang={uiLanguage}>
@@ -393,15 +338,14 @@ export default function MenuAiDishImagesV1() {
             <section className="ai-dish-v1-card">
               <header><div><strong>{t.vibe}</strong><p>{t.vibeHint}</p></div></header>
               <div className="ai-dish-v1-vibes">{VIBES.map((entry) => <button type="button" key={entry.id} className={vibeId === entry.id ? "active" : ""} onClick={() => { setVibeId(entry.id); resetVisualDirection(); }}>{vibeId === entry.id ? <Check size={13} /> : null}<span>{entry.label}</span></button>)}</div>
-              <label className="ai-dish-v1-custom"><span>{t.custom}</span><textarea value={customVibe} onChange={(event) => { setCustomVibe(event.target.value); setResults({}); setStyleAnchor(null); }} placeholder={t.customPlaceholder} /></label>
+              <label className="ai-dish-v1-custom"><span>{t.custom}</span><textarea value={customVibe} onChange={(event) => { setCustomVibe(event.target.value); setStyleAnchor(null); }} placeholder={t.customPlaceholder} /></label>
             </section>
 
             <section className="ai-dish-v1-card ai-dish-v1-items-card">
               <header><div><strong>{t.items}</strong><p>{t.itemHint}</p></div><b>{selectedIds.length} {t.selected}</b></header>
               <label className="ai-dish-v1-search"><Search size={15} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t.search} /></label>
               <div className="ai-dish-v1-items-list">{itemRows.map(({ item, name, category }) => {
-                const selected = selectedIds.includes(item.id);
-                const disabled = !selected && selectedIds.length >= AI_DISH_MAX_ITEMS;
+                const selected = selectedIds.includes(item.id); const disabled = !selected && selectedIds.length >= AI_DISH_MAX_ITEMS;
                 return <button type="button" key={item.id} className={selected ? "selected" : ""} disabled={disabled || running} onClick={() => toggleItem(item.id)}><span className="check">{selected ? <Check size={13} /> : null}</span>{item.image_url ? <img src={item.image_url} alt="" /> : <span className="thumb"><ImagePlus size={14} /></span>}<span className="copy"><strong>{name}</strong><small>{category}</small></span></button>;
               })}</div>
               <small className="ai-dish-v1-limit">{t.max}</small>
@@ -425,9 +369,8 @@ export default function MenuAiDishImagesV1() {
 
             <div className="ai-dish-v1-result-list">
               {selectedIds.map((itemId) => {
-                const item = menu.items.find((entry) => entry.id === itemId);
-                if (!item) return null;
-                const result = results[itemId];
+                const item = menu.items.find((entry) => entry.id === itemId); if (!item) return null;
+                const result = results[itemId]; const versions = result?.versions || historyFor(item);
                 return (
                   <article className={`ai-dish-v1-result ${result?.approved ? "approved" : ""}`} key={itemId}>
                     <header><div><strong>{itemLabel(item, uiLanguage)}</strong><small>{localizedDishText(groupsById.get(item.group_id)?.name, uiLanguage)}</small></div>{result?.approved ? <span><Check size={12} /> {t.used}</span> : result?.styleLocked ? <span><Sparkles size={12} /> Style Lock</span> : null}</header>
@@ -435,6 +378,11 @@ export default function MenuAiDishImagesV1() {
                       {result?.status === "generating" ? <div className="loading"><LoaderCircle className="spin" size={26} /><span>{t.generating}…</span></div> : result?.imageUrl ? <img src={result.imageUrl} alt="" /> : result?.status === "error" ? <div className="failed"><ImagePlus size={24} /><strong>{t.failed}</strong><small>{result.error}</small></div> : <div className="empty"><ImagePlus size={24} /><span>AI preview</span></div>}
                     </div>
                     {result?.imageUrl ? <div className="ai-dish-v1-result-meta"><span>{t.cost}</span><strong>{formatDishImageCost(result?.cost?.estimated_cost_usd)}</strong></div> : null}
+
+                    {versions.length ? <section className="ai-dish-v1-history"><div className="ai-dish-v1-history-head"><strong>{t.history}</strong><small>{t.historyHint}</small></div><div className="ai-dish-v1-history-strip">{versions.map((version, index) => <button type="button" key={version.id || version.imagePath} className={result?.imagePath === version.imagePath ? "active" : ""} onClick={() => selectVersion(itemId, index)}><img src={version.imageUrl} alt="" /><span>V{index + 1}</span>{item.image_path === version.imagePath ? <em><Check size={10} /> {t.selectedVersion}</em> : null}</button>)}</div></section> : null}
+
+                    {result?.imageUrl ? <section className="ai-dish-v1-refine-box"><div><strong>{t.refine}</strong><small>{t.refineCost}</small></div><textarea value={refineInstructions[itemId] || ""} onChange={(event) => setRefineInstructions((current) => ({ ...current, [itemId]: event.target.value }))} placeholder={t.refinePlaceholder} /><button type="button" disabled={running || result?.status === "generating" || !String(refineInstructions[itemId] || "").trim()} onClick={() => refine(item)}><Sparkles size={13} /> {t.refineAction}</button></section> : null}
+
                     {result?.imageUrl && !result?.approved ? <div className="ai-dish-v1-refine-actions">
                       <button type="button" disabled={running || result?.status === "generating"} onClick={() => regenerate(item, REGEN_DIRECTIONS.restaurant)}>{t.moreLike}</button>
                       <button type="button" disabled={running || result?.status === "generating"} onClick={() => regenerate(item, REGEN_DIRECTIONS.accurate)}>{t.accurate}</button>
