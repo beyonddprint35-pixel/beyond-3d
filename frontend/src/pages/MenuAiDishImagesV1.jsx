@@ -1,18 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import {
-  ArrowLeft,
-  ArrowRight,
-  Check,
-  ImagePlus,
-  LoaderCircle,
-  Search,
-  Sparkles,
-  Upload,
-  X,
-} from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, ImagePlus, LoaderCircle, Search, Sparkles, Upload, X } from "lucide-react";
 
 import beyondLogo from "../assets/beyond-logo-transparent.png";
 import StudioLanguageMenu from "../components/StudioLanguageMenu";
+import { removeMenuItemImage, uploadMenuItemImage } from "../features/menu-engine/data/menuItemImageService";
 import {
   AI_DISH_REFERENCE_MAX_FILES,
   AI_DISH_REFERENCE_MIN_FILES,
@@ -23,417 +14,105 @@ import {
   localizedDishText,
   validateDishReferenceFiles,
 } from "../features/menu-engine/data/menuAiDishImageService";
-import {
-  readMenuStudioV2Draft,
-  writeMenuStudioV2Draft,
-} from "../features/menu-engine/studio/menuStudioV2Session";
-import {
-  readStudioLanguage,
-  studioLanguageDirection,
-  writeStudioLanguage,
-} from "../features/menu-engine/studio/studioLanguage";
+import { readMenuStudioV2Draft, writeMenuStudioV2Draft } from "../features/menu-engine/studio/menuStudioV2Session";
+import { readStudioLanguage, studioLanguageDirection, writeStudioLanguage } from "../features/menu-engine/studio/studioLanguage";
 import "./MenuAiDishImagesV1.css";
-import "./MenuAiDishImagesV1Guided.css";
+import "./MenuAiPhotoStudioV2.css";
 
+const KNOWN_BRANDS = ["Guinness","Heineken","Carlsberg","Tuborg","Corona","Budweiser","Stella Artois","Beck's","Hoegaarden","Coca-Cola","Coca Cola","Pepsi","Sprite","Fanta","Red Bull","Schweppes"];
+const ACTIONS = [
+  { id:"create", label:"Create photo", sub:"Create a new photo in your place style", instruction:"Create a new photo of this exact menu item using the saved restaurant place style as the visual identity." },
+  { id:"improve", label:"Improve photo", sub:"Improve realism and quality", instruction:"Improve the selected photo's realism, product accuracy and photographic quality. Preserve the existing background, lighting, camera angle, crop, composition and restaurant atmosphere unless a change is explicitly requested." },
+  { id:"brand", label:"Add brand / logo", sub:"Add the detected product branding", instruction:"Add or correct only the product branding/logo. Preserve the existing background, lighting, camera angle, crop, composition, product position and restaurant atmosphere as closely as possible." },
+  { id:"presentation", label:"Improve presentation", sub:"Adjust product or plating presentation", instruction:"Improve only the product/plating presentation while keeping the restaurant background, lighting, atmosphere and overall scene consistent with the saved place style." },
+  { id:"background", label:"Change background", sub:"Use another background from your place style", instruction:"Change the background while keeping the same product identity. The new background must still match the saved restaurant place style, lighting, materials and atmosphere." },
+  { id:"custom", label:"Custom change", sub:"Tell Beyond exactly what to change", instruction:"Apply only the customer's requested change. Preserve every unrequested visual property as closely as possible." },
+];
 const VIBES = [
-  { id: "fresh", label: "Bright & fresh", text: "Bright natural daylight, fresh ingredients, clean modern plating, airy Mediterranean/cafe atmosphere, soft neutral table surface." },
-  { id: "premium", label: "Premium editorial", text: "Refined restaurant editorial photography, controlled soft light, elegant styling, premium materials, shallow depth of field." },
-  { id: "warm", label: "Cozy & warm", text: "Warm inviting restaurant light, natural wood and ceramic textures, authentic casual atmosphere, appetizing but not over-styled." },
-  { id: "moody", label: "Dark moody bar", text: "Dark atmospheric bar photography, warm highlights, deeper shadows, realistic nightlife mood, premium but authentic bar environment." },
-  { id: "modern", label: "Clean modern", text: "Clean contemporary restaurant photography, balanced neutral light, minimalist styling and believable atmosphere." },
+  {id:"moody",label:"Dark bar",text:"dark bar, warm low light, rich shadows, dark wood, realistic nightlife atmosphere"},
+  {id:"warm",label:"Warm & cozy",text:"warm inviting restaurant light, natural wood and ceramic textures, cozy authentic atmosphere"},
+  {id:"fresh",label:"Bright & fresh",text:"bright natural daylight, clean surfaces, fresh modern restaurant atmosphere"},
+  {id:"premium",label:"Premium",text:"refined restaurant editorial photography, controlled soft light, elegant premium atmosphere"},
+  {id:"modern",label:"Clean modern",text:"clean contemporary restaurant photography, balanced neutral light, minimalist believable atmosphere"},
 ];
-
-const KNOWN_BRANDS = [
-  "Guinness", "Heineken", "Carlsberg", "Tuborg", "Corona", "Budweiser", "Stella Artois",
-  "Beck's", "Hoegaarden", "Coca-Cola", "Coca Cola", "Pepsi", "Sprite", "Fanta", "Red Bull", "Schweppes",
-];
-
-const CHANGE_OPTIONS = [
-  { id: "accurate", label: "Make product more accurate", instruction: "Improve only the factual accuracy of the product/dish. Keep the current scene, background, lighting, camera angle and composition unchanged." },
-  { id: "restaurant", label: "Match my restaurant better", instruction: "Adjust only details needed to better match the restaurant visual identity while preserving the current composition and product placement." },
-  { id: "background", label: "Change background", instruction: "Change the background only. Preserve the product, its position, camera angle, scale and overall lighting relationship." },
-  { id: "composition", label: "Change composition", instruction: "Create a different composition while keeping the same product identity, restaurant atmosphere and realistic presentation." },
-];
-
-const COPY = {
-  en: {
-    eyebrow: "AI ITEM PHOTO",
-    title: "Create the right photo for this item",
-    hint: "Work on one item at a time. Choose exactly what should change and Beyond protects everything else.",
-    back: "Back to Content",
-    currentItem: "Current item",
-    search: "Search item",
-    references: "Restaurant references",
-    referenceHint: `For a brand-new image, upload ${AI_DISH_REFERENCE_MIN_FILES}–${AI_DISH_REFERENCE_MAX_FILES} real restaurant photos so Beyond learns the atmosphere. Refining a saved version does not require re-uploading them.`,
-    choosePhotos: "Choose restaurant photos",
-    vibe: "Restaurant vibe",
-    vibeHint: "Used for a brand-new image. When refining an existing version, the current image is locked and preserved.",
-    createFirst: "Create first version",
-    generating: "Generating…",
-    results: "Photo versions",
-    resultsHint: "Every generated version stays saved. Returning to V1/V2/V3 is free.",
-    history: "Saved versions",
-    selected: "Selected",
-    use: "Use this image",
-    used: "Using this image",
-    selectChange: "1 · Select what to change",
-    selectChangeHint: "Choose only what needs fixing. Beyond locks the rest of the image.",
-    brandDetected: "Brand detected",
-    addBrand: "Add branding",
-    clearerBrand: "Make branding clearer",
-    exactLogo: "Upload exact logo",
-    exactLogoHint: "Best choice when logo accuracy matters. PNG/JPG/WEBP up to 5 MB.",
-    removeLogo: "Remove logo file",
-    anythingElse: "3 · Anything else?",
-    freeText: "Optional extra instruction",
-    freePlaceholder: "Example: Move the Guinness logo slightly higher on the glass. Do not change anything else.",
-    preflight: "4 · Before generating",
-    changes: "Beyond will change",
-    locks: "Beyond will keep locked",
-    noChanges: "Choose at least one change or write an instruction.",
-    lockedDefault: "Background · composition · camera angle · lighting · product position · restaurant atmosphere · everything not requested",
-    generateRefined: "Generate refined version · 1 generation",
-    generateNew: "Generate new version · 1 generation",
-    costNotice: "Only generating a new version uses AI. Selecting an older saved version is free.",
-    failed: "Generation failed",
-    totalCost: "Session AI cost",
-    noDraft: "Open an existing menu in Studio before using AI item photos.",
-    projectMissing: "This menu must be saved as a Studio project before AI photos can run.",
-    logoError: "Could not prepare this logo file.",
-    done: "Return to Content",
-  },
-  he: {
-    eyebrow: "תמונת פריט AI", title: "צרו את התמונה הנכונה לפריט הזה", hint: "עובדים על פריט אחד בכל פעם. בוחרים בדיוק מה לשנות ו-Beyond שומר על כל השאר.", back: "חזרה לתוכן",
-    currentItem: "פריט נוכחי", search: "חיפוש פריט", references: "תמונות מסעדה", referenceHint: `לתמונה חדשה העלו ${AI_DISH_REFERENCE_MIN_FILES}–${AI_DISH_REFERENCE_MAX_FILES} תמונות אמיתיות של המסעדה. בשיפור גרסה שמורה אין צורך להעלות אותן שוב.`, choosePhotos: "בחירת תמונות מסעדה", vibe: "אווירת המסעדה", vibeHint: "משמשת לתמונה חדשה. בשיפור גרסה קיימת התמונה הנוכחית ננעלת ונשמרת.", createFirst: "יצירת גרסה ראשונה", generating: "יוצר…", results: "גרסאות תמונה", resultsHint: "כל גרסה נשמרת. חזרה לגרסה קודמת היא ללא עלות AI.", history: "גרסאות שמורות", selected: "נבחרה", use: "שימוש בתמונה", used: "בשימוש", selectChange: "1 · מה לשנות", selectChangeHint: "בחרו רק מה שדורש תיקון. Beyond נועל את כל השאר.", brandDetected: "מותג זוהה", addBrand: "הוספת מיתוג", clearerBrand: "הבלטת המיתוג", exactLogo: "העלאת לוגו מדויק", exactLogoHint: "מומלץ כשדיוק הלוגו חשוב.", removeLogo: "הסרת קובץ הלוגו", anythingElse: "3 · משהו נוסף?", freeText: "הנחיה נוספת אופציונלית", freePlaceholder: "לדוגמה: העלה מעט את לוגו Guinness על הכוס. אל תשנה שום דבר אחר.", preflight: "4 · לפני היצירה", changes: "Beyond ישנה", locks: "Beyond ישמור נעול", noChanges: "בחרו לפחות שינוי אחד או כתבו הנחיה.", lockedDefault: "רקע · קומפוזיציה · זווית מצלמה · תאורה · מיקום המוצר · אווירת המסעדה · כל מה שלא ביקשתם לשנות", generateRefined: "יצירת גרסה משופרת · יצירת AI אחת", generateNew: "יצירת גרסה חדשה · יצירת AI אחת", costNotice: "רק יצירת גרסה חדשה משתמשת ב-AI. בחירת גרסה שמורה קודמת היא חינמית.", failed: "היצירה נכשלה", totalCost: "עלות AI בסשן", noDraft: "פתחו תפריט קיים ב-Studio.", projectMissing: "יש לשמור את התפריט כפרויקט Studio.", logoError: "לא ניתן להכין את קובץ הלוגו.", done: "חזרה לתוכן",
-  },
-  ar: {
-    eyebrow: "صورة عنصر AI", title: "أنشئ الصورة المناسبة لهذا العنصر", hint: "اعمل على عنصر واحد كل مرة. اختر فقط ما تريد تغييره وسيحافظ Beyond على الباقي.", back: "العودة إلى المحتوى",
-    currentItem: "العنصر الحالي", search: "بحث عن عنصر", references: "صور المطعم المرجعية", referenceHint: `للصورة الجديدة ارفع ${AI_DISH_REFERENCE_MIN_FILES}–${AI_DISH_REFERENCE_MAX_FILES} صور حقيقية للمطعم. تعديل نسخة محفوظة لا يحتاج إعادة رفعها.`, choosePhotos: "اختيار صور المطعم", vibe: "أجواء المطعم", vibeHint: "تستخدم للصورة الجديدة. عند تعديل نسخة موجودة يتم تثبيت الصورة الحالية.", createFirst: "إنشاء النسخة الأولى", generating: "جارٍ الإنشاء…", results: "نسخ الصورة", resultsHint: "كل نسخة تبقى محفوظة والعودة إلى نسخة سابقة مجانية.", history: "النسخ المحفوظة", selected: "مختارة", use: "استخدام هذه الصورة", used: "قيد الاستخدام", selectChange: "1 · اختر ما تريد تغييره", selectChangeHint: "اختر فقط ما يحتاج إلى تعديل وسيتم تثبيت كل شيء آخر.", brandDetected: "تم اكتشاف العلامة", addBrand: "إضافة العلامة", clearerBrand: "إظهار العلامة أكثر", exactLogo: "رفع الشعار الدقيق", exactLogoHint: "الأفضل عندما تكون دقة الشعار مهمة.", removeLogo: "إزالة ملف الشعار", anythingElse: "3 · شيء آخر؟", freeText: "تعليمات إضافية اختيارية", freePlaceholder: "مثال: ارفع شعار Guinness قليلاً على الكأس ولا تغيّر أي شيء آخر.", preflight: "4 · قبل الإنشاء", changes: "سيغيّر Beyond", locks: "سيحافظ Beyond على", noChanges: "اختر تغييراً واحداً على الأقل أو اكتب تعليمات.", lockedDefault: "الخلفية · التكوين · زاوية الكاميرا · الإضاءة · موضع المنتج · أجواء المطعم · كل ما لم تطلب تغييره", generateRefined: "إنشاء نسخة معدلة · عملية AI واحدة", generateNew: "إنشاء نسخة جديدة · عملية AI واحدة", costNotice: "إنشاء نسخة جديدة فقط يستخدم AI. اختيار نسخة محفوظة سابقة مجاني.", failed: "فشل الإنشاء", totalCost: "تكلفة AI للجلسة", noDraft: "افتح قائمة موجودة في Studio.", projectMissing: "يجب حفظ القائمة كمشروع Studio.", logoError: "تعذر تجهيز ملف الشعار.", done: "العودة إلى المحتوى",
-  },
+const COPY={
+ en:{title:"AI Photo Studio",hint:"Set your place style once. Then create and refine one menu item at a time.",back:"Back to Content",place:"My Place Style",placeReady:"Ready",placeHint:"Upload real photos of your venue so Beyond learns the lighting, tables, walls, glassware, plates and atmosphere.",replace:"Replace style photos",choose:"Choose style photos",save:"Save My Place Style",clear:"Clear style",current:"Current item",search:"Search item",actions:"What would you like to do?",anything:"Anything else?",optional:"Optional",brand:"Brand detected",useBrand:"Use product branding",exactLogo:"Upload exact logo",removeLogo:"Remove logo",before:"Before generating",willChange:"Beyond will change",willKeep:"Beyond will keep",keep:"Your saved place style · lighting · tables/materials · restaurant atmosphere · everything you did not request",generate:"Generate new version · 1 generation",versions:"Saved versions",versionHint:"Every version is saved. Tap any version to go back for free.",use:"Use this image",used:"Using this image",deleteConfirm:"Delete this saved version? This cannot be undone.",deleteUsedConfirm:"This version is currently used on the menu. Deleting it will also remove it from the menu. Continue?",cost:"Session AI cost",needStyle:"Set up My Place Style first.",needAction:"Choose what you want Beyond to do.",needText:"Write the custom change you want.",done:"Return to Content"},
+ he:{title:"סטודיו תמונות AI",hint:"מגדירים פעם אחת את סגנון המקום ואז עובדים על פריט אחד בכל פעם.",back:"חזרה לתוכן",place:"סגנון המקום שלי",placeReady:"מוכן",placeHint:"העלו תמונות אמיתיות של המקום כדי ש-Beyond ילמד תאורה, שולחנות, קירות, כוסות, צלחות ואווירה.",replace:"החלפת תמונות סגנון",choose:"בחירת תמונות מקום",save:"שמירת סגנון המקום",clear:"מחיקת סגנון",current:"פריט נוכחי",search:"חיפוש פריט",actions:"מה תרצו לעשות?",anything:"משהו נוסף?",optional:"אופציונלי",brand:"מותג זוהה",useBrand:"שימוש במיתוג המוצר",exactLogo:"העלאת לוגו מדויק",removeLogo:"הסרת לוגו",before:"לפני היצירה",willChange:"Beyond ישנה",willKeep:"Beyond ישמור",keep:"סגנון המקום השמור · תאורה · שולחנות וחומרים · אווירת המקום · כל מה שלא ביקשתם לשנות",generate:"יצירת גרסה חדשה · יצירת AI אחת",versions:"גרסאות שמורות",versionHint:"כל גרסה נשמרת. אפשר לחזור לכל גרסה ללא עלות.",use:"שימוש בתמונה",used:"בשימוש",deleteConfirm:"למחוק את הגרסה השמורה? אי אפשר לבטל פעולה זו.",deleteUsedConfirm:"הגרסה הזו נמצאת כרגע בשימוש בתפריט. מחיקה שלה תסיר אותה גם מהתפריט. להמשיך?",cost:"עלות AI בסשן",needStyle:"יש להגדיר קודם את סגנון המקום.",needAction:"בחרו מה תרצו ש-Beyond יעשה.",needText:"כתבו את השינוי המותאם שתרצו.",done:"חזרה לתוכן"},
+ ar:{title:"استوديو صور AI",hint:"اضبط أسلوب المكان مرة واحدة ثم اعمل على عنصر واحد في كل مرة.",back:"العودة إلى المحتوى",place:"أسلوب مكاني",placeReady:"جاهز",placeHint:"ارفع صوراً حقيقية للمكان ليتعلم Beyond الإضاءة والطاولات والجدران والأكواب والأطباق والأجواء.",replace:"استبدال صور الأسلوب",choose:"اختيار صور المكان",save:"حفظ أسلوب المكان",clear:"مسح الأسلوب",current:"العنصر الحالي",search:"بحث عن عنصر",actions:"ماذا تريد أن تفعل؟",anything:"شيء آخر؟",optional:"اختياري",brand:"تم اكتشاف العلامة",useBrand:"استخدام علامة المنتج",exactLogo:"رفع الشعار الدقيق",removeLogo:"إزالة الشعار",before:"قبل الإنشاء",willChange:"سيغير Beyond",willKeep:"سيحافظ Beyond على",keep:"أسلوب المكان المحفوظ · الإضاءة · الطاولات والمواد · أجواء المطعم · كل شيء لم تطلب تغييره",generate:"إنشاء نسخة جديدة · عملية AI واحدة",versions:"النسخ المحفوظة",versionHint:"كل نسخة محفوظة. الرجوع لأي نسخة مجاني.",use:"استخدام هذه الصورة",used:"قيد الاستخدام",deleteConfirm:"حذف هذه النسخة المحفوظة؟ لا يمكن التراجع.",deleteUsedConfirm:"هذه النسخة مستخدمة حالياً في القائمة. حذفها سيزيلها من القائمة أيضاً. متابعة؟",cost:"تكلفة AI للجلسة",needStyle:"اضبط أسلوب المكان أولاً.",needAction:"اختر ما تريد أن يفعله Beyond.",needText:"اكتب التغيير المخصص الذي تريده.",done:"العودة إلى المحتوى"}
 };
 
-function projectIdFor(draft) {
-  const query = new URLSearchParams(window.location.search).get("project") || "";
-  return query || draft?.importProject?.id || draft?.profile?.importedProjectId || draft?.menu?.source_project_id || "";
-}
-function itemLabel(item, language) { return localizedDishText(item?.name, language) || localizedDishText(item?.name, "en") || "Unnamed item"; }
-function descriptionLabel(item, language) { return localizedDishText(item?.description, language) || localizedDishText(item?.description, "en"); }
-function historyFor(item) { return Array.isArray(item?.image_ai_history) ? item.image_ai_history.filter((entry) => entry?.imageUrl && entry?.imagePath) : []; }
-function detectBrand(item) {
-  const text = `${itemLabel(item, "en")} ${itemLabel(item, "he")} ${itemLabel(item, "ar")}`.toLowerCase();
-  return KNOWN_BRANDS.find((brand) => text.includes(brand.toLowerCase())) || "";
-}
-function resultFromItem(item) {
-  const versions = historyFor(item);
-  if (!versions.length) return null;
-  let activeIndex = versions.findIndex((version) => version.imagePath === item.image_path);
-  if (activeIndex < 0) activeIndex = versions.length - 1;
-  const active = versions[activeIndex];
-  return { status: "ready", ...active, versions, activeVersion: activeIndex, approved: active.imagePath === item.image_path };
-}
-function resultsFromDraft(draft) {
-  const next = {};
-  for (const item of draft?.menu?.items || []) {
-    const result = resultFromItem(item);
-    if (result) next[item.id] = result;
-  }
-  return next;
-}
+function projectIdFor(draft){const q=new URLSearchParams(window.location.search).get("project")||"";return q||draft?.importProject?.id||draft?.profile?.importedProjectId||draft?.menu?.source_project_id||"";}
+function itemLabel(item,lang){return localizedDishText(item?.name,lang)||localizedDishText(item?.name,"en")||"Unnamed item";}
+function historyFor(item){return Array.isArray(item?.image_ai_history)?item.image_ai_history.filter(v=>v?.imageUrl&&v?.imagePath):[];}
+function detectBrand(item){const text=`${itemLabel(item,"en")} ${itemLabel(item,"he")} ${itemLabel(item,"ar")}`.toLowerCase();return KNOWN_BRANDS.find(b=>text.includes(b.toLowerCase()))||"";}
+function resultFromItem(item){const versions=historyFor(item);if(!versions.length)return null;let i=versions.findIndex(v=>v.imagePath===item.image_path);if(i<0)i=versions.length-1;const active=versions[i];return{status:"ready",...active,versions,activeVersion:i,approved:active.imagePath===item.image_path};}
+function resultsFromDraft(draft){const out={};for(const item of draft?.menu?.items||[]){const r=resultFromItem(item);if(r)out[item.id]=r;}return out;}
 
-export default function MenuAiDishImagesV1() {
-  const initialDraft = useMemo(() => readMenuStudioV2Draft(), []);
-  const [draft, setDraft] = useState(initialDraft);
-  const [uiLanguage, setUiLanguage] = useState(() => readStudioLanguage(initialDraft?.contentLanguage || "en"));
-  const [itemId, setItemId] = useState(() => {
-    const requested = new URLSearchParams(window.location.search).get("item") || "";
-    return requested || initialDraft?.menu?.items?.find((item) => item.visible !== false)?.id || "";
-  });
-  const [query, setQuery] = useState("");
-  const [files, setFiles] = useState([]);
-  const [reference, setReference] = useState(null);
-  const [vibeId, setVibeId] = useState("moody");
-  const [results, setResults] = useState(() => resultsFromDraft(initialDraft));
-  const [changes, setChanges] = useState([]);
-  const [brandMode, setBrandMode] = useState("");
-  const [logoFile, setLogoFile] = useState(null);
-  const [freeText, setFreeText] = useState("");
-  const [running, setRunning] = useState(false);
-  const [preparing, setPreparing] = useState(false);
-  const [sessionCost, setSessionCost] = useState(0);
-  const [error, setError] = useState("");
+export default function MenuAiPhotoStudioV2(){
+ const initialDraft=useMemo(()=>readMenuStudioV2Draft(),[]);
+ const [draft,setDraft]=useState(initialDraft);
+ const [uiLanguage,setUiLanguage]=useState(()=>readStudioLanguage(initialDraft?.contentLanguage||"en"));
+ const [itemId,setItemId]=useState(()=>new URLSearchParams(window.location.search).get("item")||initialDraft?.menu?.items?.find(i=>i.visible!==false)?.id||"");
+ const [query,setQuery]=useState("");
+ const [results,setResults]=useState(()=>resultsFromDraft(initialDraft));
+ const [styleFiles,setStyleFiles]=useState([]);
+ const [styleReference,setStyleReference]=useState(null);
+ const [vibeId,setVibeId]=useState(()=>initialDraft?.profile?.aiPlaceStyle?.vibeId||"moody");
+ const [action,setAction]=useState("");
+ const [freeText,setFreeText]=useState("");
+ const [brandMode,setBrandMode]=useState("");
+ const [logoFile,setLogoFile]=useState(null);
+ const [running,setRunning]=useState(false);
+ const [savingStyle,setSavingStyle]=useState(false);
+ const [sessionCost,setSessionCost]=useState(0);
+ const [error,setError]=useState("");
+ const t=COPY[uiLanguage]||COPY.en;const rtl=studioLanguageDirection(uiLanguage)==="rtl";const BackIcon=rtl?ArrowRight:ArrowLeft;
+ const menu=draft?.menu;const projectId=projectIdFor(draft);const placeStyle=draft?.profile?.aiPlaceStyle||null;
+ const groupsById=useMemo(()=>new Map((menu?.groups||[]).map(g=>[g.id,g])),[menu?.groups]);
+ const currentItem=menu?.items?.find(i=>i.id===itemId)||null;const currentResult=currentItem?(results[currentItem.id]||resultFromItem(currentItem)):null;const brandName=currentItem?detectBrand(currentItem):"";
+ const itemRows=useMemo(()=>{const n=query.trim().toLowerCase();return(menu?.items||[]).filter(i=>i.visible!==false).filter(i=>!n||`${itemLabel(i,uiLanguage)} ${localizedDishText(groupsById.get(i.group_id)?.name,uiLanguage)}`.toLowerCase().includes(n));},[menu?.items,groupsById,query,uiLanguage]);
+ const stylePreviews=useMemo(()=>styleFiles.map(file=>({file,url:URL.createObjectURL(file)})),[styleFiles]);useEffect(()=>()=>stylePreviews.forEach(p=>URL.revokeObjectURL(p.url)),[stylePreviews]);
+ const logoPreview=useMemo(()=>logoFile?URL.createObjectURL(logoFile):"",[logoFile]);useEffect(()=>()=>{if(logoPreview)URL.revokeObjectURL(logoPreview);},[logoPreview]);
+ const versions=currentResult?.versions||historyFor(currentItem);
+ const selectedAction=ACTIONS.find(a=>a.id===action)||null;
+ const vibe=VIBES.find(v=>v.id===vibeId)?.text||VIBES[0].text;
 
-  const t = COPY[uiLanguage] || COPY.en;
-  const rtl = studioLanguageDirection(uiLanguage) === "rtl";
-  const BackIcon = rtl ? ArrowRight : ArrowLeft;
-  const menu = draft?.menu;
-  const projectId = projectIdFor(draft);
-  const currentItem = menu?.items?.find((item) => item.id === itemId) || null;
-  const currentResult = currentItem ? results[currentItem.id] || resultFromItem(currentItem) : null;
-  const brandName = currentItem ? detectBrand(currentItem) : "";
-  const vibe = VIBES.find((entry) => entry.id === vibeId)?.text || VIBES[0].text;
-  const groupsById = useMemo(() => new Map((menu?.groups || []).map((group) => [group.id, group])), [menu?.groups]);
-  const itemRows = useMemo(() => {
-    const needle = query.trim().toLowerCase();
-    return (menu?.items || []).filter((item) => item.visible !== false).filter((item) => {
-      const group = groupsById.get(item.group_id);
-      const haystack = `${itemLabel(item, uiLanguage)} ${localizedDishText(group?.name, uiLanguage)}`.toLowerCase();
-      return !needle || haystack.includes(needle);
-    });
-  }, [menu?.items, groupsById, query, uiLanguage]);
+ function writeDraft(next){writeMenuStudioV2Draft(next);setDraft(next);}
+ function goBack(){window.location.assign(`/menu-studio/content${window.location.search||""}`);}
+ function changeLanguage(lang){setUiLanguage(lang);writeStudioLanguage(lang);}
+ function chooseItem(id){setItemId(id);setAction("");setFreeText("");setBrandMode("");setLogoFile(null);setError("");const p=new URLSearchParams(window.location.search||"");p.set("item",id);history.replaceState(null,"",`${window.location.pathname}?${p.toString()}`);}
+ function chooseStyleFiles(e){const files=Array.from(e.target.files||[]).slice(0,AI_DISH_REFERENCE_MAX_FILES);e.target.value="";if(!files.length)return;const v=validateDishReferenceFiles(files);if(v)return setError(v);setStyleFiles(files);setError("");}
+ async function savePlaceStyle(){if(!projectId)return setError("Save this menu project first.");const v=validateDishReferenceFiles(styleFiles);if(v)return setError(v);setSavingStyle(true);setError("");try{const uploaded=[];for(let i=0;i<styleFiles.length;i+=1){const r=await uploadMenuItemImage({file:styleFiles[i],itemId:`place-style-${i}`,projectId});uploaded.push({url:r.image_url,path:r.image_path,name:styleFiles[i].name});}for(const old of placeStyle?.photos||[])await removeMenuItemImage(old.path).catch(()=>{});const next={...draft,profile:{...(draft?.profile||{}),aiPlaceStyle:{photos:uploaded,vibeId,updatedAt:new Date().toISOString()}}};writeDraft(next);setStyleFiles([]);setStyleReference(null);}catch(e){setError(e?.message||"Could not save place style.");}finally{setSavingStyle(false);}}
+ async function clearPlaceStyle(){if(!placeStyle)return;const ok=window.confirm("Clear My Place Style? New AI photos will require a new style setup.");if(!ok)return;for(const photo of placeStyle.photos||[])await removeMenuItemImage(photo.path).catch(()=>{});const profile={...(draft?.profile||{})};delete profile.aiPlaceStyle;writeDraft({...draft,profile});setStyleReference(null);}
+ async function ensurePlaceReference(){if(styleReference)return styleReference;if(!placeStyle?.photos?.length)throw new Error(t.needStyle);const files=[];for(const photo of placeStyle.photos){const res=await fetch(photo.url);if(!res.ok)throw new Error("Could not load a saved place-style photo.");const blob=await res.blob();files.push(new File([blob],photo.name||"place-style.jpg",{type:blob.type||"image/jpeg"}));}const ref=await createDishReferenceCollage(files);setStyleReference(ref);return ref;}
+ function payload(){const group=groupsById.get(currentItem?.group_id);return{id:currentItem.id,name:itemLabel(currentItem,uiLanguage),description:localizedDishText(currentItem?.description,uiLanguage),category:localizedDishText(group?.name,uiLanguage)||localizedDishText(group?.name,"en")};}
+ function persistVersion(version){const next={...draft,menu:{...draft.menu,items:draft.menu.items.map(i=>i.id===currentItem.id?{...i,image_ai_history:[...historyFor(i),version]}:i)}};writeDraft(next);}
+ function actionSummary(){const parts=[];if(selectedAction)parts.push(selectedAction.label);if(action==="brand"&&brandName)parts.push(brandMode==="exact_logo"?`Use uploaded ${brandName} logo`:`Use ${brandName} branding`);if(freeText.trim())parts.push(freeText.trim());return parts;}
+ async function generate(){if(!currentItem||running)return;if(!placeStyle?.photos?.length)return setError(t.needStyle);if(!selectedAction)return setError(t.needAction);if(action==="custom"&&!freeText.trim())return setError(t.needText);setRunning(true);setError("");try{const reference=await ensurePlaceReference();let brandReference=null;if(brandMode==="exact_logo"&&logoFile)brandReference=await createSingleImageReference(logoFile);const isEdit=Boolean(currentResult?.imagePath)&&action!=="create";const adjustment=[selectedAction.instruction,freeText.trim()?`Customer instruction: ${freeText.trim()}`:"",`HARD STYLE CONSTRAINT: The result must match the saved restaurant place style (${vibe}). Do not turn a dark venue into a bright venue or vice versa unless the customer explicitly asks to change the background.`].filter(Boolean).join("\n");const generated=await generateDishImageWithAi({projectId,restaurantName:menu?.restaurant_name||"",vibe,item:payload(),reference,editReferencePath:isEdit?currentResult.imagePath:"",adjustment,brandName,brandMode:action==="brand"?(brandMode||"add"):brandMode,brandReference});setSessionCost(c=>c+Number(generated?.cost?.estimated_cost_usd||0));const version={id:crypto?.randomUUID?crypto.randomUUID():`${currentItem.id}-${Date.now()}`,imageUrl:generated.imageUrl,imagePath:generated.imagePath,model:generated.model||"gpt-image-2",cost:generated.cost||null,action:action,changeSummary:actionSummary(),createdAt:new Date().toISOString()};const nextVersions=[...versions,version];persistVersion(version);setResults(cur=>({...cur,[currentItem.id]:{status:"ready",...version,versions:nextVersions,activeVersion:nextVersions.length-1,approved:false}}));setAction("");setFreeText("");setBrandMode("");setLogoFile(null);}catch(e){setError(e?.message||"Generation failed.");}finally{setRunning(false);}}
+ function selectVersion(index){const version=versions[index];if(!version)return;setResults(cur=>({...cur,[currentItem.id]:{...(cur[currentItem.id]||{}),...version,status:"ready",versions,activeVersion:index,approved:version.imagePath===currentItem.image_path}}));}
+ function approve(){if(!currentResult?.imageUrl)return;const next={...draft,menu:{...draft.menu,items:draft.menu.items.map(i=>i.id===currentItem.id?{...i,image_url:currentResult.imageUrl,image_path:currentResult.imagePath,image_ai_generated:true,image_ai_model:currentResult.model||"gpt-image-2",image_ai_generated_at:new Date().toISOString(),image_ai_selected_version:currentResult.id||""}:i)}};writeDraft(next);setResults(cur=>({...cur,[currentItem.id]:{...cur[currentItem.id],approved:true}}));}
+ async function deleteVersion(index){const version=versions[index];if(!version)return;const used=currentItem?.image_path===version.imagePath;const ok=window.confirm(used?t.deleteUsedConfirm:t.deleteConfirm);if(!ok)return;await removeMenuItemImage(version.imagePath).catch(()=>{});const remaining=versions.filter((_,i)=>i!==index);let nextItem={...currentItem,image_ai_history:remaining};if(used)nextItem={...nextItem,image_url:"",image_path:"",image_ai_selected_version:""};const next={...draft,menu:{...draft.menu,items:draft.menu.items.map(i=>i.id===currentItem.id?nextItem:i)}};writeDraft(next);if(!remaining.length){setResults(cur=>{const n={...cur};delete n[currentItem.id];return n;});return;}const nextIndex=Math.min(index,remaining.length-1);const active=remaining[nextIndex];setResults(cur=>({...cur,[currentItem.id]:{status:"ready",...active,versions:remaining,activeVersion:nextIndex,approved:active.imagePath===nextItem.image_path}}));}
 
-  const filePreviews = useMemo(() => files.map((file) => ({ file, url: URL.createObjectURL(file) })), [files]);
-  useEffect(() => () => filePreviews.forEach(({ url }) => URL.revokeObjectURL(url)), [filePreviews]);
-  const logoPreview = useMemo(() => logoFile ? URL.createObjectURL(logoFile) : "", [logoFile]);
-  useEffect(() => () => { if (logoPreview) URL.revokeObjectURL(logoPreview); }, [logoPreview]);
-
-  function goBack() { window.location.assign(`/menu-studio/content${window.location.search || ""}`); }
-  function changeLanguage(language) { setUiLanguage(language); writeStudioLanguage(language); }
-  function chooseItem(nextId) {
-    setItemId(nextId);
-    setChanges([]);
-    setBrandMode("");
-    setLogoFile(null);
-    setFreeText("");
-    setError("");
-    const params = new URLSearchParams(window.location.search || "");
-    params.set("item", nextId);
-    history.replaceState(null, "", `${window.location.pathname}?${params.toString()}`);
-  }
-  function chooseFiles(event) {
-    const selected = Array.from(event.target.files || []).slice(0, AI_DISH_REFERENCE_MAX_FILES);
-    event.target.value = "";
-    if (!selected.length) return;
-    const validation = validateDishReferenceFiles(selected);
-    if (validation) return setError(validation);
-    setFiles(selected);
-    setReference(null);
-    setError("");
-  }
-  function removeFile(index) {
-    setFiles((current) => current.filter((_, itemIndex) => itemIndex !== index));
-    setReference(null);
-  }
-  function toggleChange(id) {
-    setChanges((current) => current.includes(id) ? current.filter((value) => value !== id) : [...current, id]);
-  }
-  async function ensureReference() {
-    if (reference) return reference;
-    const validation = validateDishReferenceFiles(files);
-    if (validation) throw new Error(validation);
-    setPreparing(true);
-    try {
-      const next = await createDishReferenceCollage(files);
-      setReference(next);
-      return next;
-    } finally {
-      setPreparing(false);
-    }
-  }
-  function payloadFor(item) {
-    const group = groupsById.get(item.group_id);
-    return {
-      id: item.id,
-      name: itemLabel(item, uiLanguage),
-      description: descriptionLabel(item, uiLanguage),
-      category: localizedDishText(group?.name, uiLanguage) || localizedDishText(group?.name, "en"),
-    };
-  }
-  function persistVersion(itemIdToUpdate, version) {
-    setDraft((current) => {
-      if (!current?.menu) return current;
-      const nextDraft = {
-        ...current,
-        menu: {
-          ...current.menu,
-          items: current.menu.items.map((item) => item.id === itemIdToUpdate ? { ...item, image_ai_history: [...historyFor(item), version] } : item),
-        },
-      };
-      writeMenuStudioV2Draft(nextDraft);
-      return nextDraft;
-    });
-  }
-  function changeSummary() {
-    const selected = CHANGE_OPTIONS.filter((option) => changes.includes(option.id)).map((option) => option.label);
-    if (brandMode === "add" && brandName) selected.push(`Add ${brandName} branding`);
-    if (brandMode === "clearer" && brandName) selected.push(`Make ${brandName} branding clearer`);
-    if (brandMode === "exact_logo" && brandName) selected.push(`Use uploaded ${brandName} logo`);
-    if (freeText.trim()) selected.push(freeText.trim());
-    return selected;
-  }
-  function adjustmentText() {
-    const instructions = CHANGE_OPTIONS.filter((option) => changes.includes(option.id)).map((option) => option.instruction);
-    if (freeText.trim()) instructions.push(`Customer instruction: ${freeText.trim()}`);
-    return instructions.join("\n");
-  }
-  async function generate({ refine = false } = {}) {
-    if (!currentItem || running || preparing) return;
-    if (!projectId) return setError(t.projectMissing);
-    const summary = changeSummary();
-    if (refine && !summary.length) return setError(t.noChanges);
-    setRunning(true);
-    setError("");
-    try {
-      let preparedReference = reference;
-      if (!refine) preparedReference = await ensureReference();
-      let brandReference = null;
-      if (brandMode === "exact_logo" && logoFile) brandReference = await createSingleImageReference(logoFile);
-      const generated = await generateDishImageWithAi({
-        projectId,
-        restaurantName: menu?.restaurant_name || "",
-        vibe,
-        item: payloadFor(currentItem),
-        reference: preparedReference,
-        editReferencePath: refine ? currentResult?.imagePath || "" : "",
-        adjustment: refine ? adjustmentText() : "",
-        brandName,
-        brandMode,
-        brandReference,
-      });
-      setSessionCost((current) => current + Number(generated?.cost?.estimated_cost_usd || 0));
-      const version = {
-        id: typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `${currentItem.id}-${Date.now()}`,
-        imageUrl: generated.imageUrl,
-        imagePath: generated.imagePath,
-        model: generated.model || "gpt-image-2",
-        styleLocked: Boolean(generated.styleLocked),
-        editLocked: Boolean(generated.editLocked),
-        cost: generated.cost || null,
-        adjustment: refine ? adjustmentText() : "",
-        changeSummary: summary,
-        createdAt: new Date().toISOString(),
-      };
-      const existingVersions = currentResult?.versions || historyFor(currentItem);
-      const versions = [...existingVersions, version];
-      persistVersion(currentItem.id, version);
-      setResults((current) => ({ ...current, [currentItem.id]: { status: "ready", ...version, versions, activeVersion: versions.length - 1, approved: false } }));
-      setChanges([]);
-      setBrandMode("");
-      setLogoFile(null);
-      setFreeText("");
-    } catch (generationError) {
-      setError(generationError?.message || t.failed);
-    } finally {
-      setRunning(false);
-    }
-  }
-  function selectVersion(index) {
-    if (!currentItem) return;
-    setResults((current) => {
-      const result = current[currentItem.id] || resultFromItem(currentItem);
-      const version = result?.versions?.[index];
-      if (!version) return current;
-      return { ...current, [currentItem.id]: { ...result, ...version, status: "ready", activeVersion: index, approved: version.imagePath === currentItem.image_path } };
-    });
-  }
-  function approve() {
-    if (!currentItem || !currentResult?.imageUrl || !draft?.menu) return;
-    const nextDraft = {
-      ...draft,
-      menu: {
-        ...draft.menu,
-        items: draft.menu.items.map((item) => item.id === currentItem.id ? {
-          ...item,
-          image_url: currentResult.imageUrl,
-          image_path: currentResult.imagePath,
-          image_ai_generated: true,
-          image_ai_model: currentResult.model || "gpt-image-2",
-          image_ai_vibe: vibeId,
-          image_ai_generated_at: new Date().toISOString(),
-          image_ai_selected_version: currentResult.id || "",
-        } : item),
-      },
-    };
-    writeMenuStudioV2Draft(nextDraft);
-    setDraft(nextDraft);
-    setResults((current) => ({ ...current, [currentItem.id]: { ...current[currentItem.id], approved: true } }));
-  }
-
-  if (!draft?.menu) return <main className="ai-dish-v1 ai-dish-v1-empty" dir={rtl ? "rtl" : "ltr"}><div><ImagePlus size={28} /><h1>{t.noDraft}</h1><button type="button" onClick={goBack}>{t.back}</button></div></main>;
-
-  const versions = currentResult?.versions || historyFor(currentItem);
-  const summary = changeSummary();
-  const canRefine = Boolean(currentResult?.imagePath && summary.length && !running && !preparing);
-  const canCreateFirst = Boolean(currentItem && files.length >= AI_DISH_REFERENCE_MIN_FILES && !currentResult && projectId && !running && !preparing);
-
-  return (
-    <main className="ai-dish-v1 ai-dish-guided" dir={rtl ? "rtl" : "ltr"} lang={uiLanguage}>
-      <header className="ai-dish-v1-topbar">
-        <button type="button" className="ai-dish-v1-back" onClick={goBack}><BackIcon size={16} /> {t.back}</button>
-        <div className="ai-dish-v1-brand"><img src={beyondLogo} alt="" /><span><strong>BEYOND</strong><small>AI Item Photo</small></span></div>
-        <StudioLanguageMenu value={uiLanguage} onChange={changeLanguage} compact />
-      </header>
-
-      <div className="ai-dish-v1-shell">
-        <section className="ai-dish-v1-hero"><span><Sparkles size={14} /> {t.eyebrow}</span><h1>{t.title}</h1><p>{t.hint}</p></section>
-
-        <div className="ai-dish-guided-grid">
-          <div className="ai-dish-guided-controls">
-            <section className="ai-dish-v1-card ai-dish-single-item-card">
-              <header><div><strong>{t.currentItem}</strong><p>{currentItem ? localizedDishText(groupsById.get(currentItem.group_id)?.name, uiLanguage) : ""}</p></div></header>
-              <label className="ai-dish-v1-search"><Search size={15} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t.search} /></label>
-              <div className="ai-dish-single-item-list">{itemRows.map((item) => <button type="button" key={item.id} className={item.id === itemId ? "selected" : ""} onClick={() => chooseItem(item.id)}>{item.image_url ? <img src={item.image_url} alt="" /> : <span className="thumb"><ImagePlus size={14} /></span>}<span><strong>{itemLabel(item, uiLanguage)}</strong><small>{localizedDishText(groupsById.get(item.group_id)?.name, uiLanguage)}</small></span>{item.id === itemId ? <Check size={14} /> : null}</button>)}</div>
-            </section>
-
-            {!currentResult ? <>
-              <section className="ai-dish-v1-card">
-                <header><div><strong>{t.references}</strong><p>{t.referenceHint}</p></div><b>{files.length}/{AI_DISH_REFERENCE_MAX_FILES}</b></header>
-                <label className="ai-dish-v1-upload"><Upload size={20} /><strong>{t.choosePhotos}</strong><small>JPG · PNG · WEBP</small><input type="file" multiple accept="image/jpeg,image/png,image/webp" onChange={chooseFiles} /></label>
-                {filePreviews.length ? <div className="ai-dish-v1-reference-grid">{filePreviews.map(({ file, url }, index) => <figure key={`${file.name}-${index}`}><img src={url} alt="" /><button type="button" onClick={() => removeFile(index)}><X size={13} /></button></figure>)}</div> : null}
-              </section>
-              <section className="ai-dish-v1-card">
-                <header><div><strong>{t.vibe}</strong><p>{t.vibeHint}</p></div></header>
-                <div className="ai-dish-v1-vibes">{VIBES.map((entry) => <button type="button" key={entry.id} className={vibeId === entry.id ? "active" : ""} onClick={() => setVibeId(entry.id)}>{vibeId === entry.id ? <Check size={13} /> : null}<span>{entry.label}</span></button>)}</div>
-              </section>
-              <button type="button" className="ai-dish-v1-generate" disabled={!canCreateFirst} onClick={() => generate({ refine: false })}>{running || preparing ? <LoaderCircle className="spin" size={17} /> : <Sparkles size={17} />}{running || preparing ? t.generating : t.createFirst}</button>
-            </> : <>
-              <section className="ai-dish-v1-card ai-dish-change-card">
-                <header><div><strong>{t.selectChange}</strong><p>{t.selectChangeHint}</p></div></header>
-                <div className="ai-dish-smart-chips">{CHANGE_OPTIONS.map((option) => <button type="button" key={option.id} className={changes.includes(option.id) ? "active" : ""} onClick={() => toggleChange(option.id)}>{changes.includes(option.id) ? <Check size={13} /> : null}{option.label}</button>)}</div>
-              </section>
-
-              {brandName ? <section className="ai-dish-v1-card ai-dish-brand-card">
-                <header><div><strong>2 · {t.brandDetected}: {brandName}</strong><p>{t.exactLogoHint}</p></div></header>
-                <div className="ai-dish-brand-options">
-                  <button type="button" className={brandMode === "add" ? "active" : ""} onClick={() => setBrandMode((current) => current === "add" ? "" : "add")}>{brandMode === "add" ? <Check size={13} /> : null}{t.addBrand}</button>
-                  <button type="button" className={brandMode === "clearer" ? "active" : ""} onClick={() => setBrandMode((current) => current === "clearer" ? "" : "clearer")}>{brandMode === "clearer" ? <Check size={13} /> : null}{t.clearerBrand}</button>
-                  <label className={brandMode === "exact_logo" ? "active upload" : "upload"}><Upload size={13} />{t.exactLogo}<input type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => { const file = event.target.files?.[0] || null; setLogoFile(file); setBrandMode(file ? "exact_logo" : ""); event.target.value = ""; }} /></label>
-                </div>
-                {logoFile ? <div className="ai-dish-logo-preview"><img src={logoPreview} alt="" /><div><strong>{logoFile.name}</strong><small>{brandName}</small></div><button type="button" onClick={() => { setLogoFile(null); setBrandMode(""); }}><X size={13} /> {t.removeLogo}</button></div> : null}
-              </section> : null}
-
-              <section className="ai-dish-v1-card ai-dish-free-card">
-                <header><div><strong>{t.anythingElse}</strong><p>{t.freeText}</p></div></header>
-                <textarea value={freeText} onChange={(event) => setFreeText(event.target.value)} placeholder={t.freePlaceholder} />
-              </section>
-
-              <section className="ai-dish-v1-card ai-dish-preflight">
-                <header><div><strong>{t.preflight}</strong><p>{t.costNotice}</p></div></header>
-                <div className="ai-dish-preflight-row"><span>{t.changes}</span>{summary.length ? <ul>{summary.map((entry, index) => <li key={`${entry}-${index}`}>{entry}</li>)}</ul> : <em>{t.noChanges}</em>}</div>
-                <div className="ai-dish-preflight-row locked"><span>{t.locks}</span><p>{t.lockedDefault}</p></div>
-                <button type="button" className="ai-dish-guided-generate" disabled={!canRefine} onClick={() => generate({ refine: true })}>{running || preparing ? <LoaderCircle className="spin" size={16} /> : <Sparkles size={16} />}{running || preparing ? t.generating : t.generateRefined}</button>
-              </section>
-            </>}
-
-            {error ? <div className="ai-dish-v1-error">{error}</div> : null}
-            {!projectId ? <div className="ai-dish-v1-error">{t.projectMissing}</div> : null}
-          </div>
-
-          <aside className="ai-dish-v1-results ai-dish-guided-results">
-            <section className="ai-dish-v1-results-head"><div><span>{t.results}</span><p>{t.resultsHint}</p></div>{sessionCost > 0 ? <b>{t.totalCost}: {formatDishImageCost(sessionCost)}</b> : null}</section>
-            <article className={`ai-dish-v1-result ${currentResult?.approved ? "approved" : ""}`}>
-              <header><div><strong>{currentItem ? itemLabel(currentItem, uiLanguage) : ""}</strong><small>{currentItem ? localizedDishText(groupsById.get(currentItem.group_id)?.name, uiLanguage) : ""}</small></div>{currentResult?.approved ? <span><Check size={12} /> {t.used}</span> : null}</header>
-              <div className="ai-dish-v1-result-image">{running ? <div className="loading"><LoaderCircle className="spin" size={26} /><span>{t.generating}</span></div> : currentResult?.imageUrl ? <img src={currentResult.imageUrl} alt="" /> : currentItem?.image_url ? <img src={currentItem.image_url} alt="" /> : <div className="empty"><ImagePlus size={24} /><span>AI preview</span></div>}</div>
-              {currentResult?.imageUrl ? <div className="ai-dish-v1-result-meta"><span>AI cost</span><strong>{formatDishImageCost(currentResult?.cost?.estimated_cost_usd)}</strong></div> : null}
-
-              {versions.length ? <section className="ai-dish-v1-history"><div className="ai-dish-v1-history-head"><strong>{t.history}</strong><small>{t.resultsHint}</small></div><div className="ai-dish-v1-history-strip">{versions.map((version, index) => <button type="button" key={version.id || version.imagePath} className={currentResult?.imagePath === version.imagePath ? "active" : ""} onClick={() => selectVersion(index)}><img src={version.imageUrl} alt="" /><span>V{index + 1}</span>{currentItem?.image_path === version.imagePath ? <em><Check size={10} /> {t.selected}</em> : null}</button>)}</div></section> : null}
-
-              {currentResult?.imageUrl ? <div className="ai-dish-v1-result-actions"><button type="button" className="primary" disabled={currentResult.approved} onClick={approve}><Check size={14} /> {currentResult.approved ? t.used : t.use}</button></div> : null}
-            </article>
-            <div className="ai-dish-guided-principle"><Sparkles size={15} /><p><strong>Choose what to change.</strong> Beyond protects everything else.</p></div>
-            {currentResult?.approved ? <button type="button" className="ai-dish-v1-done" onClick={goBack}>{t.done} <ArrowRight size={15} /></button> : null}
-          </aside>
-        </div>
-      </div>
-    </main>
-  );
+ if(!draft?.menu)return <main className="ai-dish-v1 ai-dish-v1-empty"><div><h1>Open a menu first.</h1><button onClick={goBack}>{t.back}</button></div></main>;
+ return <main className="ai-dish-v1 ai-photo-v2" dir={rtl?"rtl":"ltr"} lang={uiLanguage}>
+  <header className="ai-dish-v1-topbar"><button className="ai-dish-v1-back" onClick={goBack}><BackIcon size={16}/>{t.back}</button><div className="ai-dish-v1-brand"><img src={beyondLogo} alt=""/><span><strong>BEYOND</strong><small>AI Photo Studio</small></span></div><StudioLanguageMenu value={uiLanguage} onChange={changeLanguage} compact/></header>
+  <div className="ai-dish-v1-shell"><section className="ai-dish-v1-hero"><span><Sparkles size={14}/> AI PHOTO STUDIO</span><h1>{t.title}</h1><p>{t.hint}</p></section>
+   <section className={`place-style-card ${placeStyle?.photos?.length?"ready":""}`}><div className="place-style-head"><div><strong>{t.place}</strong>{placeStyle?.photos?.length?<span><Check size={12}/>{t.placeReady}</span>:null}<p>{t.placeHint}</p></div>{placeStyle?.photos?.length?<div className="place-style-thumbs">{placeStyle.photos.slice(0,5).map(p=><img key={p.path} src={p.url} alt=""/>)}</div>:null}</div>
+    {placeStyle?.photos?.length?<div className="place-style-manage"><label className="secondary-upload"><Upload size={14}/>{t.replace}<input type="file" multiple accept="image/jpeg,image/png,image/webp" onChange={chooseStyleFiles}/></label><button onClick={clearPlaceStyle}>{t.clear}</button></div>:<label className="ai-dish-v1-upload"><Upload size={20}/><strong>{t.choose}</strong><small>{AI_DISH_REFERENCE_MIN_FILES}–{AI_DISH_REFERENCE_MAX_FILES} photos</small><input type="file" multiple accept="image/jpeg,image/png,image/webp" onChange={chooseStyleFiles}/></label>}
+    {stylePreviews.length?<><div className="ai-dish-v1-reference-grid">{stylePreviews.map(({file,url},i)=><figure key={`${file.name}-${i}`}><img src={url} alt=""/><button onClick={()=>setStyleFiles(cur=>cur.filter((_,j)=>j!==i))}><X size={13}/></button></figure>)}</div><div className="place-style-vibes">{VIBES.map(v=><button key={v.id} className={vibeId===v.id?"active":""} onClick={()=>setVibeId(v.id)}>{vibeId===v.id?<Check size={12}/>:null}{v.label}</button>)}</div><button className="place-style-save" disabled={savingStyle} onClick={savePlaceStyle}>{savingStyle?<LoaderCircle className="spin" size={15}/>:<Check size={15}/>} {t.save}</button></>:null}
+   </section>
+   <div className="ai-photo-v2-grid"><div className="ai-photo-v2-controls">
+    <section className="ai-dish-v1-card"><header><div><strong>{t.current}</strong><p>{currentItem?localizedDishText(groupsById.get(currentItem.group_id)?.name,uiLanguage):""}</p></div></header><label className="ai-dish-v1-search"><Search size={15}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder={t.search}/></label><div className="ai-dish-single-item-list">{itemRows.map(item=><button key={item.id} className={item.id===itemId?"selected":""} onClick={()=>chooseItem(item.id)}>{item.image_url?<img src={item.image_url} alt=""/>:<span className="thumb"><ImagePlus size={14}/></span>}<span><strong>{itemLabel(item,uiLanguage)}</strong><small>{localizedDishText(groupsById.get(item.group_id)?.name,uiLanguage)}</small></span>{item.id===itemId?<Check size={14}/>:null}</button>)}</div></section>
+    <section className="ai-dish-v1-card"><header><div><strong>{t.actions}</strong><p>{placeStyle?.photos?.length?`${menu?.restaurant_name||"Restaurant"} style is applied automatically.`:t.needStyle}</p></div></header><div className="action-grid">{ACTIONS.map(a=><button key={a.id} className={action===a.id?"active":""} onClick={()=>setAction(a.id)}><strong>{a.label}</strong><small>{a.sub}</small></button>)}</div></section>
+    {brandName&&action==="brand"?<section className="ai-dish-v1-card brand-simple"><header><div><strong>{t.brand}: {brandName}</strong></div></header><div className="brand-simple-actions"><button className={brandMode!=="exact_logo"?"active":""} onClick={()=>{setBrandMode("add");setLogoFile(null);}}>{t.useBrand}</button><label className={brandMode==="exact_logo"?"active":""}><Upload size={13}/>{t.exactLogo}<input type="file" accept="image/jpeg,image/png,image/webp" onChange={e=>{const f=e.target.files?.[0]||null;setLogoFile(f);setBrandMode(f?"exact_logo":"");e.target.value="";}}/></label></div>{logoFile?<div className="logo-mini"><img src={logoPreview} alt=""/><span>{logoFile.name}</span><button onClick={()=>{setLogoFile(null);setBrandMode("add");}}><X size={12}/>{t.removeLogo}</button></div>:null}</section>:null}
+    <section className="ai-dish-v1-card custom-box"><header><div><strong>{t.anything} <em>{t.optional}</em></strong></div></header><textarea value={freeText} onChange={e=>setFreeText(e.target.value)} placeholder="Example: keep the same angle, make the logo slightly larger…"/></section>
+    <section className="ai-dish-v1-card preflight-simple"><header><div><strong>{t.before}</strong></div></header><div><span>{t.willChange}</span><p>{actionSummary().join(" · ")||t.needAction}</p></div><div><span>{t.willKeep}</span><p>{t.keep}</p></div><button disabled={running||!placeStyle?.photos?.length||!selectedAction} onClick={generate}>{running?<LoaderCircle className="spin" size={16}/>:<Sparkles size={16}/>} {t.generate}</button></section>
+    {error?<div className="ai-dish-v1-error">{error}</div>:null}
+   </div>
+   <aside className="ai-dish-v1-results ai-photo-v2-results"><section className="ai-dish-v1-results-head"><div><span>{t.versions}</span><p>{t.versionHint}</p></div>{sessionCost>0?<b>{t.cost}: {formatDishImageCost(sessionCost)}</b>:null}</section><article className={`ai-dish-v1-result ${currentResult?.approved?"approved":""}`}><header><div><strong>{currentItem?itemLabel(currentItem,uiLanguage):""}</strong><small>{currentItem?localizedDishText(groupsById.get(currentItem.group_id)?.name,uiLanguage):""}</small></div>{currentResult?.approved?<span><Check size={12}/>{t.used}</span>:null}</header><div className="ai-dish-v1-result-image">{running?<div className="loading"><LoaderCircle className="spin" size={26}/><span>Generating…</span></div>:currentResult?.imageUrl?<img src={currentResult.imageUrl} alt=""/>:currentItem?.image_url?<img src={currentItem.image_url} alt=""/>:<div className="empty"><ImagePlus size={24}/><span>AI preview</span></div>}</div>
+    {versions.length?<section className="ai-dish-v1-history"><div className="ai-dish-v1-history-head"><strong>{t.versions}</strong><small>{t.versionHint}</small></div><div className="ai-dish-v1-history-strip">{versions.map((v,i)=><div className={`version-tile ${currentResult?.imagePath===v.imagePath?"active":""}`} key={v.id||v.imagePath}><button className="version-delete" onClick={e=>{e.stopPropagation();deleteVersion(i);}} aria-label="Delete version"><X size={11}/></button><button className="version-select" onClick={()=>selectVersion(i)}><img src={v.imageUrl} alt=""/><span>V{i+1}</span>{currentItem?.image_path===v.imagePath?<em><Check size={9}/>{t.selected}</em>:null}</button></div>)}</div></section>:null}
+    {currentResult?.imageUrl?<div className="ai-dish-v1-result-actions"><button className="primary" disabled={currentResult.approved} onClick={approve}><Check size={14}/>{currentResult.approved?t.used:t.use}</button></div>:null}</article>{currentResult?.approved?<button className="ai-dish-v1-done" onClick={goBack}>{t.done}<ArrowRight size={15}/></button>:null}</aside>
+   </div>
+  </div>
+ </main>;
 }
