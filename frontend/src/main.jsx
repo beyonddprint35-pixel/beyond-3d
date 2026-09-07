@@ -18,6 +18,7 @@ import installMenuContentCategoryAccordion from "./pages/menuContentCategoryAcco
 import installMenuContentPreviewSelection from "./pages/menuContentPreviewSelection";
 import installMenuTranslationReviewOverlay from "./pages/menuTranslationReviewOverlay";
 import installMenuStudioViewportLock from "./pages/menuStudioViewportLock";
+import installMenuAiOnlineReferenceOverlay from "./pages/menuAiOnlineReferenceOverlay";
 import "./components/BeyondMenuPlatform.css";
 import "./components/BeyondLiveMenuDesign.css";
 import "./components/BeyondLiveMenuDesignMobilePatch.css";
@@ -48,6 +49,7 @@ installMenuContentCategoryAccordion();
 installMenuContentPreviewSelection();
 installMenuTranslationReviewOverlay();
 installMenuStudioViewportLock();
+installMenuAiOnlineReferenceOverlay();
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
