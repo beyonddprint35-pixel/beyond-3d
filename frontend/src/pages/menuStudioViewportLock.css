@@ -1,5 +1,6 @@
 /* Global Studio viewport contract.
-   The document never becomes a scroll surface; each Studio pane owns its own scroll. */
+   Desktop Studio is pinned to the viewport and each pane owns its own scroll.
+   Mobile is deliberately excluded from that contract and uses native page/touch scrolling. */
 html.menu-studio-viewport-lock,
 body.menu-studio-viewport-lock{
   width:100%;
@@ -11,8 +12,6 @@ body.menu-studio-viewport-lock{
   overscroll-behavior:none;
 }
 
-/* Important: do not position:fixed the document root. Chromium can shift a
-   fixed body/root when an invisible form control receives focus. */
 body.menu-studio-viewport-lock{
   position:static!important;
 }
@@ -73,9 +72,6 @@ body.menu-studio-viewport-lock .menu-content-v2-canvas{
   overscroll-behavior:contain;
 }
 
-/* Keep the real checkbox located inside the visible switch. Previously it was
-   absolutely positioned without coordinates, so Chromium could scroll a
-   container/document to reveal the focused 0-opacity input after React rerender. */
 body.menu-studio-viewport-lock .menu-content-v2-toggle,
 body.menu-studio-viewport-lock .menu-content-v2-mobile-visibility{
   position:relative;
@@ -111,4 +107,69 @@ body.menu-studio-viewport-lock .menu-publish-v2{
 
 body.menu-studio-viewport-lock [class*="studio-v3"]{
   max-height:100dvh;
+}
+
+/* Universal mobile scroll contract for the complete Menu Studio.
+   Do not pin html/body/root on phones. This applies to every Studio tab and
+   survives route changes, browser chrome resizing, iPhone mirroring and
+   orientation changes. Desktop rules above remain untouched. */
+@media (max-width:850px){
+  html,
+  body{
+    height:auto!important;
+    min-height:100%!important;
+    max-height:none!important;
+    overflow-x:hidden!important;
+    overflow-y:auto!important;
+    overscroll-behavior-y:auto!important;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  body #root{
+    height:auto!important;
+    min-height:100dvh!important;
+    max-height:none!important;
+    overflow:visible!important;
+  }
+
+  .menu-content-v2,
+  .menu-design-v2,
+  .menu-preview-v2,
+  .menu-analytics-v2,
+  .menu-publish-v2{
+    height:auto!important;
+    min-height:100dvh!important;
+    max-height:none!important;
+    overflow-x:hidden!important;
+    overflow-y:visible!important;
+    overscroll-behavior-y:auto!important;
+    touch-action:pan-y!important;
+  }
+
+  .menu-content-v2-workspace{
+    height:auto!important;
+    min-height:0!important;
+    max-height:none!important;
+    overflow:visible!important;
+  }
+
+  .menu-content-v2-tree,
+  .menu-content-v2-inspector,
+  .menu-content-v2-preview,
+  .menu-content-v2-canvas{
+    max-height:none!important;
+    overscroll-behavior-y:auto!important;
+    -webkit-overflow-scrolling:touch;
+    touch-action:pan-y!important;
+  }
+
+  .menu-content-v2-tree,
+  .menu-content-v2-inspector,
+  .menu-content-v2-canvas{
+    overflow-y:auto!important;
+  }
+
+  [class*="studio-v3"]{
+    max-height:none!important;
+  }
 }

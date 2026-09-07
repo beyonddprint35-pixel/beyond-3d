@@ -2,8 +2,6 @@ import { supabase } from "../../../lib/supabaseClient";
 
 export const AI_DISH_REFERENCE_MAX_FILES = 6;
 export const AI_DISH_REFERENCE_MIN_FILES = 2;
-export const AI_DISH_MAX_ITEMS = 3;
-export const AI_DISH_MIN_ITEMS = 2;
 export const AI_DISH_REFERENCE_MAX_TOTAL_BYTES = 30 * 1024 * 1024;
 
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
@@ -35,7 +33,7 @@ function blobToBase64(blob) {
       const comma = value.indexOf(",");
       resolve(comma >= 0 ? value.slice(comma + 1) : value);
     };
-    reader.onerror = () => reject(new Error("Could not prepare the restaurant photo references."));
+    reader.onerror = () => reject(new Error("Could not prepare this image reference."));
     reader.readAsDataURL(blob);
   });
 }
@@ -59,7 +57,7 @@ function drawCover(context, image, x, y, width, height) {
 
 export function validateDishReferenceFiles(files = []) {
   if (files.length < AI_DISH_REFERENCE_MIN_FILES) return `Upload at least ${AI_DISH_REFERENCE_MIN_FILES} real dish photos.`;
-  if (files.length > AI_DISH_REFERENCE_MAX_FILES) return `Use up to ${AI_DISH_REFERENCE_MAX_FILES} reference photos for this test.`;
+  if (files.length > AI_DISH_REFERENCE_MAX_FILES) return `Use up to ${AI_DISH_REFERENCE_MAX_FILES} reference photos.`;
   if (files.some((file) => !ALLOWED_TYPES.has(file?.type))) return "Use JPG, PNG or WEBP dish photos.";
   const total = files.reduce((sum, file) => sum + Number(file?.size || 0), 0);
   if (total > AI_DISH_REFERENCE_MAX_TOTAL_BYTES) return "Reference photos can be up to 30 MB combined.";
@@ -112,6 +110,18 @@ export async function createDishReferenceCollage(files = []) {
   }
 }
 
+export async function createSingleImageReference(file, maxBytes = 5 * 1024 * 1024) {
+  if (!file) return null;
+  if (!ALLOWED_TYPES.has(file.type)) throw new Error("Use a JPG, PNG or WEBP image.");
+  if (Number(file.size || 0) > maxBytes) throw new Error("This image is too large.");
+  return {
+    mimeType: file.type,
+    base64: await blobToBase64(file),
+    bytes: Number(file.size || 0),
+    name: file.name || "reference",
+  };
+}
+
 async function parseFunctionError(error) {
   let message = error?.message || "Could not generate this dish image.";
   try {
@@ -133,22 +143,62 @@ async function parseFunctionError(error) {
   return new Error(message);
 }
 
-export async function generateDishImageWithAi({
-  projectId,
-  restaurantName,
-  vibe,
-  item,
-  reference,
-  styleReferencePath = "",
-  adjustment = "",
-}) {
+async function requireSession() {
   const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
   if (sessionError) throw sessionError;
   const session = sessionData?.session;
-  if (!session?.access_token) throw new Error("Sign in to generate AI dish photos.");
+  if (!session?.access_token) throw new Error("Sign in to use AI dish photos.");
+  return session;
+}
+
+export async function searchProductReferenceImages(query) {
+  const session = await requireSession();
+  const { data, error } = await supabase.functions.invoke("menu-ai-product-reference-search", {
+    body: { action: "search", query: String(query || "").trim().slice(0, 180) },
+    headers: { Authorization: `Bearer ${session.access_token}` },
+  });
+  if (error) throw await parseFunctionError(error);
+  if (!data?.ok) throw new Error(data?.error || "Could not search for product references.");
+  return Array.isArray(data.results) ? data.results : [];
+}
+
+export async function resolveProductReferenceImage(result) {
+  const session = await requireSession();
+  const { data, error } = await supabase.functions.invoke("menu-ai-product-reference-search", {
+    body: {
+      action: "resolve",
+      imageUrl: result?.imageUrl || "",
+      sourceUrl: result?.sourceUrl || "",
+      source: result?.source || "",
+      title: result?.title || "",
+    },
+    headers: { Authorization: `Bearer ${session.access_token}` },
+  });
+  if (error) throw await parseFunctionError(error);
+  if (!data?.ok || !data?.reference?.base64) throw new Error(data?.error || "Could not prepare this online reference.");
+  return data.reference;
+}
+
+export async function generateDishImageWithAi({
+  projectId,
+  restaurantName,
+  vibe = "",
+  item,
+  reference = null,
+  styleReferencePath = "",
+  editReferencePath = "",
+  adjustment = "",
+  brandName = "",
+  brandMode = "",
+  brandReference = null,
+  productReference = null,
+}) {
+  const session = await requireSession();
   if (!projectId) throw new Error("This menu needs a saved project before AI dish photos can be generated.");
   if (!item?.id || !item?.name) throw new Error("Choose a valid menu item.");
-  if (!reference?.base64) throw new Error("Upload restaurant dish reference photos first.");
+  if (!reference?.base64 && !editReferencePath) throw new Error("Upload restaurant reference photos first, or refine an existing saved version.");
+
+  const selectedProductReference = productReference || (typeof window !== "undefined" ? window.__beyondAiProductReference || null : null);
 
   const { data, error } = await supabase.functions.invoke("menu-ai-dish-image-test", {
     body: {
@@ -158,7 +208,12 @@ export async function generateDishImageWithAi({
       item,
       reference,
       styleReferencePath,
+      editReferencePath,
       adjustment,
+      brandName,
+      brandMode,
+      brandReference,
+      productReference: selectedProductReference,
     },
     headers: { Authorization: `Bearer ${session.access_token}` },
   });
