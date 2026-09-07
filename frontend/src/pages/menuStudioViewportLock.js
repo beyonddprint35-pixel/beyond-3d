@@ -2,8 +2,16 @@ function isStudioRoute() {
   return window.location.pathname.startsWith("/menu-studio/");
 }
 
+function isMobileViewport() {
+  return window.matchMedia("(max-width: 850px)").matches;
+}
+
+function shouldLockStudioViewport() {
+  return isStudioRoute() && !isMobileViewport();
+}
+
 function resetDocumentScroll() {
-  if (!isStudioRoute()) return;
+  if (!shouldLockStudioViewport()) return;
   const scrollingElement = document.scrollingElement || document.documentElement;
   if (scrollingElement) {
     scrollingElement.scrollTop = 0;
@@ -13,7 +21,7 @@ function resetDocumentScroll() {
 }
 
 function applyStudioViewportLock() {
-  const active = isStudioRoute();
+  const active = shouldLockStudioViewport();
   document.documentElement.classList.toggle("menu-studio-viewport-lock", active);
   document.body.classList.toggle("menu-studio-viewport-lock", active);
   if (active) {
@@ -41,17 +49,19 @@ export default function installMenuStudioViewportLock() {
   };
 
   const keepDocumentPinned = () => {
-    if (!isStudioRoute()) return;
+    if (!shouldLockStudioViewport()) return;
     resetDocumentScroll();
   };
 
   const keepDocumentPinnedAfterFocus = () => {
-    if (!isStudioRoute()) return;
+    if (!shouldLockStudioViewport()) return;
     requestAnimationFrame(resetDocumentScroll);
   };
 
   window.addEventListener("popstate", applyStudioViewportLock);
   window.addEventListener("hashchange", applyStudioViewportLock);
+  window.addEventListener("resize", applyStudioViewportLock, { passive: true });
+  window.addEventListener("orientationchange", applyStudioViewportLock, { passive: true });
   window.addEventListener("scroll", keepDocumentPinned, { passive: true });
   document.addEventListener("focusin", keepDocumentPinnedAfterFocus, true);
 }
