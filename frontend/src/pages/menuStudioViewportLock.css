@@ -1,5 +1,6 @@
 /* Global Studio viewport contract.
-   The document never becomes a scroll surface on desktop; each Studio pane owns its own scroll. */
+   Desktop Studio is pinned to the viewport and each pane owns its own scroll.
+   Mobile is deliberately excluded from that contract and uses native page/touch scrolling. */
 html.menu-studio-viewport-lock,
 body.menu-studio-viewport-lock{
   width:100%;
@@ -11,8 +12,6 @@ body.menu-studio-viewport-lock{
   overscroll-behavior:none;
 }
 
-/* Important: do not position:fixed the document root. Chromium can shift a
-   fixed body/root when an invisible form control receives focus. */
 body.menu-studio-viewport-lock{
   position:static!important;
 }
@@ -73,9 +72,6 @@ body.menu-studio-viewport-lock .menu-content-v2-canvas{
   overscroll-behavior:contain;
 }
 
-/* Keep the real checkbox located inside the visible switch. Previously it was
-   absolutely positioned without coordinates, so Chromium could scroll a
-   container/document to reveal the focused 0-opacity input after React rerender. */
 body.menu-studio-viewport-lock .menu-content-v2-toggle,
 body.menu-studio-viewport-lock .menu-content-v2-mobile-visibility{
   position:relative;
@@ -113,53 +109,67 @@ body.menu-studio-viewport-lock [class*="studio-v3"]{
   max-height:100dvh;
 }
 
-/* Mobile Studio uses the page for vertical movement. The desktop viewport lock
-   intentionally pins every Studio root to one screen, but on phones that made
-   Content / Design / Preview / Analytics / Publish feel frozen because the
-   active surface had nowhere to scroll. Keep the document itself pinned, but
-   make each Studio root a real touch scroll container. This is mobile-only so
-   the approved desktop Content layout is unchanged. */
+/* Universal mobile scroll contract for the complete Menu Studio.
+   Do not pin html/body/root on phones. This applies to every Studio tab and
+   survives route changes, browser chrome resizing, iPhone mirroring and
+   orientation changes. Desktop rules above remain untouched. */
 @media (max-width:850px){
-  body.menu-studio-viewport-lock #root{
-    overflow:hidden!important;
-  }
-
-  body.menu-studio-viewport-lock .menu-content-v2,
-  body.menu-studio-viewport-lock .menu-design-v2,
-  body.menu-studio-viewport-lock .menu-preview-v2,
-  body.menu-studio-viewport-lock .menu-analytics-v2,
-  body.menu-studio-viewport-lock .menu-publish-v2{
-    height:100dvh!important;
-    min-height:100dvh!important;
-    max-height:100dvh!important;
+  html,
+  body{
+    height:auto!important;
+    min-height:100%!important;
+    max-height:none!important;
     overflow-x:hidden!important;
     overflow-y:auto!important;
+    overscroll-behavior-y:auto!important;
     -webkit-overflow-scrolling:touch;
-    overscroll-behavior-y:contain;
-    touch-action:pan-y;
   }
 
-  /* Content has its own mobile panes. Give the visible pane the full remaining
-     height and native touch scrolling instead of letting the workspace swallow
-     vertical gestures. */
-  body.menu-studio-viewport-lock .menu-content-v2-workspace{
-    flex:1 0 auto!important;
+  body #root{
+    height:auto!important;
+    min-height:100dvh!important;
+    max-height:none!important;
+    overflow:visible!important;
+  }
+
+  .menu-content-v2,
+  .menu-design-v2,
+  .menu-preview-v2,
+  .menu-analytics-v2,
+  .menu-publish-v2{
+    height:auto!important;
+    min-height:100dvh!important;
+    max-height:none!important;
+    overflow-x:hidden!important;
+    overflow-y:visible!important;
+    overscroll-behavior-y:auto!important;
+    touch-action:pan-y!important;
+  }
+
+  .menu-content-v2-workspace{
     height:auto!important;
     min-height:0!important;
     max-height:none!important;
     overflow:visible!important;
   }
 
-  body.menu-studio-viewport-lock .menu-content-v2-tree,
-  body.menu-studio-viewport-lock .menu-content-v2-inspector,
-  body.menu-studio-viewport-lock .menu-content-v2-preview,
-  body.menu-studio-viewport-lock .menu-content-v2-canvas{
+  .menu-content-v2-tree,
+  .menu-content-v2-inspector,
+  .menu-content-v2-preview,
+  .menu-content-v2-canvas{
     max-height:none!important;
-    overflow-y:visible!important;
-    overscroll-behavior:auto;
+    overscroll-behavior-y:auto!important;
+    -webkit-overflow-scrolling:touch;
+    touch-action:pan-y!important;
   }
 
-  body.menu-studio-viewport-lock [class*="studio-v3"]{
-    max-height:none;
+  .menu-content-v2-tree,
+  .menu-content-v2-inspector,
+  .menu-content-v2-canvas{
+    overflow-y:auto!important;
+  }
+
+  [class*="studio-v3"]{
+    max-height:none!important;
   }
 }
