@@ -1,0 +1,89 @@
+/* =========================================================
+   DESKTOP CATEGORY NAVIGATION REGULATION
+
+   Long restaurant menus can have 10–20 categories. On a wide screen, forcing
+   every category into one horizontal editorial line makes labels look tiny and
+   difficult to scan. Desktop navigation should remain elegant, but readability
+   wins: standard category bars may wrap into balanced rows while mobile keeps
+   the familiar horizontal swipe strip.
+   ========================================================= */
+
+@container beyond-menu (min-width: 900px) {
+  /* Standard pill / minimal / underline navigation. Purpose-built navigation
+     families (launcher, covers and bottom docks) keep their own composition. */
+  .bme-menu.bme-nav-pills:not(.bme-presentation-category-covers):not(.bme-presentation-launcher):not(.bme-presentation-bottom-tabs):not(.bme-presentation-neon-dock):not(.bme-presentation-tropical-club) .bme-category-nav,
+  .bme-menu.bme-nav-minimal:not(.bme-presentation-category-covers):not(.bme-presentation-launcher):not(.bme-presentation-bottom-tabs):not(.bme-presentation-neon-dock):not(.bme-presentation-tropical-club) .bme-category-nav,
+  .bme-menu.bme-nav-underline:not(.bme-presentation-category-covers):not(.bme-presentation-launcher):not(.bme-presentation-bottom-tabs):not(.bme-presentation-neon-dock):not(.bme-presentation-tropical-club) .bme-category-nav {
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    column-gap: 10px;
+    row-gap: 9px;
+    overflow: visible;
+    padding-top: 18px;
+    padding-bottom: 20px;
+  }
+
+  .bme-menu.bme-nav-pills .bme-category-nav button,
+  .bme-menu.bme-nav-minimal .bme-category-nav button,
+  .bme-menu.bme-nav-underline .bme-category-nav button {
+    flex: 0 0 auto;
+    max-width: 100%;
+    font-size: max(12px,var(--bme-category-size));
+    line-height: 1.2;
+  }
+
+  /* Atelier Editorial deliberately used 9px spaced-out labels. That works with
+     four categories, but becomes unreadable for a real wine/bar menu with many
+     sections. Keep the editorial restraint while turning the categories into
+     calm, readable chips that can form two balanced rows. */
+  .bme-menu.bme-presentation-atelier .bme-category-nav {
+    gap: 9px 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    overflow: visible;
+    padding-block: 18px 20px;
+  }
+
+  .bme-menu.bme-presentation-atelier .bme-category-nav button {
+    min-height: 38px;
+    padding: 0 14px;
+    border: 1px solid color-mix(in srgb,var(--bme-line) 88%,transparent);
+    border-radius: 999px;
+    background: color-mix(in srgb,var(--bme-surface) 88%,transparent);
+    color: var(--bme-muted);
+    font-size: max(12px,var(--bme-category-size));
+    font-weight: 650;
+    line-height: 1.15;
+    letter-spacing: .025em;
+    text-transform: none;
+    box-shadow: 0 2px 8px color-mix(in srgb,var(--bme-text) 4%,transparent);
+  }
+
+  .bme-menu.bme-presentation-atelier .bme-category-nav button:hover {
+    color: var(--bme-text);
+    border-color: color-mix(in srgb,var(--bme-text) 22%,var(--bme-line));
+  }
+
+  .bme-menu.bme-presentation-atelier .bme-category-nav button.active {
+    border-color: var(--bme-category-bg);
+    background: var(--bme-category-bg);
+    color: var(--bme-category-text);
+    box-shadow: 0 7px 18px color-mix(in srgb,var(--bme-category-bg) 18%,transparent);
+  }
+
+  /* Wine Register is another high-category-count profile. On desktop, wrap the
+     book-style index instead of making the guest hunt through a very long strip. */
+  .bme-menu.bme-presentation-wine-register .bme-category-nav {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 10px;
+    overflow: visible;
+  }
+
+  .bme-menu.bme-presentation-wine-register .bme-category-nav button {
+    min-height: 38px;
+    padding-inline: 13px;
+    font-size: max(12px,var(--bme-category-size));
+  }
+}
