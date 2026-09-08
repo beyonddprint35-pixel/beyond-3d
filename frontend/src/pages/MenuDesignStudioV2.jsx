@@ -29,6 +29,7 @@ import "../features/menu-engine/studio/MenuDesignAdvancedClarity.css";
 import "../features/menu-engine/studio/MenuDesignDarkMode.css";
 import "../features/menu-engine/studio/MenuDesignDarkModePolish.css";
 import "../features/menu-engine/studio/MenuDesignVariants.css";
+import "../features/menu-engine/studio/MenuDesignCompactWorkspace.css";
 
 const UI = {
   en: {
@@ -315,6 +316,7 @@ export default function MenuDesignStudioV2() {
               language={contentLanguage}
               uiLanguage={uiLanguage}
               label={`${t.live} · ${activeDesignVariant}`}
+              patchDesign={patchDesign}
               compact
             />
           </div>
