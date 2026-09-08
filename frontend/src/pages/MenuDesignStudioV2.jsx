@@ -38,7 +38,7 @@ const UI = {
     eyebrow:"DESIGN STUDIO", title:"Design your menu", hint:"Choose a design and adjust it while your live menu stays visible beside you.",
     live:"LIVE DESIGN", continuePreview:"Continue to Preview", draftKept:"Design changes are saved to your draft.",
     restaurantLogo:"Restaurant logo", logoHint:"PNG, JPG, WebP or SVG", uploadLogo:"Upload logo", replaceLogo:"Replace logo", removeLogo:"Remove",
-    savedDesigns:"Saved designs", savedDesignsHint:"Keep two favorites for this menu. Switching slots never changes your menu content.", designA:"Design A", designB:"Design B", editing:"Editing", duplicateHint:"Tap to create from your current design",
+    savedDesigns:"Saved options", savedDesignsHint:"Keep two favorites for this menu. Switching options never changes your menu content.", option1:"Option 1", option2:"Option 2", editing:"Editing", duplicateHint:"Tap to create from your current option",
   },
   he: {
     interfaceLanguage:"שפה", contentLanguage:"שפה", backContent:"חזרה לתוכן", workspace:"סביבת עבודת התפריט",
@@ -46,7 +46,7 @@ const UI = {
     eyebrow:"סטודיו לעיצוב", title:"עצבו את התפריט", hint:"בחרו עיצוב והתאימו אותו בזמן שהתפריט החי נשאר מולכם לאורך כל הדרך.",
     live:"עיצוב חי", continuePreview:"המשך לתצוגה מקדימה", draftKept:"שינויי העיצוב נשמרים בטיוטה שלכם.",
     restaurantLogo:"לוגו המסעדה", logoHint:"PNG, JPG, WebP או SVG", uploadLogo:"העלאת לוגו", replaceLogo:"החלפת לוגו", removeLogo:"הסרה",
-    savedDesigns:"עיצובים שמורים", savedDesignsHint:"שמרו שני עיצובים מועדפים לאותו תפריט. התוכן נשאר משותף.", designA:"עיצוב A", designB:"עיצוב B", editing:"בעריכה", duplicateHint:"לחצו כדי ליצור מהעיצוב הנוכחי",
+    savedDesigns:"אפשרויות שמורות", savedDesignsHint:"שמרו שתי אפשרויות מועדפות לאותו תפריט. התוכן נשאר משותף.", option1:"אפשרות 1", option2:"אפשרות 2", editing:"בעריכה", duplicateHint:"לחצו כדי ליצור מהאפשרות הנוכחית",
   },
   ar: {
     interfaceLanguage:"اللغة", contentLanguage:"اللغة", backContent:"العودة إلى المحتوى", workspace:"مساحة عمل القائمة",
@@ -54,7 +54,7 @@ const UI = {
     eyebrow:"استوديو التصميم", title:"صمّم قائمتك", hint:"اختر تصميماً وعدّله بينما تبقى المعاينة الحية ظاهرة أمامك طوال الوقت.",
     live:"تصميم مباشر", continuePreview:"المتابعة إلى المعاينة", draftKept:"تُحفظ تغييرات التصميم في مسودتكم.",
     restaurantLogo:"شعار المطعم", logoHint:"PNG أو JPG أو WebP أو SVG", uploadLogo:"رفع الشعار", replaceLogo:"استبدال الشعار", removeLogo:"إزالة",
-    savedDesigns:"تصاميم محفوظة", savedDesignsHint:"احتفظوا بتصميمين مفضلين لنفس القائمة. يبقى المحتوى مشتركاً.", designA:"التصميم A", designB:"التصميم B", editing:"قيد التعديل", duplicateHint:"اضغطوا للإنشاء من التصميم الحالي",
+    savedDesigns:"خيارات محفوظة", savedDesignsHint:"احتفظ بخيارين مفضلين لنفس القائمة. يبقى المحتوى مشتركاً.", option1:"الخيار 1", option2:"الخيار 2", editing:"قيد التعديل", duplicateHint:"اضغط للإنشاء من الخيار الحالي",
   },
 };
 
@@ -111,8 +111,8 @@ function studioRoute(path) {
   return `${path}${window.location.search || ""}`;
 }
 
-function designSlotLabel(slot, t) {
-  return slot === "B" ? t.designB : t.designA;
+function optionSlotLabel(slot, t) {
+  return slot === "B" ? t.option2 : t.option1;
 }
 
 export default function MenuDesignStudioV2() {
@@ -271,8 +271,8 @@ export default function MenuDesignStudioV2() {
               <div className="menu-design-v2-variant-buttons">
                 {["A", "B"].map((slot) => (
                   <button key={slot} type="button" className={`menu-design-v2-variant-button ${activeDesignVariant === slot ? "active" : ""}`} onClick={() => switchDesignVariant(slot)} aria-pressed={activeDesignVariant === slot}>
-                    <span className="menu-design-v2-variant-letter">{slot}</span>
-                    <span><strong>{designSlotLabel(slot, t)}{activeDesignVariant === slot ? ` · ${t.editing}` : ""}</strong><small>{slotDesignName(slot)}</small></span>
+                    <span className="menu-design-v2-variant-letter">{slot === "B" ? "2" : "1"}</span>
+                    <span><strong>{optionSlotLabel(slot, t)}{activeDesignVariant === slot ? ` · ${t.editing}` : ""}</strong><small>{slotDesignName(slot)}</small></span>
                   </button>
                 ))}
               </div>
@@ -315,7 +315,7 @@ export default function MenuDesignStudioV2() {
               design={design}
               language={contentLanguage}
               uiLanguage={uiLanguage}
-              label={`${t.live} · ${activeDesignVariant}`}
+              label={`${t.live} · ${optionSlotLabel(activeDesignVariant, t)}`}
               patchDesign={patchDesign}
               compact
             />
