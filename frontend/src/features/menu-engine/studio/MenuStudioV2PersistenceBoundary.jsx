@@ -15,6 +15,7 @@ import {
   readActiveMenuStudioProjectId,
   setActiveMenuStudioProjectId,
 } from "./menuStudioV2Persistence";
+import { prefetchMenuSubscription } from "../data/menuSubscriptionService";
 import { readStudioLanguage } from "./studioLanguage";
 import { useMenuStudioWorkspace } from "./menuStudioWorkspaceContext";
 import "./MenuStudioV2PersistenceBoundary.css";
@@ -153,6 +154,12 @@ export default function MenuStudioV2PersistenceBoundary({ children }) {
     void openDraft();
     return () => { active = false; };
   }, [hasWarmProjectDraft, isWebsiteEntry, prepared, requestedProjectId, t.loading, t.migrating, t.missing]);
+
+  useEffect(() => {
+    if (state !== "ready") return;
+    const projectId = requestedProjectId || menuStudioProjectId(readMenuStudioV2Draft());
+    if (projectId) void prefetchMenuSubscription(projectId);
+  }, [requestedProjectId, state]);
 
   useEffect(() => {
     function onCloudSave(event) {

@@ -6,6 +6,7 @@ import MenuStudioHeader from "./MenuStudioHeader";
 import {
   activateMenuSubscriptionAsAdmin,
   loadMenuSubscription,
+  peekMenuSubscription,
   selectMenuSubscriptionPlan,
 } from "../features/menu-engine/data/menuSubscriptionService";
 import { menuStudioProjectId } from "../features/menu-engine/studio/menuStudioV2Persistence";
@@ -36,10 +37,10 @@ const COPY = {
     errorTitle: "Subscription check failed",
     missingProject: "This menu must be saved to your Beyond account before you can choose a plan.",
     chooseDesignEyebrow: "FINAL DESIGN",
-    chooseDesignTitle: "Which design do you want to publish?",
-    chooseDesignIntro: "Your content is shared between both favorites. Choose the design guests should see on the live menu.",
-    designA: "Design A",
-    designB: "Design B",
+    chooseDesignTitle: "Which option do you want to publish?",
+    chooseDesignIntro: "Your content is shared between both options. Choose which look guests should see on the live menu.",
+    option1: "Option 1",
+    option2: "Option 2",
   },
   he: {
     eyebrow: "בחירת חבילה",
@@ -61,10 +62,10 @@ const COPY = {
     errorTitle: "לא ניתן לבדוק את המנוי",
     missingProject: "צריך לשמור את התפריט בחשבון Beyond לפני בחירת חבילה.",
     chooseDesignEyebrow: "עיצוב סופי",
-    chooseDesignTitle: "איזה עיצוב תרצו לפרסם?",
-    chooseDesignIntro: "התוכן משותף לשני העיצובים. בחרו איזה עיצוב האורחים יראו בתפריט החי.",
-    designA: "עיצוב A",
-    designB: "עיצוב B",
+    chooseDesignTitle: "איזו אפשרות תרצו לפרסם?",
+    chooseDesignIntro: "התוכן משותף לשתי האפשרויות. בחרו איזה מראה האורחים יראו בתפריט החי.",
+    option1: "אפשרות 1",
+    option2: "אפשרות 2",
   },
   ar: {
     eyebrow: "اختيار الخطة",
@@ -86,10 +87,10 @@ const COPY = {
     errorTitle: "تعذر فحص الاشتراك",
     missingProject: "يجب حفظ القائمة في حساب Beyond قبل اختيار خطة.",
     chooseDesignEyebrow: "التصميم النهائي",
-    chooseDesignTitle: "أي تصميم تريدون نشره؟",
-    chooseDesignIntro: "المحتوى مشترك بين التصميمين. اختاروا التصميم الذي سيشاهده الضيوف في القائمة المباشرة.",
-    designA: "التصميم A",
-    designB: "التصميم B",
+    chooseDesignTitle: "أي خيار تريدون نشره؟",
+    chooseDesignIntro: "المحتوى مشترك بين الخيارين. اختاروا المظهر الذي سيشاهده الضيوف في القائمة المباشرة.",
+    option1: "الخيار 1",
+    option2: "الخيار 2",
   },
 };
 
@@ -125,29 +126,39 @@ export default function MenuSubscriptionPublishGate({ children }) {
   const projectId = menuStudioProjectId(draft);
   const menuName = draft?.menu?.restaurant_name || draft?.menu?.name || "Menu";
   const [language] = useState(() => readStudioLanguage("en"));
-  const [state, setState] = useState({ loading: true, data: null, error: "" });
+  const [state, setState] = useState(() => {
+    const cached = projectId ? peekMenuSubscription(projectId) : null;
+    return { loading: !cached, data: cached, error: "" };
+  });
   const [selectingPlanId, setSelectingPlanId] = useState("");
   const [activating, setActivating] = useState(false);
   const [publishDesignVariant, setPublishDesignVariant] = useState("");
   const t = COPY[language] || COPY.en;
   const rtl = studioLanguageDirection(language) === "rtl";
 
-  async function load() {
+  async function load(force = false, silent = false) {
     if (!projectId) {
       setState({ loading: false, data: null, error: t.missingProject });
       return;
     }
-    setState((current) => ({ ...current, loading: true, error: "" }));
+    if (!silent) setState((current) => ({ ...current, loading: true, error: "" }));
     try {
-      const data = await loadMenuSubscription(projectId);
+      const data = await loadMenuSubscription(projectId, { force });
       setState({ loading: false, data, error: "" });
     } catch (error) {
+      if (silent) return;
       setState({ loading: false, data: null, error: error?.message || t.errorTitle });
     }
   }
 
   useEffect(() => {
-    void load();
+    const cached = projectId ? peekMenuSubscription(projectId) : null;
+    if (cached) {
+      setState({ loading: false, data: cached, error: "" });
+      void load(true, true);
+      return;
+    }
+    void load(false, false);
   }, [projectId]);
 
   async function choosePlan(planId) {
@@ -222,9 +233,9 @@ export default function MenuSubscriptionPublishGate({ children }) {
               <div className="menu-publish-design-choice-options">
                 {availableVariants.map((slot) => (
                   <button key={slot} type="button" className="menu-publish-design-choice-option" onClick={() => choosePublishDesign(slot)}>
-                    <span className="menu-publish-design-choice-letter">{slot}</span>
+                    <span className="menu-publish-design-choice-letter">{slot === "B" ? "2" : "1"}</span>
                     <span>
-                      <strong>{slot === "B" ? t.designB : t.designA}</strong>
+                      <strong>{slot === "B" ? t.option2 : t.option1}</strong>
                       <small>{designName(designVariants[slot])}</small>
                     </span>
                   </button>
@@ -267,7 +278,7 @@ export default function MenuSubscriptionPublishGate({ children }) {
         </div>
 
         {state.error ? (
-          <div className="menu-subscription-error"><CircleAlert size={17} /><span><strong>{t.errorTitle}</strong><small>{state.error}</small></span><button type="button" onClick={load}><RefreshCw size={14} /> {t.refresh}</button></div>
+          <div className="menu-subscription-error"><CircleAlert size={17} /><span><strong>{t.errorTitle}</strong><small>{state.error}</small></span><button type="button" onClick={() => load(true, false)}><RefreshCw size={14} /> {t.refresh}</button></div>
         ) : null}
 
         {state.loading ? (
@@ -280,7 +291,7 @@ export default function MenuSubscriptionPublishGate({ children }) {
             {selectedPlan ? <strong>{planName(selectedPlan, language)} · {selectedPlan.price || ""}</strong> : null}
             <p>{t.pendingText}</p>
             <div className="menu-subscription-pending-actions">
-              <button type="button" className="secondary" onClick={load}><RefreshCw size={15} /> {t.refresh}</button>
+              <button type="button" className="secondary" onClick={() => load(true, false)}><RefreshCw size={15} /> {t.refresh}</button>
               {state.data?.isAdmin ? <button type="button" className="primary" onClick={activateAsAdmin} disabled={activating}><ShieldCheck size={15} /> {activating ? t.activating : t.adminActivate}</button> : null}
             </div>
           </section>

@@ -1,0 +1,291 @@
+/* =========================================================
+   BEYOND MENU STUDIO — FIXED PREVIEW / COMPACT INSPECTOR
+
+   Desktop Design is an app workspace, not a long document. The browser page
+   never scrolls: controls scroll independently while the real menu stays in
+   view. The live menu is also the primary hero-photo crop surface.
+   ========================================================= */
+
+@media (min-width:901px){
+  body:has(.menu-design-v2){overflow:hidden!important}
+  .menu-design-v2{
+    position:fixed!important;
+    inset:0!important;
+    width:100vw!important;
+    height:100dvh!important;
+    min-height:0!important;
+    max-height:100dvh!important;
+    overflow:hidden!important;
+  }
+  .menu-design-v2-workspace{
+    flex:1 1 0!important;
+    height:0!important;
+    min-height:0!important;
+    overflow:hidden!important;
+  }
+  .menu-design-v2-controls{
+    height:100%!important;
+    min-height:0!important;
+    overflow-x:hidden!important;
+    overflow-y:auto!important;
+    overscroll-behavior:contain!important;
+    scrollbar-gutter:stable;
+  }
+  .menu-design-v2-canvas,
+  .menu-design-v2-live-preview,
+  .studio-v3-design-canvas-workspace,
+  .studio-v3-design-canvas-stage{
+    min-height:0!important;
+  }
+  .menu-design-v2-canvas{height:100%!important;overflow:hidden!important}
+}
+
+/* Compress the always-visible setup area. */
+.menu-design-v2 .menu-design-v2-sidebar-overview{
+  gap:7px!important;
+  padding:8px 9px!important;
+}
+.menu-design-v2 .menu-design-v2-sidebar-title{
+  grid-template-columns:auto 1fr;
+  grid-template-areas:"eyebrow title";
+  align-items:center;
+  gap:5px 8px!important;
+}
+.menu-design-v2 .menu-design-v2-sidebar-title>span{grid-area:eyebrow;font-size:7px!important;letter-spacing:.08em!important}
+.menu-design-v2 .menu-design-v2-sidebar-title>strong{grid-area:title;font-size:13px!important;line-height:1.1!important}
+.menu-design-v2 .menu-design-v2-sidebar-title>small{display:none!important}
+.menu-design-v2 .menu-design-v2-logo-control{
+  min-height:44px!important;
+  padding:5px 6px!important;
+  grid-template-columns:34px minmax(65px,1fr) auto!important;
+}
+.menu-design-v2 .menu-design-v2-logo-preview{width:34px!important;height:34px!important;border-radius:8px!important}
+.menu-design-v2 .menu-design-v2-logo-copy strong{font-size:9px!important}
+.menu-design-v2 .menu-design-v2-logo-copy small{display:none!important}
+.menu-design-v2 .menu-design-v2-logo-upload{min-height:26px!important;padding:0 8px!important;font-size:7.5px!important}
+.menu-design-v2 .menu-design-v2-variants-compact{gap:4px!important;padding:5px 6px!important}
+.menu-design-v2 .menu-design-v2-variants-copy{display:flex!important;align-items:center!important;justify-content:space-between!important}
+.menu-design-v2 .menu-design-v2-variants-copy strong{font-size:9px!important}
+.menu-design-v2 .menu-design-v2-variants-copy small{display:none!important}
+.menu-design-v2 .menu-design-v2-variant-buttons{gap:4px!important}
+.menu-design-v2 .menu-design-v2-variant-button{min-height:34px!important;padding:4px 6px!important;border-radius:8px!important}
+.menu-design-v2 .menu-design-v2-variant-letter{width:20px!important;height:20px!important;flex-basis:20px!important;font-size:8px!important}
+.menu-design-v2 .menu-design-v2-variant-button strong{font-size:8px!important}
+.menu-design-v2 .menu-design-v2-variant-button small{font-size:7px!important}
+.menu-design-v2 .menu-design-v2-sidebar-picker .menu-design-picker-industries button{min-height:25px!important;padding:0 8px!important;font-size:8px!important}
+.menu-design-v2 .menu-design-v2-sidebar-picker .menu-design-picker-tab{min-height:36px!important;padding:5px 8px!important;border-radius:9px!important}
+.menu-design-v2 .menu-design-v2-sidebar-picker .menu-design-picker-tab>span:nth-child(2){font-size:8.5px!important}
+.menu-design-v2 .menu-design-v2-sidebar-picker .menu-design-picker-swatches{width:16px!important;height:16px!important}
+.menu-design-v2 .menu-design-v2-sidebar-picker .menu-design-picker-scroll{height:34px!important}
+
+/* Command bar and Quick/Detailed switch should consume one compact band. */
+.menu-design-v2 .studio-v3-design-commandbar{min-height:32px!important;padding:4px 8px!important}
+.menu-design-v2 .studio-v3-design-breadcrumb{font-size:8px!important}
+.menu-design-v2 .studio-v3-design-history-actions button{min-height:25px!important}
+.menu-design-v2 .studio-v3-design-history-actions button small{display:none!important}
+.menu-design-v2 .studio-v3-design-v2-nav{gap:4px!important;padding:5px 7px!important}
+.menu-design-v2 .studio-v3-design-v2-nav button{min-height:34px!important;padding:4px 7px!important;border-radius:9px!important}
+.menu-design-v2 .studio-v3-design-v2-nav button i{width:20px!important;height:20px!important;font-size:10px!important}
+.menu-design-v2 .studio-v3-design-v2-nav button strong{font-size:9px!important}
+.menu-design-v2 .studio-v3-design-v2-nav button small{display:none!important}
+
+/* Detailed settings: one compact destination list, with only the chosen panel
+   carrying visual weight. */
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-inspector-shell{gap:5px!important;padding:6px!important;border-radius:12px!important}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-context-editor-head{min-height:32px!important;padding:4px 5px!important}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-context-editor-head small{display:none!important}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-context-editor-head strong{font-size:10px!important}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-context-editor-head button{min-height:25px!important;padding:0 7px!important;font-size:7px!important}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs{gap:3px!important}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button{
+  min-height:38px!important;
+  grid-template-columns:24px minmax(0,1fr) 10px!important;
+  gap:6px!important;
+  padding:4px 7px!important;
+  border-radius:9px!important;
+}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-design-tab-icon{width:24px!important;height:24px!important;border-radius:7px!important;font-size:11px!important}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-design-tab-label::before{font-size:9.5px!important}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-design-tab-label::after{display:none!important}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button::after{font-size:13px!important}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-inspector-block{gap:7px!important;padding:8px!important;border-radius:10px!important}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-inspector-block-title{gap:1px!important;font-size:10px!important}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-inspector-block-title small{font-size:8px!important;line-height:1.25!important}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-inspector-range{gap:4px!important;padding:4px 0!important}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-inspector-range-head{font-size:9px!important}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-inspector-range-head b{min-width:42px!important;padding:3px 5px!important;border-radius:6px!important;font-size:8px!important}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-inspector-range input[type="range"]{height:15px!important}
+.menu-design-v2 .studio-v3-inspector-help{margin:2px 0!important;font-size:8px!important;line-height:1.3!important}
+.menu-design-v2 .studio-v3-inspector-background-preview{max-height:70px!important;object-fit:cover!important}
+.menu-design-v2 .studio-v3-hero-mode-grid button,
+.menu-design-v2 .studio-v3-option-grid button,
+.menu-design-v2 .studio-v3-shape-grid button{min-height:34px!important;padding:5px!important}
+
+/* The small duplicate crop image on the left is no longer the editing surface.
+   The actual menu hero is draggable, so keep only precise sliders here. */
+.menu-design-v2 .hero-framing-control{
+  position:sticky;
+  bottom:7px;
+  z-index:25;
+  margin:6px!important;
+  padding:7px 8px!important;
+  gap:5px!important;
+  border-radius:11px!important;
+  box-shadow:0 12px 32px rgba(20,27,38,.14);
+  backdrop-filter:blur(14px);
+}
+.menu-design-v2 .hero-framing-preview{display:none!important}
+.menu-design-v2 .hero-framing-head{align-items:center!important;gap:6px!important}
+.menu-design-v2 .hero-framing-head>div{gap:1px!important}
+.menu-design-v2 .hero-framing-head strong{font-size:9.5px!important}
+.menu-design-v2 .hero-framing-head small{font-size:7.5px!important;line-height:1.25!important}
+.menu-design-v2 .hero-framing-head>button{min-height:24px!important;padding:0 6px!important;font-size:7px!important;border-radius:7px!important}
+.menu-design-v2 .hero-framing-range{
+  min-height:25px;
+  display:grid!important;
+  grid-template-columns:92px minmax(0,1fr)!important;
+  align-items:center!important;
+  gap:6px!important;
+}
+.menu-design-v2 .hero-framing-range>span{font-size:7.5px!important;gap:3px!important}
+.menu-design-v2 .hero-framing-range b{font-size:7.5px!important}
+.menu-design-v2 .hero-framing-range input[type="range"]{height:16px!important}
+.menu-design-v2 .menu-hero-headline-control{margin:6px!important;padding:8px!important}
+
+/* Direct hero-photo toolbar floats above the canvas without moving the phone. */
+.menu-design-v2 .studio-v3-design-canvas-stage{position:relative!important}
+.menu-design-v2 .studio-v3-design-canvas-hero-tools{
+  position:absolute;
+  top:8px;
+  left:50%;
+  z-index:35;
+  transform:translateX(-50%);
+  min-height:30px;
+  padding:3px 4px 3px 8px;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  border:1px solid rgba(66,79,101,.16);
+  border-radius:10px;
+  background:rgba(255,255,255,.94);
+  box-shadow:0 8px 24px rgba(28,38,55,.12);
+  backdrop-filter:blur(14px);
+  color:#273142;
+  white-space:nowrap;
+}
+.menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-hint{margin-inline-end:3px;font-size:8px;font-weight:800;color:#4974e5}
+.menu-design-v2 .studio-v3-design-canvas-hero-tools button{height:23px;min-width:23px;padding:0 6px;border:1px solid rgba(66,79,101,.13);border-radius:7px;background:#f7f9fc;color:#38465a;font-size:9px;font-weight:800;cursor:pointer}
+.menu-design-v2 .studio-v3-design-canvas-hero-tools b{min-width:34px;text-align:center;font-size:8px;font-variant-numeric:tabular-nums}
+.menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-reset{padding-inline:8px;color:#4974e5}
+
+html[data-beyond-theme="dark"] .menu-design-v2 .hero-framing-control{box-shadow:0 14px 34px rgba(0,0,0,.34)}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-canvas-hero-tools{border-color:rgba(255,255,255,.12);background:rgba(15,22,31,.94);color:#e9eef6;box-shadow:0 8px 26px rgba(0,0,0,.32)}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-canvas-hero-tools button{border-color:rgba(255,255,255,.1);background:#1c2633;color:#dce5f2}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-reset{color:#8fb0ff}
+
+@media(max-width:1180px) and (min-width:901px){
+  .menu-design-v2-workspace{grid-template-columns:minmax(310px,340px) minmax(0,1fr)!important}
+  .menu-design-v2 .hero-framing-range{grid-template-columns:82px minmax(0,1fr)!important}
+}
+
+@media(max-width:900px){
+  /* Mobile remains a normal document: stack preview before controls. */
+  .menu-design-v2 .studio-v3-design-canvas-hero-tools{top:6px;max-width:calc(100% - 20px)}
+  .menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-hint{display:none}
+  .menu-design-v2 .hero-framing-control{position:static}
+}
+
+/* =========================================================
+   READABLE DESIGN STUDIO TYPE — MATCH CONTENT STUDIO
+
+   The workspace stays compact, but text uses the same regulated scale as the
+   Content tab. Never shrink editor copy to micro type just to avoid scrolling;
+   the left inspector is allowed to scroll while the live menu stays fixed.
+   ========================================================= */
+.menu-design-v2{
+  --menu-design-type-meta:var(--studio-v2-type-meta,12px);
+  --menu-design-type-small:var(--studio-v2-type-small,13px);
+  --menu-design-type-control:var(--studio-v2-type-control,14px);
+  --menu-design-type-body:var(--studio-v2-type-body,15px);
+  --menu-design-type-section:var(--studio-v2-type-section,17px);
+}
+
+.menu-design-v2 .menu-design-v2-sidebar-title>span{font-size:var(--menu-design-type-meta)!important}
+.menu-design-v2 .menu-design-v2-sidebar-title>strong{font-size:var(--menu-design-type-section)!important}
+.menu-design-v2 .menu-design-v2-logo-copy strong{font-size:var(--menu-design-type-small)!important}
+.menu-design-v2 .menu-design-v2-logo-upload,
+.menu-design-v2 .menu-design-v2-logo-remove{min-height:30px!important;font-size:var(--menu-design-type-small)!important}
+
+.menu-design-v2 .menu-design-v2-variants-copy strong{font-size:var(--menu-design-type-small)!important}
+.menu-design-v2 .menu-design-v2-variant-letter{font-size:var(--menu-design-type-meta)!important}
+.menu-design-v2 .menu-design-v2-variant-button{min-height:40px!important}
+.menu-design-v2 .menu-design-v2-variant-button strong{font-size:var(--menu-design-type-small)!important}
+.menu-design-v2 .menu-design-v2-variant-button small{font-size:var(--menu-design-type-meta)!important}
+
+.menu-design-v2 .menu-design-v2-sidebar-picker .menu-design-picker-industries button{
+  min-height:30px!important;
+  font-size:var(--menu-design-type-small)!important;
+}
+.menu-design-v2 .menu-design-v2-sidebar-picker .menu-design-picker-tab{min-height:42px!important}
+.menu-design-v2 .menu-design-v2-sidebar-picker .menu-design-picker-tab>span:nth-child(2){font-size:var(--menu-design-type-small)!important}
+.menu-design-v2 .menu-design-v2-sidebar-picker button{font-size:var(--menu-design-type-small)!important}
+
+.menu-design-v2 .studio-v3-design-breadcrumb{font-size:var(--menu-design-type-meta)!important}
+.menu-design-v2 .studio-v3-design-history-actions button{min-height:30px!important;font-size:var(--menu-design-type-small)!important}
+.menu-design-v2 .studio-v3-design-v2-nav button{min-height:40px!important}
+.menu-design-v2 .studio-v3-design-v2-nav button i{font-size:var(--menu-design-type-small)!important}
+.menu-design-v2 .studio-v3-design-v2-nav button strong{font-size:var(--menu-design-type-small)!important}
+
+.menu-design-v2 .menu-design-v2-controls .studio-v3-design-pro-controls button{font-size:var(--menu-design-type-small)!important}
+.menu-design-v2 .menu-design-v2-controls .studio-v3-design-pro-controls input,
+.menu-design-v2 .menu-design-v2-controls .studio-v3-design-pro-controls select,
+.menu-design-v2 .menu-design-v2-controls .studio-v3-design-pro-controls textarea{font-size:var(--menu-design-type-control)!important}
+.menu-design-v2 .menu-design-v2-controls .studio-v3-design-pro-controls small{font-size:var(--menu-design-type-meta)!important}
+
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-context-editor-head{min-height:40px!important}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-context-editor-head>div>span{font-size:var(--menu-design-type-meta)!important}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-context-editor-head strong{font-size:var(--menu-design-type-small)!important}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-context-editor-head button{min-height:30px!important;font-size:var(--menu-design-type-meta)!important}
+
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button{
+  min-height:46px!important;
+  grid-template-columns:30px minmax(0,1fr) 12px!important;
+  gap:8px!important;
+  padding:6px 8px!important;
+}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-design-tab-icon{
+  width:30px!important;
+  height:30px!important;
+  font-size:var(--menu-design-type-small)!important;
+}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-design-tab-label::before{font-size:var(--menu-design-type-small)!important}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button::after{font-size:17px!important}
+
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-inspector-block-title{font-size:var(--menu-design-type-small)!important}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-inspector-block-title small{font-size:var(--menu-design-type-meta)!important;line-height:1.35!important}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-inspector-range-head{font-size:var(--menu-design-type-small)!important}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-inspector-range-head b{font-size:var(--menu-design-type-meta)!important}
+.menu-design-v2 .studio-v3-inspector-help{font-size:var(--menu-design-type-meta)!important;line-height:1.4!important}
+.menu-design-v2 .studio-v3-design-control-label{font-size:var(--menu-design-type-small)!important}
+
+.menu-design-v2 .studio-v3-hero-mode-grid button,
+.menu-design-v2 .studio-v3-option-grid button,
+.menu-design-v2 .studio-v3-shape-grid button,
+.menu-design-v2 .studio-v3-weight-grid button,
+.menu-design-v2 .studio-v3-quick-control-card button{min-height:38px!important;font-size:var(--menu-design-type-small)!important}
+
+.menu-design-v2 .hero-framing-head strong{font-size:var(--menu-design-type-small)!important}
+.menu-design-v2 .hero-framing-head small{font-size:var(--menu-design-type-meta)!important;line-height:1.35!important}
+.menu-design-v2 .hero-framing-head>button{min-height:30px!important;font-size:var(--menu-design-type-meta)!important}
+.menu-design-v2 .hero-framing-range{min-height:31px!important;grid-template-columns:112px minmax(0,1fr)!important}
+.menu-design-v2 .hero-framing-range>span,
+.menu-design-v2 .hero-framing-range b{font-size:var(--menu-design-type-meta)!important}
+
+.menu-design-v2 .studio-v3-design-canvas-hero-tools{min-height:36px!important}
+.menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-hint{font-size:var(--menu-design-type-meta)!important}
+.menu-design-v2 .studio-v3-design-canvas-hero-tools button{height:29px!important;min-width:29px!important;font-size:var(--menu-design-type-small)!important}
+.menu-design-v2 .studio-v3-design-canvas-hero-tools b{font-size:var(--menu-design-type-meta)!important}
+
+@media(max-width:1180px) and (min-width:901px){
+  .menu-design-v2 .hero-framing-range{grid-template-columns:104px minmax(0,1fr)!important}
+}

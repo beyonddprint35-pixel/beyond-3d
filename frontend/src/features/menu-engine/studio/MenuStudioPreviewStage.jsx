@@ -1,13 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import MenuRenderer from "../renderer/MenuRenderer";
 import "./MenuStudioPreviewStage.css";
 import "./MenuStudioPreviewPan.css";
+import "./MenuStudioPreviewAccessibility.css";
+import "./MenuStudioIPhoneStatusBar.css";
 
 const DEVICE_PRESETS = Object.freeze({
   mobile:{ width:390, height:844, outerWidth:422, outerHeight:876 },
   tablet:{ width:768, height:1024, outerWidth:804, outerHeight:1060 },
   desktop:{ width:1280, height:800, outerWidth:1320, outerHeight:888 },
 });
+
+const PREVIEW_DOCUMENT = "<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'></head><body><div id='beyond-menu-customer-preview-root'></div></body></html>";
 
 const COPY = {
   en:{
@@ -66,14 +71,94 @@ function DeviceIcon({ type }) {
   return <span className={`studio-v3-preview-device-icon ${type}`} aria-hidden="true"><i/></span>;
 }
 
+function menuStatusBarStyle(design) {
+  const background = String(design?.theme?.background || "#ffffff").trim() || "#ffffff";
+  const foreground = String(design?.theme?.text || "#050506").trim() || "#050506";
+  return {
+    "--preview-status-bg":background,
+    "--preview-status-fg":foreground,
+  };
+}
+
+function clonePreviewStyles(targetDocument) {
+  targetDocument.head.querySelectorAll("[data-beyond-customer-preview-style]").forEach(node => node.remove());
+
+  document.querySelectorAll('link[rel="stylesheet"],style').forEach(node => {
+    const clone = node.cloneNode(true);
+    clone.setAttribute("data-beyond-customer-preview-style","true");
+    targetDocument.head.appendChild(clone);
+  });
+
+  const previewBase = targetDocument.createElement("style");
+  previewBase.setAttribute("data-beyond-customer-preview-style","true");
+  previewBase.textContent = `
+    html,body,#beyond-menu-customer-preview-root{margin:0;min-height:100%;width:100%;background:#fff}
+    html,body{padding:0}
+    html{scrollbar-width:thin}
+    body{overflow-x:hidden}
+    #beyond-menu-customer-preview-root{min-height:100%;isolation:isolate}
+  `;
+  targetDocument.head.appendChild(previewBase);
+}
+
 function PreviewContent({ menu, design, language }) {
-  return <MenuRenderer menu={menu} design={design} initialLanguage={language}/>;
+  const iframeRef = useRef(null);
+  const [iframeRoot,setIframeRoot] = useState(null);
+
+  function prepareFrame() {
+    const frameDocument = iframeRef.current?.contentDocument;
+    if (!frameDocument?.head) return;
+    clonePreviewStyles(frameDocument);
+    setIframeRoot(frameDocument.getElementById("beyond-menu-customer-preview-root"));
+  }
+
+  return <>
+    <iframe
+      ref={iframeRef}
+      className="studio-v3-preview-renderer-frame"
+      title="Customer menu"
+      srcDoc={PREVIEW_DOCUMENT}
+      onLoad={prepareFrame}
+      style={{width:"100%",height:"100%",display:"block",border:0,background:design?.theme?.background || "#fff"}}
+    />
+    {iframeRoot ? createPortal(
+      <MenuRenderer menu={menu} design={design} initialLanguage={language}/>,
+      iframeRoot,
+    ) : null}
+  </>;
+}
+
+function PhoneStatusBar() {
+  return <div className="studio-v3-preview-phone-statusbar" aria-hidden="true">
+    <span className="studio-v3-preview-phone-status-time">9:41</span>
+    <span className="studio-v3-preview-dynamic-island"/>
+    <span className="studio-v3-preview-phone-status-icons">
+      <svg className="signal" viewBox="0 0 18 12" fill="currentColor">
+        <rect x="0" y="8" width="3" height="4" rx="1"/>
+        <rect x="5" y="6" width="3" height="6" rx="1"/>
+        <rect x="10" y="3" width="3" height="9" rx="1"/>
+        <rect x="15" y="0" width="3" height="12" rx="1"/>
+      </svg>
+      <svg className="wifi" viewBox="0 0 20 15" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round">
+        <path d="M2 5.4C6.7 1.4 13.3 1.4 18 5.4"/>
+        <path d="M5 8.6c3-2.5 7-2.5 10 0"/>
+        <path d="M8.3 11.6c1-.8 2.4-.8 3.4 0"/>
+        <circle cx="10" cy="13.2" r="1" fill="currentColor" stroke="none"/>
+      </svg>
+      <svg className="battery" viewBox="0 0 28 13" fill="none">
+        <rect x="1" y="1" width="23" height="11" rx="3" stroke="currentColor" strokeWidth="1.4"/>
+        <rect x="3.2" y="3.2" width="18.5" height="6.6" rx="1.7" fill="currentColor"/>
+        <path d="M25.2 4.2v4.6c1.1-.35 1.8-1.2 1.8-2.3s-.7-1.95-1.8-2.3Z" fill="currentColor"/>
+      </svg>
+    </span>
+  </div>;
 }
 
 function MobileFrame({ menu, design, language, style }) {
-  return <div className="studio-v3-preview-device-shell mobile" style={style}>
+  const themedStyle = { ...style, ...menuStatusBarStyle(design) };
+  return <div className="studio-v3-preview-device-shell mobile" style={themedStyle}>
     <div className="studio-v3-preview-phone-hardware">
-      <span className="studio-v3-preview-dynamic-island" aria-hidden="true"/>
+      <PhoneStatusBar/>
       <div className="studio-v3-preview-device-screen">
         <PreviewContent menu={menu} design={design} language={language}/>
       </div>

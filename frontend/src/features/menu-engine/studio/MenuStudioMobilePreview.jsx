@@ -9,6 +9,7 @@ const localized = (value, language) => value && typeof value === "object" ? Stri
 
 export default function MenuStudioMobilePreview({ menu, design, language = "en", minScale = 0.3, maxScale = 1, onSelectItem, onSelectCategory }) {
   const stageRef = useRef(null);
+  const scrollRef = useRef(null);
   const [scale, setScale] = useState(0.72);
   useEffect(() => {
     const stage = stageRef.current; if (!stage) return undefined;
@@ -18,7 +19,8 @@ export default function MenuStudioMobilePreview({ menu, design, language = "en",
     const observer = new ResizeObserver(measure); observer.observe(stage); return () => observer.disconnect();
   }, [maxScale, minScale]);
   const holderStyle = useMemo(() => ({ width: `${Math.round(MOBILE_DEVICE.outerWidth * scale)}px`, height: `${Math.round(MOBILE_DEVICE.outerHeight * scale)}px` }), [scale]);
-  const deviceStyle = useMemo(() => ({ width: `${MOBILE_DEVICE.outerWidth}px`, height: `${MOBILE_DEVICE.outerHeight}px`, transform: `scale(${scale})`, "--studio-mobile-screen-width": `${MOBILE_DEVICE.screenWidth}px`, "--studio-mobile-screen-height": `${MOBILE_DEVICE.screenHeight}px` }), [scale]);
+  const previewBackground = design?.theme?.background || "#fff";
+  const deviceStyle = useMemo(() => ({ width: `${MOBILE_DEVICE.outerWidth}px`, height: `${MOBILE_DEVICE.outerHeight}px`, transform: `scale(${scale})`, "--studio-mobile-screen-width": `${MOBILE_DEVICE.screenWidth}px`, "--studio-mobile-screen-height": `${MOBILE_DEVICE.screenHeight}px`, "--studio-preview-menu-bg": previewBackground }), [scale, previewBackground]);
   const broadcast = (detail) => window.dispatchEvent(new CustomEvent("beyond-content-preview-select", { detail }));
   const handlePreviewEvent = (event) => {
     if (event?.type !== "item_open" || !event.entityId) return;
@@ -31,6 +33,22 @@ export default function MenuStudioMobilePreview({ menu, design, language = "en",
     const button = event.target.closest?.(".bme-category-nav button, .ep-tabs button"); if (!button) return;
     const label = String(button.textContent || "").trim(); if (!label) return;
     onSelectCategory?.(label); broadcast({ type: "category_click", label, language });
+
+    // Category strips can be much wider than the simulated phone (Wine Book in
+    // particular). CSS snapping alone does not guarantee that a clicked button
+    // becomes fully visible. Recenter only the horizontal category scroller;
+    // never use scrollIntoView here because it can also move the phone vertically.
+    window.requestAnimationFrame(() => {
+      const nav = button.closest?.(".bme-category-nav, .ep-tabs");
+      if (!nav) return;
+      const navRect = nav.getBoundingClientRect();
+      const buttonRect = button.getBoundingClientRect();
+      const safeInset = 18;
+      if (buttonRect.left < navRect.left + safeInset || buttonRect.right > navRect.right - safeInset) {
+        const delta = ((buttonRect.left + buttonRect.right) / 2) - ((navRect.left + navRect.right) / 2);
+        nav.scrollBy({ left: delta, behavior: "smooth" });
+      }
+    });
   };
-  return <div className="menu-studio-mobile-preview-fit" ref={stageRef}><div className="menu-studio-mobile-preview-holder" style={holderStyle}><div className="menu-studio-mobile-preview-device" style={deviceStyle}><div className="menu-studio-mobile-preview-hardware"><span className="menu-studio-mobile-preview-island" aria-hidden="true" /><div className="menu-studio-mobile-preview-screen" dir={isRtl(language) ? "rtl" : "ltr"} lang={language} onClickCapture={handlePreviewClick}><div className="menu-studio-mobile-preview-scroll"><MenuRenderer menu={{ ...menu, default_language: language }} design={design} initialLanguage={language} onAnalyticsEvent={handlePreviewEvent} /></div></div><span className="menu-studio-mobile-preview-home" aria-hidden="true" /></div></div></div></div>;
+  return <div className="menu-studio-mobile-preview-fit" ref={stageRef}><div className="menu-studio-mobile-preview-holder" style={holderStyle}><div className="menu-studio-mobile-preview-device" style={deviceStyle}><div className="menu-studio-mobile-preview-hardware"><span className="menu-studio-mobile-preview-island" aria-hidden="true" /><div className="menu-studio-mobile-preview-screen" dir={isRtl(language) ? "rtl" : "ltr"} lang={language} onClickCapture={handlePreviewClick}><div ref={scrollRef} className="menu-studio-mobile-preview-scroll"><MenuRenderer menu={{ ...menu, default_language: language }} design={design} initialLanguage={language} onAnalyticsEvent={handlePreviewEvent} /></div></div><span className="menu-studio-mobile-preview-home" aria-hidden="true" /></div></div></div></div>;
 }

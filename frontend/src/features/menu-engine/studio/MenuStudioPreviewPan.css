@@ -38,3 +38,55 @@
   font-weight:800;
   pointer-events:none;
 }
+
+/* Keep accessibility controls attached to the simulated device viewport, not
+   to the scrolling menu document. This mirrors the Content tab behavior. */
+.studio-v3-preview-device-screen .restaurant-a11y-toggle{
+  position:fixed !important;
+  left:14px !important;
+  right:auto !important;
+  bottom:38px !important;
+  top:auto !important;
+  z-index:70 !important;
+  width:46px;
+  height:46px;
+  border:2px solid #fff !important;
+  color:#fff !important;
+  background:#111 !important;
+  box-shadow:0 8px 22px rgba(0,0,0,.28) !important;
+}
+.studio-v3-preview-device-screen .restaurant-a11y-toggle svg{
+  width:28px;
+  height:28px;
+  color:#fff !important;
+  stroke:#fff !important;
+}
+.studio-v3-preview-device-screen .restaurant-a11y-toggle .restaurant-a11y-head{
+  fill:#fff !important;
+  stroke:none !important;
+}
+.studio-v3-preview-device-screen .restaurant-a11y-panel{
+  position:fixed !important;
+  left:12px !important;
+  right:auto !important;
+  bottom:94px !important;
+  top:auto !important;
+  z-index:71 !important;
+  width:calc(100% - 24px);
+  max-height:calc(100% - 112px);
+  border-radius:18px;
+}
+.studio-v3-preview-device-screen .restaurant-a11y-statement-backdrop{
+  position:fixed !important;
+  inset:0 !important;
+  z-index:72 !important;
+  padding:10px;
+}
+.studio-v3-preview-device-screen .restaurant-a11y-statement{
+  width:100%;
+  max-height:100%;
+  border-radius:18px;
+}
+.studio-v3-preview-device-screen .restaurant-skip-link{
+  display:none !important;
+}

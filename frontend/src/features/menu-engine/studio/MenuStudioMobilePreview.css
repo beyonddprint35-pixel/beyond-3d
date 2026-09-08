@@ -58,7 +58,7 @@
   min-height:0;
   overflow:hidden;
   border-radius:43px;
-  background:#fff;
+  background:var(--studio-preview-menu-bg,#fff);
   box-shadow:0 0 0 1px rgba(255,255,255,.06);
   isolation:isolate;
 }
@@ -70,7 +70,7 @@
   min-height:0;
   overflow-x:hidden;
   overflow-y:auto;
-  background:#fff;
+  background:var(--studio-preview-menu-bg,#fff);
   border-radius:43px;
   overscroll-behavior:contain;
   touch-action:pan-y;
@@ -81,10 +81,16 @@
 .menu-studio-mobile-preview-scroll::-webkit-scrollbar{width:5px}
 .menu-studio-mobile-preview-scroll::-webkit-scrollbar-thumb{border-radius:99px;background:rgba(92,102,118,.24)}
 
-/* Hard preview rule: every renderer fills the complete simulated screen.
-   Short menus expand their content region so no theme/background strip is
-   exposed below the footer. */
-.menu-studio-mobile-preview-scroll > .bme-menu,
+/* Hard preview rule: every renderer fills at least the complete simulated
+   screen. Generic menus must be allowed to grow past one screen; forcing a
+   fixed 100% height made long menus overflow their themed root and exposed the
+   preview's white backing as soon as the user scrolled below the first screen. */
+.menu-studio-mobile-preview-scroll > .bme-menu{
+  width:100% !important;
+  height:auto !important;
+  min-height:100% !important;
+  overflow:visible;
+}
 .menu-studio-mobile-preview-scroll > .bme-heritage-exact,
 .menu-studio-mobile-preview-scroll > .ep-page{
   width:100% !important;

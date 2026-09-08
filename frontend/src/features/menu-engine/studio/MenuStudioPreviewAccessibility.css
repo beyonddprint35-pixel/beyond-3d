@@ -1,0 +1,149 @@
+/* Preview accessibility controls must live on the simulated device frame,
+   outside .studio-v3-preview-device-screen (the menu's scroll container).
+   RestaurantAccessibility portals its controls here only in Preview. */
+.restaurant-a11y-preview-anchor{display:none!important}
+.studio-v3-preview-browser{position:relative}
+
+.studio-v3-preview-phone-hardware > .restaurant-skip-link,
+.studio-v3-preview-tablet-hardware > .restaurant-skip-link,
+.studio-v3-preview-browser > .restaurant-skip-link{
+  display:none!important;
+}
+
+.studio-v3-preview-phone-hardware > .restaurant-a11y-status,
+.studio-v3-preview-tablet-hardware > .restaurant-a11y-status,
+.studio-v3-preview-browser > .restaurant-a11y-status{
+  position:absolute!important;
+}
+
+.studio-v3-preview-phone-hardware > .restaurant-a11y-toggle,
+.studio-v3-preview-tablet-hardware > .restaurant-a11y-toggle,
+.studio-v3-preview-browser > .restaurant-a11y-toggle{
+  position:absolute!important;
+  z-index:70!important;
+  width:46px!important;
+  height:46px!important;
+  border:2px solid #fff!important;
+  color:#fff!important;
+  background:#111!important;
+  box-shadow:0 8px 22px rgba(0,0,0,.28)!important;
+}
+
+/* Match the Content tab: 14px from the left and 38px from the bottom of
+   the actual simulated phone screen. The hardware adds 16px around it. */
+.studio-v3-preview-phone-hardware > .restaurant-a11y-toggle{
+  left:30px!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:54px!important;
+}
+.studio-v3-preview-tablet-hardware > .restaurant-a11y-toggle{
+  left:32px!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:56px!important;
+}
+.studio-v3-preview-browser > .restaurant-a11y-toggle{
+  left:14px!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:24px!important;
+}
+
+.studio-v3-preview-phone-hardware > .restaurant-a11y-toggle svg,
+.studio-v3-preview-tablet-hardware > .restaurant-a11y-toggle svg,
+.studio-v3-preview-browser > .restaurant-a11y-toggle svg{
+  width:28px!important;
+  height:28px!important;
+  color:#fff!important;
+  stroke:#fff!important;
+}
+.studio-v3-preview-phone-hardware > .restaurant-a11y-toggle .restaurant-a11y-head,
+.studio-v3-preview-tablet-hardware > .restaurant-a11y-toggle .restaurant-a11y-head,
+.studio-v3-preview-browser > .restaurant-a11y-toggle .restaurant-a11y-head{
+  fill:#fff!important;
+  stroke:none!important;
+}
+
+/* Keep the controls panel attached to that same non-scrolling viewport. */
+.studio-v3-preview-phone-hardware > .restaurant-a11y-panel{
+  position:absolute!important;
+  z-index:71!important;
+  left:28px!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:108px!important;
+  width:calc(var(--preview-screen-width) - 24px)!important;
+  max-height:calc(var(--preview-screen-height) - 112px)!important;
+  border-radius:18px;
+}
+.studio-v3-preview-tablet-hardware > .restaurant-a11y-panel{
+  position:absolute!important;
+  z-index:71!important;
+  left:30px!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:110px!important;
+  width:min(360px,calc(var(--preview-screen-width) - 24px))!important;
+  max-height:calc(var(--preview-screen-height) - 112px)!important;
+  border-radius:18px;
+}
+.studio-v3-preview-browser > .restaurant-a11y-panel{
+  position:absolute!important;
+  z-index:71!important;
+  left:12px!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:78px!important;
+  width:min(360px,calc(var(--preview-screen-width) - 24px))!important;
+  max-height:calc(var(--preview-screen-height) - 112px)!important;
+  border-radius:18px;
+}
+
+/* Accessibility statement overlays the visible simulated screen, never the
+   long scrolling menu document. */
+.studio-v3-preview-phone-hardware > .restaurant-a11y-statement-backdrop{
+  position:absolute!important;
+  z-index:72!important;
+  left:16px!important;
+  right:auto!important;
+  top:16px!important;
+  bottom:auto!important;
+  width:var(--preview-screen-width)!important;
+  height:var(--preview-screen-height)!important;
+  padding:10px!important;
+  border-radius:43px;
+  overflow:hidden;
+}
+.studio-v3-preview-tablet-hardware > .restaurant-a11y-statement-backdrop{
+  position:absolute!important;
+  z-index:72!important;
+  left:18px!important;
+  right:auto!important;
+  top:18px!important;
+  bottom:auto!important;
+  width:var(--preview-screen-width)!important;
+  height:var(--preview-screen-height)!important;
+  padding:10px!important;
+  border-radius:27px;
+  overflow:hidden;
+}
+.studio-v3-preview-browser > .restaurant-a11y-statement-backdrop{
+  position:absolute!important;
+  z-index:72!important;
+  left:0!important;
+  right:auto!important;
+  top:42px!important;
+  bottom:auto!important;
+  width:var(--preview-screen-width)!important;
+  height:var(--preview-screen-height)!important;
+  padding:10px!important;
+  overflow:hidden;
+}
+.studio-v3-preview-phone-hardware > .restaurant-a11y-statement,
+.studio-v3-preview-tablet-hardware > .restaurant-a11y-statement,
+.studio-v3-preview-browser > .restaurant-a11y-statement{
+  width:100%!important;
+  max-height:100%!important;
+  border-radius:18px;
+}

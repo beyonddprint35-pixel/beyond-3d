@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
 
 import MenuStudioHeader from "../components/MenuStudioHeader";
 import { flushStudioDraft } from "../features/menu-engine/studio/studioNavigation";
+import HeroImageFramingControl from "../features/menu-engine/studio/HeroImageFramingControl";
 import MenuDesignControls from "../features/menu-engine/studio/MenuDesignControls";
 import MenuItemNameColorControl from "../features/menu-engine/studio/MenuItemNameColorControl";
 import MenuDesignPicker from "../features/menu-engine/studio/MenuDesignPicker";
@@ -24,33 +25,36 @@ import {
   writeStudioLanguage,
 } from "../features/menu-engine/studio/studioLanguage";
 import "./MenuDesignStudioV2.css";
+import "../features/menu-engine/studio/MenuDesignAdvancedClarity.css";
 import "../features/menu-engine/studio/MenuDesignDarkMode.css";
+import "../features/menu-engine/studio/MenuDesignDarkModePolish.css";
 import "../features/menu-engine/studio/MenuDesignVariants.css";
+import "../features/menu-engine/studio/MenuDesignCompactWorkspace.css";
 
 const UI = {
   en: {
     interfaceLanguage:"Language", contentLanguage:"Language", backContent:"Back to Content", workspace:"Menu workspace",
     content:"Content", design:"Design", preview:"Preview", publish:"Publish", saved:"Saved locally", saving:"Saving…", saveError:"Could not save",
-    eyebrow:"DESIGN STUDIO", title:"Choose your menu design", hint:"Swipe through designs and tap one to see your menu update below.",
+    eyebrow:"DESIGN STUDIO", title:"Design your menu", hint:"Choose a design and adjust it while your live menu stays visible beside you.",
     live:"LIVE DESIGN", continuePreview:"Continue to Preview", draftKept:"Design changes are saved to your draft.",
     restaurantLogo:"Restaurant logo", logoHint:"PNG, JPG, WebP or SVG", uploadLogo:"Upload logo", replaceLogo:"Replace logo", removeLogo:"Remove",
-    savedDesigns:"Saved designs", savedDesignsHint:"Keep two favorites for this menu. Switching slots never changes your menu content.", designA:"Design A", designB:"Design B", editing:"Editing", duplicateHint:"Tap to create from your current design",
+    savedDesigns:"Saved options", savedDesignsHint:"Keep two favorites for this menu. Switching options never changes your menu content.", option1:"Option 1", option2:"Option 2", editing:"Editing", duplicateHint:"Tap to create from your current option",
   },
   he: {
     interfaceLanguage:"שפה", contentLanguage:"שפה", backContent:"חזרה לתוכן", workspace:"סביבת עבודת התפריט",
     content:"תוכן", design:"עיצוב", preview:"תצוגה מקדימה", publish:"פרסום", saved:"נשמר מקומית", saving:"שומר…", saveError:"לא ניתן לשמור",
-    eyebrow:"סטודיו לעיצוב", title:"בחרו את עיצוב התפריט", hint:"גללו בין העיצובים ולחצו על עיצוב כדי לראות מיד את התפריט שלכם למטה.",
+    eyebrow:"סטודיו לעיצוב", title:"עצבו את התפריט", hint:"בחרו עיצוב והתאימו אותו בזמן שהתפריט החי נשאר מולכם לאורך כל הדרך.",
     live:"עיצוב חי", continuePreview:"המשך לתצוגה מקדימה", draftKept:"שינויי העיצוב נשמרים בטיוטה שלכם.",
     restaurantLogo:"לוגו המסעדה", logoHint:"PNG, JPG, WebP או SVG", uploadLogo:"העלאת לוגו", replaceLogo:"החלפת לוגו", removeLogo:"הסרה",
-    savedDesigns:"עיצובים שמורים", savedDesignsHint:"שמרו שני עיצובים מועדפים לאותו תפריט. התוכן נשאר משותף.", designA:"עיצוב A", designB:"עיצוב B", editing:"בעריכה", duplicateHint:"לחצו כדי ליצור מהעיצוב הנוכחי",
+    savedDesigns:"אפשרויות שמורות", savedDesignsHint:"שמרו שתי אפשרויות מועדפות לאותו תפריט. התוכן נשאר משותף.", option1:"אפשרות 1", option2:"אפשרות 2", editing:"בעריכה", duplicateHint:"לחצו כדי ליצור מהאפשרות הנוכחית",
   },
   ar: {
     interfaceLanguage:"اللغة", contentLanguage:"اللغة", backContent:"العودة إلى المحتوى", workspace:"مساحة عمل القائمة",
     content:"المحتوى", design:"التصميم", preview:"المعاينة", publish:"النشر", saved:"تم الحفظ محلياً", saving:"جارٍ الحفظ…", saveError:"تعذر الحفظ",
-    eyebrow:"استوديو التصميم", title:"اختاروا تصميم قائمتكم", hint:"مرّروا بين التصاميم واضغطوا على أحدها لرؤية النتيجة فوراً أدناه.",
+    eyebrow:"استوديو التصميم", title:"صمّم قائمتك", hint:"اختر تصميماً وعدّله بينما تبقى المعاينة الحية ظاهرة أمامك طوال الوقت.",
     live:"تصميم مباشر", continuePreview:"المتابعة إلى المعاينة", draftKept:"تُحفظ تغييرات التصميم في مسودتكم.",
     restaurantLogo:"شعار المطعم", logoHint:"PNG أو JPG أو WebP أو SVG", uploadLogo:"رفع الشعار", replaceLogo:"استبدال الشعار", removeLogo:"إزالة",
-    savedDesigns:"تصاميم محفوظة", savedDesignsHint:"احتفظوا بتصميمين مفضلين لنفس القائمة. يبقى المحتوى مشتركاً.", designA:"التصميم A", designB:"التصميم B", editing:"قيد التعديل", duplicateHint:"اضغطوا للإنشاء من التصميم الحالي",
+    savedDesigns:"خيارات محفوظة", savedDesignsHint:"احتفظ بخيارين مفضلين لنفس القائمة. يبقى المحتوى مشتركاً.", option1:"الخيار 1", option2:"الخيار 2", editing:"قيد التعديل", duplicateHint:"اضغط للإنشاء من الخيار الحالي",
   },
 };
 
@@ -107,8 +111,8 @@ function studioRoute(path) {
   return `${path}${window.location.search || ""}`;
 }
 
-function designSlotLabel(slot, t) {
-  return slot === "B" ? t.designB : t.designA;
+function optionSlotLabel(slot, t) {
+  return slot === "B" ? t.option2 : t.option1;
 }
 
 export default function MenuDesignStudioV2() {
@@ -154,7 +158,6 @@ export default function MenuDesignStudioV2() {
   const selectedDesignEntry = PREMIUM_MENU_DESIGNS.find((entry) => entry.id === designId) || resolved.entry;
 
   const saveState = useStudioDraftSave({ ...(storedDraft || {}), menu, design, designId, profile, contentLanguage });
-
   const saveLabel = saveState === "saving" ? t.saving : saveState === "error" ? t.saveError : t.saved;
 
   function changeStudioLanguage(language) {
@@ -230,7 +233,7 @@ export default function MenuDesignStudioV2() {
 
   function browseDesigns() {
     const selected = designRailRef.current?.querySelector('[aria-selected="true"]');
-    selected?.scrollIntoView({ block: "center", inline: "nearest" });
+    selected?.scrollIntoView({ block: "nearest", inline: "center" });
     selected?.focus({ preventScroll: true });
   }
 
@@ -244,50 +247,42 @@ export default function MenuDesignStudioV2() {
     <main className="menu-design-v2" dir={rtl ? "rtl" : "ltr"} lang={uiLanguage}>
       <MenuStudioHeader stage="design" language={uiLanguage} onLanguageChange={changeStudioLanguage} menuName={menu.restaurant_name} onBack={() => navigate(studioRoute("/menu-studio/content"))} backLabel={t.backContent} saveState={saveState} saveLabel={saveLabel} />
 
-      <section className="menu-design-v2-intro">
-        <div><span><Sparkles size={13} /> {t.eyebrow}</span><h1>{t.title}</h1><p>{t.hint}</p></div>
-        <div className="menu-design-v2-logo-control">
-          <div className="menu-design-v2-logo-preview">{logo ? <img src={logo} alt="" /> : <span>LOGO</span>}</div>
-          <div className="menu-design-v2-logo-copy"><strong>{t.restaurantLogo}</strong><small>{t.logoHint}</small></div>
-          <label className="menu-design-v2-logo-upload">
-            <input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" onChange={(event) => uploadLogo(event.target.files?.[0])} />
-            <span>{logo ? t.replaceLogo : t.uploadLogo}</span>
-          </label>
-          {logo ? <button type="button" className="menu-design-v2-logo-remove" onClick={() => patchLogo("")}>{t.removeLogo}</button> : null}
-        </div>
-      </section>
-
-      <section className="menu-design-v2-variants" aria-label={t.savedDesigns}>
-        <div className="menu-design-v2-variants-copy"><strong>{t.savedDesigns}</strong><small>{t.savedDesignsHint}</small></div>
-        <div className="menu-design-v2-variant-buttons">
-          {["A", "B"].map((slot) => (
-            <button key={slot} type="button" className={`menu-design-v2-variant-button ${activeDesignVariant === slot ? "active" : ""}`} onClick={() => switchDesignVariant(slot)} aria-pressed={activeDesignVariant === slot}>
-              <span className="menu-design-v2-variant-letter">{slot}</span>
-              <span><strong>{designSlotLabel(slot, t)}{activeDesignVariant === slot ? ` · ${t.editing}` : ""}</strong><small>{slotDesignName(slot)}</small></span>
-            </button>
-          ))}
-        </div>
-      </section>
-
       <div className="menu-design-v2-workspace">
-        <section className="menu-design-v2-canvas">
-          <MenuDesignPicker designId={designId} language={uiLanguage} onSelect={chooseDesign} railRef={designRailRef} previewId="menu-design-live-preview" />
-          <div className="menu-design-v2-live-preview" id="menu-design-live-preview" role="tabpanel" aria-labelledby={`menu-design-tab-${designId}`}>
-            <MenuStudioDesignCanvas
-              menu={{ ...menu, default_language: contentLanguage }}
-              design={design}
-              language={contentLanguage}
-              uiLanguage={uiLanguage}
-              label={`${t.live} · ${activeDesignVariant}`}
-              compact
-            />
-          </div>
-          <div className="menu-design-v2-next">
-            <span>{t.draftKept}</span>
-            <button type="button" onClick={() => navigate(studioRoute("/menu-studio/preview"))}>{t.continuePreview} <ForwardIcon size={14} /></button>
-          </div>
-        </section>
         <aside className="menu-design-v2-controls">
+          <div className="menu-design-v2-sidebar-overview">
+            <div className="menu-design-v2-sidebar-title">
+              <span><Sparkles size={13} /> {t.eyebrow}</span>
+              <strong>{t.title}</strong>
+              <small>{t.hint}</small>
+            </div>
+
+            <div className="menu-design-v2-logo-control">
+              <div className="menu-design-v2-logo-preview">{logo ? <img src={logo} alt="" /> : <span>LOGO</span>}</div>
+              <div className="menu-design-v2-logo-copy"><strong>{t.restaurantLogo}</strong><small>{t.logoHint}</small></div>
+              <label className="menu-design-v2-logo-upload">
+                <input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" onChange={(event) => uploadLogo(event.target.files?.[0])} />
+                <span>{logo ? t.replaceLogo : t.uploadLogo}</span>
+              </label>
+              {logo ? <button type="button" className="menu-design-v2-logo-remove" onClick={() => patchLogo("")}>{t.removeLogo}</button> : null}
+            </div>
+
+            <section className="menu-design-v2-variants menu-design-v2-variants-compact" aria-label={t.savedDesigns}>
+              <div className="menu-design-v2-variants-copy"><strong>{t.savedDesigns}</strong><small>{t.savedDesignsHint}</small></div>
+              <div className="menu-design-v2-variant-buttons">
+                {["A", "B"].map((slot) => (
+                  <button key={slot} type="button" className={`menu-design-v2-variant-button ${activeDesignVariant === slot ? "active" : ""}`} onClick={() => switchDesignVariant(slot)} aria-pressed={activeDesignVariant === slot}>
+                    <span className="menu-design-v2-variant-letter">{slot === "B" ? "2" : "1"}</span>
+                    <span><strong>{optionSlotLabel(slot, t)}{activeDesignVariant === slot ? ` · ${t.editing}` : ""}</strong><small>{slotDesignName(slot)}</small></span>
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            <div className="menu-design-v2-sidebar-picker">
+              <MenuDesignPicker designId={designId} language={uiLanguage} onSelect={chooseDesign} railRef={designRailRef} previewId="menu-design-live-preview" />
+            </div>
+          </div>
+
           <MenuDesignControls
             design={design}
             designId={designId}
@@ -301,14 +296,35 @@ export default function MenuDesignStudioV2() {
           />
           {panel === "type" ? <MenuItemNameColorControl design={design} language={uiLanguage} patchDesign={patchDesign} /> : null}
           {panel === "hero" ? (
-            <MenuHeroHeadlineControl
-              value={menu.hero_title}
-              language={contentLanguage}
-              industry={selectedDesignEntry?.industry || "restaurant"}
-              onChange={patchHeroHeadline}
-            />
+            <>
+              <HeroImageFramingControl design={design} language={uiLanguage} patchDesign={patchDesign} />
+              <MenuHeroHeadlineControl
+                value={menu.hero_title}
+                language={contentLanguage}
+                industry={selectedDesignEntry?.industry || "restaurant"}
+                onChange={patchHeroHeadline}
+              />
+            </>
           ) : null}
         </aside>
+
+        <section className="menu-design-v2-canvas">
+          <div className="menu-design-v2-live-preview" id="menu-design-live-preview" role="tabpanel" aria-labelledby={`menu-design-tab-${designId}`}>
+            <MenuStudioDesignCanvas
+              menu={{ ...menu, default_language: contentLanguage }}
+              design={design}
+              language={contentLanguage}
+              uiLanguage={uiLanguage}
+              label={`${t.live} · ${optionSlotLabel(activeDesignVariant, t)}`}
+              patchDesign={patchDesign}
+              compact
+            />
+          </div>
+          <div className="menu-design-v2-next">
+            <span>{t.draftKept}</span>
+            <button type="button" onClick={() => navigate(studioRoute("/menu-studio/preview"))}>{t.continuePreview} <ForwardIcon size={14} /></button>
+          </div>
+        </section>
       </div>
     </main>
   );

@@ -1,5 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import "./RestaurantAccessibility.css";
+import "./RestaurantAccessibilityMenuRegulation.css";
+import "./RestaurantMenuScrollbarRegulation.css";
 
 const STORAGE_KEY = "beyondRestaurantAccessibilityV1";
 const DEFAULT_STATE = { font:0, contrast:false, dark:false, grayscale:false, readable:false, reducedMotion:false, links:false };
@@ -42,6 +45,8 @@ export default function RestaurantAccessibility({ restaurantName="Restaurant", l
   const lang = ["he","en","ar"].includes(language) ? language : "en";
   const t = COPY[lang];
   const rtl = lang === "he" || lang === "ar";
+  const anchorRef = useRef(null);
+  const [previewPortalTarget,setPreviewPortalTarget] = useState(null);
   const [open,setOpen] = useState(false);
   const [statementOpen,setStatementOpen] = useState(false);
   const [settings,setSettings] = useState(DEFAULT_STATE);
@@ -49,12 +54,19 @@ export default function RestaurantAccessibility({ restaurantName="Restaurant", l
 
   useEffect(()=>{ try { const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||"null"); if(saved) setSettings({...DEFAULT_STATE,...saved}); } catch {} },[]);
   useEffect(()=>{
-    const root=document.documentElement; const body=document.body;
+    const anchor=anchorRef.current;
+    const previewScreen=anchor?.closest?.(".studio-v3-preview-device-screen");
+    setPreviewPortalTarget(previewScreen?.parentElement||null);
+  },[]);
+  useEffect(()=>{
+    const ownerDocument=anchorRef.current?.ownerDocument||document;
+    const root=ownerDocument.documentElement;
+    const body=ownerDocument.body;
     [1,2,3,4].forEach(level=>body.classList.toggle(`restaurant-a11y-text-${level}`,settings.font===level));
     root.classList.toggle("restaurant-a11y-contrast",settings.contrast); root.classList.toggle("restaurant-a11y-dark",settings.dark);
     root.classList.toggle("restaurant-a11y-grayscale",settings.grayscale); root.classList.toggle("restaurant-a11y-readable",settings.readable);
     root.classList.toggle("restaurant-a11y-motion",settings.reducedMotion); root.classList.toggle("restaurant-a11y-links",settings.links);
-    try { localStorage.setItem(STORAGE_KEY,JSON.stringify(settings)); } catch {}
+    try { (ownerDocument.defaultView?.localStorage||localStorage).setItem(STORAGE_KEY,JSON.stringify(settings)); } catch {}
   },[settings]);
   useEffect(()=>{ const fn=()=>{setOpen(false);setStatementOpen(true)}; window.addEventListener("beyond-open-accessibility-statement",fn); return()=>window.removeEventListener("beyond-open-accessibility-statement",fn); },[]);
   useEffect(()=>{ const fn=e=>{if(e.key==="Escape"){setOpen(false);setStatementOpen(false)}}; document.addEventListener("keydown",fn); return()=>document.removeEventListener("keydown",fn); },[]);
@@ -65,11 +77,16 @@ export default function RestaurantAccessibility({ restaurantName="Restaurant", l
   const decrease=()=>setSettings(current=>{const next=Math.max(0,current.font-1);announce(next===0?t.normal:t.decreased);return{...current,font:next};});
   const reset=()=>{setSettings(DEFAULT_STATE);try{localStorage.removeItem(STORAGE_KEY)}catch{}announce(t.resetDone)};
 
-  return <>
+  const controls = <>
     <a className="restaurant-skip-link" href="#restaurant-main-content">{t.skip}</a>
     <div className="restaurant-a11y-status" aria-live="polite" aria-atomic="true">{status}</div>
     <button type="button" className="restaurant-a11y-toggle" aria-label={t.accessibility} aria-expanded={open} onClick={()=>setOpen(v=>!v)}><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="17"/><circle className="restaurant-a11y-head" cx="20" cy="11.5" r="2.8"/><path d="M11.5 16.8c2.8 1.3 5.6 2 8.5 2s5.7-.7 8.5-2"/><path d="M20 18.8v8.1"/><path d="M20 26.7l-5.2 6"/><path d="M20 26.7l5.2 6"/></svg></button>
     {open&&<aside className="restaurant-a11y-panel" role="dialog" aria-label={t.accessibility} dir={rtl?"rtl":"ltr"}><div className="restaurant-a11y-panel-head"><strong>{t.accessibility}</strong><button type="button" aria-label={t.close} onClick={()=>setOpen(false)}><CloseIcon/></button></div><div className="restaurant-a11y-actions"><button onClick={increase}>A+ {t.increase}</button><button onClick={decrease}>A− {t.decrease}</button><button aria-pressed={settings.contrast} onClick={()=>toggle("contrast",t.contrast)}>{t.contrast}</button><button aria-pressed={settings.dark} onClick={()=>toggle("dark",t.dark)}>{t.dark}</button><button aria-pressed={settings.grayscale} onClick={()=>toggle("grayscale",t.grayscale)}>{t.grayscale}</button><button aria-pressed={settings.readable} onClick={()=>toggle("readable",t.readable)}>{t.readable}</button><button aria-pressed={settings.reducedMotion} onClick={()=>toggle("reducedMotion",t.motion)}>{t.motion}</button><button aria-pressed={settings.links} onClick={()=>toggle("links",t.links)}>{t.links}</button><button onClick={reset}>{t.reset}</button><button onClick={()=>{setOpen(false);setStatementOpen(true)}}>{t.statement}</button></div><p className="restaurant-a11y-note">{t.note}</p></aside>}
     {statementOpen&&<div className="restaurant-a11y-statement-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget)setStatementOpen(false)}}><section className="restaurant-a11y-statement" role="dialog" aria-modal="true" aria-labelledby="restaurantAccessibilityStatementTitle" dir={rtl?"rtl":"ltr"}><header><div><span>{t.eyebrow}</span><h2 id="restaurantAccessibilityStatementTitle">{t.statement}</h2></div><button type="button" aria-label={t.close} onClick={()=>setStatementOpen(false)}><CloseIcon/></button></header><div className="restaurant-a11y-statement-body"><p>{t.intro(restaurantName)}</p><h3>{t.adjustments}</h3><ul>{t.features.map(item=><li key={item}>{item}</li>)}</ul><h3>{t.updating}</h3><p>{t.updatingText}</p><p className="restaurant-a11y-statement-note">{t.closing}</p></div></section></div>}
+  </>;
+
+  return <>
+    <span ref={anchorRef} className="restaurant-a11y-preview-anchor" aria-hidden="true" />
+    {previewPortalTarget ? createPortal(controls,previewPortalTarget) : controls}
   </>;
 }

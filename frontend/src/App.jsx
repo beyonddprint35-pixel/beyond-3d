@@ -73,6 +73,7 @@ import "./pages/MenuStudioEnglishLTR.css";
 import "./components/MenuStudioHeader.css";
 import "./pages/MenuStudioDarkMode.css";
 import "./pages/MenuAiDishImagesV1StyleLock.css";
+import "./pages/MenuAiPhotoStudioThemeParity.css";
 import "./features/menu-engine/studio/MenuDesignDarkModePolish.css";
 import "./features/menu-engine/renderer/menuHeritageDesignControlsFix.css";
 import "./features/menu-engine/renderer/menuItemNameColor.css";

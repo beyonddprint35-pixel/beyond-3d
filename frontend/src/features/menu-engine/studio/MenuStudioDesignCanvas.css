@@ -159,3 +159,180 @@
   .compact .studio-v3-design-canvas-zoom button.percentage{min-width:44px}
   .compact .studio-v3-design-canvas-size-label{top:5px;padding:3px 7px}
 }
+
+/* =========================================================
+   OWNER-FOCUSED EDITING
+   Opening one of the simple Design choices should open only that editor. Do
+   not reveal a second six-category navigation that makes the user relearn the
+   screen. The Back button returns to the same short list of choices.
+   ========================================================= */
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-inspector-shell .studio-v3-design-v2-tabs{
+  display:none !important;
+}
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-design-v2-primary-action{
+  display:none !important;
+}
+
+/* Hero position is edited directly on the real menu, so remove the duplicate
+   positioning sliders from the left inspector. */
+.menu-design-v2 .menu-design-v2-controls .hero-framing-control{
+  display:none !important;
+}
+
+/* Hero photo controls live beside the preview instead of above it. */
+.menu-design-v2 .menu-design-v2-live-preview .studio-v3-design-canvas-stage .studio-v3-design-canvas-hero-tools{
+  position:absolute !important;
+  z-index:45 !important;
+  top:50% !important;
+  right:18px !important;
+  left:auto !important;
+  width:220px !important;
+  min-height:0 !important;
+  padding:13px !important;
+  display:grid !important;
+  gap:12px !important;
+  transform:translateY(-50%) !important;
+  border:1px solid rgba(72,84,104,.16) !important;
+  border-radius:16px !important;
+  background:rgba(255,255,255,.94) !important;
+  color:#253044 !important;
+  box-shadow:0 16px 40px rgba(26,36,54,.12) !important;
+  backdrop-filter:blur(18px) !important;
+  white-space:normal !important;
+}
+.menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-copy{
+  display:grid;
+  gap:4px;
+}
+.menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-copy>strong{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  color:#263248;
+  font-size:13px;
+  font-weight:850;
+}
+.menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-copy>strong span{
+  width:24px;
+  height:24px;
+  display:grid;
+  place-items:center;
+  border-radius:7px;
+  color:#4974e5;
+  background:#eef3ff;
+}
+.menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-copy>small{
+  color:#727d8f;
+  font-size:11px;
+  font-weight:650;
+  line-height:1.4;
+}
+.menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-spectrum{
+  display:grid;
+  gap:7px;
+}
+.menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-spectrum>span{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+.menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-spectrum>span strong{
+  font-size:12px;
+  font-weight:800;
+}
+.menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-spectrum>span b{
+  padding:3px 6px;
+  border-radius:7px;
+  color:#4974e5;
+  background:#eef3ff;
+  font-size:11px;
+  font-variant-numeric:tabular-nums;
+}
+.menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-spectrum>div{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:7px;
+}
+.menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-spectrum>div small{
+  color:#929aa7;
+  font-size:9px;
+  font-weight:800;
+}
+.menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-spectrum input[type="range"]{
+  width:100%;
+  height:22px;
+  margin:0;
+  accent-color:#4974e5;
+  cursor:ew-resize;
+}
+.menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-spectrum input[type="range"]::-webkit-slider-runnable-track{
+  height:6px;
+  border-radius:999px;
+  background:linear-gradient(90deg,#dce6ff,#4974e5);
+}
+.menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-spectrum input[type="range"]::-webkit-slider-thumb{
+  width:18px;
+  height:18px;
+  margin-top:-6px;
+  border:3px solid #fff;
+  border-radius:50%;
+  background:#4974e5;
+  box-shadow:0 2px 7px rgba(50,76,145,.28);
+  -webkit-appearance:none;
+}
+.menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-reset{
+  width:100% !important;
+  height:32px !important;
+  min-width:0 !important;
+  padding:0 10px !important;
+  border:1px solid rgba(73,116,229,.2) !important;
+  border-radius:9px !important;
+  color:#4974e5 !important;
+  background:#f6f8ff !important;
+  font-size:11px !important;
+  font-weight:800 !important;
+  cursor:pointer;
+}
+.menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-reset:hover{
+  background:#edf2ff !important;
+}
+
+html[data-beyond-theme="dark"] .menu-design-v2 .menu-design-v2-live-preview .studio-v3-design-canvas-stage .studio-v3-design-canvas-hero-tools{
+  border-color:rgba(255,255,255,.12) !important;
+  background:rgba(15,22,31,.95) !important;
+  color:#e8eef8 !important;
+  box-shadow:0 18px 42px rgba(0,0,0,.34) !important;
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-copy>strong{color:#eef3fb}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-copy>strong span,
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-spectrum>span b{
+  color:#9bb5ff;
+  background:rgba(73,116,229,.18);
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-copy>small{color:#9ba8ba}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-reset{
+  border-color:rgba(106,143,244,.28) !important;
+  color:#9bb5ff !important;
+  background:rgba(73,116,229,.12) !important;
+}
+
+@media(max-width:1350px){
+  .menu-design-v2 .menu-design-v2-live-preview .studio-v3-design-canvas-stage.device-mobile .studio-v3-design-canvas-hero-tools{
+    width:190px !important;
+    right:10px !important;
+  }
+}
+@media(max-width:1100px){
+  .menu-design-v2 .menu-design-v2-live-preview .studio-v3-design-canvas-stage .studio-v3-design-canvas-hero-tools{
+    top:8px !important;
+    right:8px !important;
+    left:auto !important;
+    width:min(230px,calc(100% - 16px)) !important;
+    padding:9px !important;
+    gap:7px !important;
+    transform:none !important;
+  }
+  .menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-copy>small{display:none}
+}

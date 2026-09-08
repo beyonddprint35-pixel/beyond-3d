@@ -9,6 +9,17 @@ export default function MenuPublicV3Dev() {
   const [state, setState] = useState({ status: "loading", payload: null, error: "" });
 
   useEffect(() => {
+    const root = document.documentElement;
+    const body = document.body;
+    root.classList.add("beyond-public-menu-scrollbarless");
+    body.classList.add("beyond-public-menu-scrollbarless");
+    return () => {
+      root.classList.remove("beyond-public-menu-scrollbarless");
+      body.classList.remove("beyond-public-menu-scrollbarless");
+    };
+  }, []);
+
+  useEffect(() => {
     let active = true;
     setState({ status: "loading", payload: null, error: "" });
 

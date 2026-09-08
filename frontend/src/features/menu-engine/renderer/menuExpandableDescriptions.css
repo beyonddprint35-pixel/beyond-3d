@@ -1,0 +1,75 @@
+/* ==========================================================
+   PHOTO MENU ITEM DESCRIPTIONS
+
+   Long descriptions in every photo-led menu stay compact by default. Guests
+   see a small preview, then tap the description itself to reveal the full
+   text. Short descriptions remain completely unchanged.
+   ========================================================== */
+
+.bme-language-control-anchor{display:none!important}
+
+.bme-visual-item .bme-item-copy > p.bme-item-description-interactive{
+  position:relative;
+  margin:6px 0 0;
+  padding:0 0 18px;
+  max-height:calc(3em + 18px);
+  overflow:hidden;
+  color:var(--bme-muted);
+  font-family:var(--bme-body-font);
+  font-size:clamp(11px,3.4vw,var(--bme-description-size));
+  font-weight:var(--bme-body-weight);
+  line-height:1.5;
+  cursor:pointer;
+  outline:none;
+  transition:max-height .22s ease;
+}
+
+.bme-visual-item .bme-item-copy > p.bme-item-description-interactive::after{
+  content:attr(data-description-action);
+  position:absolute;
+  inset-inline-end:0;
+  bottom:0;
+  min-width:52px;
+  padding:2px 0 1px 26px;
+  color:var(--bme-text);
+  background:linear-gradient(90deg,transparent 0%,color-mix(in srgb,var(--bme-card) 82%,transparent) 27%,var(--bme-card) 48%);
+  font-size:max(10px,calc(var(--bme-description-size) - 1px));
+  font-weight:800;
+  line-height:14px;
+  text-align:end;
+  opacity:.76;
+}
+
+.bme-visual-item .bme-item-copy > p.bme-item-description-interactive:dir(rtl)::after{
+  padding:2px 26px 1px 0;
+  background:linear-gradient(270deg,transparent 0%,color-mix(in srgb,var(--bme-card) 82%,transparent) 27%,var(--bme-card) 48%);
+}
+
+.bme-visual-item .bme-item-copy > p.bme-item-description-interactive:hover::after,
+.bme-visual-item .bme-item-copy > p.bme-item-description-interactive:focus-visible::after{
+  opacity:1;
+}
+
+.bme-visual-item .bme-item-copy > p.bme-item-description-interactive:focus-visible{
+  border-radius:6px;
+  outline:2px solid var(--bme-accent);
+  outline-offset:3px;
+}
+
+.bme-visual-item .bme-item-copy > p.bme-item-description-interactive.is-expanded{
+  max-height:80em;
+}
+
+/* In narrow side-photo cards, keep the collapsed state particularly tidy. */
+@container beyond-menu (max-width:520px){
+  .bme-visual-item:is(.bme-image-left,.bme-image-right) .bme-item-copy > p.bme-item-description-interactive{
+    max-height:calc(3em + 18px);
+  }
+  .bme-visual-item:is(.bme-image-left,.bme-image-right) .bme-item-copy > p.bme-item-description-interactive.is-expanded{
+    max-height:80em;
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .bme-visual-item .bme-item-copy > p.bme-item-description-interactive{transition:none}
+}

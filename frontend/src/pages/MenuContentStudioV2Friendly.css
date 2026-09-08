@@ -23,28 +23,19 @@
   }
   .menu-content-v2-panel-head>div{gap:2px}
   .menu-content-v2-panel-head span{
-    font-size:0;
-    letter-spacing:0;
-    text-transform:none;
-    color:var(--mcv2-text);
-  }
-  .menu-content-v2-panel-head span::after{
     font-size:15px;
     font-weight:850;
     letter-spacing:-.025em;
+    text-transform:none;
+    color:var(--mcv2-text);
   }
-  .menu-content-v2[lang="en"] .menu-content-v2-panel-head span::after{content:"Your menu"}
-  .menu-content-v2[lang="he"] .menu-content-v2-panel-head span::after{content:"התפריט שלך"}
-  .menu-content-v2[lang="ar"] .menu-content-v2-panel-head span::after{content:"قائمتك"}
+  .menu-content-v2-panel-head span::after{content:none!important}
   .menu-content-v2-panel-head strong{
     color:var(--mcv2-muted);
-    font-size:0;
+    font-size:12px;
     font-weight:650;
   }
-  .menu-content-v2-panel-head strong::after{font-size:8px}
-  .menu-content-v2[lang="en"] .menu-content-v2-panel-head strong::after{content:"Choose something to edit"}
-  .menu-content-v2[lang="he"] .menu-content-v2-panel-head strong::after{content:"בחרו מה תרצו לערוך"}
-  .menu-content-v2[lang="ar"] .menu-content-v2-panel-head strong::after{content:"اختر ما تريد تعديله"}
+  .menu-content-v2-panel-head strong::after{content:none!important}
   .menu-content-v2-panel-head button{
     width:36px;
     height:36px;
