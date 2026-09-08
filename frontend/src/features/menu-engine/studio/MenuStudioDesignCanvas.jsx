@@ -74,6 +74,8 @@ export default function MenuStudioDesignCanvas({ menu, design, language="en", ui
   const stageRef = useRef(null);
   const iframeRef = useRef(null);
   const heroDragRef = useRef(null);
+  const patchDesignRef = useRef(patchDesign);
+  const heroStateRef = useRef({focusX:50,focusY:50,zoom:1});
   const [iframeRoot,setIframeRoot] = useState(null);
   const [deviceKey,setDeviceKey] = useState("mobile");
   const [fitMode,setFitMode] = useState(true);
@@ -86,10 +88,13 @@ export default function MenuStudioDesignCanvas({ menu, design, language="en", ui
   const heroFocusX = clampFocus(design?.brand?.heroImageFocusX);
   const heroFocusY = clampFocus(design?.brand?.heroImageFocusY);
   const heroZoom = clampHeroZoom(design?.brand?.heroImageZoom);
+  patchDesignRef.current = patchDesign;
+  heroStateRef.current = {focusX:heroFocusX,focusY:heroFocusY,zoom:heroZoom};
 
   function patchHeroFraming(values) {
-    if (typeof patchDesign !== "function") return;
-    patchDesign(current => ({
+    const patch = patchDesignRef.current;
+    if (typeof patch !== "function") return;
+    patch(current => ({
       ...current,
       brand: {
         ...current.brand,
@@ -98,7 +103,7 @@ export default function MenuStudioDesignCanvas({ menu, design, language="en", ui
     }));
   }
 
-  function applyHeroVariables(frameDocument, focusX, focusY, nextZoom = heroZoom) {
+  function applyHeroVariables(frameDocument, focusX, focusY, nextZoom = heroStateRef.current.zoom) {
     const standardRoot = frameDocument?.querySelector?.(".bme-menu");
     const heritageRoot = frameDocument?.querySelector?.(".bme-heritage-exact");
     standardRoot?.style?.setProperty("--bme-hero-focus-x",`${focusX}%`);
@@ -168,12 +173,14 @@ export default function MenuStudioDesignCanvas({ menu, design, language="en", ui
       const hero = event.target?.closest?.(".bme-hero.bme-hero-mode-image,.bme-heritage-exact .ep-hero");
       if (!hero) return;
       const rect = hero.getBoundingClientRect();
+      const currentHero = heroStateRef.current;
       heroDragRef.current = {
         pointerId:event.pointerId,
         startX:event.clientX,
         startY:event.clientY,
-        focusX:heroFocusX,
-        focusY:heroFocusY,
+        focusX:currentHero.focusX,
+        focusY:currentHero.focusY,
+        zoom:currentHero.zoom,
         width:Math.max(1,rect.width),
         height:Math.max(1,rect.height),
       };
@@ -189,9 +196,10 @@ export default function MenuStudioDesignCanvas({ menu, design, language="en", ui
       const dx = event.clientX - drag.startX;
       const dy = event.clientY - drag.startY;
       if (Math.abs(dx) + Math.abs(dy) > 2) dragged = true;
-      const nextX = clampFocus(drag.focusX - (dx / drag.width) * 100 / heroZoom);
-      const nextY = clampFocus(drag.focusY - (dy / drag.height) * 100 / heroZoom);
-      applyHeroVariables(frameDocument,nextX,nextY,heroZoom);
+      const nextX = clampFocus(drag.focusX - (dx / drag.width) * 100 / drag.zoom);
+      const nextY = clampFocus(drag.focusY - (dy / drag.height) * 100 / drag.zoom);
+      applyHeroVariables(frameDocument,nextX,nextY,drag.zoom);
+      heroStateRef.current = {...heroStateRef.current,focusX:nextX,focusY:nextY};
       patchHeroFraming({heroImageFocusX:nextX,heroImageFocusY:nextY});
       event.preventDefault();
     };
@@ -238,7 +246,7 @@ export default function MenuStudioDesignCanvas({ menu, design, language="en", ui
       frameDocument.removeEventListener("pointercancel",endHeroDrag,true);
       frameDocument.removeEventListener("click",onClick,true);
     };
-  },[iframeRoot,design?.template,design?.layout?.presentation,heroEditable,heroFocusX,heroFocusY,heroZoom,patchDesign]);
+  },[iframeRoot,design?.template,design?.layout?.presentation,heroEditable]);
 
   useEffect(() => {
     const frame = iframeRef.current;
@@ -281,9 +289,11 @@ export default function MenuStudioDesignCanvas({ menu, design, language="en", ui
   }
   function changeHeroZoom(delta) {
     const next = clampHeroZoom(Number((heroZoom + delta).toFixed(2)));
+    heroStateRef.current = {...heroStateRef.current,zoom:next};
     patchHeroFraming({heroImageZoom:next});
   }
   function resetHeroFraming() {
+    heroStateRef.current = {focusX:50,focusY:50,zoom:1};
     patchHeroFraming({heroImageZoom:1,heroImageFocusX:50,heroImageFocusY:50});
   }
 
