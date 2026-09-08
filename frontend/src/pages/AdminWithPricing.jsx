@@ -8,6 +8,7 @@ import AdminPromoEmailSender from "../components/AdminPromoEmailSender";
 import AdminMenuOwnershipManager from "../components/AdminMenuOwnershipManager";
 import AdminSignupNotifications from "../components/AdminSignupNotifications";
 import AdminDataDashboard from "../components/AdminDataDashboard";
+import AdminCostCenter from "../components/AdminCostCenter";
 import "../components/AdminPricingPanelMatch.css";
 import Admin from "./Admin";
 
@@ -60,6 +61,7 @@ export default function AdminWithPricing() {
       {target && password
         ? createPortal(
             <>
+              <AdminCostCenter password={password} />
               <AdminSignupNotifications />
               <AdminDataDashboard />
               <AdminMenuOwnershipManager />
