@@ -2,12 +2,20 @@ function isStudioRoute() {
   return window.location.pathname.startsWith("/menu-studio/");
 }
 
+function isContentStudioRoute() {
+  const path = window.location.pathname.replace(/\/+$/, "");
+  return path === "/menu-studio/content" || path.startsWith("/menu-studio/content/");
+}
+
 function isMobileViewport() {
   return window.matchMedia("(max-width: 850px)").matches;
 }
 
 function shouldLockStudioViewport() {
-  return isStudioRoute() && !isMobileViewport();
+  // Only Content Studio needs the desktop pane-lock contract. Design, Preview,
+  // Analytics, Publish and AI Photo Studio are full-page workspaces and must
+  // retain normal document scrolling on desktop as well as mobile.
+  return isStudioRoute() && isContentStudioRoute() && !isMobileViewport();
 }
 
 function resetDocumentScroll() {
