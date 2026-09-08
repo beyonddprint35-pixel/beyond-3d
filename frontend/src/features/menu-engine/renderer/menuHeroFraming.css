@@ -1,0 +1,21 @@
+/* Hero-image framing shared by every menu presentation. Values come from the
+   persisted design brand settings and default to the previous centered crop. */
+.bme-menu .bme-hero-media-image{
+  overflow:hidden;
+}
+.bme-menu .bme-hero-media-image img{
+  object-position:var(--bme-hero-focus-x,50%) var(--bme-hero-focus-y,50%);
+  transform:scale(var(--bme-hero-image-zoom,1));
+  transform-origin:var(--bme-hero-focus-x,50%) var(--bme-hero-focus-y,50%);
+  will-change:transform,object-position;
+}
+
+.bme-heritage-exact .ep-hero{
+  isolation:isolate;
+}
+.bme-heritage-exact .ep-hero-background-image{
+  object-position:var(--ep-hero-focus-x,50%) var(--ep-hero-focus-y,50%);
+  transform:scale(var(--ep-hero-image-zoom,1));
+  transform-origin:var(--ep-hero-focus-x,50%) var(--ep-hero-focus-y,50%);
+  will-change:transform,object-position;
+}
