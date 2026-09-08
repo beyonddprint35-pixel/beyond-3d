@@ -1,0 +1,257 @@
+/* ==========================================================
+   BEYOND ACCESSIBILITY — MENU-WIDE VISIBILITY REGULATION
+
+   Accessibility dark mode must override decorative design choices.
+   This layer covers both renderer families used by Beyond:
+   - .bme-menu (all standard / premium menu designs)
+   - .ep-page / .ep-app (Heritage renderer)
+
+   The objective is simple: whenever accessibility dark mode is active,
+   every piece of menu text must remain readable even when a template or
+   a user-selected custom color would normally become too dark.
+   ========================================================== */
+
+/* ---------- Shared dark-mode palette ---------- */
+html.restaurant-a11y-dark .bme-menu {
+  --bme-bg: #111111 !important;
+  --bme-surface: #161616 !important;
+  --bme-card: #1b1b1b !important;
+  --bme-text: #ffffff !important;
+  --bme-muted: #d7d7d7 !important;
+  --bme-line: #555555 !important;
+  --bme-category-bg: #1b1b1b !important;
+  --bme-category-text: #ffffff !important;
+  --bme-item-name-color: #ffffff !important;
+  color: #ffffff !important;
+  background: #111111 !important;
+}
+
+html.restaurant-a11y-dark .ep-page,
+html.restaurant-a11y-dark .ep-app {
+  --ep-bg: #111111 !important;
+  --ep-paper: #111111 !important;
+  --ep-card: #1b1b1b !important;
+  --ep-ink: #ffffff !important;
+  --ep-muted: #d7d7d7 !important;
+  --ep-line: #555555 !important;
+  --ep-category-bg: #1b1b1b !important;
+  --ep-category-text: #ffffff !important;
+  --ep-item-name-color: #ffffff !important;
+  color: #ffffff !important;
+  background: #111111 !important;
+}
+
+/* ---------- Standard renderer: force readable text ---------- */
+html.restaurant-a11y-dark .bme-menu :is(
+  .bme-header,
+  .bme-hero,
+  .bme-category-nav,
+  .bme-content,
+  .bme-footer
+),
+html.restaurant-a11y-dark .bme-menu :is(
+  .bme-header,
+  .bme-hero,
+  .bme-category-nav,
+  .bme-content,
+  .bme-footer
+) :is(h1,h2,h3,h4,h5,h6,p,span,strong,small,em,b,i,a,button,label,code) {
+  color: #ffffff !important;
+  -webkit-text-fill-color: currentColor !important;
+  opacity: 1 !important;
+}
+
+/* Custom item-name colors must never be allowed to disappear in dark mode. */
+html.restaurant-a11y-dark .bme-menu :is(
+  .bme-item-copy h3,
+  .bme-visual-copy h3,
+  .bme-item-name,
+  .bme-section-heading h2,
+  .bme-subcategory-heading h3
+) {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+}
+
+html.restaurant-a11y-dark .bme-menu :is(
+  .bme-item-copy p,
+  .bme-visual-copy p,
+  .bme-group-note,
+  .bme-section-heading p,
+  .bme-subcategory-heading p
+) {
+  color: #dddddd !important;
+  -webkit-text-fill-color: #dddddd !important;
+  opacity: 1 !important;
+}
+
+html.restaurant-a11y-dark .bme-menu :is(
+  .bme-price,
+  .bme-price-option,
+  .bme-price-option strong,
+  .bme-price-option small,
+  .bme-item-badge,
+  .bme-item-badge span
+) {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+/* Normalize surfaces so white text always has a dark surface underneath it. */
+html.restaurant-a11y-dark .bme-menu :is(
+  .bme-classic-item,
+  .bme-visual-item
+) {
+  color: #ffffff !important;
+  background: #1b1b1b !important;
+  border-color: #555555 !important;
+}
+
+html.restaurant-a11y-dark .bme-menu .bme-category-nav button {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  background: #1b1b1b !important;
+  border-color: #555555 !important;
+  opacity: 1 !important;
+}
+
+html.restaurant-a11y-dark .bme-menu .bme-category-nav button.active,
+html.restaurant-a11y-dark .bme-menu .bme-category-nav button[aria-current="true"] {
+  color: #111111 !important;
+  -webkit-text-fill-color: #111111 !important;
+  background: #ffffff !important;
+  border-color: #ffffff !important;
+}
+
+html.restaurant-a11y-dark .bme-menu .bme-category-nav button.active *,
+html.restaurant-a11y-dark .bme-menu .bme-category-nav button[aria-current="true"] * {
+  color: #111111 !important;
+  -webkit-text-fill-color: #111111 !important;
+}
+
+/* Keep hero copy readable on any uploaded photograph. */
+html.restaurant-a11y-dark .bme-menu .bme-hero-copy,
+html.restaurant-a11y-dark .bme-menu .bme-hero-copy * {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  text-shadow: 0 1px 3px rgba(0,0,0,.95), 0 0 10px rgba(0,0,0,.72) !important;
+}
+
+html.restaurant-a11y-dark .bme-menu .bme-hero-media-image img {
+  filter: brightness(.58) !important;
+}
+
+/* ---------- Heritage renderer: same regulation ---------- */
+html.restaurant-a11y-dark .ep-app :is(
+  .ep-header,
+  .ep-hero,
+  .ep-tabs-wrap,
+  .ep-section-head,
+  .ep-menu-list,
+  .ep-footer
+),
+html.restaurant-a11y-dark .ep-app :is(
+  .ep-header,
+  .ep-hero,
+  .ep-tabs-wrap,
+  .ep-section-head,
+  .ep-menu-list,
+  .ep-footer
+) :is(h1,h2,h3,h4,h5,h6,p,span,strong,small,em,b,i,a,button,label,code) {
+  color: #ffffff !important;
+  -webkit-text-fill-color: currentColor !important;
+  opacity: 1 !important;
+}
+
+html.restaurant-a11y-dark .ep-app :is(
+  .ep-item-name,
+  .ep-item-category,
+  .ep-section-head h2,
+  .ep-brand-title,
+  .ep-hero-title,
+  .ep-hero-kicker
+) {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+html.restaurant-a11y-dark .ep-app :is(
+  .ep-item-description,
+  .ep-group-note,
+  .ep-brand-sub,
+  .ep-section-count,
+  .ep-footer-responsible
+) {
+  color: #dddddd !important;
+  -webkit-text-fill-color: #dddddd !important;
+  opacity: 1 !important;
+}
+
+html.restaurant-a11y-dark .ep-app :is(
+  .ep-item-price,
+  .ep-price-option,
+  .ep-price-option strong,
+  .ep-price-option small,
+  .ep-item-badge,
+  .ep-item-badge span
+) {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+html.restaurant-a11y-dark .ep-app :is(.ep-item-row,.ep-wine-row) {
+  color: #ffffff !important;
+  background: #1b1b1b !important;
+  border-color: #555555 !important;
+}
+
+html.restaurant-a11y-dark .ep-app .ep-tabs button {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  background: #1b1b1b !important;
+  border-color: #555555 !important;
+  opacity: 1 !important;
+}
+
+html.restaurant-a11y-dark .ep-app .ep-tabs button.active,
+html.restaurant-a11y-dark .ep-app .ep-tabs button[aria-current="true"] {
+  color: #111111 !important;
+  -webkit-text-fill-color: #111111 !important;
+  background: #ffffff !important;
+  border-color: #ffffff !important;
+}
+
+html.restaurant-a11y-dark .ep-app .ep-tabs button.active *,
+html.restaurant-a11y-dark .ep-app .ep-tabs button[aria-current="true"] * {
+  color: #111111 !important;
+  -webkit-text-fill-color: #111111 !important;
+}
+
+html.restaurant-a11y-dark .ep-app :is(.ep-hero-title,.ep-hero-kicker) {
+  text-shadow: 0 1px 3px rgba(0,0,0,.95), 0 0 10px rgba(0,0,0,.72) !important;
+}
+
+html.restaurant-a11y-dark .ep-app .ep-hero-background-image {
+  filter: brightness(.58) !important;
+}
+
+/* ---------- Footer / links ---------- */
+html.restaurant-a11y-dark .bme-menu :is(.bme-footer a,.bme-footer button),
+html.restaurant-a11y-dark .ep-app :is(.ep-footer a,.ep-footer button) {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  text-decoration-color: #ffffff !important;
+}
+
+/* Accessibility UI itself keeps its own light control palette. */
+html.restaurant-a11y-dark .restaurant-a11y-panel,
+html.restaurant-a11y-dark .restaurant-a11y-panel *,
+html.restaurant-a11y-dark .restaurant-a11y-statement,
+html.restaurant-a11y-dark .restaurant-a11y-statement * {
+  -webkit-text-fill-color: currentColor;
+}
