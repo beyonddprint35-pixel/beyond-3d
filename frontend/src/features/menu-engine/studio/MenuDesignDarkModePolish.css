@@ -115,3 +115,351 @@ html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-inspector-range-head b
 html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-inspector-range input[type="range"] {
   accent-color:#5f82ef;
 }
+
+/* =========================================================
+   RESTAURANT OWNER DESIGN EXPERIENCE
+
+   The left side should read like a short customization checklist, not like a
+   professional design inspector. The live menu remains the main workspace.
+   ========================================================= */
+
+/* The old Quick/Detailed mode switch is implementation detail. The default
+   screen is already the simple experience; individual rows open the detailed
+   editor only when the owner asks for it. */
+.menu-design-v2 .studio-v3-design-v2-nav{
+  display:none !important;
+}
+
+/* Put choosing a look before secondary setup. */
+.menu-design-v2 .menu-design-v2-sidebar-title{order:1}
+.menu-design-v2 .menu-design-v2-sidebar-picker{order:2}
+.menu-design-v2 .menu-design-v2-logo-control{order:3}
+.menu-design-v2 .menu-design-v2-variants-compact{order:4}
+
+.menu-design-v2 .menu-design-v2-sidebar-picker::before{
+  content:"Choose your look";
+  display:block;
+  margin:2px 0 7px;
+  color:var(--md-text,#17191d);
+  font-size:15px;
+  font-weight:850;
+  letter-spacing:-.015em;
+}
+.menu-design-v2[lang="he"] .menu-design-v2-sidebar-picker::before{content:"בחרו את המראה"}
+.menu-design-v2[lang="ar"] .menu-design-v2-sidebar-picker::before{content:"اختر المظهر"}
+
+/* Logo is a normal owner task, not a technical asset block. */
+.menu-design-v2 .menu-design-v2-logo-control{
+  min-height:48px !important;
+  border-radius:12px !important;
+  box-shadow:none !important;
+}
+.menu-design-v2 .menu-design-v2-logo-copy strong{
+  font-size:13px !important;
+}
+.menu-design-v2 .menu-design-v2-logo-copy small{
+  display:none !important;
+}
+.menu-design-v2 .menu-design-v2-logo-upload{
+  min-height:32px !important;
+  padding-inline:10px !important;
+}
+
+/* Saved A/B versions remain available without dominating the first screen. */
+.menu-design-v2 .menu-design-v2-variants-compact{
+  padding:5px !important;
+  border-style:dashed !important;
+  background:transparent !important;
+}
+.menu-design-v2 .menu-design-v2-variants-copy{
+  display:none !important;
+}
+.menu-design-v2 .menu-design-v2-variant-buttons{
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+}
+.menu-design-v2 .menu-design-v2-variant-button{
+  min-height:34px !important;
+  padding:4px 7px !important;
+  opacity:.78;
+}
+.menu-design-v2 .menu-design-v2-variant-button.active{opacity:1}
+.menu-design-v2 .menu-design-v2-variant-letter{
+  width:22px !important;
+  height:22px !important;
+  flex-basis:22px !important;
+}
+.menu-design-v2 .menu-design-v2-variant-button small{display:none !important}
+
+/* Remove duplicate current-design information. The selected design is already
+   obvious in the Choose your look rail above. */
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-design-v2-current{
+  display:none !important;
+}
+
+/* The main customization area becomes a short list of outcomes. */
+.menu-design-v2 .studio-v3-design-quick-workspace{
+  gap:7px !important;
+}
+.menu-design-v2 .studio-v3-design-quick-workspace>.studio-v3-design-v2-secondary-action{
+  min-height:34px !important;
+  margin:0 7px !important;
+}
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-design-v2-section{
+  gap:7px !important;
+  padding:7px !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-design-v2-section-head{
+  padding:3px 2px 5px !important;
+}
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-design-v2-section-head strong{
+  font-size:16px !important;
+}
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-design-v2-section-head small{
+  margin-top:3px !important;
+  font-size:12px !important;
+  line-height:1.35 !important;
+}
+
+/* Hide the dense inline controls on the landing screen. Owners first choose
+   what they want to change; the dedicated editor then exposes the controls. */
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-palette-row,
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-type-grid,
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-hero-grid,
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-hero-upload,
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-density-grid{
+  display:none !important;
+}
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-control-card{
+  position:relative;
+  min-height:56px !important;
+  padding:0 !important;
+  gap:0 !important;
+  overflow:hidden;
+  border:1px solid var(--md-line,#e2dfdb) !important;
+  border-radius:12px !important;
+  background:var(--md-paper,#fff) !important;
+  box-shadow:none !important;
+  transition:border-color .15s ease,background .15s ease,transform .15s ease;
+}
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-control-card:hover{
+  transform:translateY(-1px);
+  border-color:rgba(73,116,229,.42) !important;
+  background:color-mix(in srgb,var(--md-paper,#fff) 95%,#4974e5) !important;
+}
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-control-title{
+  min-height:56px;
+  grid-template-columns:36px minmax(0,1fr) 24px !important;
+  gap:10px !important;
+  padding:8px 10px !important;
+}
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-control-title>.dot{
+  width:34px !important;
+  height:34px !important;
+  border-radius:10px !important;
+}
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-control-title>div{
+  display:grid;
+  gap:2px;
+}
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-control-title strong{
+  font-size:14px !important;
+  line-height:1.2;
+}
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-control-title small{
+  max-width:230px;
+  overflow:hidden;
+  color:var(--md-muted,#737780) !important;
+  font-size:11px !important;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+/* Make the whole row clickable by stretching its existing details button. */
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-control-title>button{
+  position:absolute !important;
+  inset:0 !important;
+  z-index:3;
+  width:100% !important;
+  height:100% !important;
+  padding:0 !important;
+  border:0 !important;
+  background:transparent !important;
+  color:transparent !important;
+  font-size:0 !important;
+  cursor:pointer;
+}
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-control-title::after{
+  content:"›";
+  grid-column:3;
+  grid-row:1;
+  align-self:center;
+  justify-self:end;
+  color:var(--md-muted,#8a909a);
+  font-size:20px;
+  line-height:1;
+  pointer-events:none;
+}
+.menu-design-v2[dir="rtl"] .studio-v3-design-quick-workspace .studio-v3-quick-control-title::after{
+  content:"‹";
+}
+
+/* Plain owner-facing wording on the four common customization rows. */
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-control-title strong{font-size:0 !important}
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-control-title strong::before{font-size:14px !important}
+.menu-design-v2[lang="en"] .studio-v3-design-quick-workspace .studio-v3-quick-control-card:has(.dot.colors) strong::before{content:"Colors"}
+.menu-design-v2[lang="en"] .studio-v3-design-quick-workspace .studio-v3-quick-control-card:has(.dot.type) strong::before{content:"Text"}
+.menu-design-v2[lang="en"] .studio-v3-design-quick-workspace .studio-v3-quick-control-card:has(.dot.hero-media-control) strong::before{content:"Top photo & header"}
+.menu-design-v2[lang="en"] .studio-v3-design-quick-workspace .studio-v3-quick-control-card:has(.dot.spacing) strong::before{content:"Menu layout"}
+.menu-design-v2[lang="he"] .studio-v3-design-quick-workspace .studio-v3-quick-control-card:has(.dot.colors) strong::before{content:"צבעים"}
+.menu-design-v2[lang="he"] .studio-v3-design-quick-workspace .studio-v3-quick-control-card:has(.dot.type) strong::before{content:"טקסט"}
+.menu-design-v2[lang="he"] .studio-v3-design-quick-workspace .studio-v3-quick-control-card:has(.dot.hero-media-control) strong::before{content:"תמונה עליונה וכותרת"}
+.menu-design-v2[lang="he"] .studio-v3-design-quick-workspace .studio-v3-quick-control-card:has(.dot.spacing) strong::before{content:"פריסת התפריט"}
+.menu-design-v2[lang="ar"] .studio-v3-design-quick-workspace .studio-v3-quick-control-card:has(.dot.colors) strong::before{content:"الألوان"}
+.menu-design-v2[lang="ar"] .studio-v3-design-quick-workspace .studio-v3-quick-control-card:has(.dot.type) strong::before{content:"النص"}
+.menu-design-v2[lang="ar"] .studio-v3-design-quick-workspace .studio-v3-quick-control-card:has(.dot.hero-media-control) strong::before{content:"الصورة العلوية والعنوان"}
+.menu-design-v2[lang="ar"] .studio-v3-design-quick-workspace .studio-v3-quick-control-card:has(.dot.spacing) strong::before{content:"تخطيط القائمة"}
+
+/* Advanced controls are intentionally demoted to a single quiet option. */
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-design-v2-primary-action{
+  min-height:42px !important;
+  margin-top:2px;
+  border:1px dashed var(--md-line,#dce1e8) !important;
+  background:transparent !important;
+  color:var(--md-muted,#6f7782) !important;
+  box-shadow:none !important;
+  font-size:0 !important;
+}
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-design-v2-primary-action::before{
+  content:"More options";
+  font-size:13px;
+  font-weight:800;
+}
+.menu-design-v2[lang="he"] .studio-v3-design-quick-workspace .studio-v3-design-v2-primary-action::before{content:"אפשרויות נוספות"}
+.menu-design-v2[lang="ar"] .studio-v3-design-quick-workspace .studio-v3-design-v2-primary-action::before{content:"خيارات إضافية"}
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-design-v2-primary-action span{
+  margin-inline-start:6px;
+  font-size:13px !important;
+}
+
+/* Detailed editor: one clear task at a time. Keep the six destinations compact
+   and outcome-based, then show the selected controls below. */
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-context-editor-head{
+  position:sticky;
+  top:0;
+  z-index:30;
+  min-height:44px !important;
+  padding:5px 6px !important;
+  background:var(--md-paper,#fff);
+}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-context-editor-head>div>span,
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-context-editor-head>div>small{
+  display:none !important;
+}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-context-editor-head>div>strong{
+  font-size:14px !important;
+}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-context-editor-head>button{
+  min-height:32px !important;
+  padding:0 10px !important;
+  font-size:0 !important;
+}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-context-editor-head>button::before{
+  content:"← Back";
+  font-size:12px;
+  font-weight:800;
+}
+.menu-design-v2[dir="rtl"] .studio-v3-design-v2-advanced .studio-v3-context-editor-head>button::before{content:"חזרה →"}
+.menu-design-v2[lang="ar"] .studio-v3-design-v2-advanced .studio-v3-context-editor-head>button::before{content:"رجوع →"}
+
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs{
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:5px !important;
+}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button{
+  min-height:46px !important;
+  grid-template-columns:26px minmax(0,1fr) 10px !important;
+  gap:6px !important;
+  padding:6px 7px !important;
+}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-design-tab-icon{
+  width:26px !important;
+  height:26px !important;
+}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-design-tab-label::after{
+  display:none !important;
+}
+/* Shorter names: owners think in outcomes, not design-system terminology. */
+.menu-design-v2[lang="en"] .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button:nth-child(1) .studio-v3-design-tab-label::before{content:"Logo"}
+.menu-design-v2[lang="en"] .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button:nth-child(2) .studio-v3-design-tab-label::before{content:"Header photo"}
+.menu-design-v2[lang="en"] .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button:nth-child(3) .studio-v3-design-tab-label::before{content:"Colors"}
+.menu-design-v2[lang="en"] .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button:nth-child(4) .studio-v3-design-tab-label::before{content:"Text"}
+.menu-design-v2[lang="en"] .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button:nth-child(5) .studio-v3-design-tab-label::before{content:"Menu layout"}
+.menu-design-v2[lang="en"] .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button:nth-child(6) .studio-v3-design-tab-label::before{content:"Tags & icons"}
+.menu-design-v2[lang="he"] .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button:nth-child(1) .studio-v3-design-tab-label::before{content:"לוגו"}
+.menu-design-v2[lang="he"] .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button:nth-child(2) .studio-v3-design-tab-label::before{content:"תמונת כותרת"}
+.menu-design-v2[lang="he"] .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button:nth-child(3) .studio-v3-design-tab-label::before{content:"צבעים"}
+.menu-design-v2[lang="he"] .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button:nth-child(4) .studio-v3-design-tab-label::before{content:"טקסט"}
+.menu-design-v2[lang="he"] .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button:nth-child(5) .studio-v3-design-tab-label::before{content:"פריסת תפריט"}
+.menu-design-v2[lang="he"] .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button:nth-child(6) .studio-v3-design-tab-label::before{content:"תגיות וסמלים"}
+.menu-design-v2[lang="ar"] .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button:nth-child(1) .studio-v3-design-tab-label::before{content:"الشعار"}
+.menu-design-v2[lang="ar"] .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button:nth-child(2) .studio-v3-design-tab-label::before{content:"صورة العنوان"}
+.menu-design-v2[lang="ar"] .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button:nth-child(3) .studio-v3-design-tab-label::before{content:"الألوان"}
+.menu-design-v2[lang="ar"] .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button:nth-child(4) .studio-v3-design-tab-label::before{content:"النص"}
+.menu-design-v2[lang="ar"] .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button:nth-child(5) .studio-v3-design-tab-label::before{content:"تخطيط القائمة"}
+.menu-design-v2[lang="ar"] .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button:nth-child(6) .studio-v3-design-tab-label::before{content:"الوسوم والأيقونات"}
+
+/* Direct editing hint: reinforce that the menu itself can be clicked. */
+.menu-design-v2 .menu-design-v2-live-preview::before{
+  content:"Tip: click the menu itself to edit that part";
+  position:absolute;
+  z-index:20;
+  left:50%;
+  top:48px;
+  transform:translateX(-50%);
+  padding:5px 9px;
+  border:1px solid rgba(73,116,229,.16);
+  border-radius:999px;
+  color:#4974e5;
+  background:rgba(255,255,255,.88);
+  box-shadow:0 4px 14px rgba(25,35,52,.06);
+  backdrop-filter:blur(10px);
+  font-size:11px;
+  font-weight:800;
+  pointer-events:none;
+  white-space:nowrap;
+}
+.menu-design-v2[lang="he"] .menu-design-v2-live-preview::before{content:"טיפ: לחצו ישירות על התפריט כדי לערוך את החלק הזה"}
+.menu-design-v2[lang="ar"] .menu-design-v2-live-preview::before{content:"نصيحة: اضغط مباشرة على القائمة لتعديل هذا الجزء"}
+
+/* Dark mode for the simplified owner experience. */
+html[data-beyond-theme="dark"] .menu-design-v2 .menu-design-v2-sidebar-picker::before{color:#f1f4f8}
+html[data-beyond-theme="dark"] .menu-design-v2 .menu-design-v2-variants-compact{border-color:rgba(255,255,255,.12) !important}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-control-card{
+  border-color:rgba(255,255,255,.1) !important;
+  background:#141b23 !important;
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-control-card:hover{
+  border-color:rgba(106,143,244,.45) !important;
+  background:#192330 !important;
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-control-title strong::before{color:#f1f4f8}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-design-v2-primary-action{
+  border-color:rgba(255,255,255,.12) !important;
+  color:#aeb7c3 !important;
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-context-editor-head{
+  background:#11171e !important;
+}
+html[data-beyond-theme="dark"] .menu-design-v2 .menu-design-v2-live-preview::before{
+  border-color:rgba(106,143,244,.25);
+  color:#9ab4ff;
+  background:rgba(13,20,31,.9);
+}
+
+@media(max-width:900px){
+  .menu-design-v2 .menu-design-v2-live-preview::before{display:none}
+  .menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs{grid-template-columns:1fr !important}
+}
