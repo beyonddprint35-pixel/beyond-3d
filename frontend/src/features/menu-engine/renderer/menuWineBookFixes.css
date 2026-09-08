@@ -1,0 +1,49 @@
+/* Wine Book / Wine Register fixes.
+   Keep these overrides after the shared ledger and signature profile rules. */
+
+/*
+   The generic ledger family uses ::before as a full-width decorative hairline.
+   Wine Register reuses the same pseudo-element for row numbering. Without
+   resetting the inherited geometry/background, that 1px pseudo-element stretches
+   across the row and visually cuts through item names/descriptions.
+*/
+.bme-menu.bme-presentation-wine-register .bme-classic-item::before {
+  inset-inline-end: auto;
+  bottom: auto;
+  width: auto;
+  height: auto;
+  opacity: 1;
+  background: transparent;
+}
+
+/*
+   Wine Book commonly has many long categories. Always anchor the scroll strip at
+   the start on narrow menu canvases and give focused/selected tabs breathing room
+   so a clicked category cannot remain half-clipped at either edge.
+*/
+.bme-menu.bme-presentation-wine-register .bme-category-nav {
+  justify-content: flex-start;
+  scroll-padding-inline: 28px;
+  scroll-snap-type: inline proximity;
+}
+
+.bme-menu.bme-presentation-wine-register .bme-category-nav button {
+  flex: 0 0 auto;
+  max-width: none;
+  overflow: visible;
+  scroll-margin-inline: 28px;
+  scroll-snap-align: center;
+}
+
+.bme-menu.bme-presentation-wine-register .bme-category-nav button.active,
+.bme-menu.bme-presentation-wine-register .bme-category-nav button:focus {
+  scroll-snap-stop: always;
+}
+
+/* Restore centered book-style navigation only when the menu itself is genuinely
+   wide enough to show the category row without horizontal clipping. */
+@container beyond-menu (min-width: 900px) {
+  .bme-menu.bme-presentation-wine-register .bme-category-nav {
+    justify-content: center;
+  }
+}
