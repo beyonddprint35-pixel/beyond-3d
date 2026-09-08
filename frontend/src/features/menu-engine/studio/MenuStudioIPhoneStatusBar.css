@@ -14,10 +14,11 @@
   padding:11px 21px 0;
   box-sizing:border-box;
   border-radius:42px 42px 0 0;
-  background:#fff;
-  color:#050506;
+  background:var(--preview-status-bg,#fff);
+  color:var(--preview-status-fg,#050506);
   pointer-events:none;
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display",Inter,system-ui,sans-serif;
+  transition:background-color .18s ease,color .18s ease;
 }
 
 .studio-v3-preview-phone-status-time{
@@ -46,7 +47,7 @@
 .studio-v3-preview-phone-status-icons svg{
   display:block;
   overflow:visible;
-  color:#050506;
+  color:inherit;
 }
 
 .studio-v3-preview-phone-status-icons .signal{width:18px;height:12px}
@@ -79,14 +80,17 @@
 }
 
 /* Reserve the same safe-area height inside the simulated phone screen so the
-   menu begins below the system chrome instead of hiding underneath it. */
+   menu begins below the system chrome instead of hiding underneath it. The
+   reserved strip uses the menu's own background color so the status bar feels
+   like part of the customer menu rather than a separate white panel. */
 .studio-v3-preview-device-shell.mobile .studio-v3-preview-device-screen{
   box-sizing:border-box;
   padding-top:50px;
-  background:#fff;
+  background:var(--preview-status-bg,#fff);
+  transition:background-color .18s ease;
 }
 
-/* Keep menu backgrounds visually continuous below the white iPhone status bar. */
+/* Keep menu backgrounds visually continuous below the simulated status bar. */
 .studio-v3-preview-device-shell.mobile .studio-v3-preview-device-screen > .bme-menu,
 .studio-v3-preview-device-shell.mobile .studio-v3-preview-device-screen > .ep-page{
   min-height:calc(100% - 50px);
