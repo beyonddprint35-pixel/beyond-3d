@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import MenuRenderer from "../renderer/MenuRenderer";
 import "./MenuStudioPreviewStage.css";
 import "./MenuStudioPreviewPan.css";
@@ -10,6 +11,8 @@ const DEVICE_PRESETS = Object.freeze({
   tablet:{ width:768, height:1024, outerWidth:804, outerHeight:1060 },
   desktop:{ width:1280, height:800, outerWidth:1320, outerHeight:888 },
 });
+
+const PREVIEW_DOCUMENT = "<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'></head><body><div id='beyond-menu-customer-preview-root'></div></body></html>";
 
 const COPY = {
   en:{
@@ -68,8 +71,52 @@ function DeviceIcon({ type }) {
   return <span className={`studio-v3-preview-device-icon ${type}`} aria-hidden="true"><i/></span>;
 }
 
+function clonePreviewStyles(targetDocument) {
+  targetDocument.head.querySelectorAll("[data-beyond-customer-preview-style]").forEach(node => node.remove());
+
+  document.querySelectorAll('link[rel="stylesheet"],style').forEach(node => {
+    const clone = node.cloneNode(true);
+    clone.setAttribute("data-beyond-customer-preview-style","true");
+    targetDocument.head.appendChild(clone);
+  });
+
+  const previewBase = targetDocument.createElement("style");
+  previewBase.setAttribute("data-beyond-customer-preview-style","true");
+  previewBase.textContent = `
+    html,body,#beyond-menu-customer-preview-root{margin:0;min-height:100%;width:100%;background:#fff}
+    html,body{padding:0}
+    html{scrollbar-width:thin}
+    body{overflow-x:hidden}
+    #beyond-menu-customer-preview-root{min-height:100%;isolation:isolate}
+  `;
+  targetDocument.head.appendChild(previewBase);
+}
+
 function PreviewContent({ menu, design, language }) {
-  return <MenuRenderer menu={menu} design={design} initialLanguage={language}/>;
+  const iframeRef = useRef(null);
+  const [iframeRoot,setIframeRoot] = useState(null);
+
+  function prepareFrame() {
+    const frameDocument = iframeRef.current?.contentDocument;
+    if (!frameDocument?.head) return;
+    clonePreviewStyles(frameDocument);
+    setIframeRoot(frameDocument.getElementById("beyond-menu-customer-preview-root"));
+  }
+
+  return <>
+    <iframe
+      ref={iframeRef}
+      className="studio-v3-preview-renderer-frame"
+      title="Customer menu"
+      srcDoc={PREVIEW_DOCUMENT}
+      onLoad={prepareFrame}
+      style={{width:"100%",height:"100%",display:"block",border:0,background:"#fff"}}
+    />
+    {iframeRoot ? createPortal(
+      <MenuRenderer menu={menu} design={design} initialLanguage={language}/>,
+      iframeRoot,
+    ) : null}
+  </>;
 }
 
 function PhoneStatusBar() {
