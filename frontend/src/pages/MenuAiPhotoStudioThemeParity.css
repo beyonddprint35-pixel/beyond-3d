@@ -1,0 +1,252 @@
+/*
+ * AI Photo Studio theme parity.
+ *
+ * This screen uses the exact same StudioLanguageMenu control as the rest of
+ * Menu Studio. These overrides make its language/theme controls and the full
+ * Photo Studio surface follow the shared Beyond light/dark theme instead of
+ * leaving light-only islands behind.
+ */
+
+/* Match the compact Menu Studio controls exactly. */
+.ai-dish-v1-topbar .studio-language-menu.is-compact {
+  width: 94px !important;
+  min-width: 94px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 6px !important;
+}
+
+.ai-dish-v1-topbar .studio-language-menu.is-compact :is(.studio-language-menu-trigger, .studio-language-menu-theme-toggle) {
+  width: 44px !important;
+  min-width: 44px !important;
+  max-width: 44px !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0 !important;
+  border: 1px solid var(--beyond-studio-line-strong, #d8e0eb) !important;
+  border-radius: 11px !important;
+  color: var(--beyond-studio-blue-light, #4974e5) !important;
+  background: var(--beyond-studio-surface-2, #fff) !important;
+  box-shadow: none !important;
+}
+
+.ai-dish-v1-topbar .studio-language-menu.is-compact .studio-language-menu-trigger > svg,
+.ai-dish-v1-topbar .studio-language-menu.is-compact .studio-language-menu-trigger-copy {
+  display: none !important;
+}
+
+.ai-dish-v1-topbar .studio-language-menu.is-compact .studio-language-menu-code {
+  display: grid !important;
+  place-items: center !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: inherit !important;
+  font-size: 11px !important;
+  font-weight: 850 !important;
+  letter-spacing: .04em !important;
+}
+
+.ai-dish-v1-topbar .studio-language-menu.is-compact .studio-language-menu-list {
+  right: 50px !important;
+  width: 205px !important;
+}
+
+.ai-dish-v1-topbar .studio-language-menu.is-compact :is(.studio-language-menu-trigger, .studio-language-menu-theme-toggle):focus-visible {
+  outline: 2px solid var(--beyond-studio-blue-light, #4974e5) !important;
+  outline-offset: 3px !important;
+}
+
+/* Full dark-mode token switch for AI Photo Studio. */
+html[data-beyond-theme="dark"] .ai-dish-v1 {
+  --aid-bg: #080d15;
+  --aid-paper: #0d141f;
+  --aid-text: #edf3ff;
+  --aid-muted: #95a3b8;
+  --aid-line: #283548;
+  --aid-blue: #7aa2ff;
+  --aid-blue-soft: #14233d;
+  --aid-green: #37c88b;
+  color-scheme: dark;
+}
+
+html[data-beyond-theme="dark"] .ai-dish-v1-topbar {
+  border-bottom-color: var(--aid-line) !important;
+  background: rgba(8, 13, 21, .92) !important;
+}
+
+html[data-beyond-theme="dark"] .ai-dish-v1 :is(
+  .ai-dish-v1-card,
+  .ai-dish-v1-results,
+  .place-style-card,
+  .ai-dish-v1-refine-box,
+  .version-select,
+  .logo-mini
+) {
+  border-color: var(--aid-line) !important;
+  background: var(--aid-paper) !important;
+  color: var(--aid-text) !important;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, .18) !important;
+}
+
+html[data-beyond-theme="dark"] .ai-dish-v1 :is(
+  .action-grid button,
+  .brand-simple-actions button,
+  .brand-simple-actions label,
+  .ai-dish-single-item-list button,
+  .ai-dish-v1-items-list > button,
+  .ai-dish-v1-vibes button,
+  .ai-dish-v1-result,
+  .ai-dish-v1-history-strip > button
+) {
+  border-color: var(--aid-line) !important;
+  background: #101824 !important;
+  color: var(--aid-text) !important;
+}
+
+html[data-beyond-theme="dark"] .ai-dish-v1 :is(
+  .action-grid button.active,
+  .brand-simple-actions .active,
+  .ai-dish-single-item-list button.selected,
+  .ai-dish-v1-items-list > button.selected,
+  .ai-dish-v1-vibes button.active
+) {
+  border-color: rgba(122, 162, 255, .5) !important;
+  background: var(--aid-blue-soft) !important;
+  color: var(--aid-blue) !important;
+}
+
+html[data-beyond-theme="dark"] .ai-dish-v1 :is(
+  .custom-box textarea,
+  .ai-dish-v1-custom textarea,
+  .ai-dish-v1-refine-box textarea,
+  .ai-dish-v1-search
+) {
+  border-color: var(--aid-line) !important;
+  background: #0a111c !important;
+  color: var(--aid-text) !important;
+}
+
+html[data-beyond-theme="dark"] .ai-dish-v1 :is(input, textarea)::placeholder {
+  color: #6f7f95 !important;
+}
+
+html[data-beyond-theme="dark"] .ai-dish-v1 :is(
+  .preflight-simple > div,
+  .ai-dish-v1-reference-grid figure,
+  .ai-dish-v1-result-image,
+  .ai-dish-single-item-list .thumb,
+  .ai-dish-v1-items-list .thumb
+) {
+  background: #0a111c !important;
+}
+
+html[data-beyond-theme="dark"] .ai-dish-v1 .ai-dish-v1-upload {
+  border-color: #35445a !important;
+  background: #0a111c !important;
+  color: var(--aid-blue) !important;
+}
+
+html[data-beyond-theme="dark"] .ai-dish-v1 :is(
+  .ai-dish-v1-card > header > b,
+  .ai-dish-v1-results-head > b
+) {
+  background: #111b2a !important;
+  color: var(--aid-muted) !important;
+}
+
+html[data-beyond-theme="dark"] .ai-dish-v1 .ai-dish-v1-items-list .check {
+  border-color: #35445a !important;
+  background: #101824 !important;
+}
+
+html[data-beyond-theme="dark"] .ai-dish-v1 .ai-dish-v1-items-list button.selected .check {
+  border-color: var(--aid-blue) !important;
+  background: var(--aid-blue) !important;
+  color: #fff !important;
+}
+
+html[data-beyond-theme="dark"] .ai-dish-v1 .ai-dish-v1-result.approved {
+  border-color: rgba(55, 200, 139, .32) !important;
+  background: rgba(23, 106, 75, .13) !important;
+}
+
+html[data-beyond-theme="dark"] .ai-dish-v1 .place-style-head span {
+  background: rgba(55, 200, 139, .14) !important;
+  color: #6ee7b7 !important;
+}
+
+html[data-beyond-theme="dark"] .ai-dish-v1 .place-style-thumbs img {
+  border-color: var(--aid-paper) !important;
+}
+
+html[data-beyond-theme="dark"] .ai-dish-v1 :is(
+  .secondary-upload,
+  .place-style-manage button
+) {
+  border-color: var(--aid-line) !important;
+  background: #101824 !important;
+  color: var(--aid-text) !important;
+}
+
+html[data-beyond-theme="dark"] .ai-dish-v1 :is(
+  .ai-dish-v1-results-empty,
+  .ai-dish-v1-history,
+  .logo-mini
+) {
+  border-color: var(--aid-line) !important;
+}
+
+html[data-beyond-theme="dark"] .ai-dish-v1 .ai-dish-v1-accuracy {
+  border-color: #5b4a27 !important;
+  background: #211b10 !important;
+  color: #e5c87a !important;
+}
+
+html[data-beyond-theme="dark"] .ai-dish-v1 .ai-dish-v1-error {
+  border-color: #61383d !important;
+  background: #241216 !important;
+  color: #ff9da7 !important;
+}
+
+html[data-beyond-theme="dark"] .ai-dish-v1-empty > div {
+  border-color: var(--aid-line) !important;
+  background: var(--aid-paper) !important;
+  color: var(--aid-text) !important;
+}
+
+/* Keep every label legible when dark mode is active. */
+html[data-beyond-theme="dark"] .ai-dish-v1 :is(
+  .ai-dish-v1-vibes button,
+  .ai-dish-v1-result-meta strong,
+  .ai-dish-v1-result-actions .secondary
+) {
+  color: var(--aid-text) !important;
+}
+
+html[data-beyond-theme="dark"] .ai-dish-v1 .ai-dish-v1-result-actions .secondary {
+  border-color: var(--aid-line) !important;
+  background: #101824 !important;
+}
+
+@media (max-width: 720px) {
+  .ai-dish-v1-topbar .studio-language-menu.is-compact .studio-language-menu-list {
+    position: fixed !important;
+    top: calc(62px + env(safe-area-inset-top, 0px)) !important;
+    inset-inline-end: 9px !important;
+    inset-inline-start: auto !important;
+    right: auto !important;
+    width: min(204px, calc(100vw - 20px)) !important;
+    min-width: 0 !important;
+    max-width: calc(100vw - 20px) !important;
+    z-index: 700 !important;
+  }
+}
