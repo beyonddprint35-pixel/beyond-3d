@@ -156,7 +156,14 @@ export async function getMenuImportSession() {
   return data?.session || null;
 }
 
-export async function importMenuWithAi({ session, files = [], text = "", languages = [], extractFunctionName = "" }) {
+export async function importMenuWithAi({
+  session,
+  files = [],
+  text = "",
+  languages = [],
+  extractFunctionName = "",
+  deferTranslationRepair = false,
+}) {
   if (!session?.user?.id || !session?.access_token) throw new Error("Sign in is required to use AI menu import.");
   if (!languages.length) throw new Error("Choose at least one menu language.");
   if (!String(text || "").trim() && !files.length) throw new Error("Upload your menu or paste its content first.");
@@ -211,10 +218,14 @@ export async function importMenuWithAi({ session, files = [], text = "", languag
   if (functionError) throw await parseFunctionError(functionError);
   if (!data?.ok || !data?.menu) throw new Error(data?.error || "Could not build this menu.");
 
-  // The batched photo pipeline already performs its own source-first translation pass.
-  // Running the generic translation repair again on a large imported menu is redundant,
-  // increases cost, and can time out. Keep repair only for the legacy PDF/text pipeline.
-  const translation = imageOnly
+  // Photo imports and large website imports should not send the entire structured
+  // menu through the legacy whole-menu translation repair. On large menus that
+  // second pass can accidentally return fewer sections/items even though extraction
+  // succeeded. Website drafts are adapted to V3 immediately afterwards, where the
+  // field-level translation repair can safely fill only missing translations without
+  // touching categories, items or prices.
+  const shouldDeferTranslationRepair = imageOnly || deferTranslationRepair;
+  const translation = shouldDeferTranslationRepair
     ? { menu: data.menu, repaired: false, missingBefore: 0, aiCost: null }
     : await completeMissingMenuTranslations({
         session,
@@ -235,6 +246,7 @@ export async function importMenuWithAi({ session, files = [], text = "", languag
     aiCost: data.aiCost || null,
     diagnostics: data.diagnostics || null,
     reviewItems,
+    translationDeferred: Boolean(deferTranslationRepair),
     translationRepair: translation.repaired ? {
       repaired: true,
       missingBefore: translation.missingBefore,
