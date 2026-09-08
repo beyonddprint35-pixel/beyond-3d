@@ -13,12 +13,14 @@ const DEVICE_CHROME_HEIGHT = 24;
 const PREVIEW_DOCUMENT = "<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'></head><body><div id='beyond-menu-preview-root'></div></body></html>";
 
 const COPY = {
-  en:{mobile:"Mobile",tablet:"Tablet",desktop:"Desktop",fit:"Fit",zoomOut:"Zoom out",zoomIn:"Zoom in",resetZoom:"Reset to 100%",live:"Live",editHint:"Click any part of the menu to edit it"},
-  he:{mobile:"נייד",tablet:"טאבלט",desktop:"מחשב",fit:"התאם",zoomOut:"הקטן",zoomIn:"הגדל",resetZoom:"חזרה ל־100%",live:"חי",editHint:"לחצו על כל חלק בתפריט כדי לערוך אותו"},
-  ar:{mobile:"هاتف",tablet:"جهاز لوحي",desktop:"سطح المكتب",fit:"ملاءمة",zoomOut:"تصغير",zoomIn:"تكبير",resetZoom:"العودة إلى 100%",live:"مباشر",editHint:"انقر على أي جزء من القائمة لتعديله"},
+  en:{mobile:"Mobile",tablet:"Tablet",desktop:"Desktop",fit:"Fit",zoomOut:"Zoom out",zoomIn:"Zoom in",resetZoom:"Reset to 100%",live:"Live",editHint:"Click any part of the menu to edit it",heroDrag:"Drag hero photo",heroZoom:"Hero zoom",heroReset:"Reset hero"},
+  he:{mobile:"נייד",tablet:"טאבלט",desktop:"מחשב",fit:"התאם",zoomOut:"הקטן",zoomIn:"הגדל",resetZoom:"חזרה ל־100%",live:"חי",editHint:"לחצו על כל חלק בתפריט כדי לערוך אותו",heroDrag:"גררו את תמונת ה-Hero",heroZoom:"זום Hero",heroReset:"איפוס Hero"},
+  ar:{mobile:"هاتف",tablet:"جهاز لوحي",desktop:"سطح المكتب",fit:"ملاءمة",zoomOut:"تصغير",zoomIn:"تكبير",resetZoom:"العودة إلى 100%",live:"مباشر",editHint:"انقر على أي جزء من القائمة لتعديله",heroDrag:"اسحب صورة الواجهة",heroZoom:"تكبير الواجهة",heroReset:"إعادة ضبط الواجهة"},
 };
 
 const clamp = (value,min,max) => Math.min(max,Math.max(min,value));
+const clampFocus = value => clamp(Number.isFinite(Number(value)) ? Number(value) : 50,0,100);
+const clampHeroZoom = value => clamp(Number.isFinite(Number(value)) ? Number(value) : 1,1,3);
 const TARGET_SELECTOR = ".bme-item-badge,.bme-visual-item,.bme-classic-item,.bme-category-nav,.bme-hero,.bme-brand,.bme-header,.ep-item-row,.ep-tabs-wrap,.ep-hero,.ep-brand,.ep-header";
 
 function targetName(node) {
@@ -59,14 +61,19 @@ function clonePreviewStyles(targetDocument) {
     .bme-item-media-placeholder:after{content:"PHOTO";position:absolute;inset-inline:0;bottom:18%;text-align:center;font:800 8px/1 var(--bme-body-font);letter-spacing:.18em;color:color-mix(in srgb,var(--bme-text) 52%,transparent)}
     .beyond-design-target-hover{outline:2px solid #4974e5!important;outline-offset:-2px!important;cursor:pointer!important}
     .beyond-design-target-selected{outline:3px solid #4974e5!important;outline-offset:-3px!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.75)!important}
+    body[data-hero-editable="true"] .bme-hero.bme-hero-mode-image,
+    body[data-hero-editable="true"] .bme-heritage-exact .ep-hero{cursor:grab!important;touch-action:none}
+    body[data-hero-editable="true"].beyond-hero-dragging .bme-hero.bme-hero-mode-image,
+    body[data-hero-editable="true"].beyond-hero-dragging .bme-heritage-exact .ep-hero{cursor:grabbing!important}
   `;
   targetDocument.head.appendChild(previewBase);
 }
 
-export default function MenuStudioDesignCanvas({ menu, design, language="en", uiLanguage="en", label="Live preview", compact=false }) {
+export default function MenuStudioDesignCanvas({ menu, design, language="en", uiLanguage="en", label="Live preview", compact=false, patchDesign }) {
   const copy = COPY[uiLanguage] || COPY.en;
   const stageRef = useRef(null);
   const iframeRef = useRef(null);
+  const heroDragRef = useRef(null);
   const [iframeRoot,setIframeRoot] = useState(null);
   const [deviceKey,setDeviceKey] = useState("mobile");
   const [fitMode,setFitMode] = useState(true);
@@ -74,6 +81,33 @@ export default function MenuStudioDesignCanvas({ menu, design, language="en", ui
   const [fitScale,setFitScale] = useState(.8);
   const device = VIEWPORTS[deviceKey];
   const outerHeight = device.height + DEVICE_CHROME_HEIGHT;
+  const heroImageUrl = String(design?.brand?.heroImageUrl || "").trim();
+  const heroEditable = design?.brand?.heroMediaMode === "image" && Boolean(heroImageUrl) && typeof patchDesign === "function";
+  const heroFocusX = clampFocus(design?.brand?.heroImageFocusX);
+  const heroFocusY = clampFocus(design?.brand?.heroImageFocusY);
+  const heroZoom = clampHeroZoom(design?.brand?.heroImageZoom);
+
+  function patchHeroFraming(values) {
+    if (typeof patchDesign !== "function") return;
+    patchDesign(current => ({
+      ...current,
+      brand: {
+        ...current.brand,
+        ...values,
+      },
+    }));
+  }
+
+  function applyHeroVariables(frameDocument, focusX, focusY, nextZoom = heroZoom) {
+    const standardRoot = frameDocument?.querySelector?.(".bme-menu");
+    const heritageRoot = frameDocument?.querySelector?.(".bme-heritage-exact");
+    standardRoot?.style?.setProperty("--bme-hero-focus-x",`${focusX}%`);
+    standardRoot?.style?.setProperty("--bme-hero-focus-y",`${focusY}%`);
+    standardRoot?.style?.setProperty("--bme-hero-image-zoom",String(nextZoom));
+    heritageRoot?.style?.setProperty("--ep-hero-focus-x",`${focusX}%`);
+    heritageRoot?.style?.setProperty("--ep-hero-focus-y",`${focusY}%`);
+    heritageRoot?.style?.setProperty("--ep-hero-image-zoom",String(nextZoom));
+  }
 
   useEffect(() => {
     const stage = stageRef.current;
@@ -102,9 +136,17 @@ export default function MenuStudioDesignCanvas({ menu, design, language="en", ui
 
   useEffect(() => {
     const frameDocument = iframeRoot?.ownerDocument;
+    if (!frameDocument?.body) return;
+    frameDocument.body.dataset.heroEditable = heroEditable ? "true" : "false";
+    applyHeroVariables(frameDocument,heroFocusX,heroFocusY,heroZoom);
+  },[iframeRoot,heroEditable,heroFocusX,heroFocusY,heroZoom]);
+
+  useEffect(() => {
+    const frameDocument = iframeRoot?.ownerDocument;
     if (!frameDocument) return undefined;
     let hovered = null;
     let selected = null;
+    let dragged = false;
     const resolve = event => event.target?.closest?.(TARGET_SELECTOR) || null;
     const onPointerOver = event => {
       const node = resolve(event);
@@ -120,7 +162,54 @@ export default function MenuStudioDesignCanvas({ menu, design, language="en", ui
       hovered.classList.remove("beyond-design-target-hover");
       hovered = null;
     };
+    const onPointerDown = event => {
+      if (!heroEditable || event.button !== 0) return;
+      if (event.target?.closest?.("button,a,input,select,textarea,label")) return;
+      const hero = event.target?.closest?.(".bme-hero.bme-hero-mode-image,.bme-heritage-exact .ep-hero");
+      if (!hero) return;
+      const rect = hero.getBoundingClientRect();
+      heroDragRef.current = {
+        pointerId:event.pointerId,
+        startX:event.clientX,
+        startY:event.clientY,
+        focusX:heroFocusX,
+        focusY:heroFocusY,
+        width:Math.max(1,rect.width),
+        height:Math.max(1,rect.height),
+      };
+      dragged = false;
+      frameDocument.body?.classList.add("beyond-hero-dragging");
+      hero.setPointerCapture?.(event.pointerId);
+      window.dispatchEvent(new CustomEvent("beyond-menu-design-focus",{detail:{focus:"hero"}}));
+      event.preventDefault();
+    };
+    const onPointerMove = event => {
+      const drag = heroDragRef.current;
+      if (!drag || drag.pointerId !== event.pointerId) return;
+      const dx = event.clientX - drag.startX;
+      const dy = event.clientY - drag.startY;
+      if (Math.abs(dx) + Math.abs(dy) > 2) dragged = true;
+      const nextX = clampFocus(drag.focusX - (dx / drag.width) * 100 / heroZoom);
+      const nextY = clampFocus(drag.focusY - (dy / drag.height) * 100 / heroZoom);
+      applyHeroVariables(frameDocument,nextX,nextY,heroZoom);
+      patchHeroFraming({heroImageFocusX:nextX,heroImageFocusY:nextY});
+      event.preventDefault();
+    };
+    const endHeroDrag = event => {
+      const drag = heroDragRef.current;
+      if (!drag || drag.pointerId !== event.pointerId) return;
+      heroDragRef.current = null;
+      frameDocument.body?.classList.remove("beyond-hero-dragging");
+      event.target?.releasePointerCapture?.(event.pointerId);
+      event.preventDefault();
+    };
     const onClick = event => {
+      if (dragged) {
+        dragged = false;
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
       const node = resolve(event);
       const focus = targetName(node);
       if (!node || !focus) return;
@@ -131,15 +220,25 @@ export default function MenuStudioDesignCanvas({ menu, design, language="en", ui
     };
     frameDocument.addEventListener("pointerover",onPointerOver,true);
     frameDocument.addEventListener("pointerout",onPointerOut,true);
+    frameDocument.addEventListener("pointerdown",onPointerDown,true);
+    frameDocument.addEventListener("pointermove",onPointerMove,true);
+    frameDocument.addEventListener("pointerup",endHeroDrag,true);
+    frameDocument.addEventListener("pointercancel",endHeroDrag,true);
     frameDocument.addEventListener("click",onClick,true);
     return () => {
       hovered?.classList.remove("beyond-design-target-hover");
       selected?.classList.remove("beyond-design-target-selected");
+      heroDragRef.current = null;
+      frameDocument.body?.classList.remove("beyond-hero-dragging");
       frameDocument.removeEventListener("pointerover",onPointerOver,true);
       frameDocument.removeEventListener("pointerout",onPointerOut,true);
+      frameDocument.removeEventListener("pointerdown",onPointerDown,true);
+      frameDocument.removeEventListener("pointermove",onPointerMove,true);
+      frameDocument.removeEventListener("pointerup",endHeroDrag,true);
+      frameDocument.removeEventListener("pointercancel",endHeroDrag,true);
       frameDocument.removeEventListener("click",onClick,true);
     };
-  },[iframeRoot,design?.template,design?.layout?.presentation]);
+  },[iframeRoot,design?.template,design?.layout?.presentation,heroEditable,heroFocusX,heroFocusY,heroZoom,patchDesign]);
 
   useEffect(() => {
     const frame = iframeRef.current;
@@ -180,6 +279,13 @@ export default function MenuStudioDesignCanvas({ menu, design, language="en", ui
     setFitMode(false);
     setZoom(1);
   }
+  function changeHeroZoom(delta) {
+    const next = clampHeroZoom(Number((heroZoom + delta).toFixed(2)));
+    patchHeroFraming({heroImageZoom:next});
+  }
+  function resetHeroFraming() {
+    patchHeroFraming({heroImageZoom:1,heroImageFocusX:50,heroImageFocusY:50});
+  }
 
   return <div className={`studio-v3-design-canvas-workspace${compact ? " compact" : ""}`}>
     <div className="studio-v3-design-canvas-toolbar">
@@ -202,6 +308,13 @@ export default function MenuStudioDesignCanvas({ menu, design, language="en", ui
     </div>
 
     <div className="studio-v3-design-canvas-stage" ref={stageRef}>
+      {heroEditable ? <div className="studio-v3-design-canvas-hero-tools" role="group" aria-label={copy.heroZoom}>
+        <span className="hero-tools-hint">↔ {copy.heroDrag}</span>
+        <button type="button" onClick={()=>changeHeroZoom(-.1)} aria-label={copy.zoomOut}>−</button>
+        <b>{heroZoom.toFixed(1)}×</b>
+        <button type="button" onClick={()=>changeHeroZoom(.1)} aria-label={copy.zoomIn}>+</button>
+        <button type="button" className="hero-tools-reset" onClick={resetHeroFraming}>{copy.heroReset}</button>
+      </div> : null}
       <div className="studio-v3-design-canvas-size-label">{device.width} × {device.height}</div>
       <div className="studio-v3-design-canvas-holder" style={holderStyle}>
         <div className={`studio-v3-design-device-frame ${deviceKey}`} style={deviceStyle}>
