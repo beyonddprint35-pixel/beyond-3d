@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import MenuRenderer from "../renderer/MenuRenderer";
 import "./MenuStudioPreviewStage.css";
 import "./MenuStudioPreviewPan.css";
+import "./MenuStudioPreviewAccessibility.css";
 
 const DEVICE_PRESETS = Object.freeze({
   mobile:{ width:390, height:844, outerWidth:422, outerHeight:876 },
