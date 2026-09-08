@@ -1,6 +1,6 @@
 /* Global Studio viewport contract.
-   Desktop Studio is pinned to the viewport and each pane owns its own scroll.
-   Mobile is deliberately excluded from that contract and uses native page/touch scrolling. */
+   Only desktop Content Studio is pinned to the viewport. Full-page Studio
+   routes use native document scrolling on desktop and mobile. */
 html.menu-studio-viewport-lock,
 body.menu-studio-viewport-lock{
   width:100%;
@@ -91,28 +91,29 @@ body.menu-studio-viewport-lock .menu-content-v2-mobile-visibility > input[type="
   pointer-events:none!important;
 }
 
-body.menu-studio-viewport-lock .menu-design-v2,
-body.menu-studio-viewport-lock .menu-preview-v2,
-body.menu-studio-viewport-lock .menu-analytics-v2,
-body.menu-studio-viewport-lock .menu-publish-v2{
-  width:100%!important;
-  height:100vh!important;
-  height:100dvh!important;
-  min-height:0!important;
-  max-height:100dvh!important;
-  overflow:hidden!important;
-  overscroll-behavior:contain;
-  overflow-anchor:none;
+/* Full-page Studio screens own the document, not a locked internal viewport. */
+body:not(.menu-studio-viewport-lock) #root{
+  height:auto!important;
+  min-height:100dvh!important;
+  max-height:none!important;
+  overflow:visible!important;
+}
+body:not(.menu-studio-viewport-lock) .menu-design-v2,
+body:not(.menu-studio-viewport-lock) .menu-preview-v2,
+body:not(.menu-studio-viewport-lock) .menu-analytics-v2,
+body:not(.menu-studio-viewport-lock) .menu-publish-v2,
+body:not(.menu-studio-viewport-lock) .ai-dish-v1{
+  height:auto!important;
+  min-height:100dvh!important;
+  max-height:none!important;
+  overflow-x:hidden!important;
+  overflow-y:visible!important;
+  overscroll-behavior-y:auto!important;
+}
+body:not(.menu-studio-viewport-lock) [class*="studio-v3"]{
+  max-height:none!important;
 }
 
-body.menu-studio-viewport-lock [class*="studio-v3"]{
-  max-height:100dvh;
-}
-
-/* Universal mobile scroll contract for the complete Menu Studio.
-   Do not pin html/body/root on phones. This applies to every Studio tab and
-   survives route changes, browser chrome resizing, iPhone mirroring and
-   orientation changes. Desktop rules above remain untouched. */
 @media (max-width:850px){
   html,
   body{
@@ -136,7 +137,8 @@ body.menu-studio-viewport-lock [class*="studio-v3"]{
   .menu-design-v2,
   .menu-preview-v2,
   .menu-analytics-v2,
-  .menu-publish-v2{
+  .menu-publish-v2,
+  .ai-dish-v1{
     height:auto!important;
     min-height:100dvh!important;
     max-height:none!important;
