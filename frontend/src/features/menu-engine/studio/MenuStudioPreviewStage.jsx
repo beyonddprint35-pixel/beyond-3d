@@ -71,6 +71,15 @@ function DeviceIcon({ type }) {
   return <span className={`studio-v3-preview-device-icon ${type}`} aria-hidden="true"><i/></span>;
 }
 
+function menuStatusBarStyle(design) {
+  const background = String(design?.theme?.background || "#ffffff").trim() || "#ffffff";
+  const foreground = String(design?.theme?.text || "#050506").trim() || "#050506";
+  return {
+    "--preview-status-bg":background,
+    "--preview-status-fg":foreground,
+  };
+}
+
 function clonePreviewStyles(targetDocument) {
   targetDocument.head.querySelectorAll("[data-beyond-customer-preview-style]").forEach(node => node.remove());
 
@@ -110,7 +119,7 @@ function PreviewContent({ menu, design, language }) {
       title="Customer menu"
       srcDoc={PREVIEW_DOCUMENT}
       onLoad={prepareFrame}
-      style={{width:"100%",height:"100%",display:"block",border:0,background:"#fff"}}
+      style={{width:"100%",height:"100%",display:"block",border:0,background:design?.theme?.background || "#fff"}}
     />
     {iframeRoot ? createPortal(
       <MenuRenderer menu={menu} design={design} initialLanguage={language}/>,
@@ -146,7 +155,8 @@ function PhoneStatusBar() {
 }
 
 function MobileFrame({ menu, design, language, style }) {
-  return <div className="studio-v3-preview-device-shell mobile" style={style}>
+  const themedStyle = { ...style, ...menuStatusBarStyle(design) };
+  return <div className="studio-v3-preview-device-shell mobile" style={themedStyle}>
     <div className="studio-v3-preview-phone-hardware">
       <PhoneStatusBar/>
       <div className="studio-v3-preview-device-screen">
