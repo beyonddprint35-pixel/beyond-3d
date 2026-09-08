@@ -35,7 +35,7 @@ export default function MenuStudioHeader({ stage, language, onLanguageChange, me
     </nav>
     <div className={`${prefix}-top-actions`}>
       <div className="menu-studio-header-controls">
-        <StudioLanguageMenu value={language} onChange={onLanguageChange} label={t.language} compact />
+        <StudioLanguageMenu value={language} onChange={onLanguageChange} label={t.language} compact showThemeToggle={false} />
         <button type="button" className="studio-theme-toggle" aria-label={theme === "dark" ? t.light : t.dark} title={theme === "dark" ? t.light : t.dark} onClick={() => setBeyondTheme(theme === "dark" ? "light" : "dark")}>{theme === "dark" ? <Sun size={17} /> : <Moon size={17} />}</button>
       </div>
       {saveLabel ? <div className={`${prefix}-save`}><span className={saveState === "saved" ? "ok" : ""} /><strong>{saveLabel}</strong></div> : null}
