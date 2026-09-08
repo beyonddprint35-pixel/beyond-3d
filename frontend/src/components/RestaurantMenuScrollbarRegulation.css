@@ -1,0 +1,74 @@
+/* ==========================================================
+   BEYOND CUSTOMER MENU — SCROLLBAR REGULATION
+
+   Menus must remain fully scrollable, but mobile/browser scrollbar
+   chrome should not be visible. This keeps the real customer menu and
+   Studio device previews visually identical to a native mobile menu.
+   ========================================================== */
+
+/* Studio Preview: scrolling remains enabled inside the simulated device,
+   but no vertical or horizontal scrollbar is drawn. */
+.studio-v3-preview-device-screen,
+.studio-v3-preview-v2-stage,
+.studio-v3-preview-device-screen .bme-menu,
+.studio-v3-preview-device-screen .bme-content,
+.studio-v3-preview-device-screen .bme-category-nav,
+.studio-v3-preview-device-screen .ep-page,
+.studio-v3-preview-device-screen .ep-app,
+.studio-v3-preview-device-screen .ep-menu-list,
+.studio-v3-preview-device-screen .ep-tabs-wrap,
+.studio-v3-preview-device-screen .ep-tabs {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.studio-v3-preview-device-screen::-webkit-scrollbar,
+.studio-v3-preview-v2-stage::-webkit-scrollbar,
+.studio-v3-preview-device-screen .bme-menu::-webkit-scrollbar,
+.studio-v3-preview-device-screen .bme-content::-webkit-scrollbar,
+.studio-v3-preview-device-screen .bme-category-nav::-webkit-scrollbar,
+.studio-v3-preview-device-screen .ep-page::-webkit-scrollbar,
+.studio-v3-preview-device-screen .ep-app::-webkit-scrollbar,
+.studio-v3-preview-device-screen .ep-menu-list::-webkit-scrollbar,
+.studio-v3-preview-device-screen .ep-tabs-wrap::-webkit-scrollbar,
+.studio-v3-preview-device-screen .ep-tabs::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
+}
+
+/* Shared renderer surfaces. This also hides horizontal category-nav bars
+   without preventing swipe/trackpad scrolling. */
+.bme-category-nav,
+.bme-content,
+.ep-tabs-wrap,
+.ep-tabs,
+.ep-menu-list {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.bme-category-nav::-webkit-scrollbar,
+.bme-content::-webkit-scrollbar,
+.ep-tabs-wrap::-webkit-scrollbar,
+.ep-tabs::-webkit-scrollbar,
+.ep-menu-list::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+/* Public /menu/:slug page. The browser page itself is the vertical scroll
+   container, so hide only its visual scrollbar. Scrolling stays native. */
+html.beyond-public-menu-scrollbarless,
+html.beyond-public-menu-scrollbarless body {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+html.beyond-public-menu-scrollbarless::-webkit-scrollbar,
+html.beyond-public-menu-scrollbarless body::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
+}
