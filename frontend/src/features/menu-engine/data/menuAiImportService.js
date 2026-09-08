@@ -156,7 +156,7 @@ export async function getMenuImportSession() {
   return data?.session || null;
 }
 
-export async function importMenuWithAi({ session, files = [], text = "", languages = [] }) {
+export async function importMenuWithAi({ session, files = [], text = "", languages = [], extractFunctionName = "" }) {
   if (!session?.user?.id || !session?.access_token) throw new Error("Sign in is required to use AI menu import.");
   if (!languages.length) throw new Error("Choose at least one menu language.");
   if (!String(text || "").trim() && !files.length) throw new Error("Upload your menu or paste its content first.");
@@ -193,7 +193,7 @@ export async function importMenuWithAi({ session, files = [], text = "", languag
   const imageOnly = files.length > 0
     && files.every((file) => file.type?.startsWith("image/"))
     && !String(text || "").trim();
-  const functionName = imageOnly ? "menu-ai-extract-batch-test" : "menu-ai-extract";
+  const functionName = imageOnly ? "menu-ai-extract-batch-test" : (extractFunctionName || "menu-ai-extract");
 
   const { data, error: functionError } = await supabase.functions.invoke(functionName, {
     body: {
