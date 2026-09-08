@@ -69,7 +69,7 @@ export default function StudioLanguageMenu({
   }
 
   return (
-    <div ref={rootRef} className={`studio-language-menu ${compact ? "is-compact" : ""} ${open ? "is-open" : ""} ${className}`.trim()}>
+    <div ref={rootRef} className={`studio-language-menu ${theme === "dark" ? "is-dark-theme" : "is-light-theme"} ${compact ? "is-compact" : ""} ${open ? "is-open" : ""} ${className}`.trim()}>
       <button
         type="button"
         className="studio-language-menu-trigger"
