@@ -9,7 +9,7 @@ const CORS = {
 const JSON_HEADERS = { ...CORS, "Content-Type": "application/json; charset=utf-8" };
 const MAX_RESPONSE_HTML_CHARS = 6_000_000;
 const MAX_HTML_CHARS = 2_500_000;
-const MAX_SOURCE_CHARS = 49_000;
+const MAX_SOURCE_CHARS = 110_000;
 const MAX_PAGES = 4;
 const FETCH_TIMEOUT_MS = 12_000;
 const MENU_TERMS = [
