@@ -132,6 +132,30 @@ body.dark .menu-design-v2-variant-button.active {
   color: #aebdf6;
 }
 
+/* Restaurant-owner wording: the underlying saved slots remain A/B for data
+   compatibility, but the interface presents them simply as Option 1 / Option 2. */
+.menu-design-v2 .menu-design-v2-variant-letter,
+.menu-design-v2 .menu-design-v2-variant-button strong,
+.menu-design-v2 .studio-v3-design-canvas-title strong {
+  font-size: 0;
+}
+.menu-design-v2 .menu-design-v2-variant-button:nth-child(1) .menu-design-v2-variant-letter::before { content: "1"; font-size: 12px; }
+.menu-design-v2 .menu-design-v2-variant-button:nth-child(2) .menu-design-v2-variant-letter::before { content: "2"; font-size: 12px; }
+
+.menu-design-v2[lang="en"] .menu-design-v2-variant-button:nth-child(1) strong::before { content: "Option 1"; font-size: 12px; }
+.menu-design-v2[lang="en"] .menu-design-v2-variant-button:nth-child(2) strong::before { content: "Option 2"; font-size: 12px; }
+.menu-design-v2[lang="he"] .menu-design-v2-variant-button:nth-child(1) strong::before { content: "אפשרות 1"; font-size: 12px; }
+.menu-design-v2[lang="he"] .menu-design-v2-variant-button:nth-child(2) strong::before { content: "אפשרות 2"; font-size: 12px; }
+.menu-design-v2[lang="ar"] .menu-design-v2-variant-button:nth-child(1) strong::before { content: "الخيار 1"; font-size: 12px; }
+.menu-design-v2[lang="ar"] .menu-design-v2-variant-button:nth-child(2) strong::before { content: "الخيار 2"; font-size: 12px; }
+
+.menu-design-v2[lang="en"]:has(.menu-design-v2-variant-button:nth-child(1).active) .studio-v3-design-canvas-title strong::before { content: "LIVE DESIGN · OPTION 1"; font-size: 13px; }
+.menu-design-v2[lang="en"]:has(.menu-design-v2-variant-button:nth-child(2).active) .studio-v3-design-canvas-title strong::before { content: "LIVE DESIGN · OPTION 2"; font-size: 13px; }
+.menu-design-v2[lang="he"]:has(.menu-design-v2-variant-button:nth-child(1).active) .studio-v3-design-canvas-title strong::before { content: "עיצוב חי · אפשרות 1"; font-size: 13px; }
+.menu-design-v2[lang="he"]:has(.menu-design-v2-variant-button:nth-child(2).active) .studio-v3-design-canvas-title strong::before { content: "עיצוב חי · אפשרות 2"; font-size: 13px; }
+.menu-design-v2[lang="ar"]:has(.menu-design-v2-variant-button:nth-child(1).active) .studio-v3-design-canvas-title strong::before { content: "تصميم مباشر · الخيار 1"; font-size: 13px; }
+.menu-design-v2[lang="ar"]:has(.menu-design-v2-variant-button:nth-child(2).active) .studio-v3-design-canvas-title strong::before { content: "تصميم مباشر · الخيار 2"; font-size: 13px; }
+
 @media (max-width: 720px) {
   .menu-design-v2-variants {
     width: calc(100% - 20px);
