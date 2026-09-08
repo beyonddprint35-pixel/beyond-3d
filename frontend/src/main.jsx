@@ -26,6 +26,7 @@ import "./pages/MenuStudioV3Controls.css";
 import "./pages/MenuContentStudioV2FinalPolish.css";
 import "./pages/MenuContentStudioV2FinishingPolish.css";
 import "./pages/MenuContentStudioV2DarkModeFix.css";
+import "./pages/MenuAiDishImagesV1DarkFix.css";
 import "./pages/menuStudioViewportLock.css";
 import "./pages/menuStudioDarkModeRegulation.css";
 import "./features/menu-engine/renderer/menuTypographyGuard.css";
