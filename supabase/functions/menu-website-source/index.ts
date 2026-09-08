@@ -7,8 +7,9 @@ const CORS = {
 };
 
 const JSON_HEADERS = { ...CORS, "Content-Type": "application/json; charset=utf-8" };
-const MAX_HTML_CHARS = 1_250_000;
-const MAX_SOURCE_CHARS = 45_000;
+const MAX_RESPONSE_HTML_CHARS = 6_000_000;
+const MAX_HTML_CHARS = 2_500_000;
+const MAX_SOURCE_CHARS = 49_000;
 const MAX_PAGES = 4;
 const FETCH_TIMEOUT_MS = 12_000;
 const MENU_TERMS = [
@@ -63,6 +64,26 @@ async function assertPublicUrl(url: URL) {
   }
 }
 
+function reduceHtmlForMenuExtraction(rawHtml: string) {
+  // Large restaurant sites often embed megabytes of JavaScript, SVG or CSS before
+  // the later menu categories. The old scanner cut the raw response first, so a
+  // perfectly readable page could be chopped after the first categories. Remove
+  // non-content payloads before applying the safety cap and preserve JSON-LD.
+  const structuredScripts = Array.from(rawHtml.matchAll(/<script\b[^>]*type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>/gi))
+    .map((match) => match[0])
+    .join("\n");
+
+  let html = rawHtml
+    .replace(/<!--[\s\S]*?-->/g, " ")
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, " ")
+    .replace(/<noscript\b[^>]*>[\s\S]*?<\/noscript>/gi, " ")
+    .replace(/<svg\b[^>]*>[\s\S]*?<\/svg>/gi, " ");
+
+  if (structuredScripts) html += `\n${structuredScripts}`;
+  return html.slice(0, MAX_HTML_CHARS);
+}
+
 async function fetchHtml(inputUrl: URL, redirects = 0): Promise<{ url: URL; html: string }> {
   if (redirects > 4) throw new Error("This website redirects too many times.");
   await assertPublicUrl(inputUrl);
@@ -98,10 +119,11 @@ async function fetchHtml(inputUrl: URL, redirects = 0): Promise<{ url: URL; html
     throw new Error("This link does not point to a readable website page.");
   }
   const declaredLength = Number(response.headers.get("content-length") || 0);
-  if (declaredLength > 2_500_000) throw new Error("This website page is too large to import safely.");
+  if (declaredLength > MAX_RESPONSE_HTML_CHARS) throw new Error("This website page is too large to import safely.");
 
-  const html = (await response.text()).slice(0, MAX_HTML_CHARS);
-  return { url: inputUrl, html };
+  const rawHtml = await response.text();
+  if (rawHtml.length > MAX_RESPONSE_HTML_CHARS) throw new Error("This website page is too large to import safely.");
+  return { url: inputUrl, html: reduceHtmlForMenuExtraction(rawHtml) };
 }
 
 function decodeEntities(value: string) {
@@ -130,8 +152,10 @@ function visibleText(html: string) {
     .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, " ")
     .replace(/<noscript\b[^>]*>[\s\S]*?<\/noscript>/gi, " ")
     .replace(/<svg\b[^>]*>[\s\S]*?<\/svg>/gi, " ")
+    .replace(/<h[1-6]\b[^>]*>/gi, "\nMENU HEADING: ")
+    .replace(/<\/h[1-6]>/gi, "\n")
     .replace(/<(?:br|hr)\b[^>]*>/gi, "\n")
-    .replace(/<\/(?:p|div|section|article|header|footer|main|nav|li|ul|ol|h[1-6]|tr|table|figure|figcaption)>/gi, "\n")
+    .replace(/<\/(?:p|div|section|article|header|footer|main|nav|li|ul|ol|tr|table|figure|figcaption)>/gi, "\n")
     .replace(/<\/(?:td|th)>/gi, " | ")
     .replace(/<[^>]+>/g, " ");
 
@@ -206,7 +230,9 @@ Deno.serve(async (req: Request) => {
       chunks.push(`SOURCE PAGE: ${page.title}\nURL: ${page.url}\n${page.text}`);
     }
 
-    const text = chunks.join("\n\n---\n\n").slice(0, MAX_SOURCE_CHARS).trim();
+    const completeText = chunks.join("\n\n---\n\n").trim();
+    const sourceTruncated = completeText.length > MAX_SOURCE_CHARS;
+    const text = completeText.slice(0, MAX_SOURCE_CHARS).trim();
     const priceSignals = (text.match(/(?:₪|\$|€|£|\b(?:ILS|NIS|USD|EUR|GBP)\b)\s*\d|\d[\d.,]*\s*(?:₪|\$|€|£)/gi) || []).length;
     const lowered = text.toLowerCase();
     const menuSignals = MENU_TERMS.reduce((count, term) => count + (lowered.includes(term.toLowerCase()) ? 1 : 0), 0);
@@ -224,6 +250,8 @@ Deno.serve(async (req: Request) => {
       sourceUrl: root.url.toString(),
       text,
       characters: text.length,
+      completeCharacters: completeText.length,
+      sourceTruncated,
       priceSignals,
       menuSignals,
       pages: pages.map(({ url, title }) => ({ url, title })),
