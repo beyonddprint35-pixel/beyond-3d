@@ -61,6 +61,10 @@ export async function importMenuWebsiteWithAi({ session, url, languages, onSourc
     text: source.text,
     languages,
     extractFunctionName: WEBSITE_EXTRACT_FUNCTION,
+    // Large website menus are already translated during chunk extraction. Any
+    // individual weak/missing translation is repaired later at field level after
+    // V3 adaptation, which cannot change the menu structure.
+    deferTranslationRepair: true,
   });
   return { ...result, websiteSource: source };
 }
