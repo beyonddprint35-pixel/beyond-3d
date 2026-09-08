@@ -3,12 +3,17 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const MODEL = "gpt-5.6-luna";
-const PIPELINE_VERSION = "v10-openai-file-id";
+const PIPELINE_VERSION = "v11-text-chunk-merge";
 const PRICE_INPUT = 0.20;
 const PRICE_CACHED_INPUT = 0.02;
 const PRICE_OUTPUT = 1.20;
 const MAX_OUTPUT_TOKENS = 24000;
 const RESPONSE_TIMEOUT_MS = 110000;
+const MAX_TEXT_CHARS = 120_000;
+const TEXT_CHUNK_TRIGGER_CHARS = 16_000;
+const TEXT_CHUNK_CHARS = 10_500;
+const TEXT_CHUNK_OVERLAP_CHARS = 900;
+const TEXT_CHUNK_CONCURRENCY = 3;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -169,6 +174,7 @@ function promptForMenu(requestedLanguages) {
     `Requested customer languages: ${requested}. ${fieldRules}\n\n` +
     `SOURCE ACCURACY RULES:\n` +
     `- Extract every clearly visible menu section and menu item; scan all pages from top to bottom.\n` +
+    `- Dense wine, beer, cocktail and drinks lists are menu content too. Never stop after the food section.\n` +
     `- Never invent dishes, ingredients, prices, sizes, origins, or missing words.\n` +
     `- Preserve prices exactly as printed. Do not confuse item numbers/codes with prices.\n` +
     `- If an item has one normal price, put it in price and return an empty price_options array.\n` +
@@ -200,6 +206,150 @@ function calculateAiCost(usage) {
   };
 }
 
+function combineAiCosts(costs = []) {
+  const totals = costs.reduce((out, cost) => {
+    out.openai_request_count += Number(cost?.openai_request_count || 0);
+    out.input_tokens += Number(cost?.input_tokens || 0);
+    out.cached_input_tokens += Number(cost?.cached_input_tokens || 0);
+    out.cache_write_tokens += Number(cost?.cache_write_tokens || 0);
+    out.output_tokens += Number(cost?.output_tokens || 0);
+    out.total_tokens += Number(cost?.total_tokens || 0);
+    out.estimated_cost_usd += Number(cost?.estimated_cost_usd || 0);
+    return out;
+  }, {
+    model: MODEL,
+    openai_request_count: 0,
+    input_tokens: 0,
+    cached_input_tokens: 0,
+    cache_write_tokens: 0,
+    output_tokens: 0,
+    total_tokens: 0,
+    estimated_cost_usd: 0,
+    cache_hit: false,
+  });
+  totals.estimated_cost_usd = Number(totals.estimated_cost_usd.toFixed(6));
+  return totals;
+}
+
+function normalizeIdentity(value) {
+  return String(value || "")
+    .normalize("NFKC")
+    .toLowerCase()
+    .replace(/[\u200e\u200f\u202a-\u202e]/g, "")
+    .replace(/[^a-z0-9\u0590-\u05ff\u0600-\u06ff]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function sectionIdentity(section) {
+  return normalizeIdentity(section?.name_en || section?.name_he || section?.name_ar);
+}
+
+function itemIdentity(item) {
+  const name = normalizeIdentity(item?.name_en || item?.name_he || item?.name_ar);
+  const options = Array.isArray(item?.price_options) ? item.price_options.map((option) => String(option?.price || "").trim()).join("/") : "";
+  return `${name}|${String(item?.price || "").trim()}|${options}`;
+}
+
+function mergeLocalizedRow(existing, incoming, fields) {
+  const next = { ...existing };
+  fields.forEach((field) => {
+    if (!String(next?.[field] || "").trim() && String(incoming?.[field] || "").trim()) next[field] = incoming[field];
+  });
+  if ((!Array.isArray(next.price_options) || !next.price_options.length) && Array.isArray(incoming?.price_options) && incoming.price_options.length) {
+    next.price_options = incoming.price_options;
+  }
+  return next;
+}
+
+function mergeMenuParts(menus, requestedLanguages) {
+  const merged = {
+    restaurant_name: "",
+    requested_languages: requestedLanguages,
+    detected_language: "unknown",
+    sections: [],
+    warnings: [],
+  };
+  const sectionMap = new Map();
+  const warningSet = new Set();
+  const detected = new Set();
+
+  menus.forEach((menu, menuIndex) => {
+    if (!merged.restaurant_name && String(menu?.restaurant_name || "").trim()) merged.restaurant_name = String(menu.restaurant_name).trim();
+    const language = String(menu?.detected_language || "").trim();
+    if (language && language !== "unknown") detected.add(language);
+    (Array.isArray(menu?.warnings) ? menu.warnings : []).forEach((warning) => {
+      const value = String(warning || "").trim();
+      if (value) warningSet.add(value);
+    });
+
+    (Array.isArray(menu?.sections) ? menu.sections : []).forEach((section, sectionIndex) => {
+      const identity = sectionIdentity(section) || `chunk-${menuIndex}-section-${sectionIndex}`;
+      let target = sectionMap.get(identity);
+      if (!target) {
+        target = { ...section, items: [] };
+        sectionMap.set(identity, target);
+        merged.sections.push(target);
+      } else {
+        target = mergeLocalizedRow(target, section, ["name_en", "name_he", "name_ar"]);
+        sectionMap.set(identity, target);
+        const targetIndex = merged.sections.findIndex((entry) => sectionIdentity(entry) === identity);
+        if (targetIndex >= 0) merged.sections[targetIndex] = target;
+      }
+
+      const existingItems = new Map((target.items || []).map((item, index) => [itemIdentity(item) || `existing-${index}`, index]));
+      (Array.isArray(section?.items) ? section.items : []).forEach((item, itemIndex) => {
+        const itemKey = itemIdentity(item) || `chunk-${menuIndex}-section-${sectionIndex}-item-${itemIndex}`;
+        const existingIndex = existingItems.get(itemKey);
+        if (existingIndex == null) {
+          target.items.push(item);
+          existingItems.set(itemKey, target.items.length - 1);
+        } else {
+          target.items[existingIndex] = mergeLocalizedRow(target.items[existingIndex], item, [
+            "name_en", "name_he", "name_ar",
+            "description_en", "description_he", "description_ar",
+            "origin_en", "origin_he", "origin_ar", "price",
+          ]);
+        }
+      });
+    });
+  });
+
+  merged.warnings = [...warningSet];
+  merged.detected_language = detected.size === 1 ? [...detected][0] : detected.size > 1 ? "mixed" : "unknown";
+  return merged;
+}
+
+function splitMenuText(text) {
+  const source = String(text || "").trim();
+  if (source.length <= TEXT_CHUNK_TRIGGER_CHARS) return [source];
+  const chunks = [];
+  let cursor = 0;
+
+  while (cursor < source.length) {
+    let end = Math.min(source.length, cursor + TEXT_CHUNK_CHARS);
+    if (end < source.length) {
+      const minimumBoundary = cursor + Math.floor(TEXT_CHUNK_CHARS * 0.7);
+      const headingBoundary = source.lastIndexOf("\nMENU HEADING:", end);
+      const paragraphBoundary = source.lastIndexOf("\n\n", end);
+      const lineBoundary = source.lastIndexOf("\n", end);
+      const boundary = [headingBoundary, paragraphBoundary, lineBoundary].find((value) => value >= minimumBoundary);
+      if (boundary && boundary > cursor) end = boundary;
+    }
+
+    let start = cursor;
+    if (chunks.length) {
+      start = Math.max(0, cursor - TEXT_CHUNK_OVERLAP_CHARS);
+      const firstLine = source.indexOf("\n", start);
+      if (firstLine >= start && firstLine < cursor) start = firstLine + 1;
+    }
+    const chunk = source.slice(start, end).trim();
+    if (chunk) chunks.push(chunk);
+    cursor = end;
+  }
+  return chunks;
+}
+
 async function extractMenu(openAiKey, content, requestedLanguages) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), RESPONSE_TIMEOUT_MS);
@@ -217,7 +367,7 @@ async function extractMenu(openAiKey, content, requestedLanguages) {
         reasoning: { effort: "none" },
         max_output_tokens: MAX_OUTPUT_TOKENS,
         input: [{ role: "user", content: [{ type: "input_text", text: promptForMenu(requestedLanguages) }, ...content] }],
-        text: { format: { type: "json_schema", name: "beyond_menu_pdf_import_v10", strict: true, schema: MENU_SCHEMA } },
+        text: { format: { type: "json_schema", name: "beyond_menu_pdf_import_v11", strict: true, schema: MENU_SCHEMA } },
       }),
     });
     const data = await response.json();
@@ -251,6 +401,27 @@ async function extractMenu(openAiKey, content, requestedLanguages) {
   } finally {
     clearTimeout(timer);
   }
+}
+
+async function extractLargeTextMenu(openAiKey, menuText, requestedLanguages) {
+  const chunks = splitMenuText(menuText);
+  const results = [];
+  for (let offset = 0; offset < chunks.length; offset += TEXT_CHUNK_CONCURRENCY) {
+    const batch = chunks.slice(offset, offset + TEXT_CHUNK_CONCURRENCY);
+    const batchResults = await Promise.all(batch.map((chunk, index) => {
+      const chunkNumber = offset + index + 1;
+      return extractMenu(openAiKey, [{
+        type: "input_text",
+        text: `MENU TEXT PART ${chunkNumber} OF ${chunks.length}. This is one part of the same restaurant menu. Extract every menu item visible in this part, including dense wine/drink lists. Overlap with adjacent parts may exist; do not invent missing context.\n\n${chunk}`,
+      }], requestedLanguages);
+    }));
+    results.push(...batchResults);
+  }
+  return {
+    menu: mergeMenuParts(results.map((result) => result.menu), requestedLanguages),
+    aiCost: combineAiCosts(results.map((result) => result.aiCost)),
+    chunkCount: chunks.length,
+  };
 }
 
 async function persistAttemptUsage(adminClient, attemptId, aiCost) {
@@ -294,6 +465,7 @@ Deno.serve(async (req) => {
   let projectId = "";
   let sourceType = "text";
   let aiCost = null;
+  let chunkCount = 1;
   const uploadedOpenAiFileIds = [];
 
   try {
@@ -307,7 +479,7 @@ Deno.serve(async (req) => {
     if (!requestedLanguages.length) return json({ error: "Choose at least one menu language before generating." }, 400);
     if (!menuText && !files.length) return json({ error: "Upload a PDF or menu photo, or paste/write your menu." }, 400);
     if (menuText && menuText.length < 10) return json({ error: "Please provide a little more menu text before generating." }, 400);
-    if (menuText.length > 50000) return json({ error: "Menu text is too long." }, 400);
+    if (menuText.length > MAX_TEXT_CHARS) return json({ error: "Menu text is too long." }, 400);
     if (files.length > 12) return json({ error: "Upload up to 12 menu files at a time." }, 400);
 
     let totalFileSize = 0;
@@ -328,19 +500,25 @@ Deno.serve(async (req) => {
 
     await adminClient.from("menu_projects").update({ status: "processing", source_type: sourceType, last_error: null }).eq("id", projectId);
 
-    const content = [];
-    if (menuText) content.push({ type: "input_text", text: `MENU TEXT PROVIDED BY USER:\n\n${menuText}` });
-    for (const file of files) {
-      if (file.mimeType === "application/pdf") {
-        const fileId = await uploadOpenAiFile(openAiKey, file);
-        uploadedOpenAiFileIds.push(fileId);
-        content.push({ type: "input_file", file_id: fileId });
-      } else {
-        content.push({ type: "input_image", image_url: `data:${file.mimeType};base64,${file.base64}`, detail: "high" });
+    let result;
+    if (!files.length && menuText.length > TEXT_CHUNK_TRIGGER_CHARS) {
+      result = await extractLargeTextMenu(openAiKey, menuText, requestedLanguages);
+      chunkCount = result.chunkCount || 1;
+    } else {
+      const content = [];
+      if (menuText) content.push({ type: "input_text", text: `MENU TEXT PROVIDED BY USER:\n\n${menuText}` });
+      for (const file of files) {
+        if (file.mimeType === "application/pdf") {
+          const fileId = await uploadOpenAiFile(openAiKey, file);
+          uploadedOpenAiFileIds.push(fileId);
+          content.push({ type: "input_file", file_id: fileId });
+        } else {
+          content.push({ type: "input_image", image_url: `data:${file.mimeType};base64,${file.base64}`, detail: "high" });
+        }
       }
+      result = await extractMenu(openAiKey, content, requestedLanguages);
     }
 
-    const result = await extractMenu(openAiKey, content, requestedLanguages);
     aiCost = result.aiCost;
     const menu = result.menu;
     menu.requested_languages = requestedLanguages;
@@ -359,6 +537,7 @@ Deno.serve(async (req) => {
         requested_languages: requestedLanguages,
         text_length: menuText.length,
         file_count: files.length,
+        text_chunk_count: chunkCount,
         extracted_section_count: Array.isArray(menu.sections) ? menu.sections.length : 0,
         extracted_item_count: itemCount,
         ai_cost: aiCost,
@@ -377,7 +556,7 @@ Deno.serve(async (req) => {
       projectId,
       menu,
       aiCost,
-      diagnostics: { pipelineVersion: PIPELINE_VERSION, model: MODEL, itemCount, temporaryPdfFiles: uploadedOpenAiFileIds.length },
+      diagnostics: { pipelineVersion: PIPELINE_VERSION, model: MODEL, itemCount, textChunkCount: chunkCount, temporaryPdfFiles: uploadedOpenAiFileIds.length },
       unlimited: Boolean(reservation?.unlimited),
       remainingAttempts: finish?.remaining_attempts ?? reservation?.remaining_attempts ?? null,
     });
