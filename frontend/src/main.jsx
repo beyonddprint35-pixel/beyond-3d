@@ -20,6 +20,7 @@ import installMenuTranslationReviewOverlay from "./pages/menuTranslationReviewOv
 import installMenuStudioViewportLock from "./pages/menuStudioViewportLock";
 import installMenuAiOnlineReferenceOverlay from "./pages/menuAiOnlineReferenceOverlay";
 import installMenuAiImageViewerOverlay from "./pages/menuAiImageViewerOverlay";
+import installMenuAiMenuCropOverlay from "./pages/menuAiMenuCropOverlay";
 import "./components/BeyondMenuPlatform.css";
 import "./components/BeyondLiveMenuDesign.css";
 import "./components/BeyondLiveMenuDesignMobilePatch.css";
@@ -54,6 +55,7 @@ installMenuTranslationReviewOverlay();
 installMenuStudioViewportLock();
 installMenuAiOnlineReferenceOverlay();
 installMenuAiImageViewerOverlay();
+installMenuAiMenuCropOverlay();
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
