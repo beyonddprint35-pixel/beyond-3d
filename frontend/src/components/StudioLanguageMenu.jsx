@@ -1,8 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Check, ChevronDown, Languages } from "lucide-react";
+import { Check, ChevronDown, Languages, Moon, Sun } from "lucide-react";
 
 import { STUDIO_LANGUAGES, studioLanguageMeta } from "../features/menu-engine/studio/studioLanguage";
+import { applyStoredBeyondTheme, setBeyondTheme } from "../lib/beyondThemeBootstrap";
 import "./StudioLanguageMenu.css";
+
+const THEME_COPY = {
+  en: { light: "Switch to light mode", dark: "Switch to dark mode" },
+  he: { light: "מעבר למצב בהיר", dark: "מעבר למצב כהה" },
+  ar: { light: "التبديل إلى الوضع الفاتح", dark: "التبديل إلى الوضع الداكن" },
+};
 
 export default function StudioLanguageMenu({
   value,
@@ -13,6 +20,7 @@ export default function StudioLanguageMenu({
   allowedLanguages = null,
 }) {
   const [open, setOpen] = useState(false);
+  const [theme, setTheme] = useState(() => applyStoredBeyondTheme());
   const rootRef = useRef(null);
   const options = useMemo(() => {
     // Compact selectors live in the Studio app chrome. They are interface
@@ -25,6 +33,8 @@ export default function StudioLanguageMenu({
     return filtered.length ? filtered : STUDIO_LANGUAGES;
   }, [allowedLanguages, compact]);
   const active = options.find((language) => language.code === value) || studioLanguageMeta(value) || options[0];
+  const themeCopy = THEME_COPY[value] || THEME_COPY.en;
+  const themeLabel = theme === "dark" ? themeCopy.light : themeCopy.dark;
 
   useEffect(() => {
     if (!open) return undefined;
@@ -41,6 +51,21 @@ export default function StudioLanguageMenu({
       window.removeEventListener("keydown", onKeyDown);
     };
   }, [open]);
+
+  useEffect(() => {
+    const refresh = (event) => setTheme(event?.detail?.theme || applyStoredBeyondTheme());
+    window.addEventListener("beyond-theme-change", refresh);
+    window.addEventListener("storage", refresh);
+    return () => {
+      window.removeEventListener("beyond-theme-change", refresh);
+      window.removeEventListener("storage", refresh);
+    };
+  }, []);
+
+  function toggleTheme() {
+    setOpen(false);
+    setTheme(setBeyondTheme(theme === "dark" ? "light" : "dark"));
+  }
 
   return (
     <div ref={rootRef} className={`studio-language-menu ${compact ? "is-compact" : ""} ${open ? "is-open" : ""} ${className}`.trim()}>
@@ -60,6 +85,18 @@ export default function StudioLanguageMenu({
         <span className="studio-language-menu-code">{active.short}</span>
         <ChevronDown size={14} aria-hidden="true" />
       </button>
+
+      {compact ? (
+        <button
+          type="button"
+          className="studio-theme-toggle studio-language-menu-theme-toggle"
+          aria-label={themeLabel}
+          title={themeLabel}
+          onClick={toggleTheme}
+        >
+          {theme === "dark" ? <Sun size={17} aria-hidden="true" /> : <Moon size={17} aria-hidden="true" />}
+        </button>
+      ) : null}
 
       {open ? (
         <div className="studio-language-menu-list" role="listbox" aria-label={label}>
