@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Maximize2, Move, RotateCcw, ZoomIn, ZoomOut } from "lucide-react";
 import "./HeroImageFramingControl.css";
 
@@ -38,17 +38,49 @@ function clamp(value, min, max, fallback) {
   return Math.min(max, Math.max(min, parsed));
 }
 
+function applyFramingToLivePreview({ focusX, focusY, zoom }) {
+  if (typeof document === "undefined") return;
+  const objectPosition = `${focusX}% ${focusY}%`;
+  const transform = `scale(${zoom})`;
+
+  document.querySelectorAll(".studio-v3-design-device-iframe").forEach((frame) => {
+    const frameDocument = frame?.contentDocument;
+    if (!frameDocument) return;
+
+    frameDocument
+      .querySelectorAll(".bme-hero-media-image img, .ep-hero-background-image")
+      .forEach((image) => {
+        image.style.setProperty("object-position", objectPosition, "important");
+        image.style.setProperty("transform", transform, "important");
+        image.style.setProperty("transform-origin", objectPosition, "important");
+      });
+  });
+}
+
 export default function HeroImageFramingControl({ design, language = "en", patchDesign }) {
   const dragRef = useRef(null);
   const t = COPY[language] || COPY.en;
   const brand = design?.brand || {};
   const imageUrl = String(brand.heroImageUrl || "");
   const enabled = brand.heroMediaMode === "image" && Boolean(imageUrl);
-  if (!enabled) return null;
-
   const zoom = clamp(brand.heroImageZoom, 1, 3, 1);
   const focusX = clamp(brand.heroImageFocusX, 0, 100, 50);
   const focusY = clamp(brand.heroImageFocusY, 0, 100, 50);
+
+  // The live Design Studio preview is rendered through a React portal inside a
+  // srcDoc iframe. React correctly receives the updated design, but browser
+  // stylesheet cloning can leave object-position/transform on the hero image
+  // stale until the iframe is rebuilt. Mirror the persisted framing directly
+  // onto the live hero image so dragging and sliders are truly WYSIWYG.
+  useEffect(() => {
+    if (!enabled) return undefined;
+    const framing = { focusX, focusY, zoom };
+    applyFramingToLivePreview(framing);
+    const animationFrame = window.requestAnimationFrame(() => applyFramingToLivePreview(framing));
+    return () => window.cancelAnimationFrame(animationFrame);
+  }, [enabled, imageUrl, focusX, focusY, zoom]);
+
+  if (!enabled) return null;
 
   function patchFraming(values) {
     patchDesign?.((current) => ({
@@ -85,6 +117,7 @@ export default function HeroImageFramingControl({ design, language = "en", patch
     const nextX = clamp(drag.focusX - (dx / drag.width) * 100 / zoom, 0, 100, 50);
     const nextY = clamp(drag.focusY - (dy / drag.height) * 100 / zoom, 0, 100, 50);
     patchFraming({ heroImageFocusX: nextX, heroImageFocusY: nextY });
+    applyFramingToLivePreview({ focusX: nextX, focusY: nextY, zoom });
   }
 
   function endDrag(event) {
