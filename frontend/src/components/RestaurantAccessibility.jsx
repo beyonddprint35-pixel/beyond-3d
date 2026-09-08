@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import "./RestaurantAccessibility.css";
+import "./RestaurantAccessibilityMenuRegulation.css";
 
 const STORAGE_KEY = "beyondRestaurantAccessibilityV1";
 const DEFAULT_STATE = { font:0, contrast:false, dark:false, grayscale:false, readable:false, reducedMotion:false, links:false };
@@ -57,12 +58,14 @@ export default function RestaurantAccessibility({ restaurantName="Restaurant", l
     setPreviewPortalTarget(previewScreen?.parentElement||null);
   },[]);
   useEffect(()=>{
-    const root=document.documentElement; const body=document.body;
+    const ownerDocument=anchorRef.current?.ownerDocument||document;
+    const root=ownerDocument.documentElement;
+    const body=ownerDocument.body;
     [1,2,3,4].forEach(level=>body.classList.toggle(`restaurant-a11y-text-${level}`,settings.font===level));
     root.classList.toggle("restaurant-a11y-contrast",settings.contrast); root.classList.toggle("restaurant-a11y-dark",settings.dark);
     root.classList.toggle("restaurant-a11y-grayscale",settings.grayscale); root.classList.toggle("restaurant-a11y-readable",settings.readable);
     root.classList.toggle("restaurant-a11y-motion",settings.reducedMotion); root.classList.toggle("restaurant-a11y-links",settings.links);
-    try { localStorage.setItem(STORAGE_KEY,JSON.stringify(settings)); } catch {}
+    try { (ownerDocument.defaultView?.localStorage||localStorage).setItem(STORAGE_KEY,JSON.stringify(settings)); } catch {}
   },[settings]);
   useEffect(()=>{ const fn=()=>{setOpen(false);setStatementOpen(true)}; window.addEventListener("beyond-open-accessibility-statement",fn); return()=>window.removeEventListener("beyond-open-accessibility-statement",fn); },[]);
   useEffect(()=>{ const fn=e=>{if(e.key==="Escape"){setOpen(false);setStatementOpen(false)}}; document.addEventListener("keydown",fn); return()=>document.removeEventListener("keydown",fn); },[]);
