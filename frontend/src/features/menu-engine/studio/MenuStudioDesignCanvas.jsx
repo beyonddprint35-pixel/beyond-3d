@@ -21,17 +21,54 @@ const COPY = {
 const clamp = (value,min,max) => Math.min(max,Math.max(min,value));
 const clampFocus = value => clamp(Number.isFinite(Number(value)) ? Number(value) : 50,0,100);
 const clampHeroZoom = value => clamp(Number.isFinite(Number(value)) ? Number(value) : 1,1,3);
-const TARGET_SELECTOR = ".bme-item-badge,.bme-visual-item,.bme-classic-item,.bme-category-nav,.bme-hero,.bme-brand,.bme-header,.ep-item-row,.ep-tabs-wrap,.ep-hero,.ep-brand,.ep-header";
 
-function targetName(node) {
-  if (!node) return "";
-  if (node.classList.contains("bme-item-badge")) return "badges";
-  if (node.classList.contains("bme-visual-item") || node.classList.contains("bme-classic-item") || node.classList.contains("ep-item-row")) return "items";
-  if (node.classList.contains("bme-category-nav") || node.classList.contains("ep-tabs-wrap")) return "categories";
-  if (node.classList.contains("bme-hero") || node.classList.contains("ep-hero")) return "hero";
-  if (node.classList.contains("bme-brand") || node.classList.contains("ep-brand")) return "brand";
-  if (node.classList.contains("bme-header") || node.classList.contains("ep-header")) return "brand";
-  return "";
+const TARGET_CONFIGS = Object.freeze([
+  { selector:".bme-hero-copy h1,.ep-hero-title", focus:"hero", panel:"hero", control:".menu-hero-headline-control" },
+  { selector:".bme-hero-copy > span,.ep-hero-kicker", focus:"hero", panel:"type", control:".studio-v3-type-scale" },
+  { selector:".bme-hero-media,.ep-hero-background-image,.ep-hero-background-logo", focus:"hero", panel:"hero" },
+  { selector:".bme-brand img,.ep-logo", focus:"brand", panel:"brand" },
+  { selector:".bme-brand strong,.ep-brand-title", focus:"brand", panel:"type", control:".studio-v3-font-grid" },
+  { selector:".bme-brand span,.ep-brand-sub", focus:"brand", panel:"type", control:".studio-v3-font-grid" },
+  { selector:".bme-category-nav button,.ep-tabs button", focus:"categories", panel:"layout" },
+  { selector:".bme-section-heading h2,.ep-section-head h2", focus:"items", panel:"type", control:".studio-v3-type-scale" },
+  { selector:".bme-subcategory-heading h3,.ep-item-category", focus:"items", panel:"type", control:".studio-v3-type-scale" },
+  { selector:".bme-item-copy h3,.ep-item-name", focus:"items", panel:"type", control:".menu-item-name-color-control" },
+  { selector:".bme-item-copy p,.ep-item-description,.bme-group-note,.ep-group-note", focus:"items", panel:"type", control:".studio-v3-type-scale" },
+  { selector:".bme-price,.bme-price-options,.ep-item-price,.ep-price-options", focus:"items", panel:"layout" },
+  { selector:".bme-item-media", focus:"items", panel:"layout", control:".studio-v3-option-grid.ratios" },
+  { selector:".bme-item-badge", focus:"badges", panel:"badges" },
+  { selector:".bme-category-nav,.ep-tabs-wrap", focus:"categories", panel:"layout" },
+  { selector:".bme-visual-item,.bme-classic-item,.ep-item-row", focus:"items", panel:"layout" },
+  { selector:".bme-hero,.ep-hero", focus:"hero", panel:"hero" },
+  { selector:".bme-brand,.ep-brand,.bme-header,.ep-header", focus:"brand", panel:"brand" },
+]);
+const TARGET_SELECTOR = TARGET_CONFIGS.map(config => config.selector).join(",");
+const PANEL_INDEX = Object.freeze({ brand:0, hero:1, colors:2, type:3, layout:4, badges:5 });
+
+function targetConfig(node) {
+  if (!node) return null;
+  return TARGET_CONFIGS.find(config => node.matches?.(config.selector)) || null;
+}
+
+function openRelevantInspector(config) {
+  if (!config) return;
+  window.dispatchEvent(new CustomEvent("beyond-menu-design-focus",{detail:{focus:config.focus}}));
+
+  let attempts = 0;
+  const settle = () => {
+    attempts += 1;
+    const panelButtons = document.querySelectorAll(".studio-v3-design-v2-tabs > button");
+    const panelButton = panelButtons[PANEL_INDEX[config.panel]];
+    if (panelButton && !panelButton.classList.contains("active")) panelButton.click();
+
+    const control = config.control ? document.querySelector(config.control) : null;
+    if (control) {
+      control.scrollIntoView?.({ block:"nearest", behavior:"smooth" });
+      return;
+    }
+    if ((!panelButton || config.control) && attempts < 8) window.requestAnimationFrame(settle);
+  };
+  window.requestAnimationFrame(settle);
 }
 
 function DeviceIcon({ type }) {
@@ -63,6 +100,9 @@ function clonePreviewStyles(targetDocument) {
     .beyond-design-target-selected{outline:3px solid #4974e5!important;outline-offset:-3px!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.75)!important}
     body[data-hero-editable="true"] .bme-hero.bme-hero-mode-image,
     body[data-hero-editable="true"] .bme-heritage-exact .ep-hero{cursor:grab!important;touch-action:none}
+    body[data-hero-editable="true"] .bme-hero-copy,
+    body[data-hero-editable="true"] .ep-hero-title,
+    body[data-hero-editable="true"] .ep-hero-kicker{cursor:pointer!important;touch-action:auto}
     body[data-hero-editable="true"].beyond-hero-dragging .bme-hero.bme-hero-mode-image,
     body[data-hero-editable="true"].beyond-hero-dragging .bme-heritage-exact .ep-hero{cursor:grabbing!important}
   `;
@@ -170,6 +210,7 @@ export default function MenuStudioDesignCanvas({ menu, design, language="en", ui
     const onPointerDown = event => {
       if (!heroEditable || event.button !== 0) return;
       if (event.target?.closest?.("button,a,input,select,textarea,label")) return;
+      if (event.target?.closest?.(".bme-hero-copy,.ep-hero-title,.ep-hero-kicker")) return;
       const hero = event.target?.closest?.(".bme-hero.bme-hero-mode-image,.bme-heritage-exact .ep-hero");
       if (!hero) return;
       const rect = hero.getBoundingClientRect();
@@ -187,7 +228,7 @@ export default function MenuStudioDesignCanvas({ menu, design, language="en", ui
       dragged = false;
       frameDocument.body?.classList.add("beyond-hero-dragging");
       hero.setPointerCapture?.(event.pointerId);
-      window.dispatchEvent(new CustomEvent("beyond-menu-design-focus",{detail:{focus:"hero"}}));
+      openRelevantInspector({focus:"hero",panel:"hero"});
       event.preventDefault();
     };
     const onPointerMove = event => {
@@ -219,12 +260,12 @@ export default function MenuStudioDesignCanvas({ menu, design, language="en", ui
         return;
       }
       const node = resolve(event);
-      const focus = targetName(node);
-      if (!node || !focus) return;
+      const config = targetConfig(node);
+      if (!node || !config) return;
       selected?.classList.remove("beyond-design-target-selected");
       selected = node;
       selected.classList.add("beyond-design-target-selected");
-      window.dispatchEvent(new CustomEvent("beyond-menu-design-focus",{detail:{focus}}));
+      openRelevantInspector(config);
     };
     frameDocument.addEventListener("pointerover",onPointerOver,true);
     frameDocument.addEventListener("pointerout",onPointerOut,true);
