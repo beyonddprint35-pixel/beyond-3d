@@ -1,0 +1,152 @@
+/* AI Photo Studio dark theme.
+   Keep the customer image itself untouched; only Studio chrome is themed. */
+html[data-beyond-theme="dark"] .ai-dish-v1{
+  --aid-bg:#070b12;
+  --aid-paper:#0d141f;
+  --aid-text:#edf3ff;
+  --aid-muted:#95a3b8;
+  --aid-line:#202b3a;
+  --aid-blue:#6d93ff;
+  --aid-blue-soft:#14233d;
+  --aid-green:#4fd0a0;
+  background:#070b12!important;
+  color:var(--aid-text)!important;
+  color-scheme:dark;
+}
+
+html[data-beyond-theme="dark"] .ai-dish-v1-topbar{
+  background:rgba(7,11,18,.94)!important;
+  border-color:#202b3a!important;
+  box-shadow:0 1px 0 rgba(255,255,255,.02);
+}
+
+html[data-beyond-theme="dark"] .ai-dish-v1-card,
+html[data-beyond-theme="dark"] .ai-dish-v1-results,
+html[data-beyond-theme="dark"] .place-style-card,
+html[data-beyond-theme="dark"] .ai-dish-v1-refine-box,
+html[data-beyond-theme="dark"] .ai-dish-v1-empty>div{
+  background:#0d141f!important;
+  border-color:#202b3a!important;
+  box-shadow:0 16px 40px rgba(0,0,0,.22)!important;
+}
+
+html[data-beyond-theme="dark"] .ai-dish-v1-search,
+html[data-beyond-theme="dark"] .ai-dish-v1-custom textarea,
+html[data-beyond-theme="dark"] .custom-box textarea,
+html[data-beyond-theme="dark"] .ai-dish-v1-refine-box textarea,
+html[data-beyond-theme="dark"] .action-grid button,
+html[data-beyond-theme="dark"] .brand-simple-actions button,
+html[data-beyond-theme="dark"] .brand-simple-actions label,
+html[data-beyond-theme="dark"] .ai-dish-v1-vibes button,
+html[data-beyond-theme="dark"] .ai-dish-v1-items-list>button,
+html[data-beyond-theme="dark"] .ai-dish-single-item-list button,
+html[data-beyond-theme="dark"] .version-select,
+html[data-beyond-theme="dark"] .ai-dish-v1-history-strip>button{
+  background:#0a111b!important;
+  border-color:#202b3a!important;
+  color:#e8eef8!important;
+}
+
+html[data-beyond-theme="dark"] .action-grid button:hover,
+html[data-beyond-theme="dark"] .brand-simple-actions button:hover,
+html[data-beyond-theme="dark"] .brand-simple-actions label:hover,
+html[data-beyond-theme="dark"] .ai-dish-v1-items-list>button:hover,
+html[data-beyond-theme="dark"] .ai-dish-single-item-list button:hover,
+html[data-beyond-theme="dark"] .ai-dish-v1-vibes button:hover{
+  background:#101a28!important;
+  border-color:#314159!important;
+}
+
+html[data-beyond-theme="dark"] .action-grid button.active,
+html[data-beyond-theme="dark"] .brand-simple-actions .active,
+html[data-beyond-theme="dark"] .ai-dish-v1-vibes button.active,
+html[data-beyond-theme="dark"] .ai-dish-v1-items-list>button.selected,
+html[data-beyond-theme="dark"] .ai-dish-single-item-list button.selected,
+html[data-beyond-theme="dark"] .version-tile.active .version-select{
+  background:#14233d!important;
+  border-color:#527bea!important;
+  color:#f3f7ff!important;
+  box-shadow:0 0 0 2px rgba(82,123,234,.12)!important;
+}
+
+html[data-beyond-theme="dark"] .preflight-simple>div,
+html[data-beyond-theme="dark"] .ai-dish-v1-results-head>b,
+html[data-beyond-theme="dark"] .ai-dish-v1-card>header>b{
+  background:#101824!important;
+  color:#aebbd0!important;
+  border-color:#202b3a!important;
+}
+
+html[data-beyond-theme="dark"] .ai-dish-v1-result{
+  background:#0a111b!important;
+  border-color:#202b3a!important;
+}
+html[data-beyond-theme="dark"] .ai-dish-v1-result.approved{
+  background:#0b1b17!important;
+  border-color:rgba(79,208,160,.34)!important;
+}
+
+html[data-beyond-theme="dark"] .ai-dish-v1-upload{
+  background:#0a111b!important;
+  border-color:#35445a!important;
+}
+html[data-beyond-theme="dark"] .ai-dish-v1-reference-grid figure,
+html[data-beyond-theme="dark"] .ai-dish-v1-result-image,
+html[data-beyond-theme="dark"] .ai-dish-v1-items-list .thumb,
+html[data-beyond-theme="dark"] .ai-dish-single-item-list .thumb{
+  background:#111a27!important;
+}
+
+html[data-beyond-theme="dark"] .ai-dish-v1-items-list .check{
+  background:#101824!important;
+  border-color:#35445a!important;
+}
+html[data-beyond-theme="dark"] .ai-dish-v1-items-list button.selected .check{
+  background:var(--aid-blue)!important;
+  border-color:var(--aid-blue)!important;
+  color:#fff!important;
+}
+
+html[data-beyond-theme="dark"] .ai-dish-v1-result-actions .secondary,
+html[data-beyond-theme="dark"] .secondary-upload,
+html[data-beyond-theme="dark"] .place-style-manage button{
+  background:#0a111b!important;
+  border-color:#2a3749!important;
+  color:#dbe5f5!important;
+}
+
+html[data-beyond-theme="dark"] .place-style-head span{
+  background:#10231e!important;
+  color:#62d7aa!important;
+}
+html[data-beyond-theme="dark"] .place-style-thumbs img{
+  border-color:#0d141f!important;
+}
+
+html[data-beyond-theme="dark"] .ai-dish-v1-accuracy{
+  background:#1a1710!important;
+  border-color:#4b4025!important;
+  color:#d9bd77!important;
+}
+html[data-beyond-theme="dark"] .ai-dish-v1-error{
+  background:#211013!important;
+  border-color:#5d2a31!important;
+  color:#f2a6ad!important;
+}
+
+html[data-beyond-theme="dark"] .ai-dish-v1 input::placeholder,
+html[data-beyond-theme="dark"] .ai-dish-v1 textarea::placeholder{
+  color:#6f7d90!important;
+}
+html[data-beyond-theme="dark"] .ai-dish-v1 input,
+html[data-beyond-theme="dark"] .ai-dish-v1 textarea,
+html[data-beyond-theme="dark"] .ai-dish-v1 select{
+  color-scheme:dark;
+}
+
+html[data-beyond-theme="dark"] .ai-dish-v1,
+html[data-beyond-theme="dark"] .ai-dish-v1-items-list,
+html[data-beyond-theme="dark"] .ai-dish-single-item-list,
+html[data-beyond-theme="dark"] .ai-dish-v1-history-strip{
+  scrollbar-color:#35445a #0a111b;
+}
