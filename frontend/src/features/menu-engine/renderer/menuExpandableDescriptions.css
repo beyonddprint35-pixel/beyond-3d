@@ -1,0 +1,89 @@
+/* ==========================================================
+   PHOTO MENU ITEM DESCRIPTIONS
+
+   Photo-led cards stay compact when descriptions are long. Guests see a
+   two-line preview and can tap the description to reveal the full copy.
+   This is renderer-level behavior, so it applies to every photo-menu design.
+   ========================================================== */
+
+.bme-visual-item .bme-item-description,
+.bme-visual-item .bme-item-description-toggle{
+  margin:6px 0 0;
+  color:var(--bme-muted);
+  font-family:var(--bme-body-font);
+  font-size:clamp(11px,3.4vw,var(--bme-description-size));
+  font-weight:var(--bme-body-weight);
+  line-height:1.5;
+}
+
+.bme-visual-item .bme-item-description-toggle{
+  width:100%;
+  padding:0;
+  display:grid;
+  gap:4px;
+  appearance:none;
+  border:0;
+  border-radius:7px;
+  background:transparent;
+  cursor:pointer;
+  text-align:start;
+}
+
+.bme-visual-item .bme-item-description-toggle:focus-visible{
+  outline:2px solid var(--bme-accent);
+  outline-offset:3px;
+}
+
+.bme-visual-item .bme-item-description-text{
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+
+.bme-visual-item .bme-item-description-toggle.is-collapsed .bme-item-description-text{
+  display:-webkit-box;
+  overflow:hidden;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  line-clamp:2;
+}
+
+.bme-visual-item .bme-item-description-more{
+  width:max-content;
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  color:var(--bme-text);
+  font-size:max(10px,calc(var(--bme-description-size) - 1px));
+  font-weight:750;
+  line-height:1.15;
+  opacity:.72;
+}
+
+.bme-visual-item .bme-item-description-more i{
+  width:6px;
+  height:6px;
+  border-inline-end:1.5px solid currentColor;
+  border-bottom:1.5px solid currentColor;
+  transform:translateY(-1px) rotate(45deg);
+  transition:transform .18s ease;
+}
+
+.bme-visual-item .bme-item-description-toggle.is-expanded .bme-item-description-more i{
+  transform:translateY(2px) rotate(225deg);
+}
+
+.bme-visual-item .bme-item-description-toggle:hover .bme-item-description-more{
+  opacity:1;
+}
+
+/* Keep compact side-photo cards tidy until the guest asks for more copy. */
+@container beyond-menu (max-width:520px){
+  .bme-visual-item:is(.bme-image-left,.bme-image-right) .bme-item-description-toggle.is-collapsed .bme-item-description-text{
+    -webkit-line-clamp:2;
+    line-clamp:2;
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .bme-visual-item .bme-item-description-more i{transition:none}
+}
