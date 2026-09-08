@@ -13,9 +13,9 @@ const DEVICE_CHROME_HEIGHT = 24;
 const PREVIEW_DOCUMENT = "<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'></head><body><div id='beyond-menu-preview-root'></div></body></html>";
 
 const COPY = {
-  en:{mobile:"Mobile",tablet:"Tablet",desktop:"Desktop",fit:"Fit",zoomOut:"Zoom out",zoomIn:"Zoom in",resetZoom:"Reset to 100%",live:"Live",editHint:"Click any part of the menu to edit it",heroDrag:"Drag hero photo",heroZoom:"Hero zoom",heroReset:"Reset hero"},
-  he:{mobile:"נייד",tablet:"טאבלט",desktop:"מחשב",fit:"התאם",zoomOut:"הקטן",zoomIn:"הגדל",resetZoom:"חזרה ל־100%",live:"חי",editHint:"לחצו על כל חלק בתפריט כדי לערוך אותו",heroDrag:"גררו את תמונת ה-Hero",heroZoom:"זום Hero",heroReset:"איפוס Hero"},
-  ar:{mobile:"هاتف",tablet:"جهاز لوحي",desktop:"سطح المكتب",fit:"ملاءمة",zoomOut:"تصغير",zoomIn:"تكبير",resetZoom:"العودة إلى 100%",live:"مباشر",editHint:"انقر على أي جزء من القائمة لتعديله",heroDrag:"اسحب صورة الواجهة",heroZoom:"تكبير الواجهة",heroReset:"إعادة ضبط الواجهة"},
+  en:{mobile:"Mobile",tablet:"Tablet",desktop:"Desktop",fit:"Fit",zoomOut:"Zoom out",zoomIn:"Zoom in",resetZoom:"Reset to 100%",live:"Live",editHint:"Click any part of the menu to edit it",heroMove:"Move photo",heroDrag:"Drag the photo inside the menu to reposition it",heroZoom:"Zoom",heroReset:"Reset"},
+  he:{mobile:"נייד",tablet:"טאבלט",desktop:"מחשב",fit:"התאם",zoomOut:"הקטן",zoomIn:"הגדל",resetZoom:"חזרה ל־100%",live:"חי",editHint:"לחצו על כל חלק בתפריט כדי לערוך אותו",heroMove:"מיקום התמונה",heroDrag:"גררו את התמונה בתוך התפריט כדי למקם אותה",heroZoom:"זום",heroReset:"איפוס"},
+  ar:{mobile:"هاتف",tablet:"جهاز لوحي",desktop:"سطح المكتب",fit:"ملاءمة",zoomOut:"تصغير",zoomIn:"تكبير",resetZoom:"العودة إلى 100%",live:"مباشر",editHint:"انقر على أي جزء من القائمة لتعديله",heroMove:"موضع الصورة",heroDrag:"اسحب الصورة داخل القائمة لتغيير موضعها",heroZoom:"التكبير",heroReset:"إعادة ضبط"},
 };
 
 const clamp = (value,min,max) => Math.min(max,Math.max(min,value));
@@ -287,8 +287,8 @@ export default function MenuStudioDesignCanvas({ menu, design, language="en", ui
     setFitMode(false);
     setZoom(1);
   }
-  function changeHeroZoom(delta) {
-    const next = clampHeroZoom(Number((heroZoom + delta).toFixed(2)));
+  function setHeroZoomValue(value) {
+    const next = clampHeroZoom(Number(value));
     heroStateRef.current = {...heroStateRef.current,zoom:next};
     patchHeroFraming({heroImageZoom:next});
   }
@@ -317,14 +317,18 @@ export default function MenuStudioDesignCanvas({ menu, design, language="en", ui
       </div>
     </div>
 
-    <div className="studio-v3-design-canvas-stage" ref={stageRef}>
-      {heroEditable ? <div className="studio-v3-design-canvas-hero-tools" role="group" aria-label={copy.heroZoom}>
-        <span className="hero-tools-hint">↔ {copy.heroDrag}</span>
-        <button type="button" onClick={()=>changeHeroZoom(-.1)} aria-label={copy.zoomOut}>−</button>
-        <b>{heroZoom.toFixed(1)}×</b>
-        <button type="button" onClick={()=>changeHeroZoom(.1)} aria-label={copy.zoomIn}>+</button>
+    <div className={`studio-v3-design-canvas-stage device-${deviceKey}`} ref={stageRef}>
+      {heroEditable ? <aside className="studio-v3-design-canvas-hero-tools" aria-label={copy.heroZoom}>
+        <div className="hero-tools-copy">
+          <strong><span aria-hidden="true">↔</span> {copy.heroMove}</strong>
+          <small>{copy.heroDrag}</small>
+        </div>
+        <label className="hero-tools-spectrum">
+          <span><strong>{copy.heroZoom}</strong><b>{heroZoom.toFixed(2)}×</b></span>
+          <div><small>1×</small><input type="range" min="1" max="3" step="0.05" value={heroZoom} onChange={event=>setHeroZoomValue(event.target.value)} aria-label={copy.heroZoom}/><small>3×</small></div>
+        </label>
         <button type="button" className="hero-tools-reset" onClick={resetHeroFraming}>{copy.heroReset}</button>
-      </div> : null}
+      </aside> : null}
       <div className="studio-v3-design-canvas-size-label">{device.width} × {device.height}</div>
       <div className="studio-v3-design-canvas-holder" style={holderStyle}>
         <div className={`studio-v3-design-device-frame ${deviceKey}`} style={deviceStyle}>
