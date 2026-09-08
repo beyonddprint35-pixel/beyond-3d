@@ -18,6 +18,7 @@ export default function StudioLanguageMenu({
   compact = false,
   className = "",
   allowedLanguages = null,
+  showThemeToggle = true,
 }) {
   const [open, setOpen] = useState(false);
   const [theme, setTheme] = useState(() => applyStoredBeyondTheme());
@@ -86,7 +87,7 @@ export default function StudioLanguageMenu({
         <ChevronDown size={14} aria-hidden="true" />
       </button>
 
-      {compact ? (
+      {compact && showThemeToggle ? (
         <button
           type="button"
           className="studio-theme-toggle studio-language-menu-theme-toggle"
