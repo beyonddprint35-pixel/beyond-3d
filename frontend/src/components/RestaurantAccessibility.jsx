@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import "./RestaurantAccessibility.css";
 import "./RestaurantAccessibilityMenuRegulation.css";
+import "./RestaurantMenuScrollbarRegulation.css";
 
 const STORAGE_KEY = "beyondRestaurantAccessibilityV1";
 const DEFAULT_STATE = { font:0, contrast:false, dark:false, grayscale:false, readable:false, reducedMotion:false, links:false };
