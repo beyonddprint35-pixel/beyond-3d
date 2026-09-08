@@ -64,9 +64,75 @@
 .studio-language-menu.is-compact .studio-language-menu-code{display:none}
 .studio-language-menu.is-compact .studio-language-menu-list{width:205px}
 
+/* AI Photo Studio uses the same compact language + theme controls as Menu Studio. */
+.ai-dish-v1-topbar .studio-language-menu.is-compact{
+  width:94px;
+  min-width:94px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  justify-self:end;
+}
+.ai-dish-v1-topbar .studio-language-menu.is-compact :is(.studio-language-menu-trigger,.studio-language-menu-theme-toggle){
+  width:44px;
+  min-width:44px;
+  max-width:44px;
+  height:40px;
+  min-height:40px;
+  padding:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:0;
+  border:1px solid #d8e0eb;
+  border-radius:11px;
+  color:#4974e5;
+  background:#fff;
+  box-shadow:none;
+  cursor:pointer;
+}
+.ai-dish-v1-topbar .studio-language-menu.is-compact .studio-language-menu-trigger>svg,
+.ai-dish-v1-topbar .studio-language-menu.is-compact .studio-language-menu-trigger-copy{display:none}
+.ai-dish-v1-topbar .studio-language-menu.is-compact .studio-language-menu-code{
+  display:grid!important;
+  place-items:center;
+  width:100%;
+  height:100%;
+  min-width:0;
+  padding:0;
+  border:0;
+  background:transparent;
+  color:inherit;
+  font-size:11px;
+  font-weight:850;
+  letter-spacing:.04em;
+}
+.ai-dish-v1-topbar .studio-language-menu.is-compact .studio-language-menu-list{right:50px;width:205px}
+.ai-dish-v1-topbar .studio-language-menu.is-compact :is(.studio-language-menu-trigger,.studio-language-menu-theme-toggle):hover{border-color:rgba(73,116,229,.48);background:#f7f9ff}
+.ai-dish-v1-topbar .studio-language-menu.is-compact :is(.studio-language-menu-trigger,.studio-language-menu-theme-toggle):focus-visible{outline:2px solid #4974e5;outline-offset:3px}
+
+/* Menu Studio already renders its own theme button beside the selector. */
+.menu-studio-header .studio-language-menu>.studio-language-menu-theme-toggle{display:none!important}
+
+html[data-beyond-theme="dark"] .ai-dish-v1-topbar .studio-language-menu.is-compact :is(.studio-language-menu-trigger,.studio-language-menu-theme-toggle){
+  border-color:#2a3749;
+  color:#8ab1ff;
+  background:#0d141f;
+}
+html[data-beyond-theme="dark"] .ai-dish-v1-topbar .studio-language-menu.is-compact :is(.studio-language-menu-trigger,.studio-language-menu-theme-toggle):hover{border-color:#3d5270;background:#111b2a}
+html[data-beyond-theme="dark"] .studio-language-menu-list{border-color:#283548;background:#0d141f;box-shadow:0 22px 58px rgba(0,0,0,.36)}
+html[data-beyond-theme="dark"] .studio-language-menu-list>button{color:#edf3ff}
+html[data-beyond-theme="dark"] .studio-language-menu-list>button:hover{background:#111b2a}
+html[data-beyond-theme="dark"] .studio-language-menu-list>button.active{background:#14233d}
+html[data-beyond-theme="dark"] .studio-language-menu-check{border-color:#35445a;background:#101824}
+html[data-beyond-theme="dark"] .studio-language-menu-option-copy small,
+html[data-beyond-theme="dark"] .studio-language-menu-list>button>span:last-child{color:#95a3b8}
+
 @media(max-width:720px){
   .studio-language-menu-trigger{min-width:118px}
   .studio-language-menu-trigger-copy small{display:none}
   .studio-language-menu-code{display:none}
   .studio-language-menu-list{right:0;width:min(220px,calc(100vw - 28px))}
+  .ai-dish-v1-topbar .studio-language-menu.is-compact{width:94px;min-width:94px}
+  .ai-dish-v1-topbar .studio-language-menu.is-compact .studio-language-menu-list{right:50px;width:min(205px,calc(100vw - 28px))}
 }
