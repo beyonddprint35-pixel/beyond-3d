@@ -5,7 +5,6 @@ import {
   CircleDollarSign,
   Cloud,
   Database,
-  Github,
   RefreshCw,
   Save,
   Settings2,
@@ -16,7 +15,7 @@ import "./AdminCostCenter.css";
 const PROVIDER_ICONS = {
   openai: BrainCircuit,
   netlify: Cloud,
-  codespaces: Github,
+  codespaces: CircleDollarSign,
   supabase: Database,
 };
 
