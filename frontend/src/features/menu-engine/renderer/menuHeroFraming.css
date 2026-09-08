@@ -3,10 +3,13 @@
 .bme-menu .bme-hero-media-image{
   overflow:hidden;
 }
-.bme-menu .bme-hero-media-image img{
-  object-position:var(--bme-hero-focus-x,50%) var(--bme-hero-focus-y,50%);
-  transform:scale(var(--bme-hero-image-zoom,1));
-  transform-origin:var(--bme-hero-focus-x,50%) var(--bme-hero-focus-y,50%);
+/* Photo-profile CSS intentionally sets each template's shape and tone. Only
+   framing is user-controlled, so these three properties must win even when a
+   presentation profile supplies its own default crop transform. */
+.bme-menu .bme-hero.bme-hero-mode-image .bme-hero-media-image img{
+  object-position:var(--bme-hero-focus-x,50%) var(--bme-hero-focus-y,50%) !important;
+  transform:scale(var(--bme-hero-image-zoom,1)) !important;
+  transform-origin:var(--bme-hero-focus-x,50%) var(--bme-hero-focus-y,50%) !important;
   will-change:transform,object-position;
 }
 
@@ -14,8 +17,8 @@
   isolation:isolate;
 }
 .bme-heritage-exact .ep-hero-background-image{
-  object-position:var(--ep-hero-focus-x,50%) var(--ep-hero-focus-y,50%);
-  transform:scale(var(--ep-hero-image-zoom,1));
-  transform-origin:var(--ep-hero-focus-x,50%) var(--ep-hero-focus-y,50%);
+  object-position:var(--ep-hero-focus-x,50%) var(--ep-hero-focus-y,50%) !important;
+  transform:scale(var(--ep-hero-image-zoom,1)) !important;
+  transform-origin:var(--ep-hero-focus-x,50%) var(--ep-hero-focus-y,50%) !important;
   will-change:transform,object-position;
 }
