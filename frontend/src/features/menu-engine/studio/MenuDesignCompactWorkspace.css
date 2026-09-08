@@ -194,3 +194,98 @@ html[data-beyond-theme="dark"] .menu-design-v2 .studio-v3-design-canvas-hero-too
   .menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-hint{display:none}
   .menu-design-v2 .hero-framing-control{position:static}
 }
+
+/* =========================================================
+   READABLE DESIGN STUDIO TYPE — MATCH CONTENT STUDIO
+
+   The workspace stays compact, but text uses the same regulated scale as the
+   Content tab. Never shrink editor copy to micro type just to avoid scrolling;
+   the left inspector is allowed to scroll while the live menu stays fixed.
+   ========================================================= */
+.menu-design-v2{
+  --menu-design-type-meta:var(--studio-v2-type-meta,12px);
+  --menu-design-type-small:var(--studio-v2-type-small,13px);
+  --menu-design-type-control:var(--studio-v2-type-control,14px);
+  --menu-design-type-body:var(--studio-v2-type-body,15px);
+  --menu-design-type-section:var(--studio-v2-type-section,17px);
+}
+
+.menu-design-v2 .menu-design-v2-sidebar-title>span{font-size:var(--menu-design-type-meta)!important}
+.menu-design-v2 .menu-design-v2-sidebar-title>strong{font-size:var(--menu-design-type-section)!important}
+.menu-design-v2 .menu-design-v2-logo-copy strong{font-size:var(--menu-design-type-small)!important}
+.menu-design-v2 .menu-design-v2-logo-upload,
+.menu-design-v2 .menu-design-v2-logo-remove{min-height:30px!important;font-size:var(--menu-design-type-small)!important}
+
+.menu-design-v2 .menu-design-v2-variants-copy strong{font-size:var(--menu-design-type-small)!important}
+.menu-design-v2 .menu-design-v2-variant-letter{font-size:var(--menu-design-type-meta)!important}
+.menu-design-v2 .menu-design-v2-variant-button{min-height:40px!important}
+.menu-design-v2 .menu-design-v2-variant-button strong{font-size:var(--menu-design-type-small)!important}
+.menu-design-v2 .menu-design-v2-variant-button small{font-size:var(--menu-design-type-meta)!important}
+
+.menu-design-v2 .menu-design-v2-sidebar-picker .menu-design-picker-industries button{
+  min-height:30px!important;
+  font-size:var(--menu-design-type-small)!important;
+}
+.menu-design-v2 .menu-design-v2-sidebar-picker .menu-design-picker-tab{min-height:42px!important}
+.menu-design-v2 .menu-design-v2-sidebar-picker .menu-design-picker-tab>span:nth-child(2){font-size:var(--menu-design-type-small)!important}
+.menu-design-v2 .menu-design-v2-sidebar-picker button{font-size:var(--menu-design-type-small)!important}
+
+.menu-design-v2 .studio-v3-design-breadcrumb{font-size:var(--menu-design-type-meta)!important}
+.menu-design-v2 .studio-v3-design-history-actions button{min-height:30px!important;font-size:var(--menu-design-type-small)!important}
+.menu-design-v2 .studio-v3-design-v2-nav button{min-height:40px!important}
+.menu-design-v2 .studio-v3-design-v2-nav button i{font-size:var(--menu-design-type-small)!important}
+.menu-design-v2 .studio-v3-design-v2-nav button strong{font-size:var(--menu-design-type-small)!important}
+
+.menu-design-v2 .menu-design-v2-controls .studio-v3-design-pro-controls button{font-size:var(--menu-design-type-small)!important}
+.menu-design-v2 .menu-design-v2-controls .studio-v3-design-pro-controls input,
+.menu-design-v2 .menu-design-v2-controls .studio-v3-design-pro-controls select,
+.menu-design-v2 .menu-design-v2-controls .studio-v3-design-pro-controls textarea{font-size:var(--menu-design-type-control)!important}
+.menu-design-v2 .menu-design-v2-controls .studio-v3-design-pro-controls small{font-size:var(--menu-design-type-meta)!important}
+
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-context-editor-head{min-height:40px!important}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-context-editor-head>div>span{font-size:var(--menu-design-type-meta)!important}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-context-editor-head strong{font-size:var(--menu-design-type-small)!important}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-context-editor-head button{min-height:30px!important;font-size:var(--menu-design-type-meta)!important}
+
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button{
+  min-height:46px!important;
+  grid-template-columns:30px minmax(0,1fr) 12px!important;
+  gap:8px!important;
+  padding:6px 8px!important;
+}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-design-tab-icon{
+  width:30px!important;
+  height:30px!important;
+  font-size:var(--menu-design-type-small)!important;
+}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-design-tab-label::before{font-size:var(--menu-design-type-small)!important}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-design-v2-tabs button::after{font-size:17px!important}
+
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-inspector-block-title{font-size:var(--menu-design-type-small)!important}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-inspector-block-title small{font-size:var(--menu-design-type-meta)!important;line-height:1.35!important}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-inspector-range-head{font-size:var(--menu-design-type-small)!important}
+.menu-design-v2 .studio-v3-design-v2-advanced .studio-v3-inspector-range-head b{font-size:var(--menu-design-type-meta)!important}
+.menu-design-v2 .studio-v3-inspector-help{font-size:var(--menu-design-type-meta)!important;line-height:1.4!important}
+.menu-design-v2 .studio-v3-design-control-label{font-size:var(--menu-design-type-small)!important}
+
+.menu-design-v2 .studio-v3-hero-mode-grid button,
+.menu-design-v2 .studio-v3-option-grid button,
+.menu-design-v2 .studio-v3-shape-grid button,
+.menu-design-v2 .studio-v3-weight-grid button,
+.menu-design-v2 .studio-v3-quick-control-card button{min-height:38px!important;font-size:var(--menu-design-type-small)!important}
+
+.menu-design-v2 .hero-framing-head strong{font-size:var(--menu-design-type-small)!important}
+.menu-design-v2 .hero-framing-head small{font-size:var(--menu-design-type-meta)!important;line-height:1.35!important}
+.menu-design-v2 .hero-framing-head>button{min-height:30px!important;font-size:var(--menu-design-type-meta)!important}
+.menu-design-v2 .hero-framing-range{min-height:31px!important;grid-template-columns:112px minmax(0,1fr)!important}
+.menu-design-v2 .hero-framing-range>span,
+.menu-design-v2 .hero-framing-range b{font-size:var(--menu-design-type-meta)!important}
+
+.menu-design-v2 .studio-v3-design-canvas-hero-tools{min-height:36px!important}
+.menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-hint{font-size:var(--menu-design-type-meta)!important}
+.menu-design-v2 .studio-v3-design-canvas-hero-tools button{height:29px!important;min-width:29px!important;font-size:var(--menu-design-type-small)!important}
+.menu-design-v2 .studio-v3-design-canvas-hero-tools b{font-size:var(--menu-design-type-meta)!important}
+
+@media(max-width:1180px) and (min-width:901px){
+  .menu-design-v2 .hero-framing-range{grid-template-columns:104px minmax(0,1fr)!important}
+}
