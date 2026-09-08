@@ -19,6 +19,7 @@ import installMenuContentPreviewSelection from "./pages/menuContentPreviewSelect
 import installMenuTranslationReviewOverlay from "./pages/menuTranslationReviewOverlay";
 import installMenuStudioViewportLock from "./pages/menuStudioViewportLock";
 import installMenuAiOnlineReferenceOverlay from "./pages/menuAiOnlineReferenceOverlay";
+import installMenuAiImageViewerOverlay from "./pages/menuAiImageViewerOverlay";
 import "./components/BeyondMenuPlatform.css";
 import "./components/BeyondLiveMenuDesign.css";
 import "./components/BeyondLiveMenuDesignMobilePatch.css";
@@ -27,6 +28,7 @@ import "./pages/MenuContentStudioV2FinalPolish.css";
 import "./pages/MenuContentStudioV2FinishingPolish.css";
 import "./pages/MenuContentStudioV2DarkModeFix.css";
 import "./pages/MenuAiDishImagesV1DarkFix.css";
+import "./pages/menuAiImageViewerOverlay.css";
 import "./pages/menuStudioViewportLock.css";
 import "./pages/menuStudioDarkModeRegulation.css";
 import "./features/menu-engine/renderer/menuTypographyGuard.css";
@@ -51,6 +53,7 @@ installMenuContentPreviewSelection();
 installMenuTranslationReviewOverlay();
 installMenuStudioViewportLock();
 installMenuAiOnlineReferenceOverlay();
+installMenuAiImageViewerOverlay();
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
