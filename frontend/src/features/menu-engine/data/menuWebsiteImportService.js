@@ -1,6 +1,9 @@
 import { supabase } from "../../../lib/supabaseClient";
 import { importMenuWithAi } from "./menuAiImportService";
 
+const WEBSITE_SOURCE_FUNCTION = "menu-website-source-large-test";
+const WEBSITE_EXTRACT_FUNCTION = "menu-ai-extract-website-test";
+
 async function parseFunctionError(functionError) {
   let message = functionError?.message || "Could not read this website.";
   let details = null;
@@ -40,7 +43,7 @@ export function normalizeWebsiteUrl(value) {
 export async function extractMenuWebsiteSource({ session, url }) {
   if (!session?.access_token) throw new Error("Sign in is required to import a website.");
   const normalizedUrl = normalizeWebsiteUrl(url);
-  const { data, error } = await supabase.functions.invoke("menu-website-source", {
+  const { data, error } = await supabase.functions.invoke(WEBSITE_SOURCE_FUNCTION, {
     body: { url: normalizedUrl },
     headers: { Authorization: `Bearer ${session.access_token}` },
   });
@@ -57,6 +60,7 @@ export async function importMenuWebsiteWithAi({ session, url, languages, onSourc
     files: [],
     text: source.text,
     languages,
+    extractFunctionName: WEBSITE_EXTRACT_FUNCTION,
   });
   return { ...result, websiteSource: source };
 }
