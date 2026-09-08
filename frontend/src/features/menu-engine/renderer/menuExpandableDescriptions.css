@@ -1,89 +1,75 @@
 /* ==========================================================
    PHOTO MENU ITEM DESCRIPTIONS
 
-   Photo-led cards stay compact when descriptions are long. Guests see a
-   two-line preview and can tap the description to reveal the full copy.
-   This is renderer-level behavior, so it applies to every photo-menu design.
+   Long descriptions in every photo-led menu stay compact by default. Guests
+   see a small preview, then tap the description itself to reveal the full
+   text. Short descriptions remain completely unchanged.
    ========================================================== */
 
-.bme-visual-item .bme-item-description,
-.bme-visual-item .bme-item-description-toggle{
+.bme-language-control-anchor{display:none!important}
+
+.bme-visual-item .bme-item-copy > p.bme-item-description-interactive{
+  position:relative;
   margin:6px 0 0;
+  padding:0 0 18px;
+  max-height:calc(3em + 18px);
+  overflow:hidden;
   color:var(--bme-muted);
   font-family:var(--bme-body-font);
   font-size:clamp(11px,3.4vw,var(--bme-description-size));
   font-weight:var(--bme-body-weight);
   line-height:1.5;
-}
-
-.bme-visual-item .bme-item-description-toggle{
-  width:100%;
-  padding:0;
-  display:grid;
-  gap:4px;
-  appearance:none;
-  border:0;
-  border-radius:7px;
-  background:transparent;
   cursor:pointer;
-  text-align:start;
+  outline:none;
+  transition:max-height .22s ease;
 }
 
-.bme-visual-item .bme-item-description-toggle:focus-visible{
+.bme-visual-item .bme-item-copy > p.bme-item-description-interactive::after{
+  content:attr(data-description-action);
+  position:absolute;
+  inset-inline-end:0;
+  bottom:0;
+  min-width:52px;
+  padding:2px 0 1px 26px;
+  color:var(--bme-text);
+  background:linear-gradient(90deg,transparent 0%,color-mix(in srgb,var(--bme-card) 82%,transparent) 27%,var(--bme-card) 48%);
+  font-size:max(10px,calc(var(--bme-description-size) - 1px));
+  font-weight:800;
+  line-height:14px;
+  text-align:end;
+  opacity:.76;
+}
+
+.bme-visual-item .bme-item-copy > p.bme-item-description-interactive:dir(rtl)::after{
+  padding:2px 26px 1px 0;
+  background:linear-gradient(270deg,transparent 0%,color-mix(in srgb,var(--bme-card) 82%,transparent) 27%,var(--bme-card) 48%);
+}
+
+.bme-visual-item .bme-item-copy > p.bme-item-description-interactive:hover::after,
+.bme-visual-item .bme-item-copy > p.bme-item-description-interactive:focus-visible::after{
+  opacity:1;
+}
+
+.bme-visual-item .bme-item-copy > p.bme-item-description-interactive:focus-visible{
+  border-radius:6px;
   outline:2px solid var(--bme-accent);
   outline-offset:3px;
 }
 
-.bme-visual-item .bme-item-description-text{
-  min-width:0;
-  overflow-wrap:anywhere;
+.bme-visual-item .bme-item-copy > p.bme-item-description-interactive.is-expanded{
+  max-height:80em;
 }
 
-.bme-visual-item .bme-item-description-toggle.is-collapsed .bme-item-description-text{
-  display:-webkit-box;
-  overflow:hidden;
-  -webkit-box-orient:vertical;
-  -webkit-line-clamp:2;
-  line-clamp:2;
-}
-
-.bme-visual-item .bme-item-description-more{
-  width:max-content;
-  display:inline-flex;
-  align-items:center;
-  gap:5px;
-  color:var(--bme-text);
-  font-size:max(10px,calc(var(--bme-description-size) - 1px));
-  font-weight:750;
-  line-height:1.15;
-  opacity:.72;
-}
-
-.bme-visual-item .bme-item-description-more i{
-  width:6px;
-  height:6px;
-  border-inline-end:1.5px solid currentColor;
-  border-bottom:1.5px solid currentColor;
-  transform:translateY(-1px) rotate(45deg);
-  transition:transform .18s ease;
-}
-
-.bme-visual-item .bme-item-description-toggle.is-expanded .bme-item-description-more i{
-  transform:translateY(2px) rotate(225deg);
-}
-
-.bme-visual-item .bme-item-description-toggle:hover .bme-item-description-more{
-  opacity:1;
-}
-
-/* Keep compact side-photo cards tidy until the guest asks for more copy. */
+/* In narrow side-photo cards, keep the collapsed state particularly tidy. */
 @container beyond-menu (max-width:520px){
-  .bme-visual-item:is(.bme-image-left,.bme-image-right) .bme-item-description-toggle.is-collapsed .bme-item-description-text{
-    -webkit-line-clamp:2;
-    line-clamp:2;
+  .bme-visual-item:is(.bme-image-left,.bme-image-right) .bme-item-copy > p.bme-item-description-interactive{
+    max-height:calc(3em + 18px);
+  }
+  .bme-visual-item:is(.bme-image-left,.bme-image-right) .bme-item-copy > p.bme-item-description-interactive.is-expanded{
+    max-height:80em;
   }
 }
 
 @media (prefers-reduced-motion:reduce){
-  .bme-visual-item .bme-item-description-more i{transition:none}
+  .bme-visual-item .bme-item-copy > p.bme-item-description-interactive{transition:none}
 }
