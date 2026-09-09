@@ -1,0 +1,467 @@
+/* =========================================================
+   BEYOND MENU STUDIO — MOBILE DESIGN WORKSPACE
+
+   Mobile Design behaves like the desktop editor: the page itself never
+   scrolls. The live menu remains visible while the inspector below it scrolls
+   independently. This removes the old preview -> long controls document flow.
+   ========================================================= */
+
+@media (max-width: 850px) {
+  html:has(.menu-design-v2),
+  body:has(.menu-design-v2),
+  #root:has(.menu-design-v2) {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+    overscroll-behavior: none !important;
+  }
+
+  body:has(.menu-design-v2) {
+    position: fixed !important;
+    inset: 0 !important;
+  }
+
+  .menu-design-v2.menu-design-v2 {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    min-height: 0 !important;
+    max-height: 100dvh !important;
+    padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  /* Header remains shared with Content/Preview. The workspace below owns all
+     remaining height and never makes the browser document taller. */
+  .menu-design-v2 .menu-design-v2-topbar {
+    flex: 0 0 64px !important;
+    min-height: 64px !important;
+    height: 64px !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-workspace {
+    flex: 1 1 0 !important;
+    width: 100% !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: minmax(0, 60fr) minmax(0, 40fr) !important;
+    grid-template-areas:
+      "canvas"
+      "controls" !important;
+    overflow: hidden !important;
+    background: var(--md-bg) !important;
+  }
+
+  /* ---------------- LIVE PREVIEW — ALWAYS VISIBLE ---------------- */
+  .menu-design-v2 .menu-design-v2-canvas {
+    grid-area: canvas !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    padding: 5px 7px !important;
+    display: block !important;
+    overflow: hidden !important;
+    border-bottom: 1px solid var(--md-line) !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-live-preview {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  /* The mobile bottom stage bar already contains Preview, so the duplicate
+     Continue to Preview row is unnecessary and only steals preview height. */
+  .menu-design-v2 .menu-design-v2-next {
+    display: none !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-workspace.compact {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    display: grid !important;
+    grid-template-rows: 34px minmax(0, 1fr) !important;
+    gap: 4px !important;
+    overflow: hidden !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-toolbar {
+    position: relative !important;
+    top: auto !important;
+    z-index: 20 !important;
+    width: 100% !important;
+    min-height: 34px !important;
+    height: 34px !important;
+    padding: 2px !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    gap: 3px !important;
+    border-radius: 10px !important;
+    box-shadow: none !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-title {
+    display: none !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-device-switch,
+  .menu-design-v2 .studio-v3-design-canvas-zoom {
+    min-width: 0 !important;
+    height: 30px !important;
+    padding: 1px !important;
+    gap: 1px !important;
+    border-radius: 8px !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-device-switch {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-device-switch button,
+  .menu-design-v2 .studio-v3-design-canvas-zoom button {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 28px !important;
+    min-height: 28px !important;
+    padding: 0 5px !important;
+    border-radius: 7px !important;
+    font-size: 10px !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-device-switch button {
+    gap: 4px !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-device-switch button > span:last-child {
+    display: inline !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-zoom {
+    display: flex !important;
+    width: auto !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-zoom button {
+    width: auto !important;
+    min-width: 27px !important;
+    padding-inline: 4px !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-zoom button.percentage {
+    min-width: 38px !important;
+    font-size: 9px !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-zoom button.fit {
+    min-width: 32px !important;
+    font-size: 9px !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-stage,
+  .menu-design-v2 .compact .studio-v3-design-canvas-stage {
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    padding: 4px !important;
+    display: grid !important;
+    place-items: center !important;
+    align-content: center !important;
+    justify-items: center !important;
+    overflow: hidden !important;
+    scroll-padding: 0 !important;
+    border-radius: 11px !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-size-label {
+    display: none !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-holder {
+    margin: 0 !important;
+  }
+
+  /* Hero framing must not cover the phone. On mobile it becomes a small
+     floating strip at the bottom of the preview instead of the desktop card. */
+  .menu-design-v2 .menu-design-v2-live-preview .studio-v3-design-canvas-stage .studio-v3-design-canvas-hero-tools {
+    top: auto !important;
+    right: 6px !important;
+    bottom: 6px !important;
+    left: 6px !important;
+    width: auto !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    padding: 5px 6px !important;
+    display: grid !important;
+    grid-template-columns: auto minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    gap: 6px !important;
+    transform: none !important;
+    border-radius: 10px !important;
+    white-space: nowrap !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-copy {
+    display: block !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-copy > strong {
+    gap: 4px !important;
+    font-size: 10px !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-copy > strong span {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-copy > small {
+    display: none !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-spectrum {
+    min-width: 0 !important;
+    display: grid !important;
+    gap: 2px !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-spectrum > span {
+    display: none !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-spectrum > div {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 0 !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-spectrum > div small {
+    display: none !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-spectrum input[type="range"] {
+    width: 100% !important;
+    min-width: 80px !important;
+    height: 20px !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-reset {
+    width: auto !important;
+    height: 28px !important;
+    min-width: 48px !important;
+    padding: 0 8px !important;
+    font-size: 9px !important;
+  }
+
+  /* ---------------- INSPECTOR — INDEPENDENT SCROLLER ---------------- */
+  .menu-design-v2 .menu-design-v2-controls {
+    grid-area: controls !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain !important;
+    -webkit-overflow-scrolling: touch !important;
+    border-inline-end: 0 !important;
+    border-top: 0 !important;
+    border-bottom: 0 !important;
+    background: var(--md-paper) !important;
+    scrollbar-width: none !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-controls::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  /* Remove explanatory copy that is useful on desktop but wastes the first
+     mobile inspector screen. The controls themselves remain unchanged. */
+  .menu-design-v2 .menu-design-v2-sidebar-title {
+    display: none !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-sidebar-overview {
+    gap: 5px !important;
+    padding: 6px 7px !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-logo-control {
+    min-height: 38px !important;
+    padding: 4px 5px !important;
+    grid-template-columns: 32px minmax(64px, 1fr) auto !important;
+    gap: 2px 6px !important;
+    border-radius: 9px !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-logo-preview {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 7px !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-logo-copy strong {
+    font-size: 11px !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-logo-copy small {
+    display: none !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-logo-upload {
+    min-height: 27px !important;
+    padding: 0 7px !important;
+    font-size: 10px !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-logo-remove {
+    font-size: 9px !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-variants-compact {
+    gap: 3px !important;
+    padding: 4px 5px !important;
+    border-radius: 9px !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-variants-copy {
+    display: none !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-variant-buttons {
+    gap: 4px !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-variant-button {
+    min-height: 34px !important;
+    padding: 3px 5px !important;
+    border-radius: 8px !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-variant-letter {
+    width: 20px !important;
+    height: 20px !important;
+    flex-basis: 20px !important;
+    font-size: 9px !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-variant-button strong {
+    font-size: 10px !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-variant-button small {
+    display: none !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-sidebar-picker .menu-design-picker-shell {
+    gap: 3px !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-sidebar-picker .menu-design-picker-industries {
+    gap: 3px !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-sidebar-picker .menu-design-picker-industries button {
+    min-height: 27px !important;
+    padding: 0 8px !important;
+    font-size: 10px !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-sidebar-picker .menu-design-picker-tab {
+    min-height: 36px !important;
+    padding: 4px 7px !important;
+    border-radius: 8px !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-sidebar-picker .menu-design-picker-tab > span:nth-child(2) {
+    font-size: 10px !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-sidebar-picker .menu-design-picker-scroll {
+    display: none !important;
+  }
+
+  /* Once the user scrolls into customization, keep the editor command band at
+     the top of the inspector pane while the live menu stays pinned above. */
+  .menu-design-v2 .studio-v3-design-commandbar {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 35 !important;
+    min-height: 34px !important;
+    padding: 4px 7px !important;
+    backdrop-filter: blur(16px) !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-history-actions button {
+    min-height: 28px !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-v2-nav {
+    gap: 4px !important;
+    padding: 5px 7px !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-v2-nav button {
+    min-height: 38px !important;
+    padding: 4px 7px !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-v2-nav button small {
+    display: none !important;
+  }
+}
+
+/* Very narrow phones: preserve the full preview by simplifying the toolbar. */
+@media (max-width: 390px) {
+  .menu-design-v2 .studio-v3-design-canvas-device-switch button > span:last-child {
+    display: none !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-zoom button.percentage {
+    display: none !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-hero-tools .hero-tools-copy {
+    display: none !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-live-preview .studio-v3-design-canvas-stage .studio-v3-design-canvas-hero-tools {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+  }
+}
+
+/* Landscape phones use the same principle as desktop: inspector and preview
+   side by side, both locked to the available viewport. */
+@media (max-width: 850px) and (orientation: landscape) and (max-height: 520px) {
+  .menu-design-v2 .menu-design-v2-workspace {
+    grid-template-columns: minmax(280px, 44%) minmax(0, 56%) !important;
+    grid-template-rows: minmax(0, 1fr) !important;
+    grid-template-areas: "controls canvas" !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-controls {
+    border-inline-end: 1px solid var(--md-line) !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-canvas {
+    border-bottom: 0 !important;
+  }
+}
