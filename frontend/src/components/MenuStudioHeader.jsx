@@ -5,6 +5,7 @@ import beyondLogo from "../assets/beyond-logo-transparent.png";
 import StudioLanguageMenu from "./StudioLanguageMenu";
 import MenuStudioMenuSwitcher from "./MenuStudioMenuSwitcher";
 import "./MenuStudioHeaderCompact.css";
+import "./MenuStudioCompactStack.css";
 import { applyStoredBeyondTheme, setBeyondTheme } from "../lib/beyondThemeBootstrap";
 import { flushStudioDraft, STUDIO_NAV_COPY, STUDIO_STAGES } from "../features/menu-engine/studio/studioNavigation";
 import { studioLanguageDirection } from "../features/menu-engine/studio/studioLanguage";
