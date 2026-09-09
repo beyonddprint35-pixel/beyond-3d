@@ -1,7 +1,7 @@
 .menu-publish-v2-share-actions{
   margin-top:10px;
   display:grid;
-  grid-template-columns:1fr 1fr;
+  grid-template-columns:repeat(4,minmax(0,1fr));
   gap:8px;
 }
 
@@ -34,6 +34,18 @@
   stroke-linejoin:round;
 }
 
+.menu-publish-v2-whatsapp-button{
+  color:#fff;
+  border-color:#25d366!important;
+  background:#25d366;
+  box-shadow:0 8px 20px rgba(37,211,102,.16);
+}
+
+.menu-publish-v2-sms-button{
+  color:var(--mpu-text);
+  background:var(--mpu-paper);
+}
+
 .menu-publish-v2-share-button{
   color:#fff;
   border-color:var(--mpu-blue)!important;
@@ -53,13 +65,19 @@
   box-shadow:none;
 }
 
+html[data-beyond-theme="dark"] .menu-publish-v2 .menu-publish-v2-whatsapp-button{
+  color:#fff!important;
+  border-color:#25d366!important;
+  background:#25d366!important;
+}
+
 html[data-beyond-theme="dark"] .menu-publish-v2 .menu-publish-v2-share-button{
   color:#fff!important;
   border-color:var(--beyond-studio-blue)!important;
   background:var(--beyond-studio-blue)!important;
 }
 
-html[data-beyond-theme="dark"] .menu-publish-v2 .menu-publish-v2-copy-button{
+html[data-beyond-theme="dark"] .menu-publish-v2 :is(.menu-publish-v2-sms-button,.menu-publish-v2-copy-button){
   color:var(--beyond-studio-text)!important;
   border-color:var(--beyond-studio-line)!important;
   background:var(--beyond-studio-surface-2)!important;
@@ -71,6 +89,10 @@ html[data-beyond-theme="dark"] .menu-publish-v2 .menu-publish-v2-share-actions b
   background:rgba(72,185,132,.08)!important;
 }
 
-@media(max-width:520px){
+@media(max-width:760px){
+  .menu-publish-v2-share-actions{grid-template-columns:1fr 1fr}
+}
+
+@media(max-width:420px){
   .menu-publish-v2-share-actions{grid-template-columns:1fr}
 }
