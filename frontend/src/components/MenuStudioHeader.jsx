@@ -16,37 +16,50 @@ export default function MenuStudioHeader({ stage, language, onLanguageChange, me
   const t = STUDIO_NAV_COPY[language] || STUDIO_NAV_COPY.en;
   const prefix = `menu-${stage === "analytics" ? "content" : stage}-v2`;
   const BackIcon = language === "en" ? ArrowLeft : ArrowRight;
+
   useEffect(() => {
     const refresh = (event) => setTheme(event?.detail?.theme || applyStoredBeyondTheme());
     window.addEventListener("beyond-theme-change", refresh);
     window.addEventListener("storage", refresh);
-    return () => { window.removeEventListener("beyond-theme-change", refresh); window.removeEventListener("storage", refresh); };
+    return () => {
+      window.removeEventListener("beyond-theme-change", refresh);
+      window.removeEventListener("storage", refresh);
+    };
   }, []);
+
   function openStage(nextStage) {
     flushStudioDraft();
     navigate(`/menu-studio/${nextStage}${location.search}`);
   }
-  return <header className={`${prefix}-topbar menu-studio-header`}>
-    <div className={`${prefix}-brand-wrap`}>
-      <button type="button" className={`${prefix}-back`} aria-label={backLabel || t.back} onClick={() => { flushStudioDraft(); if (onBack) onBack(); else navigate("/"); }}><BackIcon size={16} /></button>
-      <button type="button" className={`${prefix}-brand`} onClick={onBrand || (() => openStage("content"))}>
+
+  return <header className={`${prefix}-topbar menu-studio-header`} dir="ltr">
+    <div className={`${prefix}-brand-wrap menu-studio-header-brand-wrap`}>
+      <button type="button" className={`${prefix}-back`} aria-label={backLabel || t.back} onClick={() => { flushStudioDraft(); if (onBack) onBack(); else navigate("/"); }}>
+        <BackIcon size={16} />
+      </button>
+      <button type="button" className={`${prefix}-brand menu-studio-header-brand`} onClick={onBrand || (() => openStage("content"))}>
         <img src={beyondLogo} alt="" />
         <span>
-          <strong className="menu-studio-brand-title" dir="ltr"><span>Beyond</span><span className="menu-studio-brand-suffix"> Menu Studio</span></strong>
+          <strong className="menu-studio-brand-title">Beyond Menu Studio</strong>
           <small>{menuName}</small>
         </span>
       </button>
     </div>
+
     <nav className={`${prefix}-product-nav`} aria-label="Menu Studio" dir={studioLanguageDirection(language)}>
       {STUDIO_STAGES.map((key) => <button type="button" key={key} aria-current={key === stage ? "page" : undefined} className={key === stage ? "active" : ""} onClick={() => openStage(key)}>{t[key]}</button>)}
     </nav>
-    <div className={`${prefix}-top-actions`}>
+
+    <div className={`${prefix}-top-actions menu-studio-header-actions`}>
       <div className="menu-studio-header-controls">
         <StudioLanguageMenu value={language} onChange={onLanguageChange} label={t.language} compact showThemeToggle={false} />
-        <button type="button" className="studio-theme-toggle" aria-label={theme === "dark" ? t.light : t.dark} title={theme === "dark" ? t.light : t.dark} onClick={() => setBeyondTheme(theme === "dark" ? "light" : "dark")}>{theme === "dark" ? <Sun size={17} /> : <Moon size={17} />}</button>
+        <button type="button" className="studio-theme-toggle" aria-label={theme === "dark" ? t.light : t.dark} title={theme === "dark" ? t.light : t.dark} onClick={() => setBeyondTheme(theme === "dark" ? "light" : "dark")}>
+          {theme === "dark" ? <Sun size={17} /> : <Moon size={17} />}
+        </button>
       </div>
       {saveLabel ? <div className={`${prefix}-save`}><span className={saveState === "saved" ? "ok" : ""} /><strong>{saveLabel}</strong></div> : null}
     </div>
+
     <MenuStudioMenuSwitcher language={language} menuName={menuName} />
   </header>;
 }
