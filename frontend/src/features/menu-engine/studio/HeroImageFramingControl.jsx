@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Maximize2, Move, RotateCcw, ZoomIn, ZoomOut } from "lucide-react";
 import "./HeroImageFramingControl.css";
+import "./HeroImageFramingMobilePolish.css";
 
 const COPY = {
   en: {
@@ -109,9 +110,6 @@ export default function HeroImageFramingControl({ design, language = "en", patch
   const focusX = clamp(brand.heroImageFocusX, 0, 100, 50);
   const focusY = clamp(brand.heroImageFocusY, 0, 100, 50);
 
-  // The live Design Studio preview is rendered through a React portal inside a
-  // srcDoc iframe. Mirror the persisted framing directly onto the live hero so
-  // every framing change is immediately WYSIWYG.
   useEffect(() => {
     if (!enabled) return undefined;
     const framing = { focusX, focusY, zoom };
