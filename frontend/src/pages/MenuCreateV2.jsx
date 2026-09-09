@@ -17,6 +17,8 @@ import { PREMIUM_MENU_DESIGNS } from "../features/menu-engine/domain/menuDesignL
 import {
   MENU_CREATE_V2_DESIGN_KEY,
   MENU_CREATE_V2_FLOW_KEY,
+  createBlankMenuV2,
+  writeMenuStudioV2Draft,
 } from "../features/menu-engine/studio/menuStudioV2Session";
 import {
   readStudioLanguage,
@@ -235,12 +237,43 @@ export default function MenuCreateV2() {
     setScreen("start");
   }
 
+  function seedFreshManualDraft(designId = "") {
+    const nextMode = mode || "manual";
+    if (nextMode !== "manual") return;
+
+    const menu = createBlankMenuV2();
+    menu.default_language = ["en", "he", "ar"].includes(uiLanguage) ? uiLanguage : "en";
+
+    writeMenuStudioV2Draft({
+      menu,
+      designId,
+      contentLanguage: menu.default_language,
+      profile: {
+        ...readStoredFlow(),
+        mode: "manual",
+        sourceFallback: "manual",
+        answers,
+        uiLanguage,
+        createdAt: new Date().toISOString(),
+      },
+      publication: null,
+    }, { queueSave: false });
+  }
+
+  function openGuidedContent(designId = "") {
+    const nextMode = mode || "manual";
+    seedFreshManualDraft(designId);
+    const paramsOut = new URLSearchParams({ guided: "1", mode: nextMode, ui: uiLanguage });
+    if (designId) paramsOut.set("design", designId);
+    if (nextMode === "manual") paramsOut.set("new", "1");
+    if (websiteUrl.trim()) paramsOut.set("website", websiteUrl.trim());
+    window.location.assign(`/dev/menu-content-v2?${paramsOut.toString()}`);
+  }
+
   function selectDesign(entry) {
     persistFlow(mode, { recommendedDesignId: entry.id, recommendedDesignName: entry.name });
     try { window.sessionStorage.setItem(MENU_CREATE_V2_DESIGN_KEY, entry.id); } catch { /* non-blocking */ }
-    const paramsOut = new URLSearchParams({ guided: "1", mode: mode || "manual", design: entry.id, ui: uiLanguage });
-    if (websiteUrl.trim()) paramsOut.set("website", websiteUrl.trim());
-    window.location.assign(`/dev/menu-content-v2?${paramsOut.toString()}`);
+    openGuidedContent(entry.id);
   }
 
   function prepareConciergeRequest(event) {
@@ -325,7 +358,7 @@ export default function MenuCreateV2() {
                 </article>
               ))}
             </div>
-            <button type="button" className="menu-create-v2-secondary-link" onClick={() => window.location.assign(`/dev/menu-content-v2?guided=1&mode=${mode || "manual"}&ui=${uiLanguage}`)}>{t.skip}</button>
+            <button type="button" className="menu-create-v2-secondary-link" onClick={() => openGuidedContent()}>{t.skip}</button>
           </section>
         ) : null}
 
