@@ -1,0 +1,53 @@
+/* Hero positioning belongs in the Design settings, not on top of the scaled
+   device preview. Keep the real preview clean and make the dedicated framing
+   card the single, reliable editing surface. */
+.menu-design-v2.menu-design-v2 .menu-design-v2-live-preview .studio-v3-design-canvas-stage .studio-v3-design-canvas-hero-tools,
+.menu-design-v2.menu-design-v2 .studio-v3-design-canvas-hero-tools {
+  display: none !important;
+}
+
+/* MenuDesignCompactWorkspace previously hid the dedicated crop preview because
+   the device itself was intended to be draggable. The dedicated settings card
+   is now the source of truth again, so restore its usable image surface. */
+.menu-design-v2.menu-design-v2 .menu-design-v2-controls .hero-framing-control {
+  position: static !important;
+  bottom: auto !important;
+  z-index: auto !important;
+}
+
+.menu-design-v2.menu-design-v2 .menu-design-v2-controls .hero-framing-control .hero-framing-preview {
+  display: block !important;
+}
+
+.menu-design-v2.menu-design-v2 .menu-design-v2-controls .hero-framing-control .hero-framing-body {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 96px !important;
+  gap: 10px !important;
+}
+
+.menu-design-v2.menu-design-v2 .menu-design-v2-controls .hero-framing-control .hero-framing-position {
+  display: grid !important;
+}
+
+@media (max-width: 850px) {
+  .menu-design-v2.menu-design-v2 .menu-design-v2-controls .hero-framing-control {
+    margin: 6px 7px !important;
+    padding: 9px !important;
+    gap: 8px !important;
+    box-shadow: none !important;
+  }
+
+  .menu-design-v2.menu-design-v2 .menu-design-v2-controls .hero-framing-control .hero-framing-body {
+    grid-template-columns: minmax(0, 1fr) 82px !important;
+    gap: 7px !important;
+  }
+
+  .menu-design-v2.menu-design-v2 .menu-design-v2-controls .hero-framing-control .hero-framing-preview {
+    height: 92px !important;
+  }
+
+  .menu-design-v2.menu-design-v2 .menu-design-v2-controls .hero-framing-control .hero-framing-range-x,
+  .menu-design-v2.menu-design-v2 .menu-design-v2-controls .hero-framing-control .hero-framing-range-y {
+    display: none !important;
+  }
+}
