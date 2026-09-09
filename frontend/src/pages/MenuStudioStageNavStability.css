@@ -8,6 +8,10 @@
   display: none;
 }
 
+.menu-studio-menu-switcher-compact {
+  display: none;
+}
+
 :is(
   .menu-content-v2-product-nav,
   .menu-design-v2-product-nav,
@@ -35,13 +39,86 @@
   text-align: center !important;
 }
 
-/* Keep the multi-menu switcher on wide desktop workspaces only. The real
-   switcher class is menu-studio-menu-switcher; compact Studio should never
-   create a second horizontal row underneath the 64px header. */
+/* Wide desktop keeps the horizontal menu chips. Compact Studio keeps the same
+   switching capability but turns it into one small current-menu selector in
+   the header so it does not consume an entire row above the workspace. */
 @media (max-width: 1050px) {
-  .menu-studio-header > .menu-studio-menu-switcher,
-  .menu-studio-menu-switcher {
+  .menu-studio-header {
+    position: relative !important;
+  }
+
+  .menu-studio-header > .menu-studio-menu-switcher {
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    z-index: 120 !important;
+    width: clamp(138px, 22vw, 210px) !important;
+    margin: 0 !important;
+    transform: translate(-50%, -50%) !important;
+  }
+
+  .menu-studio-menu-switcher-wide {
     display: none !important;
+  }
+
+  .menu-studio-menu-switcher-compact {
+    width: 100% !important;
+    display: block !important;
+    position: relative !important;
+  }
+
+  .menu-studio-menu-switcher-compact > span {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
+
+  .menu-studio-menu-switcher-compact select {
+    width: 100% !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 0 30px 0 12px !important;
+    border: 1px solid var(--beyond-studio-line, rgba(60, 60, 67, .14)) !important;
+    border-radius: 11px !important;
+    outline: 0 !important;
+    color: var(--beyond-studio-text, #263248) !important;
+    background-color: var(--beyond-studio-surface, #fff) !important;
+    font: inherit !important;
+    font-size: 11px !important;
+    font-weight: 800 !important;
+    line-height: 1 !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    box-shadow: 0 4px 14px rgba(26, 36, 54, .07) !important;
+    cursor: pointer !important;
+  }
+
+  .menu-studio-menu-switcher[aria-busy="true"] .menu-studio-menu-switcher-compact select {
+    opacity: .62 !important;
+    cursor: wait !important;
+  }
+
+  .menu-studio-menu-switcher > p {
+    position: absolute !important;
+    top: calc(100% + 3px) !important;
+    left: 50% !important;
+    width: max-content !important;
+    max-width: 220px !important;
+    margin: 0 !important;
+    padding: 3px 7px !important;
+    transform: translateX(-50%) !important;
+    border-radius: 7px !important;
+    color: var(--beyond-studio-muted, #7d8796) !important;
+    background: var(--beyond-studio-surface, #fff) !important;
+    font-size: 9px !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 12px rgba(26, 36, 54, .08) !important;
   }
 }
 
@@ -220,6 +297,17 @@
 
   .menu-design-v2 .menu-design-v2-controls label.hero-framing-range:nth-of-type(n + 2) {
     display: none !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .menu-studio-header > .menu-studio-menu-switcher {
+    width: clamp(112px, 30vw, 138px) !important;
+  }
+
+  .menu-studio-menu-switcher-compact select {
+    padding-inline: 9px 24px !important;
+    font-size: 10px !important;
   }
 }
 
