@@ -25,7 +25,7 @@ export default function MenuStudioMenuSwitcher({ language, menuName }) {
     return () => { active = false; };
   }, [attempt, workspace]);
   async function switchMenu(id) {
-    if (id === projectId || status === "saving") return;
+    if (!id || id === projectId || status === "saving") return;
     setStatus("saving");
     try {
       let savedSnapshot;
@@ -46,10 +46,16 @@ export default function MenuStudioMenuSwitcher({ language, menuName }) {
   }
   if (status === "loadError") return <div className="menu-studio-menu-switcher"><button type="button" onClick={() => setAttempt((value) => value + 1)}>{t.menus} · {t.retry}</button></div>;
   if (projects.length <= 1) return null;
-  return <div className="menu-studio-menu-switcher">
-    <nav aria-label={t.menus}>
+  return <div className="menu-studio-menu-switcher" aria-busy={status === "saving" ? "true" : undefined}>
+    <nav className="menu-studio-menu-switcher-wide" aria-label={t.menus}>
       {projects.map((project) => <button key={project.id} type="button" aria-pressed={project.id === projectId} disabled={status === "saving"} onClick={() => switchMenu(project.id)}>{project.id === projectId ? menuName || project.name : project.name}</button>)}
     </nav>
+    <label className="menu-studio-menu-switcher-compact">
+      <span>{t.menus}</span>
+      <select value={projectId || ""} disabled={status === "saving"} aria-label={t.menus} onChange={(event) => switchMenu(event.target.value)}>
+        {projects.map((project) => <option key={project.id} value={project.id}>{project.id === projectId ? menuName || project.name : project.name}</option>)}
+      </select>
+    </label>
     {status ? <p role="status">{status === "saving" ? t.switching : t.switchError}</p> : null}
   </div>;
 }
