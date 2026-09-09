@@ -283,6 +283,7 @@ export default function MenuDesignStudioV2() {
             </div>
           </div>
 
+          <HeroImageFramingControl design={design} language={uiLanguage} patchDesign={patchDesign} />
           <MenuDesignControls
             design={design}
             designId={designId}
@@ -296,15 +297,12 @@ export default function MenuDesignStudioV2() {
           />
           {panel === "type" ? <MenuItemNameColorControl design={design} language={uiLanguage} patchDesign={patchDesign} /> : null}
           {panel === "hero" ? (
-            <>
-              <HeroImageFramingControl design={design} language={uiLanguage} patchDesign={patchDesign} />
-              <MenuHeroHeadlineControl
-                value={menu.hero_title}
-                language={contentLanguage}
-                industry={selectedDesignEntry?.industry || "restaurant"}
-                onChange={patchHeroHeadline}
-              />
-            </>
+            <MenuHeroHeadlineControl
+              value={menu.hero_title}
+              language={contentLanguage}
+              industry={selectedDesignEntry?.industry || "restaurant"}
+              onChange={patchHeroHeadline}
+            />
           ) : null}
         </aside>
 
