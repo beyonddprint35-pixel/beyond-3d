@@ -1,0 +1,151 @@
+/* =========================================================
+   BEYOND MENU STUDIO — COMPACT STACK CONTRACT
+
+   On phone/tablet widths the Studio top area is three deliberate bands:
+   1. Beyond Menu Studio + language/theme
+   2. Current menu selector
+   3. Mobile / Tablet / Desktop + zoom
+
+   The header owns bands 1–2. The Design preview toolbar owns band 3.
+   Nothing is allowed to overlap or share a row.
+   ========================================================= */
+
+@media (max-width: 850px) {
+  /* Reserve the complete two-row header in normal document flow. */
+  .menu-studio-header {
+    flex: 0 0 102px !important;
+    height: 102px !important;
+    min-height: 102px !important;
+    max-height: 102px !important;
+    align-self: stretch !important;
+  }
+
+  /* Design begins only after the full menu selector row. */
+  .menu-design-v2 > .menu-studio-header + .menu-design-v2-workspace {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-canvas {
+    padding: 5px 7px 8px !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-workspace.compact {
+    grid-template-rows: 42px minmax(0, 1fr) !important;
+    gap: 6px !important;
+  }
+
+  /* Band 3: a real full-width viewport bar directly beneath Your menus. */
+  .menu-design-v2 .studio-v3-design-canvas-workspace.compact > .studio-v3-design-canvas-toolbar {
+    position: relative !important;
+    inset: auto !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    z-index: 20 !important;
+    width: 100% !important;
+    height: 42px !important;
+    min-height: 42px !important;
+    margin: 0 !important;
+    padding: 3px !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    grid-template-rows: 36px !important;
+    align-items: center !important;
+    gap: 5px !important;
+    overflow: hidden !important;
+    border: 1px solid var(--beyond-studio-line, rgba(60,60,67,.12)) !important;
+    border-radius: 11px !important;
+    background: var(--beyond-studio-surface, #fff) !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-workspace.compact .studio-v3-design-canvas-title {
+    display: none !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-workspace.compact .studio-v3-design-canvas-device-switch {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 36px !important;
+    padding: 2px !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 2px !important;
+    justify-self: stretch !important;
+    border-radius: 9px !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-workspace.compact .studio-v3-design-canvas-device-switch button {
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 32px !important;
+    padding: 0 4px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    border-radius: 7px !important;
+    font-size: 9px !important;
+    white-space: nowrap !important;
+  }
+
+  /* Keep the actual names visible: Mobile / Tablet / Desktop. */
+  .menu-design-v2 .studio-v3-design-canvas-workspace.compact .studio-v3-design-canvas-device-switch button > span:last-child {
+    display: inline !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-workspace.compact .studio-v3-design-canvas-zoom {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    height: 36px !important;
+    padding: 2px !important;
+    gap: 1px !important;
+    justify-self: end !important;
+    border-radius: 9px !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-workspace.compact .studio-v3-design-canvas-zoom button {
+    height: 32px !important;
+    min-width: 25px !important;
+    padding: 0 4px !important;
+    font-size: 11px !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-workspace.compact .studio-v3-design-canvas-zoom button.percentage {
+    min-width: 35px !important;
+    font-size: 8px !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-workspace.compact .studio-v3-design-canvas-zoom button.fit {
+    min-width: 29px !important;
+    font-size: 8px !important;
+  }
+
+  /* The preview starts below the viewport bar, never underneath it. */
+  .menu-design-v2 .studio-v3-design-canvas-workspace.compact > .studio-v3-design-canvas-stage {
+    grid-row: 2 !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .menu-design-v2 .studio-v3-design-canvas-workspace.compact .studio-v3-design-canvas-device-switch button {
+    padding-inline: 3px !important;
+    gap: 3px !important;
+    font-size: 8px !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-workspace.compact .studio-v3-canvas-device-icon {
+    transform: scale(.88) !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-workspace.compact .studio-v3-design-canvas-zoom button {
+    min-width: 23px !important;
+    padding-inline: 3px !important;
+  }
+}
