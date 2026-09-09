@@ -57,11 +57,26 @@ installMenuAiOnlineReferenceOverlay();
 installMenuAiImageViewerOverlay();
 installMenuAiMenuCropOverlay();
 
+function BeyondRootRoute() {
+  const path = window.location.pathname.replace(/\/+$/, "") || "/";
+
+  // Public customer menus now belong to App's V3 route. That route reads the
+  // immutable publication first and falls back to migrated legacy menus, so
+  // both new Studio publications and existing QR URLs use the same resilient
+  // public-menu loader. Keep BeyondMenuRoute for its remaining legacy/admin
+  // entry points only.
+  if (path.startsWith("/menu/")) {
+    return <App />;
+  }
+
+  return <BeyondMenuRoute fallback={<App />} />;
+}
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BeyondLanguageProvider>
       <BeyondAutoTranslate />
-      <BeyondMenuRoute fallback={<App />} />
+      <BeyondRootRoute />
       <LegacyPublicMenuAnalytics />
       <MenuStudioHomeReturn />
       <BeyondLiveMenuDesignPortal />
