@@ -26,6 +26,7 @@
   cursor:pointer;
   white-space:nowrap;
 }
+.hero-framing-body{display:grid;grid-template-columns:minmax(0,1fr) 96px;gap:10px;align-items:stretch}
 .hero-framing-preview{
   position:relative;
   height:150px;
@@ -80,6 +81,32 @@
   background:rgba(0,0,0,.18);
   pointer-events:none;
 }
+.hero-framing-position{
+  min-width:0;
+  padding:8px;
+  display:grid;
+  align-content:start;
+  gap:7px;
+  border:1px solid var(--beyond-studio-line,rgba(60,60,67,.12));
+  border-radius:12px;
+  background:var(--beyond-studio-surface-2,#f7f8fa);
+}
+.hero-framing-position>span{color:var(--beyond-studio-muted,#6f7682);font-size:8.5px;font-weight:800;text-align:center}
+.hero-framing-position-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.hero-framing-position-grid button{
+  aspect-ratio:1;
+  min-width:0;
+  padding:0;
+  display:grid;
+  place-items:center;
+  border:1px solid var(--beyond-studio-line,rgba(60,60,67,.13));
+  border-radius:7px;
+  background:var(--beyond-studio-surface,#fff);
+  cursor:pointer;
+}
+.hero-framing-position-grid button span{width:5px;height:5px;border-radius:50%;background:#aab2bf}
+.hero-framing-position-grid button.active{border-color:#4974e5;background:#eef3ff;box-shadow:0 0 0 2px rgba(73,116,229,.10)}
+.hero-framing-position-grid button.active span{background:#4974e5}
 .hero-framing-range{display:grid;gap:6px}
 .hero-framing-range>span{display:flex;align-items:center;gap:5px;color:var(--beyond-studio-muted,#66666b);font-size:9px;font-weight:700}
 .hero-framing-range b{margin-inline-start:auto;color:var(--beyond-studio-text,#242428);font-size:9px;font-variant-numeric:tabular-nums}
@@ -99,3 +126,8 @@ html[data-beyond-theme="dark"] .hero-framing-head>button{
   color:#c3cbd6;
 }
 html[data-beyond-theme="dark"] .hero-framing-head>button:hover{background:#273241;color:#fff}
+html[data-beyond-theme="dark"] .hero-framing-position{border-color:rgba(255,255,255,.1);background:#202833}
+html[data-beyond-theme="dark"] .hero-framing-position>span{color:#a8b1bd}
+html[data-beyond-theme="dark"] .hero-framing-position-grid button{border-color:rgba(255,255,255,.1);background:#151c24}
+html[data-beyond-theme="dark"] .hero-framing-position-grid button.active{border-color:#6e93ff;background:#233252}
+html[data-beyond-theme="dark"] .hero-framing-position-grid button.active span{background:#8aa8ff}
