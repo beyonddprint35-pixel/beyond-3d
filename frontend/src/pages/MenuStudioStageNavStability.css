@@ -35,6 +35,20 @@
   text-align: center !important;
 }
 
+/* The desktop multi-menu switcher is useful on a wide workspace, but on the
+   compact Studio it becomes an extra horizontal row above the editor and
+   steals space from the live preview. Keep it desktop-only. */
+@media (max-width: 1050px) {
+  :is(
+    .menu-content-v2-topbar,
+    .menu-design-v2-topbar,
+    .menu-preview-v2-topbar,
+    .menu-publish-v2-topbar
+  ) > .menu-studio-switcher {
+    display: none !important;
+  }
+}
+
 @media (max-width: 850px) {
   :is(
     .menu-content-v2,
