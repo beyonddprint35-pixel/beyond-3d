@@ -103,89 +103,41 @@
 }
 
 /* =========================================================
-   MOBILE PREVIEW — DEVICE FIRST
+   COMPACT PREVIEW — DEVICE FIRST
 
-   On phones the Preview tab behaves like an app screen, not a long report.
-   Supporting information collapses into compact controls so the simulated
-   menu gets the majority of the viewport.
+   Narrow Studio windows should behave like an app screen, not a long report.
+   The preview owns the viewport and the simulated device always fits inside it.
+   This also covers split-screen / half-window desktop use, not only phones.
    ========================================================= */
-@media (max-width: 720px) {
+@media (max-width: 1050px) {
   body:has(.menu-preview-v2) {
     overflow: hidden !important;
   }
 
   .menu-preview-v2 {
+    box-sizing: border-box !important;
+    width: 100% !important;
     height: 100dvh !important;
     min-height: 0 !important;
     overflow: hidden !important;
     display: grid !important;
-    grid-template-rows: auto auto minmax(0,1fr) auto !important;
+    grid-template-rows: auto minmax(0,1fr) auto !important;
     align-content: stretch !important;
-    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
-  /* The large marketing/readiness intro is useful on desktop, but on a phone
-     it steals the space the customer preview needs. */
-  .menu-preview-v2-intro {
-    display: none !important;
-  }
-
-  /* Languages become one compact segmented strip. The status dot is enough
-     here; detailed readiness remains available on larger screens. */
+  /* The Preview tab is for seeing the menu. Readiness/language details are
+     available elsewhere and should not steal vertical space in a narrow view. */
+  .menu-preview-v2-intro,
   .menu-preview-v2-language-review {
-    width: calc(100% - 10px) !important;
-    min-height: 42px !important;
-    margin: 4px auto !important;
-    padding: 4px !important;
-    display: block !important;
-    border-radius: 11px !important;
-    background: color-mix(in srgb, var(--mp-paper) 92%, transparent) !important;
-    box-shadow: none !important;
-  }
-  .menu-preview-v2-language-review-heading {
-    display: none !important;
-  }
-  .menu-preview-v2-language-cards {
-    width: 100% !important;
-    display: grid !important;
-    grid-template-columns: repeat(3,minmax(0,1fr)) !important;
-    gap: 4px !important;
-  }
-  .menu-preview-v2-language-cards > button {
-    min-width: 0 !important;
-    min-height: 32px !important;
-    padding: 3px 6px !important;
-    grid-template-columns: 18px minmax(0,1fr) !important;
-    gap: 5px !important;
-    border-radius: 8px !important;
-  }
-  .menu-preview-v2-language-state {
-    width: 18px !important;
-    height: 18px !important;
-    border-radius: 6px !important;
-  }
-  .menu-preview-v2-language-state svg {
-    width: 12px !important;
-    height: 12px !important;
-  }
-  .menu-preview-v2-language-copy strong {
-    overflow: hidden !important;
-    font-size: 11px !important;
-    line-height: 1.1 !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
-  }
-  .menu-preview-v2-language-copy small,
-  .menu-preview-v2-language-cards b {
     display: none !important;
   }
 
-  /* Preview stage consumes all remaining height. */
+  /* Preview stage consumes every remaining pixel between the header and CTA. */
   .menu-preview-v2-stage-wrap {
     width: calc(100% - 8px) !important;
     height: auto !important;
     min-height: 0 !important;
-    margin: 0 auto !important;
+    margin: 4px auto 0 !important;
     align-self: stretch !important;
     border-radius: 13px !important;
     box-shadow: none !important;
@@ -195,13 +147,14 @@
     min-height: 0 !important;
     padding: 4px !important;
     gap: 4px !important;
-    grid-template-rows: auto minmax(0,1fr) !important;
+    grid-template-rows: 36px minmax(0,1fr) !important;
   }
 
-  /* Keep Mobile / Tablet / Desktop and zoom visible in one compact toolbar. */
+  /* One slim toolbar: device choice on the left, zoom controls on the right. */
   .menu-preview-v2-stage-wrap .studio-v3-preview-v2-header {
     width: 100% !important;
-    min-height: 38px !important;
+    min-height: 36px !important;
+    height: 36px !important;
     margin: 0 !important;
     display: block !important;
   }
@@ -211,6 +164,7 @@
   }
   .menu-preview-v2-stage-wrap .studio-v3-preview-v2-controls {
     width: 100% !important;
+    height: 36px !important;
     display: grid !important;
     grid-template-columns: minmax(0,1fr) auto !important;
     align-items: center !important;
@@ -219,7 +173,7 @@
   .menu-preview-v2-stage-wrap .studio-v3-preview-device-switch,
   .menu-preview-v2-stage-wrap .studio-v3-preview-zoom {
     min-width: 0 !important;
-    height: 36px !important;
+    height: 34px !important;
     padding: 2px !important;
     gap: 1px !important;
     border-radius: 9px !important;
@@ -233,7 +187,7 @@
   .menu-preview-v2-stage-wrap .studio-v3-preview-device-switch button {
     width: 100% !important;
     min-width: 0 !important;
-    height: 30px !important;
+    height: 28px !important;
     padding: 0 4px !important;
     gap: 4px !important;
     border-radius: 7px !important;
@@ -258,11 +212,11 @@
     height: 11px !important;
   }
   .menu-preview-v2-stage-wrap .studio-v3-preview-zoom button {
-    height: 30px !important;
+    height: 28px !important;
     min-width: 27px !important;
     padding: 0 4px !important;
     border-radius: 7px !important;
-    font-size: 13px !important;
+    font-size: 12px !important;
   }
   .menu-preview-v2-stage-wrap .studio-v3-preview-zoom .percentage {
     min-width: 38px !important;
@@ -273,42 +227,56 @@
     font-size: 9px !important;
   }
 
+  /* No artificial minimum height: Fit can now use the real visible stage. */
   .menu-preview-v2-stage-wrap .studio-v3-preview-v2-stage {
     width: 100% !important;
     height: 100% !important;
     min-height: 0 !important;
-    padding: 5px !important;
+    padding: 4px !important;
+    overflow: hidden !important;
     border: 0 !important;
     border-radius: 10px !important;
     box-shadow: none !important;
   }
 
-  /* Navigation remains available without pushing the preview off screen. */
+  /* Keep the two useful actions without turning them into another large panel. */
   .menu-preview-v2-footer {
     width: calc(100% - 10px) !important;
-    min-height: 42px !important;
+    min-height: 40px !important;
     margin: 0 auto !important;
-    padding: 4px 0 !important;
+    padding: 3px 0 !important;
     gap: 5px !important;
   }
   .menu-preview-v2-footer button {
     min-width: 0 !important;
     min-height: 34px !important;
-    padding: 0 8px !important;
+    padding: 0 9px !important;
     gap: 5px !important;
     border-radius: 9px !important;
     font-size: 10px !important;
   }
 
-  html[data-beyond-theme="dark"] .menu-preview-v2-language-review {
-    background: rgba(13,20,29,.94) !important;
+  html[data-beyond-theme="dark"] .menu-preview-v2-stage-wrap {
+    box-shadow: none !important;
   }
 }
 
-@media (max-width: 390px) {
+@media (max-width: 850px) {
+  /* MenuStudioStageNavStability reserves space for the fixed bottom navigation.
+     Border-box keeps that reserved space INSIDE 100dvh instead of making the
+     Preview page taller than the screen. */
+  .menu-preview-v2 {
+    box-sizing: border-box !important;
+  }
+}
+
+@media (max-width: 460px) {
   .menu-preview-v2-stage-wrap .studio-v3-preview-device-switch button {
     gap: 3px !important;
     font-size: 9px !important;
+  }
+  .menu-preview-v2-stage-wrap .studio-v3-preview-device-switch button span {
+    display: none !important;
   }
   .menu-preview-v2-stage-wrap .studio-v3-preview-zoom .fit {
     display: none !important;
