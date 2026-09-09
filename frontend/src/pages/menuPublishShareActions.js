@@ -1,9 +1,30 @@
 import "./menuPublishShareActions.css";
 
 const COPY = {
-  en: { share: "Share", copy: "Copy link", copied: "Copied" },
-  he: { share: "שיתוף", copy: "העתקת קישור", copied: "הועתק" },
-  ar: { share: "مشاركة", copy: "نسخ الرابط", copied: "تم النسخ" },
+  en: {
+    share: "Share",
+    copy: "Copy link",
+    copied: "Copied",
+    whatsapp: "WhatsApp",
+    sms: "SMS",
+    message: "Check out our menu",
+  },
+  he: {
+    share: "שיתוף",
+    copy: "העתקת קישור",
+    copied: "הועתק",
+    whatsapp: "WhatsApp",
+    sms: "SMS",
+    message: "הנה התפריט שלנו",
+  },
+  ar: {
+    share: "مشاركة",
+    copy: "نسخ الرابط",
+    copied: "تم النسخ",
+    whatsapp: "WhatsApp",
+    sms: "SMS",
+    message: "تفضلوا قائمتنا",
+  },
 };
 
 const SHARE_ICON = `
@@ -26,6 +47,18 @@ const CHECK_ICON = `
     <path d="m5 12 4 4L19 6"></path>
   </svg>`;
 
+const WHATSAPP_ICON = `
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M20.5 11.6a8.5 8.5 0 0 1-12.6 7.5L3 20.5l1.4-4.7A8.5 8.5 0 1 1 20.5 11.6Z"></path>
+    <path d="M8.1 7.7c.3-.6.6-.6.9-.6h.5c.2 0 .4.1.5.4l.8 1.9c.1.3.1.5-.1.7l-.6.8c-.2.2-.1.4 0 .6.6 1.1 1.5 2 2.6 2.6.2.1.4.1.6-.1l.8-1c.2-.2.4-.3.7-.2l1.9.9c.3.1.4.3.4.5 0 .3-.2 1.3-.9 1.8-.5.4-1.2.7-2 .6-1.2-.2-2.8-.8-4.4-2.2-1.9-1.7-3.1-3.8-3.4-5-.2-.8.1-1.5.7-1.7Z"></path>
+  </svg>`;
+
+const SMS_ICON = `
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M21 15a4 4 0 0 1-4 4H8l-5 3v-7a4 4 0 0 1-1-2.6V7a4 4 0 0 1 4-4h11a4 4 0 0 1 4 4Z"></path>
+    <path d="M7 9h10M7 13h7"></path>
+  </svg>`;
+
 function languageFor(root) {
   const lang = root?.getAttribute("lang") || document.documentElement.lang || "en";
   return lang === "he" || lang === "ar" ? lang : "en";
@@ -34,6 +67,15 @@ function languageFor(root) {
 function publicUrlFor(root) {
   const value = root?.querySelector(".menu-publish-v2-url-preview strong")?.textContent?.trim();
   return value || "";
+}
+
+function menuNameFor(root) {
+  return root?.querySelector(".menu-studio-header-menu-name")?.textContent?.trim() || "Beyond Menu";
+}
+
+function shareText(root, url, t) {
+  const name = menuNameFor(root);
+  return `${t.message} — ${name}\n${url}`;
 }
 
 async function copyText(value) {
@@ -84,6 +126,12 @@ function buildActions(root) {
   const wrap = document.createElement("div");
   wrap.className = "menu-publish-v2-share-actions";
   wrap.innerHTML = `
+    <button type="button" class="menu-publish-v2-whatsapp-button" aria-label="${t.whatsapp}">
+      ${WHATSAPP_ICON}<span>${t.whatsapp}</span>
+    </button>
+    <button type="button" class="menu-publish-v2-sms-button" aria-label="${t.sms}">
+      ${SMS_ICON}<span>${t.sms}</span>
+    </button>
     <button type="button" class="menu-publish-v2-share-button" aria-label="${t.share}">
       ${SHARE_ICON}<span>${t.share}</span>
     </button>
@@ -91,8 +139,24 @@ function buildActions(root) {
       ${COPY_ICON}<span>${t.copy}</span>
     </button>`;
 
+  const whatsappButton = wrap.querySelector(".menu-publish-v2-whatsapp-button");
+  const smsButton = wrap.querySelector(".menu-publish-v2-sms-button");
   const shareButton = wrap.querySelector(".menu-publish-v2-share-button");
   const copyButton = wrap.querySelector(".menu-publish-v2-copy-button");
+
+  whatsappButton?.addEventListener("click", () => {
+    const url = publicUrlFor(root);
+    if (!url) return;
+    const message = shareText(root, url, t);
+    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+  });
+
+  smsButton?.addEventListener("click", () => {
+    const url = publicUrlFor(root);
+    if (!url) return;
+    const message = shareText(root, url, t);
+    window.location.href = `sms:?&body=${encodeURIComponent(message)}`;
+  });
 
   copyButton?.addEventListener("click", async () => {
     const url = publicUrlFor(root);
@@ -107,7 +171,8 @@ function buildActions(root) {
     if (typeof navigator.share === "function") {
       try {
         await navigator.share({
-          title: root.querySelector(".menu-studio-header-menu-name")?.textContent?.trim() || "Beyond Menu",
+          title: menuNameFor(root),
+          text: t.message,
           url,
         });
         return;
