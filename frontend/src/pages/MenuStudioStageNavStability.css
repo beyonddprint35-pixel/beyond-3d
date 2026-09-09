@@ -35,16 +35,12 @@
   text-align: center !important;
 }
 
-/* The desktop multi-menu switcher is useful on a wide workspace, but on the
-   compact Studio it becomes an extra horizontal row above the editor and
-   steals space from the live preview. Keep it desktop-only. */
+/* Keep the multi-menu switcher on wide desktop workspaces only. The real
+   switcher class is menu-studio-menu-switcher; compact Studio should never
+   create a second horizontal row underneath the 64px header. */
 @media (max-width: 1050px) {
-  :is(
-    .menu-content-v2-topbar,
-    .menu-design-v2-topbar,
-    .menu-preview-v2-topbar,
-    .menu-publish-v2-topbar
-  ) > .menu-studio-switcher {
+  .menu-studio-header > .menu-studio-menu-switcher,
+  .menu-studio-menu-switcher {
     display: none !important;
   }
 }
@@ -162,6 +158,67 @@
     .menu-preview-v2-brand,
     .menu-publish-v2-brand
   ) > span > small {
+    display: none !important;
+  }
+
+  /* Photo positioning on a touch-sized Studio should work directly on the
+     actual menu. The canvas already supports pointer/touch dragging on the
+     hero image, so remove the misleading floating "Move photo" slider. */
+  .menu-design-v2 .menu-design-v2-live-preview .studio-v3-design-canvas-hero-tools {
+    display: none !important;
+  }
+
+  /* When the hero is selected, expose one compact framing control in the
+     inspector: clear drag guidance + zoom + reset. Horizontal/vertical sliders
+     and the duplicate mini-preview are unnecessary because the real hero is
+     draggable directly above. */
+  .menu-design-v2 .menu-design-v2-controls .hero-framing-control {
+    display: grid !important;
+    margin: 5px 7px !important;
+    padding: 8px !important;
+    gap: 7px !important;
+    border-radius: 10px !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-controls .hero-framing-head {
+    align-items: center !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-controls .hero-framing-head > div {
+    gap: 2px !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-controls .hero-framing-head strong {
+    font-size: 10.5px !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-controls .hero-framing-head small {
+    font-size: 8.5px !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-controls .hero-framing-head > button {
+    min-height: 28px !important;
+    padding: 0 7px !important;
+    font-size: 8px !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-controls .hero-framing-preview {
+    display: none !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-controls .hero-framing-range {
+    gap: 3px !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-controls .hero-framing-range > span {
+    font-size: 8.5px !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-controls .hero-framing-range input[type="range"] {
+    height: 20px !important;
+  }
+
+  .menu-design-v2 .menu-design-v2-controls label.hero-framing-range:nth-of-type(n + 2) {
     display: none !important;
   }
 }
