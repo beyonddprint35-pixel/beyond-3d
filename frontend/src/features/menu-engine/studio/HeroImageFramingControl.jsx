@@ -5,32 +5,74 @@ import "./HeroImageFramingControl.css";
 const COPY = {
   en: {
     title: "Position hero photo",
-    hint: "Drag the photo to move it. Use zoom to choose the crop.",
+    hint: "Drag the preview or tap a position. Use zoom to choose the crop.",
     zoom: "Zoom",
     horizontal: "Horizontal position",
     vertical: "Vertical position",
     reset: "Reset framing",
     drag: "Drag photo to reposition",
+    position: "Quick position",
+    topLeft: "Top left",
+    topCenter: "Top center",
+    topRight: "Top right",
+    centerLeft: "Center left",
+    center: "Center",
+    centerRight: "Center right",
+    bottomLeft: "Bottom left",
+    bottomCenter: "Bottom center",
+    bottomRight: "Bottom right",
   },
   he: {
     title: "מיקום תמונת ה-Hero",
-    hint: "גררו את התמונה כדי להזיז אותה. השתמשו בזום כדי לבחור את החיתוך.",
+    hint: "גררו את התצוגה או בחרו מיקום. השתמשו בזום כדי לבחור את החיתוך.",
     zoom: "זום",
     horizontal: "מיקום אופקי",
     vertical: "מיקום אנכי",
     reset: "איפוס המסגור",
     drag: "גררו את התמונה כדי למקם אותה",
+    position: "מיקום מהיר",
+    topLeft: "למעלה שמאל",
+    topCenter: "למעלה מרכז",
+    topRight: "למעלה ימין",
+    centerLeft: "מרכז שמאל",
+    center: "מרכז",
+    centerRight: "מרכז ימין",
+    bottomLeft: "למטה שמאל",
+    bottomCenter: "למטה מרכז",
+    bottomRight: "למטה ימין",
   },
   ar: {
     title: "موضع صورة الواجهة",
-    hint: "اسحب الصورة لتحريكها، واستخدم التكبير لاختيار القص.",
+    hint: "اسحب المعاينة أو اختر موضعاً، واستخدم التكبير لاختيار القص.",
     zoom: "التكبير",
     horizontal: "الموضع الأفقي",
     vertical: "الموضع العمودي",
     reset: "إعادة ضبط الإطار",
     drag: "اسحب الصورة لتغيير موضعها",
+    position: "موضع سريع",
+    topLeft: "أعلى اليسار",
+    topCenter: "أعلى الوسط",
+    topRight: "أعلى اليمين",
+    centerLeft: "وسط اليسار",
+    center: "الوسط",
+    centerRight: "وسط اليمين",
+    bottomLeft: "أسفل اليسار",
+    bottomCenter: "أسفل الوسط",
+    bottomRight: "أسفل اليمين",
   },
 };
+
+const POSITION_PRESETS = Object.freeze([
+  { key: "topLeft", x: 20, y: 20 },
+  { key: "topCenter", x: 50, y: 20 },
+  { key: "topRight", x: 80, y: 20 },
+  { key: "centerLeft", x: 20, y: 50 },
+  { key: "center", x: 50, y: 50 },
+  { key: "centerRight", x: 80, y: 50 },
+  { key: "bottomLeft", x: 20, y: 80 },
+  { key: "bottomCenter", x: 50, y: 80 },
+  { key: "bottomRight", x: 80, y: 80 },
+]);
 
 function clamp(value, min, max, fallback) {
   const parsed = Number(value);
@@ -68,10 +110,8 @@ export default function HeroImageFramingControl({ design, language = "en", patch
   const focusY = clamp(brand.heroImageFocusY, 0, 100, 50);
 
   // The live Design Studio preview is rendered through a React portal inside a
-  // srcDoc iframe. React correctly receives the updated design, but browser
-  // stylesheet cloning can leave object-position/transform on the hero image
-  // stale until the iframe is rebuilt. Mirror the persisted framing directly
-  // onto the live hero image so dragging and sliders are truly WYSIWYG.
+  // srcDoc iframe. Mirror the persisted framing directly onto the live hero so
+  // every framing change is immediately WYSIWYG.
   useEffect(() => {
     if (!enabled) return undefined;
     const framing = { focusX, focusY, zoom };
@@ -112,8 +152,6 @@ export default function HeroImageFramingControl({ design, language = "en", patch
     if (!drag || drag.pointerId !== event.pointerId) return;
     const dx = event.clientX - drag.x;
     const dy = event.clientY - drag.y;
-    // Move the picture with the pointer: dragging right reveals more of the
-    // left side, so object-position moves in the opposite direction.
     const nextX = clamp(drag.focusX - (dx / drag.width) * 100 / zoom, 0, 100, 50);
     const nextY = clamp(drag.focusY - (dy / drag.height) * 100 / zoom, 0, 100, 50);
     patchFraming({ heroImageFocusX: nextX, heroImageFocusY: nextY });
@@ -123,6 +161,11 @@ export default function HeroImageFramingControl({ design, language = "en", patch
   function endDrag(event) {
     if (dragRef.current?.pointerId === event.pointerId) dragRef.current = null;
     event.currentTarget.releasePointerCapture?.(event.pointerId);
+  }
+
+  function selectPosition(position) {
+    patchFraming({ heroImageFocusX: position.x, heroImageFocusY: position.y });
+    applyFramingToLivePreview({ focusX: position.x, focusY: position.y, zoom });
   }
 
   const previewStyle = {
@@ -143,31 +186,53 @@ export default function HeroImageFramingControl({ design, language = "en", patch
         </button>
       </div>
 
-      <div
-        className="hero-framing-preview"
-        onPointerDown={beginDrag}
-        onPointerMove={moveDrag}
-        onPointerUp={endDrag}
-        onPointerCancel={endDrag}
-        role="img"
-        aria-label={t.drag}
-      >
-        <img src={imageUrl} alt="" draggable="false" style={previewStyle} />
-        <span className="hero-framing-drag-hint"><Move size={14} aria-hidden="true" /> {t.drag}</span>
-        <span className="hero-framing-crosshair" aria-hidden="true"><Maximize2 size={16} /></span>
+      <div className="hero-framing-body">
+        <div
+          className="hero-framing-preview"
+          onPointerDown={beginDrag}
+          onPointerMove={moveDrag}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+          role="img"
+          aria-label={t.drag}
+        >
+          <img src={imageUrl} alt="" draggable="false" style={previewStyle} />
+          <span className="hero-framing-drag-hint"><Move size={14} aria-hidden="true" /> {t.drag}</span>
+          <span className="hero-framing-crosshair" aria-hidden="true"><Maximize2 size={16} /></span>
+        </div>
+
+        <div className="hero-framing-position">
+          <span>{t.position}</span>
+          <div className="hero-framing-position-grid" role="group" aria-label={t.position}>
+            {POSITION_PRESETS.map((position) => {
+              const active = Math.abs(focusX - position.x) <= 5 && Math.abs(focusY - position.y) <= 5;
+              return (
+                <button
+                  key={position.key}
+                  type="button"
+                  className={active ? "active" : ""}
+                  aria-label={t[position.key]}
+                  aria-pressed={active}
+                  title={t[position.key]}
+                  onClick={() => selectPosition(position)}
+                ><span aria-hidden="true" /></button>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
-      <label className="hero-framing-range">
+      <label className="hero-framing-range hero-framing-range-zoom">
         <span><ZoomOut size={13} aria-hidden="true" /> {t.zoom} <b>{zoom.toFixed(2)}×</b> <ZoomIn size={13} aria-hidden="true" /></span>
         <input type="range" min="1" max="3" step="0.05" value={zoom} onChange={(event) => patchFraming({ heroImageZoom: Number(event.target.value) })} />
       </label>
 
-      <label className="hero-framing-range">
+      <label className="hero-framing-range hero-framing-range-x">
         <span>{t.horizontal} <b>{Math.round(focusX)}%</b></span>
         <input type="range" min="0" max="100" step="1" value={focusX} onChange={(event) => patchFraming({ heroImageFocusX: Number(event.target.value) })} />
       </label>
 
-      <label className="hero-framing-range">
+      <label className="hero-framing-range hero-framing-range-y">
         <span>{t.vertical} <b>{Math.round(focusY)}%</b></span>
         <input type="range" min="0" max="100" step="1" value={focusY} onChange={(event) => patchFraming({ heroImageFocusY: Number(event.target.value) })} />
       </label>
