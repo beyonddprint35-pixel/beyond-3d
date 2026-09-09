@@ -131,3 +131,60 @@ html[data-beyond-theme="dark"] .hero-framing-position>span{color:#a8b1bd}
 html[data-beyond-theme="dark"] .hero-framing-position-grid button{border-color:rgba(255,255,255,.1);background:#151c24}
 html[data-beyond-theme="dark"] .hero-framing-position-grid button.active{border-color:#6e93ff;background:#233252}
 html[data-beyond-theme="dark"] .hero-framing-position-grid button.active span{background:#8aa8ff}
+
+/* Design Studio policy: photo framing belongs to the settings panel, not on top
+   of the live phone/tablet/desktop preview. Older compact-workspace rules tried
+   to hide the settings preview and float controls over the device; reverse that
+   here with higher specificity so there is one clear editing surface. */
+.menu-design-v2 .menu-design-v2-live-preview .studio-v3-design-canvas-stage .studio-v3-design-canvas-hero-tools{
+  display:none!important;
+}
+
+.menu-design-v2 .menu-design-v2-controls .hero-framing-control{
+  position:static!important;
+  bottom:auto!important;
+  z-index:auto!important;
+  margin:8px!important;
+  padding:10px!important;
+  gap:9px!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+}
+
+.menu-design-v2 .menu-design-v2-controls .hero-framing-control .hero-framing-preview{
+  display:block!important;
+}
+
+.menu-design-v2 .menu-design-v2-controls .hero-framing-control .hero-framing-range{
+  min-height:0!important;
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:5px!important;
+}
+
+@media(max-width:850px){
+  .menu-design-v2 .menu-design-v2-controls .hero-framing-control{
+    margin:7px!important;
+    padding:9px!important;
+    border-radius:12px!important;
+  }
+
+  .menu-design-v2 .menu-design-v2-controls .hero-framing-control .hero-framing-body{
+    grid-template-columns:minmax(0,1fr) 82px!important;
+    gap:7px!important;
+  }
+
+  .menu-design-v2 .menu-design-v2-controls .hero-framing-control .hero-framing-preview{
+    height:108px!important;
+  }
+
+  .menu-design-v2 .menu-design-v2-controls .hero-framing-control .hero-framing-position{
+    padding:6px!important;
+    gap:5px!important;
+  }
+
+  .menu-design-v2 .menu-design-v2-controls .hero-framing-control .hero-framing-range-x,
+  .menu-design-v2 .menu-design-v2-controls .hero-framing-control .hero-framing-range-y{
+    display:none!important;
+  }
+}
