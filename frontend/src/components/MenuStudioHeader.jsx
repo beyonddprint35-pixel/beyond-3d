@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, Moon, Sun } from "lucide-react";
 import beyondLogo from "../assets/beyond-logo-transparent.png";
 import StudioLanguageMenu from "./StudioLanguageMenu";
 import MenuStudioMenuSwitcher from "./MenuStudioMenuSwitcher";
+import "./MenuStudioHeaderCompact.css";
 import { applyStoredBeyondTheme, setBeyondTheme } from "../lib/beyondThemeBootstrap";
 import { flushStudioDraft, STUDIO_NAV_COPY, STUDIO_STAGES } from "../features/menu-engine/studio/studioNavigation";
 import { studioLanguageDirection } from "../features/menu-engine/studio/studioLanguage";
@@ -28,7 +29,13 @@ export default function MenuStudioHeader({ stage, language, onLanguageChange, me
   return <header className={`${prefix}-topbar menu-studio-header`}>
     <div className={`${prefix}-brand-wrap`}>
       <button type="button" className={`${prefix}-back`} aria-label={backLabel || t.back} onClick={() => { flushStudioDraft(); if (onBack) onBack(); else navigate("/"); }}><BackIcon size={16} /></button>
-      <button type="button" className={`${prefix}-brand`} onClick={onBrand || (() => openStage("content"))}><img src={beyondLogo} alt="" /><span><strong dir="ltr">Beyond Menu Studio</strong><small>{menuName}</small></span></button>
+      <button type="button" className={`${prefix}-brand`} onClick={onBrand || (() => openStage("content"))}>
+        <img src={beyondLogo} alt="" />
+        <span>
+          <strong className="menu-studio-brand-title" dir="ltr"><span>Beyond</span><span className="menu-studio-brand-suffix"> Menu Studio</span></strong>
+          <small>{menuName}</small>
+        </span>
+      </button>
     </div>
     <nav className={`${prefix}-product-nav`} aria-label="Menu Studio" dir={studioLanguageDirection(language)}>
       {STUDIO_STAGES.map((key) => <button type="button" key={key} aria-current={key === stage ? "page" : undefined} className={key === stage ? "active" : ""} onClick={() => openStage(key)}>{t[key]}</button>)}
