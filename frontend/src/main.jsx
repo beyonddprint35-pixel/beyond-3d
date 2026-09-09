@@ -36,6 +36,7 @@ import "./pages/menuStudioDarkModeRegulation.css";
 import "./features/menu-engine/renderer/menuTypographyGuard.css";
 import "./features/menu-engine/renderer/menuViewportFill.css";
 import "./styles/uiTypographyGuard.css";
+import "./pages/MenuDesignStudioMobileWorkspace.css";
 
 if (import.meta.env.DEV && "serviceWorker" in navigator) {
   navigator.serviceWorker
