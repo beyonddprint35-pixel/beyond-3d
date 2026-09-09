@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Check, ChevronDown, X } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { flushMenuStudioProjectSave, listMenuStudioProjects, menuStudioProjectId } from "../features/menu-engine/studio/menuStudioV2Persistence";
@@ -44,11 +45,16 @@ export default function MenuStudioMenuSwitcher({ language, menuName }) {
 
   useEffect(() => {
     if (!compactOpen) return undefined;
+    const previousOverflow = document.body.style.overflow;
     const closeOnEscape = (event) => {
       if (event.key === "Escape") setCompactOpen(false);
     };
+    document.body.style.overflow = "hidden";
     window.addEventListener("keydown", closeOnEscape);
-    return () => window.removeEventListener("keydown", closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+    };
   }, [compactOpen]);
 
   async function switchMenu(id) {
@@ -65,7 +71,6 @@ export default function MenuStudioMenuSwitcher({ language, menuName }) {
         savedSnapshot = JSON.stringify(readMenuStudioV2Draft());
         await flushMenuStudioProjectSave(projectId);
         if (!mounted.current) return;
-        // Include edits made while the network save was in progress.
         if (!flushStudioDraft()) throw new Error("Draft could not be saved.");
         latestDraft = readMenuStudioV2Draft();
       } while (JSON.stringify(latestDraft) !== savedSnapshot);
@@ -82,6 +87,30 @@ export default function MenuStudioMenuSwitcher({ language, menuName }) {
     return <div className="menu-studio-menu-switcher"><button type="button" onClick={() => setAttempt((value) => value + 1)}>{t.menus} · {t.retry}</button></div>;
   }
   if (projects.length <= 1) return null;
+
+  const compactSheet = compactOpen && typeof document !== "undefined" ? createPortal(
+    <div className="menu-studio-menu-switcher-layer" onClick={(event) => { if (event.target === event.currentTarget) setCompactOpen(false); }}>
+      <section className="menu-studio-menu-switcher-sheet" role="dialog" aria-modal="true" aria-label={t.menus} dir={language === "he" || language === "ar" ? "rtl" : "ltr"}>
+        <div className="menu-studio-menu-switcher-sheet-head">
+          <div><small>{t.menus}</small><strong>{activeName}</strong></div>
+          <button type="button" aria-label="Close" onClick={() => setCompactOpen(false)}><X size={17} /></button>
+        </div>
+        <div className="menu-studio-menu-switcher-list">
+          {projects.map((project) => {
+            const current = project.id === projectId;
+            return (
+              <button key={project.id} type="button" className={current ? "active" : ""} aria-current={current ? "true" : undefined} disabled={status === "saving"} onClick={() => switchMenu(project.id)}>
+                <span>{current ? activeName : project.name}</span>
+                {current ? <Check size={17} aria-hidden="true" /> : null}
+              </button>
+            );
+          })}
+        </div>
+        {status ? <p role="status">{status === "saving" ? t.switching : t.switchError}</p> : null}
+      </section>
+    </div>,
+    document.body,
+  ) : null;
 
   return <div className="menu-studio-menu-switcher" aria-busy={status === "saving" ? "true" : undefined}>
     <nav className="menu-studio-menu-switcher-wide" aria-label={t.menus}>
@@ -104,27 +133,6 @@ export default function MenuStudioMenuSwitcher({ language, menuName }) {
       <ChevronDown size={14} aria-hidden="true" />
     </button>
 
-    {compactOpen ? (
-      <div className="menu-studio-menu-switcher-layer" onClick={(event) => { if (event.target === event.currentTarget) setCompactOpen(false); }}>
-        <section className="menu-studio-menu-switcher-sheet" role="dialog" aria-modal="true" aria-label={t.menus}>
-          <div className="menu-studio-menu-switcher-sheet-head">
-            <div><small>{t.menus}</small><strong>{activeName}</strong></div>
-            <button type="button" aria-label="Close" onClick={() => setCompactOpen(false)}><X size={17} /></button>
-          </div>
-          <div className="menu-studio-menu-switcher-list">
-            {projects.map((project) => {
-              const current = project.id === projectId;
-              return (
-                <button key={project.id} type="button" className={current ? "active" : ""} aria-current={current ? "true" : undefined} disabled={status === "saving"} onClick={() => switchMenu(project.id)}>
-                  <span>{current ? activeName : project.name}</span>
-                  {current ? <Check size={17} aria-hidden="true" /> : null}
-                </button>
-              );
-            })}
-          </div>
-          {status ? <p role="status">{status === "saving" ? t.switching : t.switchError}</p> : null}
-        </section>
-      </div>
-    ) : null}
+    {compactSheet}
   </div>;
 }
