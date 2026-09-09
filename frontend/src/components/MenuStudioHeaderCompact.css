@@ -1,0 +1,19 @@
+/* Keep the product brand readable in compact/RTL Studio headers. */
+.menu-studio-header .menu-studio-brand-title {
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: left;
+}
+
+@media (max-width: 430px) {
+  .menu-studio-header .menu-studio-brand-title .menu-studio-brand-suffix {
+    display: none;
+  }
+
+  .menu-studio-header .menu-studio-brand-title {
+    max-width: none !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: nowrap !important;
+  }
+}
