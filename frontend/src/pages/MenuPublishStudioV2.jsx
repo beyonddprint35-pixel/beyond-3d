@@ -7,6 +7,7 @@ import {
   CircleAlert,
   Globe2,
   Link2,
+  Palette,
   QrCode,
   Rocket,
   ShieldCheck,
@@ -34,12 +35,15 @@ import {
   writeStudioLanguage,
   STUDIO_LANGUAGES,
 } from "../features/menu-engine/studio/studioLanguage";
+import { PREMIUM_MENU_DESIGNS } from "../features/menu-engine/domain/menuDesignLibrary";
+import MenuRenderer from "../features/menu-engine/renderer/MenuRenderer";
 import "./MenuPublishStudioV2.css";
 
 const UI = {
   en: {
     workspace:"Menu workspace", interfaceLanguage:"Interface language", content:"Content", design:"Design", preview:"Preview", publish:"Publish",
     backPreview:"Back to Preview", eyebrow:"PUBLISH", title:"Everything ready for your guests", hint:"Choose the public address, customer languages and final launch settings for this menu.",
+    finalDesign:"Final design", finalDesignHint:"Choose which saved style guests should see. You can switch it here without leaving Publish.", option1:"Option 1", option2:"Option 2", selected:"Selected",
     address:"Public menu address", addressHint:"This will be the URL used by your QR and NFC touchpoints.", slug:"Menu address", defaultLanguage:"Default customer language",
     customerLanguages:"Customer menu languages", customerLanguagesHint:"Choose which languages guests can switch between on the live menu.", launch:"Launch readiness", contentReady:"Menu content", designReady:"Design", addressReady:"Public address", languageReady:"Languages", translationsReady:"Language content",
     ready:"Ready", needsAttention:"Needs attention", visibleItems:"visible items", categories:"categories", selectedDesign:"Selected design", validAddress:"Valid menu URL", chooseLanguage:"At least one customer language", completeTranslations:"All enabled languages complete",
@@ -52,6 +56,7 @@ const UI = {
   he: {
     workspace:"סביבת עבודת התפריט", interfaceLanguage:"שפת הממשק", content:"תוכן", design:"עיצוב", preview:"תצוגה מקדימה", publish:"פרסום",
     backPreview:"חזרה לתצוגה", eyebrow:"פרסום", title:"הכול מוכן לאורחים שלכם", hint:"בחרו כתובת ציבורית, שפות לקוח והגדרות השקה סופיות לתפריט.",
+    finalDesign:"עיצוב סופי", finalDesignHint:"בחרו איזה עיצוב שמור האורחים יראו. אפשר להחליף כאן בלי לצאת ממסך הפרסום.", option1:"אפשרות 1", option2:"אפשרות 2", selected:"נבחר",
     address:"כתובת התפריט הציבורית", addressHint:"זו תהיה הכתובת של קוד ה-QR ושל נקודות ה-NFC.", slug:"כתובת התפריט", defaultLanguage:"שפת ברירת המחדל ללקוח",
     customerLanguages:"שפות תפריט ללקוחות", customerLanguagesHint:"בחרו בין אילו שפות האורחים יוכלו לעבור בתפריט החי.", launch:"מוכנות להשקה", contentReady:"תוכן התפריט", designReady:"עיצוב", addressReady:"כתובת ציבורית", languageReady:"שפות", translationsReady:"תוכן השפות",
     ready:"מוכן", needsAttention:"דורש תשומת לב", visibleItems:"פריטים גלויים", categories:"קטגוריות", selectedDesign:"עיצוב נבחר", validAddress:"כתובת תפריט תקינה", chooseLanguage:"לפחות שפת לקוח אחת", completeTranslations:"כל השפות הפעילות מלאות",
@@ -64,6 +69,7 @@ const UI = {
   ar: {
     workspace:"مساحة عمل القائمة", interfaceLanguage:"لغة الواجهة", content:"المحتوى", design:"التصميم", preview:"المعاينة", publish:"النشر",
     backPreview:"العودة إلى المعاينة", eyebrow:"النشر", title:"كل شيء جاهز لضيوفكم", hint:"اختاروا العنوان العام ولغات الزبائن وإعدادات الإطلاق النهائية لهذه القائمة.",
+    finalDesign:"التصميم النهائي", finalDesignHint:"اختاروا النمط المحفوظ الذي سيراه الضيوف. يمكن التبديل هنا من دون مغادرة شاشة النشر.", option1:"الخيار 1", option2:"الخيار 2", selected:"مختار",
     address:"عنوان القائمة العام", addressHint:"سيكون هذا الرابط المستخدم في رمز QR ونقاط NFC.", slug:"عنوان القائمة", defaultLanguage:"لغة الزبون الافتراضية",
     customerLanguages:"لغات قائمة الزبائن", customerLanguagesHint:"اختاروا اللغات التي يستطيع الضيوف التبديل بينها في القائمة الحية.", launch:"جاهزية الإطلاق", contentReady:"محتوى القائمة", designReady:"التصميم", addressReady:"العنوان العام", languageReady:"اللغات", translationsReady:"محتوى اللغات",
     ready:"جاهز", needsAttention:"يحتاج انتباهاً", visibleItems:"عناصر ظاهرة", categories:"فئات", selectedDesign:"التصميم المختار", validAddress:"رابط قائمة صالح", chooseLanguage:"لغة زبائن واحدة على الأقل", completeTranslations:"كل اللغات المفعلة مكتملة",
@@ -88,13 +94,44 @@ function studioRoute(path) {
   return `${path}${window.location.search || ""}`;
 }
 
+function variantName(variant) {
+  if (!variant) return "Custom";
+  return PREMIUM_MENU_DESIGNS.find((entry) => entry.id === variant.designId)?.name || "Custom";
+}
+
+function DesignVariantPreview({ menu, variant, language }) {
+  if (!variant?.design) return null;
+  const previewMenu = {
+    ...menu,
+    languages: [language],
+    default_language: language,
+  };
+  return (
+    <div className="menu-publish-v2-design-preview" aria-hidden="true">
+      <div className="menu-publish-v2-design-preview-inner">
+        <MenuRenderer menu={previewMenu} design={variant.design} initialLanguage={language} />
+      </div>
+    </div>
+  );
+}
+
 export default function MenuPublishStudioV2() {
   const navigate = useNavigate();
   const storedDraft = useMemo(readMenuStudioV2Draft, []);
-  const profile = useMemo(() => storedDraft?.profile || readMenuCreateV2Profile(), [storedDraft]);
+  const profile = useMemo(() => storedDraft?.profile || readMenuCreateV2Profile() || {}, [storedDraft]);
   const resolved = useMemo(() => resolveMenuStudioV2Design(storedDraft), [storedDraft]);
+  const designVariants = useMemo(() => profile?.designVariants || {}, [profile]);
+  const availableVariants = useMemo(() => ["A", "B"].filter((slot) => designVariants?.[slot]?.design), [designVariants]);
+  const initialDesignVariant = storedDraft?.publication?.selectedDesignVariant
+    || profile?.activeDesignVariant
+    || availableVariants[0]
+    || "";
+  const initialVariant = initialDesignVariant ? designVariants?.[initialDesignVariant] : null;
+
   const [menu, setMenu] = useState(() => storedDraft?.menu || createBlankMenuV2());
-  const [design] = useState(() => resolved.design);
+  const [selectedDesignVariant, setSelectedDesignVariant] = useState(initialDesignVariant);
+  const [design, setDesign] = useState(() => initialVariant?.design || resolved.design);
+  const [designId, setDesignId] = useState(() => initialVariant?.designId || storedDraft?.designId || resolved.designId);
   const [uiLanguage, setUiLanguage] = useState(() => readStudioLanguage("en"));
   const [slug, setSlug] = useState(() => storedDraft?.publication?.slug || menu.slug || defaultSlug(menu.restaurant_name));
   const [enabledLanguages, setEnabledLanguages] = useState(() => storedDraft?.publication?.languages || menu.languages || ["en", "he", "ar"]);
@@ -123,10 +160,11 @@ export default function MenuPublishStudioV2() {
   const publicUrl = `https://www.b3yondworld.com/menu/${normalizedSlug || "your-menu"}`;
   const readinessMenu = useMemo(() => ({ ...menu, languages: enabledLanguages, default_language: defaultLanguage }), [menu, enabledLanguages, defaultLanguage]);
   const studioReadiness = useMemo(() => buildMenuStudioReadiness({ menu: readinessMenu, design, languages: enabledLanguages }), [readinessMenu, design, enabledLanguages]);
+  const selectedDesignName = variantName(selectedDesignVariant ? designVariants?.[selectedDesignVariant] : { designId });
 
   const checks = [
     { key:"content", label:t.contentReady, ok:studioReadiness.checks.content, detail:`${studioReadiness.visibleGroups} ${t.categories} · ${studioReadiness.visibleItems} ${t.visibleItems}` },
-    { key:"design", label:t.designReady, ok:studioReadiness.checks.design, detail:resolved.entry?.name || t.selectedDesign },
+    { key:"design", label:t.designReady, ok:studioReadiness.checks.design, detail:selectedDesignName || t.selectedDesign },
     { key:"address", label:t.addressReady, ok:Boolean(normalizedSlug), detail:normalizedSlug ? t.validAddress : t.needsAttention },
     { key:"languages", label:t.languageReady, ok:studioReadiness.checks.languages, detail:enabledLanguages.length ? `${enabledLanguages.length} · ${t.chooseLanguage}` : t.chooseLanguage },
     { key:"translations", label:t.translationsReady, ok:studioReadiness.checks.translations, detail:studioReadiness.checks.translations ? t.completeTranslations : `${studioReadiness.translationBlockers} ${t.needsAttention}` },
@@ -226,6 +264,30 @@ export default function MenuPublishStudioV2() {
     });
   }
 
+  function chooseDesignVariant(slot) {
+    const variant = designVariants?.[slot];
+    if (!variant?.design) return;
+    const nextDesignId = variant.designId || designId || resolved.designId;
+    setSelectedDesignVariant(slot);
+    setDesign(variant.design);
+    setDesignId(nextDesignId);
+
+    const currentDraft = readMenuStudioV2Draft() || storedDraft || {};
+    writeMenuStudioV2Draft({
+      ...currentDraft,
+      design: variant.design,
+      designId: nextDesignId,
+      profile: {
+        ...(currentDraft.profile || profile || {}),
+        activeDesignVariant: slot,
+      },
+      publication: {
+        ...(currentDraft.publication || {}),
+        selectedDesignVariant: slot,
+      },
+    });
+  }
+
   function buildPublishDraft() {
     const nextMenu = { ...menu, slug: normalizedSlug, languages: enabledLanguages, default_language: defaultLanguage };
     const priorPublication = storedDraft?.publication || {};
@@ -240,12 +302,16 @@ export default function MenuPublishStudioV2() {
       ...(storedDraft || {}),
       menu: nextMenu,
       design,
-      designId: storedDraft?.designId || resolved.designId,
-      profile,
+      designId,
+      profile: {
+        ...(profile || {}),
+        ...(selectedDesignVariant ? { activeDesignVariant:selectedDesignVariant } : {}),
+      },
       contentLanguage: storedDraft?.contentLanguage || defaultLanguage,
       publication: {
         ...priorPublication,
         ...liveMetadata,
+        ...(selectedDesignVariant ? { selectedDesignVariant } : {}),
         slug: normalizedSlug,
         languages: enabledLanguages,
         defaultLanguage,
@@ -328,6 +394,41 @@ export default function MenuPublishStudioV2() {
 
       <div className="menu-publish-v2-grid">
         <section className="menu-publish-v2-main">
+          {availableVariants.length > 1 ? (
+            <article className="menu-publish-v2-card menu-publish-v2-design-card">
+              <header><div className="icon"><Palette size={18} /></div><div><span>{t.finalDesign}</span><p>{t.finalDesignHint}</p></div></header>
+              <div className="menu-publish-v2-design-options">
+                {availableVariants.map((slot) => {
+                  const variant = designVariants[slot];
+                  const selected = selectedDesignVariant === slot;
+                  return (
+                    <div
+                      key={slot}
+                      className={`menu-publish-v2-design-option ${selected ? "active" : ""}`}
+                      role="button"
+                      tabIndex={0}
+                      aria-pressed={selected}
+                      onClick={() => chooseDesignVariant(slot)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          chooseDesignVariant(slot);
+                        }
+                      }}
+                    >
+                      <DesignVariantPreview menu={menu} variant={variant} language={defaultLanguage} />
+                      <div className="menu-publish-v2-design-option-copy">
+                        <span className="number">{slot === "B" ? "2" : "1"}</span>
+                        <span><strong>{slot === "B" ? t.option2 : t.option1}</strong><small>{variantName(variant)}</small></span>
+                        {selected ? <em><Check size={12} /> {t.selected}</em> : null}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </article>
+          ) : null}
+
           <article className="menu-publish-v2-card">
             <header><div className="icon"><Globe2 size={18} /></div><div><span>{t.address}</span><p>{t.addressHint}</p></div></header>
             <label className="menu-publish-v2-slug"><span>{t.slug}</span><div><strong>b3yondworld.com/menu/</strong><input value={slug} onChange={(event) => setSlug(event.target.value)} onBlur={() => setSlug(safeSlug(slug))} placeholder="your-menu" /></div></label>
