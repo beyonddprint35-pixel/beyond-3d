@@ -38,18 +38,20 @@ function promptFor(mode, styleLocked, placeReferenceCount) {
   return `${common}${placeStyle}\n\nTASK\nEnhance the existing photograph only: correct exposure and white balance, improve natural contrast, clarity and sharpness, reduce distracting noise, and make the image look professionally photographed. When My Place references exist, gently align lighting and color mood with the real restaurant without replacing the scene unnecessarily.`;
 }
 
-async function loadPlaceReferences(adminClient, folder) {
+async function listPlaceReferenceNames(adminClient, folder) {
   const { data: entries, error } = await adminClient.storage.from(BUCKET).list(folder, {
     limit: 30,
     sortBy: { column: "created_at", order: "desc" },
   });
   if (error || !Array.isArray(entries)) return [];
-
-  const names = entries
+  return entries
     .filter((entry) => entry?.name?.startsWith("place-") && entry?.metadata)
     .slice(0, MAX_PLACE_REFERENCES)
     .map((entry) => entry.name);
+}
 
+async function loadPlaceReferences(adminClient, folder) {
+  const names = await listPlaceReferenceNames(adminClient, folder);
   const references = [];
   for (const name of names) {
     const path = `${folder}/${name}`;
@@ -101,15 +103,15 @@ Deno.serve(async (req) => {
     const placeFolder = `${requiredPrefix}my-place`;
 
     if (action === "status") {
-      const [{ data: remembered }, placeReferences] = await Promise.all([
+      const [{ data: remembered }, placeReferenceNames] = await Promise.all([
         adminClient.storage.from(BUCKET).download(styleMemoryPath),
-        loadPlaceReferences(adminClient, placeFolder),
+        listPlaceReferenceNames(adminClient, placeFolder),
       ]);
       return json({
         ok: true,
         styleMemoryExists: Boolean(remembered && remembered.size > 0),
         styleMemoryPath,
-        placeReferenceCount: placeReferences.length,
+        placeReferenceCount: placeReferenceNames.length,
       });
     }
 
