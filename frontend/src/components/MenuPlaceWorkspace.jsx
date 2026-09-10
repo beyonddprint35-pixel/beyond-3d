@@ -1,36 +1,32 @@
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import { Building2, CheckCircle2, ImagePlus, LoaderCircle, Trash2, Upload, WandSparkles } from "lucide-react";
 
-import { supabase } from "../lib/supabaseClient";
-import { normalizeMenuItemImage, validateMenuItemImage } from "../features/menu-engine/data/menuItemImageService";
+import { removeMenuItemImage, uploadMenuItemImage } from "../features/menu-engine/data/menuItemImageService";
 import { studioLanguageDirection } from "../features/menu-engine/studio/studioLanguage";
 import "./MenuPlaceWorkspace.css";
 
-const BUCKET = "menu-item-images";
 const MAX_PLACE_PHOTOS = 5;
 
 const COPY = {
   en: {
     eyebrow: "RESTAURANT PROFILE",
     title: "My Place",
-    subtitle: "Give Beyond a visual memory of your restaurant. These photos let AI-edited dish photos feel like they were actually shot in your place — even if you never created a dish in AI Photo Studio.",
+    subtitle: "Give Beyond a visual memory of your restaurant. Your logo and place photos are shared automatically with Design and AI Photo Studio.",
     logoTitle: "Restaurant logo",
-    logoHint: "Upload the logo you want Beyond to associate with this menu.",
+    logoHint: "This is the same logo used by your menu design.",
     addLogo: "Upload logo",
     replaceLogo: "Replace logo",
     placeTitle: "Place style photos",
-    placeHint: "Upload 3–5 real photos of the dining room, bar, tables, walls and lighting. Avoid close-up food photos here.",
+    placeHint: "These are the same place-style photos used by AI Photo Studio. Upload 3–5 real photos of the dining room, bar, tables, walls and lighting.",
     addPhotos: "Add place photos",
     photoCount: (count) => `${count}/${MAX_PLACE_PHOTOS} photos`,
     aiTitle: "My Place style is used automatically",
-    aiReady: (count) => count ? `Ready — Beyond can use ${Math.min(count, 3)} place reference photo${Math.min(count, 3) === 1 ? "" : "s"} when editing a real dish photo.` : "Add place photos and Beyond will use them when you choose Create style options on a real dish photo.",
+    aiReady: (count) => count ? `Ready — AI Photo Studio is connected to these ${count} place photo${count === 1 ? "" : "s"}.` : "Add place photos here or in AI Photo Studio — both use the same saved place style.",
     aiHint: "The dish stays locked. Place photos guide only the atmosphere: lighting, color temperature, table/background materials and restaurant mood.",
-    loading: "Loading My Place…",
     uploading: "Uploading…",
     remove: "Remove",
     maxReached: "You can keep up to 5 place photos. Remove one before adding another.",
     missingProject: "Open a saved menu before setting up My Place.",
-    signIn: "Please sign in again before uploading My Place photos.",
     uploadFailed: "Could not upload this photo. Please try again.",
     removeFailed: "Could not remove this photo. Please try again.",
     emptyLogo: "Your logo will appear here",
@@ -38,24 +34,22 @@ const COPY = {
   he: {
     eyebrow: "פרופיל המסעדה",
     title: "המקום שלי",
-    subtitle: "תנו ל-Beyond זיכרון חזותי של המסעדה. התמונות האלו מאפשרות לתמונות מנות שעוברות עריכת AI להרגיש כאילו צולמו אצלכם — גם אם לא השתמשתם קודם ב-AI Photo Studio.",
+    subtitle: "תנו ל-Beyond זיכרון חזותי של המסעדה. הלוגו ותמונות המקום משותפים אוטומטית עם העיצוב וסטודיו התמונות AI.",
     logoTitle: "לוגו המסעדה",
-    logoHint: "העלו את הלוגו ש-Beyond ישייך לתפריט הזה.",
+    logoHint: "זהו אותו לוגו שבו משתמש עיצוב התפריט.",
     addLogo: "העלאת לוגו",
     replaceLogo: "החלפת לוגו",
     placeTitle: "תמונות סגנון של המקום",
-    placeHint: "העלו 3–5 תמונות אמיתיות של החלל, הבר, השולחנות, הקירות והתאורה. כאן עדיף לא להעלות תקריבים של אוכל.",
+    placeHint: "אלו אותן תמונות סגנון שבהן משתמש סטודיו התמונות AI. העלו 3–5 תמונות אמיתיות של החלל, הבר, השולחנות, הקירות והתאורה.",
     addPhotos: "הוספת תמונות מקום",
     photoCount: (count) => `${count}/${MAX_PLACE_PHOTOS} תמונות`,
     aiTitle: "סגנון המקום שלי מופעל אוטומטית",
-    aiReady: (count) => count ? `מוכן — Beyond יכול להשתמש ב-${Math.min(count, 3)} תמונות מקום כ-reference בעת עריכת תמונת מנה אמיתית.` : "הוסיפו תמונות של המקום ו-Beyond ישתמש בהן כשתבחרו יצירת אפשרויות סגנון לתמונת מנה אמיתית.",
+    aiReady: (count) => count ? `מוכן — סטודיו התמונות AI מחובר ל-${count} תמונות המקום האלו.` : "אפשר להוסיף תמונות כאן או בסטודיו התמונות AI — שניהם משתמשים באותו סגנון מקום שמור.",
     aiHint: "המנה נשארת נעולה. תמונות המקום משפיעות רק על האווירה: תאורה, טמפרטורת צבע, חומרי שולחן/רקע והאופי של המסעדה.",
-    loading: "טוען את המקום שלי…",
     uploading: "מעלה…",
     remove: "הסרה",
     maxReached: "ניתן לשמור עד 5 תמונות מקום. הסירו תמונה לפני הוספת תמונה חדשה.",
     missingProject: "פתחו תפריט שמור לפני הגדרת המקום שלי.",
-    signIn: "יש להתחבר מחדש לפני העלאת תמונות המקום שלי.",
     uploadFailed: "לא ניתן להעלות את התמונה. נסו שוב.",
     removeFailed: "לא ניתן להסיר את התמונה. נסו שוב.",
     emptyLogo: "הלוגו שלכם יופיע כאן",
@@ -63,119 +57,66 @@ const COPY = {
   ar: {
     eyebrow: "ملف المطعم",
     title: "مكاني",
-    subtitle: "امنح Beyond ذاكرة بصرية لمطعمك. تساعد هذه الصور صور الأطباق المعدلة بالذكاء الاصطناعي على الظهور وكأنها التُقطت فعلاً في مكانك، حتى لو لم تستخدم AI Photo Studio من قبل.",
+    subtitle: "امنح Beyond ذاكرة بصرية لمطعمك. تتم مشاركة الشعار وصور المكان تلقائياً مع التصميم واستوديو صور AI.",
     logoTitle: "شعار المطعم",
-    logoHint: "ارفع الشعار الذي تريد من Beyond ربطه بهذه القائمة.",
+    logoHint: "هذا هو نفس الشعار المستخدم في تصميم القائمة.",
     addLogo: "رفع الشعار",
     replaceLogo: "استبدال الشعار",
     placeTitle: "صور أسلوب المكان",
-    placeHint: "ارفع 3–5 صور حقيقية لصالة الطعام أو البار والطاولات والجدران والإضاءة. تجنب صور الطعام القريبة هنا.",
+    placeHint: "هذه هي نفس صور أسلوب المكان التي يستخدمها استوديو صور AI. ارفع 3–5 صور حقيقية للمكان والإضاءة والطاولات والجدران.",
     addPhotos: "إضافة صور المكان",
     photoCount: (count) => `${count}/${MAX_PLACE_PHOTOS} صور`,
     aiTitle: "يُستخدم أسلوب مكاني تلقائياً",
-    aiReady: (count) => count ? `جاهز — يمكن لـ Beyond استخدام ${Math.min(count, 3)} صور مرجعية للمكان عند تعديل صورة طبق حقيقية.` : "أضف صور المكان وسيستخدمها Beyond عند اختيار إنشاء خيارات الأسلوب لصورة طبق حقيقية.",
+    aiReady: (count) => count ? `جاهز — استوديو صور AI متصل بهذه الصور وعددها ${count}.` : "أضف الصور هنا أو في استوديو صور AI — كلاهما يستخدم نفس أسلوب المكان المحفوظ.",
     aiHint: "يبقى الطبق مقفلاً. صور المكان توجه الأجواء فقط: الإضاءة وحرارة اللون وخامات الطاولة أو الخلفية وطابع المطعم.",
-    loading: "جارٍ تحميل مكاني…",
     uploading: "جارٍ الرفع…",
     remove: "إزالة",
     maxReached: "يمكن الاحتفاظ بما يصل إلى 5 صور للمكان. احذف صورة قبل إضافة أخرى.",
     missingProject: "افتح قائمة محفوظة قبل إعداد مكاني.",
-    signIn: "يرجى تسجيل الدخول مجدداً قبل رفع صور مكاني.",
     uploadFailed: "تعذر رفع الصورة. حاول مرة أخرى.",
     removeFailed: "تعذر حذف الصورة. حاول مرة أخرى.",
     emptyLogo: "سيظهر شعارك هنا",
   },
 };
 
-function safeId(value, fallback = "project") {
-  const next = String(value || fallback).replace(/[^a-zA-Z0-9_-]/g, "-").replace(/-+/g, "-");
-  return next.slice(0, 120) || fallback;
+function fileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ""));
+    reader.onerror = () => reject(new Error("Could not read this logo."));
+    reader.readAsDataURL(file);
+  });
 }
 
-function extensionFor(file) {
-  if (file?.type === "image/png") return "png";
-  if (file?.type === "image/webp") return "webp";
-  return "jpg";
-}
-
-function publicAsset(path) {
-  const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
-  return data?.publicUrl || "";
-}
-
-export default function MenuPlaceWorkspace({ projectId, language = "en" }) {
+export default function MenuPlaceWorkspace({
+  projectId,
+  language = "en",
+  logoUrl = "",
+  placeStyle = null,
+  onLogoUpdate,
+  onPlaceStyleUpdate,
+}) {
   const t = COPY[language] || COPY.en;
   const dir = studioLanguageDirection(language);
-  const [folder, setFolder] = useState("");
-  const [logo, setLogo] = useState(null);
-  const [placePhotos, setPlacePhotos] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
-  const safeProjectId = useMemo(() => safeId(projectId), [projectId]);
+  const placePhotos = Array.isArray(placeStyle?.photos)
+    ? placeStyle.photos.filter((photo) => photo?.url).slice(0, MAX_PLACE_PHOTOS)
+    : [];
 
-  async function loadAssets() {
-    if (!projectId) {
-      setLoading(false);
-      setError(t.missingProject);
-      return;
-    }
-    setLoading(true);
-    setError("");
-    try {
-      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-      if (sessionError) throw sessionError;
-      const userId = sessionData?.session?.user?.id;
-      if (!userId) throw new Error(t.signIn);
-      const nextFolder = `${userId}/${safeProjectId}/my-place`;
-      setFolder(nextFolder);
-      const { data, error: listError } = await supabase.storage.from(BUCKET).list(nextFolder, {
-        limit: 30,
-        sortBy: { column: "created_at", order: "desc" },
-      });
-      if (listError) throw listError;
-      const assets = (data || [])
-        .filter((entry) => entry?.name && entry?.metadata)
-        .map((entry) => ({ ...entry, path: `${nextFolder}/${entry.name}`, url: publicAsset(`${nextFolder}/${entry.name}`) }));
-      setLogo(assets.find((entry) => entry.name.startsWith("logo-")) || null);
-      setPlacePhotos(assets.filter((entry) => entry.name.startsWith("place-")).slice(0, MAX_PLACE_PHOTOS));
-    } catch (nextError) {
-      setError(nextError?.message || t.uploadFailed);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    loadAssets();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projectId, safeProjectId, language]);
-
-  async function uploadOne(file, kind) {
-    const validation = validateMenuItemImage(file);
-    if (validation) throw new Error(validation);
-    const uploadFile = await normalizeMenuItemImage(file);
-    const suffix = `${Date.now()}-${crypto.randomUUID().slice(0, 8)}`;
-    const path = `${folder}/${kind}-${suffix}.${extensionFor(uploadFile)}`;
-    const { error: uploadError } = await supabase.storage.from(BUCKET).upload(path, uploadFile, {
-      cacheControl: "31536000",
-      upsert: false,
-      contentType: uploadFile.type,
-    });
-    if (uploadError) throw uploadError;
-    return path;
-  }
-
-  async function onLogoChange(event) {
+  async function onLogoFileChange(event) {
     const file = event.target.files?.[0];
     event.target.value = "";
-    if (!file || !folder || busy) return;
+    if (!file || busy) return;
+    if (!String(file.type || "").startsWith("image/")) {
+      setError(t.uploadFailed);
+      return;
+    }
     setBusy("logo");
     setError("");
     try {
-      await uploadOne(file, "logo");
-      if (logo?.path) await supabase.storage.from(BUCKET).remove([logo.path]);
-      await loadAssets();
+      const nextLogoUrl = await fileAsDataUrl(file);
+      onLogoUpdate?.(nextLogoUrl);
     } catch (nextError) {
       setError(nextError?.message || t.uploadFailed);
     } finally {
@@ -186,7 +127,11 @@ export default function MenuPlaceWorkspace({ projectId, language = "en" }) {
   async function onPlacePhotosChange(event) {
     const files = Array.from(event.target.files || []);
     event.target.value = "";
-    if (!files.length || !folder || busy) return;
+    if (!files.length || busy) return;
+    if (!projectId) {
+      setError(t.missingProject);
+      return;
+    }
     const room = Math.max(0, MAX_PLACE_PHOTOS - placePhotos.length);
     if (!room) {
       setError(t.maxReached);
@@ -195,9 +140,24 @@ export default function MenuPlaceWorkspace({ projectId, language = "en" }) {
     setBusy("place");
     setError("");
     try {
-      for (const file of files.slice(0, room)) await uploadOne(file, "place");
+      const uploaded = [];
+      for (let index = 0; index < files.slice(0, room).length; index += 1) {
+        const file = files[index];
+        const result = await uploadMenuItemImage({
+          file,
+          itemId: `place-style-${Date.now()}-${index}`,
+          projectId,
+        });
+        uploaded.push({ url: result.image_url, path: result.image_path, name: file.name });
+      }
+      const nextPhotos = [...placePhotos, ...uploaded].slice(0, MAX_PLACE_PHOTOS);
+      onPlaceStyleUpdate?.({
+        ...(placeStyle || {}),
+        photos: nextPhotos,
+        vibeId: placeStyle?.vibeId || "moody",
+        updatedAt: new Date().toISOString(),
+      });
       if (files.length > room) setError(t.maxReached);
-      await loadAssets();
     } catch (nextError) {
       setError(nextError?.message || t.uploadFailed);
     } finally {
@@ -205,14 +165,19 @@ export default function MenuPlaceWorkspace({ projectId, language = "en" }) {
     }
   }
 
-  async function removeAsset(asset) {
-    if (!asset?.path || busy) return;
-    setBusy(asset.path);
+  async function removePlacePhoto(photo) {
+    if (!photo || busy) return;
+    setBusy(photo.path || photo.url);
     setError("");
     try {
-      const { error: removeError } = await supabase.storage.from(BUCKET).remove([asset.path]);
-      if (removeError) throw removeError;
-      await loadAssets();
+      if (photo.path) await removeMenuItemImage(photo.path);
+      const nextPhotos = placePhotos.filter((entry) => entry !== photo && entry.path !== photo.path && entry.url !== photo.url);
+      onPlaceStyleUpdate?.({
+        ...(placeStyle || {}),
+        photos: nextPhotos,
+        vibeId: placeStyle?.vibeId || "moody",
+        updatedAt: new Date().toISOString(),
+      });
     } catch (nextError) {
       setError(nextError?.message || t.removeFailed);
     } finally {
@@ -229,22 +194,22 @@ export default function MenuPlaceWorkspace({ projectId, language = "en" }) {
           <p>{t.subtitle}</p>
         </header>
 
-        {loading ? <div className="menu-place-loading"><LoaderCircle className="spin" size={24} /> {t.loading}</div> : null}
-        {!loading && error ? <div className="menu-place-error">{error}</div> : null}
+        {error ? <div className="menu-place-error">{error}</div> : null}
 
-        {!loading && projectId ? <div className="menu-place-grid">
+        <div className="menu-place-grid">
           <article className="menu-place-card menu-place-logo-card">
             <div className="menu-place-card-head">
               <div><span className="menu-place-card-icon"><Building2 size={18} /></span><div><h2>{t.logoTitle}</h2><p>{t.logoHint}</p></div></div>
             </div>
-            <div className={`menu-place-logo-preview ${logo ? "has-image" : ""}`}>
-              {logo ? <img src={logo.url} alt="" /> : <><Building2 size={30} /><span>{t.emptyLogo}</span></>}
+            <div className={`menu-place-logo-preview ${logoUrl ? "has-image" : ""}`}>
+              {logoUrl ? <img src={logoUrl} alt="" /> : <><Building2 size={30} /><span>{t.emptyLogo}</span></>}
             </div>
             <label className="menu-place-upload-button">
               {busy === "logo" ? <LoaderCircle className="spin" size={16} /> : <Upload size={16} />}
-              <span>{busy === "logo" ? t.uploading : logo ? t.replaceLogo : t.addLogo}</span>
-              <input type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.jpg,.jpeg,.png,.webp,.heic,.heif" onChange={onLogoChange} disabled={Boolean(busy)} />
+              <span>{busy === "logo" ? t.uploading : logoUrl ? t.replaceLogo : t.addLogo}</span>
+              <input type="file" accept="image/jpeg,image/png,image/webp,image/svg+xml" onChange={onLogoFileChange} disabled={Boolean(busy)} />
             </label>
+            {logoUrl ? <button type="button" className="menu-place-logo-remove" onClick={() => onLogoUpdate?.("")} disabled={Boolean(busy)}><Trash2 size={14} /> {t.remove}</button> : null}
           </article>
 
           <article className="menu-place-card menu-place-photos-card">
@@ -253,10 +218,10 @@ export default function MenuPlaceWorkspace({ projectId, language = "en" }) {
               <strong>{t.photoCount(placePhotos.length)}</strong>
             </div>
             <div className="menu-place-photo-grid">
-              {placePhotos.map((photo) => <figure key={photo.path} className="menu-place-photo-tile">
+              {placePhotos.map((photo) => <figure key={photo.path || photo.url} className="menu-place-photo-tile">
                 <img src={photo.url} alt="" />
-                <button type="button" title={t.remove} aria-label={t.remove} onClick={() => removeAsset(photo)} disabled={Boolean(busy)}>
-                  {busy === photo.path ? <LoaderCircle className="spin" size={14} /> : <Trash2 size={14} />}
+                <button type="button" title={t.remove} aria-label={t.remove} onClick={() => removePlacePhoto(photo)} disabled={Boolean(busy)}>
+                  {busy === (photo.path || photo.url) ? <LoaderCircle className="spin" size={14} /> : <Trash2 size={14} />}
                 </button>
               </figure>)}
               {placePhotos.length < MAX_PLACE_PHOTOS ? <label className="menu-place-photo-add">
@@ -266,12 +231,12 @@ export default function MenuPlaceWorkspace({ projectId, language = "en" }) {
               </label> : null}
             </div>
           </article>
-        </div> : null}
+        </div>
 
-        {!loading && projectId ? <aside className={`menu-place-ai-status ${placePhotos.length ? "ready" : ""}`}>
+        <aside className={`menu-place-ai-status ${placePhotos.length ? "ready" : ""}`}>
           <span className="menu-place-ai-icon">{placePhotos.length ? <CheckCircle2 size={21} /> : <WandSparkles size={21} />}</span>
           <div><h2>{t.aiTitle}</h2><strong>{t.aiReady(placePhotos.length)}</strong><p>{t.aiHint}</p></div>
-        </aside> : null}
+        </aside>
       </div>
     </section>
   );
