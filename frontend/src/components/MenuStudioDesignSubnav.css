@@ -1,6 +1,6 @@
 .menu-design-subnav {
   position: fixed;
-  top: 74px;
+  top: 66px;
   left: 0;
   right: 0;
   z-index: 116;
@@ -48,6 +48,10 @@
   flex: 0 0 54px;
 }
 
+.menu-design-subnav ~ .menu-place-workspace-layer {
+  inset: 120px 0 0;
+}
+
 html[data-beyond-theme="dark"] .menu-design-subnav {
   border-bottom-color: #1f2a3a;
   background: rgba(9, 14, 22, 0.96);
@@ -71,7 +75,7 @@ html[data-beyond-theme="dark"] .menu-design-subnav button.active {
 
 @media (max-width: 850px) {
   .menu-design-subnav {
-    top: 54px;
+    top: 102px;
     height: 48px;
     gap: 4px;
     padding: 5px 10px;
@@ -87,5 +91,9 @@ html[data-beyond-theme="dark"] .menu-design-subnav button.active {
   .menu-design-subnav-spacer {
     height: 48px;
     flex-basis: 48px;
+  }
+
+  .menu-design-subnav ~ .menu-place-workspace-layer {
+    inset: 150px 0 0;
   }
 }
