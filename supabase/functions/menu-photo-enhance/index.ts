@@ -4,6 +4,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const MODEL = "gpt-image-2";
 const BUCKET = "menu-item-images";
+const MAX_PLACE_REFERENCES = 3;
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -21,13 +22,43 @@ function safeId(value, fallback = "item") {
   const next = String(value || fallback).replace(/[^a-zA-Z0-9_-]/g, "-").replace(/-+/g, "-");
   return next.slice(0, 120) || fallback;
 }
+function imageExtension(blob) {
+  const type = String(blob?.type || "").toLowerCase();
+  if (type.includes("png")) return "png";
+  if (type.includes("webp")) return "webp";
+  return "jpg";
+}
 
-function promptFor(mode, styleLocked) {
+function promptFor(mode, styleLocked, placeReferenceCount) {
   const common = `Edit the FIRST attached image, which is the REAL target restaurant dish photo, into a polished professional digital-menu photograph.\n\nDISH LOCK — STRICT\n- Preserve the exact food that exists in the FIRST/source image.\n- Do not add, remove, replace, reshape, recolor, or invent ingredients, toppings, garnish, sauce, sides, drinks, or decoration.\n- Preserve portion size, number of food pieces, their arrangement, plate/container, and recognizable food texture.\n- Preserve the camera viewpoint and perspective unless a tiny crop/composition correction is required.\n- The result must remain an honest representation of what the restaurant serves.\n- No text, logos, watermarks, hands, or people.\n- Keep realistic imperfections. Avoid glossy or synthetic AI-looking food.`;
-  const styleMemory = styleLocked ? `\n\nSTYLE MEMORY — ACTIVE\nThe SECOND attached image is a restaurant photo the owner explicitly approved as the visual anchor. Match its lighting character, background treatment, color temperature, contrast, crop discipline, camera feel, depth of field, shadow softness, and overall restraint. Do NOT copy food, ingredients, plating objects, or dish contents from the second image into the first image. The first image remains the only source of truth for the target dish.` : "";
-  if (mode === "background") return `${common}${styleMemory}\n\nTASK\nClean only the presentation around the dish. Remove visual clutter and distracting background objects where safe, improve the table/background into a simple premium restaurant setting, and correct lighting naturally. Keep the plate and food unchanged.`;
-  if (mode === "match") return `${common}${styleMemory}\n\nTASK\nCreate a consistent premium restaurant-menu look. If Style Memory is active, prioritize matching that approved restaurant photo. Otherwise create a tasteful candidate using balanced natural light, restrained warm-neutral color, a clean unobtrusive restaurant background, soft realistic shadows, professional food-photo contrast and a composition suitable for a digital menu card. Do not stylize or redesign the food. Do not treat this candidate as approved unless the user later accepts it.`;
-  return `${common}\n\nTASK\nEnhance the existing photograph only: correct exposure and white balance, improve natural contrast, clarity and sharpness, reduce distracting noise, and make the image look professionally photographed. Keep the existing setting unless minor cleanup is necessary.`;
+  const styleMemory = styleLocked ? `\n\nSTYLE MEMORY — ACTIVE\nThe SECOND attached image is a restaurant menu photo the owner explicitly approved as the visual anchor. Match its lighting character, background treatment, color temperature, contrast, crop discipline, camera feel, depth of field, shadow softness, and overall restraint. Do NOT copy food, ingredients, plating objects, or dish contents from the approved style image into the first image. The first image remains the only source of truth for the target dish.` : "";
+  const placeStyle = placeReferenceCount > 0 ? `\n\nMY PLACE — REAL VENUE REFERENCES\n${placeReferenceCount} additional attached image${placeReferenceCount === 1 ? " is" : "s are"} real photos of this restaurant's physical place. Use them as environmental style references only. Learn the restaurant's authentic lighting mood, color temperature, wall/table material character, background palette, ambience, and level of brightness. When rebuilding or cleaning the area around the dish, make it feel naturally compatible with this real venue. Do NOT copy people, text, signs, logos, food, plates, furniture arrangements, or identifiable objects from the venue references. Do NOT place the target dish inside an exact copied scene. The venue photos guide atmosphere, not content.` : "";
+  if (mode === "background") return `${common}${styleMemory}${placeStyle}\n\nTASK\nClean only the presentation around the dish. Remove visual clutter and distracting background objects where safe, improve the table/background into a polished restaurant setting, and correct lighting naturally. If My Place references exist, make the cleaned presentation compatible with that restaurant's real ambience. Keep the plate and food unchanged.`;
+  if (mode === "match") return `${common}${styleMemory}${placeStyle}\n\nTASK\nCreate a consistent premium restaurant-menu look. Prioritize an approved Style Memory when present, while using My Place references to keep the result grounded in the restaurant's real atmosphere. If there is no approved Style Memory but My Place references exist, use those real venue references as the primary environmental guide. Otherwise create a tasteful balanced restaurant candidate. Do not stylize or redesign the food. Do not treat this candidate as approved unless the user later accepts it.`;
+  return `${common}${placeStyle}\n\nTASK\nEnhance the existing photograph only: correct exposure and white balance, improve natural contrast, clarity and sharpness, reduce distracting noise, and make the image look professionally photographed. When My Place references exist, gently align lighting and color mood with the real restaurant without replacing the scene unnecessarily.`;
+}
+
+async function loadPlaceReferences(adminClient, folder) {
+  const { data: entries, error } = await adminClient.storage.from(BUCKET).list(folder, {
+    limit: 30,
+    sortBy: { column: "created_at", order: "desc" },
+  });
+  if (error || !Array.isArray(entries)) return [];
+
+  const names = entries
+    .filter((entry) => entry?.name?.startsWith("place-") && entry?.metadata)
+    .slice(0, MAX_PLACE_REFERENCES)
+    .map((entry) => entry.name);
+
+  const references = [];
+  for (const name of names) {
+    const path = `${folder}/${name}`;
+    const { data: blob, error: downloadError } = await adminClient.storage.from(BUCKET).download(path);
+    if (downloadError || !blob || !blob.size || blob.size > 12 * 1024 * 1024) continue;
+    if (blob.type && !blob.type.startsWith("image/")) continue;
+    references.push({ blob, path, name });
+  }
+  return references;
 }
 
 Deno.serve(async (req) => {
@@ -67,10 +98,19 @@ Deno.serve(async (req) => {
     const safeProject = safeId(projectId, "project");
     const requiredPrefix = `${user.id}/${safeProject}/`;
     const styleMemoryPath = `${requiredPrefix}beyond-style-memory.png`;
+    const placeFolder = `${requiredPrefix}my-place`;
 
     if (action === "status") {
-      const { data: remembered } = await adminClient.storage.from(BUCKET).download(styleMemoryPath);
-      return json({ ok: true, styleMemoryExists: Boolean(remembered && remembered.size > 0), styleMemoryPath });
+      const [{ data: remembered }, placeReferences] = await Promise.all([
+        adminClient.storage.from(BUCKET).download(styleMemoryPath),
+        loadPlaceReferences(adminClient, placeFolder),
+      ]);
+      return json({
+        ok: true,
+        styleMemoryExists: Boolean(remembered && remembered.size > 0),
+        styleMemoryPath,
+        placeReferenceCount: placeReferences.length,
+      });
     }
 
     if (action === "reset") {
@@ -112,18 +152,25 @@ Deno.serve(async (req) => {
       const { data: remembered } = await adminClient.storage.from(BUCKET).download(styleMemoryPath);
       if (remembered && remembered.size > 0 && remembered.size <= 12 * 1024 * 1024) styleBlob = remembered;
     }
+    const placeReferences = await loadPlaceReferences(adminClient, placeFolder);
 
     const mimeType = sourceBlob.type && sourceBlob.type.startsWith("image/") ? sourceBlob.type : "image/jpeg";
     const form = new FormData();
     form.append("model", MODEL);
-    form.append("prompt", promptFor(mode, Boolean(styleBlob)));
+    form.append("prompt", promptFor(mode, Boolean(styleBlob), placeReferences.length));
     form.append("size", size);
     form.append("quality", "medium");
-    const sourceName = `target.${mimeType.includes("png") ? "png" : mimeType.includes("webp") ? "webp" : "jpg"}`;
-    if (styleBlob) {
+
+    const sourceName = `target.${imageExtension(sourceBlob)}`;
+    const inputs = [{ blob: sourceBlob, name: sourceName }];
+    if (styleBlob) inputs.push({ blob: styleBlob, name: `approved-style-anchor.${imageExtension(styleBlob)}` });
+    placeReferences.forEach((reference, index) => {
+      inputs.push({ blob: reference.blob, name: `place-reference-${index + 1}.${imageExtension(reference.blob)}` });
+    });
+
+    if (inputs.length > 1) {
       // OpenAI's Image API requires array syntax when more than one input image is supplied.
-      form.append("image[]", sourceBlob, sourceName);
-      form.append("image[]", styleBlob, "approved-style-anchor.png");
+      inputs.forEach((input) => form.append("image[]", input.blob, input.name));
     } else {
       form.append("image", sourceBlob, sourceName);
     }
@@ -145,8 +192,10 @@ Deno.serve(async (req) => {
       mode,
       model: MODEL,
       size,
-      styleLocked: Boolean(styleBlob),
+      styleLocked: Boolean(styleBlob || placeReferences.length),
       styleMemoryExists: Boolean(styleBlob),
+      placeStyleUsed: placeReferences.length > 0,
+      placeReferenceCount: placeReferences.length,
     });
   } catch (error) {
     return json({ error: error instanceof Error ? error.message : "Could not enhance this photo." }, 500);
