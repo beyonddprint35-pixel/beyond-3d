@@ -25,6 +25,7 @@ export default function MenuStudioMobilePreview({ menu, design, language = "en",
   const stageRef = useRef(null);
   const scrollRef = useRef(null);
   const focusCleanupRef = useRef(null);
+  const previewNavigationRef = useRef(false);
   const [scale, setScale] = useState(0.72);
 
   useEffect(() => {
@@ -105,7 +106,14 @@ export default function MenuStudioMobilePreview({ menu, design, language = "en",
     if (!root) return;
 
     const categoryButton = previewCategoryButton(root);
-    if (categoryButton && categoryButton.getAttribute("aria-current") !== "true") categoryButton.click();
+    if (categoryButton && categoryButton.getAttribute("aria-current") !== "true") {
+      // This click is an internal navigation command, not a user selection from
+      // the preview. Suppress the reverse preview->editor selection broadcast so
+      // an item click on the left remains selected while its category is opened.
+      previewNavigationRef.current = true;
+      categoryButton.click();
+      previewNavigationRef.current = false;
+    }
 
     // Changing the active category is a React state update. Two animation frames
     // let the common renderer paint the requested category before we locate the
@@ -170,7 +178,10 @@ export default function MenuStudioMobilePreview({ menu, design, language = "en",
   const handlePreviewClick = (event) => {
     const button = event.target.closest?.(".bme-category-nav button, .ep-tabs button"); if (!button) return;
     const label = String(button.textContent || "").trim(); if (!label) return;
-    onSelectCategory?.(label); broadcast({ type: "category_click", label, language });
+    if (!previewNavigationRef.current) {
+      onSelectCategory?.(label);
+      broadcast({ type: "category_click", label, language });
+    }
 
     // Category strips can be much wider than the simulated phone (Wine Book in
     // particular). CSS snapping alone does not guarantee that a clicked button
