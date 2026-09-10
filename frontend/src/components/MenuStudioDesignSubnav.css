@@ -1,0 +1,91 @@
+.menu-design-subnav {
+  position: fixed;
+  top: 74px;
+  left: 0;
+  right: 0;
+  z-index: 116;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-bottom: 1px solid #dce3ef;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.menu-design-subnav button {
+  min-width: 118px;
+  height: 38px;
+  padding: 0 18px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  background: transparent;
+  color: #63708a;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 850;
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+
+.menu-design-subnav button:hover {
+  background: #f3f6fb;
+  color: #1d2940;
+}
+
+.menu-design-subnav button.active {
+  border-color: #cbd9ff;
+  background: #edf3ff;
+  color: #3265de;
+  box-shadow: 0 4px 14px rgba(50, 101, 222, 0.1);
+}
+
+.menu-design-subnav-spacer {
+  height: 54px;
+  flex: 0 0 54px;
+}
+
+html[data-beyond-theme="dark"] .menu-design-subnav {
+  border-bottom-color: #1f2a3a;
+  background: rgba(9, 14, 22, 0.96);
+}
+
+html[data-beyond-theme="dark"] .menu-design-subnav button {
+  color: #99a8bc;
+}
+
+html[data-beyond-theme="dark"] .menu-design-subnav button:hover {
+  background: #111b29;
+  color: #e8eef8;
+}
+
+html[data-beyond-theme="dark"] .menu-design-subnav button.active {
+  border-color: #29487f;
+  background: #14223a;
+  color: #9ab6ff;
+  box-shadow: none;
+}
+
+@media (max-width: 850px) {
+  .menu-design-subnav {
+    top: 54px;
+    height: 48px;
+    gap: 4px;
+    padding: 5px 10px;
+  }
+
+  .menu-design-subnav button {
+    min-width: 104px;
+    height: 36px;
+    padding: 0 14px;
+    font-size: 11px;
+  }
+
+  .menu-design-subnav-spacer {
+    height: 48px;
+    flex-basis: 48px;
+  }
+}
