@@ -7,6 +7,7 @@ import MenuStudioMenuSwitcher from "./MenuStudioMenuSwitcher";
 import MenuPlaceWorkspace from "./MenuPlaceWorkspace";
 import "./MenuStudioHeaderCompact.css";
 import "./MenuStudioCompactStack.css";
+import "./MenuStudioDesignSubnav.css";
 import { applyStoredBeyondTheme, setBeyondTheme } from "../lib/beyondThemeBootstrap";
 import { flushStudioDraft, STUDIO_NAV_COPY, STUDIO_STAGES } from "../features/menu-engine/studio/studioNavigation";
 import { studioLanguageDirection } from "../features/menu-engine/studio/studioLanguage";
@@ -19,8 +20,8 @@ export default function MenuStudioHeader({ stage, language, onLanguageChange, me
   const prefix = `menu-${stage === "analytics" ? "content" : stage}-v2`;
   const BackIcon = language === "en" ? ArrowLeft : ArrowRight;
   const searchParams = new URLSearchParams(location.search);
-  const activeStage = searchParams.get("place") === "1" ? "place" : stage;
   const projectId = searchParams.get("project") || "";
+  const designSection = stage === "design" && searchParams.get("designSection") === "place" ? "place" : "design";
 
   useEffect(() => {
     const refresh = (event) => setTheme(event?.detail?.theme || applyStoredBeyondTheme());
@@ -32,18 +33,32 @@ export default function MenuStudioHeader({ stage, language, onLanguageChange, me
     };
   }, []);
 
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get("place") !== "1") return;
+    params.delete("place");
+    params.set("designSection", "place");
+    const query = params.toString();
+    navigate(`/menu-studio/design${query ? `?${query}` : ""}${location.hash}`, { replace: true });
+  }, [location.search, location.hash, navigate]);
+
   function openStage(nextStage) {
     flushStudioDraft();
     const params = new URLSearchParams(location.search);
     params.delete("place");
-    if (nextStage === "place") {
-      params.set("place", "1");
-      const query = params.toString();
-      navigate(`/menu-studio/content${query ? `?${query}` : ""}`);
-      return;
-    }
+    params.delete("designSection");
     const query = params.toString();
-    navigate(`/menu-studio/${nextStage}${query ? `?${query}` : ""}`);
+    navigate(`/menu-studio/${nextStage}${query ? `?${query}` : ""}${location.hash}`);
+  }
+
+  function openDesignSection(section) {
+    flushStudioDraft();
+    const params = new URLSearchParams(location.search);
+    params.delete("place");
+    if (section === "place") params.set("designSection", "place");
+    else params.delete("designSection");
+    const query = params.toString();
+    navigate(`/menu-studio/design${query ? `?${query}` : ""}${location.hash}`);
   }
 
   return <>
@@ -62,7 +77,7 @@ export default function MenuStudioHeader({ stage, language, onLanguageChange, me
       </div>
 
       <nav className={`${prefix}-product-nav`} aria-label="Menu Studio" dir={studioLanguageDirection(language)}>
-        {STUDIO_STAGES.map((key) => <button type="button" key={key} aria-current={key === activeStage ? "page" : undefined} className={key === activeStage ? "active" : ""} onClick={() => openStage(key)}>{t[key]}</button>)}
+        {STUDIO_STAGES.map((key) => <button type="button" key={key} aria-current={key === stage ? "page" : undefined} className={key === stage ? "active" : ""} onClick={() => openStage(key)}>{t[key]}</button>)}
       </nav>
 
       <div className={`${prefix}-top-actions menu-studio-header-actions`}>
@@ -77,6 +92,15 @@ export default function MenuStudioHeader({ stage, language, onLanguageChange, me
 
       <MenuStudioMenuSwitcher language={language} menuName={menuName} />
     </header>
-    {activeStage === "place" ? <MenuPlaceWorkspace projectId={projectId} language={language} /> : null}
+
+    {stage === "design" ? <>
+      <nav className="menu-design-subnav" aria-label={`${t.design} sections`} dir={studioLanguageDirection(language)}>
+        <button type="button" className={designSection === "design" ? "active" : ""} aria-current={designSection === "design" ? "page" : undefined} onClick={() => openDesignSection("design")}>{t.design}</button>
+        <button type="button" className={designSection === "place" ? "active" : ""} aria-current={designSection === "place" ? "page" : undefined} onClick={() => openDesignSection("place")}>{t.place}</button>
+      </nav>
+      <div className="menu-design-subnav-spacer" aria-hidden="true" />
+    </> : null}
+
+    {stage === "design" && designSection === "place" ? <MenuPlaceWorkspace projectId={projectId} language={language} /> : null}
   </>;
 }
