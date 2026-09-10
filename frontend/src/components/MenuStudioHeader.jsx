@@ -12,7 +12,21 @@ import { applyStoredBeyondTheme, setBeyondTheme } from "../lib/beyondThemeBootst
 import { flushStudioDraft, STUDIO_NAV_COPY, STUDIO_STAGES } from "../features/menu-engine/studio/studioNavigation";
 import { studioLanguageDirection } from "../features/menu-engine/studio/studioLanguage";
 
-export default function MenuStudioHeader({ stage, language, onLanguageChange, menuName, onBack, backLabel, onBrand, saveState, saveLabel }) {
+export default function MenuStudioHeader({
+  stage,
+  language,
+  onLanguageChange,
+  menuName,
+  onBack,
+  backLabel,
+  onBrand,
+  saveState,
+  saveLabel,
+  placeLogo = "",
+  placeStyle = null,
+  onPlaceLogoUpdate,
+  onPlaceStyleUpdate,
+}) {
   const navigate = useNavigate();
   const location = useLocation();
   const [theme, setTheme] = useState(() => applyStoredBeyondTheme());
@@ -101,6 +115,15 @@ export default function MenuStudioHeader({ stage, language, onLanguageChange, me
       <div className="menu-design-subnav-spacer" aria-hidden="true" />
     </> : null}
 
-    {stage === "design" && designSection === "place" ? <MenuPlaceWorkspace projectId={projectId} language={language} /> : null}
+    {stage === "design" && designSection === "place" ? (
+      <MenuPlaceWorkspace
+        projectId={projectId}
+        language={language}
+        logoUrl={placeLogo}
+        placeStyle={placeStyle}
+        onLogoUpdate={onPlaceLogoUpdate}
+        onPlaceStyleUpdate={onPlaceStyleUpdate}
+      />
+    ) : null}
   </>;
 }
