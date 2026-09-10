@@ -25,7 +25,7 @@ export default function MenuStudioMobilePreview({ menu, design, language = "en",
   const stageRef = useRef(null);
   const scrollRef = useRef(null);
   const focusCleanupRef = useRef(null);
-  const previewNavigationRef = useRef(false);
+  const focusRetryRef = useRef(null);
   const [scale, setScale] = useState(0.72);
 
   useEffect(() => {
@@ -38,6 +38,7 @@ export default function MenuStudioMobilePreview({ menu, design, language = "en",
 
   useEffect(() => () => {
     if (focusCleanupRef.current) window.clearTimeout(focusCleanupRef.current);
+    if (focusRetryRef.current) window.clearTimeout(focusRetryRef.current);
   }, []);
 
   const holderStyle = useMemo(() => ({ width: `${Math.round(MOBILE_DEVICE.outerWidth * scale)}px`, height: `${Math.round(MOBILE_DEVICE.outerHeight * scale)}px` }), [scale]);
@@ -60,15 +61,37 @@ export default function MenuStudioMobilePreview({ menu, design, language = "en",
       .find((button) => normalizedLabel(button.textContent) === wanted) || null;
   }
 
-  function scrollNodeIntoPreview(node) {
+  function renderedScaleFor(scroller) {
+    const rect = scroller?.getBoundingClientRect?.();
+    if (!rect || !scroller?.clientWidth || !rect.width) return scale || 1;
+    const measured = rect.width / scroller.clientWidth;
+    return Number.isFinite(measured) && measured > 0 ? measured : (scale || 1);
+  }
+
+  function scrollNodeIntoPreview(node, align = "center") {
     if (!node || !scrollRef.current) return;
     const outer = scrollRef.current;
     const heritageList = node.closest?.(".ep-menu-list");
     const scroller = heritageList && heritageList.scrollHeight > heritageList.clientHeight + 4 ? heritageList : outer;
     const scrollerRect = scroller.getBoundingClientRect();
     const nodeRect = node.getBoundingClientRect();
-    const top = scroller.scrollTop + nodeRect.top - scrollerRect.top - Math.max(16, scroller.clientHeight * 0.2);
-    scroller.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+    const renderedScale = renderedScaleFor(scroller);
+
+    // The whole simulated phone is CSS-transformed. getBoundingClientRect() is
+    // therefore measured in scaled screen pixels while scrollTop/clientHeight
+    // use the phone's unscaled CSS pixels. Mixing those coordinate systems was
+    // the reason the old navigation moved in the right direction but stopped
+    // above or below the selected object. Convert the visual delta back to the
+    // scroller's own coordinate system before calculating the exact target.
+    const nodeTop = scroller.scrollTop + ((nodeRect.top - scrollerRect.top) / renderedScale);
+    const nodeHeight = Math.max(1, nodeRect.height / renderedScale);
+    const viewportHeight = scroller.clientHeight;
+    let targetTop;
+    if (align === "start") targetTop = nodeTop - Math.min(72, viewportHeight * 0.12);
+    else targetTop = nodeTop - ((viewportHeight - Math.min(nodeHeight, viewportHeight * 0.72)) / 2);
+
+    const maxTop = Math.max(0, scroller.scrollHeight - viewportHeight);
+    scroller.scrollTo({ top: clamp(targetTop, 0, maxTop), behavior: "smooth" });
 
     const previous = outer.querySelector(".menu-studio-preview-focus");
     previous?.classList.remove("menu-studio-preview-focus");
@@ -97,6 +120,21 @@ export default function MenuStudioMobilePreview({ menu, design, language = "en",
     }) || null;
   }
 
+  function finishSelectionFocus(target) {
+    if (target.type === "item") {
+      scrollNodeIntoPreview(findRenderedItem(target.item), "center");
+      return;
+    }
+    const group = target.group;
+    if (group?.parent_id) {
+      scrollNodeIntoPreview(findRenderedSubcategory(group), "start");
+      return;
+    }
+    const heading = scrollRef.current?.querySelector(".bme-section-heading, .ep-section-head");
+    if (heading) scrollNodeIntoPreview(heading, "start");
+    else scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   function focusEditorSelection(target) {
     if (!target || !scrollRef.current) return;
     const group = target.type === "item"
@@ -106,30 +144,15 @@ export default function MenuStudioMobilePreview({ menu, design, language = "en",
     if (!root) return;
 
     const categoryButton = previewCategoryButton(root);
-    if (categoryButton && categoryButton.getAttribute("aria-current") !== "true") {
-      // This click is an internal navigation command, not a user selection from
-      // the preview. Suppress the reverse preview->editor selection broadcast so
-      // an item click on the left remains selected while its category is opened.
-      previewNavigationRef.current = true;
-      categoryButton.click();
-      previewNavigationRef.current = false;
-    }
+    if (categoryButton && categoryButton.getAttribute("aria-current") !== "true") categoryButton.click();
 
-    // Changing the active category is a React state update. Two animation frames
-    // let the common renderer paint the requested category before we locate the
-    // exact subcategory/item and move it into the simulated phone viewport.
+    // Wait for the renderer to switch categories, then position the exact node.
+    // Run one short correction after layout settles as images/fonts can change
+    // the vertical geometry during the first paint.
     window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
-      if (target.type === "item") {
-        scrollNodeIntoPreview(findRenderedItem(target.item));
-        return;
-      }
-      if (group?.parent_id) {
-        scrollNodeIntoPreview(findRenderedSubcategory(group));
-        return;
-      }
-      const heading = scrollRef.current?.querySelector(".bme-section-heading, .ep-section-head");
-      if (heading) scrollNodeIntoPreview(heading);
-      else scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+      finishSelectionFocus(target);
+      if (focusRetryRef.current) window.clearTimeout(focusRetryRef.current);
+      focusRetryRef.current = window.setTimeout(() => finishSelectionFocus(target), 120);
     }));
   }
 
@@ -173,15 +196,12 @@ export default function MenuStudioMobilePreview({ menu, design, language = "en",
 
     document.addEventListener("click", handleEditorClick, true);
     return () => document.removeEventListener("click", handleEditorClick, true);
-  }, [menu, language]);
+  }, [menu, language, scale]);
 
   const handlePreviewClick = (event) => {
     const button = event.target.closest?.(".bme-category-nav button, .ep-tabs button"); if (!button) return;
     const label = String(button.textContent || "").trim(); if (!label) return;
-    if (!previewNavigationRef.current) {
-      onSelectCategory?.(label);
-      broadcast({ type: "category_click", label, language });
-    }
+    onSelectCategory?.(label); broadcast({ type: "category_click", label, language });
 
     // Category strips can be much wider than the simulated phone (Wine Book in
     // particular). CSS snapping alone does not guarantee that a clicked button
