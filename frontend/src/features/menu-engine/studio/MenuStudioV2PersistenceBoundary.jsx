@@ -57,9 +57,8 @@ export default function MenuStudioV2PersistenceBoundary({ children }) {
   const requestedProjectId = params.get("project") || "";
 
   // Persistence is deliberately non-blocking. Studio paints immediately from the
-  // browser draft, while a requested cloud project is resolved in the background.
-  // When the target draft arrives we remount the stage once so every editor reads
-  // the newly activated draft synchronously on its next render.
+  // browser draft. Normal menu switches hydrate the target before navigation, and
+  // direct URLs reuse the same workspace hydrator instead of starting a second load.
   const [state, setState] = useState("ready");
   const [draftRevision, setDraftRevision] = useState(0);
   const [cloudError, setCloudError] = useState("");
@@ -96,13 +95,18 @@ export default function MenuStudioV2PersistenceBoundary({ children }) {
       return true;
     }
 
+    async function prepareProject(projectId) {
+      if (!projectId) return null;
+      if (workspace?.prepareDraft) return workspace.prepareDraft(projectId);
+      const project = await loadMenuStudioProject(projectId);
+      return draftFromMenuStudioProject(project);
+    }
+
     async function openDraft() {
       const localDraft = readMenuStudioV2Draft();
       const localProjectId = menuStudioProjectId(localDraft);
       const activeProjectId = readActiveMenuStudioProjectId();
 
-      // Normal Studio navigation and menu switching prepare the browser draft
-      // before changing the URL. In that common path there is nothing to wait for.
       if (requestedProjectId && localDraft?.menu && localProjectId === requestedProjectId) {
         workspace?.rememberDraft(localDraft);
         setActiveMenuStudioProjectId(requestedProjectId);
@@ -122,20 +126,14 @@ export default function MenuStudioV2PersistenceBoundary({ children }) {
 
       try {
         if (requestedProjectId) {
-          // Do not flush the requested project before opening it. It is not the
-          // project currently being edited, and waiting for that queue created the
-          // old full-screen "Opening your menu" delay.
-          const project = await loadMenuStudioProject(requestedProjectId);
+          const draft = await prepareProject(requestedProjectId);
           if (!active) return;
-          const draft = draftFromMenuStudioProject(project);
-          if (!draft) throw new Error(t.missing);
-          activateDraft(draft, project.id, { remount: true });
+          if (!draft?.menu) throw new Error(t.missing);
+          activateDraft(draft, requestedProjectId, { remount: true });
           return;
         }
 
         if (localDraft?.menu) {
-          // A brand-new manual draft can be edited immediately. If it has not yet
-          // been persisted, create its cloud project quietly behind the Studio.
           setState("ready");
           if (localProjectId) {
             workspace?.rememberDraft(localDraft);
@@ -153,19 +151,16 @@ export default function MenuStudioV2PersistenceBoundary({ children }) {
         }
 
         if (activeProjectId) {
-          const project = await loadMenuStudioProject(activeProjectId);
+          const draft = await prepareProject(activeProjectId);
           if (!active) return;
-          const draft = draftFromMenuStudioProject(project);
-          if (!draft) throw new Error(t.missing);
-          activateDraft(draft, project.id, { remount: true });
+          if (!draft?.menu) throw new Error(t.missing);
+          activateDraft(draft, activeProjectId, { remount: true });
           return;
         }
 
         if (active) setState("missing");
       } catch (error) {
         console.warn("Could not open persistent Menu Studio draft.", error);
-        // If a browser draft exists, keep the owner editing instead of replacing
-        // the whole Studio with an infrastructure/loading screen.
         if (active) setState(readMenuStudioV2Draft()?.menu ? "ready" : "missing");
       }
     }
