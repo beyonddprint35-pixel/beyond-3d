@@ -1,9 +1,9 @@
-export const STUDIO_STAGES = ["content", "design", "preview", "analytics", "publish"];
+export const STUDIO_STAGES = ["content", "place", "design", "preview", "analytics", "publish"];
 
 export const STUDIO_NAV_COPY = {
-  en: { content: "Content", design: "Design", preview: "Preview", analytics: "Analytics", publish: "Publish", menus: "Your menus", language: "Language", light: "Switch to light mode", dark: "Switch to dark mode", back: "Back", switching: "Saving your menu…", switchError: "Could not save this menu. Please try again before switching.", retry: "Try again" },
-  he: { content: "תוכן", design: "עיצוב", preview: "תצוגה", analytics: "אנליטיקה", publish: "פרסום", menus: "התפריטים שלך", language: "שפה", light: "מעבר למצב בהיר", dark: "מעבר למצב כהה", back: "חזרה", switching: "שומר את התפריט…", switchError: "לא ניתן לשמור את התפריט. נסו שוב לפני המעבר.", retry: "ניסיון נוסף" },
-  ar: { content: "المحتوى", design: "التصميم", preview: "المعاينة", analytics: "التحليلات", publish: "النشر", menus: "قوائمك", language: "اللغة", light: "التبديل للوضع الفاتح", dark: "التبديل للوضع الداكن", back: "رجوع", switching: "جارٍ حفظ القائمة…", switchError: "تعذر حفظ القائمة. حاول مرة أخرى قبل التبديل.", retry: "حاول مجددًا" },
+  en: { content: "Content", place: "My Place", design: "Design", preview: "Preview", analytics: "Analytics", publish: "Publish", menus: "Your menus", language: "Language", light: "Switch to light mode", dark: "Switch to dark mode", back: "Back", switching: "Saving your menu…", switchError: "Could not save this menu. Please try again before switching.", retry: "Try again" },
+  he: { content: "תוכן", place: "המקום שלי", design: "עיצוב", preview: "תצוגה", analytics: "אנליטיקה", publish: "פרסום", menus: "התפריטים שלך", language: "שפה", light: "מעבר למצב בהיר", dark: "מעבר למצב כהה", back: "חזרה", switching: "שומר את התפריט…", switchError: "לא ניתן לשמור את התפריט. נסו שוב לפני המעבר.", retry: "ניסיון נוסף" },
+  ar: { content: "المحتوى", place: "مكاني", design: "التصميم", preview: "المعاينة", analytics: "التحليلات", publish: "النشر", menus: "قوائمك", language: "اللغة", light: "التبديل للوضع الفاتح", dark: "التبديل للوضع الداكن", back: "رجوع", switching: "جارٍ حفظ القائمة…", switchError: "تعذر حفظ القائمة. حاول مرة أخرى قبل التبديل.", retry: "حاول مجددًا" },
 };
 
 export function chooseStudioProject(projects, { projectId = "", siteId = "", activeId = "" } = {}) {
