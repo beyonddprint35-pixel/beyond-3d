@@ -10,7 +10,9 @@ export default function MenuStudioMobileStageNav() {
   const navigate = useNavigate();
   const [language, setLanguage] = useState(() => readStudioLanguage("en"));
 
-  const currentStage = location.pathname.replace(/^\/menu-studio\/?/, "").split("/")[0] || "content";
+  const routeStage = location.pathname.replace(/^\/menu-studio\/?/, "").split("/")[0] || "content";
+  const query = new URLSearchParams(location.search);
+  const currentStage = query.get("place") === "1" ? "place" : routeStage;
   const t = STUDIO_NAV_COPY[language] || STUDIO_NAV_COPY.en;
 
   useEffect(() => {
@@ -34,7 +36,16 @@ export default function MenuStudioMobileStageNav() {
   function openStage(stage) {
     if (stage === currentStage) return;
     flushStudioDraft();
-    navigate(`/menu-studio/${stage}${location.search}${location.hash}`);
+    const params = new URLSearchParams(location.search);
+    params.delete("place");
+    if (stage === "place") {
+      params.set("place", "1");
+      const nextQuery = params.toString();
+      navigate(`/menu-studio/content${nextQuery ? `?${nextQuery}` : ""}${location.hash}`);
+      return;
+    }
+    const nextQuery = params.toString();
+    navigate(`/menu-studio/${stage}${nextQuery ? `?${nextQuery}` : ""}${location.hash}`);
   }
 
   return (
