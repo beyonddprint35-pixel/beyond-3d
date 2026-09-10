@@ -37,7 +37,6 @@ const UI = {
     content:"Content", design:"Design", preview:"Preview", publish:"Publish", saved:"Saved locally", saving:"Saving…", saveError:"Could not save",
     eyebrow:"DESIGN STUDIO", title:"Design your menu", hint:"Choose a design and adjust it while your live menu stays visible beside you.",
     live:"LIVE DESIGN", continuePreview:"Continue to Preview", draftKept:"Design changes are saved to your draft.",
-    restaurantLogo:"Restaurant logo", logoHint:"PNG, JPG, WebP or SVG", uploadLogo:"Upload logo", replaceLogo:"Replace logo", removeLogo:"Remove",
     savedDesigns:"Saved options", savedDesignsHint:"Keep two favorites for this menu. Switching options never changes your menu content.", option1:"Option 1", option2:"Option 2", editing:"Editing", duplicateHint:"Tap to create from your current option",
   },
   he: {
@@ -45,7 +44,6 @@ const UI = {
     content:"תוכן", design:"עיצוב", preview:"תצוגה מקדימה", publish:"פרסום", saved:"נשמר מקומית", saving:"שומר…", saveError:"לא ניתן לשמור",
     eyebrow:"סטודיו לעיצוב", title:"עצבו את התפריט", hint:"בחרו עיצוב והתאימו אותו בזמן שהתפריט החי נשאר מולכם לאורך כל הדרך.",
     live:"עיצוב חי", continuePreview:"המשך לתצוגה מקדימה", draftKept:"שינויי העיצוב נשמרים בטיוטה שלכם.",
-    restaurantLogo:"לוגו המסעדה", logoHint:"PNG, JPG, WebP או SVG", uploadLogo:"העלאת לוגו", replaceLogo:"החלפת לוגו", removeLogo:"הסרה",
     savedDesigns:"אפשרויות שמורות", savedDesignsHint:"שמרו שתי אפשרויות מועדפות לאותו תפריט. התוכן נשאר משותף.", option1:"אפשרות 1", option2:"אפשרות 2", editing:"בעריכה", duplicateHint:"לחצו כדי ליצור מהאפשרות הנוכחית",
   },
   ar: {
@@ -53,7 +51,6 @@ const UI = {
     content:"المحتوى", design:"التصميم", preview:"المعاينة", publish:"النشر", saved:"تم الحفظ محلياً", saving:"جارٍ الحفظ…", saveError:"تعذر الحفظ",
     eyebrow:"استوديو التصميم", title:"صمّم قائمتك", hint:"اختر تصميماً وعدّله بينما تبقى المعاينة الحية ظاهرة أمامك طوال الوقت.",
     live:"تصميم مباشر", continuePreview:"المتابعة إلى المعاينة", draftKept:"تُحفظ تغييرات التصميم في مسودتكم.",
-    restaurantLogo:"شعار المطعم", logoHint:"PNG أو JPG أو WebP أو SVG", uploadLogo:"رفع الشعار", replaceLogo:"استبدال الشعار", removeLogo:"إزالة",
     savedDesigns:"خيارات محفوظة", savedDesignsHint:"احتفظ بخيارين مفضلين لنفس القائمة. يبقى المحتوى مشتركاً.", option1:"الخيار 1", option2:"الخيار 2", editing:"قيد التعديل", duplicateHint:"اضغط للإنشاء من الخيار الحالي",
   },
 };
@@ -154,7 +151,7 @@ export default function MenuDesignStudioV2() {
   const t = UI[uiLanguage] || UI.en;
   const rtl = studioLanguageDirection(uiLanguage) === "rtl";
   const ForwardIcon = rtl ? ArrowLeft : ArrowRight;
-  const logo = Object.prototype.hasOwnProperty.call(design.brand || {}, "logoUrl") ? design.brand.logoUrl : (menu.logo_url || "");
+  const placeLogo = design?.brand?.logoUrl || menu?.logo_url || "";
   const selectedDesignEntry = PREMIUM_MENU_DESIGNS.find((entry) => entry.id === designId) || resolved.entry;
 
   const saveState = useStudioDraftSave({ ...(storedDraft || {}), menu, design, designId, profile, contentLanguage });
@@ -203,8 +200,48 @@ export default function MenuDesignStudioV2() {
     persistVariants(nextVariants, slot);
   }
 
-  function patchLogo(value) {
-    patchDesign((current) => ({ ...current, brand: { ...current.brand, logoUrl: value } }));
+  function updateSharedLogo(value) {
+    const nextCurrentDesign = normalizeMenuDesign({
+      ...design,
+      brand: { ...(design?.brand || {}), logoUrl: value },
+    });
+    const nextVariants = { ...designVariants };
+
+    ["A", "B"].forEach((slot) => {
+      const variant = nextVariants[slot];
+      if (!variant?.design) return;
+      nextVariants[slot] = {
+        ...variant,
+        design: slot === activeDesignVariant
+          ? nextCurrentDesign
+          : normalizeMenuDesign({
+              ...variant.design,
+              brand: { ...(variant.design?.brand || {}), logoUrl: value },
+            }),
+      };
+    });
+
+    nextVariants[activeDesignVariant] = {
+      ...(nextVariants[activeDesignVariant] || {}),
+      design: nextCurrentDesign,
+      designId,
+    };
+
+    setDesignState({ design: nextCurrentDesign, designId });
+    setDesignVariants(nextVariants);
+    setProfile((current) => ({
+      ...(current || {}),
+      activeDesignVariant,
+      designVariants: nextVariants,
+    }));
+    setMenu((current) => ({ ...current, logo_url: value }));
+  }
+
+  function updatePlaceStyle(nextStyle) {
+    setProfile((current) => ({
+      ...(current || {}),
+      aiPlaceStyle: nextStyle,
+    }));
   }
 
   function patchHeroHeadline(value) {
@@ -217,18 +254,17 @@ export default function MenuDesignStudioV2() {
     }));
   }
 
-  function uploadLogo(file) {
-    if (!file || !file.type?.startsWith("image/")) return;
-    const reader = new FileReader();
-    reader.onload = () => patchLogo(String(reader.result || ""));
-    reader.readAsDataURL(file);
-  }
-
   function chooseDesign(selectedId) {
     if (selectedId === designId) return;
     const selectedEntry = PREMIUM_MENU_DESIGNS.find((entry) => entry.id === selectedId);
+    const sharedLogo = placeLogo;
     setMenu((current) => prepareMenuForIndustry(current, selectedEntry));
-    patchDesign((current) => applyPremiumMenuDesign(current, selectedId), selectedId);
+    patchDesign((current) => {
+      const applied = applyPremiumMenuDesign(current, selectedId);
+      return sharedLogo
+        ? { ...applied, brand: { ...(applied.brand || {}), logoUrl: sharedLogo } }
+        : applied;
+    }, selectedId);
   }
 
   function browseDesigns() {
@@ -245,7 +281,20 @@ export default function MenuDesignStudioV2() {
 
   return (
     <main className="menu-design-v2" dir={rtl ? "rtl" : "ltr"} lang={uiLanguage}>
-      <MenuStudioHeader stage="design" language={uiLanguage} onLanguageChange={changeStudioLanguage} menuName={menu.restaurant_name} onBack={() => navigate(studioRoute("/menu-studio/content"))} backLabel={t.backContent} saveState={saveState} saveLabel={saveLabel} />
+      <MenuStudioHeader
+        stage="design"
+        language={uiLanguage}
+        onLanguageChange={changeStudioLanguage}
+        menuName={menu.restaurant_name}
+        onBack={() => navigate(studioRoute("/menu-studio/content"))}
+        backLabel={t.backContent}
+        saveState={saveState}
+        saveLabel={saveLabel}
+        placeLogo={placeLogo}
+        placeStyle={profile?.aiPlaceStyle || null}
+        onPlaceLogoUpdate={updateSharedLogo}
+        onPlaceStyleUpdate={updatePlaceStyle}
+      />
 
       <div className="menu-design-v2-workspace">
         <aside className="menu-design-v2-controls">
@@ -254,16 +303,6 @@ export default function MenuDesignStudioV2() {
               <span><Sparkles size={13} /> {t.eyebrow}</span>
               <strong>{t.title}</strong>
               <small>{t.hint}</small>
-            </div>
-
-            <div className="menu-design-v2-logo-control">
-              <div className="menu-design-v2-logo-preview">{logo ? <img src={logo} alt="" /> : <span>LOGO</span>}</div>
-              <div className="menu-design-v2-logo-copy"><strong>{t.restaurantLogo}</strong><small>{t.logoHint}</small></div>
-              <label className="menu-design-v2-logo-upload">
-                <input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" onChange={(event) => uploadLogo(event.target.files?.[0])} />
-                <span>{logo ? t.replaceLogo : t.uploadLogo}</span>
-              </label>
-              {logo ? <button type="button" className="menu-design-v2-logo-remove" onClick={() => patchLogo("")}>{t.removeLogo}</button> : null}
             </div>
 
             <section className="menu-design-v2-variants menu-design-v2-variants-compact" aria-label={t.savedDesigns}>
