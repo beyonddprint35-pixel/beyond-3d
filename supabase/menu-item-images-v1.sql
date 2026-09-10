@@ -10,7 +10,7 @@ values (
   'menu-item-images',
   'menu-item-images',
   true,
-  5242880,
+  8388608,
   array['image/jpeg','image/png','image/webp']::text[]
 )
 on conflict (id) do update
