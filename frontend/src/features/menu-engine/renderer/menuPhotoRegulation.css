@@ -225,3 +225,25 @@
     min-height:205px!important;
   }
 }
+
+/* The Studio phone preview lives inside a desktop browser, so viewport media
+   queries do not describe its simulated 390px screen. Apply the same compact
+   contract explicitly inside the simulated phone as well. */
+.menu-studio-mobile-preview-screen .bme-menu .bme-item-media,
+.menu-studio-mobile-preview-screen .bme-menu .bme-item-media[data-photo-source="portrait"],
+.menu-studio-mobile-preview-screen .bme-menu .bme-item-media[data-photo-source="balanced"],
+.menu-studio-mobile-preview-screen .bme-menu .bme-item-media[data-photo-source="landscape"]{
+  aspect-ratio:16/9!important;
+  block-size:auto!important;
+  min-block-size:0!important;
+  max-block-size:205px!important;
+}
+
+.menu-studio-mobile-preview-screen .bme-menu.bme-presentation-noir-gallery .bme-visual-item,
+.menu-studio-mobile-preview-screen .bme-menu.bme-presentation-noir-gallery .bme-visual-item:first-child,
+.menu-studio-mobile-preview-screen .bme-menu.bme-presentation-luxury-steak .bme-visual-item,
+.menu-studio-mobile-preview-screen .bme-menu.bme-presentation-luxury-steak .bme-visual-item:first-child,
+.menu-studio-mobile-preview-screen .bme-menu.bme-presentation-noir-gallery .bme-visual-item:has(.bme-item-media[data-photo-source="portrait"]),
+.menu-studio-mobile-preview-screen .bme-menu.bme-presentation-luxury-steak .bme-visual-item:has(.bme-item-media[data-photo-source="portrait"]){
+  min-height:205px!important;
+}
