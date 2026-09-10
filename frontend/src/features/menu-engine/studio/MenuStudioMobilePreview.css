@@ -81,6 +81,27 @@
 .menu-studio-mobile-preview-scroll::-webkit-scrollbar{width:5px}
 .menu-studio-mobile-preview-scroll::-webkit-scrollbar-thumb{border-radius:99px;background:rgba(92,102,118,.24)}
 
+/* Content Studio selection sync. The marker exists only in the editor preview,
+   never in the published menu. It briefly confirms which category/item the
+   owner selected without changing the menu's actual design. */
+.menu-studio-mobile-preview-scroll .menu-studio-preview-focus{
+  position:relative;
+  z-index:2;
+  outline:3px solid color-mix(in srgb,var(--bme-accent,#4974e5) 72%,#fff 28%);
+  outline-offset:4px;
+  border-radius:max(8px,var(--bme-radius,8px));
+  animation:menu-studio-preview-focus-pulse 1.1s ease both;
+}
+.menu-studio-mobile-preview-scroll .ep-page .menu-studio-preview-focus{
+  outline-color:color-mix(in srgb,var(--ep-accent,#4974e5) 72%,#fff 28%);
+  border-radius:max(8px,var(--ep-radius,8px));
+}
+@keyframes menu-studio-preview-focus-pulse{
+  0%{outline-width:0;outline-offset:10px}
+  35%{outline-width:3px;outline-offset:4px}
+  100%{outline-color:transparent;outline-offset:1px}
+}
+
 /* Hard preview rule: every renderer fills at least the complete simulated
    screen. Generic menus must be allowed to grow past one screen; forcing a
    fixed 100% height made long menus overflow their themed root and exposed the
