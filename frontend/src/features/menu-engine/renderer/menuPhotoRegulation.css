@@ -179,3 +179,49 @@
     min-height:340px;
   }
 }
+
+/* =========================================================
+   UNIFORM MOBILE ITEM PHOTO CONTRACT
+   Restaurant guests should not see one tall portrait upload take over the
+   menu while another item stays compact. On phone/tablet menu cards every
+   source orientation now receives the same 16:9 frame. The image is cropped
+   with object-fit: cover and keeps the owner's focal point.
+   ========================================================= */
+@media(max-width:760px){
+  .bme-menu .bme-item-media,
+  .bme-menu .bme-item-media[data-photo-source="portrait"],
+  .bme-menu .bme-item-media[data-photo-source="balanced"],
+  .bme-menu .bme-item-media[data-photo-source="landscape"]{
+    aspect-ratio:16/9!important;
+    block-size:auto!important;
+    min-block-size:0!important;
+    max-block-size:220px!important;
+  }
+
+  .bme-menu.bme-presentation-noir-gallery .bme-visual-item,
+  .bme-menu.bme-presentation-noir-gallery .bme-visual-item:first-child,
+  .bme-menu.bme-presentation-luxury-steak .bme-visual-item,
+  .bme-menu.bme-presentation-luxury-steak .bme-visual-item:first-child,
+  .bme-menu.bme-presentation-noir-gallery .bme-visual-item:has(.bme-item-media[data-photo-source="portrait"]),
+  .bme-menu.bme-presentation-noir-gallery .bme-visual-item:first-child:has(.bme-item-media[data-photo-source="portrait"]),
+  .bme-menu.bme-presentation-luxury-steak .bme-visual-item:has(.bme-item-media[data-photo-source="portrait"]),
+  .bme-menu.bme-presentation-luxury-steak .bme-visual-item:first-child:has(.bme-item-media[data-photo-source="portrait"]){
+    min-height:220px!important;
+  }
+}
+
+@media(max-width:430px){
+  .bme-menu .bme-item-media,
+  .bme-menu .bme-item-media[data-photo-source="portrait"],
+  .bme-menu .bme-item-media[data-photo-source="balanced"],
+  .bme-menu .bme-item-media[data-photo-source="landscape"]{
+    max-block-size:205px!important;
+  }
+
+  .bme-menu.bme-presentation-noir-gallery .bme-visual-item,
+  .bme-menu.bme-presentation-noir-gallery .bme-visual-item:first-child,
+  .bme-menu.bme-presentation-luxury-steak .bme-visual-item,
+  .bme-menu.bme-presentation-luxury-steak .bme-visual-item:first-child{
+    min-height:205px!important;
+  }
+}
