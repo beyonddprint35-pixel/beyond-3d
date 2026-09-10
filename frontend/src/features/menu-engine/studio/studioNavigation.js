@@ -1,4 +1,4 @@
-export const STUDIO_STAGES = ["content", "place", "design", "preview", "analytics", "publish"];
+export const STUDIO_STAGES = ["content", "design", "preview", "analytics", "publish"];
 
 export const STUDIO_NAV_COPY = {
   en: { content: "Content", place: "My Place", design: "Design", preview: "Preview", analytics: "Analytics", publish: "Publish", menus: "Your menus", language: "Language", light: "Switch to light mode", dark: "Switch to dark mode", back: "Back", switching: "Saving your menu…", switchError: "Could not save this menu. Please try again before switching.", retry: "Try again" },
