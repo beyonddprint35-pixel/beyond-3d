@@ -2,8 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Check, ChevronDown, X } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { flushMenuStudioProjectSave, listMenuStudioProjects, menuStudioProjectId } from "../features/menu-engine/studio/menuStudioV2Persistence";
-import { readMenuStudioV2Draft } from "../features/menu-engine/studio/menuStudioV2Session";
+import {
+  draftFromMenuStudioProject,
+  flushMenuStudioProjectSave,
+  loadMenuStudioProject,
+  menuStudioProjectId,
+  setActiveMenuStudioProjectId,
+} from "../features/menu-engine/studio/menuStudioV2Persistence";
+import { listMenuStudioProjectSummaries } from "../features/menu-engine/studio/menuStudioProjectIndex";
+import { readMenuStudioV2Draft, writeMenuStudioV2Draft } from "../features/menu-engine/studio/menuStudioV2Session";
 import { useMenuStudioWorkspace } from "../features/menu-engine/studio/menuStudioWorkspaceContext";
 import { flushStudioDraft, STUDIO_NAV_COPY, studioProjectUrl } from "../features/menu-engine/studio/studioNavigation";
 
@@ -19,7 +26,7 @@ export default function MenuStudioMenuSwitcher({ language, menuName }) {
   const projectId = new URLSearchParams(location.search).get("project") || menuStudioProjectId(readMenuStudioV2Draft());
   const t = STUDIO_NAV_COPY[language] || STUDIO_NAV_COPY.en;
   const activeProject = projects.find((project) => project.id === projectId);
-  const activeName = menuName || activeProject?.name || t.menus;
+  const activeName = activeProject?.name || menuName || t.menus;
 
   useEffect(() => {
     mounted.current = true;
@@ -28,7 +35,10 @@ export default function MenuStudioMenuSwitcher({ language, menuName }) {
 
   useEffect(() => {
     let active = true;
-    (workspace ? workspace.loadProjects() : listMenuStudioProjects()).then((rows) => {
+    const cached = workspace?.cachedProjects() || [];
+    if (cached.length) setProjects(cached);
+
+    (workspace ? workspace.loadProjects() : listMenuStudioProjectSummaries()).then((rows) => {
       if (active) {
         setProjects(rows);
         setStatus("");
@@ -57,6 +67,17 @@ export default function MenuStudioMenuSwitcher({ language, menuName }) {
     };
   }, [compactOpen]);
 
+  async function prepareTargetMenu(id) {
+    if (workspace?.prepareDraft) return workspace.prepareDraft(id);
+
+    const project = await loadMenuStudioProject(id);
+    const draft = draftFromMenuStudioProject(project);
+    if (!draft?.menu) throw new Error("This menu could not be opened.");
+    if (!writeMenuStudioV2Draft(draft, { queueSave: false })) throw new Error("This menu could not be prepared.");
+    setActiveMenuStudioProjectId(id);
+    return draft;
+  }
+
   async function switchMenu(id) {
     if (!id || id === projectId || status === "saving") {
       if (id === projectId) setCompactOpen(false);
@@ -64,6 +85,9 @@ export default function MenuStudioMenuSwitcher({ language, menuName }) {
     }
     setStatus("saving");
     try {
+      // Persist only the menu the owner is leaving. The target menu is then
+      // hydrated before navigation, so the next Studio screen never paints the
+      // previous/blank menu while waiting for the cloud.
       let savedSnapshot;
       let latestDraft;
       do {
@@ -74,19 +98,27 @@ export default function MenuStudioMenuSwitcher({ language, menuName }) {
         if (!flushStudioDraft()) throw new Error("Draft could not be saved.");
         latestDraft = readMenuStudioV2Draft();
       } while (JSON.stringify(latestDraft) !== savedSnapshot);
+
       workspace?.rememberDraft(latestDraft);
-      if (workspace && !workspace.activateDraft(id)) throw new Error("Menu could not be opened.");
+      const targetDraft = await prepareTargetMenu(id);
+      if (!mounted.current || !targetDraft?.menu) return;
+
       setCompactOpen(false);
       navigate(studioProjectUrl(location.pathname, location.search, id));
     } catch {
-      setStatus("error");
+      if (mounted.current) setStatus("error");
     }
   }
 
   if (status === "loadError") {
     return <div className="menu-studio-menu-switcher"><button type="button" onClick={() => setAttempt((value) => value + 1)}>{t.menus} · {t.retry}</button></div>;
   }
-  if (projects.length <= 1) return null;
+
+  // Keep the selector present while the lightweight index arrives. This avoids
+  // making the whole navigation row appear/disappear during normal startup.
+  if (projects.length <= 1) {
+    return projects.length === 1 ? null : <div className="menu-studio-menu-switcher menu-studio-menu-switcher-loading" aria-label={t.menus} />;
+  }
 
   const compactSheet = compactOpen && typeof document !== "undefined" ? createPortal(
     <div className="menu-studio-menu-switcher-layer" onClick={(event) => { if (event.target === event.currentTarget) setCompactOpen(false); }}>
