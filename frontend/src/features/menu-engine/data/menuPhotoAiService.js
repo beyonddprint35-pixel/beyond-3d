@@ -43,6 +43,23 @@ function resolveStorageContext(sourceUrl, sourcePath = "", projectId = "") {
   };
 }
 
+function cleanStyleContext(context) {
+  if (!context || typeof context !== "object") return undefined;
+  const referencePaths = Array.isArray(context.referencePaths)
+    ? context.referencePaths.map((value) => String(value || "").trim()).filter(Boolean).slice(0, 3)
+    : [];
+  const theme = context.theme && typeof context.theme === "object"
+    ? Object.fromEntries(Object.entries(context.theme).slice(0, 12).map(([key, value]) => [key, String(value || "").slice(0, 80)]))
+    : undefined;
+  return {
+    restaurantName: String(context.restaurantName || "").slice(0, 160),
+    designId: String(context.designId || "").slice(0, 120),
+    heroImageUrl: String(context.heroImageUrl || "").slice(0, 1200),
+    referencePaths,
+    theme,
+  };
+}
+
 async function sessionToken() {
   const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
   if (sessionError) throw sessionError;
@@ -110,6 +127,9 @@ export async function enhanceMenuPhotoWithAi({
   projectId = "",
   mode = "enhance",
   itemId = "dish",
+  styleContext,
+  styleStrength = "balanced",
+  variantIndex = 0,
 }) {
   const context = resolveStorageContext(sourceUrl, sourcePath, projectId);
   if (!context.projectId || !context.sourcePath) {
@@ -124,12 +144,16 @@ export async function enhanceMenuPhotoWithAi({
     sourcePath: context.sourcePath,
     mode,
     size,
+    styleStrength: ["balanced", "strong"].includes(styleStrength) ? styleStrength : "balanced",
+    variantIndex: Number(variantIndex || 0),
+    styleContext: cleanStyleContext(styleContext),
   }, "AI could not enhance this photo.");
 
   if (!data?.imageBase64) throw new Error("AI returned no photo.");
   return {
-    file: base64ToFile(data.imageBase64, data.mimeType, `${itemId}-${mode}-ai.png`),
+    file: base64ToFile(data.imageBase64, data.mimeType, `${itemId}-${mode}-${styleStrength}-${variantIndex || 1}-ai.png`),
     mode: data.mode || mode,
+    requestedStyleStrength: styleStrength,
     model: data.model || "gpt-image-2",
     size: data.size || size,
     styleLocked: Boolean(data.styleLocked),
