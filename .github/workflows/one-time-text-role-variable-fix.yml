@@ -1,0 +1,74 @@
+name: One-time text role variable namespace fix
+
+on:
+  push:
+    branches:
+      - studio-mobile-remodel-development
+    paths:
+      - .github/workflows/one-time-text-role-variable-fix.yml
+
+permissions:
+  contents: write
+
+jobs:
+  fix-text-role-variables:
+    if: github.event.head_commit.message == 'Run one-time text role variable namespace fix'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: studio-mobile-remodel-development
+          fetch-depth: 0
+
+      - name: Namespace per-role typography variables
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          component_path = Path('frontend/src/features/menu-engine/studio/MenuItemNameColorControl.jsx')
+          component = component_path.read_text()
+          for prop in ('size', 'weight', 'style', 'decoration'):
+              component = component.replace(f'--${{prefix}}-${{role.slug}}-{prop}', f'--${{prefix}}-role-${{role.slug}}-{prop}')
+          component_path.write_text(component)
+
+          renderer_path = Path('frontend/src/features/menu-engine/renderer/MenuRenderer.jsx')
+          renderer = renderer_path.read_text()
+          for prop in ('size', 'weight', 'style', 'decoration'):
+              renderer = renderer.replace(f'--${{prefix}}-${{slug}}-{prop}', f'--${{prefix}}-role-${{slug}}-{prop}')
+          renderer_path.write_text(renderer)
+
+          css_path = Path('frontend/src/features/menu-engine/renderer/menuTextRoleColors.css')
+          css = css_path.read_text()
+          marker = '/* Per-text-role typography overrides. */'
+          before, sep, after = css.partition(marker)
+          if not sep:
+              raise SystemExit('Typography marker missing')
+          slugs = ('brand-title','brand-subtitle','hero-kicker','hero-title','category-nav','section-title','subcategory-title','item-name','description','price','price-type','note','footer')
+          for slug in slugs:
+              after = after.replace(f'--bme-{slug}-', f'--bme-role-{slug}-')
+              after = after.replace(f'--ep-{slug}-', f'--ep-role-{slug}-')
+          css_path.write_text(before + sep + after)
+          PY
+
+      - name: Build frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd frontend
+          npm ci --no-audit --no-fund
+          npm run build
+
+      - name: Commit namespace fix
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Beyond UI Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add frontend/src/features/menu-engine/studio/MenuItemNameColorControl.jsx \
+                  frontend/src/features/menu-engine/renderer/MenuRenderer.jsx \
+                  frontend/src/features/menu-engine/renderer/menuTextRoleColors.css
+          git diff --cached --quiet && exit 0
+          git commit -m "Namespace per-role text style variables"
+          git push origin HEAD:studio-mobile-remodel-development
