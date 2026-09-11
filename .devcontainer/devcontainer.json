@@ -1,8 +1,8 @@
 {
   "name": "Beyond Development",
-  "forwardPorts": [5174],
+  "forwardPorts": [5175],
   "portsAttributes": {
-    "5174": {
+    "5175": {
       "label": "Beyond Menu Studio",
       "onAutoForward": "openPreview",
       "protocol": "http"
