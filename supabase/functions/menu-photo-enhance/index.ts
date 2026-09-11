@@ -4,8 +4,9 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const MODEL = "gpt-image-2";
 const BUCKET = "menu-item-images";
-const MAX_PLACE_REFERENCES = 3;
-const SCENE_TYPES = ["bar", "table"];
+const MAX_PLACE_REFERENCES = 5;
+const MAX_SCENE_REFERENCES = 3;
+const SCENE_TYPES = ["scene1", "scene2"];
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -67,32 +68,39 @@ function styleContextText(styleContext) {
 }
 
 function itemPrompt({ mode, sceneType, scenePresetUsed, placeReferenceCount, styleContext }) {
-  const identityLock = `Edit the FIRST attached image into a polished professional digital-menu photograph.\n\nABSOLUTE ITEM LOCK — HIGHEST PRIORITY\n- The FIRST image is the ONLY source of truth for the served item.\n- Preserve its semantic identity exactly. A beer must remain that same beer; a cocktail must remain that same cocktail; food must remain the same food.\n- Never replace a drink with food, food with a drink, or one dish/drink with another.\n- Preserve the visible glass, cup, plate or container, liquid color, fill level, foam/head, ice, garnish, ingredients, toppings, sauces, sides, portion size, number of pieces and recognizable geometry from the FIRST image.\n- Minor repositioning, crop and perspective cleanup are allowed only when needed to place the exact item naturally in the restaurant scene.\n- Do not import food, drinks, plates, glasses, utensils, props, text, logos, signs, hands or people from any reference image.\n- Keep realistic texture and believable imperfections. The result must remain an honest representation of the exact item in the FIRST image.`;
+  const identityLock = `Edit the FIRST attached image into a polished professional digital-menu photograph.\n\nABSOLUTE ITEM LOCK — HIGHEST PRIORITY\n- The FIRST image is the ONLY source of truth for the served item.\n- Preserve its semantic identity exactly. A beer must remain that same beer; a cocktail must remain that same cocktail; food must remain the same food.\n- Never replace a drink with food, food with a drink, or one dish/drink with another.\n- Preserve the visible glass, cup, plate or container, liquid color, fill level, foam/head, ice, garnish, ingredients, toppings, sauces, sides, portion size, number of pieces and recognizable geometry from the FIRST image.\n- Minor repositioning, crop and perspective cleanup are allowed only when needed to place the exact item naturally in the restaurant scene.\n- Do not import food, drinks, plates, glasses, utensils, text, logos, signs, hands or people from any reference image.\n- Keep realistic texture and believable imperfections. The result must remain an honest representation of the exact item in the FIRST image.`;
 
   const sceneInstruction = scenePresetUsed
-    ? `\n\nSELECTED RESTAURANT SCENE — STRONG ENVIRONMENT ANCHOR\nThe SECOND attached image is the reusable ${sceneType} scene preset created from this restaurant's own My Place photos. Reconstruct a closely matching environment: use its foreground surface type, camera height, background composition, lighting direction, warmth, color palette, depth of field and ambience. Treat this scene as the dominant background/layout reference.\nThe scene image contains no menu item to copy. Place the exact item from the FIRST image naturally into this scene family. Do not add prominent branded bottles, readable labels, text, logos, people or unrelated food/drink.`
+    ? `\n\nSELECTED RESTAURANT SCENE — STRONG ENVIRONMENT ANCHOR\nThe SECOND attached image is the reusable ${sceneType === "scene2" ? "Scene 2" : "Scene 1"} preset created from this restaurant's selected My Place photo(s). Preserve this scene very closely. Match its foreground surface, camera position, background composition, furniture, shelves, wall features, visible décor, lights, reflections, color palette, depth of field and ambience.\nDo NOT simplify, erase, replace or redesign recognizable background elements from the scene. The goal is for menu items using this preset to look as though they were photographed in the same physical setup. Place only the exact item from the FIRST image naturally into the available foreground space.`
     : placeReferenceCount > 0
-      ? `\n\nMY PLACE — VENUE STYLE FALLBACK\nAdditional attached images are real venue photos. Use them only for lighting warmth and direction, color temperature, material character, ambience, brightness, depth of field and background palette. Do not copy food, drinks, people, signs, logos, furniture arrangements or identifiable objects. Because no reusable scene preset is available, keep the composition conservative and believable.`
+      ? `\n\nMY PLACE — VENUE STYLE FALLBACK\nAdditional attached images are real venue photos. Use them only to guide lighting, color temperature, material character, ambience and background palette. Preserve the target item from the FIRST image and keep the scene believable.`
       : `\n\nRESTAURANT STYLE FALLBACK\nUse a refined realistic premium restaurant-menu photography look with intentional lighting, natural contrast, clean composition and subtle depth of field. Do not invent or replace the served item.`;
 
   const designContext = styleContextText(styleContext);
 
   if (mode === "background") {
-    return `${identityLock}${sceneInstruction}${designContext}\n\nTASK — CLEAN BACKGROUND\nKeep the served item and its container unchanged. Remove visual clutter around it, rebuild only the surrounding tabletop/background where useful, and correct lighting naturally. The result must still look like a real photograph of the exact original item.`;
+    return `${identityLock}${sceneInstruction}${designContext}\n\nTASK — CLEAN BACKGROUND\nKeep the served item and its container unchanged. Remove only distracting clutter immediately around the item and correct lighting naturally. Do not redesign the restaurant environment.`;
   }
 
   if (mode === "match") {
-    return `${identityLock}${sceneInstruction}${designContext}\n\nTASK — MATCH RESTAURANT SCENE\nTransform the PRESENTATION, not the served item. Integrate the exact real item into the selected restaurant scene so it looks as if it was photographed there during the same professional menu shoot. Match background composition, surface, lighting, warmth, ambience and camera feel strongly. You may substantially replace the original background, but do not change the item identity or its recognizable container/contents.\n\nFINAL SELF-CHECK\nCompare the output to the FIRST image. The same item must still be unmistakable. If preserving the item conflicts with scene matching, preserve the item and reduce the scene transformation.`;
+    return `${identityLock}${sceneInstruction}${designContext}\n\nTASK — MATCH RESTAURANT SCENE\nIntegrate the exact real item into the selected restaurant scene so it looks as if it was photographed there. The selected preset controls the background composition, surface, lighting, warmth, ambience and camera feel. Preserve the scene itself rather than inventing a similar replacement.\n\nFINAL SELF-CHECK\nThe output must contain the same item from the FIRST image and the same recognizable restaurant scene family from the SECOND image. If either identity would be lost, reduce the transformation.`;
   }
 
   return `${identityLock}${sceneInstruction}${designContext}\n\nTASK — ENHANCE PHOTO\nEnhance the existing photograph only: correct exposure and white balance, improve natural contrast, clarity and sharpness, reduce distracting noise and minor clutter, and make the image look professionally photographed. Do not substantially replace the scene or served item.`;
 }
 
-function scenePrompt(sceneType) {
-  if (sceneType === "bar") {
-    return `Using the attached real restaurant photos only as venue references, create a reusable EMPTY BAR SCENE for future menu photography.\n\nThe scene must clearly belong to the same real restaurant: preserve its lighting warmth, color palette, bar/table materials, architectural character and ambience. Create a clean bar-counter foreground with generous empty space where a future drink or dish can be placed. Use a professional restaurant-photography camera angle around bar height, realistic depth of field and premium but natural lighting.\n\nIMPORTANT: this is a BACKGROUND PRESET, not a food photo. Do not place any food, drink, glass, cup, plate, cutlery, hands or people in the foreground. Do not add readable text, logos or brands. Distant bar shelving may appear only as soft non-branded bokeh/background structure. Keep the usable foreground surface clean and unobstructed. Produce a realistic landscape photograph, not an illustration.`;
+function scenePrompt(generationMode, referenceCount) {
+  const primaryRule = `The FIRST attached My Place photo is the PRIMARY scene reference and must remain clearly recognizable in the result. Preserve its real background composition and identity: walls, bar or table surfaces, shelves, furniture, lighting fixtures, décor, windows, architectural features, reflections, material textures, background objects and their approximate positions. Do NOT strip the place down into a generic empty restaurant. Do NOT remove distinctive background items merely to make the scene cleaner.`;
+  const supportRule = referenceCount > 1
+    ? `\nThe remaining ${referenceCount - 1} reference photo${referenceCount - 1 === 1 ? " is" : "s are"} SUPPORTING references only. Use them to confirm the same venue's lighting, colors, materials and mood. Never let them overwrite the primary photo's composition.`
+    : "";
+  const foregroundRule = `\nCreate a reusable menu-photography scene by clearing only the minimum foreground space needed to place a future dish or drink. If the primary reference contains a served food/drink, plate, glass, cup, hand or person exactly where a future menu item must go, remove only that foreground subject and realistically reconstruct the surface behind it. Everything else in the restaurant should remain as faithful as possible. Do not add readable text, new logos, new brands or invented decorative objects.`;
+
+  if (generationMode === "regenerate") {
+    return `Create another professional variation of a reusable restaurant scene from the selected real My Place photo(s).\n\n${primaryRule}${supportRule}${foregroundRule}\n\nREGENERATE MODE\nKeep the same recognizable physical place and key background elements, but allow a modest photographic variation: slightly adjusted crop, depth of field, exposure balance or lens feel. This is a new take of the SAME real setup, not a redesigned scene. Preserve background identity over cleanliness. Produce a realistic landscape photograph.`;
   }
-  return `Using the attached real restaurant photos only as venue references, create a reusable EMPTY TABLE SCENE for future menu photography.\n\nThe scene must clearly belong to the same real restaurant: preserve its lighting warmth, color palette, table materials, wall/background character and ambience. Create a clean dining-table foreground with generous empty space where a future drink or dish can be placed. Use a professional restaurant-photography camera angle slightly above table height, realistic depth of field and premium but natural lighting.\n\nIMPORTANT: this is a BACKGROUND PRESET, not a food photo. Do not place any food, drink, glass, cup, plate, cutlery, hands or people in the foreground. Do not add readable text, logos or brands. Keep the usable foreground surface clean and unobstructed. Produce a realistic landscape photograph, not an illustration.`;
+
+  return `Recreate a reusable restaurant scene from the selected real My Place photo(s) with very high fidelity.\n\n${primaryRule}${supportRule}${foregroundRule}\n\nRECREATE MODE — MAXIMUM FIDELITY\nStay as close as possible to the PRIMARY reference's camera angle, perspective, geometry, lighting placement, background objects and material details. Think of this as a faithful reconstruction of the same photographed place with only the foreground served item removed when necessary. Do not beautify by deleting real background content. Do not turn it into a generic studio set. Produce a realistic landscape photograph.`;
 }
 
 async function listPlaceReferencePaths(adminClient, placeFolder, projectFolder) {
@@ -156,14 +164,14 @@ async function sceneStatus(adminClient, sceneFolder) {
   return scenes;
 }
 
-async function generateScene(adminClient, openAiKey, placeReferences, sceneFolder, sceneType) {
+async function generateScene(adminClient, openAiKey, references, sceneFolder, sceneKey, generationMode) {
   const form = new FormData();
   form.append("model", MODEL);
-  form.append("prompt", scenePrompt(sceneType));
+  form.append("prompt", scenePrompt(generationMode, references.length));
   form.append("size", "1536x1024");
   form.append("quality", "medium");
-  placeReferences.forEach((reference, index) => {
-    form.append("image[]", reference.blob, `venue-reference-${index + 1}.${imageExtension(reference.blob)}`);
+  references.forEach((reference, index) => {
+    form.append("image[]", reference.blob, `${index === 0 ? "primary" : "support"}-venue-reference-${index + 1}.${imageExtension(reference.blob)}`);
   });
 
   const response = await fetch("https://api.openai.com/v1/images/edits", {
@@ -172,26 +180,24 @@ async function generateScene(adminClient, openAiKey, placeReferences, sceneFolde
     body: form,
   });
   const data = await response.json();
-  if (!response.ok) throw new Error(data?.error?.message || `Could not create the ${sceneType} scene.`);
+  if (!response.ok) throw new Error(data?.error?.message || `Could not create ${sceneKey}.`);
   const imageBase64 = data?.data?.[0]?.b64_json;
-  if (!imageBase64) throw new Error(`AI returned no ${sceneType} scene.`);
+  if (!imageBase64) throw new Error(`AI returned no image for ${sceneKey}.`);
 
-  const path = `${sceneFolder}/${sceneType}.png`;
+  const path = `${sceneFolder}/${sceneKey}.png`;
   const blob = new Blob([decodeBase64(imageBase64)], { type: "image/png" });
   const { error: uploadError } = await adminClient.storage.from(BUCKET).upload(path, blob, {
     contentType: "image/png",
-    cacheControl: "31536000",
+    cacheControl: "3600",
     upsert: true,
   });
-  if (uploadError) throw new Error(`Could not save the ${sceneType} scene.`);
+  if (uploadError) throw new Error(`Could not save ${sceneKey}.`);
 }
 
-async function loadScenePreset(adminClient, scenes, requestedSceneType, itemName = "") {
+async function loadScenePreset(adminClient, scenes, requestedSceneType) {
   let sceneType = requestedSceneType;
   if (!SCENE_TYPES.includes(sceneType)) {
-    const name = String(itemName || "").toLowerCase();
-    const drinkHint = /(beer|lager|ale|wine|whisky|whiskey|cocktail|vodka|gin|rum|tequila|coffee|tea|juice|soda|מים|בירה|יין|ויסקי|קוקטייל|قهوة|بيرة|نبيذ|كوكتيل)/i.test(name);
-    sceneType = drinkHint && scenes.bar?.exists ? "bar" : scenes.table?.exists ? "table" : scenes.bar?.exists ? "bar" : "auto";
+    sceneType = scenes.scene1?.exists ? "scene1" : scenes.scene2?.exists ? "scene2" : "auto";
   }
   const scene = scenes[sceneType];
   if (!scene?.exists) return { sceneType: "auto", scene: null };
@@ -226,7 +232,7 @@ Deno.serve(async (req) => {
 
   try {
     const body = await req.json();
-    const action = ["enhance", "status", "generate_scenes", "remember", "reset"].includes(body?.action) ? body.action : "enhance";
+    const action = ["enhance", "status", "generate_scene", "remember", "reset"].includes(body?.action) ? body.action : "enhance";
     const projectId = clean(body?.projectId, 100);
     if (!projectId) return json({ error: "This menu is missing required information." }, 400);
 
@@ -271,29 +277,33 @@ Deno.serve(async (req) => {
 
     if (!openAiKey) return json({ error: "AI photo configuration is incomplete." }, 500);
 
-    if (action === "generate_scenes") {
-      const requested = Array.isArray(body?.sceneTypes)
-        ? [...new Set(body.sceneTypes.filter((value) => SCENE_TYPES.includes(value)))]
-        : SCENE_TYPES;
-      if (!requested.length) return json({ error: "Choose at least one scene to create." }, 400);
-      const placeReferences = await loadPlaceReferences(adminClient, placeFolder, projectFolder);
-      if (!placeReferences.length) return json({ error: "Add at least one My Place photo before creating restaurant scenes." }, 422);
-      for (const sceneType of requested) {
-        await generateScene(adminClient, openAiKey, placeReferences, sceneFolder, sceneType);
-      }
+    if (action === "generate_scene") {
+      const sceneKey = SCENE_TYPES.includes(body?.sceneKey) ? body.sceneKey : "scene1";
+      const generationMode = body?.generationMode === "regenerate" ? "regenerate" : "recreate";
+      const allPlacePaths = await listPlaceReferencePaths(adminClient, placeFolder, projectFolder);
+      const allowed = new Set(allPlacePaths);
+      const sourcePaths = [...new Set((Array.isArray(body?.sourcePaths) ? body.sourcePaths : [])
+        .map((value) => clean(value, 700))
+        .filter((value) => allowed.has(value)))]
+        .slice(0, MAX_SCENE_REFERENCES);
+      if (!sourcePaths.length) return json({ error: "Choose at least one My Place photo for this scene." }, 422);
+      const references = await loadReferences(adminClient, sourcePaths);
+      if (!references.length) return json({ error: "The selected My Place photos could not be loaded." }, 422);
+      await generateScene(adminClient, openAiKey, references, sceneFolder, sceneKey, generationMode);
       return json({
         ok: true,
         scenes: await sceneStatus(adminClient, sceneFolder),
-        placeReferenceCount: placeReferences.length,
+        placeReferenceCount: allPlacePaths.length,
+        sceneKey,
+        generationMode,
       });
     }
 
     const itemId = clean(body?.itemId, 140);
-    const itemName = clean(body?.itemName, 160);
     const sourcePath = clean(body?.sourcePath, 700);
     const mode = ["enhance", "background", "match"].includes(body?.mode) ? body.mode : "enhance";
     const size = ["1024x1024", "1536x1024", "1024x1536"].includes(body?.size) ? body.size : "1536x1024";
-    const requestedSceneType = ["auto", "bar", "table"].includes(body?.sceneType) ? body.sceneType : "auto";
+    const requestedSceneType = ["auto", "scene1", "scene2"].includes(body?.sceneType) ? body.sceneType : "auto";
     const styleContext = cleanStyleContext(body?.styleContext);
 
     if (!itemId || !sourcePath) return json({ error: "This photo is missing required information." }, 400);
@@ -305,11 +315,9 @@ Deno.serve(async (req) => {
 
     const scenes = await sceneStatus(adminClient, sceneFolder);
     const { sceneType, scene } = mode === "match"
-      ? await loadScenePreset(adminClient, scenes, requestedSceneType, itemName)
+      ? await loadScenePreset(adminClient, scenes, requestedSceneType)
       : { sceneType: "auto", scene: null };
-    const placeReferences = scene
-      ? []
-      : await loadPlaceReferences(adminClient, placeFolder, projectFolder);
+    const placeReferences = scene ? [] : await loadPlaceReferences(adminClient, placeFolder, projectFolder);
 
     const form = new FormData();
     form.append("model", MODEL);
@@ -326,9 +334,9 @@ Deno.serve(async (req) => {
     const sourceName = `target.${imageExtension(sourceBlob)}`;
     const inputs = [{ blob: sourceBlob, name: sourceName }];
     if (scene) {
-      inputs.push({ blob: scene.blob, name: `restaurant-${sceneType}-scene.${imageExtension(scene.blob)}` });
+      inputs.push({ blob: scene.blob, name: `restaurant-${sceneType}.${imageExtension(scene.blob)}` });
     } else {
-      placeReferences.forEach((reference, index) => {
+      placeReferences.slice(0, 3).forEach((reference, index) => {
         inputs.push({ blob: reference.blob, name: `venue-style-${index + 1}.${imageExtension(reference.blob)}` });
       });
     }
