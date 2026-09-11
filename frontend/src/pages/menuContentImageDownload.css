@@ -1,0 +1,41 @@
+.menu-content-v2-image-download{
+  width:100%;
+  min-height:42px;
+  margin-top:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  border:1px solid rgba(55,109,246,.35);
+  border-radius:11px;
+  background:rgba(55,109,246,.08);
+  color:#2f63df;
+  font:800 11px/1 Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  cursor:pointer;
+  transition:background .15s ease,border-color .15s ease,transform .15s ease,opacity .15s ease;
+}
+.menu-content-v2-image-download:hover{
+  background:rgba(55,109,246,.13);
+  border-color:rgba(55,109,246,.5);
+  transform:translateY(-1px);
+}
+.menu-content-v2-image-download svg{
+  width:16px;
+  height:16px;
+  flex:0 0 auto;
+}
+.menu-content-v2-image-download:disabled,
+.menu-content-v2-image-download.is-downloading{
+  opacity:.58;
+  cursor:wait;
+  transform:none;
+}
+html[data-beyond-theme="dark"] .menu-content-v2-image-download{
+  border-color:rgba(111,150,255,.38);
+  background:rgba(75,117,232,.10);
+  color:#9db8ff;
+}
+html[data-beyond-theme="dark"] .menu-content-v2-image-download:hover{
+  border-color:rgba(126,162,255,.58);
+  background:rgba(75,117,232,.17);
+}
