@@ -17,7 +17,7 @@ import {
   uploadMenuItemImage,
   validateMenuItemImage,
 } from "../features/menu-engine/data/menuItemImageService";
-import { enhanceMenuPhotoWithAi } from "../features/menu-engine/data/menuPhotoAiService";
+import { enhanceMenuPhotoWithAi, getRestaurantScenePresets } from "../features/menu-engine/data/menuPhotoAiService";
 import {
   readMenuStudioV2Draft,
   resolveMenuStudioV2Design,
@@ -32,15 +32,22 @@ const PHOTO_COPY = {
     hint: "Use a real photo. Beyond can make it look professionally shot without changing the dish or drink.",
     take: "Take photo", takeHint: "Open camera", choose: "Choose from phone", chooseHint: "Photo library",
     replace: "Replace photo", ready: "Photo added", done: "AI enhanced",
-    prepare: "Enhance with Beyond AI", prepareHint: "Clean, improve or match the restaurant style — while preserving the real item.",
-    studioTitle: "Beyond AI Photo Studio", studioHint: "Keep the real item, then make the photo belong to this restaurant.",
+    prepare: "Enhance with Beyond AI", prepareHint: "Clean, improve or match a saved restaurant scene — while preserving the real item.",
+    studioTitle: "Beyond AI Photo Studio", studioHint: "Keep the real item, then place it naturally inside this restaurant's visual world.",
     enhance: "Enhance photo", enhanceHint: "Fix light, color and clarity",
     background: "Clean background", backgroundHint: "Remove surrounding distractions",
-    match: "Match restaurant style", matchHint: "Match My Place lighting, mood and menu presentation",
+    match: "Match restaurant scene", matchHint: "Use a reusable Bar or Table scene created from My Place",
     recommended: "Recommended", foodLock: "Item Lock ON",
     foodLockHint: "AI is instructed to preserve the exact dish or drink, its container, ingredients and portion.",
-    generate: "Match this photo", preview: "Create AI preview", generating: "Matching your photo to this restaurant…",
-    generatingHint: "Beyond is preserving the real item while rebuilding the presentation around it.",
+    sceneTitle: "Choose restaurant scene",
+    sceneHint: "One selected scene = one generated photo. Scenes are created once in My Place and reused across the menu.",
+    autoScene: "Auto", autoSceneHint: "Beyond chooses an available scene",
+    barScene: "Bar", barSceneHint: "Bar counter / drinks",
+    tableScene: "Table", tableSceneHint: "Dining table / dishes",
+    noScenes: "No reusable scenes yet. Create Bar or Table scenes in Design → My Place, or use Auto to fall back to your place photos.",
+    loadingScenes: "Loading restaurant scenes…",
+    generate: "Match this photo", preview: "Create AI preview", generating: "Matching your photo to this restaurant scene…",
+    generatingHint: "Beyond is preserving the real item while rebuilding only the presentation around it.",
     before: "Original", after: "Styled photo", compare: "Compare",
     enhancedView: "Enhanced photo", regenerate: "Try again", usePhoto: "Use this photo", saving: "Saving photo…", cancel: "Cancel",
     advancedAi: "Create a new photo with AI instead", advancedAiHint: "Only use this when you do not have a real photo of the item.",
@@ -49,15 +56,22 @@ const PHOTO_COPY = {
     title: "תמונת הפריט", hint: "השתמשו בתמונה אמיתית. Beyond יכול להפוך אותה למקצועית בלי לשנות את המנה או המשקה.",
     take: "צילום עכשיו", takeHint: "פתיחת המצלמה", choose: "בחירה מהטלפון", chooseHint: "ספריית התמונות",
     replace: "החלפת תמונה", ready: "התמונה נוספה", done: "שופרה עם AI",
-    prepare: "שיפור עם Beyond AI", prepareHint: "ניקוי, שיפור והתאמה לסגנון המסעדה — תוך שמירה על הפריט האמיתי.",
-    studioTitle: "סטודיו התמונות של Beyond AI", studioHint: "שומרים על הפריט האמיתי ומתאימים את התמונה למסעדה.",
+    prepare: "שיפור עם Beyond AI", prepareHint: "ניקוי, שיפור או התאמה לסצנת מסעדה שמורה — תוך שמירה על הפריט האמיתי.",
+    studioTitle: "סטודיו התמונות של Beyond AI", studioHint: "שומרים על הפריט האמיתי וממקמים אותו באופן טבעי בעולם החזותי של המסעדה.",
     enhance: "שיפור התמונה", enhanceHint: "תאורה, צבע וחדות",
     background: "ניקוי הרקע", backgroundHint: "הסרת הסחות מסביב לפריט",
-    match: "התאמה לסגנון המסעדה", matchHint: "התאמה לתאורה ולאווירה של המקום ולעיצוב התפריט",
+    match: "התאמה לסצנת המסעדה", matchHint: "שימוש בסצנת בר או שולחן שנוצרה מהמקום שלי",
     recommended: "מומלץ", foodLock: "נעילת פריט פעילה",
     foodLockHint: "ה-AI מונחה לשמור על אותה מנה או משקה, הכלי, המרכיבים והכמות.",
-    generate: "התאמת התמונה", preview: "יצירת תצוגת AI", generating: "מתאימים את התמונה לסגנון המסעדה…",
-    generatingHint: "Beyond שומר על הפריט האמיתי ומשפר את ההצגה והאווירה סביבו.",
+    sceneTitle: "בחירת סצנת מסעדה",
+    sceneHint: "סצנה אחת שנבחרה = תמונה אחת שנוצרת. הסצנות נוצרות פעם אחת במיקום שלי ומשמשות לכל התפריט.",
+    autoScene: "אוטומטי", autoSceneHint: "Beyond בוחר סצנה זמינה",
+    barScene: "בר", barSceneHint: "דלפק בר / משקאות",
+    tableScene: "שולחן", tableSceneHint: "שולחן אוכל / מנות",
+    noScenes: "עדיין אין סצנות לשימוש חוזר. צרו סצנת בר או שולחן בעיצוב ← המקום שלי, או השתמשו באוטומטי כדי להסתמך על תמונות המקום.",
+    loadingScenes: "טוען סצנות מסעדה…",
+    generate: "התאמת התמונה", preview: "יצירת תצוגת AI", generating: "מתאימים את התמונה לסצנת המסעדה…",
+    generatingHint: "Beyond שומר על הפריט האמיתי ומשנה רק את ההצגה סביבו.",
     before: "מקור", after: "תמונה מעוצבת", compare: "השוואה",
     enhancedView: "תמונה משופרת", regenerate: "נסו שוב", usePhoto: "שימוש בתמונה", saving: "שומר את התמונה…", cancel: "ביטול",
     advancedAi: "יצירת תמונה חדשה עם AI במקום", advancedAiHint: "רק כשאין תמונה אמיתית של הפריט.",
@@ -66,15 +80,22 @@ const PHOTO_COPY = {
     title: "صورة العنصر", hint: "استخدم صورة حقيقية. يمكن لـ Beyond جعلها احترافية دون تغيير الطبق أو المشروب.",
     take: "التقط صورة", takeHint: "فتح الكاميرا", choose: "اختر من الهاتف", chooseHint: "مكتبة الصور",
     replace: "استبدال الصورة", ready: "تمت إضافة الصورة", done: "محسّنة بالذكاء الاصطناعي",
-    prepare: "تحسين باستخدام Beyond AI", prepareHint: "تنظيف وتحسين ومطابقة أسلوب المطعم مع الحفاظ على العنصر الحقيقي.",
-    studioTitle: "استوديو صور Beyond AI", studioHint: "نحافظ على العنصر الحقيقي ونجعل الصورة تنتمي إلى أجواء المطعم.",
+    prepare: "تحسين باستخدام Beyond AI", prepareHint: "تنظيف أو تحسين أو مطابقة مشهد مطعم محفوظ مع الحفاظ على العنصر الحقيقي.",
+    studioTitle: "استوديو صور Beyond AI", studioHint: "نحافظ على العنصر الحقيقي ونضعه بشكل طبيعي داخل العالم البصري للمطعم.",
     enhance: "تحسين الصورة", enhanceHint: "الإضاءة واللون والوضوح",
     background: "تنظيف الخلفية", backgroundHint: "إزالة المشتتات حول العنصر",
-    match: "مطابقة أسلوب المطعم", matchHint: "مطابقة إضاءة وأجواء المكان وعرض القائمة",
+    match: "مطابقة مشهد المطعم", matchHint: "استخدم مشهد بار أو طاولة تم إنشاؤه من مكاني",
     recommended: "موصى به", foodLock: "قفل العنصر مفعّل",
     foodLockHint: "الذكاء الاصطناعي موجه للحفاظ على نفس الطبق أو المشروب والوعاء والمكونات والكمية.",
-    generate: "مطابقة هذه الصورة", preview: "إنشاء معاينة AI", generating: "نطابق صورتك مع أسلوب المطعم…",
-    generatingHint: "يحافظ Beyond على العنصر الحقيقي ويعيد تحسين العرض والأجواء من حوله.",
+    sceneTitle: "اختر مشهد المطعم",
+    sceneHint: "مشهد واحد محدد = صورة واحدة يتم إنشاؤها. يتم إنشاء المشاهد مرة واحدة في مكاني وإعادة استخدامها في القائمة.",
+    autoScene: "تلقائي", autoSceneHint: "Beyond يختار مشهداً متاحاً",
+    barScene: "البار", barSceneHint: "سطح البار / المشروبات",
+    tableScene: "الطاولة", tableSceneHint: "طاولة الطعام / الأطباق",
+    noScenes: "لا توجد مشاهد قابلة لإعادة الاستخدام بعد. أنشئ مشهد بار أو طاولة في التصميم ← مكاني، أو استخدم تلقائي للاعتماد على صور المكان.",
+    loadingScenes: "جارٍ تحميل مشاهد المطعم…",
+    generate: "مطابقة هذه الصورة", preview: "إنشاء معاينة AI", generating: "نطابق صورتك مع مشهد المطعم…",
+    generatingHint: "يحافظ Beyond على العنصر الحقيقي ويعيد بناء العرض المحيط به فقط.",
     before: "الأصل", after: "الصورة المنسقة", compare: "مقارنة",
     enhancedView: "الصورة المحسّنة", regenerate: "حاول مرة أخرى", usePhoto: "استخدم هذه الصورة", saving: "جارٍ حفظ الصورة…", cancel: "إلغاء",
     advancedAi: "أنشئ صورة جديدة بالذكاء الاصطناعي", advancedAiHint: "استخدم هذا فقط عندما لا توجد صورة حقيقية للعنصر.",
@@ -100,6 +121,10 @@ function currentMenuStyleContext() {
   };
 }
 
+function itemDisplayName(item) {
+  return String(item?.name || item?.name_en || item?.title || item?.name_he || item?.name_ar || "").trim();
+}
+
 export default function MenuContentImageEditor({ item, projectId = "draft", t = {}, onChange }) {
   const [uploading, setUploading] = useState(false);
   const [processing, setProcessing] = useState(false);
@@ -111,6 +136,9 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
   const [result, setResult] = useState(null);
   const [compareSide, setCompareSide] = useState("after");
   const [savedCompareSide, setSavedCompareSide] = useState("after");
+  const [sceneType, setSceneType] = useState(item.image_ai_scene || "auto");
+  const [scenes, setScenes] = useState({ bar: null, table: null });
+  const [scenesLoading, setScenesLoading] = useState(false);
   const cameraInputRef = useRef(null);
   const libraryInputRef = useRef(null);
   const generatedUrlsRef = useRef(new Set());
@@ -128,6 +156,23 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
     generatedUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
     generatedUrlsRef.current.clear();
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!projectId || projectId === "draft") {
+      setScenes({ bar: null, table: null });
+      return () => { cancelled = true; };
+    }
+    setScenesLoading(true);
+    getRestaurantScenePresets({ projectId, sourcePath })
+      .then((status) => {
+        if (cancelled) return;
+        setScenes(status.scenes || { bar: null, table: null });
+      })
+      .catch(() => { if (!cancelled) setScenes({ bar: null, table: null }); })
+      .finally(() => { if (!cancelled) setScenesLoading(false); });
+    return () => { cancelled = true; };
+  }, [projectId, sourcePath, studioOpen]);
 
   function objectUrl(file) {
     const url = URL.createObjectURL(file);
@@ -159,10 +204,12 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
         image_variant: "",
         image_ai_model: "",
         image_ai_mode: "",
+        image_ai_scene: "",
       });
       clearResult();
       setSavedCompareSide("after");
       setMode("match");
+      setSceneType("auto");
       setStudioOpen(true);
     } catch (uploadError) {
       setError(uploadError?.message || t.imageUploadError || "Could not upload this photo.");
@@ -185,11 +232,13 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
         projectId,
         mode,
         itemId: item.id,
+        itemName: itemDisplayName(item),
         styleContext,
+        sceneType: mode === "match" ? sceneType : "auto",
         styleStrength: "balanced",
         variantIndex: 1,
       });
-      const next = { ...ai, id: `${mode}-1`, url: objectUrl(ai.file) };
+      const next = { ...ai, id: `${mode}-${ai.sceneType || "auto"}`, url: objectUrl(ai.file) };
       setResult(next);
       setCompareSide("after");
     } catch (aiError) {
@@ -218,9 +267,10 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
         image_original_path: sourcePath,
         image_processed_url: uploaded.image_url,
         image_processed_path: uploaded.image_path,
-        image_variant: result.mode === "match" ? "ai-style-match" : `ai-${result.mode}`,
+        image_variant: result.mode === "match" ? "ai-scene-match" : `ai-${result.mode}`,
         image_ai_mode: result.mode,
         image_ai_model: result.model,
+        image_ai_scene: result.sceneType || sceneType || "auto",
       });
       clearResult();
       setSavedCompareSide("after");
@@ -238,7 +288,7 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
     try {
       const paths = [...new Set([item.image_path, item.image_original_path, item.image_processed_path].filter(Boolean))];
       for (const path of paths) await removeMenuItemImage(path);
-      onChange?.({ image_url: "", image_path: "", image_original_url: "", image_original_path: "", image_processed_url: "", image_processed_path: "", image_variant: "", image_ai_mode: "", image_ai_model: "" });
+      onChange?.({ image_url: "", image_path: "", image_original_url: "", image_original_path: "", image_processed_url: "", image_processed_path: "", image_variant: "", image_ai_mode: "", image_ai_model: "", image_ai_scene: "" });
       clearResult();
       setSavedCompareSide("after");
       setStudioOpen(false);
@@ -255,8 +305,22 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
     window.location.assign(`/menu-studio/ai-images?${params.toString()}`);
   }
 
+  function openStudio() {
+    clearResult();
+    setMode(item.image_ai_mode === "strong" ? "match" : item.image_ai_mode || "match");
+    setSceneType(["auto", "bar", "table"].includes(item.image_ai_scene) ? item.image_ai_scene : "auto");
+    setStudioOpen(true);
+  }
+
+  function selectScene(nextScene) {
+    if (busy) return;
+    setSceneType(nextScene);
+    clearResult();
+  }
+
   const busy = uploading || processing || saving;
   const selectedPreviewUrl = result?.url || sourceUrl;
+  const hasScenePresets = Boolean(scenes.bar || scenes.table);
 
   return (
     <div className="menu-content-v2-image-editor menu-content-v2-image-editor-friendly">
@@ -281,7 +345,7 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
       ) : null}
 
       {item.image_url && !studioOpen ? (
-        <button type="button" className="menu-content-v2-photo-prepare" onClick={() => { clearResult(); setMode(item.image_ai_mode === "strong" ? "match" : item.image_ai_mode || "match"); setStudioOpen(true); }} disabled={busy}>
+        <button type="button" className="menu-content-v2-photo-prepare" onClick={openStudio} disabled={busy}>
           <span className="menu-content-v2-photo-prepare-icon"><WandSparkles size={18} /></span>
           <span><strong>{copy.prepare}</strong><small>{copy.prepareHint}</small></span>
           <span className="menu-content-v2-photo-prepare-arrow">›</span>
@@ -308,6 +372,33 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
               </button>
             ))}
           </div>
+
+          {mode === "match" ? (
+            <div className="menu-content-v2-scene-selector">
+              <div className="menu-content-v2-scene-selector-head">
+                <div><strong>{copy.sceneTitle}</strong><small>{copy.sceneHint}</small></div>
+                {scenesLoading ? <span><LoaderCircle className="spin" size={12} /> {copy.loadingScenes}</span> : null}
+              </div>
+              <div className="menu-content-v2-scene-options">
+                <button type="button" className={`menu-content-v2-scene-option auto ${sceneType === "auto" ? "active" : ""}`} onClick={() => selectScene("auto")} disabled={busy}>
+                  <span className="scene-auto-icon"><Sparkles size={20} /></span>
+                  <span><strong>{copy.autoScene}</strong><small>{copy.autoSceneHint}</small></span>
+                  {sceneType === "auto" ? <i><Check size={11} /></i> : null}
+                </button>
+                {scenes.bar ? <button type="button" className={`menu-content-v2-scene-option ${sceneType === "bar" ? "active" : ""}`} onClick={() => selectScene("bar")} disabled={busy}>
+                  <img src={`${scenes.bar.url}?v=${encodeURIComponent(scenes.bar.path || "bar")}`} alt="" />
+                  <span><strong>{copy.barScene}</strong><small>{copy.barSceneHint}</small></span>
+                  {sceneType === "bar" ? <i><Check size={11} /></i> : null}
+                </button> : null}
+                {scenes.table ? <button type="button" className={`menu-content-v2-scene-option ${sceneType === "table" ? "active" : ""}`} onClick={() => selectScene("table")} disabled={busy}>
+                  <img src={`${scenes.table.url}?v=${encodeURIComponent(scenes.table.path || "table")}`} alt="" />
+                  <span><strong>{copy.tableScene}</strong><small>{copy.tableSceneHint}</small></span>
+                  {sceneType === "table" ? <i><Check size={11} /></i> : null}
+                </button> : null}
+              </div>
+              {!scenesLoading && !hasScenePresets ? <p className="menu-content-v2-scene-empty">{copy.noScenes}</p> : null}
+            </div>
+          ) : null}
 
           {!result ? (
             <>
