@@ -65,6 +65,57 @@ function selectedItemFromDraft(draft) {
     || null;
 }
 
+function editIconMarkup() {
+  return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5M8 12h8M12 8v8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+
+function findSelectedContentImage() {
+  if (!isContentStudio()) return null;
+  const draft = readMenuStudioV2Draft();
+  const item = selectedItemFromDraft(draft);
+  if (!item) return null;
+
+  const names = new Set(localizedValues(item.name));
+  const articles = [...document.querySelectorAll(".menu-content-v2-preview .bme-visual-item")];
+  const article = articles.find((node) => names.has(normalized(node.querySelector("h3")?.textContent)));
+  const media = article?.querySelector(".bme-item-media");
+  const img = media?.querySelector("img");
+  if (!media || !img || !img.src || media.clientWidth < 30 || media.clientHeight < 30) return null;
+  return { item, media, img };
+}
+
+function removeStaleTriggerButtons(keepMedia = null) {
+  document.querySelectorAll(".menu-content-v2-preview .beyond-live-framing-trigger").forEach((button) => {
+    if (!keepMedia || button.parentElement !== keepMedia) button.remove();
+  });
+}
+
+function ensureTriggerButton() {
+  if (!isContentStudio()) {
+    removeStaleTriggerButtons();
+    return;
+  }
+
+  const target = findSelectedContentImage();
+  if (!target?.media || !target?.img) {
+    removeStaleTriggerButtons();
+    return;
+  }
+
+  const media = target.media;
+  removeStaleTriggerButtons(media);
+  if (media.querySelector(":scope > .beyond-live-framing-trigger")) return;
+
+  if (getComputedStyle(media).position === "static") media.style.position = "relative";
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "beyond-menu-crop-btn icon-only beyond-live-framing-trigger";
+  button.innerHTML = editIconMarkup();
+  button.setAttribute("aria-label", "Adjust photo position and zoom");
+  button.title = "Adjust photo position and zoom";
+  media.appendChild(button);
+}
+
 function distanceBetweenPointers() {
   const points = [...state.pointers.values()];
   if (points.length < 2) return 0;
@@ -141,6 +192,7 @@ function endEditor({ restore = true } = {}) {
   state.item = null;
   state.drag = null;
   state.pointers.clear();
+  ensureTriggerButton();
 }
 
 function makeToolbar() {
@@ -393,12 +445,9 @@ async function saveFraming() {
 
 function onDocumentClick(event) {
   if (!isContentStudio()) return;
-  const button = event.target.closest?.(".menu-content-v2-preview .beyond-menu-crop-btn.icon-only");
+  const button = event.target.closest?.(".menu-content-v2-preview .beyond-live-framing-trigger");
   if (!button) return;
 
-  // The legacy crop overlay owns this button too. Intercept its click during
-  // the capture phase so Content Studio edits the real live-menu image instead
-  // of opening a separate modal. AI Photo Studio keeps the modal workflow.
   event.preventDefault();
   event.stopPropagation();
   event.stopImmediatePropagation();
@@ -420,11 +469,35 @@ function onKeyDown(event) {
 }
 
 export default function installMenuLiveImageFraming() {
+  let queued = false;
+  const queueEnsureTrigger = () => {
+    if (queued) return;
+    queued = true;
+    window.requestAnimationFrame(() => {
+      queued = false;
+      if (!state.active) ensureTriggerButton();
+    });
+  };
+
+  const observer = new MutationObserver(queueEnsureTrigger);
+  observer.observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: ["class", "src"],
+  });
+
   document.addEventListener("click", onDocumentClick, true);
+  document.addEventListener("click", queueEnsureTrigger, true);
   document.addEventListener("pointerdown", onPointerDown, true);
   document.addEventListener("pointermove", onPointerMove, true);
   document.addEventListener("pointerup", onPointerEnd, true);
   document.addEventListener("pointercancel", onPointerEnd, true);
   document.addEventListener("wheel", onWheel, { capture: true, passive: false });
   window.addEventListener("keydown", onKeyDown);
+  window.addEventListener("popstate", queueEnsureTrigger);
+  window.addEventListener("hashchange", queueEnsureTrigger);
+  window.addEventListener("beyond-menu-translations-applied", queueEnsureTrigger);
+  window.setInterval(queueEnsureTrigger, 1000);
+  queueEnsureTrigger();
 }
