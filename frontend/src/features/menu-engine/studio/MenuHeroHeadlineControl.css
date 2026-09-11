@@ -33,3 +33,20 @@
 .menu-hero-headline-control-foot small{font-size:9px;line-height:1.45}
 .menu-hero-headline-control-foot span{flex:0 0 auto;font-size:9px;font-weight:700}
 @media(max-width:900px){.menu-hero-headline-control{margin-inline:0}}
+
+/* Keep the visible Quick setup row labels aligned with the product language.
+   These rows are compacted by the Studio presentation layer, so force the
+   customer-facing English labels here instead of exposing the older short names. */
+.menu-design-v2[lang="en"] .studio-v3-quick-control-card:has(.studio-v3-quick-control-title>.dot.colors) .studio-v3-quick-control-title>div>strong,
+.menu-design-v2[lang="en"] .studio-v3-quick-control-card:has(.studio-v3-quick-control-title>.dot.type) .studio-v3-quick-control-title>div>strong{
+  font-size:0!important;
+}
+.menu-design-v2[lang="en"] .studio-v3-quick-control-card:has(.studio-v3-quick-control-title>.dot.colors) .studio-v3-quick-control-title>div>strong::after,
+.menu-design-v2[lang="en"] .studio-v3-quick-control-card:has(.studio-v3-quick-control-title>.dot.type) .studio-v3-quick-control-title>div>strong::after{
+  color:var(--beyond-studio-text,var(--design-ink,#1d1d1f));
+  font-size:var(--menu-design-type-control,14px)!important;
+  font-weight:800;
+  line-height:1.2;
+}
+.menu-design-v2[lang="en"] .studio-v3-quick-control-card:has(.studio-v3-quick-control-title>.dot.colors) .studio-v3-quick-control-title>div>strong::after{content:"Theme"}
+.menu-design-v2[lang="en"] .studio-v3-quick-control-card:has(.studio-v3-quick-control-title>.dot.type) .studio-v3-quick-control-title>div>strong::after{content:"Text style & color"}
