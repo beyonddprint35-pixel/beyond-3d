@@ -136,7 +136,6 @@
   -webkit-text-fill-color:var(--ep-footer-color)!important;
 }
 
-
 /* Per-text-role typography overrides. */
 .bme-custom-type-brand-title .bme-brand strong,
 .bme-custom-type-brand-title .ep-brand-title{font-size:var(--bme-role-brand-title-size,var(--ep-role-brand-title-size))!important;font-weight:var(--bme-role-brand-title-weight,var(--ep-role-brand-title-weight))!important;font-style:var(--bme-role-brand-title-style,var(--ep-role-brand-title-style))!important;text-decoration:var(--bme-role-brand-title-decoration,var(--ep-role-brand-title-decoration))!important}
@@ -178,3 +177,67 @@
 .bme-custom-type-footer .ep-accessibility-statement-link,
 .bme-custom-type-footer .ep-footer span,
 .bme-custom-type-footer .ep-footer strong{font-size:var(--bme-role-footer-size,var(--ep-role-footer-size))!important;font-weight:var(--bme-role-footer-weight,var(--ep-role-footer-weight))!important;font-style:var(--bme-role-footer-style,var(--ep-role-footer-style))!important;text-decoration:var(--bme-role-footer-decoration,var(--ep-role-footer-decoration))!important}
+
+/* Heritage is a separate renderer. Use its own role variables explicitly so
+   studio/public Heritage menus never inherit or prefer standard-menu role
+   variables from an outer preview shell. Undefined variables simply leave the
+   authored Heritage template value untouched. */
+.bme-heritage-exact.bme-custom-type-brand-title .ep-brand-title{font-size:var(--ep-role-brand-title-size)!important;font-weight:var(--ep-role-brand-title-weight)!important;font-style:var(--ep-role-brand-title-style)!important;text-decoration:var(--ep-role-brand-title-decoration)!important}
+.bme-heritage-exact.bme-custom-type-brand-subtitle .ep-brand-sub{font-size:var(--ep-role-brand-subtitle-size)!important;font-weight:var(--ep-role-brand-subtitle-weight)!important;font-style:var(--ep-role-brand-subtitle-style)!important;text-decoration:var(--ep-role-brand-subtitle-decoration)!important}
+.bme-heritage-exact.bme-custom-type-hero-kicker .ep-hero-kicker{font-size:var(--ep-role-hero-kicker-size)!important;font-weight:var(--ep-role-hero-kicker-weight)!important;font-style:var(--ep-role-hero-kicker-style)!important;text-decoration:var(--ep-role-hero-kicker-decoration)!important}
+.bme-heritage-exact.bme-custom-type-hero-title .ep-hero-title{font-size:var(--ep-role-hero-title-size)!important;font-weight:var(--ep-role-hero-title-weight)!important;font-style:var(--ep-role-hero-title-style)!important;text-decoration:var(--ep-role-hero-title-decoration)!important}
+.bme-heritage-exact.bme-custom-type-category-nav .ep-tabs button,
+.bme-heritage-exact.bme-custom-type-category-nav .ep-tabs button.active{font-size:var(--ep-role-category-nav-size)!important;font-weight:var(--ep-role-category-nav-weight)!important;font-style:var(--ep-role-category-nav-style)!important;text-decoration:var(--ep-role-category-nav-decoration)!important}
+.bme-heritage-exact.bme-custom-type-section-title .ep-section-head h2{font-size:var(--ep-role-section-title-size)!important;font-weight:var(--ep-role-section-title-weight)!important;font-style:var(--ep-role-section-title-style)!important;text-decoration:var(--ep-role-section-title-decoration)!important}
+.bme-heritage-exact.bme-custom-type-subcategory-title .ep-item-category{font-size:var(--ep-role-subcategory-title-size)!important;font-weight:var(--ep-role-subcategory-title-weight)!important;font-style:var(--ep-role-subcategory-title-style)!important;text-decoration:var(--ep-role-subcategory-title-decoration)!important}
+.bme-heritage-exact.bme-custom-type-item-name .ep-item-name{font-size:var(--ep-role-item-name-size)!important;font-weight:var(--ep-role-item-name-weight)!important;font-style:var(--ep-role-item-name-style)!important;text-decoration:var(--ep-role-item-name-decoration)!important}
+.bme-heritage-exact.bme-custom-type-description .ep-item-description{font-size:var(--ep-role-description-size)!important;font-weight:var(--ep-role-description-weight)!important;font-style:var(--ep-role-description-style)!important;text-decoration:var(--ep-role-description-decoration)!important}
+.bme-heritage-exact.bme-custom-type-price .ep-item-price,
+.bme-heritage-exact.bme-custom-type-price .ep-price-option strong,
+.bme-heritage-exact.bme-custom-type-price .ep-dual-price strong{font-size:var(--ep-role-price-size)!important;font-weight:var(--ep-role-price-weight)!important;font-style:var(--ep-role-price-style)!important;text-decoration:var(--ep-role-price-decoration)!important}
+.bme-heritage-exact.bme-custom-type-price-type .ep-price-option small,
+.bme-heritage-exact.bme-custom-type-price-type .ep-dual-price small{font-size:var(--ep-role-price-type-size)!important;font-weight:var(--ep-role-price-type-weight)!important;font-style:var(--ep-role-price-type-style)!important;text-decoration:var(--ep-role-price-type-decoration)!important}
+.bme-heritage-exact.bme-custom-type-note .ep-group-note{font-size:var(--ep-role-note-size)!important;font-weight:var(--ep-role-note-weight)!important;font-style:var(--ep-role-note-style)!important;text-decoration:var(--ep-role-note-decoration)!important}
+.bme-heritage-exact.bme-custom-type-footer .ep-footer,
+.bme-heritage-exact.bme-custom-type-footer .ep-footer-responsible,
+.bme-heritage-exact.bme-custom-type-footer .ep-accessibility-statement-link,
+.bme-heritage-exact.bme-custom-type-footer .ep-footer span,
+.bme-heritage-exact.bme-custom-type-footer .ep-footer strong{font-size:var(--ep-role-footer-size)!important;font-weight:var(--ep-role-footer-weight)!important;font-style:var(--ep-role-footer-style)!important;text-decoration:var(--ep-role-footer-decoration)!important}
+
+/* PRICE-LABEL INTEGRITY REGULATION
+   Price-type labels must always remain readable. Templates may grow a little
+   vertically, but they must never hide content behind ellipsis/clipping. */
+.bme-price-option small,
+.bme-presentation-street-poster .bme-price-option small,
+.bme-heritage-exact .ep-price-option small,
+.bme-heritage-exact .ep-dual-price small{
+  overflow:visible!important;
+  text-overflow:clip!important;
+  white-space:normal!important;
+  overflow-wrap:break-word;
+  word-break:normal;
+  max-width:100%!important;
+  height:auto!important;
+  min-height:0;
+  line-height:1.2;
+}
+
+.bme-price-option,
+.bme-heritage-exact .ep-price-option{
+  min-width:0;
+  align-content:start;
+}
+
+/* Let price areas make the smallest layout adjustment needed instead of
+   stealing/obscuring item text. Existing template widths remain the baseline. */
+.bme-price-options,
+.bme-heritage-exact .ep-price-options{
+  align-items:start;
+}
+
+.bme-classic-item:has(.bme-price-options),
+.bme-visual-item:has(.bme-price-options),
+.bme-heritage-exact .ep-item-row:has(.ep-price-options){
+  height:auto!important;
+  min-height:min-content;
+}
