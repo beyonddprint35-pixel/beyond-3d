@@ -1,13 +1,14 @@
 .menu-design-v2 .menu-design-v2-controls>.studio-v3-design-pro-controls{min-height:0}
 .menu-hero-headline-control{
-  margin:0 12px 14px;
-  padding:13px;
+  margin:12px 0 14px;
+  padding:12px 0 0;
   display:grid;
   gap:10px;
-  border:1px solid var(--beyond-studio-line,#e1e4e9);
-  border-radius:14px;
-  background:var(--beyond-studio-surface,#fff);
-  box-shadow:0 2px 9px rgba(30,45,70,.035);
+  border:0;
+  border-top:1px solid var(--beyond-studio-line,#e1e4e9);
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
 }
 .menu-hero-headline-control-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
 .menu-hero-headline-control-head>div{min-width:0;display:grid;gap:3px}
@@ -31,4 +32,4 @@
 .menu-hero-headline-control-foot{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;color:var(--beyond-studio-muted,#7a7a80)}
 .menu-hero-headline-control-foot small{font-size:9px;line-height:1.45}
 .menu-hero-headline-control-foot span{flex:0 0 auto;font-size:9px;font-weight:700}
-@media(max-width:900px){.menu-hero-headline-control{margin-inline:10px}}
+@media(max-width:900px){.menu-hero-headline-control{margin-inline:0}}
