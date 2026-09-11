@@ -117,6 +117,11 @@ export default function MenuContentPriceEditor({
 
   function removeOption(index) {
     const next = options.filter((_, optionIndex) => optionIndex !== index);
+    if (next.length === 1) {
+      const remainingPrice = String(next[0]?.price || "").trim();
+      onChange?.({ price: remainingPrice, price_options: [] });
+      return;
+    }
     if (!next.length) {
       onChange?.({ price: "", price_options: [] });
       return;
