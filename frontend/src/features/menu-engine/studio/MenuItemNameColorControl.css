@@ -1,7 +1,6 @@
-.menu-item-name-color-control,
-.menu-note-type-control{
+.menu-item-name-color-control{
   display:grid;
-  gap:12px;
+  gap:14px;
   margin:0 14px 14px;
   padding:15px;
   border:1px solid rgba(60,60,67,.12);
@@ -11,53 +10,45 @@
 .menu-item-name-color-copy{display:grid;gap:4px}
 .menu-item-name-color-copy strong{color:#343438;font-size:12px;font-weight:740}
 .menu-item-name-color-copy small{color:#8a8a8f;font-size:10px;line-height:1.45}
-.menu-text-colors-control{gap:14px}
-.menu-text-colors-list{display:grid;gap:11px}
-.menu-text-color-field{display:grid;gap:6px;padding-bottom:11px;border-bottom:1px solid rgba(60,60,67,.08)}
-.menu-text-color-field:last-child{padding-bottom:0;border-bottom:0}
-.menu-text-color-label{color:#56565b;font-size:10px;font-weight:720}
-.menu-item-name-color-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
-.menu-item-name-color-picker{min-width:0;height:44px;display:grid;grid-template-columns:32px minmax(0,1fr);align-items:center;gap:9px;padding:6px 10px;border:1px solid rgba(60,60,67,.13);border-radius:12px;background:#f7f7f9;cursor:pointer;position:relative}
-.menu-item-name-color-native{position:absolute;left:8px;top:6px;width:32px;height:32px;opacity:0;cursor:pointer;z-index:2}
-.menu-item-name-color-swatch{width:32px;height:32px;border-radius:9px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.1);pointer-events:none}
-.menu-item-name-color-hex{min-width:0;width:100%;height:30px;padding:0;border:0;outline:0;background:transparent;color:#4d4d52;font:650 10.5px/1.2 Inter,sans-serif;text-transform:uppercase}
-.menu-item-name-color-actions{display:flex;align-items:center;gap:6px}
-.menu-item-name-color-actions button{min-height:44px;padding:0 11px;border:1px solid rgba(60,60,67,.13);border-radius:12px;background:#fff;color:#4974e5;font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap}
-.menu-item-name-color-actions button:disabled{opacity:.4;cursor:not-allowed}
+.menu-text-style-groups{display:grid;gap:14px}
+.menu-text-style-group{display:grid;gap:7px}
+.menu-text-style-group-title{padding:0 1px 6px;color:#343438;font-size:11px;font-weight:800;border-bottom:1px solid rgba(60,60,67,.1)}
+.menu-text-styles-list{display:grid;gap:0}
+.menu-text-style-field{display:grid;gap:7px;padding:10px 0;border-bottom:1px solid rgba(60,60,67,.075)}
+.menu-text-style-field:last-child{border-bottom:0}
+.menu-text-style-label{color:#56565b;font-size:10px;font-weight:720}
+.menu-text-style-toolbar{display:grid;grid-template-columns:minmax(105px,1fr) 58px auto;gap:6px;align-items:center}
+.menu-text-color-picker{min-width:0;height:38px;display:grid;grid-template-columns:26px minmax(0,1fr);align-items:center;gap:7px;padding:5px 8px;border:1px solid rgba(60,60,67,.13);border-radius:10px;background:#f7f7f9;cursor:pointer;position:relative}
+.menu-text-color-native{position:absolute;left:7px;top:5px;width:26px;height:26px;opacity:0;cursor:pointer;z-index:2}
+.menu-text-color-swatch{width:26px;height:26px;border-radius:7px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.1);pointer-events:none}
+.menu-text-color-hex{min-width:0;width:100%;height:26px;padding:0;border:0;outline:0;background:transparent;color:#4d4d52;font:650 10px/1.2 Inter,sans-serif;text-transform:uppercase}
+.menu-text-size-control{display:block}
+.menu-text-size-control select{width:100%;height:38px;padding:0 6px;border:1px solid rgba(60,60,67,.13);border-radius:10px;background:#fff;color:#343438;font:700 11px/1 Inter,sans-serif;outline:none;cursor:pointer;text-align:center}
+.menu-text-format-buttons{display:flex;gap:4px;align-items:center}
+.menu-text-format-buttons button{width:34px;height:38px;display:grid;place-items:center;padding:0;border:1px solid rgba(60,60,67,.13);border-radius:9px;background:#fff;color:#343438;font:700 12px/1 Inter,sans-serif;cursor:pointer}
+.menu-text-format-buttons button em{font-family:Georgia,serif;font-size:14px}
+.menu-text-format-buttons button u{text-underline-offset:2px}
+.menu-text-format-buttons button.active{border-color:#80a2fb;background:#edf3ff;color:#3569e8;box-shadow:0 0 0 1px rgba(73,116,229,.08)}
+.menu-text-style-actions{display:flex;gap:5px;flex-wrap:wrap}
+.menu-text-style-actions button{min-height:28px;padding:0 8px;border:1px solid rgba(60,60,67,.11);border-radius:8px;background:#fff;color:#4974e5;font-size:9px;font-weight:700;cursor:pointer;white-space:nowrap}
+.menu-text-style-actions button:disabled{opacity:.35;cursor:not-allowed}
 
-.menu-note-type-control{gap:13px}
-.menu-note-type-field,
-.menu-note-type-range{display:grid;gap:6px}
-.menu-note-type-field>span:first-child,
-.menu-note-type-range>span:first-child>span{color:#56565b;font-size:10px;font-weight:700}
-.menu-note-type-field select{width:100%;height:42px;padding:0 11px;border:1px solid rgba(60,60,67,.13);border-radius:12px;background:#f7f7f9;color:#343438;font-size:11px;font-weight:650;outline:none}
-.menu-note-type-range>span:first-child{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.menu-note-type-range b{color:#4974e5;font-size:10px;font-weight:750}
-.menu-note-type-range input[type="range"]{width:100%;accent-color:#4974e5}
-
-html[data-beyond-theme="dark"] .menu-item-name-color-control,
-html[data-beyond-theme="dark"] .menu-note-type-control{
-  border-color:rgba(255,255,255,.11);
-  background:#151c24;
-}
-html[data-beyond-theme="dark"] .menu-item-name-color-copy strong{color:#eef2f7}
+html[data-beyond-theme="dark"] .menu-item-name-color-control{border-color:rgba(255,255,255,.11);background:#151c24}
+html[data-beyond-theme="dark"] .menu-item-name-color-copy strong,
+html[data-beyond-theme="dark"] .menu-text-style-group-title{color:#eef2f7}
 html[data-beyond-theme="dark"] .menu-item-name-color-copy small{color:#929ba7}
-html[data-beyond-theme="dark"] .menu-text-color-label{color:#cbd3dd}
-html[data-beyond-theme="dark"] .menu-text-color-field{border-bottom-color:rgba(255,255,255,.08)}
-html[data-beyond-theme="dark"] .menu-item-name-color-picker,
-html[data-beyond-theme="dark"] .menu-item-name-color-actions button,
-html[data-beyond-theme="dark"] .menu-note-type-field select{
-  border-color:rgba(255,255,255,.11);
-  background:#1b222b;
-}
-html[data-beyond-theme="dark"] .menu-item-name-color-hex,
-html[data-beyond-theme="dark"] .menu-note-type-field select{color:#e4e9ef}
-html[data-beyond-theme="dark"] .menu-item-name-color-actions button{color:#91aaff}
-html[data-beyond-theme="dark"] .menu-note-type-field>span:first-child,
-html[data-beyond-theme="dark"] .menu-note-type-range>span:first-child>span{color:#cbd3dd}
+html[data-beyond-theme="dark"] .menu-text-style-label{color:#cbd3dd}
+html[data-beyond-theme="dark"] .menu-text-style-group-title,
+html[data-beyond-theme="dark"] .menu-text-style-field{border-color:rgba(255,255,255,.08)}
+html[data-beyond-theme="dark"] .menu-text-color-picker,
+html[data-beyond-theme="dark"] .menu-text-size-control select,
+html[data-beyond-theme="dark"] .menu-text-format-buttons button,
+html[data-beyond-theme="dark"] .menu-text-style-actions button{border-color:rgba(255,255,255,.11);background:#1b222b;color:#e4e9ef}
+html[data-beyond-theme="dark"] .menu-text-color-hex{color:#e4e9ef}
+html[data-beyond-theme="dark"] .menu-text-format-buttons button.active{border-color:#7898ec;background:#223153;color:#a9bcff}
+html[data-beyond-theme="dark"] .menu-text-style-actions button{color:#91aaff}
 
 @media(max-width:600px){
-  .menu-item-name-color-row{grid-template-columns:1fr}
-  .menu-item-name-color-actions{display:grid;grid-template-columns:1fr 1fr}
-  .menu-item-name-color-actions button{width:100%}
+  .menu-text-style-toolbar{grid-template-columns:minmax(96px,1fr) 56px auto}
+  .menu-text-format-buttons button{width:32px}
 }
