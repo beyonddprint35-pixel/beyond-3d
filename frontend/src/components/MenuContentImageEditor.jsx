@@ -43,13 +43,12 @@ const PHOTO_COPY = {
     enhance: "Enhance photo", enhanceHint: "Fix light, color and clarity",
     background: "Clean background", backgroundHint: "Remove surrounding distractions",
     match: "Match menu style", matchHint: "Match approved menu photos and restaurant atmosphere",
-    strong: "Strong AI restyle", strongHint: "A stronger two-pass match for scene, lighting and mood",
     recommended: "Recommended", foodLock: "Dish Lock ON",
     foodLockHint: "AI is instructed not to add, remove or change ingredients, portions or plating.",
-    generate: "Create style options", generating: "Matching your photo to this menu…",
+    generate: "Match this photo", generating: "Matching your photo to this menu…",
     generatingHint: "Beyond is preserving the real dish while rebuilding the presentation around it.",
-    before: "Original", after: "Selected style", compare: "Compare",
-    enhancedView: "Enhanced photo", regenerate: "Try again", usePhoto: "Use selected photo", saving: "Saving photo…", cancel: "Cancel",
+    before: "Original", after: "Styled photo", compare: "Compare",
+    enhancedView: "Enhanced photo", regenerate: "Try again", usePhoto: "Use this photo", saving: "Saving photo…", cancel: "Cancel",
     advancedAi: "Create a new photo with AI instead", advancedAiHint: "Only use this when you do not have a real photo of the dish.",
     memoryTitle: "Restaurant Style Memory", memoryOn: "Active — new photos follow this restaurant's approved visual language",
     memoryOff: "Beyond will learn from an existing approved AI photo when one is available",
@@ -58,11 +57,7 @@ const PHOTO_COPY = {
     styleSources: "Style sources", styleSourcesHint: "Beyond uses the strongest available restaurant references.",
     menuPhotos: (count) => `${count} menu photo${count === 1 ? "" : "s"}`,
     hero: "Restaurant hero", designTheme: "Menu design", fallbackStyle: "Restaurant-aware fallback",
-    chooseVersion: "Choose the version that fits your menu best",
-    chooseVersionHint: "The original always stays available. Nothing changes until you approve a version.",
-    originalChoice: "Original", styled1: "Styled 1", styled2: "Styled 2", strong1: "Restyled 1", strong2: "Restyled 2",
-    selected: "Selected", originalSelected: "Keep original photo", preparingStyle: "Preparing restaurant style…",
-    progress: (current, total) => `Creating option ${current} of ${total}`,
+    selected: "Selected", preparingStyle: "Preparing restaurant style…",
   },
   he: {
     title: "תמונת המנה", hint: "השתמשו בתמונה אמיתית. Beyond יכול להפוך אותה למקצועית בלי לשנות את המנה.",
@@ -73,13 +68,12 @@ const PHOTO_COPY = {
     enhance: "שיפור התמונה", enhanceHint: "תאורה, צבע וחדות",
     background: "ניקוי הרקע", backgroundHint: "הסרת הסחות מסביב למנה",
     match: "התאמה לסגנון התפריט", matchHint: "התאמה לתמונות המאושרות ולאווירת המסעדה",
-    strong: "עיצוב AI חזק", strongHint: "התאמה דו-שלבית חזקה יותר לסצנה, לתאורה ולאווירה",
     recommended: "מומלץ", foodLock: "נעילת מנה פעילה",
     foodLockHint: "ה-AI מונחה לא להוסיף, להסיר או לשנות מרכיבים, כמויות או צילחות.",
-    generate: "יצירת אפשרויות סגנון", generating: "מתאימים את התמונה לסגנון התפריט…",
+    generate: "התאמת התמונה", generating: "מתאימים את התמונה לסגנון התפריט…",
     generatingHint: "Beyond שומר על המנה האמיתית ומשפר את ההצגה והאווירה סביבה.",
-    before: "מקור", after: "הסגנון שנבחר", compare: "השוואה",
-    enhancedView: "תמונה משופרת", regenerate: "נסו שוב", usePhoto: "שימוש בתמונה שנבחרה", saving: "שומר את התמונה…", cancel: "ביטול",
+    before: "מקור", after: "תמונה מעוצבת", compare: "השוואה",
+    enhancedView: "תמונה משופרת", regenerate: "נסו שוב", usePhoto: "שימוש בתמונה", saving: "שומר את התמונה…", cancel: "ביטול",
     advancedAi: "יצירת תמונה חדשה עם AI במקום", advancedAiHint: "רק כשאין תמונה אמיתית של המנה.",
     memoryTitle: "זיכרון סגנון המסעדה", memoryOn: "פעיל — תמונות חדשות מותאמות לשפה החזותית שאושרה למסעדה",
     memoryOff: "Beyond ילמד מתמונת AI מאושרת קיימת כאשר היא זמינה",
@@ -87,11 +81,7 @@ const PHOTO_COPY = {
     memoryReset: "איפוס סגנון", memoryResetting: "מאפס…",
     styleSources: "מקורות סגנון", styleSourcesHint: "Beyond משתמש במקורות המסעדה החזקים ביותר הזמינים.",
     menuPhotos: (count) => `${count} תמונות תפריט`, hero: "תמונת המסעדה", designTheme: "עיצוב התפריט", fallbackStyle: "סגנון מסעדה חכם",
-    chooseVersion: "בחרו את הגרסה שמתאימה לתפריט בצורה הטובה ביותר",
-    chooseVersionHint: "תמונת המקור תמיד נשמרת. שום דבר לא משתנה עד לאישור.",
-    originalChoice: "מקור", styled1: "סגנון 1", styled2: "סגנון 2", strong1: "עיצוב 1", strong2: "עיצוב 2",
-    selected: "נבחר", originalSelected: "שמירת תמונת המקור", preparingStyle: "מכינים את סגנון המסעדה…",
-    progress: (current, total) => `יוצרים אפשרות ${current} מתוך ${total}`,
+    selected: "נבחר", preparingStyle: "מכינים את סגנון המסעדה…",
   },
   ar: {
     title: "صورة الطبق", hint: "استخدم صورة حقيقية. يمكن لـ Beyond جعلها احترافية دون تغيير الطبق.",
@@ -102,13 +92,12 @@ const PHOTO_COPY = {
     enhance: "تحسين الصورة", enhanceHint: "الإضاءة واللون والوضوح",
     background: "تنظيف الخلفية", backgroundHint: "إزالة المشتتات حول الطبق",
     match: "مطابقة أسلوب القائمة", matchHint: "مطابقة صور القائمة المعتمدة وأجواء المطعم",
-    strong: "إعادة تصميم AI قوية", strongHint: "مطابقة أقوى بمرحلتين للمشهد والإضاءة والمزاج",
     recommended: "موصى به", foodLock: "قفل الطبق مفعّل",
     foodLockHint: "الذكاء الاصطناعي موجه لعدم إضافة أو إزالة أو تغيير المكونات أو الكمية أو التقديم.",
-    generate: "إنشاء خيارات الأسلوب", generating: "نطابق صورتك مع أسلوب القائمة…",
+    generate: "مطابقة هذه الصورة", generating: "نطابق صورتك مع أسلوب القائمة…",
     generatingHint: "يحافظ Beyond على الطبق الحقيقي ويعيد تحسين العرض والأجواء من حوله.",
-    before: "الأصل", after: "الأسلوب المختار", compare: "مقارنة",
-    enhancedView: "الصورة المحسّنة", regenerate: "حاول مرة أخرى", usePhoto: "استخدم الصورة المختارة", saving: "جارٍ حفظ الصورة…", cancel: "إلغاء",
+    before: "الأصل", after: "الصورة المنسقة", compare: "مقارنة",
+    enhancedView: "الصورة المحسّنة", regenerate: "حاول مرة أخرى", usePhoto: "استخدم هذه الصورة", saving: "جارٍ حفظ الصورة…", cancel: "إلغاء",
     advancedAi: "أنشئ صورة جديدة بالذكاء الاصطناعي", advancedAiHint: "استخدم هذا فقط عندما لا توجد صورة حقيقية للطبق.",
     memoryTitle: "ذاكرة أسلوب المطعم", memoryOn: "نشطة — الصور الجديدة تتبع اللغة البصرية المعتمدة للمطعم",
     memoryOff: "سيتعلم Beyond من صورة AI معتمدة موجودة عندما تكون متاحة",
@@ -116,11 +105,7 @@ const PHOTO_COPY = {
     memoryReset: "إعادة ضبط الأسلوب", memoryResetting: "جارٍ الضبط…",
     styleSources: "مصادر الأسلوب", styleSourcesHint: "يستخدم Beyond أقوى مراجع المطعم المتاحة.",
     menuPhotos: (count) => `${count} صور من القائمة`, hero: "صورة المطعم", designTheme: "تصميم القائمة", fallbackStyle: "أسلوب مطعم ذكي",
-    chooseVersion: "اختر النسخة الأنسب لقائمتك",
-    chooseVersionHint: "تبقى الصورة الأصلية متاحة دائماً. لن يتغير شيء حتى تعتمد نسخة.",
-    originalChoice: "الأصل", styled1: "منسقة 1", styled2: "منسقة 2", strong1: "معاد تصميمها 1", strong2: "معاد تصميمها 2",
-    selected: "مختارة", originalSelected: "الاحتفاظ بالصورة الأصلية", preparingStyle: "نجهز أسلوب المطعم…",
-    progress: (current, total) => `إنشاء الخيار ${current} من ${total}`,
+    selected: "مختارة", preparingStyle: "نجهز أسلوب المطعم…",
   },
 };
 
@@ -128,7 +113,6 @@ const MODES = [
   { key: "enhance", icon: WandSparkles },
   { key: "background", icon: ImagePlus },
   { key: "match", icon: Sparkles },
-  { key: "strong", icon: WandSparkles },
 ];
 
 function storagePathFromPublicUrl(value) {
@@ -277,52 +261,22 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
       setStyleMemory({ loaded: true, exists });
       return exists;
     } catch {
-      // Style matching still works without an anchor; the AI endpoint will use
-      // its restaurant-menu fallback rather than blocking the restaurant owner.
       return false;
     }
   }
 
-  async function createStyleVariant(index, requestedMode) {
-    const strong = requestedMode === "strong";
-    const firstPass = await enhanceMenuPhotoWithAi({
+  async function createStyleVariant() {
+    const ai = await enhanceMenuPhotoWithAi({
       sourceUrl,
       sourcePath,
       projectId,
       mode: "match",
       itemId: item.id,
       styleContext,
-      styleStrength: strong ? "strong" : "balanced",
-      variantIndex: index,
+      styleStrength: "balanced",
+      variantIndex: 1,
     });
-
-    if (!strong) return { ...firstPass, mode: "match", id: `styled-${index}`, label: copy[`styled${index}`] };
-
-    // The currently deployed production-safe AI endpoint already has strict Dish
-    // Lock and restaurant Style Memory. A second pass through that same guarded
-    // matcher gives the local Studio a genuinely stronger restyle without
-    // changing the live backend contract. The intermediate file is temporary.
-    let temporary = null;
-    try {
-      temporary = await uploadMenuItemImage({
-        file: firstPass.file,
-        itemId: `${item.id}-strong-pass-${index}`,
-        projectId,
-      });
-      const secondPass = await enhanceMenuPhotoWithAi({
-        sourceUrl: temporary.image_url,
-        sourcePath: temporary.image_path,
-        projectId,
-        mode: "match",
-        itemId: item.id,
-        styleContext,
-        styleStrength: "strong",
-        variantIndex: index,
-      });
-      return { ...secondPass, mode: "strong", id: `strong-${index}`, label: copy[`strong${index}`] };
-    } finally {
-      if (temporary?.image_path) await removeMenuItemImage(temporary.image_path).catch(() => {});
-    }
+    return { ...ai, mode: "match", id: "styled-1" };
   }
 
   async function generatePreview() {
@@ -331,19 +285,14 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
     setError("");
     clearResult();
     try {
-      if (mode === "match" || mode === "strong") {
+      if (mode === "match") {
         await ensureRestaurantStyleAnchor();
-        const generated = [];
-        for (let index = 1; index <= 2; index += 1) {
-          setGenerationProgress(copy.progress(index, 2));
-          const ai = await createStyleVariant(index, mode);
-          generated.push({ ...ai, url: objectUrl(ai.file) });
-        }
-        setVariants(generated);
-        setResult(generated[0]);
-        setSelectedChoice(generated[0]?.id || "generated");
+        const ai = await createStyleVariant();
+        const next = { ...ai, url: objectUrl(ai.file) };
+        setResult(next);
+        setSelectedChoice(next.id);
         setCompareSide("after");
-        if (generated.some((entry) => entry.styleMemoryExists)) {
+        if (next.styleMemoryExists) {
           setStyleMemory((current) => ({ ...current, loaded: true, exists: true }));
         }
         setGenerationProgress("");
@@ -401,7 +350,7 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
         previousPath: item.image_processed_path || "",
       });
 
-      if ((result.mode === "match" || result.mode === "strong") && !styleMemory.exists) {
+      if (result.mode === "match" && !styleMemory.exists) {
         try {
           const memory = await rememberMenuPhotoStyle({ projectId, sourcePath, approvedPath: uploaded.image_path });
           setStyleMemory({ loaded: true, exists: Boolean(memory.exists) });
@@ -417,7 +366,7 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
         image_original_path: sourcePath,
         image_processed_url: uploaded.image_url,
         image_processed_path: uploaded.image_path,
-        image_variant: result.mode === "strong" ? "ai-style-match-strong" : result.mode === "match" ? "ai-style-match" : `ai-${result.mode}`,
+        image_variant: result.mode === "match" ? "ai-style-match" : `ai-${result.mode}`,
         image_ai_mode: result.mode,
         image_ai_model: result.model,
       });
@@ -438,7 +387,7 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
     try {
       await resetMenuPhotoStyleMemory({ projectId, sourcePath });
       setStyleMemory({ loaded: true, exists: false });
-      if (mode === "match" || mode === "strong") clearResult();
+      if (mode === "match") clearResult();
     } catch (resetError) {
       setError(resetError?.message || "Could not reset Style Memory.");
     } finally {
@@ -476,7 +425,7 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
   }
 
   const busy = uploading || processing || saving || resettingStyle;
-  const styleMode = mode === "match" || mode === "strong";
+  const styleMode = mode === "match";
   const selectedPreviewUrl = selectedChoice === "original" ? sourceUrl : (result?.url || sourceUrl);
 
   return (
@@ -502,7 +451,7 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
       ) : null}
 
       {item.image_url && !studioOpen ? (
-        <button type="button" className="menu-content-v2-photo-prepare" onClick={() => { clearResult(); setMode(item.image_ai_mode === "strong" ? "strong" : item.image_ai_mode || "match"); setStudioOpen(true); }} disabled={busy}>
+        <button type="button" className="menu-content-v2-photo-prepare" onClick={() => { clearResult(); setMode(item.image_ai_mode === "strong" ? "match" : item.image_ai_mode || "match"); setStudioOpen(true); }} disabled={busy}>
           <span className="menu-content-v2-photo-prepare-icon"><WandSparkles size={18} /></span>
           <span><strong>{copy.prepare}</strong><small>{copy.prepareHint}</small></span>
           <span className="menu-content-v2-photo-prepare-arrow">›</span>
@@ -534,7 +483,7 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
 
           <div className="menu-content-v2-photo-mode-grid">
             {MODES.map(({ key, icon: Icon }) => (
-              <button key={key} type="button" className={`${mode === key ? "active" : ""} ${key === "strong" ? "strong-style-mode" : ""}`} onClick={() => { setMode(key); clearResult(); }} disabled={busy}>
+              <button key={key} type="button" className={mode === key ? "active" : ""} onClick={() => { setMode(key); clearResult(); }} disabled={busy}>
                 <span className="mode-icon"><Icon size={17} /></span>
                 <span><strong>{copy[key]}</strong><small>{copy[`${key}Hint`]}</small>{key === "match" ? <em>{copy.recommended}</em> : null}</span>
               </button>
@@ -566,30 +515,22 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
               {processing && generationProgress ? <div className="menu-content-v2-photo-generation-progress"><LoaderCircle size={13} className="spin" /> {generationProgress}</div> : null}
               <button type="button" className="menu-content-v2-photo-ai-generate" onClick={generatePreview} disabled={busy}>
                 {processing ? <LoaderCircle size={16} className="spin" /> : <Sparkles size={16} />}
-                {styleMode ? copy.generate : (copy.generate.replace("style options", "AI preview"))}
+                {styleMode ? copy.generate : "Create AI preview"}
               </button>
             </>
           ) : (
             <>
               {variants.length ? (
-                <>
-                  <div className="menu-content-v2-photo-variant-title"><strong>{copy.chooseVersion}</strong><small>{copy.chooseVersionHint}</small></div>
-                  <div className="menu-content-v2-photo-variant-grid">
-                    <button type="button" className={`menu-content-v2-photo-variant-card original ${selectedChoice === "original" ? "active" : ""}`} onClick={() => { setSelectedChoice("original"); setCompareSide("before"); }} disabled={busy}>
-                      <img src={sourceUrl} alt="" />
-                      <span><span>{copy.originalChoice}</span>{selectedChoice === "original" ? <i className="selected-mark"><Check size={11} /></i> : null}</span>
+                <div className="menu-content-v2-photo-variant-grid">
+                  {variants.map((variant) => (
+                    <button key={variant.id} type="button" className={`menu-content-v2-photo-variant-card ${selectedChoice === variant.id ? "active" : ""}`} onClick={() => chooseGeneratedVariant(variant)} disabled={busy}>
+                      <img src={variant.url} alt="" />
                     </button>
-                    {variants.map((variant) => (
-                      <button key={variant.id} type="button" className={`menu-content-v2-photo-variant-card ${selectedChoice === variant.id ? "active" : ""}`} onClick={() => chooseGeneratedVariant(variant)} disabled={busy}>
-                        <img src={variant.url} alt="" />
-                        <span><span>{variant.label}</span>{selectedChoice === variant.id ? <i className="selected-mark"><Check size={11} /></i> : null}</span>
-                      </button>
-                    ))}
-                  </div>
-                </>
+                  ))}
+                </div>
               ) : null}
 
-              {(result?.mode === "match" || result?.mode === "strong") && selectedChoice !== "original" ? (
+              {result?.mode === "match" ? (
                 <div className={`menu-content-v2-photo-memory-result ${result.styleLocked ? "used" : "new"}`}>
                   <Sparkles size={12} />
                   <span>{result.styleLocked ? copy.memoryUsed : copy.memoryNew}</span>
@@ -598,13 +539,12 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
 
               <div className="menu-content-v2-photo-compare-tabs">
                 <button type="button" className={compareSide === "before" ? "active" : ""} onClick={() => setCompareSide("before")}><span>{copy.before}</span></button>
-                <button type="button" className={compareSide === "after" ? "active" : ""} onClick={() => { if (selectedChoice !== "original") setCompareSide("after"); }} disabled={selectedChoice === "original"}><Sparkles size={11} /><span>{copy.after}</span></button>
+                <button type="button" className={compareSide === "after" ? "active" : ""} onClick={() => setCompareSide("after")}><Sparkles size={11} /><span>{copy.after}</span></button>
               </div>
               <div className="menu-content-v2-photo-studio-preview ai-result-preview">
-                <img src={compareSide === "before" || selectedChoice === "original" ? sourceUrl : selectedPreviewUrl} alt="" />
+                <img src={compareSide === "before" ? sourceUrl : selectedPreviewUrl} alt="" />
                 <span><ArrowLeftRight size={12} /> {copy.compare}</span>
               </div>
-              {selectedChoice === "original" ? <div className="menu-content-v2-photo-selected-note"><Check size={12} /> {copy.originalSelected}</div> : null}
               <div className="menu-content-v2-photo-ai-result-actions">
                 <button type="button" className="secondary" onClick={generatePreview} disabled={busy}>{copy.regenerate}</button>
                 <button type="button" className="primary" onClick={saveAiPhoto} disabled={busy}>{saving ? <LoaderCircle size={15} className="spin" /> : <Check size={15} />}{saving ? copy.saving : copy.usePhoto}</button>
