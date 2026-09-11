@@ -202,10 +202,10 @@ function syncStudioPreviewTypographyRole(role, stored = {}) {
       const prefix = root.classList.contains("bme-heritage-exact") ? "ep" : "bme";
       const className = `bme-custom-type-${role.slug}`;
       const variables = {
-        size: `--${prefix}-${role.slug}-size`,
-        bold: `--${prefix}-${role.slug}-weight`,
-        italic: `--${prefix}-${role.slug}-style`,
-        underline: `--${prefix}-${role.slug}-decoration`,
+        size: `--${prefix}-role-${role.slug}-size`,
+        bold: `--${prefix}-role-${role.slug}-weight`,
+        italic: `--${prefix}-role-${role.slug}-style`,
+        underline: `--${prefix}-role-${role.slug}-decoration`,
       };
       if (!enabled) {
         root.classList.remove(className);
