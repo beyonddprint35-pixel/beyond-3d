@@ -1,19 +1,27 @@
 /* Quick setup accordion: Theme, Text style & color, Top photo & header. */
-.menu-design-v2 .studio-v3-design-quick-workspace .beyond-quick-accordion-item > .studio-v3-quick-control-title{
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-control-card:has(> .studio-v3-quick-control-title > .dot.colors) > .studio-v3-quick-control-title,
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-control-card:has(> .studio-v3-quick-control-title > .dot.type) > .studio-v3-quick-control-title,
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-control-card:has(> .studio-v3-quick-control-title > .dot.hero-media-control) > .studio-v3-quick-control-title{
   cursor:pointer;
   user-select:none;
 }
 
-.menu-design-v2 .studio-v3-design-quick-workspace .beyond-quick-accordion-item:not(.beyond-quick-accordion-open) > :not(.studio-v3-quick-control-title){
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-control-card:has(> .studio-v3-quick-control-title > .dot.colors):not([data-beyond-accordion-open]) > :not(.studio-v3-quick-control-title),
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-control-card:has(> .studio-v3-quick-control-title > .dot.type):not([data-beyond-accordion-open]) > :not(.studio-v3-quick-control-title),
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-control-card:has(> .studio-v3-quick-control-title > .dot.hero-media-control):not([data-beyond-accordion-open]) > :not(.studio-v3-quick-control-title){
   display:none!important;
 }
 
-.menu-design-v2 .studio-v3-design-quick-workspace .beyond-quick-accordion-item > .studio-v3-quick-control-title > button{
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-control-card:has(> .studio-v3-quick-control-title > .dot.colors) > .studio-v3-quick-control-title > button,
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-control-card:has(> .studio-v3-quick-control-title > .dot.type) > .studio-v3-quick-control-title > button,
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-control-card:has(> .studio-v3-quick-control-title > .dot.hero-media-control) > .studio-v3-quick-control-title > button{
   pointer-events:none;
   font-size:0!important;
 }
 
-.menu-design-v2 .studio-v3-design-quick-workspace .beyond-quick-accordion-item > .studio-v3-quick-control-title > button::after{
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-control-card:has(> .studio-v3-quick-control-title > .dot.colors) > .studio-v3-quick-control-title > button::after,
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-control-card:has(> .studio-v3-quick-control-title > .dot.type) > .studio-v3-quick-control-title > button::after,
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-control-card:has(> .studio-v3-quick-control-title > .dot.hero-media-control) > .studio-v3-quick-control-title > button::after{
   content:"›";
   display:block;
   font-size:20px;
@@ -22,15 +30,15 @@
   transition:transform .16s ease;
 }
 
-.menu-design-v2 .studio-v3-design-quick-workspace .beyond-quick-accordion-item.beyond-quick-accordion-open > .studio-v3-quick-control-title > button::after{
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-control-card[data-beyond-accordion-open] > .studio-v3-quick-control-title > button::after{
   transform:rotate(90deg);
 }
 
-.menu-design-v2 .studio-v3-design-quick-workspace .beyond-quick-accordion-item.beyond-quick-accordion-open{
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-control-card[data-beyond-accordion-open]{
   box-shadow:0 0 0 1px color-mix(in srgb,var(--beyond-studio-blue,#4974e5) 16%,transparent);
 }
 
-.menu-design-v2 .studio-v3-design-quick-workspace .beyond-quick-accordion-item > .studio-v3-quick-control-title:focus-visible{
+.menu-design-v2 .studio-v3-design-quick-workspace .studio-v3-quick-control-title:focus-visible{
   outline:2px solid color-mix(in srgb,var(--beyond-studio-blue,#4974e5) 72%,white);
   outline-offset:3px;
   border-radius:10px;
