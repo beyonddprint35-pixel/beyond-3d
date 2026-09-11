@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 set -uo pipefail
 
-PORT=5175
+PORT=5174
 ROUTE="/menu-builder"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 SUPERVISOR="$SCRIPT_DIR/menu-studio-supervisor.sh"
-SUPERVISOR_LOG="/tmp/beyond-vite-supervisor-5175.log"
-SUPERVISOR_PID_FILE="/tmp/beyond-vite-supervisor-5175.pid"
-VITE_LOG="/tmp/beyond-vite-5175.log"
-LOCK_FILE="/tmp/beyond-menu-studio-5175.lock"
+SUPERVISOR_LOG="/tmp/beyond-vite-supervisor.log"
+SUPERVISOR_PID_FILE="/tmp/beyond-vite-supervisor.pid"
+VITE_LOG="/tmp/beyond-vite.log"
+LOCK_FILE="/tmp/beyond-menu-studio.lock"
 LOCAL_ROOT="http://127.0.0.1:${PORT}"
 LOCAL_URL="${LOCAL_ROOT}${ROUTE}"
 
@@ -34,40 +34,17 @@ supervisor_running() {
   [ -n "$pid" ] && kill -0 "$pid" >/dev/null 2>&1
 }
 
-listener_exists() {
-  if command -v ss >/dev/null 2>&1; then
-    ss -ltn 2>/dev/null | grep -qE "[:.]${PORT}[[:space:]]"
-    return
-  fi
-  fuser "${PORT}/tcp" >/dev/null 2>&1
-}
-
-stop_existing_server() {
-  # Always restart when this repair/start script is invoked. This prevents a
-  # healthy-but-stale Vite process from continuing to serve code from an older
-  # checkout after git pull.
+start_supervisor() {
   if supervisor_running; then
-    local pid
-    pid="$(cat "$SUPERVISOR_PID_FILE" 2>/dev/null || true)"
-    [ -n "$pid" ] && kill "$pid" >/dev/null 2>&1 || true
-    sleep 0.5
+    return 0
   fi
 
   rm -f "$SUPERVISOR_PID_FILE"
-
-  if listener_exists; then
-    fuser -k "${PORT}/tcp" >/dev/null 2>&1 || true
-    sleep 1
-  fi
-}
-
-start_supervisor() {
   touch "$VITE_LOG" "$SUPERVISOR_LOG"
   nohup setsid bash "$SUPERVISOR" >>"$SUPERVISOR_LOG" 2>&1 < /dev/null &
   echo $! >"$SUPERVISOR_PID_FILE"
 }
 
-stop_existing_server
 start_supervisor
 
 for _ in $(seq 1 120); do
@@ -77,6 +54,8 @@ for _ in $(seq 1 120); do
     echo "Vite log: $VITE_LOG"
     echo "Supervisor log: $SUPERVISOR_LOG"
 
+    # Codespaces already owns port-forward registration. We only read the URL;
+    # do not toggle visibility here because doing so can recreate the tunnel.
     if [ -n "${CODESPACE_NAME:-}" ] && command -v gh >/dev/null 2>&1; then
       BROWSE_URL="$(
         timeout 8s gh codespace ports -c "$CODESPACE_NAME" \
