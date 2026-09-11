@@ -131,7 +131,7 @@ function restoreDomImage() {
 function endEditor({ restore = true } = {}) {
   if (!state.active || state.busy) return;
   if (restore) restoreDomImage();
-  state.media?.classList.remove("beyond-live-framing-active", "beyond-live-framing-dragging");
+  state.media?.classList.remove("beyond-live-framing-active", "beyond-live-framing-dragging", "beyond-live-framing-saving");
   if (state.button) state.button.hidden = false;
   removeToolbar();
   state.active = false;
@@ -372,8 +372,16 @@ async function saveFraming() {
       detail: { menu: next.menu, profile: next.profile || {} },
     }));
 
+    // The saved asset already contains the selected crop. Remove the temporary
+    // DOM transform immediately so React cannot leave a second zoom on the new file.
+    if (state.img) {
+      state.img.src = uploaded.image_url;
+      state.img.style.objectPosition = "50% 50%";
+      state.img.style.transform = state.originalTransform;
+      state.img.style.transformOrigin = state.originalTransformOrigin;
+    }
+
     state.busy = false;
-    state.media?.classList.remove("beyond-live-framing-saving");
     endEditor({ restore: false });
   } catch (error) {
     state.busy = false;
