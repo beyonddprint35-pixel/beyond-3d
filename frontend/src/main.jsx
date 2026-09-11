@@ -21,6 +21,7 @@ import installMenuStudioViewportLock from "./pages/menuStudioViewportLock";
 import installMenuAiOnlineReferenceOverlay from "./pages/menuAiOnlineReferenceOverlay";
 import installMenuAiImageViewerOverlay from "./pages/menuAiImageViewerOverlay";
 import installMenuAiMenuCropOverlay from "./pages/menuAiMenuCropOverlay";
+import installMenuLiveImageFraming from "./pages/menuLiveImageFraming";
 import installMenuPublishShareActions from "./pages/menuPublishShareActions";
 import "./components/BeyondMenuPlatform.css";
 import "./components/BeyondLiveMenuDesign.css";
@@ -58,6 +59,7 @@ installMenuStudioViewportLock();
 installMenuAiOnlineReferenceOverlay();
 installMenuAiImageViewerOverlay();
 installMenuAiMenuCropOverlay();
+installMenuLiveImageFraming();
 installMenuPublishShareActions();
 
 function BeyondRootRoute() {
