@@ -34,6 +34,7 @@ const TEXT_ROLE_COLORS = Object.freeze({
   itemNameColor:"item-name",
   descriptionColor:"description",
   priceColor:"price",
+  priceTypeColor:"price-type",
   noteColor:"note",
   footerColor:"footer",
 });
