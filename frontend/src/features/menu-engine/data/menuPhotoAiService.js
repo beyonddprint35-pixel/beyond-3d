@@ -45,18 +45,25 @@ function resolveStorageContext(sourceUrl, sourcePath = "", projectId = "") {
 
 function cleanStyleContext(context) {
   if (!context || typeof context !== "object") return undefined;
-  const referencePaths = Array.isArray(context.referencePaths)
-    ? context.referencePaths.map((value) => String(value || "").trim()).filter(Boolean).slice(0, 3)
-    : [];
   const theme = context.theme && typeof context.theme === "object"
     ? Object.fromEntries(Object.entries(context.theme).slice(0, 12).map(([key, value]) => [key, String(value || "").slice(0, 80)]))
     : undefined;
   return {
     restaurantName: String(context.restaurantName || "").slice(0, 160),
     designId: String(context.designId || "").slice(0, 120),
-    heroImageUrl: String(context.heroImageUrl || "").slice(0, 1200),
-    referencePaths,
     theme,
+  };
+}
+
+function normalizeSceneType(value) {
+  return ["auto", "bar", "table"].includes(value) ? value : "auto";
+}
+
+function normalizeScenes(data) {
+  const raw = data?.scenes && typeof data.scenes === "object" ? data.scenes : {};
+  return {
+    bar: raw.bar?.exists ? { ...raw.bar, type: "bar" } : null,
+    table: raw.table?.exists ? { ...raw.table, type: "table" } : null,
   };
 }
 
@@ -64,7 +71,7 @@ async function sessionToken() {
   const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
   if (sessionError) throw sessionError;
   const session = sessionData?.session;
-  if (!session?.access_token) throw new Error("Please sign in again before enhancing photos.");
+  if (!session?.access_token) throw new Error("Please sign in again before using Beyond AI.");
   return session.access_token;
 }
 
@@ -100,25 +107,54 @@ async function invokePhotoAi(body, fallback) {
   return data;
 }
 
-export async function getMenuPhotoStyleMemory({ projectId = "", sourcePath = "" }) {
+export async function getRestaurantScenePresets({ projectId = "", sourcePath = "" } = {}) {
   const context = resolveStorageContext("", sourcePath, projectId);
-  if (!context.projectId) return { exists: false };
-  const data = await invokePhotoAi({ action: "status", projectId: context.projectId }, "Could not read Style Memory.");
-  return { exists: Boolean(data.styleMemoryExists), path: data.styleMemoryPath || "", projectId: context.projectId };
+  if (!context.projectId) return { scenes: { bar: null, table: null }, placeReferenceCount: 0 };
+  const data = await invokePhotoAi(
+    { action: "status", projectId: context.projectId },
+    "Could not read restaurant scenes.",
+  );
+  return {
+    projectId: context.projectId,
+    scenes: normalizeScenes(data),
+    placeReferenceCount: Number(data.placeReferenceCount || 0),
+  };
 }
 
-export async function rememberMenuPhotoStyle({ projectId = "", sourcePath = "", approvedPath }) {
-  const context = resolveStorageContext("", sourcePath || approvedPath, projectId);
-  if (!context.projectId || !approvedPath) throw new Error("Could not save Style Memory for this menu.");
-  const data = await invokePhotoAi({ action: "remember", projectId: context.projectId, approvedPath }, "Could not save Style Memory.");
-  return { exists: Boolean(data.styleMemoryExists), path: data.styleMemoryPath || "", projectId: context.projectId };
+export async function generateRestaurantScenePresets({ projectId = "", sourcePath = "", sceneTypes = ["bar", "table"] } = {}) {
+  const context = resolveStorageContext("", sourcePath, projectId);
+  if (!context.projectId) throw new Error("Open a saved menu before creating restaurant scenes.");
+  const requested = [...new Set((sceneTypes || []).filter((value) => ["bar", "table"].includes(value)))];
+  if (!requested.length) throw new Error("Choose at least one restaurant scene to create.");
+  const data = await invokePhotoAi(
+    { action: "generate_scenes", projectId: context.projectId, sceneTypes: requested },
+    "Beyond could not create the restaurant scenes.",
+  );
+  return {
+    projectId: context.projectId,
+    scenes: normalizeScenes(data),
+    placeReferenceCount: Number(data.placeReferenceCount || 0),
+  };
+}
+
+// Kept as compatibility shims for older Studio code. Dish-photo style memory is
+// intentionally disabled because another dish can leak into a new generation.
+export async function getMenuPhotoStyleMemory({ projectId = "", sourcePath = "" }) {
+  const status = await getRestaurantScenePresets({ projectId, sourcePath });
+  return { exists: false, path: "", projectId: status.projectId };
+}
+
+export async function rememberMenuPhotoStyle({ projectId = "", sourcePath = "" }) {
+  const context = resolveStorageContext("", sourcePath, projectId);
+  return { exists: false, path: "", projectId: context.projectId };
 }
 
 export async function resetMenuPhotoStyleMemory({ projectId = "", sourcePath = "" }) {
   const context = resolveStorageContext("", sourcePath, projectId);
-  if (!context.projectId) return { exists: false };
-  const data = await invokePhotoAi({ action: "reset", projectId: context.projectId }, "Could not reset Style Memory.");
-  return { exists: Boolean(data.styleMemoryExists), projectId: context.projectId };
+  if (context.projectId) {
+    await invokePhotoAi({ action: "reset", projectId: context.projectId }, "Could not clear legacy Style Memory.");
+  }
+  return { exists: false, projectId: context.projectId };
 }
 
 export async function enhanceMenuPhotoWithAi({
@@ -127,37 +163,46 @@ export async function enhanceMenuPhotoWithAi({
   projectId = "",
   mode = "enhance",
   itemId = "dish",
+  itemName = "",
   styleContext,
+  sceneType = "auto",
   styleStrength = "balanced",
-  variantIndex = 0,
+  variantIndex = 1,
 }) {
   const context = resolveStorageContext(sourceUrl, sourcePath, projectId);
   if (!context.projectId || !context.sourcePath) {
-    throw new Error("The original uploaded dish photo could not be found. Try uploading it again.");
+    throw new Error("The original uploaded item photo could not be found. Try uploading it again.");
   }
 
   const size = await imageSizeForUrl(sourceUrl);
+  const safeSceneType = normalizeSceneType(sceneType);
   const data = await invokePhotoAi({
     action: "enhance",
     projectId: context.projectId,
     itemId,
+    itemName: String(itemName || "").slice(0, 160),
     sourcePath: context.sourcePath,
     mode,
     size,
-    styleStrength: ["balanced", "strong"].includes(styleStrength) ? styleStrength : "balanced",
-    variantIndex: Number(variantIndex || 0),
+    sceneType: safeSceneType,
+    styleStrength: "balanced",
+    variantIndex: 1,
     styleContext: cleanStyleContext(styleContext),
   }, "AI could not enhance this photo.");
 
   if (!data?.imageBase64) throw new Error("AI returned no photo.");
+  const usedScene = normalizeSceneType(data.sceneType || safeSceneType);
   return {
-    file: base64ToFile(data.imageBase64, data.mimeType, `${itemId}-${mode}-${styleStrength}-${variantIndex || 1}-ai.png`),
+    file: base64ToFile(data.imageBase64, data.mimeType, `${itemId}-${mode}-${usedScene}-ai.png`),
     mode: data.mode || mode,
-    requestedStyleStrength: styleStrength,
+    requestedStyleStrength: "balanced",
     model: data.model || "gpt-image-2",
     size: data.size || size,
     styleLocked: Boolean(data.styleLocked),
-    styleMemoryExists: Boolean(data.styleMemoryExists),
+    styleMemoryExists: false,
     projectId: context.projectId,
+    sceneType: usedScene,
+    scenePresetUsed: Boolean(data.scenePresetUsed),
+    scenePresetPath: data.scenePresetPath || "",
   };
 }
