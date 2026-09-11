@@ -15,6 +15,7 @@ import installMenuTypographyGuard from "./features/menu-engine/renderer/menuTypo
 import installUiTypographyGuard from "./styles/uiTypographyGuard";
 import installMenuContentAdvancedAlwaysOpen from "./features/menu-engine/studio/menuContentAdvancedAlwaysOpen";
 import installMenuImageFramingInvariant from "./features/menu-engine/studio/menuImageFramingInvariant";
+import "./features/menu-engine/studio/MenuDesignQuickAccordion.js";
 import installMenuContentCategoryAccordion from "./pages/menuContentCategoryAccordion";
 import installMenuContentPreviewSelection from "./pages/menuContentPreviewSelection";
 import installMenuContentImageDownload from "./pages/menuContentImageDownload";
