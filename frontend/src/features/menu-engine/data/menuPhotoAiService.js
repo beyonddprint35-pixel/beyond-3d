@@ -56,14 +56,14 @@ function cleanStyleContext(context) {
 }
 
 function normalizeSceneType(value) {
-  return ["auto", "bar", "table"].includes(value) ? value : "auto";
+  return ["auto", "scene1", "scene2"].includes(value) ? value : "auto";
 }
 
 function normalizeScenes(data) {
   const raw = data?.scenes && typeof data.scenes === "object" ? data.scenes : {};
   return {
-    bar: raw.bar?.exists ? { ...raw.bar, type: "bar" } : null,
-    table: raw.table?.exists ? { ...raw.table, type: "table" } : null,
+    scene1: raw.scene1?.exists ? { ...raw.scene1, type: "scene1" } : null,
+    scene2: raw.scene2?.exists ? { ...raw.scene2, type: "scene2" } : null,
   };
 }
 
@@ -109,7 +109,7 @@ async function invokePhotoAi(body, fallback) {
 
 export async function getRestaurantScenePresets({ projectId = "", sourcePath = "" } = {}) {
   const context = resolveStorageContext("", sourcePath, projectId);
-  if (!context.projectId) return { scenes: { bar: null, table: null }, placeReferenceCount: 0 };
+  if (!context.projectId) return { scenes: { scene1: null, scene2: null }, placeReferenceCount: 0 };
   const data = await invokePhotoAi(
     { action: "status", projectId: context.projectId },
     "Could not read restaurant scenes.",
@@ -121,14 +121,27 @@ export async function getRestaurantScenePresets({ projectId = "", sourcePath = "
   };
 }
 
-export async function generateRestaurantScenePresets({ projectId = "", sourcePath = "", sceneTypes = ["bar", "table"] } = {}) {
-  const context = resolveStorageContext("", sourcePath, projectId);
+export async function generateRestaurantScenePreset({
+  projectId = "",
+  sourcePath = "",
+  sceneKey = "scene1",
+  sourcePaths = [],
+  generationMode = "recreate",
+} = {}) {
+  const context = resolveStorageContext("", sourcePath || sourcePaths?.[0], projectId);
   if (!context.projectId) throw new Error("Open a saved menu before creating restaurant scenes.");
-  const requested = [...new Set((sceneTypes || []).filter((value) => ["bar", "table"].includes(value)))];
-  if (!requested.length) throw new Error("Choose at least one restaurant scene to create.");
+  const safeSceneKey = ["scene1", "scene2"].includes(sceneKey) ? sceneKey : "scene1";
+  const safePaths = [...new Set((sourcePaths || []).map((value) => String(value || "").trim()).filter(Boolean))].slice(0, 3);
+  if (!safePaths.length) throw new Error("Choose at least one My Place photo for this scene.");
   const data = await invokePhotoAi(
-    { action: "generate_scenes", projectId: context.projectId, sceneTypes: requested },
-    "Beyond could not create the restaurant scenes.",
+    {
+      action: "generate_scene",
+      projectId: context.projectId,
+      sceneKey: safeSceneKey,
+      sourcePaths: safePaths,
+      generationMode: generationMode === "regenerate" ? "regenerate" : "recreate",
+    },
+    "Beyond could not create this restaurant scene.",
   );
   return {
     projectId: context.projectId,
@@ -137,8 +150,17 @@ export async function generateRestaurantScenePresets({ projectId = "", sourcePat
   };
 }
 
-// Kept as compatibility shims for older Studio code. Dish-photo style memory is
-// intentionally disabled because another dish can leak into a new generation.
+// Compatibility wrapper for older callers. Each scene must now have selected
+// My Place source photos, so new UI should use generateRestaurantScenePreset.
+export async function generateRestaurantScenePresets({ projectId = "", sourcePath = "", sceneTypes = [], sourcePaths = [] } = {}) {
+  let latest = await getRestaurantScenePresets({ projectId, sourcePath });
+  for (const sceneType of sceneTypes || []) {
+    const sceneKey = sceneType === "table" || sceneType === "scene2" ? "scene2" : "scene1";
+    latest = await generateRestaurantScenePreset({ projectId, sourcePath, sceneKey, sourcePaths, generationMode: "recreate" });
+  }
+  return latest;
+}
+
 export async function getMenuPhotoStyleMemory({ projectId = "", sourcePath = "" }) {
   const status = await getRestaurantScenePresets({ projectId, sourcePath });
   return { exists: false, path: "", projectId: status.projectId };
