@@ -1,0 +1,122 @@
+/* Per-text-role color overrides.
+   These selectors only activate when a role has an explicit custom color,
+   so existing templates keep their authored colors until the customer opts in. */
+
+.bme-custom-color-brand-title .bme-brand strong,
+.bme-custom-color-brand-title .ep-brand-title{
+  color:var(--bme-brand-title-color,var(--ep-brand-title-color))!important;
+  -webkit-text-fill-color:var(--bme-brand-title-color,var(--ep-brand-title-color))!important;
+}
+.bme-heritage-exact.bme-custom-color-brand-title .ep-brand-title{
+  color:var(--ep-brand-title-color)!important;
+  -webkit-text-fill-color:var(--ep-brand-title-color)!important;
+}
+
+.bme-custom-color-brand-subtitle .bme-brand span{
+  color:var(--bme-brand-subtitle-color)!important;
+  -webkit-text-fill-color:var(--bme-brand-subtitle-color)!important;
+}
+.bme-heritage-exact.bme-custom-color-brand-subtitle .ep-brand-sub{
+  color:var(--ep-brand-subtitle-color)!important;
+  -webkit-text-fill-color:var(--ep-brand-subtitle-color)!important;
+}
+
+.bme-custom-color-hero-kicker .bme-hero-copy>span{
+  color:var(--bme-hero-kicker-color)!important;
+  -webkit-text-fill-color:var(--bme-hero-kicker-color)!important;
+}
+.bme-heritage-exact.bme-custom-color-hero-kicker .ep-hero-kicker{
+  color:var(--ep-hero-kicker-color)!important;
+  -webkit-text-fill-color:var(--ep-hero-kicker-color)!important;
+}
+
+.bme-custom-color-hero-title .bme-hero-copy h1{
+  color:var(--bme-hero-title-color)!important;
+  -webkit-text-fill-color:var(--bme-hero-title-color)!important;
+}
+.bme-heritage-exact.bme-custom-color-hero-title .ep-hero-title{
+  color:var(--ep-hero-title-color)!important;
+  -webkit-text-fill-color:var(--ep-hero-title-color)!important;
+}
+
+.bme-custom-color-category-nav .bme-category-nav button,
+.bme-custom-color-category-nav .bme-category-nav button.active{
+  color:var(--bme-category-nav-color)!important;
+  -webkit-text-fill-color:var(--bme-category-nav-color)!important;
+}
+.bme-heritage-exact.bme-custom-color-category-nav .ep-tabs button,
+.bme-heritage-exact.bme-custom-color-category-nav .ep-tabs button.active{
+  color:var(--ep-category-nav-color)!important;
+  -webkit-text-fill-color:var(--ep-category-nav-color)!important;
+}
+
+.bme-custom-color-section-title .bme-section-heading h2{
+  color:var(--bme-section-title-color)!important;
+  -webkit-text-fill-color:var(--bme-section-title-color)!important;
+}
+.bme-heritage-exact.bme-custom-color-section-title .ep-section-head h2{
+  color:var(--ep-section-title-color)!important;
+  -webkit-text-fill-color:var(--ep-section-title-color)!important;
+}
+
+.bme-custom-color-subcategory-title .bme-subcategory-heading h3{
+  color:var(--bme-subcategory-title-color)!important;
+  -webkit-text-fill-color:var(--bme-subcategory-title-color)!important;
+}
+.bme-heritage-exact.bme-custom-color-subcategory-title .ep-item-category{
+  color:var(--ep-subcategory-title-color)!important;
+  -webkit-text-fill-color:var(--ep-subcategory-title-color)!important;
+}
+
+.bme-custom-color-item-name .bme-item-copy h3,
+.bme-custom-color-item-name .bme-visual-copy h3{
+  color:var(--bme-item-name-color)!important;
+  -webkit-text-fill-color:var(--bme-item-name-color)!important;
+  opacity:1!important;
+}
+.bme-heritage-exact.bme-custom-color-item-name .ep-item-name{
+  color:var(--ep-item-name-color)!important;
+  -webkit-text-fill-color:var(--ep-item-name-color)!important;
+  opacity:1!important;
+}
+
+.bme-custom-color-description .bme-item-copy p{
+  color:var(--bme-description-color)!important;
+  -webkit-text-fill-color:var(--bme-description-color)!important;
+}
+.bme-heritage-exact.bme-custom-color-description .ep-item-description{
+  color:var(--ep-description-color)!important;
+  -webkit-text-fill-color:var(--ep-description-color)!important;
+}
+
+.bme-custom-color-price .bme-price,
+.bme-custom-color-price .bme-price-option strong{
+  color:var(--bme-price-color)!important;
+  -webkit-text-fill-color:var(--bme-price-color)!important;
+}
+.bme-heritage-exact.bme-custom-color-price .ep-item-price,
+.bme-heritage-exact.bme-custom-color-price .ep-price-option strong,
+.bme-heritage-exact.bme-custom-color-price .ep-dual-price strong{
+  color:var(--ep-price-color)!important;
+  -webkit-text-fill-color:var(--ep-price-color)!important;
+}
+
+.bme-custom-color-note .bme-group-note{
+  color:var(--bme-note-color)!important;
+  -webkit-text-fill-color:var(--bme-note-color)!important;
+}
+.bme-heritage-exact.bme-custom-color-note .ep-group-note{
+  color:var(--ep-note-color)!important;
+  -webkit-text-fill-color:var(--ep-note-color)!important;
+}
+
+.bme-custom-color-footer .bme-footer{
+  color:var(--bme-footer-color)!important;
+  -webkit-text-fill-color:var(--bme-footer-color)!important;
+}
+.bme-heritage-exact.bme-custom-color-footer .ep-footer,
+.bme-heritage-exact.bme-custom-color-footer .ep-footer-responsible,
+.bme-heritage-exact.bme-custom-color-footer .ep-footer span{
+  color:var(--ep-footer-color)!important;
+  -webkit-text-fill-color:var(--ep-footer-color)!important;
+}
