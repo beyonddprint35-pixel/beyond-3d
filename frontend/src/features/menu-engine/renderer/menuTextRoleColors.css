@@ -90,18 +90,25 @@
 }
 
 .bme-custom-color-price .bme-price,
-.bme-custom-color-price .bme-price-option strong,
-.bme-custom-color-price .bme-price-option small{
+.bme-custom-color-price .bme-price-option strong{
   color:var(--bme-price-color)!important;
   -webkit-text-fill-color:var(--bme-price-color)!important;
 }
 .bme-heritage-exact.bme-custom-color-price .ep-item-price,
 .bme-heritage-exact.bme-custom-color-price .ep-price-option strong,
-.bme-heritage-exact.bme-custom-color-price .ep-price-option small,
-.bme-heritage-exact.bme-custom-color-price .ep-dual-price strong,
-.bme-heritage-exact.bme-custom-color-price .ep-dual-price small{
+.bme-heritage-exact.bme-custom-color-price .ep-dual-price strong{
   color:var(--ep-price-color)!important;
   -webkit-text-fill-color:var(--ep-price-color)!important;
+}
+
+.bme-custom-color-price-type .bme-price-option small{
+  color:var(--bme-price-type-color)!important;
+  -webkit-text-fill-color:var(--bme-price-type-color)!important;
+}
+.bme-heritage-exact.bme-custom-color-price-type .ep-price-option small,
+.bme-heritage-exact.bme-custom-color-price-type .ep-dual-price small{
+  color:var(--ep-price-type-color)!important;
+  -webkit-text-fill-color:var(--ep-price-type-color)!important;
 }
 
 .bme-custom-color-note .bme-group-note{
