@@ -50,4 +50,36 @@
 .beyond-full-hero-upload label span,.beyond-full-hero-upload>button{display:inline-grid;place-items:center;min-height:34px;padding:0 10px;border:1px solid var(--beyond-studio-line,rgba(60,60,67,.12));border-radius:8px;background:var(--beyond-studio-surface-2,#f7f8fa);color:var(--beyond-studio-text,#343438);font-size:11px;font-weight:750;cursor:pointer}
 .beyond-full-accordion-body .menu-item-name-color-control{margin:0!important;border:0!important;box-shadow:none!important;background:transparent!important;padding:0!important}
 html[data-beyond-theme="dark"] .beyond-full-accordion-section{background:var(--beyond-studio-surface,#111821)}
+
+/* The generic `.hero` class is also used by menu templates. Reset those global
+   hero styles on this tiny accordion icon so it cannot stretch across the card
+   or cover the Top photo & header label. */
+.beyond-full-accordion-title>.beyond-full-accordion-icon.hero{
+  all:unset!important;
+  box-sizing:border-box!important;
+  width:30px!important;
+  height:30px!important;
+  min-width:30px!important;
+  min-height:30px!important;
+  max-width:30px!important;
+  max-height:30px!important;
+  position:static!important;
+  inset:auto!important;
+  transform:none!important;
+  display:grid!important;
+  place-items:center!important;
+  overflow:hidden!important;
+  border:0!important;
+  border-radius:9px!important;
+  margin:0!important;
+  padding:0!important;
+  background:var(--beyond-studio-surface-2,#f2f4f8)!important;
+  color:#5c6f82!important;
+  font-family:inherit!important;
+  font-size:13px!important;
+  font-style:normal!important;
+  font-weight:850!important;
+  line-height:1!important;
+}
+
 @media(max-width:900px){.beyond-full-theme-grid{grid-template-columns:1fr}.beyond-full-weight-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
