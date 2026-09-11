@@ -1,25 +1,26 @@
 /* =========================================================
    BEYOND MENU ENGINE — PHOTO REGULATION
-   Shared photo-framing rules for every image-led template.
 
    Product rule:
-   - never letterbox item photos with visible/blurred side bars
-   - prefer a clean crop over duplicated-background filler
-   - preserve the restaurant owner's chosen focal point
-   - adapt card geometry when the source is strongly portrait
-   - cap oversized editorial media on tablet / desktop
-   - keep cinematic templates full-bleed
+   - the MENU STYLE owns the photo-frame geometry
+   - an uploaded / AI image must never resize or reshape a card
+   - source portrait / landscape orientation is irrelevant to layout
+   - images are cropped inside the style frame with object-fit: cover
+   - the owner's focal point is still respected
    ========================================================= */
 
 .bme-menu .bme-item-media{
   position:relative;
   isolation:isolate;
   overflow:hidden;
+  min-width:0;
+  min-height:0;
   background:var(--bme-accent-secondary);
 }
 
 .bme-menu .bme-item-media>img{
-  position:relative;
+  position:absolute;
+  inset:0;
   z-index:1;
   width:100%;
   height:100%;
@@ -28,154 +29,83 @@
   object-position:var(--bme-photo-focus-x,50%) var(--bme-photo-focus-y,50%);
 }
 
-/* Standard stacked cards choose the closest useful frame for the source.
-   This keeps portrait dishes from being forced into a very wide crop while
-   preserving the template's composition for balanced / landscape photos. */
-.bme-menu:not(.bme-presentation-noir-gallery):not(.bme-presentation-luxury-steak):not(.bme-presentation-smokehouse-story):not(.bme-presentation-riviera):not(.bme-presentation-botanical)
-  .bme-item-media[data-photo-source="portrait"]{
-  aspect-ratio:4/5!important;
-  max-block-size:420px;
+/* ---------------------------------------------------------
+   TOP IMAGE CARDS
+   The configured design ratio is authoritative. No uploaded
+   photo is allowed to replace it with its natural ratio.
+   --------------------------------------------------------- */
+.bme-menu .bme-visual-item.bme-image-top[data-image-ratio="1:1"] .bme-item-media{
+  aspect-ratio:1/1!important;
 }
 
-.bme-menu:not(.bme-presentation-noir-gallery):not(.bme-presentation-luxury-steak):not(.bme-presentation-smokehouse-story):not(.bme-presentation-riviera):not(.bme-presentation-botanical)
-  .bme-item-media[data-photo-source="balanced"]{
-  max-block-size:380px;
+.bme-menu .bme-visual-item.bme-image-top[data-image-ratio="4:3"] .bme-item-media{
+  aspect-ratio:4/3!important;
 }
 
-.bme-menu:not(.bme-presentation-noir-gallery):not(.bme-presentation-luxury-steak):not(.bme-presentation-smokehouse-story):not(.bme-presentation-riviera):not(.bme-presentation-botanical)
-  .bme-item-media[data-photo-source="landscape"]{
-  max-block-size:360px;
+.bme-menu .bme-visual-item.bme-image-top[data-image-ratio="3:2"] .bme-item-media{
+  aspect-ratio:3/2!important;
 }
 
-/* Split-story templates: keep the image panel controlled instead of allowing
-   a photo to stretch the full card height indefinitely. Portrait sources get
-   a narrower image column on larger screens, reducing crop without bars. */
+.bme-menu .bme-visual-item.bme-image-top[data-image-ratio="16:9"] .bme-item-media{
+  aspect-ratio:16/9!important;
+}
+
+/* Fallback for older/custom designs that do not carry a valid ratio. */
+.bme-menu .bme-visual-item.bme-image-top:not([data-image-ratio]) .bme-item-media,
+.bme-menu .bme-visual-item.bme-image-top[data-image-ratio=""] .bme-item-media{
+  aspect-ratio:4/3!important;
+}
+
+/* ---------------------------------------------------------
+   SIDE IMAGE CARDS
+   Side-image templates intentionally let the TEMPLATE/card
+   determine panel height. The source image only fills it.
+   Never adapt columns or card height based on source orientation.
+   --------------------------------------------------------- */
+.bme-menu .bme-visual-item.bme-image-left .bme-item-media,
+.bme-menu .bme-visual-item.bme-image-right .bme-item-media{
+  width:100%;
+  height:100%;
+  aspect-ratio:auto!important;
+  max-block-size:none!important;
+}
+
+/* ---------------------------------------------------------
+   PRESENTATION FAMILIES
+   Some premium templates use full-bleed or story layouts. Their
+   own presentation CSS can define the card size, but photo source
+   orientation must never alter it.
+   --------------------------------------------------------- */
 .bme-menu.bme-presentation-smokehouse-story .bme-visual-item,
-.bme-menu.bme-presentation-smokehouse-story .bme-visual-item:first-child,
 .bme-menu.bme-presentation-riviera .bme-visual-item,
-.bme-menu.bme-presentation-botanical .bme-visual-item{
-  min-height:0;
+.bme-menu.bme-presentation-botanical .bme-visual-item,
+.bme-menu.bme-presentation-noir-gallery .bme-visual-item,
+.bme-menu.bme-presentation-luxury-steak .bme-visual-item{
+  min-width:0;
 }
 
-.bme-menu.bme-presentation-smokehouse-story .bme-item-media,
-.bme-menu.bme-presentation-riviera .bme-item-media,
-.bme-menu.bme-presentation-botanical .bme-item-media{
-  min-height:0;
-  max-block-size:360px;
-}
-
-@media(min-width:761px){
-  .bme-menu.bme-presentation-smokehouse-story .bme-visual-item:has(.bme-item-media[data-photo-source="portrait"]),
-  .bme-menu.bme-presentation-smokehouse-story .bme-visual-item:first-child:has(.bme-item-media[data-photo-source="portrait"]){
-    grid-template-columns:minmax(230px,.7fr) minmax(0,1.3fr);
-  }
-
-  .bme-menu.bme-presentation-smokehouse-story .bme-visual-item:nth-child(even):has(.bme-item-media[data-photo-source="portrait"]){
-    grid-template-columns:minmax(0,1.3fr) minmax(230px,.7fr);
-  }
-
-  .bme-menu.bme-presentation-riviera .bme-visual-item:has(.bme-item-media[data-photo-source="portrait"]),
-  .bme-menu.bme-presentation-botanical .bme-visual-item:has(.bme-item-media[data-photo-source="portrait"]){
-    grid-template-columns:minmax(230px,.72fr) minmax(0,1.28fr);
-  }
-
-  .bme-menu.bme-presentation-riviera .bme-visual-item:nth-child(even):has(.bme-item-media[data-photo-source="portrait"]),
-  .bme-menu.bme-presentation-botanical .bme-visual-item:nth-child(even):has(.bme-item-media[data-photo-source="portrait"]){
-    grid-template-columns:minmax(0,1.28fr) minmax(230px,.72fr);
-  }
-}
-
-/* Full-bleed cinema templates remain edge-to-edge. Their media is never
-   height-capped directly; the card controls framing. Portrait sources get a
-   taller card, and the focal point determines which part of the source stays
-   visible when cover-cropping is still necessary. */
-.bme-menu.bme-presentation-noir-gallery .bme-item-media,
-.bme-menu.bme-presentation-luxury-steak .bme-item-media{
+/* Do not let legacy source-orientation attributes influence geometry. */
+.bme-menu .bme-item-media[data-photo-source="portrait"],
+.bme-menu .bme-item-media[data-photo-source="balanced"],
+.bme-menu .bme-item-media[data-photo-source="landscape"]{
   max-block-size:none;
 }
 
-.bme-menu.bme-presentation-noir-gallery .bme-visual-item,
-.bme-menu.bme-presentation-luxury-steak .bme-visual-item{
-  min-height:clamp(280px,31vw,360px);
-}
+/* If a presentation stylesheet changes a top-media ratio, the menu
+   design value still wins. This is what keeps every item in the same
+   template visually aligned after upload or AI replacement. */
+.bme-menu .bme-visual-item.bme-image-top[data-image-ratio="1:1"]>.bme-item-media{aspect-ratio:1/1!important}
+.bme-menu .bme-visual-item.bme-image-top[data-image-ratio="4:3"]>.bme-item-media{aspect-ratio:4/3!important}
+.bme-menu .bme-visual-item.bme-image-top[data-image-ratio="3:2"]>.bme-item-media{aspect-ratio:3/2!important}
+.bme-menu .bme-visual-item.bme-image-top[data-image-ratio="16:9"]>.bme-item-media{aspect-ratio:16/9!important}
 
-.bme-menu.bme-presentation-noir-gallery .bme-visual-item:first-child,
-.bme-menu.bme-presentation-luxury-steak .bme-visual-item:first-child{
-  min-height:clamp(320px,36vw,420px);
-}
-
-@media(min-width:761px){
-  .bme-menu.bme-presentation-noir-gallery .bme-visual-item:has(.bme-item-media[data-photo-source="portrait"]),
-  .bme-menu.bme-presentation-luxury-steak .bme-visual-item:has(.bme-item-media[data-photo-source="portrait"]){
-    min-height:clamp(390px,48vw,500px);
-  }
-
-  .bme-menu.bme-presentation-noir-gallery .bme-visual-item:first-child:has(.bme-item-media[data-photo-source="portrait"]),
-  .bme-menu.bme-presentation-luxury-steak .bme-visual-item:first-child:has(.bme-item-media[data-photo-source="portrait"]){
-    grid-column:auto;
-    min-height:clamp(430px,52vw,540px);
-  }
-}
-
-/* Existing template overlays stay above the image. */
+/* Existing overlays remain above the image. */
 .bme-menu .bme-item-media::after{z-index:2}
 
+/* Compact screens keep exactly the same template-owned framing rule. */
 @media(max-width:760px){
-  /* On stacked mobile/tablet story cards, use the source orientation itself
-     rather than forcing every photo into 16:10. */
-  .bme-menu.bme-presentation-smokehouse-story .bme-item-media[data-photo-source="portrait"],
-  .bme-menu.bme-presentation-riviera .bme-item-media[data-photo-source="portrait"],
-  .bme-menu.bme-presentation-botanical .bme-item-media[data-photo-source="portrait"]{
-    aspect-ratio:4/5!important;
-    max-block-size:340px;
-  }
-
-  .bme-menu.bme-presentation-smokehouse-story .bme-item-media[data-photo-source="balanced"],
-  .bme-menu.bme-presentation-riviera .bme-item-media[data-photo-source="balanced"],
-  .bme-menu.bme-presentation-botanical .bme-item-media[data-photo-source="balanced"]{
-    aspect-ratio:4/3!important;
-    max-block-size:300px;
-  }
-
-  .bme-menu.bme-presentation-smokehouse-story .bme-item-media[data-photo-source="landscape"],
-  .bme-menu.bme-presentation-riviera .bme-item-media[data-photo-source="landscape"],
-  .bme-menu.bme-presentation-botanical .bme-item-media[data-photo-source="landscape"]{
-    aspect-ratio:16/10!important;
-    max-block-size:280px;
-  }
-
-  .bme-menu.bme-presentation-noir-gallery .bme-visual-item,
-  .bme-menu.bme-presentation-noir-gallery .bme-visual-item:first-child,
-  .bme-menu.bme-presentation-luxury-steak .bme-visual-item,
-  .bme-menu.bme-presentation-luxury-steak .bme-visual-item:first-child{
-    min-height:300px;
-  }
-
-  .bme-menu.bme-presentation-noir-gallery .bme-visual-item:has(.bme-item-media[data-photo-source="portrait"]),
-  .bme-menu.bme-presentation-noir-gallery .bme-visual-item:first-child:has(.bme-item-media[data-photo-source="portrait"]),
-  .bme-menu.bme-presentation-luxury-steak .bme-visual-item:has(.bme-item-media[data-photo-source="portrait"]),
-  .bme-menu.bme-presentation-luxury-steak .bme-visual-item:first-child:has(.bme-item-media[data-photo-source="portrait"]){
-    min-height:360px;
-  }
-}
-
-@media(max-width:430px){
-  .bme-menu:not(.bme-presentation-noir-gallery):not(.bme-presentation-luxury-steak)
-    .bme-item-media[data-photo-source="portrait"]{
-    max-block-size:320px;
-  }
-
-  .bme-menu.bme-presentation-noir-gallery .bme-visual-item,
-  .bme-menu.bme-presentation-noir-gallery .bme-visual-item:first-child,
-  .bme-menu.bme-presentation-luxury-steak .bme-visual-item,
-  .bme-menu.bme-presentation-luxury-steak .bme-visual-item:first-child{
-    min-height:285px;
-  }
-
-  .bme-menu.bme-presentation-noir-gallery .bme-visual-item:has(.bme-item-media[data-photo-source="portrait"]),
-  .bme-menu.bme-presentation-noir-gallery .bme-visual-item:first-child:has(.bme-item-media[data-photo-source="portrait"]),
-  .bme-menu.bme-presentation-luxury-steak .bme-visual-item:has(.bme-item-media[data-photo-source="portrait"]),
-  .bme-menu.bme-presentation-luxury-steak .bme-visual-item:first-child:has(.bme-item-media[data-photo-source="portrait"]){
-    min-height:340px;
-  }
+  .bme-menu .bme-visual-item.bme-image-top[data-image-ratio="1:1"]>.bme-item-media{aspect-ratio:1/1!important}
+  .bme-menu .bme-visual-item.bme-image-top[data-image-ratio="4:3"]>.bme-item-media{aspect-ratio:4/3!important}
+  .bme-menu .bme-visual-item.bme-image-top[data-image-ratio="3:2"]>.bme-item-media{aspect-ratio:3/2!important}
+  .bme-menu .bme-visual-item.bme-image-top[data-image-ratio="16:9"]>.bme-item-media{aspect-ratio:16/9!important}
 }
