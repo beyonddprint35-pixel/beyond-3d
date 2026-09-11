@@ -30,13 +30,13 @@ jobs:
           component_path = Path('frontend/src/features/menu-engine/studio/MenuItemNameColorControl.jsx')
           component = component_path.read_text()
           for prop in ('size', 'weight', 'style', 'decoration'):
-              component = component.replace(f'--${{prefix}}-${{role.slug}}-{prop}', f'--${{prefix}}-role-${{role.slug}}-{prop}')
+              component = component.replace('--${prefix}-${role.slug}-' + prop, '--${prefix}-role-${role.slug}-' + prop)
           component_path.write_text(component)
 
           renderer_path = Path('frontend/src/features/menu-engine/renderer/MenuRenderer.jsx')
           renderer = renderer_path.read_text()
           for prop in ('size', 'weight', 'style', 'decoration'):
-              renderer = renderer.replace(f'--${{prefix}}-${{slug}}-{prop}', f'--${{prefix}}-role-${{slug}}-{prop}')
+              renderer = renderer.replace('--${prefix}-${slug}-' + prop, '--${prefix}-role-${slug}-' + prop)
           renderer_path.write_text(renderer)
 
           css_path = Path('frontend/src/features/menu-engine/renderer/menuTextRoleColors.css')
