@@ -279,6 +279,15 @@ export default function MenuDesignStudioV2() {
     return PREMIUM_MENU_DESIGNS.find((entry) => entry.id === variant.designId)?.name || "Custom";
   }
 
+  const heroHeadlineControl = (
+    <MenuHeroHeadlineControl
+      value={menu.hero_title}
+      language={contentLanguage}
+      industry={selectedDesignEntry?.industry || "restaurant"}
+      onChange={patchHeroHeadline}
+    />
+  );
+
   return (
     <main className="menu-design-v2" dir={rtl ? "rtl" : "ltr"} lang={uiLanguage}>
       <MenuStudioHeader
@@ -323,14 +332,6 @@ export default function MenuDesignStudioV2() {
           </div>
 
           <HeroImageFramingControl design={design} language={uiLanguage} patchDesign={patchDesign} />
-          {panel === "hero" ? (
-            <MenuHeroHeadlineControl
-              value={menu.hero_title}
-              language={contentLanguage}
-              industry={selectedDesignEntry?.industry || "restaurant"}
-              onChange={patchHeroHeadline}
-            />
-          ) : null}
           <MenuDesignControls
             design={design}
             designId={designId}
@@ -341,6 +342,7 @@ export default function MenuDesignStudioV2() {
             setPanel={setPanel}
             patchDesign={patchDesign}
             onBrowseDesigns={browseDesigns}
+            heroHeadlineControl={heroHeadlineControl}
           />
           {panel === "type" ? <MenuItemNameColorControl design={design} language={uiLanguage} patchDesign={patchDesign} /> : null}
         </aside>
