@@ -17,6 +17,7 @@ import installMenuContentAdvancedAlwaysOpen from "./features/menu-engine/studio/
 import installMenuImageFramingInvariant from "./features/menu-engine/studio/menuImageFramingInvariant";
 import installMenuContentCategoryAccordion from "./pages/menuContentCategoryAccordion";
 import installMenuContentPreviewSelection from "./pages/menuContentPreviewSelection";
+import installMenuContentImageDownload from "./pages/menuContentImageDownload";
 import installMenuTranslationReviewOverlay from "./pages/menuTranslationReviewOverlay";
 import installMenuStudioViewportLock from "./pages/menuStudioViewportLock";
 import installMenuAiOnlineReferenceOverlay from "./pages/menuAiOnlineReferenceOverlay";
@@ -55,6 +56,7 @@ installUiTypographyGuard();
 installMenuContentAdvancedAlwaysOpen();
 installMenuContentCategoryAccordion();
 installMenuContentPreviewSelection();
+installMenuContentImageDownload();
 installMenuTranslationReviewOverlay();
 installMenuStudioViewportLock();
 installMenuAiOnlineReferenceOverlay();
