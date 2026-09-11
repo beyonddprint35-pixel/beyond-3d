@@ -42,24 +42,32 @@ listener_exists() {
   fuser "${PORT}/tcp" >/dev/null 2>&1
 }
 
-start_supervisor() {
+stop_existing_server() {
+  # Always restart when this repair/start script is invoked. This prevents a
+  # healthy-but-stale Vite process from continuing to serve code from an older
+  # checkout after git pull.
   if supervisor_running; then
-    return 0
+    local pid
+    pid="$(cat "$SUPERVISOR_PID_FILE" 2>/dev/null || true)"
+    [ -n "$pid" ] && kill "$pid" >/dev/null 2>&1 || true
+    sleep 0.5
   fi
 
-  # Port 5175 used to be started manually. Kill any stale process before
-  # starting the managed server from this repository's current frontend tree.
+  rm -f "$SUPERVISOR_PID_FILE"
+
   if listener_exists; then
     fuser -k "${PORT}/tcp" >/dev/null 2>&1 || true
     sleep 1
   fi
+}
 
-  rm -f "$SUPERVISOR_PID_FILE"
+start_supervisor() {
   touch "$VITE_LOG" "$SUPERVISOR_LOG"
   nohup setsid bash "$SUPERVISOR" >>"$SUPERVISOR_LOG" 2>&1 < /dev/null &
   echo $! >"$SUPERVISOR_PID_FILE"
 }
 
+stop_existing_server
 start_supervisor
 
 for _ in $(seq 1 120); do
