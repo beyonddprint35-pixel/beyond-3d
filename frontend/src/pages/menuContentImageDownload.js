@@ -69,13 +69,32 @@ function iconMarkup() {
   return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11m0 0 4-4m-4 4-4-4M5 15v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 }
 
+function fullPhotoUrl(item) {
+  if (!item) return "";
+
+  // image_url may point to a menu-framing derivative. Downloads should always
+  // prefer the untouched full-resolution source asset instead of that crop.
+  const enhanced = String(item.image_processed_url || "").trim();
+  if (enhanced) return enhanced;
+
+  const original = String(item.image_original_url || "").trim();
+  if (original) return original;
+
+  // Older framed items may only retain the full source inside image_menu_crop.
+  const framingSource = String(item.image_menu_crop?.source_url || "").trim();
+  if (framingSource) return framingSource;
+
+  // Last fallback for legacy items that never stored original/processed fields.
+  return String(item.image_url || "").trim();
+}
+
 async function downloadCurrentPhoto(button) {
   if (button.disabled) return;
 
   window.dispatchEvent(new CustomEvent("beyond-menu-studio-flush-draft", { detail: { saved: true } }));
   const draft = readMenuStudioV2Draft();
   const item = selectedItemFromDraft(draft);
-  const url = String(item?.image_url || item?.image_processed_url || item?.image_original_url || "").trim();
+  const url = fullPhotoUrl(item);
   if (!item || !url) return;
 
   const originalLabel = button.querySelector("span")?.textContent || "Download photo";
@@ -120,7 +139,7 @@ function ensureDownloadButton() {
 
   const draft = readMenuStudioV2Draft();
   const item = selectedItemFromDraft(draft);
-  const hasPhoto = Boolean(item?.image_url || item?.image_processed_url || item?.image_original_url);
+  const hasPhoto = Boolean(fullPhotoUrl(item));
 
   let button = editor.querySelector(":scope > .menu-content-v2-image-download");
   if (!hasPhoto) {
