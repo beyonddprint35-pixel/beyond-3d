@@ -268,17 +268,18 @@ export default function MenuDesignControls({design,designId,baselineDesign,menu,
         <div className="studio-v3-design-v2-section-head"><div><strong>{t.makeYours}</strong><small>{t.makeYoursHint}</small></div></div>
 
         <div className="studio-v3-quick-control-card">
-          <div className="studio-v3-quick-control-title"><span className="dot colors" aria-hidden="true"/><div><strong>{t.colors}</strong><small>{activePaletteKey?MENU_COLOR_PRESETS[activePaletteKey]?.label:t.modified}</small></div><button type="button" onClick={()=>openFocus("colors")}>•••</button></div>
+          <div className="studio-v3-quick-control-title"><span className="dot colors" aria-hidden="true"/><div><strong>{language==="he"?"ערכות נושא":language==="ar"?"السمات":"Themes"}</strong><small>{activePaletteKey?MENU_COLOR_PRESETS[activePaletteKey]?.label:t.modified}</small></div><button type="button" onClick={()=>openFocus("colors")}>•••</button></div>
           <div className="studio-v3-quick-palette-row">{Object.entries(MENU_COLOR_PRESETS).map(([key,preset])=><button type="button" key={key} className={activePaletteKey===key?"active":""} onClick={()=>patchDesign(current=>applyMenuColorPreset(current,key))} title={preset.label}><span>{[preset.theme.background,preset.theme.accent,preset.theme.text].map((color,index)=><i key={`${color}-${index}`} style={{background:color}}/>)}</span><small>{preset.label}</small></button>)}</div>
         </div>
 
         <div className="studio-v3-quick-control-card">
-          <div className="studio-v3-quick-control-title"><span className="dot type" aria-hidden="true">Aa</span><div><strong>{t.typography}</strong><small>{design.typography.headingFont} + {design.typography.bodyFont}</small></div><button type="button" onClick={()=>openFocus("type")}>•••</button></div>
+          <div className="studio-v3-quick-control-title"><span className="dot type" aria-hidden="true">Aa</span><div><strong>{language==="he"?"סגנון וצבע טקסט":language==="ar"?"نمط ولون النص":"Text style & color"}</strong><small>{design.typography.headingFont} + {design.typography.bodyFont}</small></div><button type="button" onClick={()=>openFocus("type")}>•••</button></div>
           <div className="studio-v3-quick-type-grid">{Object.keys(TYPE_PRESETS).map(key=><button type="button" key={key} onClick={()=>applyTypePreset(key)}><b style={{fontFamily:TYPE_PRESETS[key].headingFont}}>Aa</b><span>{t[key]}</span></button>)}</div>
         </div>
 
         <div className="studio-v3-quick-control-card">
-          <div className="studio-v3-quick-control-title"><span className="dot hero-media-control" aria-hidden="true">▣</span><div><strong>{t.hero}</strong><small>{t.heroHint}</small></div><button type="button" onClick={()=>openFocus("hero")}>•••</button></div>
+          <div className="studio-v3-quick-control-title"><span className="dot hero-media-control" aria-hidden="true">▣</span><div><strong>{language==="he"?"תמונה עליונה וכותרת":language==="ar"?"الصورة العلوية والعنوان":"Top photo & header"}</strong><small>{t.heroHint}</small></div><button type="button" onClick={()=>openFocus("hero")}>•••</button></div>
+          {heroHeadlineControl}
           <div className="studio-v3-quick-hero-grid">
             <button type="button" onClick={restoreTemplateHero}><i aria-hidden="true">✦</i><span>{t.templateHero}</span></button>
             <button type="button" className={heroMode==="watermark"?"active":""} onClick={()=>patchBrand("heroMediaMode","watermark")}><i aria-hidden="true">◎</i><span>{t.logo}</span></button>
