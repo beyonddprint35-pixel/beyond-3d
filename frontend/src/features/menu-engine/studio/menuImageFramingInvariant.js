@@ -119,11 +119,12 @@ export default function installMenuImageFramingInvariant() {
   // Repair older affected drafts immediately on reload.
   queueMicrotask(() => repairStoredDraft());
 
-  // Every Content Studio autosave already emits this event. Validate the photo
-  // state immediately afterwards so a replacement, deletion, revert or new AI
-  // result can never keep framing metadata that belongs to the previous image.
+  // Every Content Studio autosave emits this event. Repair synchronously here:
+  // the direct live-photo editor flushes the draft immediately before reading
+  // it, so there must be zero timing window in which it can see an obsolete
+  // crop source from the previous photo.
   window.addEventListener("beyond-menu-translations-applied", () => {
-    queueMicrotask(() => repairStoredDraft());
+    repairStoredDraft();
   });
 
   // Also repair after returning to the tab, covering restored browser sessions.
