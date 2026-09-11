@@ -1,343 +1,307 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   MENU_COLOR_PRESETS,
   MENU_FONT_FAMILIES,
   MENU_FONT_WEIGHTS,
   applyMenuColorPreset,
-  normalizeMenuDesign,
 } from "../domain/designSchema";
 import { MENU_DESIGN_CONSTRAINTS } from "../domain/designConstraints";
-import { getMenuLayoutCapabilities, hasAnyMenuLayoutCapability } from "../domain/designLayoutCapabilities";
-import { PREMIUM_MENU_DESIGNS, applyPremiumMenuDesign, findMatchingMenuDesign } from "../domain/menuDesignLibrary";
-import MenuRenderer from "../renderer/MenuRenderer";
-import { getBaselineDesignForMenu } from "./draftSession";
-import MenuDesignLibraryFilters, { filterMenuDesigns } from "./MenuDesignLibraryFilters";
-import "./MenuDesignControls.css";
-import "./MenuDesignPresentationThumbnails.css";
-import "./MenuDesignLibraryExperience.css";
-import "./MenuDesignInspector.css";
-import "./MenuDesignWorkspace.css";
-
-const FAVORITES_STORAGE_KEY = "beyond-menu-design-favorites-v1";
-const FEELING_DESIGNS = [
-  { id:"blue-launcher", key:"modern", icon:"◫" },
-  { id:"atelier-editorial", key:"elegant", icon:"Aa" },
-  { id:"street-bold", key:"bold", icon:"●" },
-  { id:"nordic-paper", key:"editorial", icon:"▤" },
-  { id:"noir-gallery", key:"dark", icon:"◐" },
-  { id:"family-pizzeria", key:"playful", icon:"✦" },
-];
-const TYPE_PRESETS = Object.freeze({
-  elegant:{ headingFont:"Playfair Display", bodyFont:"Inter", headingWeight:700, itemWeight:600 },
-  modern:{ headingFont:"DM Sans", bodyFont:"Inter", headingWeight:800, itemWeight:700 },
-  bold:{ headingFont:"Montserrat", bodyFont:"DM Sans", headingWeight:800, itemWeight:800 },
-  friendly:{ headingFont:"Poppins", bodyFont:"DM Sans", headingWeight:700, itemWeight:700 },
-});
+import LegacyMenuDesignControls from "./MenuDesignControlsLegacy";
+import MenuItemNameColorControl from "./MenuItemNameColorControl";
+import "./MenuDesignFullAccordion.css";
 
 const COPY = {
-  en:{
-    design:"Design",quick:"Quick style",styles:"Designs",advanced:"Advanced",quickHint:"Make it yours without learning design tools",stylesHint:"Browse every design direction",advancedHint:"Precise controls when you need them",template:"Template",modified:"Modified",undo:"Undo",redo:"Redo",
-    recommended:"Recommended directions",recommendedHint:"Start with a feeling. You can fine-tune it afterwards.",makeYours:"Make it yours",makeYoursHint:"The controls below cover the changes most restaurants actually need.",browseAll:"Browse all designs",openAdvanced:"Advanced controls",current:"Current design",changeDesign:"Change design",
-    colors:"Theme",typography:"Text Style and Color",hero:"Top photo & header",density:"Spacing",compact:"Compact",balanced:"Balanced",spacious:"Spacious",logo:"Logo",photo:"Photo",clean:"Clean",templateHero:"Template",heroHint:"Use a dedicated hero photo, your logo, or remove the hero for a clean header.",photoHint:"Hero photos are separate from menu item photos.",uploadHero:"Upload hero image",replaceHero:"Replace hero image",removeHero:"Remove hero image",
-    modern:"Modern",elegant:"Elegant",bold:"Bold",editorial:"Editorial",dark:"Dark",playful:"Playful",friendly:"Friendly",
-    clickPreview:"Click anything in the live preview to edit it",editing:"Editing",brand:"Brand",categories:"Categories",items:"Menu items",badges:"Badges",colorsPanel:"Theme",typePanel:"Text Style and Color",layout:"Layout",backQuick:"Back to quick style",
-    library:"All menu designs",libraryHint:"Explore the complete library when you want a very specific direction.",search:"Search designs",favorites:"Favorites",restore:"Restore original design",restoreHint:"Return to the design this menu started with",preview:"Preview",useDesign:"Use this design",selected:"Selected",closePreview:"Close preview",designPreview:"Design preview",noMatches:"No designs match these filters.",
-    logoAsset:"Restaurant logo",logoHelp:"PNG, JPG, WebP or SVG",uploadLogo:"Upload logo",replaceLogo:"Replace logo",removeLogo:"Remove logo",logoSize:"Logo size",logoShape:"Logo shape",watermark:"Logo",image:"Photo",none:"Clean",headingFont:"Heading font",bodyFont:"Body font",headingWeight:"Heading weight",itemWeight:"Item weight",text:"Main text",muted:"Secondary text",accent:"Accent",background:"Background",cards:"Cards",category:"Categories",categoryText:"Category text",navigation:"Category navigation",price:"Price position",imagePosition:"Image position",imageRatio:"Image ratio",badgeSymbols:"Badge symbols",iconText:"Icon + text",textOnly:"Text only",badgeStyle:"Badge style",autoStyle:"Auto",minimalStyle:"Minimal",filledStyle:"Filled",playfulStyle:"Playful",
-    palettePresets:"Palette presets",customColors:"Custom colors",textColors:"Text colors",fonts:"Font pairing",weights:"Font weights",typeScale:"Type scale",shapeSpacing:"Shape & spacing",imageCards:"Image cards",sectionGap:"Section gap",itemGap:"Item gap",cardPadding:"Card padding",cardRadius:"Card radius",heroSize:"Hero title",sectionSize:"Section title",itemNameSize:"Item name",descriptionSize:"Description",priceSize:"Price",badgeDisplay:"Badge content",badgeAppearance:"Visual style",badgeAutoHint:"Auto follows the selected menu template.",fixedLayout:"This design uses a fixed composition. Controls that do not affect it are hidden.",
+  en: {
+    theme: "Theme",
+    text: "Text style & color",
+    hero: "Top photo & header",
+    palette: "Themes",
+    customColors: "Custom colors",
+    background: "Background",
+    cards: "Cards",
+    accent: "Accent",
+    category: "Category",
+    mainText: "Main text",
+    secondaryText: "Secondary text",
+    categoryText: "Category text",
+    headingFont: "Heading font",
+    bodyFont: "Body font",
+    headingWeight: "Heading weight",
+    itemWeight: "Item weight",
+    textSizes: "Text sizes",
+    heroSize: "Hero title",
+    sectionSize: "Section title",
+    itemSize: "Item name",
+    descriptionSize: "Description",
+    priceSize: "Price",
+    logo: "Logo",
+    photo: "Photo",
+    clean: "Clean",
+    upload: "Upload hero image",
+    replace: "Replace hero image",
+    remove: "Remove hero image",
   },
-  he:{
-    design:"עיצוב",quick:"עיצוב מהיר",styles:"עיצובים",advanced:"מתקדם",quickHint:"התאימו את התפריט בלי ללמוד כלי עיצוב",stylesHint:"עיינו בכל כיווני העיצוב",advancedHint:"שליטה מדויקת כשצריך",template:"תבנית",modified:"שונה",undo:"בטל",redo:"בצע שוב",
-    recommended:"כיוונים מומלצים",recommendedHint:"התחילו מתחושה. אחר כך אפשר לדייק כל פרט.",makeYours:"הפכו אותו לשלכם",makeYoursHint:"אלה השינויים שרוב המסעדות באמת צריכות.",browseAll:"כל העיצובים",openAdvanced:"בקרות מתקדמות",current:"העיצוב הנוכחי",changeDesign:"החלפת עיצוב",
-    colors:"ערכות נושא",typography:"סגנון וצבע טקסט",hero:"תמונה עליונה וכותרת",density:"מרווחים",compact:"צפוף",balanced:"מאוזן",spacious:"מרווח",logo:"לוגו",photo:"תמונה",clean:"נקי",templateHero:"תבנית",heroHint:"בחרו תמונת Hero, לוגו, או הסירו את אזור ה-Hero לכותרת נקייה.",photoHint:"תמונת Hero נפרדת מתמונות המנות.",uploadHero:"העלאת תמונת Hero",replaceHero:"החלפת תמונת Hero",removeHero:"הסרת תמונת Hero",
-    modern:"מודרני",elegant:"אלגנטי",bold:"נועז",editorial:"מערכתי",dark:"כהה",playful:"שובב",friendly:"ידידותי",
-    clickPreview:"לחצו על כל חלק בתצוגה החיה כדי לערוך אותו",editing:"עריכה",brand:"מותג",categories:"קטגוריות",items:"פריטי תפריט",badges:"תגיות",colorsPanel:"ערכות נושא",typePanel:"סגנון וצבע טקסט",layout:"פריסה",backQuick:"חזרה לעיצוב מהיר",
-    library:"כל עיצובי התפריט",libraryHint:"עיינו בספרייה המלאה כשאתם רוצים כיוון מאוד מסוים.",search:"חיפוש עיצובים",favorites:"מועדפים",restore:"שחזור העיצוב המקורי",restoreHint:"חזרה לעיצוב שממנו התפריט התחיל",preview:"תצוגה מלאה",useDesign:"השתמש בעיצוב",selected:"נבחר",closePreview:"סגור תצוגה",designPreview:"תצוגת עיצוב",noMatches:"לא נמצאו עיצובים מתאימים.",
-    logoAsset:"לוגו המסעדה",logoHelp:"PNG, JPG, WebP או SVG",uploadLogo:"העלאת לוגו",replaceLogo:"החלפת לוגו",removeLogo:"הסר לוגו",logoSize:"גודל לוגו",logoShape:"צורת לוגו",watermark:"לוגו",image:"תמונה",none:"נקי",headingFont:"פונט כותרות",bodyFont:"פונט טקסט",headingWeight:"עובי כותרות",itemWeight:"עובי שמות פריטים",text:"טקסט ראשי",muted:"טקסט משני",accent:"צבע מוביל",background:"רקע",cards:"כרטיסים",category:"קטגוריות",categoryText:"טקסט קטגוריות",navigation:"ניווט קטגוריות",price:"מיקום מחיר",imagePosition:"מיקום תמונה",imageRatio:"יחס תמונה",badgeSymbols:"סמלים בתגיות",iconText:"סמל + טקסט",textOnly:"טקסט בלבד",badgeStyle:"סגנון תגיות",autoStyle:"אוטומטי",minimalStyle:"מינימלי",filledStyle:"מלא",playfulStyle:"שובב",
-    palettePresets:"פלטות צבעים",customColors:"צבעים מותאמים",textColors:"צבעי טקסט",fonts:"שילוב פונטים",weights:"משקלי פונט",typeScale:"גדלי טקסט",shapeSpacing:"צורה ומרווחים",imageCards:"כרטיסי תמונה",sectionGap:"מרווח בין אזורים",itemGap:"מרווח בין פריטים",cardPadding:"ריווח בכרטיס",cardRadius:"עיגול כרטיס",heroSize:"כותרת ראשית",sectionSize:"כותרת אזור",itemNameSize:"שם פריט",descriptionSize:"תיאור",priceSize:"מחיר",badgeDisplay:"תוכן התגיות",badgeAppearance:"סגנון חזותי",badgeAutoHint:"אוטומטי עוקב אחרי תבנית התפריט.",fixedLayout:"לעיצוב הזה יש קומפוזיציה קבועה. בקרות שלא משפיעות עליו מוסתרות.",
+  he: {
+    theme: "ערכות נושא",
+    text: "סגנון וצבע טקסט",
+    hero: "תמונה עליונה וכותרת",
+    palette: "ערכות נושא",
+    customColors: "צבעים מותאמים",
+    background: "רקע",
+    cards: "כרטיסים",
+    accent: "צבע מוביל",
+    category: "קטגוריה",
+    mainText: "טקסט ראשי",
+    secondaryText: "טקסט משני",
+    categoryText: "טקסט קטגוריה",
+    headingFont: "פונט כותרות",
+    bodyFont: "פונט טקסט",
+    headingWeight: "עובי כותרת",
+    itemWeight: "עובי שם פריט",
+    textSizes: "גדלי טקסט",
+    heroSize: "כותרת ראשית",
+    sectionSize: "כותרת קטגוריה",
+    itemSize: "שם פריט",
+    descriptionSize: "תיאור",
+    priceSize: "מחיר",
+    logo: "לוגו",
+    photo: "תמונה",
+    clean: "נקי",
+    upload: "העלאת תמונת Hero",
+    replace: "החלפת תמונת Hero",
+    remove: "הסרת תמונת Hero",
   },
-  ar:{
-    design:"التصميم",quick:"تنسيق سريع",styles:"التصاميم",advanced:"متقدم",quickHint:"خصص قائمتك بدون تعلم أدوات التصميم",stylesHint:"استعرض جميع اتجاهات التصميم",advancedHint:"تحكم دقيق عند الحاجة",template:"قالب",modified:"معدل",undo:"تراجع",redo:"إعادة",
-    recommended:"اتجاهات مقترحة",recommendedHint:"ابدأ بالإحساس ثم عدّل التفاصيل لاحقاً.",makeYours:"اجعله خاصاً بك",makeYoursHint:"هذه هي التغييرات التي تحتاجها معظم المطاعم فعلاً.",browseAll:"كل التصاميم",openAdvanced:"أدوات متقدمة",current:"التصميم الحالي",changeDesign:"تغيير التصميم",
-    colors:"السمات",typography:"نمط ولون النص",hero:"الصورة العلوية والعنوان",density:"المسافات",compact:"مضغوط",balanced:"متوازن",spacious:"واسع",logo:"الشعار",photo:"صورة",clean:"نظيف",templateHero:"القالب",heroHint:"استخدم صورة واجهة أو الشعار أو أزل قسم الواجهة لعنوان نظيف.",photoHint:"صورة الواجهة منفصلة عن صور عناصر القائمة.",uploadHero:"رفع صورة الواجهة",replaceHero:"استبدال صورة الواجهة",removeHero:"إزالة صورة الواجهة",
-    modern:"حديث",elegant:"أنيق",bold:"جريء",editorial:"تحريري",dark:"داكن",playful:"مرح",friendly:"ودود",
-    clickPreview:"انقر على أي جزء من المعاينة لتعديله",editing:"تعديل",brand:"العلامة",categories:"الفئات",items:"عناصر القائمة",badges:"الشارات",colorsPanel:"السمات",typePanel:"نمط ولون النص",layout:"التخطيط",backQuick:"العودة للتنسيق السريع",
-    library:"كل تصاميم القائمة",libraryHint:"استعرض المكتبة الكاملة عندما تريد اتجاهاً محدداً جداً.",search:"البحث في التصاميم",favorites:"المفضلة",restore:"استعادة التصميم الأصلي",restoreHint:"العودة إلى التصميم الذي بدأت به القائمة",preview:"معاينة",useDesign:"استخدم التصميم",selected:"محدد",closePreview:"إغلاق",designPreview:"معاينة التصميم",noMatches:"لا توجد تصاميم مطابقة.",
-    logoAsset:"شعار المطعم",logoHelp:"PNG أو JPG أو WebP أو SVG",uploadLogo:"رفع الشعار",replaceLogo:"استبدال الشعار",removeLogo:"إزالة الشعار",logoSize:"حجم الشعار",logoShape:"شكل الشعار",watermark:"شعار",image:"صورة",none:"نظيف",headingFont:"خط العناوين",bodyFont:"خط النص",headingWeight:"سماكة العناوين",itemWeight:"سماكة أسماء العناصر",text:"النص الرئيسي",muted:"النص الثانوي",accent:"اللون الرئيسي",background:"الخلفية",cards:"البطاقات",category:"الفئات",categoryText:"نص الفئات",navigation:"تنقل الفئات",price:"موضع السعر",imagePosition:"موضع الصورة",imageRatio:"نسبة الصورة",badgeSymbols:"رموز الشارات",iconText:"رمز + نص",textOnly:"نص فقط",badgeStyle:"نمط الشارات",autoStyle:"تلقائي",minimalStyle:"بسيط",filledStyle:"ممتلئ",playfulStyle:"مرح",
-    palettePresets:"لوحات الألوان",customColors:"ألوان مخصصة",textColors:"ألوان النص",fonts:"تنسيق الخطوط",weights:"أوزان الخط",typeScale:"أحجام النص",shapeSpacing:"الشكل والمسافات",imageCards:"بطاقات الصور",sectionGap:"مسافة الأقسام",itemGap:"مسافة العناصر",cardPadding:"حشوة البطاقة",cardRadius:"استدارة البطاقة",heroSize:"عنوان الواجهة",sectionSize:"عنوان القسم",itemNameSize:"اسم العنصر",descriptionSize:"الوصف",priceSize:"السعر",badgeDisplay:"محتوى الشارات",badgeAppearance:"النمط البصري",badgeAutoHint:"يتبع الوضع التلقائي قالب القائمة.",fixedLayout:"يستخدم هذا التصميم تكويناً ثابتاً. يتم إخفاء الأدوات التي لا تؤثر عليه.",
+  ar: {
+    theme: "السمات",
+    text: "نمط ولون النص",
+    hero: "الصورة العلوية والعنوان",
+    palette: "السمات",
+    customColors: "ألوان مخصصة",
+    background: "الخلفية",
+    cards: "البطاقات",
+    accent: "اللون الرئيسي",
+    category: "الفئة",
+    mainText: "النص الرئيسي",
+    secondaryText: "النص الثانوي",
+    categoryText: "نص الفئة",
+    headingFont: "خط العناوين",
+    bodyFont: "خط النص",
+    headingWeight: "سماكة العنوان",
+    itemWeight: "سماكة اسم العنصر",
+    textSizes: "أحجام النص",
+    heroSize: "عنوان الواجهة",
+    sectionSize: "عنوان القسم",
+    itemSize: "اسم العنصر",
+    descriptionSize: "الوصف",
+    priceSize: "السعر",
+    logo: "الشعار",
+    photo: "صورة",
+    clean: "نظيف",
+    upload: "رفع صورة الواجهة",
+    replace: "استبدال صورة الواجهة",
+    remove: "إزالة صورة الواجهة",
   },
 };
 
-const titleCase=value=>String(value).replace(/_/g," ").replace(/\b\w/g,c=>c.toUpperCase());
-const comparable=value=>JSON.stringify(normalizeMenuDesign(value||{}));
-const previewLayout=entry=>entry.design?.layout?.presentation&&entry.design.layout.presentation!=="standard"?entry.design.layout.presentation:entry.design.template;
-const paletteMatches=(theme,preset)=>Object.entries(preset?.theme||{}).every(([key,value])=>theme?.[key]===value);
-
-function ColorField({label,value,onChange}){
-  return <label className="studio-v3-design-color"><span>{label}</span><span className="studio-v3-design-color-input"><code>{value}</code><input type="color" value={value} onChange={e=>onChange(e.target.value)}/></span></label>;
-}
-function RangeField({label,value,min,max,onChange,suffix="px"}){
-  return <label className="studio-v3-inspector-range"><span className="studio-v3-inspector-range-head"><span>{label}</span><b>{value}{suffix}</b></span><input type="range" min={min} max={max} value={value} onChange={e=>onChange(Number(e.target.value))}/></label>;
-}
-function FontField({label,value,onChange}){
-  return <label className="studio-v3-font-field"><span>{label}</span><span className="studio-v3-font-picker"><b className="studio-v3-font-sample" style={{fontFamily:value}}>Aa</b><select value={value} onChange={e=>onChange(e.target.value)}>{MENU_FONT_FAMILIES.map(option=><option key={option} value={option}>{option}</option>)}</select></span></label>;
-}
-function DesignThumbnail({entry}){
-  const [background,accent,text]=entry.swatches;
-  return <span className={`studio-v3-premium-design-preview layout-${previewLayout(entry)}`} style={{"--thumb-bg":background,"--thumb-accent":accent,"--thumb-text":text}}><span className="studio-v3-thumb-hero"/><span className="studio-v3-thumb-nav"><i/><i/><i/></span><span className="studio-v3-thumb-items"><i/><i/><i/><i/></span></span>;
-}
-function readFavorites(){
-  if(typeof window==="undefined")return [];
-  try{const parsed=JSON.parse(window.localStorage.getItem(FAVORITES_STORAGE_KEY)||"[]");return Array.isArray(parsed)?parsed.filter(Boolean):[];}catch{return [];}
+function ColorField({ label, value, onChange }) {
+  return (
+    <label className="beyond-full-color-field">
+      <span>{label}</span>
+      <span className="beyond-full-color-input">
+        <code>{value}</code>
+        <input type="color" value={value} onChange={(event) => onChange(event.target.value)} />
+      </span>
+    </label>
+  );
 }
 
-export default function MenuDesignControls({design,designId,baselineDesign,menu,language="en",panel,setPanel,patchDesign,onBrowseDesigns,heroHeadlineControl=null}){
-  const t=COPY[language]||COPY.en;
-  const [workspaceMode,setWorkspaceMode]=useState(onBrowseDesigns?"quick":"styles");
-  const [query,setQuery]=useState("");
-  const [filters,setFilters]=useState({browse:"all",type:"all",layout:"all",tone:"all"});
-  const [previewEntry,setPreviewEntry]=useState(null);
-  const [favorites,setFavorites]=useState(readFavorites);
-  const [favoritesOnly,setFavoritesOnly]=useState(false);
-  const [history,setHistory]=useState({past:[],future:[]});
-  const [focusTarget,setFocusTarget]=useState("hero");
-  const previousDesignRef=useRef({design,designId});
-  const historyModeRef=useRef("normal");
-  const lastHistoryAtRef=useRef(0);
-  const baseDesignNameRef=useRef("");
+function FontField({ label, value, onChange }) {
+  return (
+    <label className="beyond-full-font-field">
+      <span>{label}</span>
+      <select value={value} onChange={(event) => onChange(event.target.value)}>
+        {MENU_FONT_FAMILIES.map((font) => <option key={font} value={font}>{font}</option>)}
+      </select>
+    </label>
+  );
+}
 
-  const patchTheme=(key,value)=>patchDesign(current=>({...current,theme:{...current.theme,[key]:value}}));
-  const patchType=(key,value)=>patchDesign(current=>({...current,typography:{...current.typography,[key]:value}}));
-  const patchLayout=(key,value)=>patchDesign(current=>({...current,layout:{...current.layout,[key]:value}}));
-  const patchBrand=(key,value)=>patchDesign(current=>({...current,brand:{...current.brand,[key]:value}}));
-  const patchBadges=(key,value)=>patchDesign(current=>({...current,badges:{...current.badges,[key]:value}}));
+function RangeField({ label, value, min, max, onChange }) {
+  return (
+    <label className="beyond-full-range-field">
+      <span><span>{label}</span><b>{value}px</b></span>
+      <input type="range" min={min} max={max} value={value} onChange={(event) => onChange(Number(event.target.value))} />
+    </label>
+  );
+}
 
-  const logo=Object.prototype.hasOwnProperty.call(design.brand||{},"logoUrl")?design.brand.logoUrl:(menu?.logo_url||"");
-  const heroMode=design.brand?.heroMediaMode||"watermark";
-  const heroImage=design.brand?.heroImageUrl||"";
-  const baseline=baselineDesign||getBaselineDesignForMenu(menu);
-  const original=baseline?normalizeMenuDesign(baseline):null;
-  const isOriginal=Boolean(original&&comparable(design)===comparable(original));
-  const activeDesignId=useMemo(()=>findMatchingMenuDesign(design)?.id||"",[design]);
-  const activeDesign=useMemo(()=>PREMIUM_MENU_DESIGNS.find(entry=>entry.id===activeDesignId)||null,[activeDesignId]);
-  const activePaletteKey=useMemo(()=>Object.entries(MENU_COLOR_PRESETS).find(([,preset])=>paletteMatches(design.theme,preset))?.[0]||"",[design.theme]);
-  const filteredDesigns=useMemo(()=>{
-    const matches=filterMenuDesigns(PREMIUM_MENU_DESIGNS,{query,...filters});
-    return favoritesOnly?matches.filter(entry=>favorites.includes(entry.id)):matches;
-  },[query,filters,favoritesOnly,favorites]);
-  const previewDesign=useMemo(()=>previewEntry?applyPremiumMenuDesign(design,previewEntry.id):null,[design,previewEntry]);
-  const recommendedDesigns=useMemo(()=>FEELING_DESIGNS.map(feel=>({feel,entry:PREMIUM_MENU_DESIGNS.find(item=>item.id===feel.id)})).filter(row=>row.entry),[]);
-  const layoutCapabilities=useMemo(()=>getMenuLayoutCapabilities(design),[design.template,design.layout?.presentation]);
-  const hasLayoutControls=hasAnyMenuLayoutCapability(layoutCapabilities);
-  const hasImageControls=layoutCapabilities.imagePosition||layoutCapabilities.imageRatio;
-  const hasShapeSpacingControls=layoutCapabilities.cardRadius||layoutCapabilities.sectionGap||layoutCapabilities.itemGap||layoutCapabilities.cardPadding;
-  const baseDesignName=activeDesign?.name||PREMIUM_MENU_DESIGNS.find(entry=>entry.id===designId)?.name||baseDesignNameRef.current||titleCase(design.template);
-  const designIsModified=!activeDesign;
+function AccordionSection({ id, title, icon, open, onToggle, children }) {
+  return (
+    <section className={`beyond-full-accordion-section ${open ? "open" : ""}`}>
+      <button type="button" className="beyond-full-accordion-title" aria-expanded={open} onClick={() => onToggle(id)}>
+        <span className={`beyond-full-accordion-icon ${id}`}>{icon}</span>
+        <strong>{title}</strong>
+        <span className="beyond-full-accordion-chevron" aria-hidden="true">›</span>
+      </button>
+      {open ? <div className="beyond-full-accordion-body">{children}</div> : null}
+    </section>
+  );
+}
 
-  useEffect(()=>{if(activeDesign?.name)baseDesignNameRef.current=activeDesign.name;},[activeDesign?.name]);
-  useEffect(()=>{
-    previousDesignRef.current={design,designId};
-    historyModeRef.current="normal";
-    lastHistoryAtRef.current=0;
-    baseDesignNameRef.current=activeDesign?.name||"";
-    setHistory({past:[],future:[]});
-  },[menu?.slug]);
-  useEffect(()=>{
-    const previous=previousDesignRef.current;
-    if(comparable(previous.design)===comparable(design)&&previous.designId===designId)return;
-    previousDesignRef.current={design,designId};
-    if(historyModeRef.current!=="normal"){historyModeRef.current="normal";return;}
-    const now=Date.now();
-    setHistory(current=>{
-      const startsNewStep=previous.designId!==designId||now-lastHistoryAtRef.current>420||!current.past.length;
-      lastHistoryAtRef.current=now;
-      return {past:startsNewStep?[...current.past,{design:normalizeMenuDesign(previous.design),designId:previous.designId}].slice(-60):current.past,future:[]};
-    });
-  },[design,designId]);
-  useEffect(()=>{try{window.localStorage.setItem(FAVORITES_STORAGE_KEY,JSON.stringify(favorites));}catch{}},[favorites]);
-  useEffect(()=>{
-    if(!previewEntry)return undefined;
-    const previousOverflow=document.body.style.overflow;
-    const onKeyDown=event=>{if(event.key==="Escape")setPreviewEntry(null);};
-    document.body.style.overflow="hidden";
-    window.addEventListener("keydown",onKeyDown);
-    return ()=>{document.body.style.overflow=previousOverflow;window.removeEventListener("keydown",onKeyDown);};
-  },[previewEntry]);
-  useEffect(()=>{
-    const onKeyDown=event=>{
-      if(!(event.metaKey||event.ctrlKey)||String(event.key).toLowerCase()!=="z")return;
-      const target=event.target;
-      const tag=target?.tagName?.toLowerCase();
-      if(target?.isContentEditable||["input","textarea","select"].includes(tag))return;
-      event.preventDefault();
-      if(event.shiftKey)redoDesign();else undoDesign();
-    };
-    window.addEventListener("keydown",onKeyDown);
-    return ()=>window.removeEventListener("keydown",onKeyDown);
-  },[history.past.length,history.future.length,design,designId]);
-  useEffect(()=>{
-    const onFocus=event=>{
-      const focus=event.detail?.focus;
-      const panelFor={brand:"brand",hero:"hero",categories:"layout",items:"layout",badges:"badges"}[focus];
-      if(!panelFor)return;
-      setFocusTarget(focus);
-      setPanel(panelFor);
-      setWorkspaceMode("advanced");
-    };
-    window.addEventListener("beyond-menu-design-focus",onFocus);
-    return ()=>window.removeEventListener("beyond-menu-design-focus",onFocus);
-  },[setPanel]);
+function FullAccordion({ design, language, patchDesign, heroHeadlineControl }) {
+  const t = COPY[language] || COPY.en;
+  const [openSection, setOpenSection] = useState(null);
 
-  function undoDesign(){
-    if(!history.past.length)return;
-    const previous=history.past[history.past.length-1];
-    historyModeRef.current="undo";
-    lastHistoryAtRef.current=0;
-    setHistory(current=>({past:current.past.slice(0,-1),future:[{design:normalizeMenuDesign(design),designId},...current.future].slice(0,60)}));
-    patchDesign(()=>previous.design,previous.designId);
+  const patchTheme = (key, value) => patchDesign((current) => ({ ...current, theme: { ...current.theme, [key]: value } }));
+  const patchType = (key, value) => patchDesign((current) => ({ ...current, typography: { ...current.typography, [key]: value } }));
+  const patchBrand = (key, value) => patchDesign((current) => ({ ...current, brand: { ...current.brand, [key]: value } }));
+  const heroMode = design.brand?.heroMediaMode || "watermark";
+  const heroImage = design.brand?.heroImageUrl || "";
+
+  function toggleSection(id) {
+    setOpenSection((current) => current === id ? null : id);
   }
-  function redoDesign(){
-    if(!history.future.length)return;
-    const next=history.future[0];
-    historyModeRef.current="redo";
-    lastHistoryAtRef.current=0;
-    setHistory(current=>({past:[...current.past,{design:normalizeMenuDesign(design),designId}].slice(-60),future:current.future.slice(1)}));
-    patchDesign(()=>next.design,next.designId);
-  }
-  function uploadImage(file,key){
-    if(!file||!file.type?.startsWith("image/"))return;
-    const reader=new FileReader();
-    reader.onload=()=>patchBrand(key,String(reader.result||""));
+
+  function uploadHero(file) {
+    if (!file || !file.type?.startsWith("image/")) return;
+    const reader = new FileReader();
+    reader.onload = () => patchBrand("heroImageUrl", String(reader.result || ""));
     reader.readAsDataURL(file);
   }
-  function chooseDesign(entry){
-    patchDesign(current=>applyPremiumMenuDesign(current,entry.id),entry.id);
-  }
-  function toggleFavorite(entryId){setFavorites(current=>current.includes(entryId)?current.filter(id=>id!==entryId):[...current,entryId]);}
-  function usePreviewDesign(){if(!previewEntry)return;chooseDesign(previewEntry);setPreviewEntry(null);}
-  function applyTypePreset(key){const preset=TYPE_PRESETS[key];if(!preset)return;patchDesign(current=>({...current,typography:{...current.typography,...preset}}));}
-  function openFocus(focus){
-    const panelFor={brand:"brand",hero:"hero",categories:"layout",items:"layout",badges:"badges",colors:"colors",type:"type"}[focus]||"brand";
-    setFocusTarget(focus);
-    setPanel(panelFor);
-    setWorkspaceMode("advanced");
-  }
-  function restoreTemplateHero(){
-    const mode=activeDesign?.design?.brand?.heroMediaMode||original?.brand?.heroMediaMode||"watermark";
-    patchBrand("heroMediaMode",mode);
-  }
 
-  const contextLabel={brand:t.brand,hero:t.hero,categories:t.categories,items:t.items,badges:t.badges,colors:t.colorsPanel,type:t.typePanel}[focusTarget]||t.hero;
-  const panelMeta={
-    brand:{icon:"✦",title:t.brand,hint:t.logoHelp},
-    hero:{icon:"▣",title:t.hero,hint:t.heroHint},
-    colors:{icon:"◉",title:t.colorsPanel,hint:t.makeYoursHint},
-    type:{icon:"Aa",title:t.typePanel,hint:t.makeYoursHint},
-    layout:{icon:"⌗",title:t.layout,hint:focusTarget==="categories"?t.categories:t.items},
-    badges:{icon:"◆",title:t.badges,hint:t.badgeAutoHint},
-  }[panel]||{icon:"▣",title:t.hero,hint:t.heroHint};
-
-  return <div className="studio-v3-design-pro-controls studio-v3-design-v2">
-    <div className="studio-v3-design-commandbar">
-      <div className="studio-v3-design-breadcrumb" title={baseDesignName}><span>{t.design}</span><i aria-hidden="true">›</i><strong>{baseDesignName}</strong><em className={designIsModified?"modified":"template"}>{designIsModified?t.modified:t.template}</em></div>
-      <div className="studio-v3-design-history-actions" role="group" aria-label={`${t.undo} / ${t.redo}`}>
-        <button type="button" disabled={!history.past.length} onClick={undoDesign} aria-label={t.undo} title={`${t.undo} · Ctrl/⌘ Z`}><span aria-hidden="true">↶</span><small>{t.undo}</small></button>
-        <button type="button" disabled={!history.future.length} onClick={redoDesign} aria-label={t.redo} title={`${t.redo} · Shift + Ctrl/⌘ Z`}><span aria-hidden="true">↷</span><small>{t.redo}</small></button>
-      </div>
-    </div>
-
-    <div className={`studio-v3-design-v2-nav ${onBrowseDesigns?"external-picker":""}`} role="tablist" aria-label={t.design}>
-      {[["styles","▦",t.styles,t.stylesHint],["quick","✦",t.quick,t.quickHint],["advanced","⌘",t.advanced,t.advancedHint]].filter(([key])=>!onBrowseDesigns||key!=="styles").map(([key,icon,title,hint])=><button type="button" key={key} role="tab" aria-selected={workspaceMode===key} className={workspaceMode===key?"active":""} onClick={()=>setWorkspaceMode(key)}><i aria-hidden="true">{icon}</i><span><strong>{title}</strong><small>{hint}</small></span></button>)}
-    </div>
-
-    {workspaceMode==="quick"?<div className="studio-v3-design-quick-workspace">
-      <section className="studio-v3-design-v2-current">
-        <span className="studio-v3-current-design-mini" style={{"--current-bg":design.theme.background,"--current-accent":design.theme.accent,"--current-text":design.theme.text}} aria-hidden="true"/>
-        <span><small>{t.current}</small><strong>{baseDesignName}</strong></span>
-        <button type="button" onClick={()=>onBrowseDesigns?onBrowseDesigns():setWorkspaceMode("styles")}>{t.changeDesign}</button>
-      </section>
-
-      {onBrowseDesigns?<button type="button" className="studio-v3-design-v2-secondary-action" disabled={!original||isOriginal} onClick={()=>patchDesign(()=>original)}>{t.restore}<span aria-hidden="true">↺</span></button>:null}
-
-      {!onBrowseDesigns?<section className="studio-v3-design-v2-section">
-        <div className="studio-v3-design-v2-section-head"><div><strong>{t.recommended}</strong><small>{t.recommendedHint}</small></div></div>
-        <div className="studio-v3-feeling-grid">{recommendedDesigns.map(({feel,entry})=><button type="button" key={entry.id} className={activeDesignId===entry.id?"active":""} onClick={()=>chooseDesign(entry)}><DesignThumbnail entry={entry}/><span><i aria-hidden="true">{feel.icon}</i><strong>{t[feel.key]}</strong><small>{entry.name}</small></span></button>)}</div>
-        <button type="button" className="studio-v3-design-v2-secondary-action" onClick={()=>setWorkspaceMode("styles")}>{t.browseAll}<span aria-hidden="true">→</span></button>
-      </section>:null}
-
-      <section className="studio-v3-design-v2-section">
-        <div className="studio-v3-design-v2-section-head"><div><strong>{t.makeYours}</strong><small>{t.makeYoursHint}</small></div></div>
-
-        <div className="studio-v3-quick-control-card">
-          <div className="studio-v3-quick-control-title"><span className="dot colors" aria-hidden="true"/><div><strong>{language==="he"?"ערכות נושא":language==="ar"?"السمات":"Theme"}</strong><small>{activePaletteKey?MENU_COLOR_PRESETS[activePaletteKey]?.label:t.modified}</small></div><button type="button" onClick={()=>openFocus("colors")}>•••</button></div>
-          <div className="studio-v3-quick-palette-row">{Object.entries(MENU_COLOR_PRESETS).map(([key,preset])=><button type="button" key={key} className={activePaletteKey===key?"active":""} onClick={()=>patchDesign(current=>applyMenuColorPreset(current,key))} title={preset.label}><span>{[preset.theme.background,preset.theme.accent,preset.theme.text].map((color,index)=><i key={`${color}-${index}`} style={{background:color}}/>)}</span><small>{preset.label}</small></button>)}</div>
-        </div>
-
-        <div className="studio-v3-quick-control-card">
-          <div className="studio-v3-quick-control-title"><span className="dot type" aria-hidden="true">Aa</span><div><strong>{language==="he"?"סגנון וצבע טקסט":language==="ar"?"نمط ولون النص":"Text Style and Color"}</strong><small>{design.typography.headingFont} + {design.typography.bodyFont}</small></div><button type="button" onClick={()=>openFocus("type")}>•••</button></div>
-          <div className="studio-v3-quick-type-grid">{Object.keys(TYPE_PRESETS).map(key=><button type="button" key={key} onClick={()=>applyTypePreset(key)}><b style={{fontFamily:TYPE_PRESETS[key].headingFont}}>Aa</b><span>{t[key]}</span></button>)}</div>
-        </div>
-
-        <div className="studio-v3-quick-control-card">
-          <div className="studio-v3-quick-control-title"><span className="dot hero-media-control" aria-hidden="true">▣</span><div><strong>{language==="he"?"תמונה עליונה וכותרת":language==="ar"?"الصورة العلوية والعنوان":"Top photo & header"}</strong><small>{t.heroHint}</small></div><button type="button" onClick={()=>openFocus("hero")}>•••</button></div>
-          {heroHeadlineControl}
-          <div className="studio-v3-quick-hero-grid">
-            <button type="button" onClick={restoreTemplateHero}><i aria-hidden="true">✦</i><span>{t.templateHero}</span></button>
-            <button type="button" className={heroMode==="watermark"?"active":""} onClick={()=>patchBrand("heroMediaMode","watermark")}><i aria-hidden="true">◎</i><span>{t.logo}</span></button>
-            <button type="button" className={heroMode==="image"?"active":""} onClick={()=>patchBrand("heroMediaMode","image")}><i aria-hidden="true">▧</i><span>{t.photo}</span></button>
-            <button type="button" className={heroMode==="none"?"active":""} onClick={()=>patchBrand("heroMediaMode","none")}><i aria-hidden="true">—</i><span>{t.clean}</span></button>
+  return (
+    <div className="beyond-full-accordion">
+      <AccordionSection id="theme" title={t.theme} icon="●" open={openSection === "theme"} onToggle={toggleSection}>
+        <div className="beyond-full-block">
+          <div className="beyond-full-block-title">{t.palette}</div>
+          <div className="beyond-full-theme-grid">
+            {Object.entries(MENU_COLOR_PRESETS).map(([key, preset]) => (
+              <button type="button" key={key} className="beyond-full-theme-choice" onClick={() => patchDesign((current) => applyMenuColorPreset(current, key))}>
+                <span className="beyond-full-theme-swatches">
+                  {[preset.theme.background, preset.theme.card, preset.theme.accent, preset.theme.text, preset.theme.categoryBackground].map((color, index) => <i key={`${color}-${index}`} style={{ background: color }} />)}
+                </span>
+                <strong>{preset.label}</strong>
+              </button>
+            ))}
           </div>
-          {heroMode==="image"?<div className="studio-v3-quick-hero-upload">{heroImage?<img src={heroImage} alt=""/>:null}<div><small>{t.photoHint}</small><label><input type="file" accept="image/png,image/jpeg,image/webp" onChange={e=>uploadImage(e.target.files?.[0],"heroImageUrl")}/><span>{heroImage?t.replaceHero:t.uploadHero}</span></label>{heroImage?<button type="button" onClick={()=>patchBrand("heroImageUrl","")}>{t.removeHero}</button>:null}</div></div>:null}
         </div>
+        <div className="beyond-full-block">
+          <div className="beyond-full-block-title">{t.customColors}</div>
+          <div className="beyond-full-color-grid">
+            <ColorField label={t.background} value={design.theme.background} onChange={(value) => patchTheme("background", value)} />
+            <ColorField label={t.cards} value={design.theme.card} onChange={(value) => patchTheme("card", value)} />
+            <ColorField label={t.accent} value={design.theme.accent} onChange={(value) => patchTheme("accent", value)} />
+            <ColorField label={t.category} value={design.theme.categoryBackground} onChange={(value) => patchTheme("categoryBackground", value)} />
+            <ColorField label={t.mainText} value={design.theme.text} onChange={(value) => patchTheme("text", value)} />
+            <ColorField label={t.secondaryText} value={design.theme.muted} onChange={(value) => patchTheme("muted", value)} />
+            <ColorField label={t.categoryText} value={design.theme.categoryText} onChange={(value) => patchTheme("categoryText", value)} />
+          </div>
+        </div>
+      </AccordionSection>
 
-        {layoutCapabilities.density?<div className="studio-v3-quick-control-card">
-          <div className="studio-v3-quick-control-title"><span className="dot spacing" aria-hidden="true">↕</span><div><strong>{t.density}</strong><small>{t[design.layout.density==="comfortable"?"balanced":design.layout.density]}</small></div><button type="button" onClick={()=>openFocus("items")}>•••</button></div>
-          <div className="studio-v3-quick-density-grid">{[["compact",t.compact],["comfortable",t.balanced],["spacious",t.spacious]].map(([value,label])=><button type="button" key={value} className={design.layout.density===value?"active":""} onClick={()=>patchLayout("density",value)}><i className={value} aria-hidden="true"/><span>{label}</span></button>)}</div>
-        </div>:null}
+      <AccordionSection id="text" title={t.text} icon="Aa" open={openSection === "text"} onToggle={toggleSection}>
+        <div className="beyond-full-block">
+          <div className="beyond-full-font-grid">
+            <FontField label={t.headingFont} value={design.typography.headingFont} onChange={(value) => patchType("headingFont", value)} />
+            <FontField label={t.bodyFont} value={design.typography.bodyFont} onChange={(value) => patchType("bodyFont", value)} />
+          </div>
+        </div>
+        <div className="beyond-full-block">
+          <div className="beyond-full-block-title">{t.headingWeight}</div>
+          <div className="beyond-full-weight-grid">
+            {MENU_FONT_WEIGHTS.map((weight) => <button type="button" key={`heading-${weight}`} className={design.typography.headingWeight === weight ? "active" : ""} style={{ fontWeight: weight }} onClick={() => patchType("headingWeight", weight)}>{weight}</button>)}
+          </div>
+          <div className="beyond-full-block-title">{t.itemWeight}</div>
+          <div className="beyond-full-weight-grid">
+            {MENU_FONT_WEIGHTS.map((weight) => <button type="button" key={`item-${weight}`} className={design.typography.itemWeight === weight ? "active" : ""} style={{ fontWeight: weight }} onClick={() => patchType("itemWeight", weight)}>{weight}</button>)}
+          </div>
+        </div>
+        <div className="beyond-full-block">
+          <div className="beyond-full-block-title">{t.textSizes}</div>
+          <div className="beyond-full-range-grid">
+            <RangeField label={t.heroSize} value={design.typography.heroSize} min={MENU_DESIGN_CONSTRAINTS.typography.heroSize.min} max={MENU_DESIGN_CONSTRAINTS.typography.heroSize.max} onChange={(value) => patchType("heroSize", value)} />
+            <RangeField label={t.sectionSize} value={design.typography.sectionSize} min={MENU_DESIGN_CONSTRAINTS.typography.sectionSize.min} max={MENU_DESIGN_CONSTRAINTS.typography.sectionSize.max} onChange={(value) => patchType("sectionSize", value)} />
+            <RangeField label={t.itemSize} value={design.typography.itemNameSize} min={MENU_DESIGN_CONSTRAINTS.typography.itemNameSize.min} max={MENU_DESIGN_CONSTRAINTS.typography.itemNameSize.max} onChange={(value) => patchType("itemNameSize", value)} />
+            <RangeField label={t.descriptionSize} value={design.typography.descriptionSize} min={MENU_DESIGN_CONSTRAINTS.typography.descriptionSize.min} max={MENU_DESIGN_CONSTRAINTS.typography.descriptionSize.max} onChange={(value) => patchType("descriptionSize", value)} />
+            <RangeField label={t.priceSize} value={design.typography.priceSize} min={MENU_DESIGN_CONSTRAINTS.typography.priceSize.min} max={MENU_DESIGN_CONSTRAINTS.typography.priceSize.max} onChange={(value) => patchType("priceSize", value)} />
+          </div>
+        </div>
+        <MenuItemNameColorControl design={design} language={language} patchDesign={patchDesign} />
+      </AccordionSection>
 
-        <button type="button" className="studio-v3-design-v2-primary-action" onClick={()=>setWorkspaceMode("advanced")}>{t.openAdvanced}<span aria-hidden="true">→</span></button>
-      </section>
-    </div>:null}
+      <AccordionSection id="hero" title={t.hero} icon="▣" open={openSection === "hero"} onToggle={toggleSection}>
+        {heroHeadlineControl}
+        <div className="beyond-full-hero-grid">
+          <button type="button" className={heroMode === "watermark" ? "active" : ""} onClick={() => patchBrand("heroMediaMode", "watermark")}>◎<span>{t.logo}</span></button>
+          <button type="button" className={heroMode === "image" ? "active" : ""} onClick={() => patchBrand("heroMediaMode", "image")}>▧<span>{t.photo}</span></button>
+          <button type="button" className={heroMode === "none" ? "active" : ""} onClick={() => patchBrand("heroMediaMode", "none")}>—<span>{t.clean}</span></button>
+        </div>
+        {heroMode === "image" ? (
+          <div className="beyond-full-hero-upload">
+            {heroImage ? <img src={heroImage} alt="" /> : null}
+            <label>
+              <input type="file" accept="image/png,image/jpeg,image/webp" onChange={(event) => uploadHero(event.target.files?.[0])} />
+              <span>{heroImage ? t.replace : t.upload}</span>
+            </label>
+            {heroImage ? <button type="button" onClick={() => patchBrand("heroImageUrl", "")}>{t.remove}</button> : null}
+          </div>
+        ) : null}
+      </AccordionSection>
+    </div>
+  );
+}
 
-    {workspaceMode==="styles"?<div className="studio-v3-template-workspace">
-      <section className="studio-v3-design-library">
-        <div className="studio-v3-design-library-head"><div><strong>{t.library}</strong><p>{t.libraryHint}</p></div><span className="studio-v3-design-count">{PREMIUM_MENU_DESIGNS.length}</span></div>
-        <label className="studio-v3-design-search"><span aria-hidden="true">⌕</span><input value={query} onChange={e=>setQuery(e.target.value)} placeholder={t.search}/></label>
-        <MenuDesignLibraryFilters language={language} filters={filters} setFilters={setFilters} resultCount={filteredDesigns.length} totalCount={PREMIUM_MENU_DESIGNS.length}/>
-        <div className="studio-v3-design-library-utilities"><button type="button" className={`studio-v3-design-favorites-toggle ${favoritesOnly?"active":""}`} onClick={()=>setFavoritesOnly(value=>!value)}><span aria-hidden="true">♥</span><span>{t.favorites}</span><b>{favorites.length}</b></button><button type="button" className={`studio-v3-original-design ${isOriginal?"active":""}`} disabled={!original} onClick={()=>original&&patchDesign(()=>original)}><span><strong>{t.restore}</strong><small>{t.restoreHint}</small></span><span aria-hidden="true">↺</span></button></div>
-        <div className="studio-v3-premium-library-grid">{filteredDesigns.map(entry=>{const selected=activeDesignId===entry.id;const favorite=favorites.includes(entry.id);return <article className={`studio-v3-premium-design-card layout-${previewLayout(entry)} ${selected?"selected":""}`} key={entry.id}>{selected?<span className="studio-v3-design-selected-badge" aria-label={t.selected}>✓</span>:null}<button type="button" className="studio-v3-premium-design-select" onClick={()=>chooseDesign(entry)} aria-pressed={selected}><DesignThumbnail entry={entry}/><span className="studio-v3-premium-design-copy"><span><strong>{entry.name}</strong><small>{entry.layout}</small></span><em>{entry.description}</em><span className="studio-v3-design-category">{entry.category}</span></span></button><div className="studio-v3-premium-design-actions"><button type="button" className={`studio-v3-design-favorite ${favorite?"active":""}`} onClick={()=>toggleFavorite(entry.id)} aria-label={t.favorites} aria-pressed={favorite}><span aria-hidden="true">{favorite?"♥":"♡"}</span></button><button type="button" className="studio-v3-design-preview-button" onClick={()=>setPreviewEntry(entry)} disabled={!menu}><span aria-hidden="true">⛶</span>{t.preview}</button></div></article>;})}</div>
-        {!filteredDesigns.length?<div className="studio-v3-design-library-empty">{t.noMatches}</div>:null}
-      </section>
-    </div>:null}
+export default function MenuDesignControls(props) {
+  const [mountNode, setMountNode] = useState(null);
 
-    {workspaceMode==="advanced"?<div className="studio-v3-customize-workspace studio-v3-design-v2-advanced">
-      <section className="studio-v3-inspector-shell">
-        <div className="studio-v3-context-editor-head"><div><span>{t.editing}</span><strong>{contextLabel}</strong><small>{t.clickPreview}</small></div><button type="button" onClick={()=>setWorkspaceMode("quick")}>{t.backQuick}</button></div>
-        <div className="studio-v3-context-targets" role="group" aria-label={t.clickPreview}>{[["brand","✦",t.brand],["hero","▣",t.hero],["categories","▦",t.categories],["items","☷",t.items],["badges","◆",t.badges]].map(([key,icon,label])=><button type="button" key={key} className={focusTarget===key?"active":""} onClick={()=>openFocus(key)}><i aria-hidden="true">{icon}</i><span>{label}</span></button>)}</div>
-        <div className="studio-v3-design-tabs studio-v3-design-v2-tabs">{[["brand","✦",t.brand],["hero","▣",t.hero],["colors","◉",t.colorsPanel],["type","Aa",t.typePanel],["layout","⌗",t.layout],["badges","◆",t.badges]].map(([key,icon,label])=><button type="button" key={key} className={panel===key?"active":""} onClick={()=>setPanel(key)}><span className="studio-v3-design-tab-icon">{icon}</span><span className="studio-v3-design-tab-label">{label}</span></button>)}</div>
-        <div className="studio-v3-inspector-panel-head"><span aria-hidden="true">{panelMeta.icon}</span><div><strong>{panelMeta.title}</strong><small>{panelMeta.hint}</small></div></div>
+  useEffect(() => {
+    let disposed = false;
+    let observer = null;
 
-        {panel==="brand"?<div className="studio-v3-design-section studio-v3-inspector-panel"><section className="studio-v3-inspector-block"><div className="studio-v3-inspector-block-title"><span>{t.logoAsset}</span><small>{t.logoHelp}</small></div><div className="studio-v3-inspector-logo-card"><div className="studio-v3-inspector-logo-preview">{logo?<img src={logo} alt=""/>:<span className="studio-v3-inspector-logo-placeholder">LOGO</span>}</div><div className="studio-v3-inspector-logo-actions"><label className="studio-v3-inspector-upload"><input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" onChange={e=>uploadImage(e.target.files?.[0],"logoUrl")}/><span>{logo?t.replaceLogo:t.uploadLogo}</span></label><button className="studio-v3-inspector-remove" type="button" disabled={!logo} onClick={()=>patchBrand("logoUrl","")}>{t.removeLogo}</button></div></div><RangeField label={t.logoSize} value={design.brand.logoSize} min={24} max={120} onChange={value=>patchBrand("logoSize",value)}/><div className="studio-v3-inspector-block-title"><span>{t.logoShape}</span></div><div className="studio-v3-shape-grid">{["free","rounded","circle","square"].map(value=><button type="button" key={value} className={`studio-v3-shape-choice shape-${value} ${design.brand.logoShape===value?"active":""}`} onClick={()=>patchBrand("logoShape",value)}><i aria-hidden="true">B</i><span>{titleCase(value)}</span></button>)}</div></section></div>:null}
+    const findMount = () => {
+      if (disposed) return;
+      const root = document.querySelector(".menu-design-v2 .studio-v3-design-quick-workspace");
+      const firstLegacyCard = root?.querySelector(".studio-v3-quick-control-card");
+      if (!root || !firstLegacyCard) {
+        setMountNode(null);
+        return;
+      }
 
-        {panel==="hero"?<div className="studio-v3-design-section studio-v3-inspector-panel"><section className="studio-v3-inspector-block"><div className="studio-v3-inspector-block-title"><span>{t.hero}</span><small>{t.heroHint}</small></div>{heroHeadlineControl}<div className="studio-v3-hero-mode-grid">{[["watermark","◎",t.watermark],["image","▧",t.image],["none","—",t.none]].map(([value,icon,label])=><button type="button" key={value} className={`studio-v3-visual-choice ${heroMode===value?"active":""}`} onClick={()=>patchBrand("heroMediaMode",value)}><i aria-hidden="true">{icon}</i><span>{label}</span></button>)}</div>{heroMode==="image"?<div className="studio-v3-inspector-logo-actions"><p className="studio-v3-inspector-help">{t.photoHint}</p>{heroImage?<img className="studio-v3-inspector-background-preview" src={heroImage} alt=""/>:null}<label className="studio-v3-inspector-upload"><input type="file" accept="image/png,image/jpeg,image/webp" onChange={e=>uploadImage(e.target.files?.[0],"heroImageUrl")}/><span>{heroImage?t.replaceHero:t.uploadHero}</span></label>{heroImage?<button className="studio-v3-inspector-remove" type="button" onClick={()=>patchBrand("heroImageUrl","")}>{t.removeHero}</button>:null}</div>:null}<RangeField label={t.heroSize} value={design.typography.heroSize} min={MENU_DESIGN_CONSTRAINTS.typography.heroSize.min} max={MENU_DESIGN_CONSTRAINTS.typography.heroSize.max} onChange={value=>patchType("heroSize",value)}/></section></div>:null}
+      const section = firstLegacyCard.closest(".studio-v3-design-v2-section");
+      if (!section) return;
+      let mount = section.querySelector(":scope > .beyond-full-accordion-mount");
+      if (!mount) {
+        mount = document.createElement("div");
+        mount.className = "beyond-full-accordion-mount";
+        section.insertBefore(mount, firstLegacyCard);
+      }
+      setMountNode(mount);
+    };
 
-        {panel==="colors"?<div className="studio-v3-design-section studio-v3-inspector-panel"><section className="studio-v3-inspector-block"><div className="studio-v3-inspector-block-title"><span>{t.palettePresets}</span></div><div className="studio-v3-inspector-palette-grid">{Object.entries(MENU_COLOR_PRESETS).map(([key,preset])=><button type="button" key={key} className={`studio-v3-inspector-palette ${activePaletteKey===key?"active":""}`} onClick={()=>patchDesign(current=>applyMenuColorPreset(current,key))}><span className="studio-v3-inspector-palette-swatches">{[preset.theme.background,preset.theme.card,preset.theme.accent,preset.theme.text,preset.theme.categoryBackground].map((color,index)=><i key={`${color}-${index}`} style={{background:color}}/>)}</span><strong>{preset.label}</strong></button>)}</div></section><section className="studio-v3-inspector-block"><div className="studio-v3-inspector-block-title"><span>{t.customColors}</span></div><div className="studio-v3-inspector-color-grid"><ColorField label={t.background} value={design.theme.background} onChange={value=>patchTheme("background",value)}/><ColorField label={t.cards} value={design.theme.card} onChange={value=>patchTheme("card",value)}/><ColorField label={t.accent} value={design.theme.accent} onChange={value=>patchTheme("accent",value)}/><ColorField label={t.category} value={design.theme.categoryBackground} onChange={value=>patchTheme("categoryBackground",value)}/></div></section></div>:null}
+    findMount();
+    observer = new MutationObserver(findMount);
+    observer.observe(document.body, { childList: true, subtree: true });
+    return () => {
+      disposed = true;
+      observer?.disconnect();
+      setMountNode(null);
+    };
+  }, []);
 
-        {panel==="type"?<div className="studio-v3-design-section studio-v3-inspector-panel"><section className="studio-v3-inspector-block"><div className="studio-v3-inspector-block-title"><span>{t.fonts}</span></div><div className="studio-v3-font-grid"><FontField label={t.headingFont} value={design.typography.headingFont} onChange={value=>patchType("headingFont",value)}/><FontField label={t.bodyFont} value={design.typography.bodyFont} onChange={value=>patchType("bodyFont",value)}/></div></section></div>:null}
+  const accordion = useMemo(() => (
+    <FullAccordion
+      design={props.design}
+      language={props.language || "en"}
+      patchDesign={props.patchDesign}
+      heroHeadlineControl={props.heroHeadlineControl}
+    />
+  ), [props.design, props.language, props.patchDesign, props.heroHeadlineControl]);
 
-        {panel==="layout"?<div className="studio-v3-design-section studio-v3-inspector-panel">
-          {layoutCapabilities.structural&&hasLayoutControls?<p className="studio-v3-inspector-help">{t.fixedLayout}</p>:null}
-          {layoutCapabilities.density?<section className="studio-v3-inspector-block"><div className="studio-v3-inspector-block-title"><span>{t.density}</span></div><div className="studio-v3-option-grid">{["compact","comfortable","spacious"].map(value=><button type="button" key={value} className={`studio-v3-layout-choice density-${value} ${design.layout.density===value?"active":""}`} onClick={()=>patchLayout("density",value)}><i aria-hidden="true"/><span>{titleCase(value)}</span></button>)}</div></section>:null}
-          {layoutCapabilities.navigation?<section className="studio-v3-inspector-block"><div className="studio-v3-inspector-block-title"><span>{t.navigation}</span></div><div className="studio-v3-option-grid">{["pills","underline","minimal"].map(value=><button type="button" key={value} className={`studio-v3-layout-choice nav-${value} ${design.layout.navigationStyle===value?"active":""}`} onClick={()=>patchLayout("navigationStyle",value)}><i aria-hidden="true"/><span>{titleCase(value)}</span></button>)}</div></section>:null}
-          {layoutCapabilities.price?<section className="studio-v3-inspector-block"><div className="studio-v3-inspector-block-title"><span>{t.price}</span></div><div className="studio-v3-option-grid">{["inline","below","bottom"].map(value=><button type="button" key={value} className={`studio-v3-layout-choice price-${value} ${design.layout.pricePosition===value?"active":""}`} onClick={()=>patchLayout("pricePosition",value)}><i aria-hidden="true"/><span>{titleCase(value)}</span></button>)}</div></section>:null}
-          {hasImageControls?<section className="studio-v3-inspector-block"><div className="studio-v3-inspector-block-title"><span>{t.imageCards}</span></div>{layoutCapabilities.imagePosition?<><div className="studio-v3-design-control-label">{t.imagePosition}</div><div className="studio-v3-option-grid">{["top","left","right"].map(value=><button type="button" key={value} className={`studio-v3-layout-choice image-${value} ${design.layout.itemImagePosition===value?"active":""}`} onClick={()=>patchLayout("itemImagePosition",value)}><i aria-hidden="true"/><span>{titleCase(value)}</span></button>)}</div></>:null}{layoutCapabilities.imageRatio?<><div className="studio-v3-design-control-label">{t.imageRatio}</div><div className="studio-v3-option-grid ratios">{["1:1","4:3","3:2","16:9"].map(value=><button type="button" key={value} className={`studio-v3-layout-choice ratio-${value.replace(":","-")} ${design.layout.itemImageRatio===value?"active":""}`} onClick={()=>patchLayout("itemImageRatio",value)}><i aria-hidden="true"/><span>{value}</span></button>)}</div></>:null}</section>:null}
-          {hasShapeSpacingControls?<section className="studio-v3-inspector-block"><div className="studio-v3-inspector-block-title"><span>{t.shapeSpacing}</span></div>{layoutCapabilities.cardRadius?<div className="studio-v3-radius-row"><RangeField label={t.cardRadius} value={design.layout.cardRadius} min={MENU_DESIGN_CONSTRAINTS.radius.min} max={MENU_DESIGN_CONSTRAINTS.radius.max} onChange={value=>patchLayout("cardRadius",value)}/><span className="studio-v3-radius-preview" style={{borderRadius:design.layout.cardRadius}} aria-hidden="true"/></div>:null}{layoutCapabilities.sectionGap?<RangeField label={t.sectionGap} value={design.layout.sectionGap} min={MENU_DESIGN_CONSTRAINTS.spacing.sectionGap.min} max={MENU_DESIGN_CONSTRAINTS.spacing.sectionGap.max} onChange={value=>patchLayout("sectionGap",value)}/>:null}{layoutCapabilities.itemGap?<RangeField label={t.itemGap} value={design.layout.itemGap} min={MENU_DESIGN_CONSTRAINTS.spacing.itemGap.min} max={MENU_DESIGN_CONSTRAINTS.spacing.itemGap.max} onChange={value=>patchLayout("itemGap",value)}/>:null}{layoutCapabilities.cardPadding?<RangeField label={t.cardPadding} value={design.layout.cardPadding} min={MENU_DESIGN_CONSTRAINTS.spacing.cardPadding.min} max={MENU_DESIGN_CONSTRAINTS.spacing.cardPadding.max} onChange={value=>patchLayout("cardPadding",value)}/>:null}</section>:null}
-          {!hasLayoutControls?<p className="studio-v3-inspector-help">{t.fixedLayout}</p>:null}
-        </div>:null}
-
-        {panel==="badges"?<div className="studio-v3-design-section studio-v3-inspector-panel studio-v3-badges-inspector"><section className="studio-v3-inspector-block"><div className="studio-v3-inspector-block-title"><span>{t.badgeDisplay}</span><small>{t.badgeSymbols}</small></div><div className="studio-v3-badge-display-grid"><button type="button" className={`studio-v3-badge-choice ${design.badges.showSymbols?"active":""}`} onClick={()=>patchBadges("showSymbols",true)}><span className="studio-v3-badge-choice-preview symbol"><i>◆</i><b>Popular</b></span><strong>{t.iconText}</strong></button><button type="button" className={`studio-v3-badge-choice ${!design.badges.showSymbols?"active":""}`} onClick={()=>patchBadges("showSymbols",false)}><span className="studio-v3-badge-choice-preview text"><b>Popular</b></span><strong>{t.textOnly}</strong></button></div></section><section className="studio-v3-inspector-block"><div className="studio-v3-inspector-block-title"><span>{t.badgeAppearance}</span><small>{t.badgeStyle}</small></div><div className="studio-v3-badge-style-grid">{[["auto",t.autoStyle],["minimal",t.minimalStyle],["filled",t.filledStyle],["playful",t.playfulStyle]].map(([value,label])=><button type="button" key={value} className={`studio-v3-badge-style-choice style-${value} ${design.badges.iconStyle===value?"active":""}`} disabled={!design.badges.showSymbols} onClick={()=>patchBadges("iconStyle",value)}><span className="studio-v3-badge-style-preview"><i>◆</i><b>Chef</b></span><strong>{label}</strong></button>)}</div><p className="studio-v3-inspector-help">{t.badgeAutoHint}</p></section></div>:null}
-      </section>
-    </div>:null}
-
-    {previewEntry&&previewDesign&&menu?<div className="studio-v3-design-preview-overlay" role="dialog" aria-modal="true" aria-label={`${t.designPreview}: ${previewEntry.name}`} onMouseDown={event=>{if(event.target===event.currentTarget)setPreviewEntry(null);}}><div className="studio-v3-design-preview-shell"><header className="studio-v3-design-preview-toolbar"><button type="button" className="studio-v3-design-preview-close" onClick={()=>setPreviewEntry(null)} aria-label={t.closePreview}>×</button><div className="studio-v3-design-preview-title"><span>{t.designPreview}</span><strong>{previewEntry.name}</strong><small>{previewEntry.layout} · {previewEntry.category}</small></div><button type="button" className="studio-v3-design-preview-use" onClick={usePreviewDesign}>{t.useDesign}</button></header><div className="studio-v3-design-preview-stage"><div className="studio-v3-design-preview-page"><MenuRenderer menu={menu} design={previewDesign} initialLanguage={language}/></div></div></div></div>:null}
-  </div>;
+  return (
+    <>
+      <LegacyMenuDesignControls {...props} />
+      {mountNode ? createPortal(accordion, mountNode) : null}
+    </>
+  );
 }
