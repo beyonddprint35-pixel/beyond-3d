@@ -36,18 +36,18 @@ const PHOTO_COPY = {
     studioTitle: "Beyond AI Photo Studio", studioHint: "Keep the real item, then place it naturally inside this restaurant's visual world.",
     enhance: "Enhance photo", enhanceHint: "Fix light, color and clarity",
     background: "Clean background", backgroundHint: "Remove surrounding distractions",
-    match: "Match restaurant scene", matchHint: "Use a reusable Bar or Table scene created from My Place",
+    match: "Match restaurant scene", matchHint: "Use Scene 1 or Scene 2 created from My Place",
     recommended: "Recommended", foodLock: "Item Lock ON",
     foodLockHint: "AI is instructed to preserve the exact dish or drink, its container, ingredients and portion.",
     sceneTitle: "Choose restaurant scene",
-    sceneHint: "One selected scene = one generated photo. Scenes are created once in My Place and reused across the menu.",
-    autoScene: "Auto", autoSceneHint: "Beyond chooses an available scene",
-    barScene: "Bar", barSceneHint: "Bar counter / drinks",
-    tableScene: "Table", tableSceneHint: "Dining table / dishes",
-    noScenes: "No reusable scenes yet. Create Bar or Table scenes in Design → My Place, or use Auto to fall back to your place photos.",
+    sceneHint: "One selected scene = one generated photo. Each scene follows the My Place photos chosen by the restaurant.",
+    autoScene: "Auto", autoSceneHint: "Use the first available saved scene",
+    scene1: "Scene 1", scene1Hint: "Reusable restaurant setup 1",
+    scene2: "Scene 2", scene2Hint: "Reusable restaurant setup 2",
+    noScenes: "No reusable scenes yet. Create Scene 1 or Scene 2 in Design → My Place, or use Auto to fall back to your place photos.",
     loadingScenes: "Loading restaurant scenes…",
     generate: "Match this photo", preview: "Create AI preview", generating: "Matching your photo to this restaurant scene…",
-    generatingHint: "Beyond is preserving the real item while rebuilding only the presentation around it.",
+    generatingHint: "Beyond is preserving the real item and the selected restaurant background.",
     before: "Original", after: "Styled photo", compare: "Compare",
     enhancedView: "Enhanced photo", regenerate: "Try again", usePhoto: "Use this photo", saving: "Saving photo…", cancel: "Cancel",
     advancedAi: "Create a new photo with AI instead", advancedAiHint: "Only use this when you do not have a real photo of the item.",
@@ -60,18 +60,18 @@ const PHOTO_COPY = {
     studioTitle: "סטודיו התמונות של Beyond AI", studioHint: "שומרים על הפריט האמיתי וממקמים אותו באופן טבעי בעולם החזותי של המסעדה.",
     enhance: "שיפור התמונה", enhanceHint: "תאורה, צבע וחדות",
     background: "ניקוי הרקע", backgroundHint: "הסרת הסחות מסביב לפריט",
-    match: "התאמה לסצנת המסעדה", matchHint: "שימוש בסצנת בר או שולחן שנוצרה מהמקום שלי",
+    match: "התאמה לסצנת המסעדה", matchHint: "שימוש בסצנה 1 או סצנה 2 שנוצרו מהמקום שלי",
     recommended: "מומלץ", foodLock: "נעילת פריט פעילה",
     foodLockHint: "ה-AI מונחה לשמור על אותה מנה או משקה, הכלי, המרכיבים והכמות.",
     sceneTitle: "בחירת סצנת מסעדה",
-    sceneHint: "סצנה אחת שנבחרה = תמונה אחת שנוצרת. הסצנות נוצרות פעם אחת במיקום שלי ומשמשות לכל התפריט.",
-    autoScene: "אוטומטי", autoSceneHint: "Beyond בוחר סצנה זמינה",
-    barScene: "בר", barSceneHint: "דלפק בר / משקאות",
-    tableScene: "שולחן", tableSceneHint: "שולחן אוכל / מנות",
-    noScenes: "עדיין אין סצנות לשימוש חוזר. צרו סצנת בר או שולחן בעיצוב ← המקום שלי, או השתמשו באוטומטי כדי להסתמך על תמונות המקום.",
+    sceneHint: "סצנה אחת שנבחרה = תמונה אחת שנוצרת. כל סצנה עוקבת אחר תמונות המקום שבחרה המסעדה.",
+    autoScene: "אוטומטי", autoSceneHint: "שימוש בסצנה השמורה הראשונה שזמינה",
+    scene1: "סצנה 1", scene1Hint: "סט מסעדה לשימוש חוזר 1",
+    scene2: "סצנה 2", scene2Hint: "סט מסעדה לשימוש חוזר 2",
+    noScenes: "עדיין אין סצנות לשימוש חוזר. צרו סצנה 1 או סצנה 2 בעיצוב ← המקום שלי, או השתמשו באוטומטי כדי להסתמך על תמונות המקום.",
     loadingScenes: "טוען סצנות מסעדה…",
     generate: "התאמת התמונה", preview: "יצירת תצוגת AI", generating: "מתאימים את התמונה לסצנת המסעדה…",
-    generatingHint: "Beyond שומר על הפריט האמיתי ומשנה רק את ההצגה סביבו.",
+    generatingHint: "Beyond שומר על הפריט האמיתי ועל רקע המסעדה שנבחר.",
     before: "מקור", after: "תמונה מעוצבת", compare: "השוואה",
     enhancedView: "תמונה משופרת", regenerate: "נסו שוב", usePhoto: "שימוש בתמונה", saving: "שומר את התמונה…", cancel: "ביטול",
     advancedAi: "יצירת תמונה חדשה עם AI במקום", advancedAiHint: "רק כשאין תמונה אמיתית של הפריט.",
@@ -84,18 +84,18 @@ const PHOTO_COPY = {
     studioTitle: "استوديو صور Beyond AI", studioHint: "نحافظ على العنصر الحقيقي ونضعه بشكل طبيعي داخل العالم البصري للمطعم.",
     enhance: "تحسين الصورة", enhanceHint: "الإضاءة واللون والوضوح",
     background: "تنظيف الخلفية", backgroundHint: "إزالة المشتتات حول العنصر",
-    match: "مطابقة مشهد المطعم", matchHint: "استخدم مشهد بار أو طاولة تم إنشاؤه من مكاني",
+    match: "مطابقة مشهد المطعم", matchHint: "استخدم المشهد 1 أو المشهد 2 الذي تم إنشاؤه من مكاني",
     recommended: "موصى به", foodLock: "قفل العنصر مفعّل",
     foodLockHint: "الذكاء الاصطناعي موجه للحفاظ على نفس الطبق أو المشروب والوعاء والمكونات والكمية.",
     sceneTitle: "اختر مشهد المطعم",
-    sceneHint: "مشهد واحد محدد = صورة واحدة يتم إنشاؤها. يتم إنشاء المشاهد مرة واحدة في مكاني وإعادة استخدامها في القائمة.",
-    autoScene: "تلقائي", autoSceneHint: "Beyond يختار مشهداً متاحاً",
-    barScene: "البار", barSceneHint: "سطح البار / المشروبات",
-    tableScene: "الطاولة", tableSceneHint: "طاولة الطعام / الأطباق",
-    noScenes: "لا توجد مشاهد قابلة لإعادة الاستخدام بعد. أنشئ مشهد بار أو طاولة في التصميم ← مكاني، أو استخدم تلقائي للاعتماد على صور المكان.",
+    sceneHint: "مشهد واحد محدد = صورة واحدة. كل مشهد يتبع صور مكاني التي اختارها المطعم.",
+    autoScene: "تلقائي", autoSceneHint: "استخدم أول مشهد محفوظ متاح",
+    scene1: "المشهد 1", scene1Hint: "إعداد مطعم قابل لإعادة الاستخدام 1",
+    scene2: "المشهد 2", scene2Hint: "إعداد مطعم قابل لإعادة الاستخدام 2",
+    noScenes: "لا توجد مشاهد قابلة لإعادة الاستخدام بعد. أنشئ المشهد 1 أو المشهد 2 في التصميم ← مكاني، أو استخدم تلقائي للاعتماد على صور المكان.",
     loadingScenes: "جارٍ تحميل مشاهد المطعم…",
     generate: "مطابقة هذه الصورة", preview: "إنشاء معاينة AI", generating: "نطابق صورتك مع مشهد المطعم…",
-    generatingHint: "يحافظ Beyond على العنصر الحقيقي ويعيد بناء العرض المحيط به فقط.",
+    generatingHint: "يحافظ Beyond على العنصر الحقيقي وعلى خلفية المطعم المختارة.",
     before: "الأصل", after: "الصورة المنسقة", compare: "مقارنة",
     enhancedView: "الصورة المحسّنة", regenerate: "حاول مرة أخرى", usePhoto: "استخدم هذه الصورة", saving: "جارٍ حفظ الصورة…", cancel: "إلغاء",
     advancedAi: "أنشئ صورة جديدة بالذكاء الاصطناعي", advancedAiHint: "استخدم هذا فقط عندما لا توجد صورة حقيقية للعنصر.",
@@ -136,8 +136,8 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
   const [result, setResult] = useState(null);
   const [compareSide, setCompareSide] = useState("after");
   const [savedCompareSide, setSavedCompareSide] = useState("after");
-  const [sceneType, setSceneType] = useState(item.image_ai_scene || "auto");
-  const [scenes, setScenes] = useState({ bar: null, table: null });
+  const [sceneType, setSceneType] = useState(["scene1", "scene2"].includes(item.image_ai_scene) ? item.image_ai_scene : "auto");
+  const [scenes, setScenes] = useState({ scene1: null, scene2: null });
   const [scenesLoading, setScenesLoading] = useState(false);
   const cameraInputRef = useRef(null);
   const libraryInputRef = useRef(null);
@@ -160,16 +160,16 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
   useEffect(() => {
     let cancelled = false;
     if (!projectId || projectId === "draft") {
-      setScenes({ bar: null, table: null });
+      setScenes({ scene1: null, scene2: null });
       return () => { cancelled = true; };
     }
     setScenesLoading(true);
     getRestaurantScenePresets({ projectId, sourcePath })
       .then((status) => {
         if (cancelled) return;
-        setScenes(status.scenes || { bar: null, table: null });
+        setScenes(status.scenes || { scene1: null, scene2: null });
       })
-      .catch(() => { if (!cancelled) setScenes({ bar: null, table: null }); })
+      .catch(() => { if (!cancelled) setScenes({ scene1: null, scene2: null }); })
       .finally(() => { if (!cancelled) setScenesLoading(false); });
     return () => { cancelled = true; };
   }, [projectId, sourcePath, studioOpen]);
@@ -308,7 +308,7 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
   function openStudio() {
     clearResult();
     setMode(item.image_ai_mode === "strong" ? "match" : item.image_ai_mode || "match");
-    setSceneType(["auto", "bar", "table"].includes(item.image_ai_scene) ? item.image_ai_scene : "auto");
+    setSceneType(["auto", "scene1", "scene2"].includes(item.image_ai_scene) ? item.image_ai_scene : "auto");
     setStudioOpen(true);
   }
 
@@ -320,7 +320,7 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
 
   const busy = uploading || processing || saving;
   const selectedPreviewUrl = result?.url || sourceUrl;
-  const hasScenePresets = Boolean(scenes.bar || scenes.table);
+  const hasScenePresets = Boolean(scenes.scene1 || scenes.scene2);
 
   return (
     <div className="menu-content-v2-image-editor menu-content-v2-image-editor-friendly">
@@ -385,15 +385,15 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
                   <span><strong>{copy.autoScene}</strong><small>{copy.autoSceneHint}</small></span>
                   {sceneType === "auto" ? <i><Check size={11} /></i> : null}
                 </button>
-                {scenes.bar ? <button type="button" className={`menu-content-v2-scene-option ${sceneType === "bar" ? "active" : ""}`} onClick={() => selectScene("bar")} disabled={busy}>
-                  <img src={`${scenes.bar.url}?v=${encodeURIComponent(scenes.bar.path || "bar")}`} alt="" />
-                  <span><strong>{copy.barScene}</strong><small>{copy.barSceneHint}</small></span>
-                  {sceneType === "bar" ? <i><Check size={11} /></i> : null}
+                {scenes.scene1 ? <button type="button" className={`menu-content-v2-scene-option ${sceneType === "scene1" ? "active" : ""}`} onClick={() => selectScene("scene1")} disabled={busy}>
+                  <img src={`${scenes.scene1.url}?v=${encodeURIComponent(scenes.scene1.path || "scene1")}`} alt="" />
+                  <span><strong>{copy.scene1}</strong><small>{copy.scene1Hint}</small></span>
+                  {sceneType === "scene1" ? <i><Check size={11} /></i> : null}
                 </button> : null}
-                {scenes.table ? <button type="button" className={`menu-content-v2-scene-option ${sceneType === "table" ? "active" : ""}`} onClick={() => selectScene("table")} disabled={busy}>
-                  <img src={`${scenes.table.url}?v=${encodeURIComponent(scenes.table.path || "table")}`} alt="" />
-                  <span><strong>{copy.tableScene}</strong><small>{copy.tableSceneHint}</small></span>
-                  {sceneType === "table" ? <i><Check size={11} /></i> : null}
+                {scenes.scene2 ? <button type="button" className={`menu-content-v2-scene-option ${sceneType === "scene2" ? "active" : ""}`} onClick={() => selectScene("scene2")} disabled={busy}>
+                  <img src={`${scenes.scene2.url}?v=${encodeURIComponent(scenes.scene2.path || "scene2")}`} alt="" />
+                  <span><strong>{copy.scene2}</strong><small>{copy.scene2Hint}</small></span>
+                  {sceneType === "scene2" ? <i><Check size={11} /></i> : null}
                 </button> : null}
               </div>
               {!scenesLoading && !hasScenePresets ? <p className="menu-content-v2-scene-empty">{copy.noScenes}</p> : null}
