@@ -26,7 +26,8 @@
 .bme-price-option small {
   max-width:76px;
   overflow:hidden;
-  color:var(--bme-muted);
+  color:var(--bme-price-type-color,var(--bme-muted));
+  -webkit-text-fill-color:var(--bme-price-type-color,var(--bme-muted));
   font-size:9px;
   line-height:1.15;
   text-overflow:ellipsis;
@@ -222,7 +223,8 @@
 
 .bme-presentation-street-poster .bme-price-option small {
   max-width:100%;
-  color:rgba(255,255,255,.7);
+  color:var(--bme-price-type-color,rgba(255,255,255,.7));
+  -webkit-text-fill-color:var(--bme-price-type-color,rgba(255,255,255,.7));
   font-size:8px;
   font-weight:800;
   line-height:1;
@@ -262,7 +264,8 @@
 .bme-heritage-exact .ep-price-option small {
   width:100%;
   overflow:hidden;
-  color:#7b756e;
+  color:var(--ep-price-type-color,#7b756e);
+  -webkit-text-fill-color:var(--ep-price-type-color,#7b756e);
   font-family:Inter,Arial,sans-serif;
   font-size:8px;
   font-weight:700;
