@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 set -uo pipefail
 
-PORT=5174
+PORT=5175
 ROUTE="/menu-builder"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 SUPERVISOR="$SCRIPT_DIR/menu-studio-supervisor.sh"
-SUPERVISOR_LOG="/tmp/beyond-vite-supervisor.log"
-SUPERVISOR_PID_FILE="/tmp/beyond-vite-supervisor.pid"
-VITE_LOG="/tmp/beyond-vite.log"
-LOCK_FILE="/tmp/beyond-menu-studio.lock"
+SUPERVISOR_LOG="/tmp/beyond-vite-supervisor-5175.log"
+SUPERVISOR_PID_FILE="/tmp/beyond-vite-supervisor-5175.pid"
+VITE_LOG="/tmp/beyond-vite-5175.log"
+LOCK_FILE="/tmp/beyond-menu-studio-5175.lock"
 LOCAL_ROOT="http://127.0.0.1:${PORT}"
 LOCAL_URL="${LOCAL_ROOT}${ROUTE}"
 
@@ -34,9 +34,24 @@ supervisor_running() {
   [ -n "$pid" ] && kill -0 "$pid" >/dev/null 2>&1
 }
 
+listener_exists() {
+  if command -v ss >/dev/null 2>&1; then
+    ss -ltn 2>/dev/null | grep -qE "[:.]${PORT}[[:space:]]"
+    return
+  fi
+  fuser "${PORT}/tcp" >/dev/null 2>&1
+}
+
 start_supervisor() {
   if supervisor_running; then
     return 0
+  fi
+
+  # Port 5175 used to be started manually. Kill any stale process before
+  # starting the managed server from this repository's current frontend tree.
+  if listener_exists; then
+    fuser -k "${PORT}/tcp" >/dev/null 2>&1 || true
+    sleep 1
   fi
 
   rm -f "$SUPERVISOR_PID_FILE"
@@ -54,8 +69,6 @@ for _ in $(seq 1 120); do
     echo "Vite log: $VITE_LOG"
     echo "Supervisor log: $SUPERVISOR_LOG"
 
-    # Codespaces already owns port-forward registration. We only read the URL;
-    # do not toggle visibility here because doing so can recreate the tunnel.
     if [ -n "${CODESPACE_NAME:-}" ] && command -v gh >/dev/null 2>&1; then
       BROWSE_URL="$(
         timeout 8s gh codespace ports -c "$CODESPACE_NAME" \
