@@ -14,6 +14,7 @@ import LegacyPublicMenuAnalytics from "./features/menu-engine/analytics/LegacyPu
 import installMenuTypographyGuard from "./features/menu-engine/renderer/menuTypographyGuard";
 import installUiTypographyGuard from "./styles/uiTypographyGuard";
 import installMenuContentAdvancedAlwaysOpen from "./features/menu-engine/studio/menuContentAdvancedAlwaysOpen";
+import installMenuImageFramingInvariant from "./features/menu-engine/studio/menuImageFramingInvariant";
 import installMenuContentCategoryAccordion from "./pages/menuContentCategoryAccordion";
 import installMenuContentPreviewSelection from "./pages/menuContentPreviewSelection";
 import installMenuTranslationReviewOverlay from "./pages/menuTranslationReviewOverlay";
@@ -58,7 +59,13 @@ installMenuTranslationReviewOverlay();
 installMenuStudioViewportLock();
 installMenuAiOnlineReferenceOverlay();
 installMenuAiImageViewerOverlay();
-installMenuAiMenuCropOverlay();
+installMenuImageFramingInvariant();
+// The legacy crop modal belongs only to the dedicated AI Images page. Content
+// Studio uses the direct-on-live-menu framing editor instead, so running both
+// there can reintroduce stale photo state and duplicate controls.
+if (window.location.pathname.startsWith("/menu-studio/ai-images")) {
+  installMenuAiMenuCropOverlay();
+}
 installMenuLiveImageFraming();
 installMenuPublishShareActions();
 
