@@ -1,7 +1,8 @@
-import { useState } from "react";
-import { Building2, CheckCircle2, ImagePlus, LoaderCircle, Trash2, Upload, WandSparkles } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Building2, CheckCircle2, ImagePlus, LoaderCircle, RefreshCcw, Sparkles, Trash2, Upload, WandSparkles } from "lucide-react";
 
 import { removeMenuItemImage, uploadMenuItemImage } from "../features/menu-engine/data/menuItemImageService";
+import { generateRestaurantScenePresets, getRestaurantScenePresets } from "../features/menu-engine/data/menuPhotoAiService";
 import { studioLanguageDirection } from "../features/menu-engine/studio/studioLanguage";
 import "./MenuPlaceWorkspace.css";
 
@@ -11,18 +12,32 @@ const COPY = {
   en: {
     eyebrow: "RESTAURANT PROFILE",
     title: "My Place",
-    subtitle: "Give Beyond a visual memory of your restaurant. Your logo and place photos are shared automatically with Design and AI Photo Studio.",
+    subtitle: "Give Beyond a visual memory of your restaurant. Your logo, real place photos and reusable AI scenes are shared automatically with Design and AI Photo Studio.",
     logoTitle: "Restaurant logo",
     logoHint: "This is the same logo used by your menu design.",
     addLogo: "Upload logo",
     replaceLogo: "Replace logo",
     placeTitle: "Place style photos",
-    placeHint: "These are the same place-style photos used by AI Photo Studio. Upload 3–5 real photos of the dining room, bar, tables, walls and lighting.",
+    placeHint: "Upload 3–5 real photos of the dining room, bar, tables, walls and lighting. Beyond uses them to build reusable restaurant scenes.",
     addPhotos: "Add place photos",
     photoCount: (count) => `${count}/${MAX_PLACE_PHOTOS} photos`,
-    aiTitle: "My Place style is used automatically",
-    aiReady: (count) => count ? `Ready — AI Photo Studio is connected to these ${count} place photo${count === 1 ? "" : "s"}.` : "Add place photos here or in AI Photo Studio — both use the same saved place style.",
-    aiHint: "The dish stays locked. Place photos guide only the atmosphere: lighting, color temperature, table/background materials and restaurant mood.",
+    scenesTitle: "Restaurant scene presets",
+    scenesHint: "Create these once from My Place, then reuse them for every item. Matching a dish or drink still generates only one photo per click.",
+    barScene: "Bar scene",
+    barSceneHint: "For beer, cocktails, wine and bar-style shots.",
+    tableScene: "Table scene",
+    tableSceneHint: "For dishes, desserts and table presentation.",
+    createScene: "Create scene",
+    refreshScene: "Regenerate",
+    createBoth: "Create both scenes",
+    creatingScene: "Creating scene…",
+    noScene: "Not created yet",
+    sceneReady: "Ready to reuse",
+    sceneNeedsPhotos: "Add at least one My Place photo first.",
+    sceneFailed: "Could not create this restaurant scene. Please try again.",
+    aiTitle: "My Place is ready for Beyond AI",
+    aiReady: (count, scenes) => scenes ? `Ready — ${scenes} reusable scene${scenes === 1 ? " is" : "s are"} available from ${count} place photo${count === 1 ? "" : "s"}.` : count ? `Ready — ${count} place photo${count === 1 ? "" : "s"} can now be turned into reusable scenes.` : "Add place photos to teach Beyond how this restaurant looks.",
+    aiHint: "The item stays locked. Restaurant scenes control the background, surface, lighting and atmosphere so menu photos stay visually consistent.",
     uploading: "Uploading…",
     remove: "Remove",
     maxReached: "You can keep up to 5 place photos. Remove one before adding another.",
@@ -34,18 +49,32 @@ const COPY = {
   he: {
     eyebrow: "פרופיל המסעדה",
     title: "המקום שלי",
-    subtitle: "תנו ל-Beyond זיכרון חזותי של המסעדה. הלוגו ותמונות המקום משותפים אוטומטית עם העיצוב וסטודיו התמונות AI.",
+    subtitle: "תנו ל-Beyond זיכרון חזותי של המסעדה. הלוגו, תמונות המקום והסצנות החוזרות משותפים אוטומטית עם העיצוב וסטודיו התמונות AI.",
     logoTitle: "לוגו המסעדה",
     logoHint: "זהו אותו לוגו שבו משתמש עיצוב התפריט.",
     addLogo: "העלאת לוגו",
     replaceLogo: "החלפת לוגו",
     placeTitle: "תמונות סגנון של המקום",
-    placeHint: "אלו אותן תמונות סגנון שבהן משתמש סטודיו התמונות AI. העלו 3–5 תמונות אמיתיות של החלל, הבר, השולחנות, הקירות והתאורה.",
+    placeHint: "העלו 3–5 תמונות אמיתיות של החלל, הבר, השולחנות, הקירות והתאורה. Beyond יוצר מהן סצנות מסעדה לשימוש חוזר.",
     addPhotos: "הוספת תמונות מקום",
     photoCount: (count) => `${count}/${MAX_PLACE_PHOTOS} תמונות`,
-    aiTitle: "סגנון המקום שלי מופעל אוטומטית",
-    aiReady: (count) => count ? `מוכן — סטודיו התמונות AI מחובר ל-${count} תמונות המקום האלו.` : "אפשר להוסיף תמונות כאן או בסטודיו התמונות AI — שניהם משתמשים באותו סגנון מקום שמור.",
-    aiHint: "המנה נשארת נעולה. תמונות המקום משפיעות רק על האווירה: תאורה, טמפרטורת צבע, חומרי שולחן/רקע והאופי של המסעדה.",
+    scenesTitle: "סצנות מסעדה לשימוש חוזר",
+    scenesHint: "יוצרים אותן פעם אחת מהמקום שלי ומשתמשים בהן לכל פריט. התאמת מנה או משקה עדיין יוצרת תמונה אחת בלבד בכל לחיצה.",
+    barScene: "סצנת בר",
+    barSceneHint: "לבירה, קוקטיילים, יין וצילומי בר.",
+    tableScene: "סצנת שולחן",
+    tableSceneHint: "למנות, קינוחים והצגה על שולחן.",
+    createScene: "יצירת סצנה",
+    refreshScene: "יצירה מחדש",
+    createBoth: "יצירת שתי הסצנות",
+    creatingScene: "יוצר סצנה…",
+    noScene: "עדיין לא נוצרה",
+    sceneReady: "מוכנה לשימוש חוזר",
+    sceneNeedsPhotos: "יש להוסיף לפחות תמונת מקום אחת קודם.",
+    sceneFailed: "לא ניתן ליצור את סצנת המסעדה. נסו שוב.",
+    aiTitle: "המקום שלי מוכן ל-Beyond AI",
+    aiReady: (count, scenes) => scenes ? `מוכן — ${scenes} סצנות לשימוש חוזר זמינות מתוך ${count} תמונות מקום.` : count ? `מוכן — ניתן ליצור סצנות לשימוש חוזר מתוך ${count} תמונות המקום.` : "הוסיפו תמונות מקום כדי ללמד את Beyond איך המסעדה נראית.",
+    aiHint: "הפריט נשאר נעול. הסצנה קובעת את הרקע, המשטח, התאורה והאווירה כדי לשמור על אחידות בין תמונות התפריט.",
     uploading: "מעלה…",
     remove: "הסרה",
     maxReached: "ניתן לשמור עד 5 תמונות מקום. הסירו תמונה לפני הוספת תמונה חדשה.",
@@ -57,18 +86,32 @@ const COPY = {
   ar: {
     eyebrow: "ملف المطعم",
     title: "مكاني",
-    subtitle: "امنح Beyond ذاكرة بصرية لمطعمك. تتم مشاركة الشعار وصور المكان تلقائياً مع التصميم واستوديو صور AI.",
+    subtitle: "امنح Beyond ذاكرة بصرية للمطعم. تتم مشاركة الشعار وصور المكان والمشاهد القابلة لإعادة الاستخدام تلقائياً مع التصميم واستوديو صور AI.",
     logoTitle: "شعار المطعم",
     logoHint: "هذا هو نفس الشعار المستخدم في تصميم القائمة.",
     addLogo: "رفع الشعار",
     replaceLogo: "استبدال الشعار",
     placeTitle: "صور أسلوب المكان",
-    placeHint: "هذه هي نفس صور أسلوب المكان التي يستخدمها استوديو صور AI. ارفع 3–5 صور حقيقية للمكان والإضاءة والطاولات والجدران.",
+    placeHint: "ارفع 3–5 صور حقيقية للمكان والبار والطاولات والجدران والإضاءة. يستخدمها Beyond لإنشاء مشاهد مطعم قابلة لإعادة الاستخدام.",
     addPhotos: "إضافة صور المكان",
     photoCount: (count) => `${count}/${MAX_PLACE_PHOTOS} صور`,
-    aiTitle: "يُستخدم أسلوب مكاني تلقائياً",
-    aiReady: (count) => count ? `جاهز — استوديو صور AI متصل بهذه الصور وعددها ${count}.` : "أضف الصور هنا أو في استوديو صور AI — كلاهما يستخدم نفس أسلوب المكان المحفوظ.",
-    aiHint: "يبقى الطبق مقفلاً. صور المكان توجه الأجواء فقط: الإضاءة وحرارة اللون وخامات الطاولة أو الخلفية وطابع المطعم.",
+    scenesTitle: "مشاهد المطعم القابلة لإعادة الاستخدام",
+    scenesHint: "أنشئها مرة واحدة من مكاني ثم استخدمها لكل عنصر. مطابقة طبق أو مشروب ما زالت تنشئ صورة واحدة فقط لكل ضغطة.",
+    barScene: "مشهد البار",
+    barSceneHint: "للبيرة والكوكتيلات والنبيذ وصور البار.",
+    tableScene: "مشهد الطاولة",
+    tableSceneHint: "للأطباق والحلويات والعرض على الطاولة.",
+    createScene: "إنشاء المشهد",
+    refreshScene: "إعادة الإنشاء",
+    createBoth: "إنشاء المشهدين",
+    creatingScene: "جارٍ إنشاء المشهد…",
+    noScene: "لم يتم إنشاؤه بعد",
+    sceneReady: "جاهز لإعادة الاستخدام",
+    sceneNeedsPhotos: "أضف صورة واحدة على الأقل للمكان أولاً.",
+    sceneFailed: "تعذر إنشاء مشهد المطعم. حاول مرة أخرى.",
+    aiTitle: "مكاني جاهز لـ Beyond AI",
+    aiReady: (count, scenes) => scenes ? `جاهز — ${scenes} مشاهد قابلة لإعادة الاستخدام متاحة من ${count} صور للمكان.` : count ? `جاهز — يمكن الآن إنشاء مشاهد قابلة لإعادة الاستخدام من ${count} صور للمكان.` : "أضف صور المكان ليعرف Beyond كيف يبدو المطعم.",
+    aiHint: "يبقى العنصر مقفلاً. تحدد المشاهد الخلفية والسطح والإضاءة والأجواء للحفاظ على اتساق صور القائمة.",
     uploading: "جارٍ الرفع…",
     remove: "إزالة",
     maxReached: "يمكن الاحتفاظ بما يصل إلى 5 صور للمكان. احذف صورة قبل إضافة أخرى.",
@@ -100,9 +143,26 @@ export default function MenuPlaceWorkspace({
   const dir = studioLanguageDirection(language);
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
+  const [scenes, setScenes] = useState({ bar: null, table: null });
+  const [scenesLoading, setScenesLoading] = useState(false);
   const placePhotos = Array.isArray(placeStyle?.photos)
     ? placeStyle.photos.filter((photo) => photo?.url).slice(0, MAX_PLACE_PHOTOS)
     : [];
+  const sceneCount = Number(Boolean(scenes.bar)) + Number(Boolean(scenes.table));
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!projectId || projectId === "draft") {
+      setScenes({ bar: null, table: null });
+      return () => { cancelled = true; };
+    }
+    setScenesLoading(true);
+    getRestaurantScenePresets({ projectId })
+      .then((result) => { if (!cancelled) setScenes(result.scenes || { bar: null, table: null }); })
+      .catch(() => { if (!cancelled) setScenes({ bar: null, table: null }); })
+      .finally(() => { if (!cancelled) setScenesLoading(false); });
+    return () => { cancelled = true; };
+  }, [projectId]);
 
   async function onLogoFileChange(event) {
     const file = event.target.files?.[0];
@@ -185,6 +245,42 @@ export default function MenuPlaceWorkspace({
     }
   }
 
+  async function createScenes(sceneTypes) {
+    if (busy || scenesLoading) return;
+    if (!placePhotos.length) {
+      setError(t.sceneNeedsPhotos);
+      return;
+    }
+    const key = `scenes-${sceneTypes.join("-")}`;
+    setBusy(key);
+    setError("");
+    try {
+      const result = await generateRestaurantScenePresets({ projectId, sceneTypes });
+      setScenes(result.scenes || { bar: null, table: null });
+    } catch (nextError) {
+      setError(nextError?.message || t.sceneFailed);
+    } finally {
+      setBusy("");
+    }
+  }
+
+  function sceneCard(type, scene, title, hint) {
+    const creating = busy === `scenes-${type}` || busy === "scenes-bar-table";
+    return (
+      <article className={`menu-place-scene-card ${scene ? "ready" : ""}`}>
+        <div className="menu-place-scene-preview">
+          {scene?.url ? <img src={`${scene.url}?v=${encodeURIComponent(scene.path || "scene")}`} alt="" /> : <><Sparkles size={26} /><span>{t.noScene}</span></>}
+          {scene ? <em><CheckCircle2 size={12} /> {t.sceneReady}</em> : null}
+        </div>
+        <div className="menu-place-scene-copy"><strong>{title}</strong><small>{hint}</small></div>
+        <button type="button" className="menu-place-scene-action" onClick={() => createScenes([type])} disabled={Boolean(busy) || scenesLoading || !placePhotos.length}>
+          {creating ? <LoaderCircle className="spin" size={15} /> : scene ? <RefreshCcw size={15} /> : <WandSparkles size={15} />}
+          <span>{creating ? t.creatingScene : scene ? t.refreshScene : t.createScene}</span>
+        </button>
+      </article>
+    );
+  }
+
   return (
     <section className="menu-place-workspace-layer" dir={dir} aria-label={t.title}>
       <div className="menu-place-workspace">
@@ -233,9 +329,25 @@ export default function MenuPlaceWorkspace({
           </article>
         </div>
 
+        <section className="menu-place-scenes">
+          <div className="menu-place-scenes-head">
+            <div><span><Sparkles size={16} /></span><div><h2>{t.scenesTitle}</h2><p>{t.scenesHint}</p></div></div>
+            <button type="button" onClick={() => createScenes(["bar", "table"])} disabled={Boolean(busy) || scenesLoading || !placePhotos.length}>
+              {busy === "scenes-bar-table" ? <LoaderCircle className="spin" size={14} /> : <WandSparkles size={14} />}
+              {busy === "scenes-bar-table" ? t.creatingScene : t.createBoth}
+            </button>
+          </div>
+          {scenesLoading ? <div className="menu-place-loading"><LoaderCircle className="spin" size={16} /> Loading scenes…</div> : (
+            <div className="menu-place-scene-grid">
+              {sceneCard("bar", scenes.bar, t.barScene, t.barSceneHint)}
+              {sceneCard("table", scenes.table, t.tableScene, t.tableSceneHint)}
+            </div>
+          )}
+        </section>
+
         <aside className={`menu-place-ai-status ${placePhotos.length ? "ready" : ""}`}>
           <span className="menu-place-ai-icon">{placePhotos.length ? <CheckCircle2 size={21} /> : <WandSparkles size={21} />}</span>
-          <div><h2>{t.aiTitle}</h2><strong>{t.aiReady(placePhotos.length)}</strong><p>{t.aiHint}</p></div>
+          <div><h2>{t.aiTitle}</h2><strong>{t.aiReady(placePhotos.length, sceneCount)}</strong><p>{t.aiHint}</p></div>
         </aside>
       </div>
     </section>
