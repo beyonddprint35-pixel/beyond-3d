@@ -3,10 +3,8 @@ import { createPortal } from "react-dom";
 import {
   MENU_COLOR_PRESETS,
   MENU_FONT_FAMILIES,
-  MENU_FONT_WEIGHTS,
   applyMenuColorPreset,
 } from "../domain/designSchema";
-import { MENU_DESIGN_CONSTRAINTS } from "../domain/designConstraints";
 import LegacyMenuDesignControls from "./MenuDesignControlsLegacy";
 import MenuItemNameColorControl from "./MenuItemNameColorControl";
 import "./MenuDesignFullAccordion.css";
@@ -27,14 +25,6 @@ const COPY = {
     categoryText: "Category text",
     headingFont: "Heading font",
     bodyFont: "Body font",
-    headingWeight: "Heading weight",
-    itemWeight: "Item weight",
-    textSizes: "Text sizes",
-    heroSize: "Hero title",
-    sectionSize: "Section title",
-    itemSize: "Item name",
-    descriptionSize: "Description",
-    priceSize: "Price",
     logo: "Logo",
     photo: "Photo",
     clean: "Clean",
@@ -57,14 +47,6 @@ const COPY = {
     categoryText: "טקסט קטגוריה",
     headingFont: "פונט כותרות",
     bodyFont: "פונט טקסט",
-    headingWeight: "עובי כותרת",
-    itemWeight: "עובי שם פריט",
-    textSizes: "גדלי טקסט",
-    heroSize: "כותרת ראשית",
-    sectionSize: "כותרת קטגוריה",
-    itemSize: "שם פריט",
-    descriptionSize: "תיאור",
-    priceSize: "מחיר",
     logo: "לוגו",
     photo: "תמונה",
     clean: "נקי",
@@ -87,14 +69,6 @@ const COPY = {
     categoryText: "نص الفئة",
     headingFont: "خط العناوين",
     bodyFont: "خط النص",
-    headingWeight: "سماكة العنوان",
-    itemWeight: "سماكة اسم العنصر",
-    textSizes: "أحجام النص",
-    heroSize: "عنوان الواجهة",
-    sectionSize: "عنوان القسم",
-    itemSize: "اسم العنصر",
-    descriptionSize: "الوصف",
-    priceSize: "السعر",
     logo: "الشعار",
     photo: "صورة",
     clean: "نظيف",
@@ -123,15 +97,6 @@ function FontField({ label, value, onChange }) {
       <select value={value} onChange={(event) => onChange(event.target.value)}>
         {MENU_FONT_FAMILIES.map((font) => <option key={font} value={font}>{font}</option>)}
       </select>
-    </label>
-  );
-}
-
-function RangeField({ label, value, min, max, onChange }) {
-  return (
-    <label className="beyond-full-range-field">
-      <span><span>{label}</span><b>{value}px</b></span>
-      <input type="range" min={min} max={max} value={value} onChange={(event) => onChange(Number(event.target.value))} />
     </label>
   );
 }
@@ -205,26 +170,6 @@ function FullAccordion({ design, language, patchDesign, heroHeadlineControl }) {
           <div className="beyond-full-font-grid">
             <FontField label={t.headingFont} value={design.typography.headingFont} onChange={(value) => patchType("headingFont", value)} />
             <FontField label={t.bodyFont} value={design.typography.bodyFont} onChange={(value) => patchType("bodyFont", value)} />
-          </div>
-        </div>
-        <div className="beyond-full-block">
-          <div className="beyond-full-block-title">{t.headingWeight}</div>
-          <div className="beyond-full-weight-grid">
-            {MENU_FONT_WEIGHTS.map((weight) => <button type="button" key={`heading-${weight}`} className={design.typography.headingWeight === weight ? "active" : ""} style={{ fontWeight: weight }} onClick={() => patchType("headingWeight", weight)}>{weight}</button>)}
-          </div>
-          <div className="beyond-full-block-title">{t.itemWeight}</div>
-          <div className="beyond-full-weight-grid">
-            {MENU_FONT_WEIGHTS.map((weight) => <button type="button" key={`item-${weight}`} className={design.typography.itemWeight === weight ? "active" : ""} style={{ fontWeight: weight }} onClick={() => patchType("itemWeight", weight)}>{weight}</button>)}
-          </div>
-        </div>
-        <div className="beyond-full-block">
-          <div className="beyond-full-block-title">{t.textSizes}</div>
-          <div className="beyond-full-range-grid">
-            <RangeField label={t.heroSize} value={design.typography.heroSize} min={MENU_DESIGN_CONSTRAINTS.typography.heroSize.min} max={MENU_DESIGN_CONSTRAINTS.typography.heroSize.max} onChange={(value) => patchType("heroSize", value)} />
-            <RangeField label={t.sectionSize} value={design.typography.sectionSize} min={MENU_DESIGN_CONSTRAINTS.typography.sectionSize.min} max={MENU_DESIGN_CONSTRAINTS.typography.sectionSize.max} onChange={(value) => patchType("sectionSize", value)} />
-            <RangeField label={t.itemSize} value={design.typography.itemNameSize} min={MENU_DESIGN_CONSTRAINTS.typography.itemNameSize.min} max={MENU_DESIGN_CONSTRAINTS.typography.itemNameSize.max} onChange={(value) => patchType("itemNameSize", value)} />
-            <RangeField label={t.descriptionSize} value={design.typography.descriptionSize} min={MENU_DESIGN_CONSTRAINTS.typography.descriptionSize.min} max={MENU_DESIGN_CONSTRAINTS.typography.descriptionSize.max} onChange={(value) => patchType("descriptionSize", value)} />
-            <RangeField label={t.priceSize} value={design.typography.priceSize} min={MENU_DESIGN_CONSTRAINTS.typography.priceSize.min} max={MENU_DESIGN_CONSTRAINTS.typography.priceSize.max} onChange={(value) => patchType("priceSize", value)} />
           </div>
         </div>
         <MenuItemNameColorControl design={design} language={language} patchDesign={patchDesign} />
