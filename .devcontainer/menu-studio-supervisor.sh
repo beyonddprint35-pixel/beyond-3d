@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 set -uo pipefail
 
-PORT=5174
+PORT=5175
 ROUTE="/menu-builder"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 FRONTEND="$ROOT/frontend"
-VITE_LOG="/tmp/beyond-vite.log"
-SUPERVISOR_LOG="/tmp/beyond-vite-supervisor.log"
+VITE_LOG="/tmp/beyond-vite-5175.log"
+SUPERVISOR_LOG="/tmp/beyond-vite-supervisor-5175.log"
 
 is_ready() {
   curl -fsS --max-time 2 "http://127.0.0.1:${PORT}${ROUTE}" >/dev/null 2>&1
