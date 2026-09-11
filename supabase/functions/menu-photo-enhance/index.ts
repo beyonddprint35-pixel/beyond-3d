@@ -164,27 +164,52 @@ TASK — QUICK CLEAN
 Enhance the existing photograph only: correct exposure and white balance, improve natural contrast, clarity and sharpness, reduce distracting noise and minor clutter, and make the image look professionally photographed. Do not substantially replace the scene. When My Place references exist, gently align lighting and color mood with the real restaurant.${optionDirection}`;
 }
 
-async function listPlaceReferenceNames(adminClient, folder) {
-  const { data: entries, error } = await adminClient.storage.from(BUCKET).list(folder, {
-    limit: 30,
-    sortBy: { column: "created_at", order: "desc" },
-  });
-  if (error || !Array.isArray(entries)) return [];
-  return entries
-    .filter((entry) => entry?.name?.startsWith("place-") && entry?.metadata)
+async function listPlaceReferencePaths(adminClient, placeFolder, projectFolder) {
+  const candidates = [];
+  const sources = [
+    { folder: placeFolder, prefix: "place-" },
+    // My Place originally used the generic menu-image uploader, which stores
+    // files in the project root as place-style-*. Keep those existing photos
+    // valid so users do not need to delete/re-upload their restaurant memory.
+    { folder: projectFolder, prefix: "place-style-" },
+  ];
+
+  for (const source of sources) {
+    const { data: entries, error } = await adminClient.storage.from(BUCKET).list(source.folder, {
+      limit: 30,
+      sortBy: { column: "created_at", order: "desc" },
+    });
+    if (error || !Array.isArray(entries)) continue;
+
+    for (const entry of entries) {
+      if (!entry?.name?.startsWith(source.prefix) || !entry?.metadata) continue;
+      candidates.push({
+        path: `${source.folder}/${entry.name}`,
+        createdAt: entry.created_at || entry.updated_at || "",
+      });
+    }
+  }
+
+  const seen = new Set();
+  return candidates
+    .sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)))
+    .filter((entry) => {
+      if (!entry.path || seen.has(entry.path)) return false;
+      seen.add(entry.path);
+      return true;
+    })
     .slice(0, MAX_PLACE_REFERENCES)
-    .map((entry) => entry.name);
+    .map((entry) => entry.path);
 }
 
-async function loadPlaceReferences(adminClient, folder) {
-  const names = await listPlaceReferenceNames(adminClient, folder);
+async function loadPlaceReferences(adminClient, placeFolder, projectFolder) {
+  const paths = await listPlaceReferencePaths(adminClient, placeFolder, projectFolder);
   const references = [];
-  for (const name of names) {
-    const path = `${folder}/${name}`;
+  for (const path of paths) {
     const { data: blob, error: downloadError } = await adminClient.storage.from(BUCKET).download(path);
     if (downloadError || !blob || !blob.size || blob.size > 12 * 1024 * 1024) continue;
     if (blob.type && !blob.type.startsWith("image/")) continue;
-    references.push({ blob, path, name });
+    references.push({ blob, path, name: path.split("/").pop() || "place-reference" });
   }
   return references;
 }
@@ -250,20 +275,21 @@ Deno.serve(async (req) => {
     }
 
     const safeProject = safeId(projectId, "project");
-    const requiredPrefix = `${user.id}/${safeProject}/`;
+    const projectFolder = `${user.id}/${safeProject}`;
+    const requiredPrefix = `${projectFolder}/`;
     const styleMemoryPath = `${requiredPrefix}beyond-style-memory.png`;
-    const placeFolder = `${requiredPrefix}my-place`;
+    const placeFolder = `${projectFolder}/my-place`;
 
     if (action === "status") {
-      const [{ data: remembered }, placeReferenceNames] = await Promise.all([
+      const [{ data: remembered }, placeReferencePaths] = await Promise.all([
         adminClient.storage.from(BUCKET).download(styleMemoryPath),
-        listPlaceReferenceNames(adminClient, placeFolder),
+        listPlaceReferencePaths(adminClient, placeFolder, projectFolder),
       ]);
       return json({
         ok: true,
         styleMemoryExists: Boolean(remembered && remembered.size > 0),
         styleMemoryPath,
-        placeReferenceCount: placeReferenceNames.length,
+        placeReferenceCount: placeReferencePaths.length,
       });
     }
 
@@ -336,7 +362,7 @@ Deno.serve(async (req) => {
             [sourcePath, styleMemoryPath],
           )
         : Promise.resolve([]),
-      loadPlaceReferences(adminClient, placeFolder),
+      loadPlaceReferences(adminClient, placeFolder, projectFolder),
     ]);
 
     const mimeType = sourceBlob.type && sourceBlob.type.startsWith("image/") ? sourceBlob.type : "image/jpeg";
