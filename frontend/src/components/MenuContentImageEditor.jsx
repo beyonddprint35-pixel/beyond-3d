@@ -111,16 +111,18 @@ const PHOTO_COPY = {
 const PHOTO_STYLE_DEFAULT = { camera: "original", lighting: "restaurant", color: "restaurant", depth: "balanced" };
 const PHOTO_STYLE_COPY = {
   en: {
-    title: "Photo style", hint: "Choose the feeling. Beyond handles the photography details.", save: "Save as restaurant default", saved: "Restaurant default saved",
+    title: "Photo style", hint: "Choose the feeling. Beyond handles the photography details.",
+    selected: "Selected for next generation", appliesNext: "This style will be used the next time Beyond generates this photo.",
+    save: "Use for future photos", saved: "Future-photo default saved", saveHint: "Applies automatically to new AI photos. Existing photos stay unchanged.",
     advanced: "Advanced controls", advancedHint: "Camera, lighting, color and background depth", custom: "Custom settings",
     camera: "Camera", lighting: "Lighting", color: "Color", depth: "Background depth",
     cameraWarning: "Changing the camera angle on a real photo can require AI to reconstruct details that were not visible. Keep original is the safest choice.",
     presets: {
       restaurant: { label: "Match my restaurant", hint: "Follow the visual style of your restaurant", badge: "Recommended", icon: "✨" },
-      bright: { label: "Bright & fresh", hint: "Clean daylight and natural color", icon: "☀️" },
-      warm: { label: "Warm & cozy", hint: "Warm evening light and a softer background", icon: "🌅" },
-      dark: { label: "Dark & premium", hint: "Moody contrast with a premium restaurant feel", icon: "🌙" },
-      clean: { label: "Clean & minimal", hint: "Neutral light, natural color and crisp detail", icon: "🤍" },
+      bright: { label: "Bright & fresh", hint: "Airy daylight, crisp whites and lively natural color", icon: "☀️" },
+      warm: { label: "Warm & cozy", hint: "Distinct golden warmth with softer background depth", icon: "🌅" },
+      dark: { label: "Dark & premium", hint: "Deeper shadows, focused highlights and premium contrast", icon: "🌙" },
+      clean: { label: "Clean & minimal", hint: "Bright neutral light, restrained color and crisp detail", icon: "🤍" },
     },
     options: {
       camera: { original: "Keep original", eye: "Eye level", threeQuarter: "45°", top: "Top-down" },
@@ -130,16 +132,18 @@ const PHOTO_STYLE_COPY = {
     },
   },
   he: {
-    title: "סגנון תמונה", hint: "בחרו את התחושה. Beyond מטפל בפרטי הצילום.", save: "שמירה כברירת מחדל למסעדה", saved: "ברירת המחדל נשמרה",
+    title: "סגנון תמונה", hint: "בחרו את התחושה. Beyond מטפל בפרטי הצילום.",
+    selected: "נבחר ליצירה הבאה", appliesNext: "הסגנון הזה יוחל בפעם הבאה ש-Beyond ייצור את התמונה.",
+    save: "שימוש בתמונות עתידיות", saved: "ברירת המחדל לתמונות עתידיות נשמרה", saveHint: "יחול אוטומטית על תמונות AI חדשות. תמונות קיימות לא ישתנו.",
     advanced: "הגדרות מתקדמות", advancedHint: "זווית, תאורה, צבע ועומק רקע", custom: "הגדרות מותאמות",
     camera: "זווית צילום", lighting: "תאורה", color: "צבע", depth: "עומק רקע",
     cameraWarning: "שינוי זווית בתמונה אמיתית עלול לדרוש מה-AI להשלים פרטים שלא נראו. שמירת הזווית המקורית היא הבחירה הבטוחה ביותר.",
     presets: {
       restaurant: { label: "התאמה למסעדה שלי", hint: "שימוש בשפה החזותית של המסעדה", badge: "מומלץ", icon: "✨" },
-      bright: { label: "בהיר ורענן", hint: "אור יום נקי וצבע טבעי", icon: "☀️" },
-      warm: { label: "חם ונעים", hint: "תאורת ערב חמה ורקע רך יותר", icon: "🌅" },
-      dark: { label: "כהה ויוקרתי", hint: "קונטרסט דרמטי ואווירת פרימיום", icon: "🌙" },
-      clean: { label: "נקי ומינימלי", hint: "אור ניטרלי, צבע טבעי ופרטים חדים", icon: "🤍" },
+      bright: { label: "בהיר ורענן", hint: "אור יום אוורירי, לבנים נקיים וצבע טבעי חי", icon: "☀️" },
+      warm: { label: "חם ונעים", hint: "חמימות זהובה ברורה ורקע רך יותר", icon: "🌅" },
+      dark: { label: "כהה ויוקרתי", hint: "צללים עמוקים, הדגשות ממוקדות וקונטרסט יוקרתי", icon: "🌙" },
+      clean: { label: "נקי ומינימלי", hint: "אור ניטרלי בהיר, צבע מאופק ופרטים חדים", icon: "🤍" },
     },
     options: {
       camera: { original: "מקורית", eye: "גובה העיניים", threeQuarter: "45°", top: "מלמעלה" },
@@ -149,16 +153,18 @@ const PHOTO_STYLE_COPY = {
     },
   },
   ar: {
-    title: "أسلوب الصورة", hint: "اختر الإحساس، وBeyond يتولى تفاصيل التصوير.", save: "حفظ كإعداد افتراضي للمطعم", saved: "تم حفظ الإعداد الافتراضي",
+    title: "أسلوب الصورة", hint: "اختر الإحساس، وBeyond يتولى تفاصيل التصوير.",
+    selected: "محدد للإنشاء التالي", appliesNext: "سيُستخدم هذا الأسلوب في المرة التالية التي ينشئ فيها Beyond الصورة.",
+    save: "استخدامه للصور المستقبلية", saved: "تم حفظ الإعداد الافتراضي للصور المستقبلية", saveHint: "يُطبّق تلقائيًا على صور AI الجديدة. الصور الحالية لن تتغير.",
     advanced: "إعدادات متقدمة", advancedHint: "الزاوية والإضاءة واللون وعمق الخلفية", custom: "إعدادات مخصصة",
     camera: "زاوية الكاميرا", lighting: "الإضاءة", color: "اللون", depth: "عمق الخلفية",
     cameraWarning: "تغيير زاوية صورة حقيقية قد يتطلب من الذكاء الاصطناعي إعادة بناء تفاصيل غير ظاهرة. الحفاظ على الزاوية الأصلية هو الخيار الأكثر أماناً.",
     presets: {
       restaurant: { label: "مطابقة مطعمي", hint: "اتباع الأسلوب البصري للمطعم", badge: "موصى به", icon: "✨" },
-      bright: { label: "مشرق ومنعش", hint: "ضوء نهاري نظيف وألوان طبيعية", icon: "☀️" },
-      warm: { label: "دافئ ومريح", hint: "إضاءة مسائية دافئة وخلفية أنعم", icon: "🌅" },
-      dark: { label: "داكن وفاخر", hint: "تباين درامي بطابع مطعم فاخر", icon: "🌙" },
-      clean: { label: "نظيف وبسيط", hint: "إضاءة محايدة وألوان طبيعية وتفاصيل واضحة", icon: "🤍" },
+      bright: { label: "مشرق ومنعش", hint: "ضوء نهاري مشرق وبياض نقي وألوان طبيعية حيوية", icon: "☀️" },
+      warm: { label: "دافئ ومريح", hint: "دفء ذهبي واضح مع خلفية أكثر نعومة", icon: "🌅" },
+      dark: { label: "داكن وفاخر", hint: "ظلال أعمق وإضاءات مركزة وتباين فاخر", icon: "🌙" },
+      clean: { label: "نظيف وبسيط", hint: "ضوء محايد مشرق وألوان هادئة وتفاصيل واضحة", icon: "🤍" },
     },
     options: {
       camera: { original: "الأصلية", eye: "مستوى العين", threeQuarter: "45°", top: "من الأعلى" },
@@ -238,9 +244,25 @@ function optionsFromItem(item) {
 function photoStyleTheme(style) {
   const next = normalizePhotoStyle(style);
   const camera = { original: "preserve original camera angle", eye: "eye-level camera angle", threeQuarter: "45 degree three-quarter camera angle", top: "top-down overhead camera angle" }[next.camera];
-  const lighting = { restaurant: "match restaurant scene lighting", warm: "warm evening restaurant lighting", natural: "bright natural daylight", neutral: "neutral balanced studio lighting", dramatic: "dark cinematic low-key restaurant lighting with controlled highlights" }[next.lighting];
-  const color = { restaurant: "match restaurant scene color palette", warm: "warm amber color grading", cool: "cool clean color grading", natural: "natural true-to-life color", rich: "rich premium color grading with deep blacks and restrained saturation" }[next.color];
-  const depth = { balanced: "balanced depth of field", sharp: "sharp detailed background", soft: "soft blurred background bokeh" }[next.depth];
+  const lighting = {
+    restaurant: "match restaurant scene lighting faithfully",
+    warm: "distinct warm golden-hour restaurant lighting with amber highlights and soft falloff",
+    natural: "high-key bright natural daylight with clean whites and fresh crisp highlights",
+    neutral: "clean neutral high-key studio lighting with even soft illumination",
+    dramatic: "pronounced dark cinematic low-key restaurant lighting with deep shadows and focused highlights",
+  }[next.lighting];
+  const color = {
+    restaurant: "match restaurant scene color palette faithfully",
+    warm: "clearly warm amber color grading with natural skin-free food color fidelity",
+    cool: "clearly cool clean color grading with controlled blue-neutral highlights",
+    natural: "natural true-to-life color with fresh restrained saturation",
+    rich: "rich premium color grading with deeper blacks, polished contrast and restrained saturation",
+  }[next.color];
+  const depth = {
+    balanced: "balanced natural depth of field",
+    sharp: "clean crisp detailed background with minimal blur",
+    soft: "noticeably soft background bokeh while keeping the served item crisp",
+  }[next.depth];
   return { photo_camera: camera, photo_lighting: lighting, photo_color: color, photo_depth: depth };
 }
 
@@ -296,6 +318,9 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
   const visibleSavedUrl = savedCompareSide === "before" && hasSavedComparison ? item.image_original_url : item.image_url;
   const styleContext = currentMenuStyleContext(photoStyle);
   const selectedStylePreset = photoStylePresetKey(photoStyle);
+  const selectedStyleLabel = selectedStylePreset === "custom" ? styleCopy.custom : (styleCopy.presets[selectedStylePreset]?.label || styleCopy.title);
+  const selectedStyleStrength = selectedStylePreset === "restaurant" ? "balanced" : "strong";
+  const styleActionSuffix = ` · ${selectedStyleLabel}`;
 
   useEffect(() => {
     const nextOptions = optionsFromItem(item);
@@ -418,7 +443,7 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
         itemName: itemDisplayName(item),
         styleContext,
         sceneType: mode === "match" ? sceneType : "auto",
-        styleStrength: "balanced",
+        styleStrength: selectedStyleStrength,
         variantIndex: results.length + 1,
       });
       const uploaded = await uploadMenuItemImage({
@@ -631,9 +656,17 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
               })}
             </div>
 
+            <div className="menu-content-v2-photo-style-selected">
+              <span><Check size={13} /></span>
+              <div><strong>{styleCopy.selected}: {selectedStyleLabel}</strong><small>{styleCopy.appliesNext}</small></div>
+            </div>
+
             <div className="menu-content-v2-photo-style-save">
-              <button type="button" onClick={saveRestaurantPhotoStyle} disabled={busy}><Check size={13} /> {styleCopy.save}</button>
-              {styleSaved ? <small>✓ {styleCopy.saved}</small> : null}
+              <div className="menu-content-v2-photo-style-save-row">
+                <button type="button" onClick={saveRestaurantPhotoStyle} disabled={busy}><Check size={13} /> {styleCopy.save}</button>
+                {styleSaved ? <small>✓ {styleCopy.saved}</small> : null}
+              </div>
+              <small className="menu-content-v2-photo-style-save-hint">{styleCopy.saveHint}</small>
             </div>
 
             <button type="button" className={`menu-content-v2-photo-style-advanced-toggle ${advancedOpen ? "open" : ""}`} onClick={() => setAdvancedOpen((value) => !value)} disabled={busy} aria-expanded={advancedOpen}>
@@ -679,7 +712,7 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
               </div>
               <button type="button" className="menu-content-v2-photo-ai-generate" onClick={generatePreview} disabled={busy}>
                 {processing ? <LoaderCircle size={16} className="spin" /> : <Sparkles size={16} />}
-                {mode === "match" ? copy.generate : copy.preview}
+                {processing ? copy.generating : `${mode === "match" ? copy.generate : copy.preview}${styleActionSuffix}`}
               </button>
             </>
           ) : (
@@ -694,7 +727,7 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
                 {processing ? <div className="menu-content-v2-photo-processing"><LoaderCircle size={26} className="spin" /><strong>{copy.generating}</strong><small>{copy.generatingHint}</small></div> : null}
               </div>
               <div className="menu-content-v2-photo-ai-result-actions">
-                <button type="button" className="secondary" onClick={generatePreview} disabled={busy}>{processing ? <LoaderCircle size={15} className="spin" /> : <Sparkles size={14} />}{processing ? copy.generating : copy.createAnother}</button>
+                <button type="button" className="secondary" onClick={generatePreview} disabled={busy}>{processing ? <LoaderCircle size={15} className="spin" /> : <Sparkles size={14} />}{processing ? copy.generating : `${copy.createAnother}${styleActionSuffix}`}</button>
                 <button type="button" className="primary" onClick={saveAiPhoto} disabled={busy}>{saving ? <LoaderCircle size={15} className="spin" /> : <Check size={15} />}{saving ? copy.saving : copy.usePhoto}</button>
               </div>
             </>

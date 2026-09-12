@@ -198,6 +198,9 @@ export async function enhanceMenuPhotoWithAi({
 
   const size = await imageSizeForUrl(sourceUrl);
   const safeSceneType = normalizeSceneType(sceneType);
+  const safeStyleStrength = styleStrength === "strong" ? "strong" : "balanced";
+  const parsedVariantIndex = Number.parseInt(variantIndex, 10);
+  const safeVariantIndex = Number.isFinite(parsedVariantIndex) ? Math.min(20, Math.max(1, parsedVariantIndex)) : 1;
   const data = await invokePhotoAi({
     action: "enhance",
     projectId: context.projectId,
@@ -207,8 +210,8 @@ export async function enhanceMenuPhotoWithAi({
     mode,
     size,
     sceneType: safeSceneType,
-    styleStrength: "balanced",
-    variantIndex: 1,
+    styleStrength: safeStyleStrength,
+    variantIndex: safeVariantIndex,
     styleContext: cleanStyleContext(styleContext),
   }, "AI could not enhance this photo.");
 
@@ -217,7 +220,8 @@ export async function enhanceMenuPhotoWithAi({
   return {
     file: base64ToFile(data.imageBase64, data.mimeType, `${itemId}-${mode}-${usedScene}-ai.png`),
     mode: data.mode || mode,
-    requestedStyleStrength: "balanced",
+    requestedStyleStrength: data.styleStrength === "strong" ? "strong" : safeStyleStrength,
+    variantIndex: Number(data.variantIndex || safeVariantIndex),
     model: data.model || "gpt-image-2",
     size: data.size || size,
     styleLocked: Boolean(data.styleLocked),

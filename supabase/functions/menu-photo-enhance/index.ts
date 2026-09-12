@@ -49,7 +49,7 @@ function cleanStyleContext(context) {
   if (context.theme && typeof context.theme === "object") {
     for (const [key, value] of Object.entries(context.theme).slice(0, 8)) {
       const safeKey = clean(key, 40).replace(/[^a-zA-Z0-9_-]/g, "");
-      const safeValue = clean(value, 40).replace(/[^a-zA-Z0-9#(),.%\s_-]/g, "");
+      const safeValue = clean(value, 120).replace(/[^a-zA-Z0-9#(),.%\s_-]/g, "");
       if (safeKey && safeValue) theme[safeKey] = safeValue;
     }
   }
@@ -60,14 +60,27 @@ function cleanStyleContext(context) {
   };
 }
 
-function styleContextText(styleContext) {
+function styleContextText(styleContext, styleStrength = "balanced") {
   const themeEntries = Object.entries(styleContext?.theme || {});
   if (!themeEntries.length) return "";
-  const themeText = themeEntries.map(([key, value]) => `${key}: ${value}`).join(", ");
-  return `\n\nMENU DESIGN CONTEXT\nThe active menu uses these visual theme tokens: ${themeText}. Use them only as subtle palette and mood hints. Never render text, logos, UI elements or literal theme tokens into the photo.`;
+
+  const photoEntries = themeEntries.filter(([key]) => key.startsWith("photo_"));
+  const designEntries = themeEntries.filter(([key]) => !key.startsWith("photo_"));
+  const photoText = photoEntries.map(([key, value]) => `${key}: ${value}`).join(", ");
+  const designText = designEntries.map(([key, value]) => `${key}: ${value}`).join(", ");
+  const strengthRule = styleStrength === "strong"
+    ? "Apply these photographic directions clearly and visibly. The chosen lighting, color grade and depth should be immediately distinguishable, while the real served item and restaurant geometry remain truthful."
+    : "Apply these photographic directions naturally and with restraint, keeping the result realistic and faithful to the served item and restaurant.";
+  const photoContext = photoText
+    ? `\n\nPHOTO STYLE REQUEST\n${photoText}. ${strengthRule} Never change the identity, ingredients, portion, container or recognizable geometry of the served item merely to achieve the style.`
+    : "";
+  const designContext = designText
+    ? `\n\nMENU DESIGN CONTEXT\nThe active menu uses these visual theme tokens: ${designText}. Use them only as subtle palette and mood hints. Never render text, logos, UI elements or literal theme tokens into the photo.`
+    : "";
+  return `${photoContext}${designContext}`;
 }
 
-function itemPrompt({ mode, sceneType, scenePresetUsed, placeReferenceCount, styleContext }) {
+function itemPrompt({ mode, sceneType, scenePresetUsed, placeReferenceCount, styleContext, styleStrength, variantIndex }) {
   const identityLock = `Edit the FIRST attached image into a polished professional digital-menu photograph.\n\nABSOLUTE ITEM LOCK — HIGHEST PRIORITY\n- The FIRST image is the ONLY source of truth for the served item.\n- Preserve its semantic identity exactly. A beer must remain that same beer; a cocktail must remain that same cocktail; food must remain the same food.\n- Never replace a drink with food, food with a drink, or one dish/drink with another.\n- Preserve the visible glass, cup, plate or container, liquid color, fill level, foam/head, ice, garnish, ingredients, toppings, sauces, sides, portion size, number of pieces and recognizable geometry from the FIRST image.\n- Minor repositioning, crop and perspective cleanup are allowed only when needed to place the exact item naturally in the restaurant scene.\n- Do not import food, drinks, plates, glasses, utensils, text, logos, signs, hands or people from any reference image.\n- Keep realistic texture and believable imperfections. The result must remain an honest representation of the exact item in the FIRST image.`;
 
   const sceneInstruction = scenePresetUsed
@@ -76,17 +89,20 @@ function itemPrompt({ mode, sceneType, scenePresetUsed, placeReferenceCount, sty
       ? `\n\nMY PLACE — VENUE STYLE FALLBACK\nAdditional attached images are real venue photos. Use them only to guide lighting, color temperature, material character, ambience and background palette. Preserve the target item from the FIRST image and keep the scene believable.`
       : `\n\nRESTAURANT STYLE FALLBACK\nUse a refined realistic premium restaurant-menu photography look with intentional lighting, natural contrast, clean composition and subtle depth of field. Do not invent or replace the served item.`;
 
-  const designContext = styleContextText(styleContext);
+  const designContext = styleContextText(styleContext, styleStrength);
+  const variationInstruction = Number(variantIndex || 1) > 1
+    ? `\n\nVARIATION ${variantIndex}\nCreate a genuinely new photographic take of the same locked item and same restaurant setup. Vary small photographic choices such as crop, highlight balance, shadow rolloff or depth treatment without changing the item's identity or redesigning the restaurant.`
+    : "";
 
   if (mode === "background") {
-    return `${identityLock}${sceneInstruction}${designContext}\n\nTASK — CLEAN BACKGROUND\nKeep the served item and its container unchanged. Remove only distracting clutter immediately around the item and correct lighting naturally. Do not redesign the restaurant environment.`;
+    return `${identityLock}${sceneInstruction}${designContext}${variationInstruction}\n\nTASK — CLEAN BACKGROUND\nKeep the served item and its container unchanged. Remove only distracting clutter immediately around the item and correct lighting naturally. Do not redesign the restaurant environment.`;
   }
 
   if (mode === "match") {
-    return `${identityLock}${sceneInstruction}${designContext}\n\nTASK — MATCH RESTAURANT SCENE\nIntegrate the exact real item into the selected restaurant scene so it looks as if it was photographed there. The selected preset controls the background composition, surface, lighting, warmth, ambience and camera feel. Preserve the scene itself rather than inventing a similar replacement.\n\nFINAL SELF-CHECK\nThe output must contain the same item from the FIRST image and the same recognizable restaurant scene family from the SECOND image. If either identity would be lost, reduce the transformation.`;
+    return `${identityLock}${sceneInstruction}${designContext}${variationInstruction}\n\nTASK — MATCH RESTAURANT SCENE\nIntegrate the exact real item into the selected restaurant scene so it looks as if it was photographed there. Preserve the scene's geometry and recognizable elements. The selected Photo Style may deliberately tune lighting, color grading and depth while keeping the same real restaurant setup. Preserve the scene itself rather than inventing a similar replacement.\n\nFINAL SELF-CHECK\nThe output must contain the same item from the FIRST image and the same recognizable restaurant scene family from the SECOND image. If either identity would be lost, reduce the transformation.`;
   }
 
-  return `${identityLock}${sceneInstruction}${designContext}\n\nTASK — ENHANCE PHOTO\nEnhance the existing photograph only: correct exposure and white balance, improve natural contrast, clarity and sharpness, reduce distracting noise and minor clutter, and make the image look professionally photographed. Do not substantially replace the scene or served item.`;
+  return `${identityLock}${sceneInstruction}${designContext}${variationInstruction}\n\nTASK — ENHANCE PHOTO\nEnhance the existing photograph only: correct exposure and white balance, improve natural contrast, clarity and sharpness, reduce distracting noise and minor clutter, and make the image look professionally photographed. Respect the selected Photo Style while preserving the real item and believable scene.`;
 }
 
 function scenePrompt(generationMode, referenceCount) {
@@ -304,6 +320,9 @@ Deno.serve(async (req) => {
     const mode = ["enhance", "background", "match"].includes(body?.mode) ? body.mode : "enhance";
     const size = ["1024x1024", "1536x1024", "1024x1536"].includes(body?.size) ? body.size : "1536x1024";
     const requestedSceneType = ["auto", "scene1", "scene2"].includes(body?.sceneType) ? body.sceneType : "auto";
+    const styleStrength = body?.styleStrength === "strong" ? "strong" : "balanced";
+    const requestedVariantIndex = Number.parseInt(body?.variantIndex, 10);
+    const variantIndex = Number.isFinite(requestedVariantIndex) ? Math.min(20, Math.max(1, requestedVariantIndex)) : 1;
     const styleContext = cleanStyleContext(body?.styleContext);
 
     if (!itemId || !sourcePath) return json({ error: "This photo is missing required information." }, 400);
@@ -327,6 +346,8 @@ Deno.serve(async (req) => {
       scenePresetUsed: Boolean(scene),
       placeReferenceCount: placeReferences.length,
       styleContext,
+      styleStrength,
+      variantIndex,
     }));
     form.append("size", size);
     form.append("quality", "medium");
@@ -363,8 +384,8 @@ Deno.serve(async (req) => {
       mode,
       model: MODEL,
       size,
-      styleStrength: "balanced",
-      variantIndex: 1,
+      styleStrength,
+      variantIndex,
       styleLocked: Boolean(scene || placeReferences.length),
       styleMemoryExists: false,
       sceneType,
