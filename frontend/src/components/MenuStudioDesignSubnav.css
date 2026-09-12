@@ -18,7 +18,7 @@
 }
 
 /* Desktop keeps the existing row below the menu tabs. Mobile gets its own copy
-   inside the header so Design / My Place can sit above the current-menu selector. */
+   inside the header so the order can be controlled without overlapping preview tools. */
 .menu-design-subnav.menu-design-subnav-mobile {
   display: none;
 }
@@ -50,8 +50,6 @@
   box-shadow: 0 4px 14px rgba(50, 101, 222, 0.1);
 }
 
-/* The subnav now participates in the Studio flex layout, so a duplicate spacer
-   would add a second empty band and push the preview controls down. */
 .menu-design-subnav-spacer {
   display: none;
   height: 0;
@@ -84,17 +82,17 @@ html[data-beyond-theme="dark"] .menu-design-subnav button.active {
 }
 
 @media (max-width: 850px) {
-  /* Design mobile stack:
+  /* Mobile Design order is intentionally:
      1) product header
-     2) Design / My Place
-     3) current menu selector
-     4) preview device controls */
+     2) Your menus
+     3) Design / My Place
+     4) Mobile / Tablet / Desktop preview controls */
   .menu-studio-header.menu-design-v2-topbar {
     height: 145px !important;
     min-height: 145px !important;
     max-height: 145px !important;
     flex: 0 0 145px !important;
-    grid-template-rows: 48px 40px 36px !important;
+    grid-template-rows: 48px 36px 40px !important;
     row-gap: 3px !important;
   }
 
@@ -102,9 +100,14 @@ html[data-beyond-theme="dark"] .menu-design-subnav button.active {
     display: none !important;
   }
 
-  .menu-studio-header > .menu-design-subnav.menu-design-subnav-mobile {
+  .menu-studio-header.menu-design-v2-topbar > .menu-studio-menu-switcher {
     grid-column: 1 / -1 !important;
     grid-row: 2 !important;
+  }
+
+  .menu-studio-header > .menu-design-subnav.menu-design-subnav-mobile {
+    grid-column: 1 / -1 !important;
+    grid-row: 3 !important;
     position: static !important;
     inset: auto !important;
     z-index: 1 !important;
@@ -135,8 +138,17 @@ html[data-beyond-theme="dark"] .menu-design-subnav button.active {
     font-size: 11px !important;
   }
 
-  .menu-studio-header.menu-design-v2-topbar > .menu-studio-menu-switcher {
-    grid-row: 3 !important;
+  /* The Design workspace must begin after all three header rows. This keeps the
+     viewport/device toolbar visible immediately below Design / My Place. */
+  .menu-design-v2 > .menu-studio-header.menu-design-v2-topbar + .menu-design-v2-workspace {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+
+  .menu-design-v2 .studio-v3-design-canvas-workspace.compact > .studio-v3-design-canvas-toolbar {
+    display: grid !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
   .menu-design-subnav-spacer {
