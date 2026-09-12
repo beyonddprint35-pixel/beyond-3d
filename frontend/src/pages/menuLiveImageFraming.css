@@ -4,19 +4,22 @@
 .menu-content-v2-preview .beyond-live-framing-active{position:relative!important;overflow:hidden!important;touch-action:none!important;cursor:grab!important;outline:2px solid rgba(55,109,246,.95);outline-offset:-2px;isolation:isolate}
 .menu-content-v2-preview .beyond-live-framing-active.beyond-live-framing-dragging{cursor:grabbing!important}
 .menu-content-v2-preview .beyond-live-framing-active>img{user-select:none!important;-webkit-user-drag:none!important;will-change:transform,object-position;transition:none!important}
-.beyond-live-framing-toolbar{position:absolute;inset:0;z-index:40;display:flex;flex-direction:column;justify-content:space-between;pointer-events:none;background:linear-gradient(180deg,rgba(2,6,23,.58) 0,rgba(2,6,23,0) 34%,rgba(2,6,23,0) 58%,rgba(2,6,23,.72) 100%);color:#fff;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-.beyond-live-framing-hint{align-self:center;margin-top:9px;padding:5px 8px;border:1px solid rgba(255,255,255,.26);border-radius:999px;background:rgba(2,6,23,.62);backdrop-filter:blur(9px);font-size:9px;font-weight:750;line-height:1;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.18)}
-.beyond-live-framing-controls{pointer-events:auto;display:flex;align-items:center;justify-content:center;gap:6px;margin:0 8px 8px;padding:6px;border:1px solid rgba(255,255,255,.22);border-radius:13px;background:rgba(9,15,27,.9);backdrop-filter:blur(12px);box-shadow:0 8px 24px rgba(0,0,0,.26)}
-.beyond-live-framing-controls button{position:relative;z-index:2;display:inline-flex;align-items:center;justify-content:center;min-width:46px;height:46px;min-height:46px;padding:0 12px;border:1px solid rgba(255,255,255,.2);border-radius:10px;background:rgba(255,255,255,.1);color:#fff;font:800 12px/1 Inter,system-ui,sans-serif;cursor:pointer;touch-action:manipulation;user-select:none;-webkit-user-select:none}
-.beyond-live-framing-controls button[data-live-frame-cancel],.beyond-live-framing-controls button[data-live-frame-minus],.beyond-live-framing-controls button[data-live-frame-plus]{width:46px;max-width:46px;padding:0;font-size:18px}
-.beyond-live-framing-controls button[data-live-frame-reset]{min-width:62px}
-.beyond-live-framing-controls button:hover{background:rgba(255,255,255,.2)}
-.beyond-live-framing-controls button:active{transform:scale(.96);background:rgba(255,255,255,.24)}
-.beyond-live-framing-controls button.done{min-width:66px;margin-inline-start:2px;padding-inline:14px;border-color:#4f7df3;background:#376df6;color:#fff}
+.beyond-live-framing-toolbar{position:absolute;inset:0;z-index:2147483000!important;display:flex;flex-direction:column;justify-content:space-between;pointer-events:none!important;background:linear-gradient(180deg,rgba(2,6,23,.58) 0,rgba(2,6,23,0) 34%,rgba(2,6,23,0) 50%,rgba(2,6,23,.8) 100%);color:#fff;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;isolation:isolate}
+.beyond-live-framing-hint{align-self:center;margin-top:9px;padding:5px 8px;border:1px solid rgba(255,255,255,.26);border-radius:999px;background:rgba(2,6,23,.62);backdrop-filter:blur(9px);font-size:9px;font-weight:750;line-height:1;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.18);pointer-events:none!important}
+.beyond-live-framing-controls{position:relative;z-index:2147483001!important;pointer-events:auto!important;align-self:center;width:min(92%,300px);margin:0 10px 10px;padding:8px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-areas:"cancel reset done" "minus zoom plus";align-items:center;justify-items:stretch;gap:7px;border:1px solid rgba(255,255,255,.28);border-radius:15px;background:rgba(9,15,27,.94);backdrop-filter:blur(14px);box-shadow:0 10px 30px rgba(0,0,0,.34)}
+.beyond-live-framing-controls button{position:relative;z-index:2147483002!important;pointer-events:auto!important;display:inline-flex;align-items:center;justify-content:center;width:100%;min-width:0;height:58px;min-height:58px;padding:0 12px;border:1px solid rgba(255,255,255,.22);border-radius:11px;background:rgba(255,255,255,.12);color:#fff;font:800 13px/1 Inter,system-ui,sans-serif;cursor:pointer;touch-action:manipulation!important;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:rgba(255,255,255,.16)}
+.beyond-live-framing-controls button[data-live-frame-cancel]{grid-area:cancel;font-size:22px}
+.beyond-live-framing-controls button[data-live-frame-reset]{grid-area:reset}
+.beyond-live-framing-controls button[data-live-frame-save]{grid-area:done}
+.beyond-live-framing-controls button[data-live-frame-minus]{grid-area:minus;font-size:22px}
+.beyond-live-framing-controls span[data-live-frame-zoom]{grid-area:zoom;display:flex;align-items:center;justify-content:center;align-self:stretch;min-width:0;border:1px solid rgba(255,255,255,.14);border-radius:11px;background:rgba(255,255,255,.06);font-size:11px;font-weight:850;font-variant-numeric:tabular-nums;pointer-events:none}
+.beyond-live-framing-controls button[data-live-frame-plus]{grid-area:plus;font-size:22px}
+.beyond-live-framing-controls button:hover{background:rgba(255,255,255,.22)}
+.beyond-live-framing-controls button:active{transform:scale(.96);background:rgba(255,255,255,.28)}
+.beyond-live-framing-controls button.done{margin:0;padding-inline:14px;border-color:#5f87f5;background:#376df6;color:#fff}
 .beyond-live-framing-controls button.done:hover{background:#2d60e8}
 .beyond-live-framing-controls button:disabled{opacity:.55;cursor:wait}
-.beyond-live-framing-controls span{min-width:44px;text-align:center;font-size:10px;font-weight:800;font-variant-numeric:tabular-nums}
-.beyond-live-framing-status{position:absolute;left:8px;right:8px;bottom:64px;min-height:0;text-align:center;font-size:9px;font-weight:750;line-height:1.25;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.55);pointer-events:none}
+.beyond-live-framing-status{position:absolute;z-index:2147483003;left:8px;right:8px;bottom:142px;min-height:0;text-align:center;font-size:9px;font-weight:750;line-height:1.25;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.55);pointer-events:none}
 .beyond-live-framing-status:empty{display:none}
 .beyond-live-framing-status[data-tone="error"]{padding:5px 7px;border-radius:7px;background:rgba(180,35,24,.9)}
 .beyond-live-framing-saving{cursor:wait!important}
@@ -24,10 +27,8 @@
 @media(max-width:850px){
   .menu-content-v2-preview .beyond-live-framing-trigger{right:8px;top:8px;width:36px;height:36px;min-height:36px}
   .beyond-live-framing-hint{font-size:8px}
-  .beyond-live-framing-controls{gap:5px;margin:0 6px 6px;padding:5px}
-  .beyond-live-framing-controls button{min-width:46px;height:46px;min-height:46px;padding-inline:10px;font-size:12px}
-  .beyond-live-framing-controls button[data-live-frame-cancel],.beyond-live-framing-controls button[data-live-frame-minus],.beyond-live-framing-controls button[data-live-frame-plus]{width:46px;max-width:46px;padding:0;font-size:18px}
-  .beyond-live-framing-controls button[data-live-frame-reset]{min-width:62px}
-  .beyond-live-framing-controls button.done{min-width:66px;padding-inline:13px}
-  .beyond-live-framing-controls span{min-width:40px;font-size:9px}
+  .beyond-live-framing-controls{width:min(94%,300px);gap:7px;margin:0 8px 8px;padding:8px}
+  .beyond-live-framing-controls button{height:60px;min-height:60px;font-size:13px}
+  .beyond-live-framing-controls button[data-live-frame-cancel],.beyond-live-framing-controls button[data-live-frame-minus],.beyond-live-framing-controls button[data-live-frame-plus]{font-size:23px}
+  .beyond-live-framing-controls span[data-live-frame-zoom]{font-size:11px}
 }
