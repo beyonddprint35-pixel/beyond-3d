@@ -72,6 +72,32 @@ button:focus-visible .beyond-pro-badge::after{
   transform:translate(-50%,0);
 }
 
+.menu-studio-nav-label{
+  position:relative;
+  display:inline-block;
+  line-height:inherit;
+  overflow:visible;
+}
+
+.menu-studio-header nav button,
+.menu-studio-mobile-stage-nav button{
+  overflow:visible;
+}
+
+.menu-studio-nav-pro-badge.beyond-pro-badge{
+  position:absolute;
+  top:-9px;
+  right:-18px;
+  z-index:3;
+  min-width:20px;
+  height:11px;
+  padding:0 3px;
+  margin:0;
+  font-size:6px;
+  letter-spacing:.04em;
+  pointer-events:auto;
+}
+
 html[data-beyond-theme="dark"] .beyond-pro-badge{
   border-color:rgba(113,151,255,.45);
   background:rgba(73,116,229,.18);
@@ -80,4 +106,13 @@ html[data-beyond-theme="dark"] .beyond-pro-badge{
 
 @media (max-width:640px){
   .beyond-pro-badge::after{max-width:190px;font-size:10px}
+
+  .menu-studio-nav-pro-badge.beyond-pro-badge{
+    top:-7px;
+    right:-15px;
+    min-width:18px;
+    height:10px;
+    padding-inline:2px;
+    font-size:5.5px;
+  }
 }
