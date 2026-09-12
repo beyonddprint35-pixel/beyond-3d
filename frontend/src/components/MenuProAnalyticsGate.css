@@ -59,14 +59,6 @@
   animation: menu-analytics-pro-pulse 1.45s ease-in-out infinite;
 }
 
-.menu-studio-nav-pro-badge.beyond-pro-badge {
-  min-width: 24px;
-  height: 15px;
-  padding-inline: 4px;
-  margin-inline-start: 4px;
-  font-size: 7px;
-}
-
 @keyframes menu-analytics-pro-pulse {
   0%, 100% { transform: scale(1); opacity: .72; }
   50% { transform: scale(1.05); opacity: 1; }
@@ -81,13 +73,5 @@
   .menu-analytics-pro-gate-card {
     padding: 30px 22px;
     border-radius: 20px;
-  }
-
-  .menu-studio-mobile-stage-nav .menu-studio-nav-pro-badge.beyond-pro-badge {
-    min-width: 20px;
-    height: 13px;
-    padding-inline: 3px;
-    margin-inline-start: 3px;
-    font-size: 6px;
   }
 }
