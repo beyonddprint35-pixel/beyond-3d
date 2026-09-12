@@ -92,7 +92,14 @@ export default function MenuStudioHeader({
       </div>
 
       <nav className={`${prefix}-product-nav`} aria-label="Menu Studio" dir={studioLanguageDirection(language)}>
-        {STUDIO_STAGES.map((key) => <button type="button" key={key} aria-current={key === stage ? "page" : undefined} className={key === stage ? "active" : ""} onClick={() => openStage(key)}>{t[key]}{key === "analytics" ? <MenuProBadge language={language} className="menu-studio-nav-pro-badge" /> : null}</button>)}
+        {STUDIO_STAGES.map((key) => (
+          <button type="button" key={key} aria-current={key === stage ? "page" : undefined} className={key === stage ? "active" : ""} onClick={() => openStage(key)}>
+            <span className="menu-studio-nav-label">
+              {t[key]}
+              {key === "analytics" ? <MenuProBadge language={language} className="menu-studio-nav-pro-badge" /> : null}
+            </span>
+          </button>
+        ))}
       </nav>
 
       <div className={`${prefix}-top-actions menu-studio-header-actions`}>
