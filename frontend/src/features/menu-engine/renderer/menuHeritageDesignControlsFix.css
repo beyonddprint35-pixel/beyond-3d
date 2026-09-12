@@ -114,3 +114,50 @@
 .bme-heritage-exact .ep-footer strong {
   color: var(--ep-ink, #151515);
 }
+
+/* Keep the Heritage item viewport physically identical in every language.
+   The old list inherited RTL from the app, so its vertical scrollbar/gutter
+   changed sides when switching EN <-> HE/AR. That changed the usable width and
+   made the cards appear to move or get clipped on the language side. The list
+   itself now keeps fixed LTR geometry while each card restores its own text
+   direction. This matches the centered El Puerto Heritage behavior. */
+.bme-heritage-exact .ep-menu-list {
+  direction: ltr !important;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.bme-heritage-exact .ep-menu-list::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
+}
+
+.bme-heritage-exact .ep-item-category-wrap,
+.bme-heritage-exact .ep-item-category,
+.bme-heritage-exact .ep-item-row {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.bme-heritage-exact .ep-item-row {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+.bme-heritage-exact .ep-app[dir="ltr"] .ep-item-category,
+.bme-heritage-exact .ep-app[dir="ltr"] .ep-item-row {
+  direction: ltr;
+  text-align: left;
+}
+
+.bme-heritage-exact .ep-app[dir="rtl"] .ep-item-category,
+.bme-heritage-exact .ep-app[dir="rtl"] .ep-item-row {
+  direction: rtl;
+  text-align: right;
+}
