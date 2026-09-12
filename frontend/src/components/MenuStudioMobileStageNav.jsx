@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import MenuProBadge from "./MenuProBadge";
 import { readStudioLanguage, studioLanguageDirection } from "../features/menu-engine/studio/studioLanguage";
 
 import { flushStudioDraft, STUDIO_NAV_COPY, STUDIO_STAGES } from "../features/menu-engine/studio/studioNavigation";
@@ -51,7 +52,7 @@ export default function MenuStudioMobileStageNav() {
           aria-current={currentStage === stage ? "page" : undefined}
           onClick={() => openStage(stage)}
         >
-          {t[stage]}
+          {t[stage]}{stage === "analytics" ? <MenuProBadge language={language} className="menu-studio-nav-pro-badge" /> : null}
         </button>
       ))}
     </nav>
