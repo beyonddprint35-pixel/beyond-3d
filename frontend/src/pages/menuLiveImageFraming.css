@@ -1,34 +1,46 @@
 .menu-content-v2-preview .beyond-live-framing-trigger{position:absolute;right:10px;top:10px;z-index:8;width:38px;height:38px;min-height:38px;padding:0;display:inline-flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.72);border-radius:12px;background:rgba(12,19,31,.88);color:#fff;cursor:pointer;backdrop-filter:blur(10px);box-shadow:0 5px 16px rgba(0,0,0,.22)}
 .menu-content-v2-preview .beyond-live-framing-trigger svg{width:17px;height:17px;display:block}
 .menu-content-v2-preview .beyond-live-framing-trigger:hover{background:rgba(12,19,31,.97);transform:translateY(-1px)}
+
+.menu-content-v2-preview .menu-content-v2-canvas{position:relative}
+.menu-content-v2-preview .menu-content-v2-canvas.beyond-live-framing-canvas-active{padding-bottom:104px!important}
 .menu-content-v2-preview .beyond-live-framing-active{position:relative!important;overflow:hidden!important;touch-action:none!important;cursor:grab!important;outline:2px solid rgba(55,109,246,.95);outline-offset:-2px;isolation:isolate}
 .menu-content-v2-preview .beyond-live-framing-active.beyond-live-framing-dragging{cursor:grabbing!important}
 .menu-content-v2-preview .beyond-live-framing-active>img{user-select:none!important;-webkit-user-drag:none!important;will-change:transform,object-position;transition:none!important}
-.beyond-live-framing-toolbar{position:absolute;inset:0;z-index:2147483000!important;display:flex;flex-direction:column;justify-content:space-between;pointer-events:none!important;background:linear-gradient(180deg,rgba(2,6,23,.58) 0,rgba(2,6,23,0) 34%,rgba(2,6,23,0) 50%,rgba(2,6,23,.8) 100%);color:#fff;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;isolation:isolate}
-.beyond-live-framing-hint{align-self:center;margin-top:9px;padding:5px 8px;border:1px solid rgba(255,255,255,.26);border-radius:999px;background:rgba(2,6,23,.62);backdrop-filter:blur(9px);font-size:9px;font-weight:750;line-height:1;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.18);pointer-events:none!important}
-.beyond-live-framing-controls{position:relative;z-index:2147483001!important;pointer-events:auto!important;align-self:center;width:min(92%,300px);margin:0 10px 10px;padding:8px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-areas:"cancel reset done" "minus zoom plus";align-items:center;justify-items:stretch;gap:7px;border:1px solid rgba(255,255,255,.28);border-radius:15px;background:rgba(9,15,27,.94);backdrop-filter:blur(14px);box-shadow:0 10px 30px rgba(0,0,0,.34)}
-.beyond-live-framing-controls button{position:relative;z-index:2147483002!important;pointer-events:auto!important;display:inline-flex;align-items:center;justify-content:center;width:100%;min-width:0;height:58px;min-height:58px;padding:0 12px;border:1px solid rgba(255,255,255,.22);border-radius:11px;background:rgba(255,255,255,.12);color:#fff;font:800 13px/1 Inter,system-ui,sans-serif;cursor:pointer;touch-action:manipulation!important;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:rgba(255,255,255,.16)}
-.beyond-live-framing-controls button[data-live-frame-cancel]{grid-area:cancel;font-size:22px}
-.beyond-live-framing-controls button[data-live-frame-reset]{grid-area:reset}
-.beyond-live-framing-controls button[data-live-frame-save]{grid-area:done}
-.beyond-live-framing-controls button[data-live-frame-minus]{grid-area:minus;font-size:22px}
-.beyond-live-framing-controls span[data-live-frame-zoom]{grid-area:zoom;display:flex;align-items:center;justify-content:center;align-self:stretch;min-width:0;border:1px solid rgba(255,255,255,.14);border-radius:11px;background:rgba(255,255,255,.06);font-size:11px;font-weight:850;font-variant-numeric:tabular-nums;pointer-events:none}
-.beyond-live-framing-controls button[data-live-frame-plus]{grid-area:plus;font-size:22px}
-.beyond-live-framing-controls button:hover{background:rgba(255,255,255,.22)}
-.beyond-live-framing-controls button:active{transform:scale(.96);background:rgba(255,255,255,.28)}
-.beyond-live-framing-controls button.done{margin:0;padding-inline:14px;border-color:#5f87f5;background:#376df6;color:#fff}
-.beyond-live-framing-controls button.done:hover{background:#2d60e8}
+
+/* Framing controls live on the Studio canvas, not inside the scaled phone.
+   This keeps the entire menu photo visible while the user zooms or drags it. */
+.beyond-live-framing-toolbar{position:absolute;left:50%;bottom:16px;z-index:80;width:min(620px,calc(100% - 32px));transform:translateX(-50%);display:grid;grid-template-columns:minmax(150px,1fr) auto;grid-template-areas:"hint controls" "status status";align-items:center;gap:8px 14px;padding:10px 12px;border:1px solid rgba(70,82,105,.18);border-radius:14px;background:rgba(255,255,255,.96);color:#172033;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;box-shadow:0 10px 28px rgba(24,35,58,.16);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);pointer-events:auto}
+.beyond-live-framing-hint{grid-area:hint;min-width:0;color:#667085;font-size:11px;font-weight:750;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.beyond-live-framing-controls{grid-area:controls;display:flex;align-items:center;justify-content:flex-end;gap:6px;pointer-events:auto}
+.beyond-live-framing-controls button{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:38px;min-height:38px;padding:0 10px;border:1px solid #d8deea;border-radius:10px;background:#f7f9fc;color:#1c2433;font:800 11px/1 Inter,system-ui,sans-serif;cursor:pointer;touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:rgba(55,109,246,.12)}
+.beyond-live-framing-controls button[data-live-frame-cancel],.beyond-live-framing-controls button[data-live-frame-minus],.beyond-live-framing-controls button[data-live-frame-plus]{width:38px;max-width:38px;padding:0;font-size:18px}
+.beyond-live-framing-controls button[data-live-frame-reset]{min-width:58px}
+.beyond-live-framing-controls button:hover{border-color:#bdc8da;background:#eef2f8}
+.beyond-live-framing-controls button:active{transform:scale(.97);background:#e8edf5}
+.beyond-live-framing-controls button.done{min-width:62px;border-color:#4974e5;background:#4974e5;color:#fff}
+.beyond-live-framing-controls button.done:hover{background:#3f68d2}
 .beyond-live-framing-controls button:disabled{opacity:.55;cursor:wait}
-.beyond-live-framing-status{position:absolute;z-index:2147483003;left:8px;right:8px;bottom:142px;min-height:0;text-align:center;font-size:9px;font-weight:750;line-height:1.25;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.55);pointer-events:none}
+.beyond-live-framing-controls span[data-live-frame-zoom]{min-width:46px;text-align:center;color:#4f5d73;font-size:10px;font-weight:850;font-variant-numeric:tabular-nums;pointer-events:none}
+.beyond-live-framing-status{grid-area:status;min-height:0;text-align:center;color:#667085;font-size:10px;font-weight:750;line-height:1.25;pointer-events:none}
 .beyond-live-framing-status:empty{display:none}
-.beyond-live-framing-status[data-tone="error"]{padding:5px 7px;border-radius:7px;background:rgba(180,35,24,.9)}
+.beyond-live-framing-status[data-tone="error"]{padding:6px 8px;border-radius:8px;background:#fff0f1;color:#b42318}
 .beyond-live-framing-saving{cursor:wait!important}
 .beyond-live-framing-saving:after{content:"";position:absolute;inset:0;z-index:35;background:rgba(2,6,23,.12);pointer-events:none}
+
+html[data-beyond-theme="dark"] .beyond-live-framing-toolbar{border-color:#2a374a;background:rgba(15,22,33,.96);color:#f4f7fb;box-shadow:0 12px 30px rgba(0,0,0,.35)}
+html[data-beyond-theme="dark"] .beyond-live-framing-hint,html[data-beyond-theme="dark"] .beyond-live-framing-status{color:#aab5c6}
+html[data-beyond-theme="dark"] .beyond-live-framing-controls button{border-color:#344258;background:#1b2636;color:#f4f7fb}
+html[data-beyond-theme="dark"] .beyond-live-framing-controls button:hover{background:#243248}
+html[data-beyond-theme="dark"] .beyond-live-framing-controls span[data-live-frame-zoom]{color:#c0c9d8}
+html[data-beyond-theme="dark"] .beyond-live-framing-controls button.done{border-color:#5c84ee;background:#4974e5;color:#fff}
+
 @media(max-width:850px){
   .menu-content-v2-preview .beyond-live-framing-trigger{right:8px;top:8px;width:36px;height:36px;min-height:36px}
-  .beyond-live-framing-hint{font-size:8px}
-  .beyond-live-framing-controls{width:min(94%,300px);gap:7px;margin:0 8px 8px;padding:8px}
-  .beyond-live-framing-controls button{height:60px;min-height:60px;font-size:13px}
-  .beyond-live-framing-controls button[data-live-frame-cancel],.beyond-live-framing-controls button[data-live-frame-minus],.beyond-live-framing-controls button[data-live-frame-plus]{font-size:23px}
-  .beyond-live-framing-controls span[data-live-frame-zoom]{font-size:11px}
+  .menu-content-v2-preview .menu-content-v2-canvas.beyond-live-framing-canvas-active{padding-bottom:126px!important}
+  .beyond-live-framing-toolbar{bottom:10px;width:calc(100% - 20px);grid-template-columns:1fr;grid-template-areas:"hint" "controls" "status";gap:7px;padding:9px 10px}
+  .beyond-live-framing-hint{text-align:center;font-size:10px}
+  .beyond-live-framing-controls{justify-content:center;gap:5px;flex-wrap:wrap}
+  .beyond-live-framing-controls button{height:40px;min-height:40px}
+  .beyond-live-framing-controls button[data-live-frame-cancel],.beyond-live-framing-controls button[data-live-frame-minus],.beyond-live-framing-controls button[data-live-frame-plus]{width:40px;max-width:40px}
 }
