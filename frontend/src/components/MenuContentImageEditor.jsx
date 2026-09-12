@@ -28,8 +28,8 @@ import "./MenuContentImageStyleMatch.css";
 
 const PHOTO_COPY = {
   en: {
-    title: "Dish photo",
-    hint: "Use a real photo. Beyond can make it look professionally shot without changing the dish or drink.",
+    title: "Photo",
+    hint: "Upload a real photo and use it as-is. Beyond AI enhancement is optional.",
     take: "Take photo", takeHint: "Open camera", choose: "Choose from phone", chooseHint: "Photo library",
     replace: "Replace photo", ready: "Photo added", done: "AI enhanced",
     prepare: "Enhance with Beyond AI", prepareHint: "Clean, improve or match a saved restaurant scene — while preserving the real item.",
@@ -53,7 +53,7 @@ const PHOTO_COPY = {
     advancedAi: "Create a new photo with AI instead", advancedAiHint: "Only use this when you do not have a real photo of the item.",
   },
   he: {
-    title: "תמונת הפריט", hint: "השתמשו בתמונה אמיתית. Beyond יכול להפוך אותה למקצועית בלי לשנות את המנה או המשקה.",
+    title: "תמונה", hint: "העלו תמונה אמיתית והשתמשו בה כפי שהיא. השיפור עם Beyond AI הוא אופציונלי.",
     take: "צילום עכשיו", takeHint: "פתיחת המצלמה", choose: "בחירה מהטלפון", chooseHint: "ספריית התמונות",
     replace: "החלפת תמונה", ready: "התמונה נוספה", done: "שופרה עם AI",
     prepare: "שיפור עם Beyond AI", prepareHint: "ניקוי, שיפור או התאמה לסצנת מסעדה שמורה — תוך שמירה על הפריט האמיתי.",
@@ -77,7 +77,7 @@ const PHOTO_COPY = {
     advancedAi: "יצירת תמונה חדשה עם AI במקום", advancedAiHint: "רק כשאין תמונה אמיתית של הפריט.",
   },
   ar: {
-    title: "صورة العنصر", hint: "استخدم صورة حقيقية. يمكن لـ Beyond جعلها احترافية دون تغيير الطبق أو المشروب.",
+    title: "صورة", hint: "ارفع صورة حقيقية واستخدمها كما هي. التحسين باستخدام Beyond AI اختياري.",
     take: "التقط صورة", takeHint: "فتح الكاميرا", choose: "اختر من الهاتف", chooseHint: "مكتبة الصور",
     replace: "استبدال الصورة", ready: "تمت إضافة الصورة", done: "محسّنة بالذكاء الاصطناعي",
     prepare: "تحسين باستخدام Beyond AI", prepareHint: "تنظيف أو تحسين أو مطابقة مشهد مطعم محفوظ مع الحفاظ على العنصر الحقيقي.",
@@ -210,7 +210,7 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
       setSavedCompareSide("after");
       setMode("match");
       setSceneType("auto");
-      setStudioOpen(true);
+      setStudioOpen(false);
     } catch (uploadError) {
       setError(uploadError?.message || t.imageUploadError || "Could not upload this photo.");
     } finally {
