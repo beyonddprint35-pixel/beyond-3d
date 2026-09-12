@@ -52,7 +52,10 @@ export default function MenuStudioMobileStageNav() {
           aria-current={currentStage === stage ? "page" : undefined}
           onClick={() => openStage(stage)}
         >
-          {t[stage]}{stage === "analytics" ? <MenuProBadge language={language} className="menu-studio-nav-pro-badge" /> : null}
+          <span className="menu-studio-nav-label">
+            {t[stage]}
+            {stage === "analytics" ? <MenuProBadge language={language} className="menu-studio-nav-pro-badge" /> : null}
+          </span>
         </button>
       ))}
     </nav>
