@@ -21,10 +21,12 @@ import { enhanceMenuPhotoWithAi, getRestaurantScenePresets } from "../features/m
 import {
   readMenuStudioV2Draft,
   resolveMenuStudioV2Design,
+  writeMenuStudioV2Draft,
 } from "../features/menu-engine/studio/menuStudioV2Session";
 import "./MenuContentImageEditor.css";
 import "./MenuContentImageEditorStyleMemory.css";
 import "./MenuContentImageStyleMatch.css";
+import "./MenuContentPhotoStyle.css";
 
 const PHOTO_COPY = {
   en: {
@@ -102,13 +104,71 @@ const PHOTO_COPY = {
   },
 };
 
+const PHOTO_STYLE_DEFAULT = { camera: "original", lighting: "restaurant", color: "restaurant", depth: "balanced" };
+const PHOTO_STYLE_COPY = {
+  en: {
+    title: "Photo style", hint: "Keep every menu photo in the same visual world.", save: "Save as restaurant default", saved: "Restaurant default saved",
+    camera: "Camera", lighting: "Lighting", color: "Color", depth: "Background depth",
+    cameraWarning: "Changing the camera angle on a real photo can require AI to reconstruct details that were not visible. Keep original is the safest choice.",
+    options: {
+      camera: { original: "Keep original", eye: "Eye level", threeQuarter: "45°", top: "Top-down" },
+      lighting: { restaurant: "Match restaurant", warm: "Warm evening", natural: "Bright natural", neutral: "Neutral" },
+      color: { restaurant: "Match restaurant", warm: "Warm", cool: "Cool", natural: "Natural" },
+      depth: { balanced: "Balanced", sharp: "Sharp background", soft: "Soft background" },
+    },
+  },
+  he: {
+    title: "סגנון תמונה", hint: "שמרו על שפה חזותית אחידה בכל תמונות התפריט.", save: "שמירה כברירת מחדל למסעדה", saved: "ברירת המחדל נשמרה",
+    camera: "זווית צילום", lighting: "תאורה", color: "צבע", depth: "עומק רקע",
+    cameraWarning: "שינוי זווית בתמונה אמיתית עלול לדרוש מה-AI להשלים פרטים שלא נראו. שמירת הזווית המקורית היא הבחירה הבטוחה ביותר.",
+    options: {
+      camera: { original: "מקורית", eye: "גובה העיניים", threeQuarter: "45°", top: "מלמעלה" },
+      lighting: { restaurant: "התאמה למסעדה", warm: "ערב חם", natural: "אור טבעי", neutral: "ניטרלי" },
+      color: { restaurant: "התאמה למסעדה", warm: "חם", cool: "קר", natural: "טבעי" },
+      depth: { balanced: "מאוזן", sharp: "רקע חד", soft: "רקע רך" },
+    },
+  },
+  ar: {
+    title: "أسلوب الصورة", hint: "حافظ على مظهر موحد لجميع صور القائمة.", save: "حفظ كإعداد افتراضي للمطعم", saved: "تم حفظ الإعداد الافتراضي",
+    camera: "زاوية الكاميرا", lighting: "الإضاءة", color: "اللون", depth: "عمق الخلفية",
+    cameraWarning: "تغيير زاوية صورة حقيقية قد يتطلب من الذكاء الاصطناعي إعادة بناء تفاصيل غير ظاهرة. الحفاظ على الزاوية الأصلية هو الخيار الأكثر أماناً.",
+    options: {
+      camera: { original: "الأصلية", eye: "مستوى العين", threeQuarter: "45°", top: "من الأعلى" },
+      lighting: { restaurant: "مطابقة المطعم", warm: "مساء دافئ", natural: "طبيعي ساطع", neutral: "محايد" },
+      color: { restaurant: "مطابقة المطعم", warm: "دافئ", cool: "بارد", natural: "طبيعي" },
+      depth: { balanced: "متوازن", sharp: "خلفية واضحة", soft: "خلفية ناعمة" },
+    },
+  },
+};
+
+const PHOTO_STYLE_VALUES = {
+  camera: ["original", "eye", "threeQuarter", "top"],
+  lighting: ["restaurant", "warm", "natural", "neutral"],
+  color: ["restaurant", "warm", "cool", "natural"],
+  depth: ["balanced", "sharp", "soft"],
+};
+
 const MODES = [
   { key: "enhance", icon: WandSparkles },
   { key: "background", icon: ImagePlus },
   { key: "match", icon: Sparkles },
 ];
 
-function currentMenuStyleContext() {
+function normalizePhotoStyle(value) {
+  const source = value && typeof value === "object" ? value : {};
+  return Object.fromEntries(Object.entries(PHOTO_STYLE_DEFAULT).map(([key, fallback]) => [key, PHOTO_STYLE_VALUES[key].includes(source[key]) ? source[key] : fallback]));
+}
+
+function photoStyleTheme(style) {
+  const next = normalizePhotoStyle(style);
+  const camera = { original: "preserve original camera angle", eye: "eye-level camera angle", threeQuarter: "45 degree three-quarter camera angle", top: "top-down overhead camera angle" }[next.camera];
+  const lighting = { restaurant: "match restaurant scene lighting", warm: "warm evening restaurant lighting", natural: "bright natural daylight", neutral: "neutral balanced studio lighting" }[next.lighting];
+  const color = { restaurant: "match restaurant scene color palette", warm: "warm amber color grading", cool: "cool clean color grading", natural: "natural true-to-life color" }[next.color];
+  const depth = { balanced: "balanced depth of field", sharp: "sharp detailed background", soft: "soft blurred background bokeh" }[next.depth];
+  return { photo_camera: camera, photo_lighting: lighting, photo_color: color, photo_depth: depth };
+}
+
+function currentMenuStyleContext(photoStyle) {
   const draft = readMenuStudioV2Draft();
   const menu = draft?.menu || {};
   let resolved = {};
@@ -117,8 +177,12 @@ function currentMenuStyleContext() {
   return {
     restaurantName: String(menu.restaurant_name || ""),
     designId: String(resolved.designId || ""),
-    theme: design?.theme || {},
+    theme: { ...photoStyleTheme(photoStyle), ...(design?.theme || {}) },
   };
+}
+
+function currentRestaurantPhotoStyle() {
+  return normalizePhotoStyle(readMenuStudioV2Draft()?.menu?.photo_style);
 }
 
 function itemDisplayName(item) {
@@ -137,6 +201,8 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
   const [compareSide, setCompareSide] = useState("after");
   const [savedCompareSide, setSavedCompareSide] = useState("after");
   const [sceneType, setSceneType] = useState(["scene1", "scene2"].includes(item.image_ai_scene) ? item.image_ai_scene : "auto");
+  const [photoStyle, setPhotoStyle] = useState(() => normalizePhotoStyle(item.image_ai_style || currentRestaurantPhotoStyle()));
+  const [styleSaved, setStyleSaved] = useState(false);
   const [scenes, setScenes] = useState({ scene1: null, scene2: null });
   const [scenesLoading, setScenesLoading] = useState(false);
   const cameraInputRef = useRef(null);
@@ -145,12 +211,13 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
 
   const language = ["en", "he", "ar"].includes(document.documentElement.lang) ? document.documentElement.lang : "en";
   const copy = PHOTO_COPY[language] || PHOTO_COPY.en;
+  const styleCopy = PHOTO_STYLE_COPY[language] || PHOTO_STYLE_COPY.en;
   const sourceUrl = item.image_original_url || item.image_url || "";
   const sourcePath = item.image_original_path || item.image_path || "";
   const isAiReady = Boolean(item.image_ai_model || item.image_variant?.startsWith?.("ai-"));
   const hasSavedComparison = Boolean(isAiReady && item.image_original_url && item.image_url && item.image_original_url !== item.image_url);
   const visibleSavedUrl = savedCompareSide === "before" && hasSavedComparison ? item.image_original_url : item.image_url;
-  const styleContext = currentMenuStyleContext();
+  const styleContext = currentMenuStyleContext(photoStyle);
 
   useEffect(() => () => {
     generatedUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
@@ -187,6 +254,26 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
     setCompareSide("after");
   }
 
+  function changePhotoStyle(key, value) {
+    if (uploading || processing || saving) return;
+    setPhotoStyle((current) => ({ ...current, [key]: value }));
+    setStyleSaved(false);
+    clearResult();
+  }
+
+  function saveRestaurantPhotoStyle() {
+    if (uploading || processing || saving) return;
+    const flushDetail = { saved: true };
+    window.dispatchEvent(new CustomEvent("beyond-menu-studio-flush-draft", { detail: flushDetail }));
+    const draft = readMenuStudioV2Draft();
+    if (!draft?.menu) return;
+    const nextMenu = { ...draft.menu, photo_style: normalizePhotoStyle(photoStyle) };
+    const nextDraft = { ...draft, menu: nextMenu };
+    if (!writeMenuStudioV2Draft(nextDraft)) return;
+    window.dispatchEvent(new CustomEvent("beyond-menu-translations-applied", { detail: { menu: nextMenu, profile: nextDraft.profile || {} } }));
+    setStyleSaved(true);
+  }
+
   async function uploadFile(file) {
     if (!file || uploading || processing || saving) return;
     const validation = validateMenuItemImage(file);
@@ -205,11 +292,14 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
         image_ai_model: "",
         image_ai_mode: "",
         image_ai_scene: "",
+        image_ai_style: null,
       });
       clearResult();
       setSavedCompareSide("after");
       setMode("match");
       setSceneType("auto");
+      setPhotoStyle(currentRestaurantPhotoStyle());
+      setStyleSaved(false);
       setStudioOpen(false);
     } catch (uploadError) {
       setError(uploadError?.message || t.imageUploadError || "Could not upload this photo.");
@@ -271,6 +361,7 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
         image_ai_mode: result.mode,
         image_ai_model: result.model,
         image_ai_scene: result.sceneType || sceneType || "auto",
+        image_ai_style: normalizePhotoStyle(photoStyle),
       });
       clearResult();
       setSavedCompareSide("after");
@@ -288,7 +379,7 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
     try {
       const paths = [...new Set([item.image_path, item.image_original_path, item.image_processed_path].filter(Boolean))];
       for (const path of paths) await removeMenuItemImage(path);
-      onChange?.({ image_url: "", image_path: "", image_original_url: "", image_original_path: "", image_processed_url: "", image_processed_path: "", image_variant: "", image_ai_mode: "", image_ai_model: "", image_ai_scene: "" });
+      onChange?.({ image_url: "", image_path: "", image_original_url: "", image_original_path: "", image_processed_url: "", image_processed_path: "", image_variant: "", image_ai_mode: "", image_ai_model: "", image_ai_scene: "", image_ai_style: null });
       clearResult();
       setSavedCompareSide("after");
       setStudioOpen(false);
@@ -309,6 +400,8 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
     clearResult();
     setMode(item.image_ai_mode === "strong" ? "match" : item.image_ai_mode || "match");
     setSceneType(["auto", "scene1", "scene2"].includes(item.image_ai_scene) ? item.image_ai_scene : "auto");
+    setPhotoStyle(normalizePhotoStyle(item.image_ai_style || currentRestaurantPhotoStyle()));
+    setStyleSaved(false);
     setStudioOpen(true);
   }
 
@@ -399,6 +492,23 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
               {!scenesLoading && !hasScenePresets ? <p className="menu-content-v2-scene-empty">{copy.noScenes}</p> : null}
             </div>
           ) : null}
+
+          <div className="menu-content-v2-photo-style">
+            <div className="menu-content-v2-photo-style-head"><strong>{styleCopy.title}</strong><small>{styleCopy.hint}</small></div>
+            {Object.keys(PHOTO_STYLE_VALUES).map((key) => (
+              <div className="menu-content-v2-photo-style-group" key={key}>
+                <span>{styleCopy[key]}</span>
+                <div className="menu-content-v2-photo-style-options">
+                  {PHOTO_STYLE_VALUES[key].map((value) => <button type="button" key={value} className={photoStyle[key] === value ? "active" : ""} onClick={() => changePhotoStyle(key, value)} disabled={busy}>{styleCopy.options[key][value]}</button>)}
+                </div>
+              </div>
+            ))}
+            {photoStyle.camera !== "original" ? <p className="menu-content-v2-photo-style-warning">{styleCopy.cameraWarning}</p> : null}
+            <div className="menu-content-v2-photo-style-save">
+              <button type="button" onClick={saveRestaurantPhotoStyle} disabled={busy}><Check size={13} /> {styleCopy.save}</button>
+              {styleSaved ? <small>✓ {styleCopy.saved}</small> : null}
+            </div>
+          </div>
 
           {!result ? (
             <>
