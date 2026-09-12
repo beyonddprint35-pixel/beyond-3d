@@ -43,13 +43,18 @@ export function menuSubscriptionAccess(data) {
   const periodActive = !Number.isFinite(periodEndMs) || periodEndMs > Date.now();
   const active = ACTIVE_SUBSCRIPTION_STATUSES.has(status) && periodActive;
   const isPro = active && PRO_AI_PLAN_IDS.has(planId);
+  const isAdmin = data?.isAdmin === true || data?.data?.isAdmin === true;
+  const hasProAccess = isAdmin || isPro;
 
   return {
     status,
     planId,
     active,
     isPro,
-    canUseAi: isPro,
+    isAdmin,
+    hasProAccess,
+    canUseAi: hasProAccess,
+    canUseAnalytics: hasProAccess,
   };
 }
 
