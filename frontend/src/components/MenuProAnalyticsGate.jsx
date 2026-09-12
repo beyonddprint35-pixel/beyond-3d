@@ -11,22 +11,22 @@ import "./MenuProAnalyticsGate.css";
 
 const COPY = {
   en: {
-    title: "Analytics is a Pro feature",
-    locked: "Upgrade this menu to Beyond Pro to see guest attention, category reach, item visibility and browsing trends.",
+    title: "Analytics is a PRO feature",
+    locked: "Upgrade this menu to the Beyond Premium plan to see guest attention, category reach, item visibility and browsing trends.",
     checking: "Checking your subscription…",
     checkingNote: "Verifying Analytics access for this menu.",
     error: "We could not verify Analytics access right now. Refresh and try again.",
   },
   he: {
-    title: "אנליטיקה היא יכולת Pro",
-    locked: "שדרגו את התפריט ל-Beyond Pro כדי לראות תשומת לב של אורחים, חשיפה לקטגוריות ולפריטים ומגמות גלישה.",
+    title: "אנליטיקה היא יכולת PRO",
+    locked: "שדרגו את התפריט לחבילת Beyond Premium כדי לראות תשומת לב של אורחים, חשיפה לקטגוריות ולפריטים ומגמות גלישה.",
     checking: "בודק את המנוי…",
     checkingNote: "מוודא גישה לאנליטיקה עבור התפריט הזה.",
     error: "לא ניתן לאמת כרגע את הגישה לאנליטיקה. רעננו ונסו שוב.",
   },
   ar: {
-    title: "التحليلات ميزة Pro",
-    locked: "قم بترقية هذه القائمة إلى Beyond Pro لرؤية اهتمام الضيوف ووصول الفئات وظهور الأصناف واتجاهات التصفح.",
+    title: "التحليلات ميزة PRO",
+    locked: "قم بترقية هذه القائمة إلى خطة Beyond Premium لرؤية اهتمام الضيوف ووصول الفئات وظهور الأصناف واتجاهات التصفح.",
     checking: "جارٍ التحقق من الاشتراك…",
     checkingNote: "جارٍ التحقق من صلاحية الوصول إلى التحليلات لهذه القائمة.",
     error: "تعذر التحقق من صلاحية الوصول إلى التحليلات الآن. حدّث الصفحة وحاول مجددًا.",
