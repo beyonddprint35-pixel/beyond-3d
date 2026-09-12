@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
-import { listMenuStudioProjects, readActiveMenuStudioProjectId } from "../features/menu-engine/studio/menuStudioV2Persistence";
-import { chooseStudioProject, studioProjectUrl } from "../features/menu-engine/studio/studioNavigation";
+import { listMenuStudioProjects, readActiveMenuStudioProjectId, setActiveMenuStudioProjectId } from "../features/menu-engine/studio/menuStudioV2Persistence";
+import { readMenuStudioV2Draft } from "../features/menu-engine/studio/menuStudioV2Session";
+import { studioProjectUrl } from "../features/menu-engine/studio/studioNavigation";
 import { readStudioLanguage } from "../features/menu-engine/studio/studioLanguage";
 import { useMenuStudioWorkspace } from "../features/menu-engine/studio/menuStudioWorkspaceContext";
 import "../features/menu-engine/studio/MenuStudioV2PersistenceBoundary.css";
@@ -12,6 +13,10 @@ const COPY = {
   he: { signIn: "התחברו כדי לפתוח את התפריט", error: "לא הצלחנו לפתוח את התפריט.", retry: "ניסיון נוסף", home: "חזרה לבית" },
   ar: { signIn: "سجّل الدخول لفتح قائمتك", error: "تعذر فتح القائمة.", retry: "حاول مجددًا", home: "العودة للرئيسية" },
 };
+
+function comparableName(value) {
+  return String(value || "").trim().toLocaleLowerCase();
+}
 
 export default function MenuStudioEntry() {
   const location = useLocation();
@@ -32,8 +37,9 @@ export default function MenuStudioEntry() {
 
     async function open() {
       try {
-        // getSession resolves from the existing Supabase session first, so returning users
-        // avoid a project-list request before entering the Studio.
+        // Resolve the persisted Supabase session before reading the project index.
+        // This also prevents a hard refresh from querying the menu table anonymously
+        // while the browser session is still being restored.
         const { data, error } = await supabase.auth.getSession();
         if (!active) return;
         if (error) throw error;
@@ -42,26 +48,40 @@ export default function MenuStudioEntry() {
           return;
         }
 
-        if (requestedProjectId) {
-          navigate(`/menu-studio/content${location.search}`, { replace: true });
-          return;
-        }
-
-        // The last active project is already stored locally. Use it immediately instead of
-        // waiting for listMenuStudioProjects on every Menu Studio click.
-        if (!requestedSiteId && activeProjectId) {
-          navigate(studioProjectUrl("/menu-studio/content", location.search, activeProjectId), { replace: true });
-          return;
-        }
-
+        // Always validate route/localStorage project ids against the lightweight
+        // cloud index before entering Studio. Old deleted/migrated ids can remain in
+        // bookmarks or localStorage; blindly reusing them created the dead-end
+        // "This menu draft could not be found" loop.
         const projects = await (workspace ? workspace.loadProjects() : listMenuStudioProjects());
         if (!active) return;
-        const project = chooseStudioProject(projects, {
-          siteId: requestedSiteId,
-          activeId: activeProjectId,
-        });
+
+        const requestedProject = requestedProjectId
+          ? projects.find((project) => project.id === requestedProjectId) || null
+          : null;
+        const requestedSiteProject = requestedSiteId
+          ? projects.find((project) => project.activated_site_id === requestedSiteId || project.studio_state?.menu?.site_id === requestedSiteId) || null
+          : null;
+        const activeProject = activeProjectId
+          ? projects.find((project) => project.id === activeProjectId) || null
+          : null;
+
+        // If an old project id was replaced during migration, keep the user on the
+        // same restaurant whenever the browser still knows that draft by name.
+        const browserDraft = readMenuStudioV2Draft();
+        const browserMenuName = comparableName(browserDraft?.menu?.restaurant_name);
+        const sameMenuProject = browserMenuName
+          ? projects.find((project) => comparableName(project.name) === browserMenuName) || null
+          : null;
+
+        const project = requestedProject
+          || requestedSiteProject
+          || activeProject
+          || sameMenuProject
+          || projects[0]
+          || null;
 
         if (project) {
+          setActiveMenuStudioProjectId(project.id);
           navigate(studioProjectUrl("/menu-studio/content", location.search, project.id), { replace: true });
         } else if (requestedSiteId) {
           setState("error");
