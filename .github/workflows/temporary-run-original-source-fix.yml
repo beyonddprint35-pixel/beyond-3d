@@ -1,0 +1,29 @@
+name: Run immutable photo source fix
+
+on:
+  push:
+    branches:
+      - studio-mobile-remodel-development
+    paths:
+      - .github/workflows/temporary-run-original-source-fix.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: studio-mobile-remodel-development
+          fetch-depth: 0
+      - name: Apply original photo fix
+        run: python .github/patches/temporary_original_source_fix.py
+      - name: Commit patch
+        run: |
+          git config user.name "beyond-patch-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add frontend/src/components/MenuContentImageEditor.jsx frontend/src/pages/menuContentImageDownload.js
+          git commit -m "Preserve immutable original for AI photo options"
+          git push origin HEAD:studio-mobile-remodel-development
