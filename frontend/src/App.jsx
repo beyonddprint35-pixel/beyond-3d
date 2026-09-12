@@ -33,6 +33,7 @@ import MenuStudioV2PersistenceBoundary from "./features/menu-engine/studio/MenuS
 import MenuStudioWorkspace from "./features/menu-engine/studio/MenuStudioWorkspace";
 import MenuStudioMobileStageNav from "./components/MenuStudioMobileStageNav";
 import MenuSubscriptionPublishGate from "./components/MenuSubscriptionPublishGate";
+import MenuProAnalyticsGate from "./components/MenuProAnalyticsGate";
 import CustomerShowcasePortal from "./components/CustomerShowcasePortal";
 
 import "./lib/beyondThemeBootstrap.js";
@@ -108,7 +109,7 @@ function MenuStudioV2Routes() {
   if (stage === "ai-images") screen = <MenuAiDishImagesV1 />;
   if (stage === "design") screen = <MenuDesignStudioV2 />;
   if (stage === "preview") screen = <MenuPreviewStudioV2 />;
-  if (stage === "analytics") screen = <MenuAnalyticsStudioV2 />;
+  if (stage === "analytics") screen = <MenuProAnalyticsGate><MenuAnalyticsStudioV2 /></MenuProAnalyticsGate>;
   if (stage === "publish") screen = <MenuSubscriptionPublishGate><MenuPublishStudioV2 /></MenuSubscriptionPublishGate>;
 
   if (!screen) {
