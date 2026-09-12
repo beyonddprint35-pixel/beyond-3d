@@ -1,9 +1,9 @@
 import "./MenuProBadge.css";
 
 const TOOLTIP = {
-  en: "Available with a Pro plan subscription",
-  he: "זמין במסגרת מנוי Beyond Pro",
-  ar: "متاح ضمن اشتراك Beyond Pro",
+  en: "PRO feature · Included with the Premium plan",
+  he: "יכולת PRO · כלולה בחבילת Premium",
+  ar: "ميزة PRO · مشمولة في خطة Premium",
 };
 
 export default function MenuProBadge({ language = "en", className = "" }) {
