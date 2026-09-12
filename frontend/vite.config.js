@@ -9,13 +9,13 @@ export default defineConfig({
 
   server: {
     // Listen on every interface so GitHub Codespaces can detect and forward
-    // the dev server. Prefer 5174, but if an older Vite process still owns it,
-    // automatically move to the next free port instead of exiting.
+    // the dev server. Keep the development port fixed so we always know which
+    // forwarded URL belongs to the active Beyond Menu Studio instance.
     host: "0.0.0.0",
     port: devPort,
-    strictPort: false,
-    // A Codespaces forwarded URL includes the actual port in the hostname.
-    // Allow the whole forwarding domain so 5175/5176 etc. work too.
+    strictPort: true,
+    // A Codespaces forwarded URL includes the port in the hostname.
+    // Allow the Codespaces forwarding domain for the fixed development port.
     allowedHosts: codespacesForwardingDomain
       ? [`.${codespacesForwardingDomain}`]
       : [],
