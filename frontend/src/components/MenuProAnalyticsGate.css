@@ -1,0 +1,93 @@
+.menu-analytics-pro-gate-page {
+  min-height: 100dvh;
+  background: var(--beyond-studio-bg, #f6f8fb);
+  color: var(--beyond-studio-text, #202a3a);
+}
+
+.menu-analytics-pro-gate-shell {
+  min-height: calc(100dvh - 132px);
+  padding: clamp(28px, 7vw, 84px) 18px 110px;
+  display: grid;
+  place-items: start center;
+}
+
+.menu-analytics-pro-gate-card {
+  width: min(100%, 620px);
+  padding: clamp(30px, 5vw, 48px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid var(--beyond-studio-line, rgba(60, 60, 67, .12));
+  border-radius: 24px;
+  background: var(--beyond-studio-surface, #fff);
+  box-shadow: 0 22px 70px rgba(26, 39, 61, .09);
+  text-align: center;
+}
+
+.menu-analytics-pro-gate-icon {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  border-radius: 18px;
+  color: #4974e5;
+  background: rgba(73, 116, 229, .1);
+}
+
+.menu-analytics-pro-gate-card > .beyond-pro-badge {
+  margin-inline-start: 0;
+}
+
+.menu-analytics-pro-gate-card h1 {
+  margin: 2px 0 0;
+  color: inherit;
+  font-size: clamp(24px, 4vw, 34px);
+  line-height: 1.1;
+  letter-spacing: -.035em;
+}
+
+.menu-analytics-pro-gate-card p {
+  max-width: 500px;
+  margin: 0;
+  color: var(--beyond-studio-muted, #758095);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.menu-analytics-pro-gate-card.is-loading .menu-analytics-pro-gate-icon {
+  animation: menu-analytics-pro-pulse 1.45s ease-in-out infinite;
+}
+
+.menu-studio-nav-pro-badge.beyond-pro-badge {
+  min-width: 24px;
+  height: 15px;
+  padding-inline: 4px;
+  margin-inline-start: 4px;
+  font-size: 7px;
+}
+
+@keyframes menu-analytics-pro-pulse {
+  0%, 100% { transform: scale(1); opacity: .72; }
+  50% { transform: scale(1.05); opacity: 1; }
+}
+
+@media (max-width: 850px) {
+  .menu-analytics-pro-gate-shell {
+    min-height: calc(100dvh - 158px);
+    padding: 24px 12px 96px;
+  }
+
+  .menu-analytics-pro-gate-card {
+    padding: 30px 22px;
+    border-radius: 20px;
+  }
+
+  .menu-studio-mobile-stage-nav .menu-studio-nav-pro-badge.beyond-pro-badge {
+    min-width: 20px;
+    height: 13px;
+    padding-inline: 3px;
+    margin-inline-start: 3px;
+    font-size: 6px;
+  }
+}
