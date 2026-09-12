@@ -4,7 +4,7 @@
     {
       "label": "Beyond: Start Menu Studio",
       "type": "shell",
-      "command": "npm run dev",
+      "command": "if curl -fsS http://127.0.0.1:5174 >/dev/null 2>&1; then echo 'Beyond Menu Studio is already running on port 5174'; else npm run dev; fi",
       "options": {
         "cwd": "${workspaceFolder}/frontend"
       },
@@ -16,6 +16,9 @@
         "clear": true,
         "close": false,
         "showReuseMessage": false
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
       }
     }
   ]
