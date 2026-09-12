@@ -125,7 +125,7 @@ export default function MenuStudioHeader({
         logoUrl={placeLogo}
         placeStyle={placeStyle}
         onLogoUpdate={onPlaceLogoUpdate}
-        onPlaceStyleUpdate={updatePlaceStyle}
+        onPlaceStyleUpdate={onPlaceStyleUpdate}
       />
     ) : null}
   </>;
