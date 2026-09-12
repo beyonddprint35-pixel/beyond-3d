@@ -96,6 +96,18 @@
   opacity: 0.72;
 }
 
+/* The saved A/B choices are the first design decision. Keep them directly
+   below the Design Studio heading, before the template / look picker. */
+.menu-design-v2 .menu-design-v2-sidebar-overview > .menu-design-v2-sidebar-title {
+  order: 0 !important;
+}
+.menu-design-v2 .menu-design-v2-sidebar-overview > .menu-design-v2-variants-compact {
+  order: 1 !important;
+}
+.menu-design-v2 .menu-design-v2-sidebar-overview > .menu-design-v2-sidebar-picker {
+  order: 2 !important;
+}
+
 [data-beyond-theme="dark"] .menu-design-v2-variants,
 html.dark .menu-design-v2-variants,
 body.dark .menu-design-v2-variants {
