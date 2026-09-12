@@ -20,11 +20,13 @@ import {
   validateMenuItemImage,
 } from "../features/menu-engine/data/menuItemImageService";
 import { enhanceMenuPhotoWithAi, getRestaurantScenePresets } from "../features/menu-engine/data/menuPhotoAiService";
+import useMenuProEntitlement from "../features/menu-engine/studio/useMenuProEntitlement";
 import {
   readMenuStudioV2Draft,
   resolveMenuStudioV2Design,
   writeMenuStudioV2Draft,
 } from "../features/menu-engine/studio/menuStudioV2Session";
+import MenuProBadge from "./MenuProBadge";
 import "./MenuContentImageEditor.css";
 import "./MenuContentImageEditorStyleMemory.css";
 import "./MenuContentImageStyleMatch.css";
@@ -107,6 +109,12 @@ const PHOTO_COPY = {
     optionsTitle: "الخيارات التي تم إنشاؤها", optionsHint: "يتم الاحتفاظ بالصورة الأصلية وكل نتيجة من AI هنا. اختر الصورة التي تريد استخدامها.", optionLabel: "خيار", originalOption: "الأصلية", download: "تنزيل الصورة",
     advancedAi: "أنشئ صورة جديدة بالذكاء الاصطناعي", advancedAiHint: "استخدم هذا فقط عندما لا توجد صورة حقيقية للعنصر.",
   },
+};
+
+const PRO_LOCK_COPY = {
+  en: { locked: "This AI feature is available with a Beyond Pro plan subscription.", checking: "Checking your subscription…" },
+  he: { locked: "תכונת ה-AI הזו זמינה במסגרת מנוי Beyond Pro.", checking: "בודק את המנוי…" },
+  ar: { locked: "ميزة الذكاء الاصطناعي هذه متاحة ضمن اشتراك Beyond Pro.", checking: "جارٍ التحقق من الاشتراك…" },
 };
 
 const PHOTO_STYLE_DEFAULT = { camera: "original", lighting: "restaurant", color: "restaurant", depth: "balanced" };
@@ -354,6 +362,8 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
   const language = ["en", "he", "ar"].includes(document.documentElement.lang) ? document.documentElement.lang : "en";
   const copy = PHOTO_COPY[language] || PHOTO_COPY.en;
   const styleCopy = PHOTO_STYLE_COPY[language] || PHOTO_STYLE_COPY.en;
+  const proCopy = PRO_LOCK_COPY[language] || PRO_LOCK_COPY.en;
+  const { canUseAi, loading: subscriptionLoading } = useMenuProEntitlement(projectId);
   // Preserve the untouched customer upload separately from every derived image.
   // All future AI options branch from this immutable source, never from Option 1/2/etc.
   const immutableOriginalUrl = String(item.image_upload_original_url || "").trim();
@@ -499,6 +509,8 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
 
   async function generatePreview() {
     if (!sourceUrl || processing) return;
+    if (subscriptionLoading) return setError(proCopy.checking);
+    if (!canUseAi) return setError(proCopy.locked);
     if (originalNeedsRepair) {
       setError(originalRepairMessage);
       return;
@@ -621,6 +633,8 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
   }
 
   function openAiPhotos() {
+    if (subscriptionLoading) return setError(proCopy.checking);
+    if (!canUseAi) return setError(proCopy.locked);
     const params = new URLSearchParams(window.location.search || "");
     params.set("item", item.id);
     window.location.assign(`/menu-studio/ai-images?${params.toString()}`);
@@ -644,6 +658,8 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
   }
 
   function openStudio() {
+    if (subscriptionLoading) return setError(proCopy.checking);
+    if (!canUseAi) return setError(proCopy.locked);
     const options = optionsFromItem(item);
     const currentIsOriginal = Boolean(originalUrl && item.image_url === originalUrl && !item.image_processed_path);
     const selected = currentIsOriginal
@@ -694,7 +710,7 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
       {item.image_url && !studioOpen ? (
         <button type="button" className="menu-content-v2-photo-prepare" onClick={openStudio} disabled={busy}>
           <span className="menu-content-v2-photo-prepare-icon"><WandSparkles size={18} /></span>
-          <span><strong>{copy.prepare}</strong><small>{copy.prepareHint}</small></span>
+          <span><strong>{copy.prepare}<MenuProBadge language={language} /></strong><small>{copy.prepareHint}</small></span>
           <span className="menu-content-v2-photo-prepare-arrow">›</span>
         </button>
       ) : null}
@@ -880,7 +896,7 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
       <input ref={cameraInputRef} className="menu-content-v2-photo-native-input" type="file" accept="image/*,.heic,.heif" capture="environment" onChange={(event) => uploadFile(event.target.files?.[0])} disabled={busy} />
       <input ref={libraryInputRef} className="menu-content-v2-photo-native-input" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif" onChange={(event) => uploadFile(event.target.files?.[0])} disabled={busy} />
 
-      {!studioOpen ? <button type="button" className="menu-content-v2-image-ai menu-content-v2-image-ai-secondary" onClick={openAiPhotos}><Sparkles size={15} /><span><strong>{copy.advancedAi}</strong><small>{copy.advancedAiHint}</small></span></button> : null}
+      {!studioOpen ? <button type="button" className="menu-content-v2-image-ai menu-content-v2-image-ai-secondary" onClick={openAiPhotos}><Sparkles size={15} /><span><strong>{copy.advancedAi}<MenuProBadge language={language} /></strong><small>{copy.advancedAiHint}</small></span></button> : null}
       {!studioOpen ? <button type="button" className="menu-content-v2-image-url-toggle" onClick={() => setShowUrl((value) => !value)}><Link2 size={13} /> {showUrl ? (t.hideImageUrl || "Hide image URL") : (t.useImageUrl || "Use image URL")}</button> : null}
       {showUrl && !studioOpen ? <div className="menu-content-v2-image-input"><Link2 size={15} /><input dir="ltr" value={item.image_url || ""} onChange={(event) => onChange?.({ image_url: event.target.value, image_path: "" })} placeholder="https://..." /></div> : null}
       {error ? <div className="menu-content-v2-image-error">{error}</div> : null}
