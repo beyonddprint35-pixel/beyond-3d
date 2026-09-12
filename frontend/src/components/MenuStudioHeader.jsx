@@ -104,22 +104,18 @@ export default function MenuStudioHeader({
         {saveLabel ? <div className={`${prefix}-save`}><span className={saveState === "saved" ? "ok" : ""} /><strong>{saveLabel}</strong></div> : null}
       </div>
 
-      {stage === "design" ? (
-        <nav className="menu-design-subnav menu-design-subnav-mobile" aria-label={`${t.design} sections`} dir={studioLanguageDirection(language)}>
-          <button type="button" className={designSection === "design" ? "active" : ""} aria-current={designSection === "design" ? "page" : undefined} onClick={() => openDesignSection("design")}>{t.design}</button>
-          <button type="button" className={designSection === "place" ? "active" : ""} aria-current={designSection === "place" ? "page" : undefined} onClick={() => openDesignSection("place")}>{t.place}</button>
-        </nav>
-      ) : null}
-
-      <MenuStudioMenuSwitcher language={language} menuName={menuName} />
+      {stage !== "design" ? <MenuStudioMenuSwitcher language={language} menuName={menuName} /> : null}
     </header>
 
     {stage === "design" ? <>
-      <nav className="menu-design-subnav menu-design-subnav-desktop" aria-label={`${t.design} sections`} dir={studioLanguageDirection(language)}>
+      <div className="menu-studio-design-menu-bar">
+        <MenuStudioMenuSwitcher language={language} menuName={menuName} />
+      </div>
+
+      <nav className="menu-design-subnav" aria-label={`${t.design} sections`} dir={studioLanguageDirection(language)}>
         <button type="button" className={designSection === "design" ? "active" : ""} aria-current={designSection === "design" ? "page" : undefined} onClick={() => openDesignSection("design")}>{t.design}</button>
         <button type="button" className={designSection === "place" ? "active" : ""} aria-current={designSection === "place" ? "page" : undefined} onClick={() => openDesignSection("place")}>{t.place}</button>
       </nav>
-      <div className="menu-design-subnav-spacer" aria-hidden="true" />
     </> : null}
 
     {stage === "design" && designSection === "place" ? (
@@ -129,7 +125,7 @@ export default function MenuStudioHeader({
         logoUrl={placeLogo}
         placeStyle={placeStyle}
         onLogoUpdate={onPlaceLogoUpdate}
-        onPlaceStyleUpdate={onPlaceStyleUpdate}
+        onPlaceStyleUpdate={updatePlaceStyle}
       />
     ) : null}
   </>;
