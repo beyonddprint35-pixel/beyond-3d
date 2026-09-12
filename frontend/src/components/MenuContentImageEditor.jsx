@@ -51,7 +51,8 @@ const PHOTO_COPY = {
     generate: "Match this photo", preview: "Create AI preview", generating: "Matching your photo to this restaurant scene…",
     generatingHint: "Beyond is preserving the real item and the selected restaurant background.",
     before: "Original", after: "Styled photo", compare: "Compare",
-    enhancedView: "Enhanced photo", regenerate: "Try again", usePhoto: "Use this photo", saving: "Saving photo…", cancel: "Cancel",
+    enhancedView: "Enhanced photo", regenerate: "Try again", createAnother: "Create another option", usePhoto: "Use this photo", saving: "Saving photo…", cancel: "Cancel",
+    optionsTitle: "Created options", optionsHint: "Every AI result is kept. Choose the one you want to use.", optionLabel: "Option",
     advancedAi: "Create a new photo with AI instead", advancedAiHint: "Only use this when you do not have a real photo of the item.",
   },
   he: {
@@ -75,7 +76,8 @@ const PHOTO_COPY = {
     generate: "התאמת התמונה", preview: "יצירת תצוגת AI", generating: "מתאימים את התמונה לסצנת המסעדה…",
     generatingHint: "Beyond שומר על הפריט האמיתי ועל רקע המסעדה שנבחר.",
     before: "מקור", after: "תמונה מעוצבת", compare: "השוואה",
-    enhancedView: "תמונה משופרת", regenerate: "נסו שוב", usePhoto: "שימוש בתמונה", saving: "שומר את התמונה…", cancel: "ביטול",
+    enhancedView: "תמונה משופרת", regenerate: "נסו שוב", createAnother: "יצירת אפשרות נוספת", usePhoto: "שימוש בתמונה", saving: "שומר את התמונה…", cancel: "ביטול",
+    optionsTitle: "אפשרויות שנוצרו", optionsHint: "כל תוצאת AI נשמרת. בחרו את התמונה שבה תרצו להשתמש.", optionLabel: "אפשרות",
     advancedAi: "יצירת תמונה חדשה עם AI במקום", advancedAiHint: "רק כשאין תמונה אמיתית של הפריט.",
   },
   ar: {
@@ -99,7 +101,8 @@ const PHOTO_COPY = {
     generate: "مطابقة هذه الصورة", preview: "إنشاء معاينة AI", generating: "نطابق صورتك مع مشهد المطعم…",
     generatingHint: "يحافظ Beyond على العنصر الحقيقي وعلى خلفية المطعم المختارة.",
     before: "الأصل", after: "الصورة المنسقة", compare: "مقارنة",
-    enhancedView: "الصورة المحسّنة", regenerate: "حاول مرة أخرى", usePhoto: "استخدم هذه الصورة", saving: "جارٍ حفظ الصورة…", cancel: "إلغاء",
+    enhancedView: "الصورة المحسّنة", regenerate: "حاول مرة أخرى", createAnother: "إنشاء خيار آخر", usePhoto: "استخدم هذه الصورة", saving: "جارٍ حفظ الصورة…", cancel: "إلغاء",
+    optionsTitle: "الخيارات التي تم إنشاؤها", optionsHint: "يتم الاحتفاظ بكل نتيجة من AI. اختر الصورة التي تريد استخدامها.", optionLabel: "خيار",
     advancedAi: "أنشئ صورة جديدة بالذكاء الاصطناعي", advancedAiHint: "استخدم هذا فقط عندما لا توجد صورة حقيقية للعنصر.",
   },
 };
@@ -159,6 +162,40 @@ function normalizePhotoStyle(value) {
   return Object.fromEntries(Object.entries(PHOTO_STYLE_DEFAULT).map(([key, fallback]) => [key, PHOTO_STYLE_VALUES[key].includes(source[key]) ? source[key] : fallback]));
 }
 
+function normalizeAiOptions(value) {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter((option) => option?.url && option?.path)
+    .map((option, index) => ({
+      id: String(option.id || option.path || `option-${index + 1}`),
+      url: String(option.url || ""),
+      path: String(option.path || ""),
+      mode: ["enhance", "background", "match"].includes(option.mode) ? option.mode : "match",
+      model: String(option.model || "gpt-image-2"),
+      sceneType: ["auto", "scene1", "scene2"].includes(option.sceneType) ? option.sceneType : "auto",
+      photoStyle: normalizePhotoStyle(option.photoStyle),
+      createdAt: String(option.createdAt || ""),
+    }));
+}
+
+function optionsFromItem(item) {
+  const options = normalizeAiOptions(item?.image_ai_options);
+  if (options.length) return options;
+  if (item?.image_processed_url && item?.image_processed_path) {
+    return [{
+      id: `saved-${item.image_processed_path}`,
+      url: item.image_processed_url,
+      path: item.image_processed_path,
+      mode: ["enhance", "background", "match"].includes(item.image_ai_mode) ? item.image_ai_mode : "match",
+      model: item.image_ai_model || "gpt-image-2",
+      sceneType: ["auto", "scene1", "scene2"].includes(item.image_ai_scene) ? item.image_ai_scene : "auto",
+      photoStyle: normalizePhotoStyle(item.image_ai_style),
+      createdAt: "",
+    }];
+  }
+  return [];
+}
+
 function photoStyleTheme(style) {
   const next = normalizePhotoStyle(style);
   const camera = { original: "preserve original camera angle", eye: "eye-level camera angle", threeQuarter: "45 degree three-quarter camera angle", top: "top-down overhead camera angle" }[next.camera];
@@ -197,6 +234,7 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
   const [showUrl, setShowUrl] = useState(false);
   const [studioOpen, setStudioOpen] = useState(false);
   const [mode, setMode] = useState("match");
+  const [results, setResults] = useState(() => optionsFromItem(item));
   const [result, setResult] = useState(null);
   const [compareSide, setCompareSide] = useState("after");
   const [savedCompareSide, setSavedCompareSide] = useState("after");
@@ -207,7 +245,6 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
   const [scenesLoading, setScenesLoading] = useState(false);
   const cameraInputRef = useRef(null);
   const libraryInputRef = useRef(null);
-  const generatedUrlsRef = useRef(new Set());
 
   const language = ["en", "he", "ar"].includes(document.documentElement.lang) ? document.documentElement.lang : "en";
   const copy = PHOTO_COPY[language] || PHOTO_COPY.en;
@@ -219,10 +256,17 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
   const visibleSavedUrl = savedCompareSide === "before" && hasSavedComparison ? item.image_original_url : item.image_url;
   const styleContext = currentMenuStyleContext(photoStyle);
 
-  useEffect(() => () => {
-    generatedUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
-    generatedUrlsRef.current.clear();
-  }, []);
+  useEffect(() => {
+    const nextOptions = optionsFromItem(item);
+    setResults(nextOptions);
+    setResult((current) => {
+      if (current) {
+        const same = nextOptions.find((option) => option.id === current.id || option.path === current.path);
+        if (same) return same;
+      }
+      return nextOptions.find((option) => option.path === item.image_processed_path) || null;
+    });
+  }, [item.id]);
 
   useEffect(() => {
     let cancelled = false;
@@ -241,15 +285,7 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
     return () => { cancelled = true; };
   }, [projectId, sourcePath, studioOpen]);
 
-  function objectUrl(file) {
-    const url = URL.createObjectURL(file);
-    generatedUrlsRef.current.add(url);
-    return url;
-  }
-
   function clearResult() {
-    generatedUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
-    generatedUrlsRef.current.clear();
     setResult(null);
     setCompareSide("after");
   }
@@ -258,7 +294,6 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
     if (uploading || processing || saving) return;
     setPhotoStyle((current) => ({ ...current, [key]: value }));
     setStyleSaved(false);
-    clearResult();
   }
 
   function saveRestaurantPhotoStyle() {
@@ -281,7 +316,16 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
     setUploading(true);
     setError("");
     try {
-      const uploaded = await uploadMenuItemImage({ file, itemId: item.id, projectId, previousPath: item.image_path || "" });
+      const previousPaths = [...new Set([
+        item.image_path,
+        item.image_original_path,
+        item.image_processed_path,
+        ...optionsFromItem(item).map((option) => option.path),
+      ].filter(Boolean))];
+      const uploaded = await uploadMenuItemImage({ file, itemId: item.id, projectId, previousPath: "" });
+      for (const path of previousPaths) {
+        if (path !== uploaded.image_path) await removeMenuItemImage(path).catch(() => {});
+      }
       onChange?.({
         ...uploaded,
         image_original_url: uploaded.image_url,
@@ -293,7 +337,9 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
         image_ai_mode: "",
         image_ai_scene: "",
         image_ai_style: null,
+        image_ai_options: [],
       });
+      setResults([]);
       clearResult();
       setSavedCompareSide("after");
       setMode("match");
@@ -314,7 +360,6 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
     if (!sourceUrl || processing) return;
     setProcessing(true);
     setError("");
-    clearResult();
     try {
       const ai = await enhanceMenuPhotoWithAi({
         sourceUrl,
@@ -326,11 +371,29 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
         styleContext,
         sceneType: mode === "match" ? sceneType : "auto",
         styleStrength: "balanced",
-        variantIndex: 1,
+        variantIndex: results.length + 1,
       });
-      const next = { ...ai, id: `${mode}-${ai.sceneType || "auto"}`, url: objectUrl(ai.file) };
+      const uploaded = await uploadMenuItemImage({
+        file: ai.file,
+        itemId: `${item.id}-ai-option`,
+        projectId,
+        previousPath: "",
+      });
+      const next = {
+        id: uploaded.image_path || `${mode}-${Date.now()}`,
+        url: uploaded.image_url,
+        path: uploaded.image_path,
+        mode: ai.mode || mode,
+        model: ai.model || "gpt-image-2",
+        sceneType: ai.sceneType || (mode === "match" ? sceneType : "auto"),
+        photoStyle: normalizePhotoStyle(photoStyle),
+        createdAt: new Date().toISOString(),
+      };
+      const nextResults = [...results, next];
+      setResults(nextResults);
       setResult(next);
       setCompareSide("after");
+      onChange?.({ image_ai_options: normalizeAiOptions(nextResults) });
     } catch (aiError) {
       setError(aiError?.message || "AI could not enhance this photo.");
     } finally {
@@ -339,31 +402,25 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
   }
 
   async function saveAiPhoto() {
-    if (!result?.file || saving) return;
+    if (!result?.url || !result?.path || saving) return;
     setSaving(true);
     setError("");
     try {
-      const uploaded = await uploadMenuItemImage({
-        file: result.file,
-        itemId: item.id,
-        projectId,
-        previousPath: item.image_processed_path || "",
-      });
-
+      const selectedStyle = normalizePhotoStyle(result.photoStyle || photoStyle);
       onChange?.({
-        image_url: uploaded.image_url,
-        image_path: uploaded.image_path,
+        image_url: result.url,
+        image_path: result.path,
         image_original_url: sourceUrl,
         image_original_path: sourcePath,
-        image_processed_url: uploaded.image_url,
-        image_processed_path: uploaded.image_path,
+        image_processed_url: result.url,
+        image_processed_path: result.path,
         image_variant: result.mode === "match" ? "ai-scene-match" : `ai-${result.mode}`,
         image_ai_mode: result.mode,
         image_ai_model: result.model,
         image_ai_scene: result.sceneType || sceneType || "auto",
-        image_ai_style: normalizePhotoStyle(photoStyle),
+        image_ai_style: selectedStyle,
+        image_ai_options: normalizeAiOptions(results),
       });
-      clearResult();
       setSavedCompareSide("after");
       setStudioOpen(false);
     } catch (saveError) {
@@ -377,9 +434,15 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
     setUploading(true);
     setError("");
     try {
-      const paths = [...new Set([item.image_path, item.image_original_path, item.image_processed_path].filter(Boolean))];
-      for (const path of paths) await removeMenuItemImage(path);
-      onChange?.({ image_url: "", image_path: "", image_original_url: "", image_original_path: "", image_processed_url: "", image_processed_path: "", image_variant: "", image_ai_mode: "", image_ai_model: "", image_ai_scene: "", image_ai_style: null });
+      const paths = [...new Set([
+        item.image_path,
+        item.image_original_path,
+        item.image_processed_path,
+        ...optionsFromItem(item).map((option) => option.path),
+      ].filter(Boolean))];
+      for (const path of paths) await removeMenuItemImage(path).catch(() => {});
+      onChange?.({ image_url: "", image_path: "", image_original_url: "", image_original_path: "", image_processed_url: "", image_processed_path: "", image_variant: "", image_ai_mode: "", image_ai_model: "", image_ai_scene: "", image_ai_style: null, image_ai_options: [] });
+      setResults([]);
       clearResult();
       setSavedCompareSide("after");
       setStudioOpen(false);
@@ -396,11 +459,25 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
     window.location.assign(`/menu-studio/ai-images?${params.toString()}`);
   }
 
+  function chooseResult(option) {
+    if (!option || busy) return;
+    setResult(option);
+    setCompareSide("after");
+    setMode(option.mode || "match");
+    setSceneType(["auto", "scene1", "scene2"].includes(option.sceneType) ? option.sceneType : "auto");
+    setPhotoStyle(normalizePhotoStyle(option.photoStyle || photoStyle));
+    setStyleSaved(false);
+  }
+
   function openStudio() {
-    clearResult();
-    setMode(item.image_ai_mode === "strong" ? "match" : item.image_ai_mode || "match");
-    setSceneType(["auto", "scene1", "scene2"].includes(item.image_ai_scene) ? item.image_ai_scene : "auto");
-    setPhotoStyle(normalizePhotoStyle(item.image_ai_style || currentRestaurantPhotoStyle()));
+    const options = optionsFromItem(item);
+    const selected = options.find((option) => option.path === item.image_processed_path) || options[options.length - 1] || null;
+    setResults(options);
+    setResult(selected);
+    setCompareSide("after");
+    setMode(selected?.mode || (item.image_ai_mode === "strong" ? "match" : item.image_ai_mode || "match"));
+    setSceneType(["auto", "scene1", "scene2"].includes(selected?.sceneType || item.image_ai_scene) ? (selected?.sceneType || item.image_ai_scene) : "auto");
+    setPhotoStyle(normalizePhotoStyle(selected?.photoStyle || item.image_ai_style || currentRestaurantPhotoStyle()));
     setStyleSaved(false);
     setStudioOpen(true);
   }
@@ -408,7 +485,6 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
   function selectScene(nextScene) {
     if (busy) return;
     setSceneType(nextScene);
-    clearResult();
   }
 
   const busy = uploading || processing || saving;
@@ -449,7 +525,7 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
         <div className="menu-content-v2-photo-studio menu-content-v2-photo-ai-studio">
           <div className="menu-content-v2-photo-studio-head">
             <div><strong>{copy.studioTitle}</strong><small>{copy.studioHint}</small></div>
-            <button type="button" onClick={() => { clearResult(); setStudioOpen(false); }} disabled={busy} aria-label={copy.cancel}><X size={16} /></button>
+            <button type="button" onClick={() => setStudioOpen(false)} disabled={busy} aria-label={copy.cancel}><X size={16} /></button>
           </div>
 
           <div className="menu-content-v2-photo-food-lock">
@@ -459,7 +535,7 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
 
           <div className="menu-content-v2-photo-mode-grid">
             {MODES.map(({ key, icon: Icon }) => (
-              <button key={key} type="button" className={mode === key ? "active" : ""} onClick={() => { setMode(key); clearResult(); }} disabled={busy}>
+              <button key={key} type="button" className={mode === key ? "active" : ""} onClick={() => setMode(key)} disabled={busy}>
                 <span className="mode-icon"><Icon size={17} /></span>
                 <span><strong>{copy[key]}</strong><small>{copy[`${key}Hint`]}</small>{key === "match" ? <em>{copy.recommended}</em> : null}</span>
               </button>
@@ -510,6 +586,23 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
             </div>
           </div>
 
+          {results.length ? (
+            <>
+              <div className="menu-content-v2-photo-variant-title">
+                <strong>{copy.optionsTitle}</strong>
+                <small>{copy.optionsHint}</small>
+              </div>
+              <div className="menu-content-v2-photo-variant-grid">
+                {results.map((option, index) => (
+                  <button type="button" key={option.id} className={`menu-content-v2-photo-variant-card ${result?.id === option.id ? "active" : ""}`} onClick={() => chooseResult(option)} disabled={busy}>
+                    <img src={option.url} alt="" />
+                    <span><span>{copy.optionLabel} {index + 1}</span>{result?.id === option.id ? <i className="selected-mark"><Check size={11} /></i> : null}</span>
+                  </button>
+                ))}
+              </div>
+            </>
+          ) : null}
+
           {!result ? (
             <>
               <div className="menu-content-v2-photo-studio-preview ai-source-preview">
@@ -530,9 +623,10 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
               <div className="menu-content-v2-photo-studio-preview ai-result-preview">
                 <img src={compareSide === "before" ? sourceUrl : selectedPreviewUrl} alt="" />
                 <span><ArrowLeftRight size={12} /> {copy.compare}</span>
+                {processing ? <div className="menu-content-v2-photo-processing"><LoaderCircle size={26} className="spin" /><strong>{copy.generating}</strong><small>{copy.generatingHint}</small></div> : null}
               </div>
               <div className="menu-content-v2-photo-ai-result-actions">
-                <button type="button" className="secondary" onClick={generatePreview} disabled={busy}>{copy.regenerate}</button>
+                <button type="button" className="secondary" onClick={generatePreview} disabled={busy}>{processing ? <LoaderCircle size={15} className="spin" /> : <Sparkles size={14} />}{processing ? copy.generating : copy.createAnother}</button>
                 <button type="button" className="primary" onClick={saveAiPhoto} disabled={busy}>{saving ? <LoaderCircle size={15} className="spin" /> : <Check size={15} />}{saving ? copy.saving : copy.usePhoto}</button>
               </div>
             </>
