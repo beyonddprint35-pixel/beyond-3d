@@ -3,6 +3,7 @@ import {
   ArrowLeftRight,
   Camera,
   Check,
+  ChevronDown,
   ImagePlus,
   Link2,
   LoaderCircle,
@@ -110,35 +111,59 @@ const PHOTO_COPY = {
 const PHOTO_STYLE_DEFAULT = { camera: "original", lighting: "restaurant", color: "restaurant", depth: "balanced" };
 const PHOTO_STYLE_COPY = {
   en: {
-    title: "Photo style", hint: "Keep every menu photo in the same visual world.", save: "Save as restaurant default", saved: "Restaurant default saved",
+    title: "Photo style", hint: "Choose the feeling. Beyond handles the photography details.", save: "Save as restaurant default", saved: "Restaurant default saved",
+    advanced: "Advanced controls", advancedHint: "Camera, lighting, color and background depth", custom: "Custom settings",
     camera: "Camera", lighting: "Lighting", color: "Color", depth: "Background depth",
     cameraWarning: "Changing the camera angle on a real photo can require AI to reconstruct details that were not visible. Keep original is the safest choice.",
+    presets: {
+      restaurant: { label: "Match my restaurant", hint: "Follow the visual style of your restaurant", badge: "Recommended", icon: "✨" },
+      bright: { label: "Bright & fresh", hint: "Clean daylight and natural color", icon: "☀️" },
+      warm: { label: "Warm & cozy", hint: "Warm evening light and a softer background", icon: "🌅" },
+      dark: { label: "Dark & premium", hint: "Moody contrast with a premium restaurant feel", icon: "🌙" },
+      clean: { label: "Clean & minimal", hint: "Neutral light, natural color and crisp detail", icon: "🤍" },
+    },
     options: {
       camera: { original: "Keep original", eye: "Eye level", threeQuarter: "45°", top: "Top-down" },
-      lighting: { restaurant: "Match restaurant", warm: "Warm evening", natural: "Bright natural", neutral: "Neutral" },
-      color: { restaurant: "Match restaurant", warm: "Warm", cool: "Cool", natural: "Natural" },
+      lighting: { restaurant: "Match restaurant", warm: "Warm evening", natural: "Bright natural", neutral: "Neutral", dramatic: "Dramatic" },
+      color: { restaurant: "Match restaurant", warm: "Warm", cool: "Cool", natural: "Natural", rich: "Rich" },
       depth: { balanced: "Balanced", sharp: "Sharp background", soft: "Soft background" },
     },
   },
   he: {
-    title: "סגנון תמונה", hint: "שמרו על שפה חזותית אחידה בכל תמונות התפריט.", save: "שמירה כברירת מחדל למסעדה", saved: "ברירת המחדל נשמרה",
+    title: "סגנון תמונה", hint: "בחרו את התחושה. Beyond מטפל בפרטי הצילום.", save: "שמירה כברירת מחדל למסעדה", saved: "ברירת המחדל נשמרה",
+    advanced: "הגדרות מתקדמות", advancedHint: "זווית, תאורה, צבע ועומק רקע", custom: "הגדרות מותאמות",
     camera: "זווית צילום", lighting: "תאורה", color: "צבע", depth: "עומק רקע",
     cameraWarning: "שינוי זווית בתמונה אמיתית עלול לדרוש מה-AI להשלים פרטים שלא נראו. שמירת הזווית המקורית היא הבחירה הבטוחה ביותר.",
+    presets: {
+      restaurant: { label: "התאמה למסעדה שלי", hint: "שימוש בשפה החזותית של המסעדה", badge: "מומלץ", icon: "✨" },
+      bright: { label: "בהיר ורענן", hint: "אור יום נקי וצבע טבעי", icon: "☀️" },
+      warm: { label: "חם ונעים", hint: "תאורת ערב חמה ורקע רך יותר", icon: "🌅" },
+      dark: { label: "כהה ויוקרתי", hint: "קונטרסט דרמטי ואווירת פרימיום", icon: "🌙" },
+      clean: { label: "נקי ומינימלי", hint: "אור ניטרלי, צבע טבעי ופרטים חדים", icon: "🤍" },
+    },
     options: {
       camera: { original: "מקורית", eye: "גובה העיניים", threeQuarter: "45°", top: "מלמעלה" },
-      lighting: { restaurant: "התאמה למסעדה", warm: "ערב חם", natural: "אור טבעי", neutral: "ניטרלי" },
-      color: { restaurant: "התאמה למסעדה", warm: "חם", cool: "קר", natural: "טבעי" },
+      lighting: { restaurant: "התאמה למסעדה", warm: "ערב חם", natural: "אור טבעי", neutral: "ניטרלי", dramatic: "דרמטי" },
+      color: { restaurant: "התאמה למסעדה", warm: "חם", cool: "קר", natural: "טבעי", rich: "עשיר" },
       depth: { balanced: "מאוזן", sharp: "רקע חד", soft: "רקע רך" },
     },
   },
   ar: {
-    title: "أسلوب الصورة", hint: "حافظ على مظهر موحد لجميع صور القائمة.", save: "حفظ كإعداد افتراضي للمطعم", saved: "تم حفظ الإعداد الافتراضي",
+    title: "أسلوب الصورة", hint: "اختر الإحساس، وBeyond يتولى تفاصيل التصوير.", save: "حفظ كإعداد افتراضي للمطعم", saved: "تم حفظ الإعداد الافتراضي",
+    advanced: "إعدادات متقدمة", advancedHint: "الزاوية والإضاءة واللون وعمق الخلفية", custom: "إعدادات مخصصة",
     camera: "زاوية الكاميرا", lighting: "الإضاءة", color: "اللون", depth: "عمق الخلفية",
     cameraWarning: "تغيير زاوية صورة حقيقية قد يتطلب من الذكاء الاصطناعي إعادة بناء تفاصيل غير ظاهرة. الحفاظ على الزاوية الأصلية هو الخيار الأكثر أماناً.",
+    presets: {
+      restaurant: { label: "مطابقة مطعمي", hint: "اتباع الأسلوب البصري للمطعم", badge: "موصى به", icon: "✨" },
+      bright: { label: "مشرق ومنعش", hint: "ضوء نهاري نظيف وألوان طبيعية", icon: "☀️" },
+      warm: { label: "دافئ ومريح", hint: "إضاءة مسائية دافئة وخلفية أنعم", icon: "🌅" },
+      dark: { label: "داكن وفاخر", hint: "تباين درامي بطابع مطعم فاخر", icon: "🌙" },
+      clean: { label: "نظيف وبسيط", hint: "إضاءة محايدة وألوان طبيعية وتفاصيل واضحة", icon: "🤍" },
+    },
     options: {
       camera: { original: "الأصلية", eye: "مستوى العين", threeQuarter: "45°", top: "من الأعلى" },
-      lighting: { restaurant: "مطابقة المطعم", warm: "مساء دافئ", natural: "طبيعي ساطع", neutral: "محايد" },
-      color: { restaurant: "مطابقة المطعم", warm: "دافئ", cool: "بارد", natural: "طبيعي" },
+      lighting: { restaurant: "مطابقة المطعم", warm: "مساء دافئ", natural: "طبيعي ساطع", neutral: "محايد", dramatic: "درامي" },
+      color: { restaurant: "مطابقة المطعم", warm: "دافئ", cool: "بارد", natural: "طبيعي", rich: "غني" },
       depth: { balanced: "متوازن", sharp: "خلفية واضحة", soft: "خلفية ناعمة" },
     },
   },
@@ -146,9 +171,17 @@ const PHOTO_STYLE_COPY = {
 
 const PHOTO_STYLE_VALUES = {
   camera: ["original", "eye", "threeQuarter", "top"],
-  lighting: ["restaurant", "warm", "natural", "neutral"],
-  color: ["restaurant", "warm", "cool", "natural"],
+  lighting: ["restaurant", "warm", "natural", "neutral", "dramatic"],
+  color: ["restaurant", "warm", "cool", "natural", "rich"],
   depth: ["balanced", "sharp", "soft"],
+};
+
+const PHOTO_STYLE_PRESETS = {
+  restaurant: { camera: "original", lighting: "restaurant", color: "restaurant", depth: "balanced" },
+  bright: { camera: "original", lighting: "natural", color: "natural", depth: "balanced" },
+  warm: { camera: "original", lighting: "warm", color: "warm", depth: "soft" },
+  dark: { camera: "original", lighting: "dramatic", color: "rich", depth: "soft" },
+  clean: { camera: "original", lighting: "neutral", color: "natural", depth: "sharp" },
 };
 
 const MODES = [
@@ -160,6 +193,12 @@ const MODES = [
 function normalizePhotoStyle(value) {
   const source = value && typeof value === "object" ? value : {};
   return Object.fromEntries(Object.entries(PHOTO_STYLE_DEFAULT).map(([key, fallback]) => [key, PHOTO_STYLE_VALUES[key].includes(source[key]) ? source[key] : fallback]));
+}
+
+function photoStylePresetKey(value) {
+  const style = normalizePhotoStyle(value);
+  const match = Object.entries(PHOTO_STYLE_PRESETS).find(([, preset]) => Object.keys(PHOTO_STYLE_DEFAULT).every((key) => preset[key] === style[key]));
+  return match?.[0] || "custom";
 }
 
 function normalizeAiOptions(value) {
@@ -199,8 +238,8 @@ function optionsFromItem(item) {
 function photoStyleTheme(style) {
   const next = normalizePhotoStyle(style);
   const camera = { original: "preserve original camera angle", eye: "eye-level camera angle", threeQuarter: "45 degree three-quarter camera angle", top: "top-down overhead camera angle" }[next.camera];
-  const lighting = { restaurant: "match restaurant scene lighting", warm: "warm evening restaurant lighting", natural: "bright natural daylight", neutral: "neutral balanced studio lighting" }[next.lighting];
-  const color = { restaurant: "match restaurant scene color palette", warm: "warm amber color grading", cool: "cool clean color grading", natural: "natural true-to-life color" }[next.color];
+  const lighting = { restaurant: "match restaurant scene lighting", warm: "warm evening restaurant lighting", natural: "bright natural daylight", neutral: "neutral balanced studio lighting", dramatic: "dark cinematic low-key restaurant lighting with controlled highlights" }[next.lighting];
+  const color = { restaurant: "match restaurant scene color palette", warm: "warm amber color grading", cool: "cool clean color grading", natural: "natural true-to-life color", rich: "rich premium color grading with deep blacks and restrained saturation" }[next.color];
   const depth = { balanced: "balanced depth of field", sharp: "sharp detailed background", soft: "soft blurred background bokeh" }[next.depth];
   return { photo_camera: camera, photo_lighting: lighting, photo_color: color, photo_depth: depth };
 }
@@ -241,6 +280,7 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
   const [sceneType, setSceneType] = useState(["scene1", "scene2"].includes(item.image_ai_scene) ? item.image_ai_scene : "auto");
   const [photoStyle, setPhotoStyle] = useState(() => normalizePhotoStyle(item.image_ai_style || currentRestaurantPhotoStyle()));
   const [styleSaved, setStyleSaved] = useState(false);
+  const [advancedOpen, setAdvancedOpen] = useState(false);
   const [scenes, setScenes] = useState({ scene1: null, scene2: null });
   const [scenesLoading, setScenesLoading] = useState(false);
   const cameraInputRef = useRef(null);
@@ -255,6 +295,7 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
   const hasSavedComparison = Boolean(isAiReady && item.image_original_url && item.image_url && item.image_original_url !== item.image_url);
   const visibleSavedUrl = savedCompareSide === "before" && hasSavedComparison ? item.image_original_url : item.image_url;
   const styleContext = currentMenuStyleContext(photoStyle);
+  const selectedStylePreset = photoStylePresetKey(photoStyle);
 
   useEffect(() => {
     const nextOptions = optionsFromItem(item);
@@ -293,6 +334,12 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
   function changePhotoStyle(key, value) {
     if (uploading || processing || saving) return;
     setPhotoStyle((current) => ({ ...current, [key]: value }));
+    setStyleSaved(false);
+  }
+
+  function applyPhotoStylePreset(key) {
+    if (uploading || processing || saving || !PHOTO_STYLE_PRESETS[key]) return;
+    setPhotoStyle({ ...PHOTO_STYLE_PRESETS[key] });
     setStyleSaved(false);
   }
 
@@ -346,6 +393,7 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
       setSceneType("auto");
       setPhotoStyle(currentRestaurantPhotoStyle());
       setStyleSaved(false);
+      setAdvancedOpen(false);
       setStudioOpen(false);
     } catch (uploadError) {
       setError(uploadError?.message || t.imageUploadError || "Could not upload this photo.");
@@ -479,6 +527,7 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
     setSceneType(["auto", "scene1", "scene2"].includes(selected?.sceneType || item.image_ai_scene) ? (selected?.sceneType || item.image_ai_scene) : "auto");
     setPhotoStyle(normalizePhotoStyle(selected?.photoStyle || item.image_ai_style || currentRestaurantPhotoStyle()));
     setStyleSaved(false);
+    setAdvancedOpen(false);
     setStudioOpen(true);
   }
 
@@ -571,19 +620,38 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
 
           <div className="menu-content-v2-photo-style">
             <div className="menu-content-v2-photo-style-head"><strong>{styleCopy.title}</strong><small>{styleCopy.hint}</small></div>
-            {Object.keys(PHOTO_STYLE_VALUES).map((key) => (
-              <div className="menu-content-v2-photo-style-group" key={key}>
-                <span>{styleCopy[key]}</span>
-                <div className="menu-content-v2-photo-style-options">
-                  {PHOTO_STYLE_VALUES[key].map((value) => <button type="button" key={value} className={photoStyle[key] === value ? "active" : ""} onClick={() => changePhotoStyle(key, value)} disabled={busy}>{styleCopy.options[key][value]}</button>)}
-                </div>
-              </div>
-            ))}
-            {photoStyle.camera !== "original" ? <p className="menu-content-v2-photo-style-warning">{styleCopy.cameraWarning}</p> : null}
+            <div className="menu-content-v2-photo-style-presets">
+              {Object.entries(PHOTO_STYLE_PRESETS).map(([key]) => {
+                const preset = styleCopy.presets[key];
+                return <button type="button" key={key} className={`menu-content-v2-photo-style-preset ${selectedStylePreset === key ? "active" : ""}`} onClick={() => applyPhotoStylePreset(key)} disabled={busy}>
+                  <span className="menu-content-v2-photo-style-preset-icon" aria-hidden="true">{preset.icon}</span>
+                  <span><strong>{preset.label}</strong><small>{preset.hint}</small></span>
+                  {preset.badge ? <em>{preset.badge}</em> : null}
+                </button>;
+              })}
+            </div>
+
             <div className="menu-content-v2-photo-style-save">
               <button type="button" onClick={saveRestaurantPhotoStyle} disabled={busy}><Check size={13} /> {styleCopy.save}</button>
               {styleSaved ? <small>✓ {styleCopy.saved}</small> : null}
             </div>
+
+            <button type="button" className={`menu-content-v2-photo-style-advanced-toggle ${advancedOpen ? "open" : ""}`} onClick={() => setAdvancedOpen((value) => !value)} disabled={busy} aria-expanded={advancedOpen}>
+              <span><strong>{styleCopy.advanced}</strong><small>{selectedStylePreset === "custom" ? styleCopy.custom : styleCopy.advancedHint}</small></span>
+              <ChevronDown size={15} />
+            </button>
+
+            {advancedOpen ? <div className="menu-content-v2-photo-style-advanced-panel">
+              {Object.keys(PHOTO_STYLE_VALUES).map((key) => (
+                <div className="menu-content-v2-photo-style-group" key={key}>
+                  <span>{styleCopy[key]}</span>
+                  <div className="menu-content-v2-photo-style-options">
+                    {PHOTO_STYLE_VALUES[key].map((value) => <button type="button" key={value} className={photoStyle[key] === value ? "active" : ""} onClick={() => changePhotoStyle(key, value)} disabled={busy}>{styleCopy.options[key][value]}</button>)}
+                  </div>
+                </div>
+              ))}
+              {photoStyle.camera !== "original" ? <p className="menu-content-v2-photo-style-warning">{styleCopy.cameraWarning}</p> : null}
+            </div> : null}
           </div>
 
           {results.length ? (
