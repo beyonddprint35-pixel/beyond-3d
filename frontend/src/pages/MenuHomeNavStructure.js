@@ -1,7 +1,4 @@
 const NAV_SELECTOR = ".menu-home-nav";
-const WORKSPACE_ACTIONS_SELECTOR = ".menu-home-nav-actions";
-const WORKSPACE_STUDIO_CLASS = "menu-home-new-studio-button";
-const WORKSPACE_MENUS_CLASS = "menu-home-my-menus-button";
 
 const NAV_ITEMS = [
   { label: "BEYOND Menu", type: "section", target: "#product" },
@@ -134,80 +131,6 @@ function makeLink(item) {
   return link;
 }
 
-function goToMenuStudioGateway() {
-  window.location.assign("/menu-studio");
-}
-
-function configureStudioButton(button) {
-  if (!(button instanceof HTMLButtonElement)) return;
-
-  button.dataset.beyondNewStudio = "true";
-  button.setAttribute("aria-label", "Open Menu Studio");
-  button.innerHTML = '<span class="menu-home-studio-full">Menu Studio</span><span class="menu-home-studio-short">Studio</span>';
-
-  if (button.dataset.beyondMenuStudioGatewayBound === "true") return;
-  button.dataset.beyondMenuStudioGatewayBound = "true";
-  button.addEventListener("click", (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    event.stopImmediatePropagation();
-    goToMenuStudioGateway();
-  }, true);
-}
-
-function createStudioButton() {
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = `menu-home-studio-button ${WORKSPACE_STUDIO_CLASS}`;
-  configureStudioButton(button);
-  return button;
-}
-
-function syncWorkspaceActions() {
-  if (window.location.pathname !== "/") return;
-
-  const actions = document.querySelector(WORKSPACE_ACTIONS_SELECTOR);
-  if (!(actions instanceof HTMLElement)) return;
-
-  const accountButton = actions.querySelector(".menu-home-account");
-  const signedIn = accountButton instanceof HTMLElement;
-
-  // Studio opens the current menu directly; menu switching lives inside Studio.
-  actions.querySelectorAll(`.${WORKSPACE_MENUS_CLASS}`).forEach((button) => button.remove());
-
-  let studioButtons = Array.from(
-    actions.querySelectorAll(".menu-home-studio-button:not(.menu-home-my-menus-button)")
-  ).filter((button) => button instanceof HTMLButtonElement);
-
-  if (!signedIn) {
-    studioButtons
-      .filter((button) => button.classList.contains(WORKSPACE_STUDIO_CLASS))
-      .forEach((button) => button.remove());
-    return;
-  }
-
-  let studioButton = studioButtons.find(
-    (button) => !button.classList.contains(WORKSPACE_STUDIO_CLASS)
-  ) || studioButtons[0];
-
-  if (!(studioButton instanceof HTMLButtonElement)) {
-    studioButton = createStudioButton();
-    actions.insertBefore(studioButton, accountButton);
-  }
-
-  // React can add the legacy button after this observer has already created one.
-  // Keep a single canonical Menu Studio button and remove every duplicate.
-  studioButtons = Array.from(
-    actions.querySelectorAll(".menu-home-studio-button:not(.menu-home-my-menus-button)")
-  ).filter((button) => button instanceof HTMLButtonElement);
-
-  studioButtons.forEach((button) => {
-    if (button !== studioButton) button.remove();
-  });
-
-  configureStudioButton(studioButton);
-}
-
 function buildHomepageNavigation() {
   if (window.location.pathname !== "/") return;
 
@@ -221,8 +144,6 @@ function buildHomepageNavigation() {
       nav.appendChild(item.type === "link" ? makeLink(item) : makeButton(item));
     });
   }
-
-  syncWorkspaceActions();
 }
 
 let queued = false;
