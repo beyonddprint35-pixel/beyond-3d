@@ -354,8 +354,27 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
   const language = ["en", "he", "ar"].includes(document.documentElement.lang) ? document.documentElement.lang : "en";
   const copy = PHOTO_COPY[language] || PHOTO_COPY.en;
   const styleCopy = PHOTO_STYLE_COPY[language] || PHOTO_STYLE_COPY.en;
-  const sourceUrl = item.image_original_url || item.image_url || "";
-  const sourcePath = item.image_original_path || item.image_path || "";
+  // Preserve the untouched customer upload separately from every derived image.
+  // All future AI options branch from this immutable source, never from Option 1/2/etc.
+  const immutableOriginalUrl = String(item.image_upload_original_url || "").trim();
+  const immutableOriginalPath = String(item.image_upload_original_path || "").trim();
+  const legacyOriginalUrl = String(item.image_original_url || "").trim();
+  const legacyOriginalPath = String(item.image_original_path || "").trim();
+  const savedOptions = optionsFromItem(item);
+  const legacyOriginalTrusted = Boolean(
+    legacyOriginalUrl
+      && (legacyOriginalUrl !== String(item.image_url || "").trim() || !savedOptions.length),
+  );
+  const originalUrl = immutableOriginalUrl || (legacyOriginalTrusted ? legacyOriginalUrl : "");
+  const originalPath = immutableOriginalPath || (legacyOriginalTrusted ? legacyOriginalPath : "");
+  const sourceUrl = immutableOriginalUrl || legacyOriginalUrl || item.image_url || "";
+  const sourcePath = immutableOriginalPath || legacyOriginalPath || item.image_path || "";
+  const originalNeedsRepair = Boolean(!originalUrl && savedOptions.length && legacyOriginalUrl);
+  const originalRepairMessage = ({
+    en: "This older item no longer has a trustworthy untouched original. Re-upload the original photo once before creating another AI option.",
+    he: "בפריט הישן הזה כבר אין מקור אמין שלא נערך. העלו מחדש את התמונה המקורית פעם אחת לפני יצירת אפשרות AI נוספת.",
+    ar: "هذا العنصر القديم لم يعد يحتوي على نسخة أصلية موثوقة وغير معدلة. أعد رفع الصورة الأصلية مرة واحدة قبل إنشاء خيار AI جديد.",
+  }[language] || "Re-upload the original photo before creating another AI option.");
   const isAiReady = Boolean(item.image_ai_model || item.image_variant?.startsWith?.("ai-"));
   const hasSavedComparison = Boolean(isAiReady && item.image_original_url && item.image_url && item.image_original_url !== item.image_url);
   const visibleSavedUrl = savedCompareSide === "before" && hasSavedComparison ? item.image_original_url : item.image_url;
@@ -431,18 +450,24 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
     setUploading(true);
     setError("");
     try {
+      const repairingOriginal = originalNeedsRepair;
+      const preservedOptionPaths = new Set(optionsFromItem(item).map((option) => option.path).filter(Boolean));
       const previousPaths = [...new Set([
         item.image_path,
+        item.image_upload_original_path,
         item.image_original_path,
         item.image_processed_path,
         ...optionsFromItem(item).map((option) => option.path),
       ].filter(Boolean))];
       const uploaded = await uploadMenuItemImage({ file, itemId: item.id, projectId, previousPath: "" });
       for (const path of previousPaths) {
+        if (repairingOriginal && preservedOptionPaths.has(path)) continue;
         if (path !== uploaded.image_path) await removeMenuItemImage(path).catch(() => {});
       }
       onChange?.({
         ...uploaded,
+        image_upload_original_url: uploaded.image_url,
+        image_upload_original_path: uploaded.image_path,
         image_original_url: uploaded.image_url,
         image_original_path: uploaded.image_path,
         image_processed_url: "",
@@ -452,9 +477,9 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
         image_ai_mode: "",
         image_ai_scene: "",
         image_ai_style: null,
-        image_ai_options: [],
+        image_ai_options: repairingOriginal ? normalizeAiOptions(results) : [],
       });
-      setResults([]);
+      setResults(repairingOriginal ? results : []);
       clearResult();
       setSavedCompareSide("after");
       setMode("match");
@@ -474,6 +499,10 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
 
   async function generatePreview() {
     if (!sourceUrl || processing) return;
+    if (originalNeedsRepair) {
+      setError(originalRepairMessage);
+      return;
+    }
     setProcessing(true);
     setError("");
     try {
@@ -524,10 +553,12 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
     try {
       if (result.isOriginal) {
         onChange?.({
-          image_url: sourceUrl,
-          image_path: sourcePath,
-          image_original_url: sourceUrl,
-          image_original_path: sourcePath,
+          image_url: originalUrl || sourceUrl,
+          image_path: originalPath || sourcePath,
+          image_upload_original_url: immutableOriginalUrl || originalUrl || "",
+          image_upload_original_path: immutableOriginalPath || originalPath || "",
+          image_original_url: originalUrl || sourceUrl,
+          image_original_path: originalPath || sourcePath,
           image_processed_url: "",
           image_processed_path: "",
           image_variant: "",
@@ -571,12 +602,13 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
     try {
       const paths = [...new Set([
         item.image_path,
+        item.image_upload_original_path,
         item.image_original_path,
         item.image_processed_path,
         ...optionsFromItem(item).map((option) => option.path),
       ].filter(Boolean))];
       for (const path of paths) await removeMenuItemImage(path).catch(() => {});
-      onChange?.({ image_url: "", image_path: "", image_original_url: "", image_original_path: "", image_processed_url: "", image_processed_path: "", image_variant: "", image_ai_mode: "", image_ai_model: "", image_ai_scene: "", image_ai_style: null, image_ai_options: [] });
+      onChange?.({ image_url: "", image_path: "", image_upload_original_url: "", image_upload_original_path: "", image_original_url: "", image_original_path: "", image_processed_url: "", image_processed_path: "", image_variant: "", image_ai_mode: "", image_ai_model: "", image_ai_scene: "", image_ai_style: null, image_ai_options: [] });
       setResults([]);
       clearResult();
       setSavedCompareSide("after");
@@ -595,8 +627,8 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
   }
 
   function chooseOriginal() {
-    if (!sourceUrl || busy) return;
-    setResult({ id: "original", url: sourceUrl, path: sourcePath, isOriginal: true });
+    if (!originalUrl || busy) return;
+    setResult({ id: "original", url: originalUrl, path: originalPath, isOriginal: true });
     setCompareSide("after");
     setStyleSaved(false);
   }
@@ -613,9 +645,9 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
 
   function openStudio() {
     const options = optionsFromItem(item);
-    const currentIsOriginal = Boolean(sourceUrl && item.image_url === sourceUrl && !item.image_processed_path);
+    const currentIsOriginal = Boolean(originalUrl && item.image_url === originalUrl && !item.image_processed_path);
     const selected = currentIsOriginal
-      ? { id: "original", url: sourceUrl, path: sourcePath, isOriginal: true }
+      ? { id: "original", url: originalUrl, path: originalPath, isOriginal: true }
       : options.find((option) => option.path === item.image_processed_path) || options[options.length - 1] || null;
     setResults(options);
     setResult(selected);
@@ -763,10 +795,10 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
             <>
               <div className="menu-content-v2-photo-variant-title">
                 <strong>{copy.optionsTitle}</strong>
-                <small>{copy.optionsHint}</small>
+                <small>{originalNeedsRepair ? originalRepairMessage : copy.optionsHint}</small>
               </div>
               <div className="menu-content-v2-photo-variant-grid">
-                <div
+                {originalUrl ? <div
                   className={`menu-content-v2-photo-variant-card original ${result?.isOriginal || (!result && !results.length) ? "active" : ""}`}
                   role="button"
                   tabIndex={busy ? -1 : 0}
@@ -774,12 +806,12 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
                   onClick={chooseOriginal}
                   onKeyDown={(event) => { if (!busy && (event.key === "Enter" || event.key === " ")) { event.preventDefault(); chooseOriginal(); } }}
                 >
-                  <img src={sourceUrl} alt="" />
-                  <button type="button" className="menu-content-v2-photo-variant-download" disabled={busy} aria-label={`${copy.download} — ${copy.originalOption}`} onClick={(event) => { event.stopPropagation(); downloadPhotoUrl(sourceUrl, `${itemDisplayName(item, language) || "menu-item"}-original`); }}>
+                  <img src={originalUrl} alt="" />
+                  <button type="button" className="menu-content-v2-photo-variant-download" disabled={busy} aria-label={`${copy.download} — ${copy.originalOption}`} onClick={(event) => { event.stopPropagation(); downloadPhotoUrl(originalUrl, `${itemDisplayName(item, language) || "menu-item"}-original`); }}>
                     <Download size={12} />
                   </button>
                   <span><span>{copy.originalOption}</span>{result?.isOriginal || (!result && !results.length) ? <i className="selected-mark"><Check size={11} /></i> : null}</span>
-                </div>
+                </div> : null}
                 {results.map((option, index) => (
                   <div
                     key={option.id}

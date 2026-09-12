@@ -134,31 +134,9 @@ function ensureDownloadButton() {
     node.setAttribute("aria-hidden", "true");
   });
 
-  const editor = document.querySelector(".menu-content-v2-image-editor");
-  if (!editor) return;
-
-  const draft = readMenuStudioV2Draft();
-  const item = selectedItemFromDraft(draft);
-  const hasPhoto = Boolean(fullPhotoUrl(item));
-
-  let button = editor.querySelector(":scope > .menu-content-v2-image-download");
-  if (!hasPhoto) {
-    button?.remove();
-    return;
-  }
-
-  if (!button) {
-    button = document.createElement("button");
-    button.type = "button";
-    button.className = "menu-content-v2-image-download";
-    button.innerHTML = `${iconMarkup()}<span>Download photo</span>`;
-    button.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      downloadCurrentPhoto(button);
-    });
-    editor.appendChild(button);
-  }
+  // Exact downloads now live on the Original / Option cards. The old generic
+  // button was ambiguous and could download a stale selection.
+  document.querySelectorAll(".menu-content-v2-image-download").forEach((button) => button.remove());
 }
 
 export default function installMenuContentImageDownload() {
