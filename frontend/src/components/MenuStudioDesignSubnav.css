@@ -17,6 +17,12 @@
   -webkit-backdrop-filter: blur(18px);
 }
 
+/* Desktop keeps the existing row below the menu tabs. Mobile gets its own copy
+   inside the header so Design / My Place can sit above the current-menu selector. */
+.menu-design-subnav.menu-design-subnav-mobile {
+  display: none;
+}
+
 .menu-design-subnav button {
   min-width: 118px;
   height: 38px;
@@ -78,19 +84,59 @@ html[data-beyond-theme="dark"] .menu-design-subnav button.active {
 }
 
 @media (max-width: 850px) {
-  .menu-design-subnav {
-    top: auto;
-    height: 48px;
-    flex-basis: 48px;
-    gap: 4px;
-    padding: 5px 10px;
+  /* Design mobile stack:
+     1) product header
+     2) Design / My Place
+     3) current menu selector
+     4) preview device controls */
+  .menu-studio-header.menu-design-v2-topbar {
+    height: 145px !important;
+    min-height: 145px !important;
+    max-height: 145px !important;
+    flex: 0 0 145px !important;
+    grid-template-rows: 48px 40px 36px !important;
+    row-gap: 3px !important;
   }
 
-  .menu-design-subnav button {
-    min-width: 104px;
-    height: 36px;
-    padding: 0 14px;
-    font-size: 11px;
+  .menu-design-subnav.menu-design-subnav-desktop {
+    display: none !important;
+  }
+
+  .menu-studio-header > .menu-design-subnav.menu-design-subnav-mobile {
+    grid-column: 1 / -1 !important;
+    grid-row: 2 !important;
+    position: static !important;
+    inset: auto !important;
+    z-index: 1 !important;
+    width: 100% !important;
+    height: 40px !important;
+    min-height: 40px !important;
+    flex: 0 0 40px !important;
+    margin: 0 !important;
+    padding: 2px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    border: 0 !important;
+    border-radius: 11px !important;
+    background: var(--beyond-studio-surface-2, #f7f8fa) !important;
+    box-shadow: inset 0 0 0 1px var(--beyond-studio-line, rgba(60,60,67,.12)) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .menu-studio-header > .menu-design-subnav.menu-design-subnav-mobile button {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    height: 36px !important;
+    padding: 0 12px !important;
+    border-radius: 9px !important;
+    font-size: 11px !important;
+  }
+
+  .menu-studio-header.menu-design-v2-topbar > .menu-studio-menu-switcher {
+    grid-row: 3 !important;
   }
 
   .menu-design-subnav-spacer {
@@ -100,6 +146,11 @@ html[data-beyond-theme="dark"] .menu-design-subnav button.active {
   }
 
   .menu-design-subnav ~ .menu-place-workspace-layer {
-    inset: 150px 0 0;
+    inset: 145px 0 0;
+  }
+
+  html[data-beyond-theme="dark"] .menu-studio-header > .menu-design-subnav.menu-design-subnav-mobile {
+    background: var(--beyond-studio-surface-2, #111923) !important;
+    box-shadow: inset 0 0 0 1px var(--beyond-studio-line, #253247) !important;
   }
 }
