@@ -3,7 +3,7 @@ import { supabase } from "../../../lib/supabaseClient";
 const SUBSCRIPTION_CACHE_TTL = 60_000;
 const subscriptionCache = new Map();
 const subscriptionRequests = new Map();
-const PRO_AI_PLAN_IDS = new Set(["premium", "pro"]);
+const PREMIUM_PLAN_ID = "premium";
 const ACTIVE_SUBSCRIPTION_STATUSES = new Set(["active", "trialing"]);
 
 function cacheEntry(projectId) {
@@ -42,15 +42,15 @@ export function menuSubscriptionAccess(data) {
   const periodEndMs = periodEnd ? Date.parse(periodEnd) : Number.NaN;
   const periodActive = !Number.isFinite(periodEndMs) || periodEndMs > Date.now();
   const active = ACTIVE_SUBSCRIPTION_STATUSES.has(status) && periodActive;
-  const isPro = active && PRO_AI_PLAN_IDS.has(planId);
+  const isPremium = active && planId === PREMIUM_PLAN_ID;
   const isAdmin = data?.isAdmin === true || data?.data?.isAdmin === true;
-  const hasProAccess = isAdmin || isPro;
+  const hasProAccess = isAdmin || isPremium;
 
   return {
     status,
     planId,
     active,
-    isPro,
+    isPremium,
     isAdmin,
     hasProAccess,
     canUseAi: hasProAccess,
