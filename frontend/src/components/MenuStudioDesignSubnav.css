@@ -1,10 +1,11 @@
 .menu-design-subnav {
-  position: fixed;
-  top: 66px;
-  left: 0;
-  right: 0;
-  z-index: 116;
+  position: relative;
+  top: auto;
+  left: auto;
+  right: auto;
+  z-index: 20;
   height: 54px;
+  flex: 0 0 54px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -43,9 +44,12 @@
   box-shadow: 0 4px 14px rgba(50, 101, 222, 0.1);
 }
 
+/* The subnav now participates in the Studio flex layout, so a duplicate spacer
+   would add a second empty band and push the preview controls down. */
 .menu-design-subnav-spacer {
-  height: 54px;
-  flex: 0 0 54px;
+  display: none;
+  height: 0;
+  flex: 0 0 0;
 }
 
 .menu-design-subnav ~ .menu-place-workspace-layer {
@@ -75,8 +79,9 @@ html[data-beyond-theme="dark"] .menu-design-subnav button.active {
 
 @media (max-width: 850px) {
   .menu-design-subnav {
-    top: 102px;
+    top: auto;
     height: 48px;
+    flex-basis: 48px;
     gap: 4px;
     padding: 5px 10px;
   }
@@ -89,8 +94,9 @@ html[data-beyond-theme="dark"] .menu-design-subnav button.active {
   }
 
   .menu-design-subnav-spacer {
-    height: 48px;
-    flex-basis: 48px;
+    display: none;
+    height: 0;
+    flex-basis: 0;
   }
 
   .menu-design-subnav ~ .menu-place-workspace-layer {
