@@ -1,3 +1,27 @@
+.menu-studio-design-menu-bar {
+  position: relative;
+  z-index: 30;
+  width: 100%;
+  flex: 0 0 auto;
+  padding: 6px 14px;
+  border-bottom: 1px solid #dce3ef;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.menu-studio-design-menu-bar > .menu-studio-menu-switcher {
+  position: static !important;
+  inset: auto !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  transform: none !important;
+  border-top: 0 !important;
+}
+
 .menu-design-subnav {
   position: relative;
   top: auto;
@@ -15,13 +39,6 @@
   background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-}
-
-/* There is only one visible Design / My Place band at a time. The mobile copy
-   inside the header stays hidden; the normal-flow band after the header is the
-   one that separates Your menus from the preview/device controls. */
-.menu-design-subnav.menu-design-subnav-mobile {
-  display: none !important;
 }
 
 .menu-design-subnav button {
@@ -51,16 +68,11 @@
   box-shadow: 0 4px 14px rgba(50, 101, 222, 0.1);
 }
 
-.menu-design-subnav-spacer {
-  display: none;
-  height: 0;
-  flex: 0 0 0;
-}
-
 .menu-design-subnav ~ .menu-place-workspace-layer {
-  inset: 120px 0 0;
+  inset: 138px 0 0;
 }
 
+html[data-beyond-theme="dark"] .menu-studio-design-menu-bar,
 html[data-beyond-theme="dark"] .menu-design-subnav {
   border-bottom-color: #1f2a3a;
   background: rgba(9, 14, 22, 0.96);
@@ -83,35 +95,66 @@ html[data-beyond-theme="dark"] .menu-design-subnav button.active {
 }
 
 @media (max-width: 850px) {
-  /* Exact mobile order:
-     1) Beyond header
-     2) Your menus
+  /* Design uses four independent rows in normal flow:
+     1) Studio identity / language
+     2) Your Menus
      3) Design / My Place
      4) Mobile / Tablet / Desktop
-     5) menu preview
-
-     Keep Your menus inside the original two-row header. Design / My Place is a
-     separate normal-flow row below it, so the device toolbar can never slide
-     behind or underneath it. */
+     Nothing shares a grid row, so nothing can cover another control. */
   .menu-studio-header.menu-design-v2-topbar {
-    height: 102px !important;
-    min-height: 102px !important;
-    max-height: 102px !important;
-    flex: 0 0 102px !important;
-    grid-template-rows: 48px 36px !important;
-    row-gap: 3px !important;
+    height: 63px !important;
+    min-height: 63px !important;
+    max-height: 63px !important;
+    flex: 0 0 63px !important;
+    grid-template-rows: 48px !important;
+    align-content: center !important;
+    row-gap: 0 !important;
   }
 
-  .menu-studio-header.menu-design-v2-topbar > .menu-studio-menu-switcher {
-    grid-column: 1 / -1 !important;
-    grid-row: 2 !important;
+  .menu-studio-design-menu-bar {
+    position: relative !important;
+    inset: auto !important;
+    z-index: 30 !important;
+    width: 100% !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    flex: 0 0 44px !important;
+    margin: 0 !important;
+    padding: 4px 7px !important;
+    display: flex !important;
+    align-items: center !important;
+    border-bottom: 1px solid var(--beyond-studio-line, rgba(60,60,67,.12)) !important;
+    background: var(--beyond-studio-surface, #fff) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
 
-  .menu-studio-header > .menu-design-subnav.menu-design-subnav-mobile {
+  .menu-studio-design-menu-bar > .menu-studio-menu-switcher {
+    position: static !important;
+    inset: auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    border: 0 !important;
+  }
+
+  .menu-studio-design-menu-bar .menu-studio-menu-switcher-wide {
     display: none !important;
   }
 
-  .menu-design-subnav.menu-design-subnav-desktop {
+  .menu-studio-design-menu-bar .menu-studio-menu-switcher-compact-trigger {
+    width: 100% !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    margin: 0 !important;
+    display: flex !important;
+  }
+
+  .menu-design-subnav {
     position: relative !important;
     inset: auto !important;
     z-index: 20 !important;
@@ -132,7 +175,7 @@ html[data-beyond-theme="dark"] .menu-design-subnav button.active {
     -webkit-backdrop-filter: none !important;
   }
 
-  .menu-design-subnav.menu-design-subnav-desktop button {
+  .menu-design-subnav button {
     flex: 1 1 0 !important;
     max-width: 180px !important;
     min-width: 0 !important;
@@ -141,29 +184,27 @@ html[data-beyond-theme="dark"] .menu-design-subnav button.active {
     font-size: 11px !important;
   }
 
-  /* The canvas now follows the subnav in normal document flow. Its toolbar is
-     the next row and must remain fully visible. */
+  /* The device toolbar is the first row of the Design canvas, directly after
+     Design / My Place. Keep it in normal flow and explicitly visible. */
   .menu-design-v2 .studio-v3-design-canvas-workspace.compact > .studio-v3-design-canvas-toolbar {
     display: grid !important;
     visibility: visible !important;
     opacity: 1 !important;
     position: relative !important;
-    top: auto !important;
     inset: auto !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
     z-index: 20 !important;
-  }
-
-  .menu-design-subnav-spacer {
-    display: none !important;
-    height: 0 !important;
-    flex-basis: 0 !important;
+    margin: 0 !important;
   }
 
   .menu-design-subnav ~ .menu-place-workspace-layer {
-    inset: 150px 0 0;
+    inset: 155px 0 0;
   }
 
-  html[data-beyond-theme="dark"] .menu-design-subnav.menu-design-subnav-desktop {
+  html[data-beyond-theme="dark"] .menu-studio-design-menu-bar,
+  html[data-beyond-theme="dark"] .menu-design-subnav {
     background: var(--beyond-studio-surface, #0d141f) !important;
     border-bottom-color: var(--beyond-studio-line, #253247) !important;
   }
