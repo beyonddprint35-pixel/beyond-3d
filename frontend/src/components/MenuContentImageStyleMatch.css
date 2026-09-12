@@ -107,3 +107,19 @@ html[data-beyond-theme="dark"] .menu-content-v2-scene-empty{background:rgba(235,
   .menu-content-v2-scene-option{grid-template-rows:56px auto}
   .menu-content-v2-scene-option>img,.menu-content-v2-scene-option .scene-auto-icon{height:56px}
 }
+
+/* per-option download controls */
+.menu-content-v2-photo-variant-card{outline:none}
+.menu-content-v2-photo-variant-card:focus-visible{border-color:#4974e5;box-shadow:0 0 0 3px rgba(73,116,229,.16)}
+.menu-content-v2-photo-variant-download{
+  position:absolute;top:8px;right:8px;z-index:3;width:27px;height:27px;padding:0;display:grid;place-items:center;
+  border:1px solid rgba(20,31,48,.12);border-radius:50%;background:rgba(255,255,255,.94);color:#26364f;
+  box-shadow:0 2px 9px rgba(21,32,51,.18);cursor:pointer;backdrop-filter:blur(8px);
+}
+.menu-content-v2-photo-variant-download:hover{background:#fff;color:#4974e5;border-color:rgba(73,116,229,.28)}
+.menu-content-v2-photo-variant-download:disabled{opacity:.55;cursor:default}
+.menu-content-v2-photo-variant-card.original .menu-content-v2-photo-variant-download{color:#247a59}
+.menu-content-v2-photo-studio-preview .original-preview-label{display:inline-flex;align-items:center;gap:5px}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-variant-download{background:rgba(20,29,40,.94);color:#eef3fb;border-color:rgba(255,255,255,.14)}
+html[data-beyond-theme="dark"] .menu-content-v2-photo-variant-download:hover{background:#1e2a38;color:#9bb5ff;border-color:rgba(121,153,239,.30)}
+@media(max-width:850px){.menu-content-v2-photo-variant-download{top:6px;right:6px;width:26px;height:26px}}

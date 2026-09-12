@@ -4,6 +4,7 @@ import {
   Camera,
   Check,
   ChevronDown,
+  Download,
   ImagePlus,
   Link2,
   LoaderCircle,
@@ -53,7 +54,7 @@ const PHOTO_COPY = {
     generatingHint: "Beyond is preserving the real item and the selected restaurant background.",
     before: "Original", after: "Styled photo", compare: "Compare",
     enhancedView: "Enhanced photo", regenerate: "Try again", createAnother: "Create another option", usePhoto: "Use this photo", saving: "Saving photo…", cancel: "Cancel",
-    optionsTitle: "Created options", optionsHint: "Every AI result is kept. Choose the one you want to use.", optionLabel: "Option",
+    optionsTitle: "Created options", optionsHint: "Your original photo and every AI result are kept here. Choose the one you want to use.", optionLabel: "Option", originalOption: "Original", download: "Download photo",
     advancedAi: "Create a new photo with AI instead", advancedAiHint: "Only use this when you do not have a real photo of the item.",
   },
   he: {
@@ -78,7 +79,7 @@ const PHOTO_COPY = {
     generatingHint: "Beyond שומר על הפריט האמיתי ועל רקע המסעדה שנבחר.",
     before: "מקור", after: "תמונה מעוצבת", compare: "השוואה",
     enhancedView: "תמונה משופרת", regenerate: "נסו שוב", createAnother: "יצירת אפשרות נוספת", usePhoto: "שימוש בתמונה", saving: "שומר את התמונה…", cancel: "ביטול",
-    optionsTitle: "אפשרויות שנוצרו", optionsHint: "כל תוצאת AI נשמרת. בחרו את התמונה שבה תרצו להשתמש.", optionLabel: "אפשרות",
+    optionsTitle: "אפשרויות שנוצרו", optionsHint: "התמונה המקורית וכל תוצאת AI נשמרות כאן. בחרו את התמונה שבה תרצו להשתמש.", optionLabel: "אפשרות", originalOption: "מקורית", download: "הורדת תמונה",
     advancedAi: "יצירת תמונה חדשה עם AI במקום", advancedAiHint: "רק כשאין תמונה אמיתית של הפריט.",
   },
   ar: {
@@ -103,7 +104,7 @@ const PHOTO_COPY = {
     generatingHint: "يحافظ Beyond على العنصر الحقيقي وعلى خلفية المطعم المختارة.",
     before: "الأصل", after: "الصورة المنسقة", compare: "مقارنة",
     enhancedView: "الصورة المحسّنة", regenerate: "حاول مرة أخرى", createAnother: "إنشاء خيار آخر", usePhoto: "استخدم هذه الصورة", saving: "جارٍ حفظ الصورة…", cancel: "إلغاء",
-    optionsTitle: "الخيارات التي تم إنشاؤها", optionsHint: "يتم الاحتفاظ بكل نتيجة من AI. اختر الصورة التي تريد استخدامها.", optionLabel: "خيار",
+    optionsTitle: "الخيارات التي تم إنشاؤها", optionsHint: "يتم الاحتفاظ بالصورة الأصلية وكل نتيجة من AI هنا. اختر الصورة التي تريد استخدامها.", optionLabel: "خيار", originalOption: "الأصلية", download: "تنزيل الصورة",
     advancedAi: "أنشئ صورة جديدة بالذكاء الاصطناعي", advancedAiHint: "استخدم هذا فقط عندما لا توجد صورة حقيقية للعنصر.",
   },
 };
@@ -283,8 +284,50 @@ function currentRestaurantPhotoStyle() {
   return normalizePhotoStyle(readMenuStudioV2Draft()?.menu?.photo_style);
 }
 
-function itemDisplayName(item) {
-  return String(item?.name || item?.name_en || item?.title || item?.name_he || item?.name_ar || "").trim();
+function itemDisplayName(item, language = "en") {
+  const localizedName = item?.name;
+  if (localizedName && typeof localizedName === "object") {
+    return String(localizedName[language] || localizedName.en || localizedName.he || localizedName.ar || "").trim();
+  }
+  return String(localizedName || item?.name_en || item?.title || item?.name_he || item?.name_ar || "").trim();
+}
+
+function safeDownloadName(value, fallback = "menu-photo") {
+  const cleaned = String(value || fallback)
+    .trim()
+    .replace(/[^\p{L}\p{N}]+/gu, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+  return cleaned || fallback;
+}
+
+async function downloadPhotoUrl(url, filenameBase) {
+  if (!url || typeof document === "undefined") return;
+  const base = safeDownloadName(filenameBase);
+  try {
+    const response = await fetch(url, { mode: "cors", cache: "no-store" });
+    if (!response.ok) throw new Error("download failed");
+    const blob = await response.blob();
+    const type = String(blob.type || "").toLowerCase();
+    const extension = type.includes("png") ? "png" : type.includes("webp") ? "webp" : "jpg";
+    const objectUrl = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = objectUrl;
+    link.download = `${base}.${extension}`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1200);
+  } catch {
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = base;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  }
 }
 
 export default function MenuContentImageEditor({ item, projectId = "draft", t = {}, onChange }) {
@@ -440,7 +483,7 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
         projectId,
         mode,
         itemId: item.id,
-        itemName: itemDisplayName(item),
+        itemName: itemDisplayName(item, language),
         styleContext,
         sceneType: mode === "match" ? sceneType : "auto",
         styleStrength: selectedStyleStrength,
@@ -475,10 +518,29 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
   }
 
   async function saveAiPhoto() {
-    if (!result?.url || !result?.path || saving) return;
+    if (!result?.url || saving || (!result?.isOriginal && !result?.path)) return;
     setSaving(true);
     setError("");
     try {
+      if (result.isOriginal) {
+        onChange?.({
+          image_url: sourceUrl,
+          image_path: sourcePath,
+          image_original_url: sourceUrl,
+          image_original_path: sourcePath,
+          image_processed_url: "",
+          image_processed_path: "",
+          image_variant: "",
+          image_ai_mode: "",
+          image_ai_model: "",
+          image_ai_scene: "",
+          image_ai_style: null,
+          image_ai_options: normalizeAiOptions(results),
+        });
+        setSavedCompareSide("after");
+        setStudioOpen(false);
+        return;
+      }
       const selectedStyle = normalizePhotoStyle(result.photoStyle || photoStyle);
       onChange?.({
         image_url: result.url,
@@ -532,6 +594,13 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
     window.location.assign(`/menu-studio/ai-images?${params.toString()}`);
   }
 
+  function chooseOriginal() {
+    if (!sourceUrl || busy) return;
+    setResult({ id: "original", url: sourceUrl, path: sourcePath, isOriginal: true });
+    setCompareSide("after");
+    setStyleSaved(false);
+  }
+
   function chooseResult(option) {
     if (!option || busy) return;
     setResult(option);
@@ -544,7 +613,10 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
 
   function openStudio() {
     const options = optionsFromItem(item);
-    const selected = options.find((option) => option.path === item.image_processed_path) || options[options.length - 1] || null;
+    const currentIsOriginal = Boolean(sourceUrl && item.image_url === sourceUrl && !item.image_processed_path);
+    const selected = currentIsOriginal
+      ? { id: "original", url: sourceUrl, path: sourcePath, isOriginal: true }
+      : options.find((option) => option.path === item.image_processed_path) || options[options.length - 1] || null;
     setResults(options);
     setResult(selected);
     setCompareSide("after");
@@ -687,18 +759,43 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
             </div> : null}
           </div>
 
-          {results.length ? (
+          {sourceUrl ? (
             <>
               <div className="menu-content-v2-photo-variant-title">
                 <strong>{copy.optionsTitle}</strong>
                 <small>{copy.optionsHint}</small>
               </div>
               <div className="menu-content-v2-photo-variant-grid">
-                {results.map((option, index) => (
-                  <button type="button" key={option.id} className={`menu-content-v2-photo-variant-card ${result?.id === option.id ? "active" : ""}`} onClick={() => chooseResult(option)} disabled={busy}>
-                    <img src={option.url} alt="" />
-                    <span><span>{copy.optionLabel} {index + 1}</span>{result?.id === option.id ? <i className="selected-mark"><Check size={11} /></i> : null}</span>
+                <div
+                  className={`menu-content-v2-photo-variant-card original ${result?.isOriginal || (!result && !results.length) ? "active" : ""}`}
+                  role="button"
+                  tabIndex={busy ? -1 : 0}
+                  aria-label={copy.originalOption}
+                  onClick={chooseOriginal}
+                  onKeyDown={(event) => { if (!busy && (event.key === "Enter" || event.key === " ")) { event.preventDefault(); chooseOriginal(); } }}
+                >
+                  <img src={sourceUrl} alt="" />
+                  <button type="button" className="menu-content-v2-photo-variant-download" disabled={busy} aria-label={`${copy.download} — ${copy.originalOption}`} onClick={(event) => { event.stopPropagation(); downloadPhotoUrl(sourceUrl, `${itemDisplayName(item, language) || "menu-item"}-original`); }}>
+                    <Download size={12} />
                   </button>
+                  <span><span>{copy.originalOption}</span>{result?.isOriginal || (!result && !results.length) ? <i className="selected-mark"><Check size={11} /></i> : null}</span>
+                </div>
+                {results.map((option, index) => (
+                  <div
+                    key={option.id}
+                    className={`menu-content-v2-photo-variant-card ${result?.id === option.id ? "active" : ""}`}
+                    role="button"
+                    tabIndex={busy ? -1 : 0}
+                    aria-label={`${copy.optionLabel} ${index + 1}`}
+                    onClick={() => chooseResult(option)}
+                    onKeyDown={(event) => { if (!busy && (event.key === "Enter" || event.key === " ")) { event.preventDefault(); chooseResult(option); } }}
+                  >
+                    <img src={option.url} alt="" />
+                    <button type="button" className="menu-content-v2-photo-variant-download" disabled={busy} aria-label={`${copy.download} — ${copy.optionLabel} ${index + 1}`} onClick={(event) => { event.stopPropagation(); downloadPhotoUrl(option.url, `${itemDisplayName(item, language) || "menu-item"}-option-${index + 1}`); }}>
+                      <Download size={12} />
+                    </button>
+                    <span><span>{copy.optionLabel} {index + 1}</span>{result?.id === option.id ? <i className="selected-mark"><Check size={11} /></i> : null}</span>
+                  </div>
                 ))}
               </div>
             </>
@@ -717,13 +814,13 @@ export default function MenuContentImageEditor({ item, projectId = "draft", t = 
             </>
           ) : (
             <>
-              <div className="menu-content-v2-photo-compare-tabs">
+              {!result?.isOriginal ? <div className="menu-content-v2-photo-compare-tabs">
                 <button type="button" className={compareSide === "before" ? "active" : ""} onClick={() => setCompareSide("before")}><span>{copy.before}</span></button>
                 <button type="button" className={compareSide === "after" ? "active" : ""} onClick={() => setCompareSide("after")}><Sparkles size={11} /><span>{copy.after}</span></button>
-              </div>
+              </div> : null}
               <div className="menu-content-v2-photo-studio-preview ai-result-preview">
-                <img src={compareSide === "before" ? sourceUrl : selectedPreviewUrl} alt="" />
-                <span><ArrowLeftRight size={12} /> {copy.compare}</span>
+                <img src={result?.isOriginal ? sourceUrl : (compareSide === "before" ? sourceUrl : selectedPreviewUrl)} alt="" />
+                {result?.isOriginal ? <span className="original-preview-label">{copy.originalOption}</span> : <span><ArrowLeftRight size={12} /> {copy.compare}</span>}
                 {processing ? <div className="menu-content-v2-photo-processing"><LoaderCircle size={26} className="spin" /><strong>{copy.generating}</strong><small>{copy.generatingHint}</small></div> : null}
               </div>
               <div className="menu-content-v2-photo-ai-result-actions">
