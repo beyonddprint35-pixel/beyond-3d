@@ -10,6 +10,8 @@ const state = {
   busy: false,
   button: null,
   media: null,
+  canvas: null,
+  toolbar: null,
   img: null,
   item: null,
   sourceUrl: "",
@@ -136,8 +138,7 @@ function outputDimensions(ratio) {
 }
 
 function setStatus(text, tone = "") {
-  const toolbar = state.media?.querySelector(":scope > .beyond-live-framing-toolbar");
-  const status = toolbar?.querySelector("[data-live-frame-status]");
+  const status = state.toolbar?.querySelector("[data-live-frame-status]");
   if (!status) return;
   status.textContent = text || "";
   status.dataset.tone = tone;
@@ -149,8 +150,7 @@ function render() {
   state.img.style.transform = `scale(${state.zoom})`;
   state.img.style.transformOrigin = `${state.x}% ${state.y}%`;
 
-  const toolbar = state.media?.querySelector(":scope > .beyond-live-framing-toolbar");
-  const zoomLabel = toolbar?.querySelector("[data-live-frame-zoom]");
+  const zoomLabel = state.toolbar?.querySelector("[data-live-frame-zoom]");
   if (zoomLabel) zoomLabel.textContent = `${Math.round(state.zoom * 100)}%`;
 }
 
@@ -169,6 +169,7 @@ function resetFraming() {
 
 function removeToolbar() {
   document.querySelectorAll(".beyond-live-framing-toolbar").forEach((node) => node.remove());
+  state.toolbar = null;
 }
 
 function restoreDomImage() {
@@ -183,11 +184,13 @@ function endEditor({ restore = true } = {}) {
   if (!state.active || state.busy) return;
   if (restore) restoreDomImage();
   state.media?.classList.remove("beyond-live-framing-active", "beyond-live-framing-dragging", "beyond-live-framing-saving");
+  state.canvas?.classList.remove("beyond-live-framing-canvas-active");
   if (state.button) state.button.hidden = false;
   removeToolbar();
   state.active = false;
   state.button = null;
   state.media = null;
+  state.canvas = null;
   state.img = null;
   state.item = null;
   state.drag = null;
@@ -199,7 +202,7 @@ function makeToolbar() {
   const toolbar = document.createElement("div");
   toolbar.className = "beyond-live-framing-toolbar";
   toolbar.innerHTML = `
-    <div class="beyond-live-framing-hint">Drag photo to move · scroll/pinch to zoom</div>
+    <div class="beyond-live-framing-hint">Drag the photo to reposition it</div>
     <div class="beyond-live-framing-controls">
       <button type="button" data-live-frame-cancel aria-label="Cancel photo adjustment">×</button>
       <button type="button" data-live-frame-minus aria-label="Zoom out">−</button>
@@ -237,7 +240,8 @@ function beginEditor(button) {
   const item = selectedItemFromDraft(draft);
   const media = button.parentElement;
   const img = media?.querySelector("img");
-  if (!draft || !item || !media || !img) return;
+  const canvas = media?.closest(".menu-content-v2-canvas");
+  if (!draft || !item || !media || !img || !canvas) return;
 
   const crop = item.image_menu_crop || {};
   const visibleSrc = img.currentSrc || img.src || item.image_url || "";
@@ -248,6 +252,7 @@ function beginEditor(button) {
   state.busy = false;
   state.button = button;
   state.media = media;
+  state.canvas = canvas;
   state.img = img;
   state.item = item;
   state.sourceUrl = sourceUrl;
@@ -265,7 +270,9 @@ function beginEditor(button) {
 
   button.hidden = true;
   media.classList.add("beyond-live-framing-active");
-  media.appendChild(makeToolbar());
+  canvas.classList.add("beyond-live-framing-canvas-active");
+  state.toolbar = makeToolbar();
+  canvas.appendChild(state.toolbar);
 
   if (sourceUrl !== visibleSrc) img.src = sourceUrl;
   render();
@@ -379,7 +386,7 @@ async function saveFraming() {
   state.media?.classList.add("beyond-live-framing-saving");
   setStatus("Saving…");
 
-  const saveButton = state.media?.querySelector("[data-live-frame-save]");
+  const saveButton = state.toolbar?.querySelector("[data-live-frame-save]");
   if (saveButton) saveButton.disabled = true;
 
   try {
