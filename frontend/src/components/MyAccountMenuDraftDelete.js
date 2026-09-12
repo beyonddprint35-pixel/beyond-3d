@@ -1,4 +1,12 @@
 import { supabase } from "../lib/supabaseClient";
+import {
+  deleteMenuStudioProject,
+  menuStudioProjectId,
+} from "../features/menu-engine/studio/menuStudioV2Persistence";
+import {
+  clearMenuStudioV2Draft,
+  readMenuStudioV2Draft,
+} from "../features/menu-engine/studio/menuStudioV2Session";
 
 const CARD_SELECTOR = ".account-generated-website-card";
 const BUTTON_CLASS = "account-menu-draft-delete";
@@ -191,24 +199,29 @@ async function deleteDraft(draft, card, button) {
     throw new Error("Your session has expired. Please sign in again.");
   }
 
+  if (
+    !draft?.id ||
+    draft.owner_user_id !== user.id ||
+    draft.activated_site_id
+  ) {
+    throw new Error(
+      "This draft could not be deleted. It may already be active or you may not have permission."
+    );
+  }
+
   button.disabled = true;
   card?.classList.add("is-deleting-menu-draft");
 
   try {
-    const { data, error } = await supabase
-      .from("menu_projects")
-      .delete()
-      .eq("id", draft.id)
-      .eq("owner_user_id", user.id)
-      .is("activated_site_id", null)
-      .select("id");
+    // One authoritative deletion path for the whole product: the Supabase project
+    // must be deleted successfully before the account UI forgets the menu.
+    await deleteMenuStudioProject(draft.id);
 
-    if (error) throw error;
-
-    if (!Array.isArray(data) || data.length === 0) {
-      throw new Error(
-        "This draft could not be deleted. It may already be active or you may not have permission."
-      );
+    // If this was the browser's currently-open Studio project, remove the stale
+    // session copy only after the cloud delete has succeeded.
+    const currentDraft = readMenuStudioV2Draft();
+    if (menuStudioProjectId(currentDraft) === draft.id) {
+      clearMenuStudioV2Draft();
     }
 
     drafts = drafts.filter((item) => item.id !== draft.id);
