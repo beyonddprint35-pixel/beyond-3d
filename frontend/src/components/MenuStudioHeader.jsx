@@ -5,6 +5,7 @@ import beyondLogo from "../assets/beyond-logo-transparent.png";
 import StudioLanguageMenu from "./StudioLanguageMenu";
 import MenuStudioMenuSwitcher from "./MenuStudioMenuSwitcher";
 import MenuPlaceWorkspace from "./MenuPlaceWorkspace";
+import MenuProBadge from "./MenuProBadge";
 import "./MenuStudioHeaderCompact.css";
 import "./MenuStudioCompactStack.css";
 import "./MenuStudioDesignSubnav.css";
@@ -91,7 +92,7 @@ export default function MenuStudioHeader({
       </div>
 
       <nav className={`${prefix}-product-nav`} aria-label="Menu Studio" dir={studioLanguageDirection(language)}>
-        {STUDIO_STAGES.map((key) => <button type="button" key={key} aria-current={key === stage ? "page" : undefined} className={key === stage ? "active" : ""} onClick={() => openStage(key)}>{t[key]}</button>)}
+        {STUDIO_STAGES.map((key) => <button type="button" key={key} aria-current={key === stage ? "page" : undefined} className={key === stage ? "active" : ""} onClick={() => openStage(key)}>{t[key]}{key === "analytics" ? <MenuProBadge language={language} className="menu-studio-nav-pro-badge" /> : null}</button>)}
       </nav>
 
       <div className={`${prefix}-top-actions menu-studio-header-actions`}>
